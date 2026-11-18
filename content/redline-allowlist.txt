@@ -1,0 +1,5 @@
+# Red-line domain allowlist (Red Line 1 exception).
+# Real domains that may appear ONLY on the "Where to report" / "Learn more" screens,
+# as factual references, never as scam props. One domain per line; subdomains are included.
+# Entries are added by fraud-researcher with a matching id in content/sources.yaml,
+# and need sceptic-reviewer PASS. Intentionally empty at Phase 1.

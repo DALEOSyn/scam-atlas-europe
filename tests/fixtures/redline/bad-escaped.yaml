@@ -1,0 +1,3 @@
+# Escapes hide the dot from a raw-text scan; the decoded-value pass must catch it.
+message:
+  body: "Pay at paketpilot-zoll\u002Ecom now"

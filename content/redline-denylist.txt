@@ -1,0 +1,98 @@
+# Red-line denylist: real brands that must never appear in game content (Red Line 1).
+# One name per line, matched case-insensitively as a whole word (spaces also match "-"/"_").
+# Real organisations may be named only on the "Where to report" / "Learn more" screens.
+# Common English words are deliberately left out (e.g. Wise, Swish, Signal, Outlook)
+# to avoid false positives; reviewers check those manually.
+
+# Banks and neobanks
+Deutsche Bank
+Commerzbank
+Sparkasse
+Volksbank
+ING
+BNP Paribas
+Société Générale
+Crédit Agricole
+Santander
+BBVA
+CaixaBank
+UniCredit
+Intesa Sanpaolo
+Rabobank
+ABN AMRO
+HSBC
+Barclays
+Lloyds
+Revolut
+N26
+Nordea
+Swedbank
+KBC
+Belfius
+PKO
+mBank
+Raiffeisen
+Erste Bank
+
+# Couriers and postal services
+DHL
+DPD
+GLS
+UPS
+FedEx
+Hermes
+Evri
+PostNL
+La Poste
+Colissimo
+Chronopost
+Correos
+Poste Italiane
+InPost
+Royal Mail
+An Post
+bpost
+PostNord
+Deutsche Post
+
+# Marketplaces and shops
+Amazon
+eBay
+Vinted
+Allegro
+OLX
+Wallapop
+Leboncoin
+Marktplaats
+Kleinanzeigen
+Zalando
+Booking.com
+Airbnb
+AliExpress
+Temu
+
+# Payment apps and wallets
+PayPal
+Klarna
+Bizum
+MobilePay
+Vipps
+Twint
+BLIK
+Satispay
+Lydia
+iDEAL
+Visa
+Mastercard
+
+# Big tech, platforms and messengers
+Google
+Apple
+iCloud
+Microsoft
+Facebook
+Instagram
+WhatsApp
+TikTok
+Netflix
+Spotify

@@ -1,0 +1,11 @@
+# Source registry (Red Line 6). Owned by fraud-researcher (T-1.3).
+# STUB: the two ids below are reserved placeholders from templates/scenario.template.yaml.
+# Placeholder sources produce a warning in `npm run content:validate` and an error with --strict.
+# This file is excluded from redline:lint because real sources carry real URLs.
+sources:
+  - id: europol-scam-smishing
+    title: "PLACEHOLDER: Europol guidance on SMS phishing (to be filled by fraud-researcher)"
+    placeholder: true
+  - id: bsi-smishing
+    title: "PLACEHOLDER: BSI guidance on smishing (to be filled by fraud-researcher)"
+    placeholder: true

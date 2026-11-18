@@ -1,0 +1,3 @@
+message:
+  sender: { display: "Bank security", detail: "+49 30 12345678" }
+  body: "Call us back on 0612 345 678 or 612 345 678."

@@ -1,0 +1,3 @@
+message:
+  qr:
+    payload: "paketpilot.example/pay"

@@ -1,0 +1,3 @@
+# DE89 3704 0044 0532 0130 00 is the widely published sample IBAN; its checksum is valid.
+message:
+  body: "New account for the invoice: DE89 3704 0044 0532 0130 00. Please pay today."

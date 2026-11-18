@@ -1,0 +1,2 @@
+browser:
+  html: '<form method="post" action="/collect"><input name="password"></form>'

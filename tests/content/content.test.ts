@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { parse } from 'yaml';
 import { brandHosts, loadBrands, validateContent, validateI18n, checkScenario, type ContentReport } from '../../scripts/lib/content.ts';
 import { isAllowedSourceHost } from '../../scripts/lib/source-hosts.ts';
-import { i18nCatalogueSchema, scenarioSchema, sourcesFileSchema } from '../../src/content/schema.ts';
+import { brandSchema, i18nCatalogueSchema, lookalikeSchema, scenarioSchema, sourcesFileSchema } from '../../src/content/schema.ts';
 
 const ROOT = resolve(import.meta.dirname, '..', '..');
 const CONTENT = resolve(ROOT, 'content');
@@ -126,21 +126,56 @@ describe('i18n catalogues (finding 5)', () => {
   });
 });
 
-describe('brand registry hosts', () => {
-  it('collects domain, look-alikes, email hosts and sub-brand domains', () => {
-    const hosts = brandHosts({
-      domain: 'a.example',
-      lookalike_examples: ['c.test/x'],
-      email_addresses: ['x@d.invalid'],
-      sub_brands: [{ domain: 'b.a.example' }],
-    });
-    expect(hosts).toEqual(['a.example', 'c.test', 'd.invalid', 'b.a.example']);
-  });
-  it('loadBrands rejects a real-looking host in the registry', () => {
+describe('brand registry (T-1.8)', () => {
+  const report = (): ContentReport => ({ errors: [], warnings: [], scenarios: new Map() });
+  const loadFrom = (yaml: string): ContentReport => {
     const dir = mkdtempSync(join(tmpdir(), 'brands-'));
-    writeFileSync(join(dir, 'brands.yaml'), 'brands:\n  - id: trundle\n    name: Trundle\n    domain: trundle.example\n    lookalike_examples: ["trundle-parcel.com"]\n');
-    const report: ContentReport = { errors: [], warnings: [], scenarios: new Map() };
-    loadBrands(dir, report);
-    expect(report.errors.join('\n')).toMatch(/trundle-parcel\.com/);
+    writeFileSync(join(dir, 'brands.yaml'), yaml);
+    const r = report();
+    loadBrands(dir, r);
+    return r;
+  };
+
+  it('the real registry validates strictly and every host is fictional', () => {
+    const r = report();
+    const brands = loadBrands(CONTENT, r);
+    expect(r.errors).toEqual([]);
+    expect(brands.size).toBe(8);
+  });
+
+  it('collects domain, sub-brand domains, email hosts and look-alikes incl. {host} objects', () => {
+    const b = brandSchema.parse({
+      id: 'x',
+      name: 'X',
+      domain: 'a.example',
+      sub_brands: [{ id: 'x-sub', name: 'X Sub', domain: 'b.a.example' }],
+      email_addresses: ['x@d.invalid'],
+      lookalike_examples: ['c.test/x', { host: 'xI.example', display_text_only: true }],
+    });
+    expect(brandHosts(b)).toEqual(['a.example', 'b.a.example', 'd.invalid', 'c.test', 'xI.example']);
+  });
+
+  it('rejects a real-looking host in a plain look-alike', () => {
+    const r = loadFrom('brands:\n  - id: trundle\n    name: Trundle\n    domain: trundle.example\n    lookalike_examples: ["trundle-parcel.com"]\n');
+    expect(r.errors.join('\n')).toMatch(/trundle-parcel\.com/);
+  });
+
+  it('rejects a real-looking host in a {host, display_text_only} look-alike', () => {
+    const r = loadFrom(
+      'brands:\n  - id: trundle\n    name: Trundle\n    lookalike_examples:\n      - host: "trundIe.com"\n        display_text_only: true\n',
+    );
+    expect(r.errors.join('\n')).toMatch(/trundIe\.com/);
+  });
+
+  it('a mistyped key carrying a real host fails validation (strict schema)', () => {
+    const r = loadFrom('brands:\n  - id: trundle\n    name: Trundle\n    lookalike_exmaples: ["trundle-parcel.com"]\n');
+    expect(r.errors.join('\n')).toMatch(/lookalike_exmaples/);
+    const sub = loadFrom('brands:\n  - id: trundle\n    name: Trundle\n    sub_brands:\n      - { id: t-pay, name: T Pay, domian: t-pay.com }\n');
+    expect(sub.errors.join('\n')).toMatch(/domian/);
+  });
+
+  it('look-alike objects must be exactly {host, display_text_only}', () => {
+    expect(lookalikeSchema.safeParse({ host: 'a.example', display_text_only: true }).success).toBe(true);
+    expect(lookalikeSchema.safeParse({ host: 'a.example', url: 'a.com' }).success).toBe(false);
   });
 });

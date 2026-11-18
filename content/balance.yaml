@@ -1,7 +1,7 @@
 # Scam Atlas: Europe — balance and scoring tables
 # Owner: game-designer. v3 (final consolidated revision for G1, 2026-11-18).
-# Addresses sceptic re-review (B1–B3, N1–N3) and QA paper playtest (docs/qa/2026-11-18-gdd-paper-playtest.md).
-# Rules these numbers feed: docs/GDD.md §6–§9. Strategy check: GDD §7.2.
+# Addresses sceptic re-review (B1–B3, N1–N3) and QA paper playtest (docs/qa, 2026-11-18 GDD paper playtest).
+# Rules these numbers feed: GDD (docs/GDD) §6–§9. Strategy check: GDD §7.2.
 # Player-facing: stars per scenario + stamp per chapter. Points and rating live behind "Details".
 
 version: 3.1   # v3.1: net spotting, 2 decoys, slot-bound timers/list, boss-fall rule, ceil thresholds, rating cap
@@ -102,7 +102,7 @@ recovery:
   max_points: 9
   harmful_step_penalty: -2
   floor: 0
-  categories_are_per_scenario: true   # outcome.recovery lists {step, category}; "change password" is `stop` after credential theft
+  categories_are_per_scenario: true   # outcome recovery lists {step, category}; "change password" is `stop` after credential theft
   lo16_demonstrated_if: "points >= 6 AND first pick has category stop in this scenario"
 
 # ---------------------------------------------------------------------------
@@ -130,7 +130,7 @@ interrupts:
 # ---------------------------------------------------------------------------
 timers:
   # v3.1: timer LENGTH is set by chapter slot, identical for genuine and fraud scenarios in that chapter,
-  # so length is never a tell. Whether a scenario has a timer is authored, subject to mix.pressure_parity_pp.
+  # so length is never a tell. Whether a scenario has a timer is authored, subject to mix > pressure_parity_pp.
   by_slot: { 0: 60, 1: 60, 2: 55, 3: 50, 4: 50, 5: 45, 6: 45, 7: 40, 8: 40, 9: 35, 10: 35 }
   honest_timer_allowed_on_legit: true   # genuine deadlines ("link valid 15 min") use the same slot length
   boss_beat: 40                   # bosses are always fraud and announced as the boss, so no tell
@@ -209,7 +209,7 @@ mix:
   min_decoys_on_fraud: 2
   sender_or_link_decoy_min_share: "ceil(F/3)"   # F = fraud scenarios in the chapter; at least this many have the sender or the link as a decoy
   genuine_at_every_difficulty_used: true        # each difficulty level used in a chapter has >= 1 genuine scenario
-  timer_length_parity: same_length_by_slot      # see timers.by_slot
+  timer_length_parity: same_length_by_slot      # see timers > by_slot
   genuine_normal_response_kind: proceed         # the expected response to a genuine message is `proceed`, even if it is a reply or opening a link
   drill_tags_count: false
   approve_prompt_only_on_fraud: true

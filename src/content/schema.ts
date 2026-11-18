@@ -166,24 +166,78 @@ export type Scenario = z.infer<typeof scenarioSchema>;
 export type Action = z.infer<typeof actionSchema>;
 export type Outcome = z.infer<typeof outcomeSchema>;
 
+const hexColour = z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'colours are #RRGGBB');
+const brandAssetPath = z.string().regex(/^public\/brands\/[a-z0-9-]+\.svg$/, 'logos live at public/brands/<id>.svg');
+
+/**
+ * A sanctioned spoof host for scam scenarios. Plain string = may be shown as
+ * an address-bar host. Object form = only as text inside an image, letter or
+ * post (e.g. capital-letter homoglyphs that lowercasing would undo).
+ */
+export const lookalikeSchema = z.union([
+  z.string().min(1),
+  z.object({ host: z.string().min(1), display_text_only: z.boolean() }).strict(),
+]);
+export type Lookalike = z.infer<typeof lookalikeSchema>;
+
+export const subBrandSchema = z
+  .object({
+    id: slug,
+    name: z.string().min(1),
+    purpose: z.string().min(1).optional(),
+    domain: z.string().min(1).optional(),
+    logo: brandAssetPath.optional(),
+  })
+  .strict();
+
+/**
+ * Fictional brand registry entry (content/brands.yaml, owned by ux-artist).
+ * Strict: an unknown or mistyped key fails validation, so no field escapes
+ * the host check below or the red-line lint.
+ *
+ * Review-only fields (rationale, checked_against, web_check) may name real
+ * brands; redline:lint exempts exactly those nodes. Everything else is
+ * player-facing or feeds player-facing text and is linted.
+ */
 export const brandSchema = z
   .object({
     id: slug,
     name: z.string().min(1),
+    short_name: z.string().min(1).optional(),
     kind: z.enum(['bank', 'courier', 'marketplace', 'payment', 'telecom', 'utility', 'government', 'tech', 'retail', 'other']).optional(),
     /** Free-text sector from the ux-artist registry (T-1.6). */
     sector: z.string().min(1).optional(),
-    /** Must be non-routable; red-line lint enforces .example/.test/.invalid. */
+    role_in_game: z.string().min(1).optional(),
+    sub_brands: z.array(subBrandSchema).optional(),
+    /** Must be non-routable (.example/.test/.invalid); checked by content:validate and redline:lint. */
     domain: z.string().min(1).optional(),
+    email_addresses: z.array(z.string().regex(/^[^@\s]+@[^@\s]+$/, 'must be an email address')).optional(),
+    app_name: z.string().min(1).optional(),
+    sms_sender_id: z.string().min(1).optional(),
+    known_channels: z.string().min(1).optional(),
+    palette: z.record(z.string().regex(/^[a-z_]+$/), hexColour).optional(),
+    logo: z.object({ lockup: brandAssetPath, mark: brandAssetPath.optional() }).strict().optional(),
+    typography: z.string().min(1).optional(),
+    rationale: z
+      .object({ name: z.string().min(1), colour_shape: z.string().min(1), typography: z.string().min(1).optional() })
+      .strict()
+      .optional(),
+    checked_against: z.array(z.string().min(1)).optional(),
+    web_check: z.string().min(1).optional(),
+    lookalike_examples: z.array(lookalikeSchema).optional(),
+    trademark_search: z.string().min(1).optional(),
+    status: z.enum(['draft', 'approved', 'retired']).optional(),
     notes: z.string().optional(),
     /** Stub entries awaiting the ux-artist brand registry (T-1.6). */
     placeholder: z.boolean().default(false),
   })
-  // The registry carries design metadata (palette, rationale, checks, look-alikes);
-  // only the fields above are validated here.
-  .passthrough();
+  .strict();
 export const brandsFileSchema = z
-  .object({ version: z.number().int().optional(), common: z.unknown().optional(), brands: z.array(brandSchema) })
+  .object({
+    version: z.number().int().optional(),
+    common: z.object({ trademark_search: z.string().min(1).optional() }).strict().optional(),
+    brands: z.array(brandSchema),
+  })
   .strict();
 export type Brand = z.infer<typeof brandSchema>;
 

@@ -373,3 +373,53 @@ describe('re-review extras', () => {
     expect(warnings('SEB')).toHaveLength(1);
   });
 });
+
+// ---------------------------------------------------------------------------
+// T-1.8: brands.yaml and balance.yaml are linted again.
+
+describe('T-1.8: brand registry and balance tables are linted', () => {
+  const BRANDS = resolve(ROOT, 'content/brands.yaml');
+  const brandYaml = (fields: string) =>
+    `brands:\n  - id: trundle\n    name: "Trundle"\n${fields}    checked_against: ["DHL", "Deutsche Post", "InPost"]\n    web_check: "Low. Not DHL or bol.com (BRAND_CHECK)."\n    rationale:\n      name: "Not PayPal."\n      colour_shape: "Couriers cluster on yellow (DHL) and orange."\n`;
+  const lintBrands = (fields: string) => lintText(BRANDS, brandYaml(fields), cfg).filter((f) => f.severity === 'error');
+
+  it('the real brands.yaml and balance.yaml are scanned and produce no findings', () => {
+    const files = [BRANDS, resolve(ROOT, 'content/balance.yaml')];
+    expect(lintPaths(files, cfg)).toEqual([]);
+    const scanned = lintPaths([resolve(ROOT, 'content')], cfg);
+    expect(scanned).toEqual([]);
+  });
+
+  it('review-only fields may name real brands', () => {
+    expect(lintBrands('')).toEqual([]);
+  });
+
+  it('a denylisted name fails', () => {
+    const found = lintText(BRANDS, brandYaml('').replace('name: "Trundle"', 'name: "DHL Paket"'), cfg);
+    expect(found.filter((f) => f.severity === 'error').map((f) => [f.category, f.line])).toEqual([['brand', 3]]);
+  });
+
+  it.each([
+    ['short_name', '    short_name: "PayPal"\n'],
+    ['app_name', '    app_name: "Revolut app"\n'],
+    ['sms_sender_id', '    sms_sender_id: "DHL"\n'],
+    ['known_channels', '    known_channels: "Call 030 1234567"\n'],
+    ['email_addresses', '    email_addresses: ["help@trundle.com"]\n'],
+    ['sub_brands name', '    sub_brands:\n      - { id: t-pay, name: "Trundle x Klarna" }\n'],
+    ['lookalike object host', '    lookalike_examples:\n      - { host: "trundle.de", display_text_only: true }\n'],
+    ['role_in_game', '    role_in_game: "Like Amazon lockers"\n'],
+  ])('player-facing field %s is linted', (_, fields) => {
+    expect(lintBrands(fields).length).toBeGreaterThan(0);
+  });
+
+  it('exemptions apply only to brands[] review fields in content/brands.yaml', () => {
+    // Same review fields in another file: linted.
+    expect(lintText(resolve(ROOT, 'content/other.yaml'), brandYaml(''), cfg).some((f) => f.severity === 'error')).toBe(true);
+    // A review-field name at another path inside brands.yaml: linted.
+    expect(lintText(BRANDS, 'common:\n  checked_against: ["DHL"]\nbrands: []\n', cfg).map((f) => f.category)).toEqual(['brand']);
+  });
+
+  it('keys are still scanned in brands.yaml (raw pass is skipped there)', () => {
+    expect(lintText(BRANDS, 'brands:\n  - id: t\n    name: T\n    paypal_id: "x"\n', cfg).map((f) => f.category)).toEqual(['brand']);
+  });
+});

@@ -64,21 +64,27 @@ export function loadBrands(contentDir: string, report: ContentReport): Map<strin
   return out;
 }
 
-/** brands.yaml is excluded from redline:lint (it names real brands in checked_against), so its own hosts are checked here. */
+/** Hosts in the registry must be non-routable (Red Line 3). Also enforced by redline:lint on brands.yaml. */
 const FICTIONAL_HOST = /\.(example|test|invalid)$/i;
-export function brandHosts(b: Record<string, unknown>): string[] {
-  const hosts: string[] = [];
-  const add = (v: unknown) => {
-    if (typeof v === 'string') hosts.push(v.includes('@') ? v.slice(v.lastIndexOf('@') + 1) : (v.split('/')[0] ?? v));
-  };
-  add(b.domain);
-  for (const key of ['lookalike_examples', 'email_addresses'] as const) {
-    const list = b[key];
-    if (Array.isArray(list)) list.forEach(add);
-  }
-  const subs = b.sub_brands;
-  if (Array.isArray(subs)) for (const sb of subs) if (sb && typeof sb === 'object') add((sb as Record<string, unknown>).domain);
-  return hosts;
+
+/** Host part of a domain, URL-ish string ("host/path") or email address. */
+function hostOf(value: string): string {
+  const afterAt = value.includes('@') ? value.slice(value.lastIndexOf('@') + 1) : value;
+  return (afterAt.split('/')[0] ?? afterAt).trim();
+}
+
+/**
+ * Every host a brand entry declares, from parsed, typed data: domain,
+ * sub-brand domains, email addresses and look-alikes (plain strings and
+ * {host, display_text_only} objects alike).
+ */
+export function brandHosts(b: Brand): string[] {
+  const values: string[] = [];
+  if (b.domain) values.push(b.domain);
+  for (const sb of b.sub_brands ?? []) if (sb.domain) values.push(sb.domain);
+  values.push(...(b.email_addresses ?? []));
+  for (const l of b.lookalike_examples ?? []) values.push(typeof l === 'string' ? l : l.host);
+  return values.map(hostOf);
 }
 
 export function loadSources(contentDir: string, report: ContentReport): Map<string, Source> {

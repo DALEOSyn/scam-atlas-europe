@@ -638,7 +638,7 @@ sources:
     accessed: 2026-11-18
     region: PT
     tier: 3
-    used_for: [MAP-ch7]
+    used_for: [MAP-missing]   # out of scope under Red Line 8 (offline ATM step)
     notes: "A seller on a classifieds site is talked through an ATM to 'receive' a phone payment and ends up linking the scammer to their account. Red flag: you never need an ATM to receive money. Older source; current prevalence unverified."
 
   # ---------------------------------------------------------------- Sweden
@@ -719,6 +719,18 @@ sources:
     tier: 3
     used_for: [MAP-ch10, MAP-missing]
     notes: "~EUR 49m stolen via phishing in BE in 2024. Young people: 23% don't know what phishing is; 14% would share bank card + PIN for money (money mule) vs 5% overall; 45% have never heard of money muling. Designer context only, not for on-screen use."
+
+
+  - id: de-bsi-deepfakes
+    publisher: BSI (Federal Office for Information Security)
+    title: "Deep Fakes - threats and countermeasures"
+    url: https://www.bsi.bund.de/EN/Themen/Unternehmen-und-Organisationen/Informationen-und-Empfehlungen/Kuenstliche-Intelligenz/Deepfakes/deepfakes_node.html
+    published: "2022-08-03 (page metadata, last updated)"
+    accessed: 2026-11-18
+    region: DE
+    tier: 2
+    used_for: [MAP-ch6, MAP-missing]
+    notes: "Explains voice cloning (text-to-speech and voice conversion; seconds-to-hours of audio needed). Fake voices used in fraud calls, e.g. CEO fraud triggering a transfer. Audible tells: metallic sound, mispronunciation, monotone or odd emphasis, reply delay. Countermeasure: awareness. Does NOT mention calls impersonating relatives; older (2022) and quality is improving, so tells are not to be taught as reliable."
 
   # ------------------------------------------------ placeholders (example scenario only)
   - id: europol-scam-smishing

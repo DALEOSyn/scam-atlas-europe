@@ -19,7 +19,7 @@ Format: gate, state (Open / Ready for Roman / Approved / Changed), the question(
 7. **Autonomy level:** may agents open PRs and merge them after all reviewers PASS and CI is green (recommended), or should every PR wait for you?
    - **Roman: as recommended. Agents may merge their own PRs after every reviewer passes them and CI is green.** Deploys and anything public still need a gate. ✅
 
-## G1 — Design approved (state: Ready for Roman, 2026-11-18)
+## G1 — Design approved (state: Approved 2026-11-18)
 Approve `docs/GDD.md`, the chapter list (`docs/patterns/MAP.md`), the learning objectives and the visual direction (`docs/UI_SPEC.md`, mock-ups in `docs/ui-mockups/`, screenshots in `docs/qa/screens/v2-*`).
 
 **Summary.** Research, design, UI and the scaffold all passed sceptic review, and the design and UI passed QA. Most rounds took one or two reworks; the GDD took three (logged as a producer exception). Main design choices:
@@ -42,6 +42,11 @@ Approve `docs/GDD.md`, the chapter list (`docs/patterns/MAP.md`), the learning o
    - every entry carries a "checked on" date;
    - 116 111 / 116 006 are shown only once verified country by country.
 7. **Known residual risk.** A player tagging details at random has about a 1-in-96 chance per chapter of a lucky silver. *Recommended: accept for now and tune in vertical-slice playtests.*
+
+**Roman, 2026-11-18: "continue as recommended". All 7 answered as recommended:** friendship-only arc with "Tell me now"; sextortion as a help card only; free city choice after Berlin; about 2.5–3 h length, re-measured at G2; strict gold, tuned after G2; real reporting bodies on the help screen under the stated conditions; lucky-silver risk accepted for now. ✅
+
+## Standing rules from Roman
+- **2026-11-18: keep the scams in the cybersecurity realm.** Every scenario must hinge on a digital or cyber vector; purely offline fraud is out of scope. Recorded as Red Line 8 in CLAUDE.md, which the sceptic-reviewer enforces.
 
 ## G2 — Vertical slice approved (state: Open)
 Play the tutorial + first city chapter yourself (link to preview build). Approve fun, tone and difficulty before content is mass-produced.

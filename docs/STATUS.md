@@ -18,7 +18,7 @@ Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR 
 - [x] T-0.3 | producer | Recorded Roman's scope decision: malicious cyber campaigns (catalogue Part B) in scope at defender level; webcam blackmail help card only | CLAUDE.md Red Line 8, DECISIONS.md
 - [x] T-1.7 | fraud-researcher | Brand-name web collision check (renamed Nodkey, Corvelle, Hoardly) | docs/patterns/BRAND_CHECK.md
 - [x] T-2.6 | game-designer | GDD/UI_SPEC follow-ups (1-9 caller, high-stakes set, layer-1 budget, snake_case flags) | sceptic: FAIL → PASS
-- [ ] T-2.4a | scenario-writer | Tutorial chapter scenarios | fraud-researcher: pending · sceptic: pending · qa: pending
+- [x] T-2.4a | scenario-writer | Tutorial chapter scenarios (0-1…0-6) + linter schema-id exemption, registered-host rule, runtime defaults | fraud-researcher: FAIL → PASS · sceptic: FAIL → PASS · qa: FAIL → PASS
 
 ## Next up (Phase 2)
 - [ ] T-2.1 | frontend-engineer | Engine: scenario runner, Check + tag, scoring v3.2, debrief layers, save state | reviewers: sceptic, qa
@@ -35,6 +35,9 @@ Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR 
 - Validator (`scripts/lib/rules.ts`): the layer-1 check needs the UI_SPEC §8.1 worst case. Add choice_worst (2 + longest label of any action that can leave the scenario below ★★★, including engage; 6 if timed) for standard debriefs. Count `debrief.safeguarding_line` on arc debriefs. Cap action labels at 8 words. LAYER1_OVERHEAD 14/10 and the flag-name regex already match.
 - Help screen: engineer adds single-file linter exemption + help checker (https, no query, checked, source ids, hosts incl. incydent.cert.pl, review_note never rendered) + test, then moves docs/patterns/where-to-report.draft.en.yaml to content/help/ (before G3). Update scripts/lib/source-hosts.ts from SOURCE_HOSTS.md.
 - Example scenario still cites the two placeholder sources; replace when the first real scenario is written.
+
+- Registered-host rule: extend to all player-visible scenario text (pusher messages first, reveals, narratives, debriefs, labels), allowing bare owner parts of registered hosts. Keep Larchwick's example-verify.test look-alike a few chapters away from 0-4.
+- Spoken forms for masked phone numbers (screen readers); timer coach mark explaining compressed game time (0-3).
 
 ## Blocked
 _(none)_

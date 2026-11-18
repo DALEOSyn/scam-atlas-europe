@@ -374,17 +374,28 @@ Reduced motion is on when the OS asks **or** `data-motion="reduced"`; `data-moti
 ### 8.1 Layer 1 (always shown, ≤ 40 words, one screen at 375×812)
 Focus lands on the `h1`. Reading and focus order:
 1. **`h1` = verdict + tell in one heading** [U4]: "**This was a scam:** the link went to trundle-zoll.example, not trundle.example." The verdict part is styled as a chip *inside* the heading (tag-crossed icon, `--color-flag-bg`/`--color-flag-text`); genuine: check-seal + "This was genuine:" with `--color-ok-*`. Genuine tells say why it was safe to act and never present a reassuring detail as proof ("It asked for nothing and matched your order. The sender fits, but senders can be faked.").
-2. **What works**: one line naming the verification step ("What works: open the Trundle app yourself."). **"You chose" line**, only when the decisive action scored fewer than 3 stars: "You chose: <action label>." (the action's own label), or "You let the timer run out." on timer expiry. Never shown on arc debriefs.
+2. **What works**: one line naming the verification step ("What works: open the Trundle app yourself."), from `debrief.layer1.what_works`. **"You chose" line**, only when the scenario (or boss beat) scored fewer than 3 stars: "You chose: <action label>." using the `label` of the action that cost the stars:
+   - a fall, report or dismiss: the decisive action's label;
+   - **an engage cap** (GDD §6: engage on fraud caps at ★★): the label of the **first engage action** the player picked, **not** the later correct action. E.g. 1-9 beat 3: "You chose: Call back this number." even though the player then called the number on the card;
+   - a verify followed by comply, proceed or report (GDD §6): the follow-up action's label;
+   - timer expiry: "You let the timer run out."
+   Never shown on arc debriefs.
 3. **Stars**: 3 icons + "3 of 3 stars" (`role="img"` with that name).
 4. **Already clicked?** one line linking to the full advice in layer 2 ("Already clicked or paid? See what to do").
 5. Buttons: **More** (opens layer 2, `aria-expanded`) and **Continue**.
 - **Word budget (validator, balance `debrief_layer1_max_words: 40`). Rule: layer 1 never renders more than 40 words, in the worst case, including the "You chose" line.** For each scenario the validator checks:
   `fixed + authored + choice_worst ≤ 40`, where
-  - **fixed** = 14 for standard and boss debriefs ("This was a scam:" 4, the longer of the two verdict chips; "What works:" 2; "Already clicked or paid? See what to do" 8). Arc debriefs: 10.
-  - **authored** = words in `debrief.layer1.tell` + `debrief.layer1.what_works`.
-  - **choice_worst** = the largest of: 2 + the word count of the label of every action in the scenario (or boss beat) that can score fewer than 3 stars; and 6 ("You let the timer run out.") if the scenario has a timer. Arc debriefs: 0 (no "You chose" line).
-  - Action labels are capped at 8 words (validator), so choice_worst ≤ 10 and **≤ 16 authored words is always safe** for standard debriefs; a scenario with shorter action labels gets the difference back (e.g. longest label 4 words → choice_worst 6 → up to 20 authored). Arc debriefs: up to 30 authored words.
-  - **Counting:** split on whitespace after inserting the player's nickname as one word; a domain or URL counts as one word; punctuation alone is not a word. Item 3 (stars) and item 5 (buttons) are not counted.
+  - **fixed** (`LAYER1_OVERHEAD` in `scripts/lib/rules.ts`) = **14** for `debrief.variant: standard` (standard and boss): "This was a scam:" 4 (the longer of the two verdict chips); "What works:" 2; "Already clicked or paid? See what to do" 8. **10** for `debrief.variant: arc`: "The habit:" 2; "Already did this? See what to do next" 8 (see the arc layout below).
+  - **authored** = words in `debrief.layer1.tell` + `debrief.layer1.what_works`, **plus `debrief.safeguarding_line` on arc debriefs** (required at arc slots 2–3, shown in layer 1).
+  - **choice_worst** (standard only) = the largest of: 2 + the word count of the `label` of every action in the scenario (or boss beat, including actions in a "What now?" step) that can leave it below 3 stars, **engage actions included**; and 6 ("You let the timer run out.") if the scenario has a timer. Arc debriefs: 0 (no "You chose" line).
+  - Action labels are capped at 8 words (validator), so choice_worst ≤ 10 and **≤ 16 authored words is always safe** for standard debriefs; a scenario with shorter action labels gets the difference back (e.g. longest such label 4 words → choice_worst 6 → up to 20 authored). Arc debriefs: up to **30** authored words including the safeguarding line.
+  - **Counting** = `wordCount()` in `scripts/lib/rules.ts`: split on whitespace and count tokens that contain a letter or digit ("isn't" = 1, "–" = 0); a domain or URL counts as one word. A `{nickname}` placeholder counts as one word. Item 3 (stars) and item 5 (buttons) are not counted.
+- **Arc layout** (`debrief.variant: arc`, GDD §10.2). Focus lands on the `h1`. Order:
+  1. `h1` = `debrief.layer1.tell` ("Things to notice"), **no verdict chip**.
+  2. "The habit:" + `debrief.layer1.what_works`.
+  3. Slots 2–3: `debrief.safeguarding_line` as a link to the "Talk to someone" support line (help list item 5).
+  4. **"Already did this? See what to do next"**: a link that opens layer 2 at "If you already…" (`debrief.already_clicked`). The advice is never inline in layer 1.
+  5. Buttons: **More**, **Continue**, and **Tell me now** (behind its confirmation). No stars, no points, no "You chose" line.
   - Why worst case and not "exclude the choice line": 50 words plus stars and two buttons no longer fits one screen at 375×812 at 200% text, and the player who just got it wrong is the one who most needs a short, readable layer 1.
 - Points are **not** in layer 1 [LI-4].
 

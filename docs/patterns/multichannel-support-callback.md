@@ -32,7 +32,7 @@
 ## 4. The verification habit
 **"Hang up. Call your bank back yourself on the number on your card or in the banking app you open. Never on the number in the message or the one that called you."** In the game: hang up → call back on the number on the card or in the Larchwick app. [ch-ncsc-double-phishing-2026], [pl-cert-fake-consultants], [eu-europol-phishing-leaflet], [se-polisen-campaign-2026]
 
-GDD §17, 1-9 needs updating: the call-back target changes from "the number in the Trundle app" to "the number on the Larchwick card or in the Larchwick app" (decision 2026-11-18, see §8).
+GDD §17, 1-9: **done (T-2.6, game-designer).** The call-back target is now "the number on the Larchwick card or in the Larchwick app" (decision 2026-11-18, see §8).
 
 ## 5. Already caught? (generic + DE where verified)
 1. **Read out a code or approved something:** call your bank now on the number on your card or in its app; ask it to block the card and stop or recall payments [ch-ncsc-double-phishing-2026], [es-incibe-smishing-bank-callback-2025].

@@ -28,7 +28,12 @@ export default tseslint.config(
         { selector: "JSXAttribute[name.name='formAction']", message: FORM_ONLY_IN_SIMULATED },
         { selector: "JSXAttribute[name.name='dangerouslySetInnerHTML']", message: 'Render content as text, never as HTML.' },
         { selector: "MemberExpression[property.name=/^(innerHTML|outerHTML)$/]", message: 'Render content as text, never as HTML.' },
-        { selector: "CallExpression[callee.property.name='sendBeacon']", message: 'No tracking (Red Line 7).' },
+        { selector: "MemberExpression[property.name='sendBeacon']", message: 'No tracking (Red Line 7).' },
+        {
+          selector:
+            "MemberExpression[object.name=/^(window|globalThis|self|top|parent)$/][property.name=/^(fetch|XMLHttpRequest|WebSocket|EventSource|open)$/]",
+          message: 'No runtime network calls or new windows; content is bundled at build time.',
+        },
       ],
       'no-restricted-globals': [
         'error',

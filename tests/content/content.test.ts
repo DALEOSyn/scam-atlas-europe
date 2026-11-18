@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { resolve } from 'node:path';
 import { readFileSync } from 'node:fs';
 import { parse } from 'yaml';
-import { validateContent, checkScenario, type ContentReport } from '../../scripts/lib/content.ts';
-import { scenarioSchema } from '../../src/content/schema.ts';
+import { validateContent, validateI18n, checkScenario, type ContentReport } from '../../scripts/lib/content.ts';
+import { isAllowedSourceHost } from '../../scripts/lib/source-hosts.ts';
+import { i18nCatalogueSchema, scenarioSchema, sourcesFileSchema } from '../../src/content/schema.ts';
 
 const ROOT = resolve(import.meta.dirname, '..', '..');
 const CONTENT = resolve(ROOT, 'content');
@@ -79,5 +80,46 @@ describe('scenario cross-checks', () => {
     const s = example();
     (s.message as Record<string, unknown>).qr = { payload: 'https://x.example' };
     expect(run(s).errors.join()).toMatch(/in-game route/);
+  });
+});
+
+describe('sources.yaml (finding 8)', () => {
+  const parseUrl = (url: string) =>
+    sourcesFileSchema.safeParse({ sources: [{ id: 'x', title: 't', publisher: 'p', url, accessed: '2026-11-18' }] }).success;
+
+  it('accepts https URLs only', () => {
+    expect(parseUrl('https://www.europol.europa.eu/')).toBe(true);
+    expect(parseUrl('http://www.europol.europa.eu/')).toBe(false);
+    expect(parseUrl('javascript:alert(1)')).toBe(false);
+    expect(parseUrl('data:text/html,hi')).toBe(false);
+    expect(parseUrl('https://user:pw@europa.eu/')).toBe(false);
+    expect(parseUrl('not a url')).toBe(false);
+  });
+
+  it('non-placeholder sources need publisher, url and accessed date', () => {
+    expect(sourcesFileSchema.safeParse({ sources: [{ id: 'x', title: 't' }] }).success).toBe(false);
+    expect(sourcesFileSchema.safeParse({ sources: [{ id: 'x', title: 't', placeholder: true }] }).success).toBe(true);
+  });
+
+  it('host allowlist matches hosts and subdomains (warn-only in content:validate)', () => {
+    expect(isAllowedSourceHost('https://www.europol.europa.eu/x')).toBe(true);
+    expect(isAllowedSourceHost('https://www.bsi.bund.de/x')).toBe(true);
+    expect(isAllowedSourceHost('https://europa.eu.evil.example/x')).toBe(false);
+    expect(isAllowedSourceHost('https://blog.example/x')).toBe(false);
+  });
+});
+
+describe('i18n catalogues (finding 5)', () => {
+  it('content/i18n validates', () => {
+    const r: ContentReport = { errors: [], warnings: [], scenarios: new Map() };
+    validateI18n(CONTENT, r);
+    expect(r.errors).toEqual([]);
+  });
+
+  it('rejects dotted keys, empty values and complex placeholders', () => {
+    expect(i18nCatalogueSchema.safeParse({ 'app.title': 'x' }).success).toBe(false);
+    expect(i18nCatalogueSchema.safeParse({ app_title: '' }).success).toBe(false);
+    expect(i18nCatalogueSchema.safeParse({ app_title: '{n, plural, one {#}}' }).success).toBe(false);
+    expect(i18nCatalogueSchema.safeParse({ app_title: 'Score: {score}' }).success).toBe(true);
   });
 });

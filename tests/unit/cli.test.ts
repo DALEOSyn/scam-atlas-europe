@@ -15,6 +15,12 @@ describe('CLI exit codes', () => {
     expect(bad.stderr).toMatch(/redline:lint FAILED/);
   });
 
+  it('redline:lint prints warnings but exits 0 when only warnlist words occur', () => {
+    const res = run('scripts/redline-lint.ts', 'tests/fixtures/redline/warn-only.yaml');
+    expect(res.status).toBe(0);
+    expect(res.stderr + res.stdout).toMatch(/warning \[brand\]/);
+  });
+
   it('content:validate exits 0 normally and 1 with --strict while placeholders remain', () => {
     expect(run('scripts/content-validate.ts').status).toBe(0);
     expect(run('scripts/content-validate.ts', '--strict').status).toBe(1);

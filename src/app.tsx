@@ -9,6 +9,7 @@ import styles from './app.module.css';
 type Screen =
   | { kind: 'title' }
   | { kind: 'loading' }
+  | { kind: 'error' }
   | { kind: 'playing'; scenario: Scenario }
   | { kind: 'debrief'; scenario: Scenario; result: Resolution };
 
@@ -29,21 +30,35 @@ export function App({ loadFirst = defaultLoadFirst }: AppProps) {
 
   const start = async () => {
     setScreen({ kind: 'loading' });
-    setScreen({ kind: 'playing', scenario: await loadFirst() });
+    try {
+      setScreen({ kind: 'playing', scenario: await loadFirst() });
+    } catch (e) {
+      // Typically a stale chunk after an update while offline. Stay local: no error reporting service.
+      console.warn('scenario load failed', e);
+      setScreen({ kind: 'error' });
+    }
   };
 
   return (
     <main class={styles.shell}>
       <header>
-        <h1 class={styles.title}>{t('app.title')}</h1>
-        {screen.kind === 'title' ? <p class={styles.tagline}>{t('app.tagline')}</p> : null}
+        <h1 class={styles.title}>{t('app_title')}</h1>
+        {screen.kind === 'title' ? <p class={styles.tagline}>{t('app_tagline')}</p> : null}
       </header>
       {screen.kind === 'title' ? (
         <button type="button" class={styles.start} onClick={() => void start()}>
-          {t('app.start')}
+          {t('app_start')}
         </button>
       ) : null}
-      {screen.kind === 'loading' ? <p role="status">{t('app.loading')}</p> : null}
+      {screen.kind === 'loading' ? <p role="status">{t('app_loading')}</p> : null}
+      {screen.kind === 'error' ? (
+        <div role="alert">
+          <p>{t('app_load_error')}</p>
+          <button type="button" class={styles.start} onClick={() => void start()}>
+            {t('app_retry')}
+          </button>
+        </div>
+      ) : null}
       {screen.kind === 'playing' ? (
         <ScenarioView
           scenario={screen.scenario}

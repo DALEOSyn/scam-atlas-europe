@@ -32,7 +32,7 @@ export function SimulatedForm({ label, onSimulatedSubmit, children }: SimulatedF
         onSimulatedSubmit();
       }}
     >
-      <p class={styles.badge}>{t('form.simulated')}</p>
+      <p class={styles.badge}>{t('form_simulated')}</p>
       {children}
     </form>
   );

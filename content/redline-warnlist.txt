@@ -1,0 +1,77 @@
+# Red-line WARNLIST: real brands whose names are also everyday words, first names or places.
+# A hit prints a warning but does not fail `npm run redline:lint`. Reviewers decide.
+# Same format and matching as redline-denylist.txt. Defaults to whole-word matching here;
+# add "affix" only where the brand is commonly glued to other words.
+# Add `except:` phrases for recurring harmless uses rather than deleting entries.
+#
+# Deliberately NOT listed (too common to be useful even as a warning): Free, Post, Three,
+# Play, Plus, Salt, Line, Teams, Windows, Meta, X, EE, O2, BT, A1, OP.
+
+# --- Couriers / postal
+UPS | word | except: ups and downs
+Hermes | word
+Bring | word
+
+# --- Marketplaces and shops
+Allegro | word
+Otto | word
+Saturn | word
+Wish | word
+Zara | word
+Tutti | word
+Subito | word
+Ricardo | word
+Uber | word
+Finn | word
+DBA | word
+
+# --- Payments, cards, crypto
+Visa | word
+Maestro | word
+Lydia | word
+Wise | word
+Swish | word
+iDEAL | word
+Sofort | word
+Stripe | word
+Kraken | word
+Ledger | word
+
+# --- Banks
+Halifax | word
+Nationwide | word
+Starling | word
+Millennium | word
+Erste | word
+
+# --- Telecoms
+Orange | word | except: orange juice
+Telekom | word
+Iliad | word
+Elisa | word
+Digi | word
+Sunrise | word
+Sky | word
+TIM | word
+
+# --- Messengers, apps, big tech
+Telegram | word
+Signal | word
+Messenger | word
+Outlook | word
+Zoom | word
+Hinge | word
+Proton | word
+Libero | word
+Norton | word
+Blizzard | word
+Rockstar | word
+
+# --- Government and eID
+Finanzamt | word
+Hacienda | word
+SKAT | word
+Garda | word
+Cl@ve | word
+ELSTER | word
+Freja | word

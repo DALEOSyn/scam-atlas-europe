@@ -30,6 +30,13 @@ function contentPlugin(): Plugin {
 /**
  * Strict CSP for production builds only (Vite dev needs inline scripts/HMR).
  * form-action 'none' backs up Red Line 2: no game form can ever submit.
+ *
+ * Known limitation: a <meta> CSP cannot express frame-ancestors (browsers
+ * ignore it there), and GitHub Pages cannot set response headers, so the
+ * game can be framed by other sites. Accepted risk: the game holds no
+ * accounts or secrets and its forms never submit, so clickjacking has no
+ * target. Revisit if hosting moves somewhere that can send a
+ * Content-Security-Policy: frame-ancestors 'none' header (decide by G4).
  */
 function cspPlugin(): Plugin {
   const csp = [

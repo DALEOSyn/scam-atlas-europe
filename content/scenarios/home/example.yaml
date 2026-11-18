@@ -12,7 +12,7 @@ brands: [paketpilot]
 pressure: { timer_seconds: 45, levers: [urgency, small_amount] }
 
 message:
-  sender: { display: "PaketPilot", detail: "+49 ••• ••• 0173" }
+  sender: { display: "PaketPilot", detail: "+49 151 •••• 0173" }
   body: |
     PaketPilot: Ihr Paket wartet. Zollgebühr 1,99 EUR offen. Heute zahlen, sonst Rücksendung:
     paketpilot-zoll.example/p/8812
@@ -20,7 +20,7 @@ message:
 
 inspectables:
   - target: sender.detail
-    reveal: "A private mobile number, not the courier's short code."
+    reveal: "+49 151 is a German mobile prefix: a private phone, not the courier's short code."
     red_flag: true
   - target: link
     reveal: "paketpilot-zoll.example is not PaketPilot's site (paketpilot.example)."

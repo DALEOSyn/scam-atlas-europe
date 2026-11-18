@@ -6,8 +6,10 @@ import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { join, relative, sep, basename, dirname } from 'node:path';
 import { parse } from 'yaml';
 import type { z } from 'zod';
+import { isAllowedSourceHost } from './source-hosts.ts';
 import {
   brandsFileSchema,
+  i18nCatalogueSchema,
   scenarioSchema,
   sourcesFileSchema,
   type Brand,
@@ -71,6 +73,9 @@ export function loadSources(contentDir: string, report: ContentReport): Map<stri
   }
   for (const s of res.data.sources) {
     if (out.has(s.id)) report.errors.push(`${file}: duplicate source id "${s.id}"`);
+    if (s.url && !isAllowedSourceHost(s.url)) {
+      report.warnings.push(`${file}: source "${s.id}" host is not on the reputable-source host list (scripts/lib/source-hosts.ts): ${s.url}`);
+    }
     out.set(s.id, s);
   }
   return out;
@@ -111,8 +116,45 @@ export function checkScenario(
   return s;
 }
 
+/** content/i18n/<locale>/*.json: schema, and every locale has exactly the English keys. */
+export function validateI18n(contentDir: string, report: ContentReport): void {
+  const root = join(contentDir, 'i18n');
+  const files = listFiles(root, ['.json']);
+  if (!files.some((f) => relative(root, f).startsWith(`en${sep}`))) {
+    report.errors.push(`${root}: missing English source catalogue (content/i18n/en/*.json)`);
+  }
+  const keysByFile = new Map<string, Set<string>>();
+  for (const file of files) {
+    let raw: unknown;
+    try {
+      raw = JSON.parse(readFileSync(file, 'utf8'));
+    } catch (e) {
+      report.errors.push(`${file}: JSON parse error: ${(e as Error).message}`);
+      continue;
+    }
+    const res = i18nCatalogueSchema.safeParse(raw);
+    if (!res.success) {
+      report.errors.push(...formatIssues(file, res.error));
+      continue;
+    }
+    keysByFile.set(relative(root, file), new Set(Object.keys(res.data)));
+  }
+  for (const [rel, keys] of keysByFile) {
+    const [locale, ...rest] = rel.split(sep);
+    if (locale === 'en') continue;
+    const source = keysByFile.get(['en', ...rest].join(sep));
+    if (!source) {
+      report.errors.push(`${join(root, rel)}: no English source catalogue en/${rest.join('/')}`);
+      continue;
+    }
+    for (const k of source) if (!keys.has(k)) report.warnings.push(`${join(root, rel)}: missing translation "${k}"`);
+    for (const k of keys) if (!source.has(k)) report.errors.push(`${join(root, rel)}: unknown key "${k}" (not in English source)`);
+  }
+}
+
 export function validateContent(contentDir: string, opts: { strict?: boolean } = {}): ContentReport {
   const report: ContentReport = { errors: [], warnings: [], scenarios: new Map() };
+  validateI18n(contentDir, report);
   const brands = loadBrands(contentDir, report);
   const sources = loadSources(contentDir, report);
   const scenarioDir = join(contentDir, 'scenarios');

@@ -86,3 +86,24 @@ describe('App shell', () => {
     assertFormsAreSafe(container);
   });
 });
+
+describe('App error state (finding 13)', () => {
+  it('shows an alert and can retry when the scenario fails to load', async () => {
+    const scenario = loadExample();
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    let calls = 0;
+    const loadFirst = async () => {
+      calls++;
+      if (calls === 1) throw new Error('chunk missing');
+      return scenario;
+    };
+    render(<App loadFirst={loadFirst} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+    await waitFor(() => screen.getByRole('alert'));
+    expect(screen.getByRole('alert').textContent).toMatch(/could not be loaded/);
+    fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    await waitFor(() => screen.getByText(/Zollgebühr 1,99 EUR/));
+    expect(warn).toHaveBeenCalled();
+    warn.mockRestore();
+  });
+});

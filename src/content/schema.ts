@@ -186,7 +186,11 @@ export const sourceSchema = z
     id: slug,
     title: z.string().min(1),
     publisher: z.string().min(1).optional(),
-    url: z.string().url().optional(),
+    /** Public reference page; https only (no http:, javascript:, data: ...). */
+    url: z
+      .string()
+      .refine(isHttpsUrl, 'url must be an absolute https:// URL')
+      .optional(),
     accessed: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'accessed must be YYYY-MM-DD').optional(),
     /** Placeholder ids reserved before fraud-researcher fills them in (T-1.3). */
     placeholder: z.boolean().default(false),
@@ -199,5 +203,25 @@ export const sourceSchema = z
       }
     }
   });
+export function isHttpsUrl(value: string): boolean {
+  try {
+    const u = new URL(value);
+    return u.protocol === 'https:' && u.hostname.length > 0 && !u.username && !u.password;
+  } catch {
+    return false;
+  }
+}
+
 export const sourcesFileSchema = z.object({ sources: z.array(sourceSchema) }).strict();
 export type Source = z.infer<typeof sourceSchema>;
+
+/** content/i18n/<locale>/*.json: flat snake_case keys to non-empty ICU-style strings. */
+export const i18nCatalogueSchema = z
+  .record(
+    z.string().regex(/^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$/, 'message keys are snake_case, e.g. app_title'),
+    z
+      .string()
+      .min(1)
+      .refine((m) => /^(?:[^{}]|\{[a-zA-Z_][a-zA-Z0-9_]*\})*$/.test(m), 'only simple {name} placeholders are supported'),
+  )
+  .refine((r) => Object.keys(r).length > 0, 'catalogue is empty');

@@ -21,7 +21,7 @@ export function ScenarioView({ scenario, onDone }: ScenarioViewProps) {
       </h2>
       <article class={styles.device} data-device={scenario.device}>
         <p class={styles.sender}>
-          <span class={styles.label}>{t('scenario.from')}: </span>
+          <span class={styles.label}>{t('scenario_from')}: </span>
           <strong>{message.sender.display}</strong>
           {message.sender.detail ? <span class={styles.detail}> {message.sender.detail}</span> : null}
         </p>
@@ -29,9 +29,9 @@ export function ScenarioView({ scenario, onDone }: ScenarioViewProps) {
         <p class={styles.body}>{message.body}</p>
       </article>
       {scenario.pressure?.timer_seconds ? (
-        <p class={styles.pressure}>{t('scenario.timer', { seconds: scenario.pressure.timer_seconds })}</p>
+        <p class={styles.pressure}>{t('scenario_timer', { seconds: scenario.pressure.timer_seconds })}</p>
       ) : null}
-      <h3>{t('scenario.choose')}</h3>
+      <h3>{t('scenario_choose')}</h3>
       <ul class={styles.actions}>
         {scenario.actions.map((a) => (
           <li key={a.id}>
@@ -66,18 +66,18 @@ export function DebriefView({ scenario, result, onAgain }: DebriefViewProps) {
   return (
     <section class={styles.scenario} aria-labelledby="outcome-heading">
       <h2 id="outcome-heading" ref={heading} tabIndex={-1}>
-        {t('outcome.title')}
+        {t('outcome_title')}
       </h2>
       <p>{result.outcome.narrative}</p>
       <p>
-        <strong>{t('outcome.score', { score: result.score > 0 ? `+${result.score}` : result.score })}</strong>
-        {result.best ? ` ${t('outcome.best')}` : null}
+        <strong>{t('outcome_score', { score: result.score > 0 ? `+${result.score}` : result.score })}</strong>
+        {result.best ? ` ${t('outcome_best')}` : null}
       </p>
-      <h2>{t('debrief.title')}</h2>
-      <p>{t('debrief.noShame')}</p>
+      <h2>{t('debrief_title')}</h2>
+      <p>{t('debrief_no_shame')}</p>
       {debrief.red_flags.length > 0 ? (
         <>
-          <h3>{t('debrief.redFlags')}</h3>
+          <h3>{t('debrief_red_flags')}</h3>
           <ul>
             {debrief.red_flags.map((f) => (
               <li key={f}>{f}</li>
@@ -85,16 +85,16 @@ export function DebriefView({ scenario, result, onAgain }: DebriefViewProps) {
           </ul>
         </>
       ) : null}
-      <h3>{t('debrief.habit')}</h3>
+      <h3>{t('debrief_habit')}</h3>
       <p>{debrief.habit}</p>
       {debrief.already_clicked ? (
         <>
-          <h3>{t('debrief.alreadyClicked')}</h3>
+          <h3>{t('debrief_already_clicked')}</h3>
           <p>{debrief.already_clicked}</p>
         </>
       ) : null}
       <button type="button" class={styles.primary} onClick={onAgain}>
-        {t('app.again')}
+        {t('app_again')}
       </button>
     </section>
   );

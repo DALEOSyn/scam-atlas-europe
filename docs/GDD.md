@@ -417,8 +417,8 @@ All endings show the red-flag timeline (slot 1 is shown as "Nothing to notice ye
 **10 Brussels: finale (slot 10, diff 4–5).**
 - New patterns: tech-support remote access (boss, LO-15) and **money-mule recruitment**.
   - The hook is a social-media or Kettle DM offering Noor easy money.
-  - She asks your advice: they want her **banking-app login, card or account access** "just for a few transfers".
-  - The cyber lesson: never hand over your banking-app login, card or account access.
+  - She asks your advice: they want her **banking-app login, card details or account access** "just for a few transfers".
+  - The cyber lesson: never hand over your banking-app login, card details or account access.
   - The tone is non-threatening: "If you've already shared it, it's not too late: change your login, call your bank on the number on your card, and tell a trusted adult" (LO-12, LO-05, LO-18).
 - Plus callbacks and the Alex resolution (§10.3).
 - End screen: habit cards and the help list.

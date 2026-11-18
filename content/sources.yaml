@@ -27,6 +27,7 @@
 #                MAP-ch0..MAP-ch10 | MAP-missing | MAP-crosscutting | WHERE_TO_REPORT
 #                help-where-to-report-en   (docs/patterns/where-to-report.draft.en.yaml for now; moves to content/help/ once the linter exemption exists; T-2.5)
 #                campaign-catalogue   (docs/patterns/THREAT_CATALOGUE.md, backlog research T-R.1, 2026-11-18)
+#                berlin-arc-alex-01 | arc   (Alex friendship-manipulation arc beats, GDD §10; added T-2.4b, 2026-11-18)
 #              An empty list means provenance only: not cited directly, kept because another entry's
 #              date or content relies on it.
 #   notes      what the source actually supports; caveats
@@ -1263,6 +1264,65 @@ sources:
     tier: 4
     used_for: [campaign-catalogue]
     notes: "TAXONOMY ONLY. Sub-techniques: .001 Malicious Link, .002 Malicious File, .003 Malicious Image, .004 Malicious Copy and Paste (ClickFix-style), .005 Malicious Library."
+
+  # ================================================ T-2.4b additions (Berlin arc beat, friendship manipulation), all opened 2026-11-18
+  # Grooming-prevention sources aimed at teens and parents. Used only for the non-explicit warning signs
+  # (moving the chat to another app, asking for secrecy, heavy praise); the game never depicts sexual content.
+
+  - id: de-propk-cybergrooming-2026
+    publisher: Police Crime Prevention of the German Länder and the Federal Government (ProPK, polizei-beratung.de)
+    title: "Cybergrooming – Was Eltern und Kinder wissen sollten"
+    url: https://www.polizei-beratung.de/aktuelles/detailansicht/cybergrooming-was-eltern-und-kinder-wissen-sollten/
+    published: 2026-05-06
+    accessed: 2026-11-18
+    region: DE
+    tier: 3
+    used_for: [berlin-arc-alex-01, arc]
+    notes: "English gloss: 'Cybergrooming: what parents and children should know'. Lists as warning signs that an online contact may be suspicious: makes many compliments ('viele Komplimente macht'); wants to move from a platform to a messenger ('von einer Plattform zu einem Messenger wechseln möchte'), or to meet in secret; demands that you tell nobody about the conversations and the contact ('verlangt, niemandem von den Gesprächen und dem Kontakt zu berichten'). Supports all three arc signs: move apps, secrecy, lots of praise. Context is child protection; the game uses only these non-explicit signs."
+
+  - id: de-polizei-lippe-cybergrooming
+    publisher: Polizei NRW, Kreispolizeibehörde Lippe (Lippe district police, North Rhine-Westphalia)
+    title: "Cybergrooming: Important information for parents and children!"
+    url: https://lippe.polizei.nrw/en/article/cybergrooming-important-information-for-parents-and-children
+    published: n/d
+    accessed: 2026-11-18
+    region: DE
+    tier: 3
+    used_for: [berlin-arc-alex-01, arc]
+    notes: "English page of a German police authority. Perpetrators 'demand to switch from public chat histories to purely private communication via messenger services'; quotes the line 'Just keep it between us, okay?'; lists 'request not to tell anyone else about the contact' as a warning sign. Supports: move apps, secrecy. Publisher inferred from the host and the text ('The Lippe police appeal to parents'); no date shown."
+
+  - id: eu-bik-grooming-2020
+    publisher: German Safer Internet Centre (klicksafe), published on Better Internet for Kids (European Commission, DG CONNECT portal)
+    title: "Protecting children from sexual grooming online"
+    url: https://better-internet-for-kids.europa.eu/en/news/protecting-children-sexual-grooming-online
+    published: 2020-10-27
+    accessed: 2026-11-18
+    region: EU
+    tier: 3
+    used_for: [berlin-arc-alex-01, arc]
+    notes: "Tier 3 because the author is a national awareness centre, even though the EU portal hosts it. OLDER (2020). Strangers 'try to gain young people's trust by showering them with praise or compliments'; 'often, the strangers suggest switching over to private chats or messengers'. On secrecy it says only that young people may end up keeping the contact secret from those around them; it does NOT say the stranger asks for secrecy (use de-propk-cybergrooming-2026 / de-polizei-lippe-cybergrooming for that). Supports: move apps, lots of praise."
+
+  - id: de-klicksafe-cybergrooming
+    publisher: klicksafe (German Awareness Centre in the EU Digital Europe Programme; coordinated by the Rhineland-Palatinate Media Authority with the Federal Agency for the Protection of Children and Young People in the Media, BzKJ)
+    title: "Cybergrooming"
+    url: https://www.klicksafe.eu/en/cybergrooming
+    published: 2026-08-11 (last updated)
+    accessed: 2026-11-18
+    region: DE
+    tier: 3
+    used_for: [berlin-arc-alex-01, arc]
+    notes: "Opened via klicksafe.de/en/cybergrooming, which redirects here. Perpetrators 'often try to switch to more private communication channels' to get around platform safeguards; teens should end contact if the chat is 'quickly shifted to a more private communication channel'. Relationship of trust or dependence built through harmless-seeming chats. Does NOT mention a secrecy request or compliments. Supports: move apps."
+
+  - id: eu-europol-osce-2017
+    publisher: Europol
+    title: "Online Sexual Coercion and Extortion as a Form of Crime Affecting Children: Law Enforcement Perspective"
+    url: https://www.europol.europa.eu/sites/default/files/documents/online_sexual_coercion_and_extortion_as_a_form_of_crime_affecting_children.pdf
+    published: "2017"
+    accessed: 2026-11-18
+    region: EU
+    tier: 1
+    used_for: [berlin-arc-alex-01, arc]
+    notes: "OLDER (2017). Supporting EU-level evidence only. Offenders typically approach a child on a social networking site and then deliberately move the communication to another platform, such as an anonymous messaging app. Does NOT describe offenders asking for secrecy (mentions only 'prohibiting disclosure' in general terms). Supports: move apps. Explicit-content parts of the report are not used anywhere in the game."
 
   # ------------------------------------------------ placeholders (example scenario only)
   - id: europol-scam-smishing

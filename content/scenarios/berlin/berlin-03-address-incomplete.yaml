@@ -123,7 +123,7 @@ debrief:
   device_tip: "On a real phone, press and hold a link to see the full address before you open it. Read the part just before .de, .com and so on."
   habit_card: open-it-yourself
   already_clicked:
-    clicked: "Close the page and type nothing. Opening it alone rarely does harm. Delete the text or report it as spam."
+    clicked: "Close the page and type nothing. Don't install anything it offers. Delete the text or report it as spam."
     entered_details: "Block your card in your banking app now, then call your bank on the number on your card and ask about disputing the payments."
     paid: "Block your card in your banking app now, call your bank on the number on your card, and report it to the police."
   sources: [de-vzn-smishing, de-vz-paketdienst-sms, eu-enisa-etl-2026, ch-ncsc-links-2025]

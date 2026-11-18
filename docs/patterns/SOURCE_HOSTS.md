@@ -115,6 +115,15 @@ attack.mitre.org | MITRE ATT&CK (US). Taxonomy only, never evidence of European 
 
 T-R.1 also cites new pages on hosts already listed: www.enisa.europa.eu, www.europol.europa.eu, www.police.be (incl. a No More Ransom leaflet), bsi.bund.de, www.bsi.bund.de, www.verbraucherzentrale.de, www.verbraucherzentrale-niedersachsen.de, www.bundesnetzagentur.de, www.garda.ie, cert.pl, www.bacs.admin.ch.
 
+## New hosts from T-2.4b (Berlin arc beat sources, 2026-11-18): all marked **new**, not yet in `scripts/lib/source-hosts.ts`
+
+better-internet-for-kids.europa.eu | Better Internet for Kids (European Commission portal; article by the German Safer Internet Centre) | 3 | **new**
+www.klicksafe.eu | klicksafe (German Awareness Centre, coordinated by the Rhineland-Palatinate Media Authority with BzKJ) | 3 | **new**
+lippe.polizei.nrw | Polizei NRW, Kreispolizeibehörde Lippe | 3 | **new**
+www.polizei-beratung.de | Police crime prevention (ProPK), www host (the host without www is listed under T-R.1) | 3 | **new**
+
+T-2.4b also cites a new page on www.europol.europa.eu (already listed).
+
 ## Notes for the engineer
 - **New to `scripts/lib/source-hosts.ts`** (not in the allow-list yet, per sceptic review 2026-11-18): `politie.nl` (no www), `moje.cert.pl`, `wiedza.cert.pl`, `www.nummergegenkummer.de`, `www.bmbfsfj.bund.de`, `www.bacs.admin.ch`, `www.verbraucherzentrale-niedersachsen.de`, and `incydent.cert.pl` (help file only). The last two were already used in `content/sources.yaml` before T-2.5 but never added to the allow-list.
 - `www.incibe.es` gained new sources in T-2.5 and is already in the allow-list.

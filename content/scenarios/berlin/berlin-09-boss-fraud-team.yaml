@@ -226,7 +226,7 @@ outcomes:
     narrative: "\"Payment received, delivery tomorrow.\" The parcel status doesn't change, and your card details are now on someone else's list."
     recovery:
       - { step: block_card_in_bank_app, category: stop }
-      - { step: call_bank_stop_payment, category: secure }
+      - { step: call_bank_known_number, category: secure }
       - { step: refuse_codes_to_callers, category: secure }
       - { step: report_to_police_online, category: report }
       - { step: reply_ask_money_back, category: harmful }
@@ -251,11 +251,11 @@ outcomes:
   invoice_deleted:
     narrative: "Deleted. Then your phone rings."
   larchwick_never_called:
-    narrative: "You dial the number on your Larchwick card. \"No, we didn't call you, and there's no payment waiting on your card. We'd never ask for a code to stop one. Thanks for checking with us.\""
+    narrative: "You dial the number on your Larchwick card. \"No, we didn't call you. Someone tried a €489.00 online payment with your card. Without your code it didn't go through. We'll block this card and send you a new one.\""
   call_reported:
     narrative: "Reported. Keep a note of the number and the time: your bank and the police can use them."
   hung_up_done:
-    narrative: "You hang up. If Larchwick really needs you, it can reach you in the app, and you can always call the number on your card."
+    narrative: "You hang up. The code text is still on your screen: a payment code you didn't ask for means someone has your card details. Call Larchwick on the number on your card to block it."
   jonas_thanked:
     narrative: "Jonas: \"Bis später!\" Your documents wait next door."
   jonas_reported:
@@ -268,7 +268,8 @@ debrief:
     what_works: "Hang up, call the number on your card."
   layer2:
     message_flags:
-      - "A customs fee by text and then by email, before delivery. Customs duties are usually collected by the carrier at the door, or customs writes to you."
+      - "A customs fee by text and then by email, before delivery."
+      - "In Germany, the carrier usually collects duties at the door; otherwise a letter by post asks you to collect the parcel at the customs office. German customs never asks for payment by SMS or email."
       - "A caller asking you to read out a code \"to stop\" a payment. The code text said it was for authorising one. A real fraud team never needs your code or an approval to stop a payment."
       - "Three channels telling one story. More channels is more pressure, not more proof."
     notes: "Hang up. Call Larchwick back on the number on your card or in the Larchwick app you open yourself. Caller ID can be faked, even to show the bank's real number, so you can't tell whose line it is. Read what a code or approval is for. And a logo or familiar name proves nothing: scammers copy them perfectly, even into a real thread."

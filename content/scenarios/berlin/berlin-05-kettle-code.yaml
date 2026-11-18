@@ -112,5 +112,5 @@ debrief:
   device_tip: "In your real messaging app, find Settings › Linked devices and the two-step PIN now, so you know where they are if you ever need them."
   habit_card: codes-are-only-for-you
   already_clicked:
-    entered_details: "Open Kettle. If it has signed you out, set it up again with your own number (it can take a while). Then turn on the two-step PIN, warn your contacts another way, and report it to the police."
+    entered_details: "Open Kettle. If it has signed you out, set it up again with your own number (it can take a while). Then turn on the two-step PIN, warn your contacts another way straight away, and report it to the police."
   sources: [nl-politie-whatsapp-takeover-2024, de-vzn-ghost-pairing-2026, pl-cert-phishing-kb-2026, ie-ncsc-phishing-guide]

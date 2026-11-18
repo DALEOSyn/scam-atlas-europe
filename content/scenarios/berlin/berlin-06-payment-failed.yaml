@@ -42,12 +42,12 @@ message:
 
 inspectables:
   - target: sender.detail
-    reveal: "orders@thimbleandpine.example. The owner part is thimbleandpine.example, Thimble & Pine's own domain. It fits, but a sender address alone proves nothing."
+    reveal: "orders@thimbleandpine.example. Read the end: the owner part is thimbleandpine.example, Thimble & Pine's own domain. It fits, but a sender address alone proves nothing."
     red_flag: false
     type: sender
     reassures: true
   - target: link
-    reveal: "thimbleandpine.example/account/orders/TP-48213. The owner part is thimbleandpine.example, Thimble & Pine's own site."
+    reveal: "thimbleandpine.example/account/orders/TP-48213. Read the end: the owner part is thimbleandpine.example, Thimble & Pine's own site."
     red_flag: false
     type: link
     reassures: true

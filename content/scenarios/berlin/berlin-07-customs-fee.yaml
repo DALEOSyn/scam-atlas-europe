@@ -117,12 +117,13 @@ debrief:
     what_works: "Pause, then open the Trundle app yourself."
   layer2:
     message_flags:
-      - "A fee asked for by text link before delivery. In Germany, customs duties are usually collected by the carrier at the door, or customs writes to you."
+      - "A fee asked for by text link before delivery."
+      - "In Germany, the carrier usually collects duties at the door; otherwise a letter by post asks you to collect the parcel at the customs office. German customs never asks for payment by SMS or email."
       - "A tiny amount and a same-day deadline: easy to pay without thinking."
     notes: "Genuine duties and carrier fees do exist. The test is whether you can match the fee to an order you placed and see it in the courier's app that you open yourself."
   device_tip: "On a real phone, press and hold a link to see the full address before you open it. If your phone offers a spam filter for texts, it's worth switching on."
   habit_card: pressure-is-the-tell
   already_clicked:
-    clicked: "Close the page and type nothing. Opening it alone rarely does harm. Delete the text or report it as spam."
+    clicked: "Close the page and type nothing. Don't install anything it offers. Delete the text or report it as spam."
     paid: "Block your card in your banking app now, call your bank on the number on your card and ask about a chargeback, then report it to the police."
   sources: [de-zoll-phishing, de-bnetza-zoll-sms-2023, de-vz-paketdienst-sms, eu-enisa-etl-2026, ch-ncsc-links-2025]

@@ -1,7 +1,8 @@
 # 1-8 Look-alike "Thimble & Pine" payment-failed email with a padlocked login page (GDD §17).
 # Fraud, difficulty 3, timer 60. Fraud twin of berlin-06-payment-failed: same look, same 48-hour
 # deadline, same logo. Brief: card-phishing-payment-failed §2–§3 (red flags 1, 2, 3, 6), §5.
-# Red flags (R): sender and link (thimbleandpine-outlet.example, registered look-alike).
+# Red flags (R): sender and link (thimbleandpine.example-account.test, "real name first" look-alike,
+# GDD §17 T-2.4b ruling 8; owner part example-account.test).
 # Decoys: order number and logo (reveals word-for-word as in 1-6), and the padlock on the sign-in page.
 # The follow-up page address is also a red flag, not counted in R.
 # LO-01 line "A logo or familiar name proves nothing" (GDD §5) is in layer 2.
@@ -22,14 +23,14 @@ pressure:
   levers: [urgency, fear]
 
 message:
-  sender: { display: "Thimble & Pine", detail: "orders@thimbleandpine-outlet.example" }
+  sender: { display: "Thimble & Pine", detail: "orders@thimbleandpine.example-account.test" }
   subject: "Payment failed for order TP-51907"
   body: |
     Hello,
 
     We couldn't take payment for your order TP-51907. The card on your account may have expired.
 
-    Please update your payment method in your account within 48 hours, or we'll cancel the order: thimbleandpine-outlet.example/account/orders/TP-51907
+    Please update your payment method in your account within 48 hours, or we'll cancel the order: thimbleandpine.example-account.test/account/orders/TP-51907
 
     Thimble & Pine customer care
   request: log_in
@@ -38,11 +39,11 @@ message:
 
 inspectables:
   - target: sender.detail
-    reveal: "orders@thimbleandpine-outlet.example. The owner part is thimbleandpine-outlet.example. Thimble & Pine's own domain is thimbleandpine.example."
+    reveal: "orders@thimbleandpine.example-account.test. Read the end: the owner part is example-account.test. Thimble & Pine's own domain is thimbleandpine.example."
     red_flag: true
     type: sender
   - target: link
-    reveal: "thimbleandpine-outlet.example/account/orders/TP-51907. The owner part is thimbleandpine-outlet.example, not thimbleandpine.example. One extra word makes a different owner."
+    reveal: "thimbleandpine.example-account.test/account/orders/TP-51907. Read the end: the owner part is example-account.test, not thimbleandpine.example. The real name at the start is borrowed."
     red_flag: true
     type: link
   - target: reference
@@ -77,12 +78,12 @@ beats:
   - id: sign_in_page
     device: browser
     message:
-      page: { address: "thimbleandpine-outlet.example/login", title: "Thimble & Pine · Sign in" }
+      page: { address: "thimbleandpine.example-account.test/login", title: "Thimble & Pine · Sign in" }
       body: "Sign in to update your payment method. Then enter your card number, expiry date and security code."
       request: log_in
     inspectables:
       - target: page.address
-        reveal: "The address bar still says thimbleandpine-outlet.example. Thimble & Pine's site is thimbleandpine.example."
+        reveal: "The address bar still ends in example-account.test. Thimble & Pine's site is thimbleandpine.example."
         red_flag: true
         type: page_address
       - target: page.info
@@ -122,15 +123,15 @@ outcomes:
 debrief:
   variant: standard
   layer1:
-    tell: "The link and sender were thimbleandpine-outlet.example, not the shop's own."
+    tell: "The sender and link both end in example-account.test, not thimbleandpine.example."
     what_works: "Open Thimble & Pine yourself and check."
   layer2:
     message_flags:
       - "The same 48-hour deadline a real shop might use. Deadlines appear on genuine emails too, so the addresses were the tell, not the deadline."
       - "It names an order number but no item or price, and the order isn't in your account."
       - "A sign-in page from an email link that then asks for your full card number, expiry and security code."
-    notes: "A logo or familiar name proves nothing. Scammers copy them perfectly, even into a real thread. The padlock on the sign-in page only means the connection is encrypted, not who runs the site."
-  device_tip: "On a real phone, press and hold the button or link to preview the address. Read the part just before the ending: one extra word means a different owner."
+    notes: "A logo or familiar name proves nothing. Scammers copy them perfectly. The padlock on the sign-in page only means the connection is encrypted, not who runs the site."
+  device_tip: "On a real phone, press and hold the button or link to preview the address. Read the end of the address: the owner is the last part before the first \"/\", not the name at the start."
   habit_card: read-the-link
   already_clicked:
     clicked: "Close the page and type nothing. Delete the email or report it as phishing."

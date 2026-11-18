@@ -23,7 +23,7 @@ cards:
     lo: LO-04
     title: "Pressure is the tell"
     habit: "A countdown, a threat or a string of reminders is a reason to slow down. Pause, then check in the app yourself."
-    example: "\"Locked in 30 minutes\"? Open the app yourself. Real services give you time to sort things out."
+    example: "\"Locked in 30 minutes\"? Open the app yourself: if something is really wrong, it will show there."
     already_clicked: "Stop where you are. If you typed a password or a code, secure that account first."
   - id: stop-the-damage-first
     lo: LO-16

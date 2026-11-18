@@ -37,7 +37,7 @@ message:
 
 inspectables:
   - target: sender.detail
-    reveal: "The sender name says \"Kettle\". Any sender can choose the name a text shows, so it looks right and settles nothing."
+    reveal: "The name a text shows can be faked, so it settles nothing."
     red_flag: false
     type: sender
   - target: link
@@ -97,11 +97,11 @@ beats:
 
 outcomes:
   kettle_taken:
-    narrative: "Kettle logs you out. That evening Noor emails you: \"Why did you send me a weird voting link on Kettle?\""
+    narrative: "An unknown device appears in Kettle's linked devices. That evening Noor emails you: \"Why did you send me a weird voting link on Kettle?\""
     recovery:
       - { step: log_out_unknown_devices, category: stop }
-      - { step: reregister_app_own_number, category: secure }
       - { step: turn_on_two_step, category: secure }
+      - { step: report_to_police_online, category: report }
       - { step: warn_contacts, category: warn }
       - { step: reply_to_sender, category: harmful }
       - { step: wait_and_see, category: harmful }
@@ -128,6 +128,6 @@ debrief:
   device_tip: "In your real messaging app, look for Settings › Linked devices: it lists every device signed in to your account."
   habit_card: pressure-is-the-tell
   already_clicked:
-    clicked: "Close the page and type nothing. Opening it alone rarely does harm."
-    entered_details: "Open Kettle's linked devices and log out any you don't know. Locked out? Set Kettle up again with your number, then warn your contacts."
+    clicked: "Close the page and type nothing. If anything downloaded or you installed something, run a security scan or ask for help."
+    entered_details: "Open Kettle's linked devices and log out any you don't know. Turn on two-step verification, warn your contacts and report it to the police."
   sources: [de-vzn-ghost-pairing-2026, pl-cert-vote-takeover-2026, nl-politie-whatsapp-takeover-2024, pl-cert-phishing-kb-2026, ie-ncsc-phishing-guide]

@@ -101,7 +101,7 @@ outcomes:
       - { step: change_password, category: stop }
       - { step: tell_it_team, category: report }
       - { step: turn_on_two_step, category: secure }
-      - { step: warn_contacts, category: warn }
+      - { step: sign_out_everywhere, category: secure }
       - { step: keep_quiet, category: harmful }
       - { step: wait_and_see, category: harmful }
     sets_flags: [waymarker_mail_phished]
@@ -127,6 +127,6 @@ debrief:
   device_tip: "On a real phone, press and hold a link to preview the full address before you open it."
   habit_card: read-the-link
   already_clicked:
-    clicked: "Close the page and type nothing. Opening it alone rarely does harm."
+    clicked: "Close the page and type nothing. If anything downloaded or you installed something, run a security scan or ask for help."
     entered_details: "Change your password now from the real Waymarker mail, and anywhere you reused it. Turn on two-step sign-in and tell your IT team."
   sources: [es-incibe-mailbox-full-2022, ie-ncsc-phishing-guide, de-bsi-protect-phishing, ch-ncsc-links-2025, pl-cert-phishing-kb-2026]

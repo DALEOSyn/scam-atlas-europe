@@ -20,7 +20,7 @@ message:
   from_cast: teo
   body: |
     Bit of a pickle, kiddo. A message said I'd won a Thimble & Pine hamper, only €2.95 delivery.
-    I clicked and typed my card number. Then it asked for even more details, so I stopped. Here's what it said:
+    I clicked and typed in my card details. Then it asked for even more details, so I stopped. Here's what it said:
 
     "Congratulations! Your hamper is waiting. Pay delivery today: thimble-and-pine-sale.example/prize"
 
@@ -71,9 +71,9 @@ debrief:
   layer2:
     message_flags:
       - "In Teo's quote: a prize he never entered, a small fee, and pay today."
-    notes: "Blocking the card stops the damage, so it comes first. Then call the bank on the number on the card, report it, and ignore anyone who calls offering to help: a real bank never asks for a code to \"cancel\" a payment. Nobody can get money back for a fee. And Teo did the best thing of all: he told someone."
+    notes: "Blocking the card stops the damage, so it comes first. Then call the bank on the number on the card, report it, and ignore anyone who calls offering to help: a real bank never asks for a code to \"cancel\" a payment. Anyone who wants a fee up front to get money back is another scam. And Teo did the best thing of all: he told someone."
   device_tip: "In your real banking app, look for a \"block card\" or \"freeze card\" switch so you know where it is before you need it."
   habit_card: stop-the-damage-first
   already_clicked:
     paid: "Block the card in your banking app now, then call your bank on the number on the card and report it to the police."
-  sources: [es-incibe-prize-2021, pl-cert-phishing-kb-2026, ch-ncsc-double-phishing-2026, es-incibe-streaming-renewal-2024]
+  sources: [es-incibe-prize-2021, pl-cert-phishing-kb-2026, ch-ncsc-double-phishing-2026, es-incibe-streaming-renewal-2024, ie-bpfi-recovery-2024]

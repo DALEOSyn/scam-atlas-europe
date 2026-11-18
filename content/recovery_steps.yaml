@@ -35,3 +35,5 @@ steps:
     label: "Keep it to yourself and hope nobody notices"
   - id: tell_it_via_desk
     label: "Tell IT through Waymarker Desk, opened yourself"
+  - id: change_password_sign_out
+    label: "Change the password and sign out other sessions"

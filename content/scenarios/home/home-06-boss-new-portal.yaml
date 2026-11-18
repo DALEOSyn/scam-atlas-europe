@@ -158,11 +158,11 @@ beats:
         kind: ask_someone
         outcome: adaeze_says_no_move
       - id: hang_up_open_desk
-        label: "Hang up, open Waymarker Desk yourself"
+        label: "Hang up and open Waymarker Desk yourself"
         kind: verify_in_app
         outcome: desk_no_notice
       - id: call_it_desk_known
-        label: "Hang up, call the IT desk you know"
+        label: "Hang up and call the IT desk"
         kind: call_back_known
         outcome: it_desk_knows_nothing
       - id: hang_up_it_call
@@ -172,7 +172,7 @@ beats:
 
 outcomes:
   portal_password_stolen:
-    narrative: "The page says \"Migration complete\". An hour later, Waymarker Desk says your password is wrong."
+    narrative: "The page says \"Migration complete\". An hour later, a sign-in alert: a device you don't know is in your Waymarker Desk account."
     recovery:
       - { step: change_password, category: stop }
       - { step: tell_it_via_desk, category: report }
@@ -184,9 +184,9 @@ outcomes:
   code_shared:
     narrative: "\"Perfect, all done!\" Ten minutes later, a sign-in alert: a device you don't know is now in your Waymarker Desk account."
     recovery:
-      - { step: change_password, category: stop }
+      - { step: change_password_sign_out, category: stop }
       - { step: tell_it_via_desk, category: report }
-      - { step: sign_out_everywhere, category: secure }
+      - { step: warn_contacts, category: warn }
       - { step: reply_to_sender, category: harmful }
       - { step: keep_quiet, category: harmful }
     sets_flags: [waymarker_desk_phished]
@@ -221,6 +221,6 @@ debrief:
   device_tip: "On a real phone, end the call yourself, then dial the number from your own contacts, not the one the caller gave."
   habit_card: ask-someone
   already_clicked:
-    clicked: "Close the page and type nothing. Opening it alone rarely does harm."
+    clicked: "Close the page and type nothing. If anything downloaded or you installed something, run a security scan or ask for help."
     entered_details: "Change your password from the real Waymarker Desk now, sign out other sessions, and tell IT through Waymarker Desk straight away, even if it feels awkward."
   sources: [eu-enisa-etl-2026, es-incibe-mailbox-full-2022, pl-cert-fake-consultants, ch-ncsc-fake-support-2024, eu-epc-threats-2025, pl-cert-phishing-kb-2026]

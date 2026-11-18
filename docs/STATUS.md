@@ -2,10 +2,10 @@
 
 _Updated by the producer at the end of every session. Keep it readable in under a minute._
 
-**Phase:** 1 — Research and design (complete) · **Next gate:** G1 (Ready for Roman) · **Last update:** 2026-11-18
+**Phase:** 2 — Vertical slice (started 2026-11-18) · **Next gate:** G2 (Roman plays tutorial + Berlin) · **Last update:** 2026-11-18
 
 ## Summary
-Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR #2) are merged. The design, the UI spec and the brands are in the G1 design PR. Waiting for Roman's G1 answers (docs/DECISIONS.md) before Phase 2 (vertical slice).
+Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR #2) are merged. The design, the UI spec and the brands are in the G1 design PR. G1 approved by Roman (all as recommended). Phase 2 (vertical slice) has started.
 
 ## Done
 - [x] T-1.1/1.2 | frontend-engineer | Scaffold, schema, red-line linter, CI | PR #2 | sceptic: FAIL → FAIL → PASS (producer exception for a third round) | CI green
@@ -14,7 +14,7 @@ Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR 
 - [x] T-1.6 | ux-artist | UI spec v2, tokens, 8 fictional brands, 3 mock-ups | sceptic: FAIL → PASS · QA: FAIL → PASS
 - [x] T-1.7 | fraud-researcher | Brand-name web collision check (renamed Nodkey, Corvelle, Hoardly) | docs/patterns/BRAND_CHECK.md
 
-## Next up (Phase 2, starts after G1)
+## Next up (Phase 2)
 - [ ] T-2.1 | frontend-engineer | Engine: scenario runner, Check + tag, scoring v3.2, debrief layers, save state | reviewers: sceptic, qa
 - [ ] T-2.2 | frontend-engineer | Schema change requests CR-01…CR-13 (GDD §19) + UI_SPEC §14 (pressure_target, already_clicked split, palette sync test) | reviewers: sceptic
 - [ ] T-2.3 | ux-artist + frontend-engineer | Devices: mail, SMS/messenger, call, browser, QR, bank, auth, letter | reviewers: sceptic, qa
@@ -32,4 +32,5 @@ _(none)_
 
 ## Open gates
 - G0 Kickoff: Approved 2026-11-18
-- G1 Design: **Ready for Roman** (7 questions in DECISIONS.md)
+- G1 Design: Approved 2026-11-18
+- G2 Vertical slice: Open

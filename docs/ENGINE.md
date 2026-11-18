@@ -72,6 +72,7 @@ The state's `log` lists announcement-worthy events (`beat_arrived`, `pusher`, `i
 - Validator (`scripts/lib/rules.ts`): layer-1 budget = authored (+ `safeguarding_line` on arc) + fixed overhead + `choice_worst` (2 + longest label of any action, including What-now extras, that can leave the scenario below ★★★; 6 if timed). Action labels are capped at 8 words.
 - `banner: { device, message }` on the opening or a beat: a notification with no actions and a required `body`. A beat with a banner gets the `request` checkable (the banner's text, e.g. the code SMS or approval prompt); inspectables on `request` need a banner, `type: request` and a `message.request` other than `none`.
 - Pusher messages may carry `lang` + `translation` (CR-14), validated like message translations.
+- Outcome `recovery` entries may carry their own `feedback` (scenario-specific harmful-pick line; `RecoveryOption.feedback`), which overrides the shared one. Shared lines in `content/recovery_steps.yaml` stay generic because steps are reused across scenarios.
 - `content/recovery_steps.yaml` steps may carry `feedback` (a non-blaming line shown when the player picks the step in damage control); the validator requires it on every `harmful` step.
 - `brands.yaml` is emitted to the runtime as a projection `{ id, name, short_name?, mark? }` only.
 - Boss beats: either scheduled (`arrives_after`) or reached by `next_beat`, never both; at least one scheduled.

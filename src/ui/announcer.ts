@@ -45,3 +45,8 @@ export function nextAnnouncement(q: QueueState, now: number, minInterval: number
     say: first.text,
   };
 }
+
+/** Drop pending category 3–5 items (timer, stress, new messages): they belong to a screen that has gone (QA B6). */
+export function dropSlow(q: QueueState): QueueState {
+  return { ...q, pending: q.pending.filter((p) => p.category <= 2) };
+}

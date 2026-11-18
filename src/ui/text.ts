@@ -180,3 +180,14 @@ export function segmentMessage(m: Pick<Message, 'body' | 'transcript' | 'referen
 export function words(text: string | undefined): number {
   return text ? text.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length : 0;
 }
+
+/**
+ * Checkable targets that appear only in transcript lines the player has not heard yet
+ * (line index ≥ `shown`). The Details list hides them until their line is revealed (QA B3).
+ */
+export function unrevealedTargets(m: Pick<Message, 'body' | 'transcript' | 'references' | 'phone_numbers'>, shown: number): Set<string> {
+  const segs = segmentMessage(m);
+  const targets = (list: Segment[]) => list.flatMap((x) => (x.kind === 'check' ? [x.target] : []));
+  const visible = new Set([...targets(segs.body), ...segs.transcript.slice(0, shown).flatMap(targets)]);
+  return new Set(segs.transcript.slice(shown).flatMap(targets).filter((x) => !visible.has(x)));
+}

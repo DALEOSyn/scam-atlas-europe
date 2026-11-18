@@ -16,11 +16,13 @@
 .content {
   position: relative;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
   padding: var(--space-4);
 }
 .field {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-1);
 }
 .label {
@@ -48,6 +50,7 @@
   top: 0;
   z-index: var(--z-sim-marker);
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   justify-items: end;
   gap: var(--space-1);
   padding: var(--space-2) var(--space-2) 0;

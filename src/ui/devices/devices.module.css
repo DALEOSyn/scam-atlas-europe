@@ -5,6 +5,7 @@
  */
 .stageInner {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
   min-width: 0;
 }
@@ -131,6 +132,7 @@
 }
 .barText {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
 }
 .barTitle {
@@ -141,6 +143,7 @@
 }
 .chatTitle {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
   overflow-wrap: anywhere;
 }
@@ -173,6 +176,7 @@
 }
 .bubbleWrap {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-1);
   justify-items: start;
 }
@@ -242,6 +246,7 @@
 }
 .translate {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-1);
 }
 .translation {
@@ -266,6 +271,7 @@
 }
 .post {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
 }
 .postHead {
@@ -278,6 +284,7 @@
 .deviceBanner,
 .notification {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 2px;
   margin: var(--space-2) var(--space-3) 0;
   padding: var(--space-2) var(--space-3);
@@ -292,6 +299,7 @@
   margin: 0;
   padding: 0;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-2);
 }
 .notification {
@@ -351,6 +359,7 @@
 }
 .inboxText {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
 }
 .inboxSubject {
@@ -360,6 +369,7 @@
 }
 .reading {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
   padding: var(--space-4);
   min-width: 0;
@@ -380,6 +390,7 @@
 /* Call */
 .call {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
   padding: var(--space-6) var(--space-4);
   background: var(--color-surface-sunken);
@@ -388,6 +399,7 @@
 }
 .caller {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   justify-items: center;
   gap: var(--space-2);
   text-align: center;
@@ -407,6 +419,7 @@
 }
 .round {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   justify-items: center;
   gap: var(--space-1);
   background: none;
@@ -428,11 +441,24 @@
   outline: var(--focus-ring-w) solid var(--color-focus);
   outline-offset: var(--focus-ring-offset);
 }
+.transcriptHead {
+  margin: 0;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.transcriptHead:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
 .transcript {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-2);
 }
 .transcript li {
@@ -471,7 +497,7 @@
   flex: 1 1 12rem;
   min-width: 0;
   display: flex !important;
-  justify-content: flex-end;
+  justify-content: flex-start;
   align-items: center;
   min-height: 36px;
   padding: 0 var(--space-3);
@@ -484,7 +510,57 @@
   overflow: hidden;
   white-space: nowrap;
 }
-.addressInner {
+/* Address text: owner part always bold; prefix truncates from the left, path from the right (UI_SPEC §3.5). */
+.addr {
+  display: flex;
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+}
+.addrPrefix {
+  flex: 0 1 auto;
+  min-width: 1.5ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
+}
+.addrLtr {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+.addrOwner {
+  flex: none;
+  color: var(--address-strong);
+  font-weight: var(--fw-bold);
+}
+.addrPath {
+  flex: 0 100 auto;
+  min-width: 1.5ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.addrMore {
+  display: none;
+}
+@media (max-width: 319px) {
+  .addrPrefix,
+  .addrPath {
+    display: none;
+  }
+  .addrMore {
+    display: inline;
+  }
+  /* The owner part may break only after a dot, never at a hyphen. */
+  .addr,
+  .address {
+    white-space: normal;
+  }
+  .addrOwner {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+}
+.addrLabel {
   white-space: nowrap;
 }
 @media (max-width: 519px) {
@@ -500,6 +576,7 @@
 }
 .pageBody {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
   padding: var(--space-4);
 }
@@ -533,17 +610,21 @@
   color: var(--p-ink-100);
   padding: var(--space-4);
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
   min-height: 420px;
+  align-content: center;
 }
 .qr {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
   justify-items: center;
 }
 .viewfinder {
   position: relative;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   justify-items: center;
   gap: var(--space-2);
   padding: var(--space-6);
@@ -581,15 +662,18 @@
 /* Banking (Larchwick) */
 .bank {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
   padding: 0 var(--space-4) var(--space-4);
 }
 .transfer {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
 }
 .field {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-1);
 }
 .fieldLabel {
@@ -631,6 +715,7 @@
 /* Sign-in prompt (Gatewren) */
 .prompt {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-2);
   padding: var(--space-4);
 }
@@ -644,6 +729,7 @@
 .promptRows {
   margin: 0;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-1);
 }
 .promptRows > div {
@@ -670,6 +756,7 @@
   max-width: 560px;
   margin: 0 auto;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
   padding: var(--space-6);
   background: var(--letter-paper);

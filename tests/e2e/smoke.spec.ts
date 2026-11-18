@@ -7,7 +7,7 @@ async function axeClean(page: Page) {
   expect((await new AxeBuilder({ page }).withTags(WCAG).analyze()).violations).toEqual([]);
 }
 
-const debriefHeading = (page: Page) => page.getByRole('heading', { level: 1, name: /^This was|Teo was right/ });
+const debriefHeading = (page: Page) => page.getByRole('heading', { level: 1, name: /This was (a scam|genuine):|Teo was right/ });
 
 async function continueToNext(page: Page) {
   await expect(debriefHeading(page)).toBeVisible();
@@ -171,14 +171,15 @@ test('tutorial 0-2: fall on the training page, damage control feedback, blame-fr
   await expect(page.locator('form[action]')).toHaveCount(0);
   await expect(page.locator('input')).toHaveCount(0);
   await expect(page.getByRole('button', { name: /Simulation/ })).toBeVisible();
-  // The owner part is highlighted in the address bar once the address is checked.
+  // The owner part is bold in the address bar at all times (UI_SPEC §3.5); the Check card boxes it.
   const address = page.locator('[data-check="page.address"]');
-  await expect(address.locator('[class*="owner"]')).toHaveCount(0);
+  await expect(address.locator('strong')).toHaveText('waymarker-it-support.example');
   await address.click();
-  await expect(page.getByRole('dialog', { name: 'Page address details' })).toBeVisible();
+  const card = page.getByRole('dialog', { name: 'Page address details' });
+  await expect(card).toBeVisible();
+  await expect(card.locator('[class*="boxed"]')).toHaveCount(1);
   await axeClean(page);
   await page.getByRole('button', { name: 'Close', exact: true }).click();
-  await expect(address.locator('[class*="owner"]')).toHaveCount(1);
   await axeClean(page);
   // The training page's own button routes to the authored action; nothing is submitted anywhere.
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
@@ -187,11 +188,12 @@ test('tutorial 0-2: fall on the training page, damage control feedback, blame-fr
   await page.getByRole('button', { name: /Keep it to yourself/ }).click();
   await page.getByRole('button', { name: /Sign out of every other session/ }).click();
   await page.getByRole('button', { name: 'Done' }).click();
-  await expect(page.getByText('Feeling embarrassed is normal, and it is what scammers count on. Telling IT fast is what limits the damage.')).toBeVisible();
+  await expect(page.getByText(/^Feeling embarrassed is normal, and it is what scammers count on\./)).toBeVisible();
   await axeClean(page);
   await page.getByRole('button', { name: 'Continue' }).click();
   await expect(debriefHeading(page)).toBeFocused();
-  await expect(page.getByText(/could happen to anyone/)).toBeVisible();
+  // After a fall the no-blame line is part of the focused h1, before the verdict (QA B9).
+  await expect(debriefHeading(page)).toHaveAccessibleName(/^This could happen to anyone\. Here is the tell\. This was a scam: /);
   await page.getByRole('button', { name: 'Already clicked or paid? See what to do' }).click();
   await expect(page.getByRole('heading', { name: 'If you already…' })).toBeFocused();
   await axeClean(page);
@@ -203,30 +205,98 @@ for (const vp of [
   { name: '320x568', width: 320, height: 568 },
   // 200% zoom of a 1440×900 window = 720×450 CSS px.
   { name: '200% zoom', width: 720, height: 450 },
+  // 375 px phone at 200% zoom.
+  { name: '188x406', width: 188, height: 406 },
 ]) {
-  test(`axe clean and no horizontal scroll at ${vp.name}: mail + Check card, browser training page, call, debrief`, async ({ page }) => {
+  test(`axe clean and no horizontal scroll at ${vp.name}: mail + Check card, browser training page, damage control, debrief`, async ({ page }) => {
     test.setTimeout(90_000);
     await page.setViewportSize({ width: vp.width, height: vp.height });
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.goto('/');
     const noHScroll = async () => expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
     await page.getByRole('button', { name: 'Start' }).click();
+    const firstAction = page.getByRole('button', { name: /Find the pack/ });
+    await page.getByRole('button', { name: /Details you can check/ }).click();
     await page.locator('[data-check="link"]').click();
     await expect(page.getByRole('dialog')).toBeVisible();
+    // Desk layout: the Check card and the open Details list never push the actions off screen (QA B4).
+    if (vp.width >= 1024) await expect(firstAction).toBeInViewport();
     await axeClean(page);
     await noHScroll();
     await page.keyboard.press('Escape');
     await tapTargetsOk(page);
-    await page.getByRole('button', { name: /Find the pack/ }).click();
+    await firstAction.click();
     await axeClean(page);
     await noHScroll();
     await continueToNext(page);
     await page.getByRole('button', { name: /Tap the link and free up space/ }).click();
+    // The owner part always stays visible in the address bar, with "…" where text is cut (QA B5).
+    const bar = page.locator('[data-check="page.address"]');
+    const owner = bar.locator('strong');
+    const [barBox, ownerBox] = [await bar.boundingBox(), await owner.boundingBox()];
+    expect(barBox && ownerBox && ownerBox.x >= barBox.x - 1 && ownerBox.x + ownerBox.width <= barBox.x + barBox.width + 1).toBe(true);
+    if (vp.width < 320) await expect(bar.locator('[class*="addrMore"]').first()).toBeVisible();
+    await axeClean(page);
+    await noHScroll();
+    await tapTargetsOk(page);
+    await page.getByRole('button', { name: 'Sign in', exact: true }).click();
+    for (const step of [/Change the password/, /Keep it to yourself/, /Sign out of every other session/]) await page.getByRole('button', { name: step }).first().click();
+    await page.getByRole('button', { name: 'Done' }).click();
+    await axeClean(page);
+    await noHScroll();
+    await page.getByRole('button', { name: 'Continue' }).click();
+    // The debrief h1 names waymarker-network.example and must not widen the page (QA B7).
+    await expect(debriefHeading(page)).toBeFocused();
     await axeClean(page);
     await noHScroll();
     await tapTargetsOk(page);
   });
 }
+
+test('boss call: lines arrive at reading pace, the call timer starts, checks follow the transcript', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto('/');
+  // Reach 0-6 beat 3 quickly with timers on (Standard).
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: /Find the pack in Waymarker Desk yourself/ }).click();
+  await continueToNext(page);
+  await page.getByRole('button', { name: /Open Waymarker mail yourself/ }).click();
+  await continueToNext(page);
+  await page.getByRole('button', { name: 'Standard timer' }).click();
+  await page.getByRole('button', { name: 'Go to your inbox' }).click();
+  await page.getByRole('button', { name: /Use the link and set a new password/ }).click();
+  await continueToNext(page);
+  await page.getByRole('button', { name: /Open Kettle yourself/ }).click();
+  await continueToNext(page);
+  await page.getByRole('button', { name: /Talk Teo through/ }).click();
+  for (const step of [/Block your card/, /Call your bank/, /Report it to the police/]) await page.getByRole('button', { name: step }).click();
+  await page.getByRole('button', { name: 'Done' }).click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await continueToNext(page);
+  await page.getByRole('button', { name: /Open Waymarker Desk from your bookmark/ }).click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await page.getByRole('button', { name: /Check with Adaeze/ }).click();
+  await page.getByRole('button', { name: 'Continue' }).click();
+
+  const timer = page.getByRole('timer');
+  const time = async () => /\d+:\d\d/.exec((await timer.textContent()) ?? '')?.[0] ?? '';
+  const before = await time();
+  await page.getByRole('button', { name: 'Answer' }).click();
+  // Focus moves to the transcript heading, never to <body> (QA B2).
+  await expect(page.getByRole('heading', { name: 'Call transcript' })).toBeFocused();
+  // Line 4 holds the call-back number and the ticket: not listed until it is said (QA B3).
+  await page.getByRole('button', { name: /Details you can check/ }).click();
+  await expect(page.getByRole('button', { name: /^Check Phone number/ })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: /^Check Reference/ })).toHaveCount(0);
+  await page.waitForTimeout(2_000);
+  expect(await time()).toBe(before); // frozen while lines are still arriving
+  // QA B1: every line arrives (reading pace ≈ 15 s for lines 1–3), not just line 1.
+  await expect(page.getByRole('log')).toContainText('call me back on', { timeout: 30_000 });
+  await expect(page.getByRole('log').locator('li')).toHaveCount(4);
+  await expect(page.getByRole('button', { name: /^Check Phone number/ })).toHaveCount(1);
+  // The call timer starts once the last line is in.
+  await expect.poll(time, { timeout: 5_000 }).not.toBe(before);
+});
 
 test('keyboard only: skip link, Check from the Details list, tag, act, debrief (shortcuts off)', async ({ page }) => {
   await page.goto('/');

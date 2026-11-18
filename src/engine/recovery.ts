@@ -10,6 +10,8 @@ export type RecoveryCategory = 'stop' | 'secure' | 'report' | 'warn' | 'harmful'
 export interface RecoveryOption {
   step: string;
   category: RecoveryCategory;
+  /** Scenario-specific harmful-pick feedback; overrides the generic line in recovery_steps.yaml. */
+  feedback?: string;
 }
 
 type RecoveryTable = Pick<Balance, 'recovery'>;
@@ -88,5 +90,5 @@ export function alreadyClickedLine(
 }
 
 export function recoveryOptionsOf(o: Outcome | undefined): RecoveryOption[] {
-  return o?.recovery ? o.recovery.map((r) => ({ step: r.step, category: r.category })) : [];
+  return o?.recovery ? o.recovery.map((r) => ({ step: r.step, category: r.category, ...(r.feedback ? { feedback: r.feedback } : {}) })) : [];
 }

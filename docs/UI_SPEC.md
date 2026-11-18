@@ -167,7 +167,7 @@ Common rules:
 ### 3.6 QR camera (`qr`)
 - Dark viewport showing the poster/letter/sticker illustration with a generic square viewfinder (four rounded corner brackets).
 - On "detection" (600 ms; reduced motion: immediate): a **destination chip** "QR code · opens **trundle-redelivery.example**" + "Check". The destination is checkable. Nothing opens unless the player picks an authored action (`scan_qr_and_open`).
-- **The QR graphic is a deliberately non-decodable stylised pattern** (GDD §5): drawn finder squares plus a random-looking module field that fails decoding. If a decodable code is ever needed it may encode only a `.invalid` string (e.g. `QR-DEMO-1-7.invalid`). The red-line linter decodes every QR asset and fails on anything else.
+- **The QR graphic is a deliberately non-decodable stylised pattern** (GDD §5): two square corner marks that are not finder patterns (ring, wide gap, dot: run ratio 1:2:1:2:1), a solid disc in the third corner, a module field with no three dark modules in a row, and format strips fixed to a pattern at distance 5 from every valid format code. `tests/unit/qr-undecodable.test.ts` runs ZXing and jsQR on rasterised copies (with a positive control) and asserts nothing is detected or decoded. If a decodable code is ever needed it may encode only a `.invalid` string (e.g. `QR-DEMO-1-7.invalid`). The red-line linter decodes every QR asset and fails on anything else.
 - **Sticker-on-sticker**: the illustration shows an offset, differently sized label; checkable ("This QR code is a sticker on top of another one").
 - SR: "Camera. A parking meter with a QR code sticker. QR code opens trundle-redelivery.example."
 
@@ -372,15 +372,15 @@ Reduced motion is on when the OS asks **or** `data-motion="reduced"`; `data-moti
 ## 8. Debrief — two layers [FI-1, U4, LI-2–4]
 
 ### 8.1 Layer 1 (always shown, ≤ 40 words, one screen at 375×812)
-Focus lands on the `h1`. Reading and focus order:
-1. **`h1` = verdict + tell in one heading** [U4]: "**This was a scam:** the link went to trundle-zoll.example, not trundle.example." The verdict part is styled as a chip *inside* the heading (tag-crossed icon, `--color-flag-bg`/`--color-flag-text`); genuine: check-seal + "This was genuine:" with `--color-ok-*`. Genuine tells say why it was safe to act and never present a reassuring detail as proof ("It asked for nothing and matched your order. The sender fits, but senders can be faked.").
+Focus lands on the `h1`. Reading and focus order (nothing of layer 1 comes before the `h1`):
+1. **`h1` = verdict + tell in one heading** [U4]. After a fall the heading starts with "This could happen to anyone. Here is the tell." (Red Line 5, never on a good outcome) on its own line; the outcome narrative follows directly after the `h1`. Example: "**This was a scam:** the link went to trundle-zoll.example, not trundle.example." The verdict part is styled as a chip *inside* the heading (tag-crossed icon, `--color-flag-bg`/`--color-flag-text`); genuine: check-seal + "This was genuine:" with `--color-ok-*`. Genuine tells say why it was safe to act and never present a reassuring detail as proof ("It asked for nothing and matched your order. The sender fits, but senders can be faked.").
 2. **What works**: one line naming the verification step ("What works: open the Trundle app yourself."), from `debrief.layer1.what_works`. **"You chose" line**, only when the scenario (or a boss beat) scored fewer than 3 stars. **Layer 1 shows at most one "You chose" line (CR-15).** On a boss it is the line of the beat with the fewest stars (on a tie, the latest beat); the other beats' lines move to layer 2 ("Your other choices"). The line uses: "You chose: <action label>." using the `label` of the action that cost the stars:
    - a fall: the decisive action's label (always, even after an engage);
    - **an engage cap** (GDD §6: engage on fraud caps at ★★): the label of the **first engage action** the player picked, **not** the later action, also when that later action was a dismiss or report (producer ruling, T-2.1: the engage is what cost the stars and teaches more). E.g. 1-9 beat 3: "You chose: Call back this number." even though the player then called the number on the card; "You chose: Open the link." when the player then closed the page;
    - otherwise a report or dismiss: the decisive action's label;
    - a verify followed by comply, proceed or report (GDD §6): the follow-up action's label;
    - timer expiry: "You let the timer run out."
-   Never shown on arc debriefs.
+   Never shown on arc debriefs. On a ★★★ standard debrief the same slot holds "That is the habit that works." (6 words).
 3. **Stars**: 3 icons + "3 of 3 stars" (`role="img"` with that name).
 4. **Already clicked?** one line linking to the full advice in layer 2 ("Already clicked or paid? See what to do").
 5. Buttons: **More** (opens layer 2, `aria-expanded`) and **Continue**.
@@ -388,7 +388,7 @@ Focus lands on the `h1`. Reading and focus order:
   `fixed + authored + choice_worst ≤ 40`, where
   - **fixed** (`LAYER1_OVERHEAD` in `scripts/lib/rules.ts`) = **14** for `debrief.variant: standard` (standard and boss): "This was a scam:" 4 (the longer of the two verdict chips); "What works:" 2; "Already clicked or paid? See what to do" 8. **10** for `debrief.variant: arc`: "The habit:" 2; "Already did this? See what to do next" 8 (see the arc layout below).
   - **authored** = words in `debrief.layer1.tell` + `debrief.layer1.what_works`, **plus `debrief.safeguarding_line` on arc debriefs** (required at arc slots 2–3, shown in layer 1).
-  - **choice_worst** (standard only; one line, also on a boss, CR-15) = the largest of: 2 + the word count of the `label` of every action in the scenario (or boss beat, including actions in a "What now?" step) that can leave it below 3 stars, **engage actions included**; and 6 ("You let the timer run out.") if the scenario has a timer. Arc debriefs: 0 (no "You chose" line).
+  - **choice_worst** (standard only; one line, also on a boss, CR-15) = the largest of: 2 + the word count of the `label` of every action in the scenario (or boss beat, including actions in a "What now?" step) that can leave it below 3 stars, **engage actions included**; and 6 ("You let the timer run out.") if the scenario has a timer. The ★★★ line "That is the habit that works." uses the same slot, so the validator counts **max(choice_worst, 6)** (`BEST_LINE_WORDS`). Arc debriefs: 0 (no "You chose" line).
   - Action labels are capped at 8 words (validator), so choice_worst ≤ 10 and **≤ 16 authored words is always safe** for standard debriefs; a scenario with shorter action labels gets the difference back (e.g. longest such label 4 words → choice_worst 6 → up to 20 authored). Arc debriefs: up to **30** authored words including the safeguarding line.
   - **Counting** = `wordCount()` in `scripts/lib/rules.ts`: split on whitespace and count tokens that contain a letter or digit ("isn't" = 1, "–" = 0); a domain or URL counts as one word. A `{nickname}` placeholder counts as one word. Item 3 (stars) and item 5 (buttons) are not counted.
 - **Arc layout** (`debrief.variant: arc`, GDD §10.2). Focus lands on the `h1`. Order:

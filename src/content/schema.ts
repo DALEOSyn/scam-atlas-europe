@@ -335,7 +335,19 @@ export const outcomeSchema = z
     narrative: z.string().min(1),
     /** CR-07: damage-control options for this outcome, each with its category for THIS scenario. */
     recovery: z
-      .array(z.object({ step: snakeId, category: z.enum(RECOVERY_CATEGORIES) }).strict())
+      .array(
+        z
+          .object({
+            step: snakeId,
+            category: z.enum(RECOVERY_CATEGORIES),
+            /**
+             * Optional harmful-pick feedback for THIS scenario. Steps are shared across scenarios, so the line
+             * in recovery_steps.yaml stays generic; put anything scenario-specific (who to tell) here.
+             */
+            feedback: z.string().min(1).optional(),
+          })
+          .strict(),
+      )
       .optional(),
     sets_flags: z.array(flagName).optional(),
     /** Arc scenarios only, e.g. { alex_invested: 50 }. */

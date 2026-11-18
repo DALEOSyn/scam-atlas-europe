@@ -64,19 +64,11 @@ export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
 
   return (
     <main class={styles.debrief}>
-      <div class={styles.outcome}>
-        {data.narratives.map((n, i) => (
-          <p key={i}>
-            <RichText text={n} />
-          </p>
-        ))}
-        {l1.deadlineWasFake ? <p>{t('deadline_fake')}</p> : null}
-        {/* Red Line 5: said after a fall, where it helps; never on a good outcome. */}
-        {data.fell ? <p>{t('debrief_no_shame')}</p> : null}
-      </div>
-
       <section class={styles.layer1} aria-labelledby="debrief-h1">
+        {/* Focus lands on the h1, so everything before it in reading order lives inside it (QA B9). */}
         <h1 id="debrief-h1" ref={heading} tabIndex={-1} class={styles.h1}>
+          {/* Red Line 5: said after a fall, where it helps; never on a good outcome. */}
+          {data.fell ? <span class={styles.noShame}>{t('debrief_no_shame')} </span> : null}
           {l1.verdict ? (
             <span class={l1.verdict === 'fraud' ? `${styles.chip} ${styles.scam}` : `${styles.chip} ${styles.genuine}`}>
               <Icon name={l1.verdict === 'fraud' ? 'tag-crossed' : 'seal'} />
@@ -84,9 +76,19 @@ export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
             </span>
           ) : null}{' '}
           <span>
-            <RichText text={l1.tell} />
+            <RichText text={l1.tell} breakOwner />
           </span>
         </h1>
+        {data.narratives.length > 0 || l1.deadlineWasFake ? (
+          <div class={styles.outcome}>
+            {data.narratives.map((n, i) => (
+              <p key={i}>
+                <RichText text={n} />
+              </p>
+            ))}
+            {l1.deadlineWasFake ? <p>{t('deadline_fake')}</p> : null}
+          </div>
+        ) : null}
         <p>
           <strong>{arc ? t('debrief_the_habit') : t('debrief_what_works')} </strong>
           <RichText text={l1.whatWorks} />

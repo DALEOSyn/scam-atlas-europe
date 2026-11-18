@@ -92,6 +92,7 @@
   padding: var(--space-4);
   box-shadow: var(--shadow-2);
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
 }
 .sheet {
@@ -131,11 +132,13 @@
 }
 .facts {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-2);
 }
 .anatomy {
   margin: 0;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-1);
 }
 .anatomy dt {
@@ -179,6 +182,7 @@
 /* Details list */
 .details {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-2);
 }
 .detailsRow {
@@ -200,7 +204,8 @@
   cursor: pointer;
 }
 .detailsToggle {
-  flex: 1 1 14rem;
+  flex: 1 1 min(14rem, 100%);
+  min-width: 0;
   font-weight: var(--fw-bold);
   display: flex;
   align-items: center;
@@ -215,18 +220,22 @@
   margin: 0;
   padding: 0;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
 }
 .list li {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-2);
   padding-bottom: var(--space-3);
   border-bottom: var(--border-w) solid var(--color-border-subtle);
 }
 .row {
   width: 100%;
+  min-width: 0;
   background: var(--color-surface);
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 2px;
 }
 .rowLabel {
@@ -251,4 +260,15 @@
 .cardHead h2:focus-visible {
   outline: var(--focus-ring-w) solid var(--color-focus);
   outline-offset: var(--focus-ring-offset);
+}
+
+/* xxs (< 320 px, e.g. 375 px at 200% zoom): hosts may break only at dots, so long labels get a
+   smaller monospace size instead of a hyphen break; the card header wraps. */
+@media (max-width: 319px) {
+  .mono {
+    font-size: var(--fs-xs);
+  }
+  .cardHead {
+    flex-wrap: wrap;
+  }
 }

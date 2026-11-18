@@ -214,3 +214,21 @@ describe('CR-14: pusher view carries lang and translation', () => {
     expect(viewOf(s, ctx(), st).pusherMessages).toEqual([{ text: 'Heute zahlen!', at: 5, lang: 'de', translation: 'Pay today!' }]);
   });
 });
+
+describe('recovery feedback per scenario (T-2.3 rework)', () => {
+  it('an outcome can override the shared feedback line for a step; the generic line stays the fallback', async () => {
+    const { recoveryOptionsOf } = await import('../../../src/engine/recovery.ts');
+    const { recoveryStepFeedback } = await import('../../../src/content/recoverySteps.ts');
+    const opts = recoveryOptionsOf({
+      narrative: 'x',
+      recovery: [
+        { step: 'keep_quiet', category: 'harmful', feedback: 'Tell the club secretary today.' },
+        { step: 'wait_and_see', category: 'harmful' },
+      ],
+    });
+    expect(opts[0]?.feedback).toBe('Tell the club secretary today.');
+    expect(opts[1]?.feedback).toBeUndefined();
+    // The shared line names no one context-specific (it is reused across scenarios).
+    expect(recoveryStepFeedback('keep_quiet')).not.toMatch(/\bIT\b(?! team)/);
+  });
+});

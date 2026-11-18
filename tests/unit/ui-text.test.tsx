@@ -4,7 +4,7 @@ import { cleanup, render } from '@testing-library/preact';
 import { hostParts, maskedParts, richPieces, segmentMessage, words } from '../../src/ui/text.ts';
 import { Host, spokenNumber } from '../../src/ui/RichText.tsx';
 import { EMPTY_QUEUE, enqueue, nextAnnouncement } from '../../src/ui/announcer.ts';
-import { qrModules, QrGraphic } from '../../src/ui/devices/QrGraphic.tsx';
+import { CORNER_MARKS, QrGraphic } from '../../src/ui/devices/QrGraphic.tsx';
 
 afterEach(cleanup);
 
@@ -29,12 +29,13 @@ describe('hostParts (owner part = last two labels)', () => {
 });
 
 describe('Host rendering never wraps at hyphens', () => {
-  it('puts each part in a nowrap span with break opportunities only between parts', () => {
+  it('puts each label in a nowrap span with break opportunities only at dots and slashes', () => {
     const { container } = render(<Host text="https://desk.waymarker-network.example/travel-pass" />);
-    const owner = [...container.querySelectorAll('span')].find((s) => s.textContent === 'waymarker-network.example');
-    expect(owner?.className).toMatch(/nowrap/);
-    // Breaks: after scheme, after "desk.", before the path. None inside a hyphenated label.
-    expect(container.querySelectorAll('wbr')).toHaveLength(3);
+    const label = [...container.querySelectorAll('span')].find((s) => s.textContent === 'waymarker-network.');
+    expect(label?.className).toMatch(/nowrap/);
+    // Breaks: after the scheme, after "desk.", after "waymarker-network.", before the path. Never at a hyphen.
+    expect(container.querySelectorAll('wbr')).toHaveLength(4);
+    for (const s of container.querySelectorAll('[class*="nowrap"]')) expect(s.querySelector('wbr')).toBeNull();
   });
   it('oneLine (address bar) has no break opportunities; strong marks the owner part', () => {
     const { container } = render(<Host text="https://desk.waymarker-network.example/x" oneLine strong />);
@@ -50,6 +51,8 @@ describe('masked numbers', () => {
     expect(maskedParts('+32 2 ••• •• 00')).toEqual({ start: '+32 2', end: '00' });
     expect(maskedParts('0800 123')).toBeNull();
     expect(spokenNumber('••• 3310')).toMatch(/3310/);
+    // The accessible name starts with what is visible (axe label-content-name-mismatch, QA B8).
+    expect(spokenNumber('+32 2 ••• •• 00')).toBe('+32 2 … 00, number ending 00');
     expect(spokenNumber('••• 3310')).not.toMatch(/\d{5,}/);
   });
   it('richPieces finds hosts and masked numbers in running text', () => {
@@ -95,13 +98,14 @@ describe('announcer queue (UI_SPEC §10.5)', () => {
   });
 });
 
-describe('QR graphic is not decodable (Red Line 3)', () => {
-  it('draws two finder patterns, not three, and carries only the in-game route', () => {
-    expect(qrModules('/qr/parking-1').finders).toHaveLength(2);
+describe('QR graphic markup (decoder test: qr-undecodable.test.ts)', () => {
+  it('draws two non-finder corner marks and a disc, and carries only the in-game route', () => {
+    expect(CORNER_MARKS).toHaveLength(2);
     const { container } = render(<QrGraphic route="/qr/parking-1" />);
     const svg = container.querySelector('svg');
     expect(svg?.getAttribute('data-route')).toBe('/qr/parking-1');
-    expect(container.querySelectorAll('[data-finder]')).toHaveLength(2);
+    expect(container.querySelectorAll('[data-corner-mark]')).toHaveLength(2);
+    expect(container.querySelectorAll('[data-disc-corner]')).toHaveLength(1);
     expect(container.innerHTML).not.toMatch(/https?:/);
   });
 });

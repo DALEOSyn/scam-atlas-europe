@@ -4,6 +4,7 @@
  *   (UI_SPEC §1.5 host wrapping rule).
  * - Masked numbers carry a spoken form ("number ending 3310") built only from the digits shown.
  */
+import { Fragment } from 'preact';
 import { t } from '../i18n/index.ts';
 import { hostParts, maskedParts, richPieces } from './text.ts';
 import styles from './text.module.css';
@@ -18,7 +19,20 @@ const Break = () => <wbr />;
 const NoBreak = () => null;
 
 /** A host or address with break opportunities only between its parts. `strong` marks the owner part (address bar after a check, Check card). */
-export function Host({ text, strong = false, boxed = false, oneLine = false }: { text: string; strong?: boolean; boxed?: boolean; oneLine?: boolean }) {
+export function Host({
+  text,
+  strong = false,
+  boxed = false,
+  oneLine = false,
+  breakOwner = !oneLine,
+}: {
+  text: string;
+  strong?: boolean;
+  boxed?: boolean;
+  oneLine?: boolean;
+  /** Allow a break after the dot inside the owner part (never at a hyphen). Default: on, except one-line hosts. */
+  breakOwner?: boolean;
+}) {
   const p = hostParts(text);
   // The address bar is one line that truncates from the left (UI_SPEC §3.5): no break opportunities.
   const Wbr = oneLine ? NoBreak : Break;
@@ -43,7 +57,24 @@ export function Host({ text, strong = false, boxed = false, oneLine = false }: {
           <Wbr />
         </span>
       ))}
-      <span class={ownerClass}>{p.owner}</span>
+      {breakOwner ? (
+        <span class={[strong ? styles.owner : '', boxed ? styles.boxed : ''].filter(Boolean).join(' ') || undefined}>
+          {p.owner.split('.').map((label, i, all) =>
+            i < all.length - 1 ? (
+              <Fragment key={i}>
+                <span class={styles.nowrap}>{label}.</span>
+                <wbr />
+              </Fragment>
+            ) : (
+              <span key={i} class={styles.nowrap}>
+                {label}
+              </span>
+            ),
+          )}
+        </span>
+      ) : (
+        <span class={ownerClass}>{p.owner}</span>
+      )}
       {p.path.map((seg, i) => (
         <span key={i}>
           <Wbr />
@@ -64,10 +95,10 @@ export function Masked({ text }: { text: string }) {
   );
 }
 
-export function RichText({ text }: { text: string }) {
+export function RichText({ text, breakOwner = true }: { text: string; breakOwner?: boolean }) {
   return (
     <>
-      {richPieces(text).map((p, i) => (p.kind === 'host' ? <Host key={i} text={p.text} /> : p.kind === 'masked' ? <Masked key={i} text={p.text} /> : p.text))}
+      {richPieces(text).map((p, i) => (p.kind === 'host' ? <Host key={i} text={p.text} breakOwner={breakOwner} /> : p.kind === 'masked' ? <Masked key={i} text={p.text} /> : p.text))}
     </>
   );
 }

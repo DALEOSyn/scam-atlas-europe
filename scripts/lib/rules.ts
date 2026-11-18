@@ -56,6 +56,13 @@ export interface RuleResult {
  */
 export const LAYER1_OVERHEAD = { standard: 4 + 2 + 8, arc: 2 + 8 } as const;
 
+/**
+ * "That is the habit that works." (ui.json `outcome_best`, 6 words): shown on a standard ★★★ debrief
+ * instead of a "You chose" line, so the variable line costs max(choice_worst, 6). A test keeps this in
+ * sync with the catalogue.
+ */
+export const BEST_LINE_WORDS = 6;
+
 export function wordCount(text: string | undefined): number {
   return text ? text.trim().split(/\s+/u).filter((w) => /[\p{L}\p{N}]/u.test(w)).length : 0;
 }
@@ -312,11 +319,11 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
   const overhead = LAYER1_OVERHEAD[s.debrief.variant];
   const arcDebrief = s.debrief.variant === 'arc';
   const authored = wordCount(s.debrief.layer1.tell) + wordCount(s.debrief.layer1.what_works) + (arcDebrief ? wordCount(s.debrief.safeguarding_line) : 0);
-  const choice = arcDebrief ? 0 : choiceWorst(s, balance);
+  const choice = arcDebrief ? 0 : Math.max(choiceWorst(s, balance), BEST_LINE_WORDS);
   const words = authored + overhead + choice;
   if (words > session.debrief_layer1_max_words) {
     errors.push(
-      `debrief.layer1 is ${words} words in the worst case (authored ${authored} + fixed ${overhead} + "You chose" ${choice}); the limit is ${session.debrief_layer1_max_words}`,
+      `debrief.layer1 is ${words} words in the worst case (authored ${authored} + fixed ${overhead} + "You chose" or best line ${choice}); the limit is ${session.debrief_layer1_max_words}`,
     );
   }
 
@@ -338,8 +345,8 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
     for (const id of ids) if (!reg.recoverySteps.has(id)) errors.push(`outcomes.${key}.recovery: unknown step "${id}" (content/recovery_steps.yaml)`);
     if (new Set(ids).size !== ids.length) errors.push(`outcomes.${key}.recovery: duplicate steps`);
     for (const r of o.recovery) {
-      if (r.category === 'harmful' && reg.recoveryFeedback && !reg.recoveryFeedback.has(r.step)) {
-        errors.push(`outcomes.${key}.recovery: harmful step "${r.step}" needs a feedback line in content/recovery_steps.yaml (GDD §9: why it hurts, what works instead, no blame)`);
+      if (r.category === 'harmful' && !r.feedback && reg.recoveryFeedback && !reg.recoveryFeedback.has(r.step)) {
+        errors.push(`outcomes.${key}.recovery: harmful step "${r.step}" needs a feedback line (here or in content/recovery_steps.yaml; GDD §9: why it hurts, what works instead, no blame)`);
       }
     }
     const harmful = o.recovery.filter((r) => r.category === 'harmful').length;

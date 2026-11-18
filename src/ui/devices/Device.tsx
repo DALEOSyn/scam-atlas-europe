@@ -7,7 +7,8 @@
  * (Red Line 1). Every visible element of the beat on screen is a Checkable; elements of earlier beats
  * render as plain text. Device content is always rendered as text, never as HTML.
  */
-import { useEffect, useState } from 'preact/hooks';
+import { Fragment } from 'preact';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import { brandById, brandForName } from '../../content/brands.ts';
 import type { Device, Message } from '../../content/schema.ts';
 import type { ActionView } from '../../engine/runner.ts';
@@ -16,7 +17,7 @@ import { Checkable } from '../check/Check.tsx';
 import { Icon } from '../Icon.tsx';
 import { Host, RichText } from '../RichText.tsx';
 import { DemoField, SimPill, SimulatedForm } from '../SimulatedForm.tsx';
-import { segmentMessage } from '../text.ts';
+import { hostParts, segmentMessage } from '../text.ts';
 import { Avatar, BrandBar, Chips, LaptopFrame, MessageBody, PhoneFrame, Segments, Translate } from './parts.tsx';
 import { QrGraphic } from './QrGraphic.tsx';
 import type { DeviceProps } from './types.ts';
@@ -296,6 +297,13 @@ function Call(p: DeviceProps) {
   const shown = stage?.shown ?? lines.length;
   const answered = stage?.answered ?? true;
   const ended = stage?.ended ?? false;
+  // After Answer the Answer button is gone: focus moves to the transcript heading (QA B2).
+  const transcriptRef = useRef<HTMLHeadingElement>(null);
+  const wasAnswered = useRef(answered);
+  useEffect(() => {
+    if (answered && !wasAnswered.current && !ended) transcriptRef.current?.focus();
+    wasAnswered.current = answered;
+  }, [answered, ended]);
   return (
     <PhoneFrame label={t('region_call')}>
       <div class={styles.call}>
@@ -322,7 +330,7 @@ function Call(p: DeviceProps) {
           </div>
         ) : (
           <>
-            <h3 class={styles.vh} id="transcript-h">
+            <h3 class={styles.transcriptHead} id="transcript-h" ref={transcriptRef} tabIndex={-1}>
               {t('call_transcript')}
             </h3>
             <div role="log" aria-labelledby="transcript-h">
@@ -347,6 +355,50 @@ function Call(p: DeviceProps) {
   );
 }
 
+/**
+ * Address bar text (UI_SPEC §3.5): the owner part is bold at all times. Scheme and subdomains
+ * truncate from the left behind a visible "…", the path from the right, so the owner part always
+ * stays visible; under 320 CSS px only "…" + the owner part is shown (subdomain and path stay in
+ * the Check card). The full address is the Checkable's accessible name.
+ */
+function AddressText({ address }: { address: string }) {
+  const p = hostParts(address);
+  const prefix = `${p.scheme}${p.local}${p.sub.join('')}`;
+  const path = p.path.join('');
+  return (
+    <span class={styles.addr} aria-hidden="true">
+      {prefix ? (
+        <>
+          <span class={styles.addrPrefix}>
+            <span class={styles.addrLtr}>{prefix}</span>
+          </span>
+          <span class={styles.addrMore}>…</span>
+        </>
+      ) : null}
+      <strong class={styles.addrOwner}>
+        {p.owner.split('.').map((label, i, all) =>
+          i < all.length - 1 ? (
+            <Fragment key={i}>
+              <span class={styles.addrLabel}>{label}.</span>
+              <wbr />
+            </Fragment>
+          ) : (
+            <span key={i} class={styles.addrLabel}>
+              {label}
+            </span>
+          ),
+        )}
+      </strong>
+      {path ? (
+        <>
+          <span class={styles.addrPath}>{path}</span>
+          <span class={styles.addrMore}>…</span>
+        </>
+      ) : null}
+    </span>
+  );
+}
+
 function Browser(p: DeviceProps) {
   const m = p.message;
   const page = m.page;
@@ -362,7 +414,7 @@ function Browser(p: DeviceProps) {
             <Icon name="lock" />
           </Checkable>
           <Checkable target="page.address" class={styles.address} name={page?.address}>
-            <span class={styles.addressInner}>{page ? <Host text={page.address} strong={p.addressChecked} oneLine /> : null}</span>
+            {page ? <AddressText address={page.address} /> : null}
           </Checkable>
         </div>
         <div class={styles.page}>

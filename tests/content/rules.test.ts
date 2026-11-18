@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { chapterRules, choiceWorst, scenarioRules, LAYER1_OVERHEAD, wordCount } from '../../scripts/lib/rules.ts';
+import { BEST_LINE_WORDS, chapterRules, choiceWorst, scenarioRules, LAYER1_OVERHEAD, wordCount } from '../../scripts/lib/rules.ts';
 import { deriveCheckables, linksIn } from '../../src/content/checkables.ts';
 import { scenarioSchema, type Scenario } from '../../src/content/schema.ts';
-import { rawFraud, rawGenuine, realRegistries, scenario, validChapter } from './fixtures.ts';
+import { rawFraud, rawGenuine, realRegistries, ROOT, scenario, validChapter } from './fixtures.ts';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 type Raw = Record<string, unknown>;
 const reg = realRegistries();
@@ -140,12 +142,17 @@ describe('per-scenario rules (scenarioRules)', () => {
       const r = rawFraud();
       // rawFraud's longest below-3-star label is "Enter card details" (3 words) → "You chose: …" = 5.
       expect(choiceWorst(scenario(r), reg.balance)).toBe(5);
-      const budget = reg.balance.session.debrief_layer1_max_words - LAYER1_OVERHEAD.standard - 5;
+      // The ★★★ line "That is the habit that works." (6) takes the same slot, so the slot costs max(5, 6).
+      const budget = reg.balance.session.debrief_layer1_max_words - LAYER1_OVERHEAD.standard - BEST_LINE_WORDS;
       const tell = (n: number) => Array.from({ length: n }, () => 'word').join(' ');
       (r.debrief as Raw).layer1 = { tell: tell(budget - 1), what_works: 'Open it.' };
-      expect(errorsOf(r).join('\n')).toMatch(/debrief\.layer1 is 41 words in the worst case \(authored 22 \+ fixed 14 \+ "You chose" 5\)/);
+      expect(errorsOf(r).join('\n')).toMatch(/debrief\.layer1 is 41 words in the worst case \(authored 21 \+ fixed 14 \+ "You chose" or best line 6\)/);
       (r.debrief as Raw).layer1 = { tell: tell(budget - 2), what_works: 'Open it.' };
       expect(errorsOf(r)).toEqual([]);
+    });
+    it('BEST_LINE_WORDS matches the catalogue line it stands for', () => {
+      const ui = JSON.parse(readFileSync(resolve(ROOT, 'content/i18n/en/ui.json'), 'utf8')) as Record<string, string>;
+      expect(wordCount(ui['outcome_best'])).toBe(BEST_LINE_WORDS);
     });
     it('choice_worst counts the timer line, engage labels and "What now?" extras', () => {
       const timed = rawFraud('t1', { pressure: { timer: true, levers: [] } });
@@ -247,6 +254,10 @@ describe('per-scenario rules (scenarioRules)', () => {
       const errs = errorsOf(r).join('\n');
       expect(errs).toMatch(/harmful step "change_password" needs a feedback line/);
       expect(errs).not.toMatch(/"keep_quiet" needs a feedback line/);
+      // A scenario can give its own line for a shared step (steps are reused across scenarios).
+      const recovery = (r.outcomes as Record<string, Raw>).stolen?.recovery as Raw[];
+      recovery[3] = { step: 'change_password', category: 'harmful', feedback: 'Scenario-specific line.' };
+      expect(errorsOf(r).join('\n')).not.toMatch(/needs a feedback line/);
     });
   });
 });

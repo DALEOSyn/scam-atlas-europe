@@ -115,7 +115,10 @@ describe('App shell', () => {
     expect(screen.queryByRole('timer')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: /Open the link/ }));
     await waitFor(() => screen.getByRole('button', { name: /Enter your card details/ }));
-    expect(container.querySelector('[data-check="page.address"]')?.textContent).toBe('trundle-zoll.example/p/8812');
+    const bar = container.querySelector('[data-check="page.address"]');
+    // Full address in the bar (the "…" markers only show under 320 px); the owner part is always bold.
+    expect(bar?.textContent?.replace(/…/g, '')).toBe('trundle-zoll.example/p/8812');
+    expect(bar?.querySelector('strong')?.textContent).toBe('trundle-zoll.example');
     expect(screen.getByRole('region', { name: 'Laptop: Browser, training page' })).toBeTruthy();
     assertFormsAreSafe(container);
     fireEvent.click(screen.getByRole('button', { name: /Enter your card details/ }));

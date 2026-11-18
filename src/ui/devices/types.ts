@@ -27,8 +27,6 @@ export interface DeviceProps {
   onAct: (actionId: string) => void;
   onTranslation: (open: boolean) => void;
   alwaysTranslate: boolean;
-  /** Has the page address been checked? (owner-part highlight in the address bar) */
-  addressChecked: boolean;
   call: CallStage | null;
   onAnswer: () => void;
   onDecline: (() => void) | null;

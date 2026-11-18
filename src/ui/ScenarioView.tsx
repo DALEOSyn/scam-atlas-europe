@@ -23,7 +23,7 @@ import { BreathPanel, formatTime, Hud } from './Hud.tsx';
 import { Icon } from './Icon.tsx';
 import { WHAT_NOW_KEYS } from './labels.ts';
 import { RichText } from './RichText.tsx';
-import { words } from './text.ts';
+import { unrevealedTargets, words } from './text.ts';
 import styles from './ScenarioView.module.css';
 
 export interface ScenarioViewProps {
@@ -103,9 +103,11 @@ function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recover
               <li key={step}>
                 <span class={styles.feedbackHead}>
                   <Icon name={harmful ? 'info' : 'seal'} />
-                  <strong>{harmful ? t('damage_doesnt_help') : t('damage_helps')}</strong> {recoveryStepLabel(step)}
+                  <span>
+                    <strong>{harmful ? t('damage_doesnt_help') : t('damage_helps')}</strong> {recoveryStepLabel(step)}
+                  </span>
                 </span>
-                {harmful && recoveryStepFeedback(step) ? <p>{recoveryStepFeedback(step)}</p> : null}
+                {harmful && (byStep.get(step)?.feedback ?? recoveryStepFeedback(step)) ? <p>{byStep.get(step)?.feedback ?? recoveryStepFeedback(step)}</p> : null}
               </li>
             );
           })}
@@ -188,17 +190,22 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
     }
   }, [runner.result, runner.state, onDone, announce]);
 
-  // ---- announcer: state.log → polite queue (UI_SPEC §10.5)
+  // ---- announcer: state.log → polite queue (UI_SPEC §10.5). Stale items from the last screen go (QA B6).
+  useEffect(() => {
+    announce.reset();
+    return () => announce.reset();
+  }, [announce]);
   const logSeen = useRef(0);
   useEffect(() => {
     const fresh = state.log.slice(logSeen.current);
     logSeen.current = state.log.length;
     for (const e of fresh) {
       const a = logAnnouncement(e);
-      if (a) announce.polite(a.category, a.text, a.category === 5 ? (n) => t('announce_new_messages', { count: n }) : undefined);
+      // Once the scenario has ended, timer/stress/message news is stale (QA B6).
+      if (a && (a.category <= 2 || !runner.result)) announce.polite(a.category, a.text, a.category === 5 ? (n) => t('announce_new_messages', { count: n }) : undefined);
       if (e.type === 'timer' && e.what === 'escalated') setChip(t('timer_escalated_chip', { seconds: ctx.balance.timers.escalation_extra_seconds }));
     }
-  }, [state.log, announce, ctx.balance.timers.escalation_extra_seconds]);
+  }, [state.log, announce, ctx.balance.timers.escalation_extra_seconds, runner.result]);
   useEffect(() => {
     if (!chip) return undefined;
     const id = setTimeout(() => setChip(null), 1500);
@@ -229,7 +236,8 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
     if (!call || !call.answered || call.ended || call.step || call.shown >= lines.length || view.pause.open) return undefined;
     const id = setTimeout(() => setCallState({ ...call, shown: call.shown + 1 }), linePace(lines[call.shown - 1]?.text ?? '') * 1000);
     return () => clearTimeout(id);
-  });
+    // Only stage changes restart the line timer; engine ticks must not (QA B1).
+  }, [call?.beatId, call?.shown, call?.answered, call?.ended, call?.step, view.pause.open, lines.length]);
   const answer = () => beat && setCallState({ beatId: beat.id, answered: true, shown: 1, ended: false, step: callLines === 'step' });
   const hangUpAction = beat?.actions.find((a) => a.kind === 'hang_up');
   const ringing = !!call && !call.answered && !call.ended;
@@ -246,10 +254,14 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
   // ---- Check
   const items = useMemo(() => {
     let list = view.checkables;
-    // Elements not on screen yet (a ringing call, unrevealed lines) are not listed (no free preview).
+    // Elements not on screen yet (a ringing call, unrevealed lines) are not listed (no free preview, QA B3).
     if (call && !call.answered) list = list.filter((c) => c.target === 'caller_id');
+    else if (call && beat) {
+      const hidden = unrevealedTargets(beat.message, call.ended ? Infinity : call.shown);
+      list = list.filter((c) => c.beatId !== beat.id || !hidden.has(c.target));
+    }
     return list;
-  }, [view.checkables, call?.answered]);
+  }, [view.checkables, call?.answered, call?.shown, call?.ended, beat]);
   const itemMap = useMemo(() => new Map(items.map((c) => [c.target, c])), [items]);
   const sender = beat?.message.sender;
   const visible = useCallback(
@@ -282,6 +294,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
       if (!c) return;
       returnEl.current = el;
       doCheck(c);
+      setToast(null); // the touch hint never sits on top of the sheet (QA B10)
       setOpenTarget(target);
     },
     hint: () => setToast(t('check_touch_hint')),
@@ -294,7 +307,6 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
 
   const card = openItem ? <CheckCard item={openItem} visibleText={visible(openItem)} sender={sender} modal={modal} onTag={doTag} onClose={closeCard} /> : null;
   const live = view.phase === 'playing' || view.phase === 'what_now';
-  const pageAddress = itemMap.get('page.address');
 
   return (
     <div class={styles.play}>
@@ -347,7 +359,6 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                 onAct={runner.act}
                 onTranslation={onTranslation}
                 alwaysTranslate={alwaysTranslate}
-                addressChecked={!!pageAddress?.checked}
                 call={call}
                 onAnswer={answer}
                 onDecline={hangUpAction ? () => runner.act(hangUpAction.id) : null}
@@ -398,10 +409,12 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
             </aside>
           ) : null}
           <section id="options" class={styles.tray} aria-labelledby="actions-h" tabIndex={-1} ref={optionsRef}>
-            {desk && card ? card : null}
             <h2 id="actions-h" class={styles.trayTitle}>
               {t('your_options')}
             </h2>
+            {/* Desk: the Check card and the Details list scroll inside the rail; the actions below stay pinned (QA B4). */}
+            <div class={styles.trayScroll}>
+            {desk && card ? card : null}
             {view.phase === 'playing' && items.length > 0 && !ringing ? (
               <DetailsList
                 items={items}
@@ -414,6 +427,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                 onTag={doTag}
               />
             ) : null}
+            </div>
             {beat && view.phase === 'playing' ? (
               ringing ? (
                 <p class={styles.note}>{t('call_answer_first')}</p>

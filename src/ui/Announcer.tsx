@@ -4,15 +4,18 @@
  */
 import { createContext, type ComponentChildren } from 'preact';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
-import { EMPTY_QUEUE, enqueue, nextAnnouncement, type Category, type QueueState } from './announcer.ts';
+import { dropSlow, EMPTY_QUEUE, enqueue, nextAnnouncement, type Category, type QueueState } from './announcer.ts';
 import styles from './text.module.css';
 
 export interface AnnounceApi {
   polite: (category: Category, text: string, coalesce?: (count: number) => string) => void;
+  /** "Scenario ended" and the like; also drops stale timer/stress/message items. */
   assertive: (text: string) => void;
+  /** A new screen mounted: drop stale category 3–5 items. */
+  reset: () => void;
 }
 
-const noop: AnnounceApi = { polite: () => undefined, assertive: () => undefined };
+const noop: AnnounceApi = { polite: () => undefined, assertive: () => undefined, reset: () => undefined };
 export const AnnounceContext = createContext<AnnounceApi>(noop);
 
 const now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now()) / 1000;
@@ -42,8 +45,12 @@ export function AnnouncerProvider({ minInterval, children }: { minInterval: numb
         if (category <= 2) flush();
       },
       assertive: (text) => {
+        queue.current = dropSlow(queue.current);
         setAssertive('');
         setTimeout(() => setAssertive(text), 50);
+      },
+      reset: () => {
+        queue.current = dropSlow(queue.current);
       },
     }),
     [flush],

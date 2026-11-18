@@ -19,8 +19,29 @@ Format: gate, state (Open / Ready for Roman / Approved / Changed), the question(
 7. **Autonomy level:** may agents open PRs and merge them after all reviewers PASS and CI is green (recommended), or should every PR wait for you?
    - **Roman: as recommended. Agents may merge their own PRs after every reviewer passes them and CI is green.** Deploys and anything public still need a gate. ✅
 
-## G1 — Design approved (state: Open)
-Approve `docs/GDD.md`, the chapter list, learning objectives and the visual direction (3 mood screenshots from the prototype).
+## G1 — Design approved (state: Ready for Roman, 2026-11-18)
+Approve `docs/GDD.md`, the chapter list (`docs/patterns/MAP.md`), the learning objectives and the visual direction (`docs/UI_SPEC.md`, mock-ups in `docs/ui-mockups/`, screenshots in `docs/qa/screens/v2-*`).
+
+**Summary.** Research, design, UI and the scaffold all passed sceptic review, and the design and UI passed QA. Most rounds took one or two reworks; the GDD took three (logged as a producer exception). Main design choices:
+- A friendship-only arc, with no romance (the player may be 14).
+- Players see stars and stamps, not points.
+- Verifying is always rewarded. Silver and gold also need red flags actually spotted, so button-mashing stays at bronze.
+- Calm mode exists, timers are optional, and nothing ever scores on speed.
+- Pressure cues appear on genuine messages too, so they never give the answer away.
+- Fictional brands: Waymarker, Trundle, Larchwick Bank, Thimble & Pine, Swaploft, Kettle, Gatewren, Wordswap.
+
+**Questions for Roman** (GDD §21, plus two from review):
+1. **Arc.** Friendship-only Alex arc. Debriefs don't reveal the verdict until the finale, and there is an optional "Tell me now" reveal. Approve? *Recommended: yes.*
+2. **Sextortion.** A factual help card only, never a scenario. *Recommended: yes.*
+3. **City order.** Linear, or a free choice of city after Berlin? *Recommended: free choice (QA), because adult players reach their topics sooner.*
+4. **Length.** About 2.5–3 h in total, with chapters of 12–18 min split into two halves. Accept, or trim the later chapters? *Recommended: accept, then re-measure in the G2 playtest.*
+5. **Gold strictness.** Gold allows no extra checks on harmless messages outside the chapter's focus. *Recommended: keep it, and tune after the G2 playtest.*
+6. **Help screen.** May the "Where to report" screen show real reporting bodies' phone numbers and URLs? *Recommended: yes, under Red Line 1's carve-out*, on these conditions:
+   - they come from one data file, which is the only file exempt from the linter;
+   - links use `rel="noopener noreferrer"` with no tracking;
+   - every entry carries a "checked on" date;
+   - 116 111 / 116 006 are shown only once verified country by country.
+7. **Known residual risk.** A player tagging details at random has about a 1-in-96 chance per chapter of a lucky silver. *Recommended: accept for now and tune in vertical-slice playtests.*
 
 ## G2 — Vertical slice approved (state: Open)
 Play the tutorial + first city chapter yourself (link to preview build). Approve fun, tone and difficulty before content is mass-produced.

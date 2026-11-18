@@ -1,0 +1,13 @@
+<!-- Fictional brand for Scam Atlas: Europe (educational game). Original artwork, CC BY-SA 4.0. Not affiliated with, and not modelled on, any real organisation. Registry: content/brands.yaml -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 229 64" width="229" height="64" role="img" aria-labelledby="t" style="color:#4B2A5C"><title id="t">Gatewren (fictional brand)</title>
+<g><rect width="64" height="64" rx="14" fill="#4B2A5C"/>
+<rect x="14" y="30" width="5" height="22" rx="1.5" fill="#F6C8A8"/>
+<rect x="45" y="30" width="5" height="22" rx="1.5" fill="#F6C8A8"/>
+<path d="M16.5 32 Q32 22 47.5 32" fill="none" stroke="#F6C8A8" stroke-width="3" stroke-linecap="round"/>
+<path d="M19 38 H45 M19 47 H45 M25.5 31 V51 M32 29 V51 M38.5 31 V51" stroke="#F6C8A8" stroke-width="2.6" stroke-linecap="round"/>
+<path d="M26 18 L22 12 L29 15 Z" fill="#F6C8A8"/>
+<ellipse cx="31" cy="20" rx="6.5" ry="5" fill="#F6C8A8"/>
+<path d="M37 18.5 L41 19.5 L37 21 Z" fill="#F6C8A8"/>
+<circle cx="33.5" cy="18.5" r="1.1" fill="#4B2A5C"/></g>
+<text x="76" y="41" font-family="ui-monospace, monospace" font-size="26" font-weight="700" letter-spacing="0" fill="currentColor">Gatewren</text>
+</svg>

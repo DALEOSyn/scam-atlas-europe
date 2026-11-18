@@ -58,7 +58,7 @@ TIM | word
 # --- Messengers, apps, big tech
 Telegram | word
 Signal | word
-Messenger | word
+Messenger | word | except: messenger app; `messenger`
 Outlook | word
 Zoom | word
 Hinge | word

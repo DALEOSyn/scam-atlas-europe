@@ -1,0 +1,10 @@
+<!-- Fictional brand for Scam Atlas: Europe (educational game). Original artwork, CC BY-SA 4.0. Not affiliated with, and not modelled on, any real organisation. Registry: content/brands.yaml -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 247 64" width="247" height="64" role="img" aria-labelledby="t" style="color:#22223B"><title id="t">Waymarker Network (fictional brand)</title>
+<g><rect width="64" height="64" rx="14" fill="#22223B"/>
+<ellipse cx="32" cy="47" rx="17" ry="6.5" fill="#EDE8DD"/>
+<ellipse cx="31" cy="36" rx="12" ry="5.5" fill="#EDE8DD"/>
+<ellipse cx="33" cy="26" rx="7.5" ry="5" fill="#F2B24C"/>
+<path d="M25 15.5 q-2 -2.5 -1 -5.5 M33 13 v-5 M41 15.5 q2 -2.5 1 -5.5" fill="none" stroke="#F2B24C" stroke-width="2.5" stroke-linecap="round"/></g>
+<text x="76" y="36" font-family="system-ui, sans-serif" font-size="26" font-weight="800" letter-spacing="0" fill="currentColor">Waymarker</text>
+<text x="77" y="54" font-family="system-ui, sans-serif" font-size="11" font-weight="700" letter-spacing="3" fill="currentColor" opacity="0.8">NETWORK</text>
+</svg>

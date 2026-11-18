@@ -15,6 +15,14 @@
  *
  * Not scanned: content/sources.yaml (real reference URLs by design, checked by
  * content:validate) and the linter's own list files.
+ *
+ * content/brands.yaml is scanned with two narrow exemptions (see
+ * exemptBrandReviewNotes): the review-only fields brands[].checked_against,
+ * web_check and rationale may name real brands, and the raw-text pass is
+ * skipped for this file because its comments document real-brand collisions.
+ * Every other value and key (name, short_name, app_name, sms_sender_id,
+ * sub-brands, known_channels, email_addresses, look-alikes, ...) is linted
+ * from decoded scalars; content:validate additionally enforces strict keys.
  */
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve, relative, basename, sep } from 'node:path';
@@ -33,6 +41,7 @@ export const ASSETS_MANIFEST = resolve(PUBLIC, 'assets-manifest.yaml');
 
 const SCANNED_EXTS = ['.yaml', '.yml', '.json', '.md', '.txt', '.svg', '.html', '.webmanifest'] as const;
 const RASTER_EXTS = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.avif', '.ico', '.bmp', '.heic'] as const;
+export const BRANDS_FILE = resolve(CONTENT, 'brands.yaml');
 const EXCLUDED = new Set([resolve(CONTENT, 'sources.yaml'), DENYLIST_FILE, WARNLIST_FILE, ALLOWLIST_FILE]);
 
 export interface FileFinding extends Finding {
@@ -98,6 +107,32 @@ export function exemptSourceIds(file: string, root: Node | null | undefined): Se
   return out;
 }
 
+/** Review-only brand fields that document which real brands a design was kept away from. */
+export const BRAND_REVIEW_FIELDS = ['checked_against', 'web_check', 'rationale'] as const;
+
+export function isBrandsFile(file: string): boolean {
+  return resolve(file) === BRANDS_FILE;
+}
+
+/**
+ * In content/brands.yaml only: the value nodes (with all sub-fields) of
+ * brands[].checked_against, brands[].web_check and brands[].rationale.
+ */
+export function exemptBrandReviewNotes(file: string, root: Node | null | undefined): Set<Node> {
+  const out = new Set<Node>();
+  if (!isBrandsFile(file) || !isMap(root)) return out;
+  const brands = root.get('brands', true);
+  if (!isSeq(brands)) return out;
+  for (const brand of brands.items) {
+    if (!isMap(brand)) continue;
+    for (const field of BRAND_REVIEW_FIELDS) {
+      const value = brand.get(field, true);
+      if (value && typeof value === 'object') out.add(value as Node);
+    }
+  }
+  return out;
+}
+
 function walkYaml(
   node: Node | null | undefined,
   keys: string[],
@@ -146,14 +181,16 @@ export function lintText(file: string, text: string, cfg: RuleConfig): FileFindi
   const lc = new LineCounter();
   const doc = isData ? parseDocument(text, { lineCounter: lc, uniqueKeys: false }) : undefined;
 
-  // Exempt source ids (see exemptSourceIds) are blanked for the raw pass and skipped when decoding.
+  // Exempt nodes (see exemptSourceIds, exemptBrandReviewNotes) are blanked for the raw pass and skipped when decoding.
   let raw = /\.svg$/i.test(file) ? blankSvgGeometry(text) : text;
-  const exempt = exemptSourceIds(file, doc?.contents as Node | null | undefined);
+  const root = doc?.contents as Node | null | undefined;
+  const exempt = new Set<Node>([...exemptSourceIds(file, root), ...exemptBrandReviewNotes(file, root)]);
   for (const n of exempt) {
-    if (n.range) raw = raw.slice(0, n.range[0]) + ' '.repeat(n.range[1] - n.range[0]) + raw.slice(n.range[1]);
+    if (n.range) raw = raw.slice(0, n.range[0]) + raw.slice(n.range[0], n.range[1]).replace(/[^\n]/g, ' ') + raw.slice(n.range[1]);
   }
 
-  for (const f of scanText(raw, cfg)) add(f);
+  // brands.yaml: decoded-scalar pass only (its comments record real-brand collision checks).
+  if (!isBrandsFile(file)) for (const f of scanText(raw, cfg)) add(f);
 
   if (doc) {
     if (doc.errors.length > 0) {

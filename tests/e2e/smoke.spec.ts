@@ -25,7 +25,7 @@ test('tutorial example: start, choose the habit, read the debrief', async ({ pag
   expect((await new AxeBuilder({ page }).withTags(WCAG).analyze()).violations).toEqual([]);
   await expect(page.locator('form[action]')).toHaveCount(0);
 
-  await page.getByRole('button', { name: /Open the PaketPilot app yourself/ }).click();
+  await page.getByRole('button', { name: /Open the Trundle app yourself/ }).click();
   await expect(page.getByRole('heading', { name: 'Debrief' })).toBeVisible();
   await expect(page.getByText('That is the habit that works.', { exact: false })).toBeVisible();
   await expect(page.getByText(/Already clicked/)).toBeVisible();

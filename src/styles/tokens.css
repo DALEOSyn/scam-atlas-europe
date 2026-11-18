@@ -1,0 +1,440 @@
+/*
+ * Scam Atlas: Europe — design tokens
+ * Owner: ux-artist · Spec: docs/UI_SPEC.md · Last update: 2026-11-18
+ *
+ * Layers:
+ *   1. Primitives (--p-*)       raw palette. Do not use in components.
+ *   2. Semantic (--color-*)     what components use. Light at :root, dark below.
+ *   3. Device (--device-*, --bubble-*)  generic simulated-device chrome.
+ *   4. Brand (--brand-<id>-*)   fictional brands. Source of truth: content/brands.yaml
+ *                               (keep hex values in sync; CI check proposed in UI_SPEC §14).
+ *
+ * Last update: 2026-11-18 (rework 1: renames, vignette cap, dark border, Check naming).
+ * Every text/background pair used by components is listed with its measured contrast
+ * ratio in docs/UI_SPEC.md §13. Do not introduce a new pair without adding it there.
+ *
+ * No web fonts: system stacks only (offline PWA, no external requests, no real-brand typefaces).
+ */
+
+/* ------------------------------------------------------------------------- */
+/* 1. Primitives                                                              */
+/* ------------------------------------------------------------------------- */
+:root {
+  /* Paper (warm neutrals, light) */
+  --p-paper-0: #ffffff;
+  --p-paper-50: #fbf6ec;
+  --p-paper-100: #f2eadb;
+  --p-paper-200: #ece6da;
+  --p-paper-300: #e3d3b4;
+
+  /* Ink (cool neutrals) */
+  --p-ink-950: #14161f;
+  --p-ink-900: #1c1f2e;
+  --p-ink-850: #1e2130;
+  --p-ink-800: #2a2d3d;
+  --p-ink-600: #555b73;
+  --p-ink-500: #7a8099;   /* dark-theme border: 4.09 on surface, 3.46 under the capped vignette */
+  --p-ink-450: #7d8299;
+  --p-ink-300: #a9aec2;
+  --p-ink-100: #ede8dd;
+
+  /* Sea — game accent (map water) */
+  --p-sea-800: #1a4f91;
+  --p-sea-700: #1f5fad;
+  --p-sea-300: #8db8f2;
+  --p-sea-200: #a9cbf7;
+  --p-sea-100: #d9e6f6;
+  --p-sea-900d: #1f3350;
+
+  /* Clay — red-flag / danger */
+  --p-clay-800: #8a2b17;
+  --p-clay-700: #a3361f;
+  --p-clay-300: #f2a08a;
+  --p-clay-200: #f8c3b3;
+  --p-clay-100: #fbe3da;
+  --p-clay-900d: #3d1f18;
+
+  /* Moss — ok / genuine */
+  --p-moss-800: #24572f;
+  --p-moss-700: #2e6b3a;
+  --p-moss-300: #8fd19b;
+  --p-moss-200: #b9e6bf;
+  --p-moss-100: #dff0da;
+  --p-moss-900d: #1b3322;
+
+  /* Sun — warning / timer low / highlight */
+  --p-sun-800: #6e4a0b;
+  --p-sun-500: #e9a23b;
+  --p-sun-300: #f3d08a;
+  --p-sun-100: #fbebc8;
+  --p-sun-900d: #3a2c10;
+
+  /* Iris — SIMULATION marker only (never used elsewhere, so it stays recognisable) */
+  --p-iris-800: #4a2b63;
+  --p-iris-600: #6b4c86;
+  --p-iris-300: #a88cc8;
+  --p-iris-200: #dcc8f0;
+  --p-iris-100: #efe6f7;
+  --p-iris-900d: #2e2240;
+
+  /* Ember — "pressure" button style: in Tense or Overwhelmed, applied to whatever action the message is
+     pushing, on genuine and fraud messages alike (UI_SPEC §6.3). Never a truth signal. */
+  --p-ember-700: #b4461f;
+  --p-ember-300: #f08c64;
+  --p-ember-950: #1a0e08;
+
+  /* Stamp tiers (text-safe on white) */
+  --p-bronze-700: #7a4a20;
+  --p-bronze-300: #d9a46c;
+  --p-silver-700: #4f5a68;
+  --p-silver-300: #c3ccd6;
+  --p-gold-700: #6f5200;
+  --p-gold-300: #e8c55a;
+}
+
+/* ------------------------------------------------------------------------- */
+/* 2. Semantic tokens — LIGHT (default)                                       */
+/* ------------------------------------------------------------------------- */
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  --color-bg: var(--p-paper-50);               /* app background, map paper */
+  --color-surface: var(--p-paper-0);           /* cards, sheets */
+  --color-surface-sunken: var(--p-paper-100);  /* wells, list backgrounds */
+  --color-text: var(--p-ink-900);              /* 15.17 on bg, 16.34 on surface */
+  --color-text-muted: var(--p-ink-600);        /* 6.23 on bg, 6.71 on surface, 5.61 on sunken */
+  --color-border: var(--p-ink-450);            /* 3.53 on bg, 3.80 on surface (non-text 3:1) */
+  --color-border-subtle: var(--p-paper-300);   /* decorative only, never the sole boundary */
+  --color-focus: var(--p-sea-700);             /* 5.91 on bg */
+  --color-focus-halo: var(--p-paper-0);
+
+  --color-accent: var(--p-sea-700);            /* 5.91 on bg */
+  --color-on-accent: var(--p-paper-0);         /* 6.37 on accent */
+  --color-link: var(--p-sea-800);              /* 6.57 on bubble-in */
+
+  --color-flag: var(--p-clay-700);             /* 6.28 on bg; always paired with flag icon + label */
+  --color-flag-bg: var(--p-clay-100);
+  --color-flag-text: var(--p-clay-800);        /* 7.01 on flag-bg */
+  --color-ok: var(--p-moss-700);               /* 5.94 on bg */
+  --color-ok-bg: var(--p-moss-100);
+  --color-ok-text: var(--p-moss-800);          /* 7.10 on ok-bg */
+  --color-warn-bg: var(--p-sun-100);
+  --color-warn-text: var(--p-sun-800);         /* 6.73 on warn-bg */
+
+  --color-sim-bg: var(--p-iris-100);
+  --color-sim-text: var(--p-iris-800);         /* 9.54 on sim-bg */
+  --color-sim-border: var(--p-iris-600);       /* 6.99 on surface */
+  --color-sim-watermark: rgb(74 43 99 / 0.05); /* decorative, never carries information */
+
+  --color-pressure: var(--p-ember-700);        /* pressure-primary button fill */
+  --color-on-pressure: var(--p-paper-0);       /* 5.47 */
+
+  --color-stamp-bronze: var(--p-bronze-700);   /* 7.43 on white */
+  --color-stamp-bronze-fill: var(--p-bronze-300);
+  --color-stamp-silver: var(--p-silver-700);   /* 7.01 */
+  --color-stamp-silver-fill: var(--p-silver-300);
+  --color-stamp-gold: var(--p-gold-700);       /* 7.28 */
+  --color-stamp-gold-fill: var(--p-gold-300);
+
+  --color-scrim: rgb(20 22 31 / 0.45);
+  --color-vignette: rgb(60 20 10 / 0.12);      /* Overwhelmed, static. Cap 0.12: every device-layer pair stays AA (UI_SPEC §13.4) */
+
+  /* Device layer — generic, intentionally unbranded */
+  --device-frame: var(--p-ink-900);
+  --device-screen: var(--p-paper-0);
+  --device-statusbar-text: var(--p-ink-900);
+  --device-header-bg: var(--p-paper-50);
+  --bubble-in-bg: var(--p-paper-200);          /* text 13.15 */
+  --bubble-in-text: var(--p-ink-900);
+  --bubble-out-bg: var(--p-sea-100);           /* text 12.92 */
+  --bubble-out-text: var(--p-ink-900);
+  --browser-chrome-bg: var(--p-paper-100);
+  --address-dim: var(--p-ink-600);             /* scheme/path in address bar: 5.61 on chrome */
+  --address-strong: var(--p-ink-900);          /* registrable domain */
+  --letter-paper: #fffdf7;
+  --letter-ink: #23201a;
+
+  --shadow-1: 0 1px 2px rgb(28 31 46 / 0.12), 0 1px 1px rgb(28 31 46 / 0.06);
+  --shadow-2: 0 4px 12px rgb(28 31 46 / 0.14);
+  --shadow-3: 0 12px 32px rgb(28 31 46 / 0.22);
+}
+
+/* ------------------------------------------------------------------------- */
+/* 2b. Semantic tokens — DARK                                                 */
+/* Applied when the OS prefers dark and the player has not forced light,      */
+/* or when the player chooses dark in Settings (data-theme on <html>).        */
+/* ------------------------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --color-bg: var(--p-ink-950);
+    --color-surface: var(--p-ink-850);
+    --color-surface-sunken: var(--p-ink-800);
+    --color-text: var(--p-ink-100);            /* 14.76 on bg, 13.07 on surface */
+    --color-text-muted: var(--p-ink-300);      /* 8.18 on bg, 7.24 on surface */
+    --color-border: var(--p-ink-500);          /* 4.09 on surface */
+    --color-border-subtle: var(--p-ink-800);
+    --color-focus: var(--p-sea-300);           /* 8.82 on bg */
+    --color-focus-halo: var(--p-ink-950);
+    --color-accent: var(--p-sea-300);          /* 7.81 on surface */
+    --color-on-accent: #0f1a2b;                /* 8.54 */
+    --color-link: var(--p-sea-200);            /* 8.16 on bubble-in */
+    --color-flag: var(--p-clay-300);           /* 7.73 */
+    --color-flag-bg: var(--p-clay-900d);
+    --color-flag-text: var(--p-clay-200);      /* 9.55 */
+    --color-ok: var(--p-moss-300);             /* 8.94 */
+    --color-ok-bg: var(--p-moss-900d);
+    --color-ok-text: var(--p-moss-200);        /* 9.81 */
+    --color-warn-bg: var(--p-sun-900d);
+    --color-warn-text: var(--p-sun-300);       /* 9.18 */
+    --color-sim-bg: var(--p-iris-900d);
+    --color-sim-text: var(--p-iris-200);       /* 9.56 */
+    --color-sim-border: var(--p-iris-300);     /* 5.51 */
+    --color-sim-watermark: rgb(220 200 240 / 0.06);
+    --color-pressure: var(--p-ember-300);
+    --color-on-pressure: var(--p-ember-950);   /* 7.78 */
+    --color-scrim: rgb(0 0 0 / 0.6);
+    --color-vignette: rgb(0 0 0 / 0.12);       /* cap, see §13.4 */
+    --device-frame: #0b0c12;
+    --device-screen: var(--p-ink-850);
+    --device-statusbar-text: var(--p-ink-100);
+    --device-header-bg: var(--p-ink-950);
+    --bubble-in-bg: var(--p-ink-800);          /* 11.15 */
+    --bubble-in-text: var(--p-ink-100);
+    --bubble-out-bg: var(--p-sea-900d);        /* 10.43 */
+    --bubble-out-text: var(--p-ink-100);
+    --browser-chrome-bg: var(--p-ink-800);
+    --address-dim: var(--p-ink-300);
+    --address-strong: var(--p-ink-100);
+    --letter-paper: #f4efe2;                   /* letters stay paper-coloured in dark mode */
+    --letter-ink: #23201a;
+    --shadow-1: 0 1px 2px rgb(0 0 0 / 0.5);
+    --shadow-2: 0 4px 12px rgb(0 0 0 / 0.5);
+    --shadow-3: 0 12px 32px rgb(0 0 0 / 0.6);
+  }
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: var(--p-ink-950);
+  --color-surface: var(--p-ink-850);
+  --color-surface-sunken: var(--p-ink-800);
+  --color-text: var(--p-ink-100);
+  --color-text-muted: var(--p-ink-300);
+  --color-border: var(--p-ink-500);
+  --color-border-subtle: var(--p-ink-800);
+  --color-focus: var(--p-sea-300);
+  --color-focus-halo: var(--p-ink-950);
+  --color-accent: var(--p-sea-300);
+  --color-on-accent: #0f1a2b;
+  --color-link: var(--p-sea-200);
+  --color-flag: var(--p-clay-300);
+  --color-flag-bg: var(--p-clay-900d);
+  --color-flag-text: var(--p-clay-200);
+  --color-ok: var(--p-moss-300);
+  --color-ok-bg: var(--p-moss-900d);
+  --color-ok-text: var(--p-moss-200);
+  --color-warn-bg: var(--p-sun-900d);
+  --color-warn-text: var(--p-sun-300);
+  --color-sim-bg: var(--p-iris-900d);
+  --color-sim-text: var(--p-iris-200);
+  --color-sim-border: var(--p-iris-300);
+  --color-sim-watermark: rgb(220 200 240 / 0.06);
+  --color-pressure: var(--p-ember-300);
+  --color-on-pressure: var(--p-ember-950);
+  --color-scrim: rgb(0 0 0 / 0.6);
+  --color-vignette: rgb(0 0 0 / 0.12);
+  --device-frame: #0b0c12;
+  --device-screen: var(--p-ink-850);
+  --device-statusbar-text: var(--p-ink-100);
+  --device-header-bg: var(--p-ink-950);
+  --bubble-in-bg: var(--p-ink-800);
+  --bubble-in-text: var(--p-ink-100);
+  --bubble-out-bg: var(--p-sea-900d);
+  --bubble-out-text: var(--p-ink-100);
+  --browser-chrome-bg: var(--p-ink-800);
+  --address-dim: var(--p-ink-300);
+  --address-strong: var(--p-ink-100);
+  --letter-paper: #f4efe2;
+  --letter-ink: #23201a;
+  --shadow-1: 0 1px 2px rgb(0 0 0 / 0.5);
+  --shadow-2: 0 4px 12px rgb(0 0 0 / 0.5);
+  --shadow-3: 0 12px 32px rgb(0 0 0 / 0.6);
+}
+
+/* ------------------------------------------------------------------------- */
+/* 3. Typography                                                              */
+/* ------------------------------------------------------------------------- */
+:root {
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+  --font-display: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, sans-serif; /* falls back to UI stack */
+  --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", "DejaVu Sans Mono", Menlo, Consolas, monospace;
+  --font-letter: Georgia, "Times New Roman", "Noto Serif", serif;
+
+  /* Scale (rem; 1rem = 16px; never below 0.8125rem / 13px, and only for meta text) */
+  --fs-xs: 0.8125rem;  /* 13px meta, timestamps */
+  --fs-sm: 0.875rem;   /* 14px secondary */
+  --fs-md: 1rem;       /* 16px body, message text, inputs (prevents mobile zoom) */
+  --fs-lg: 1.125rem;   /* 18px action labels, sheet titles */
+  --fs-xl: 1.375rem;   /* 22px screen titles */
+  --fs-2xl: 1.75rem;   /* 28px debrief verdict */
+  --fs-3xl: 2.25rem;   /* 36px city intro */
+
+  --lh-tight: 1.2;
+  --lh-snug: 1.35;
+  --lh-body: 1.5;
+
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-bold: 700;
+  --fw-black: 800;
+
+  --tracking-caps: 0.08em; /* for small-caps labels such as SIMULATION */
+  --measure: 65ch;         /* max line length for debrief and email bodies */
+}
+
+/* ------------------------------------------------------------------------- */
+/* 4. Spacing, sizing, radius, z-index                                        */
+/* ------------------------------------------------------------------------- */
+:root {
+  --space-0: 0;
+  --space-1: 0.25rem; /* 4 */
+  --space-2: 0.5rem;  /* 8 */
+  --space-3: 0.75rem; /* 12 */
+  --space-4: 1rem;    /* 16 */
+  --space-5: 1.25rem; /* 20 */
+  --space-6: 1.5rem;  /* 24 */
+  --space-8: 2rem;    /* 32 */
+  --space-10: 2.5rem; /* 40 */
+  --space-12: 3rem;   /* 48 */
+  --space-16: 4rem;   /* 64 */
+
+  --tap-min: 44px;            /* WCAG 2.5.8 needs 24; we use 44 everywhere */
+  --hud-h: 56px;
+  --tray-max-h: 50dvh;        /* action tray never exceeds half the viewport */
+  --sheet-max-h: 60dvh;       /* magnifier sheet on mobile */
+  --phone-w: 390px;           /* desktop phone frame inner width */
+  --phone-h: 800px;
+  --laptop-w: 880px;
+  --rail-w: 320px;            /* desktop action rail */
+  --notebook-w: 260px;
+  --focus-ring-w: 3px;
+  --focus-ring-offset: 2px;
+  --check-affordance-w: 2px;  /* Check-mode affordance is drawn with box-shadow/::after, NEVER outline (outline = focus only) */
+  --hud-timer-min-w: 64px;    /* timer pill never shrinks below this (flex: none) */
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-device: 36px;      /* phone frame outer */
+  --radius-pill: 999px;
+
+  --border-w: 1px;
+  --border-w-strong: 2px;
+
+  --z-device: 1;
+  --z-vignette: 5;            /* inside the device layer only: below notifications, tray, sheets and HUD; pointer-events: none */
+  --z-notification: 20;
+  --z-tray: 30;
+  --z-sim-marker: 40;         /* above page content inside the browser, below sheets */
+  --z-sheet: 50;
+  --z-hud: 60;
+  --z-modal: 80;
+  --z-toast: 90;
+}
+
+/* ------------------------------------------------------------------------- */
+/* 5. Motion                                                                  */
+/* ------------------------------------------------------------------------- */
+:root {
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+  --dur-stamp: 260ms;
+  --dur-breath: 2500ms;       /* one breathing phase (in or out) in the Take-a-breath panel; 5 s total */
+  --dur-longpress: 450ms;     /* touch long-press to Check */
+  --dur-hover-hint: 500ms;    /* mouse dwell before the "Check (click)" hint appears; hints reveal nothing */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.45, 0, 0.55, 1);
+  --ease-stamp: cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+/* Reduced motion: OS setting or in-game toggle (data-motion="reduced" on <html>).
+   Durations collapse; components must not rely on transitionend firing. */
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) {
+    --dur-fast: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+    --dur-stamp: 0ms;
+    --dur-breath: 0ms;
+  }
+}
+[data-motion="reduced"] {
+  --dur-fast: 0ms;
+  --dur-base: 0ms;
+  --dur-slow: 0ms;
+  --dur-stamp: 0ms;
+  --dur-breath: 0ms;
+}
+
+/* ------------------------------------------------------------------------- */
+/* 6. Fictional brand tokens — mirror of content/brands.yaml                  */
+/* Use only inside the device layer for the matching brand.                   */
+/* ------------------------------------------------------------------------- */
+:root {
+  /* Waymarker Network (player's employer) + Waymarker Desk (staff portal) */
+  --brand-waymarker-primary: #22223b;
+  --brand-waymarker-on-primary: #f2b24c;   /* 8.27 */
+  --brand-waymarker-accent: #f2b24c;
+  --brand-waymarker-secondary: #ede8dd;    /* stone, in the mark */
+
+  /* Trundle (parcel courier) */
+  --brand-trundle-primary: #0e5e63;
+  --brand-trundle-on-primary: #ffffff;     /* 7.50 */
+  --brand-trundle-accent: #a8e6cf;         /* non-text on primary: 5.32 */
+
+  /* Larchwick Bank (renamed from Corvelle) */
+  --brand-larchwick-primary: #2d2a6e;
+  --brand-larchwick-on-primary: #ffffff;   /* 12.59 */
+  --brand-larchwick-accent: #ead9b5;       /* 9.05 on primary */
+
+  /* Thimble & Pine (online homeware shop) */
+  --brand-thimble-pine-primary: #2f5d3a;
+  --brand-thimble-pine-on-primary: #ffffff; /* 7.64 */
+  --brand-thimble-pine-accent: #f6dcd0;     /* primary on accent: 5.85 */
+
+  /* Swaploft (second-hand marketplace; renamed from Hoardly) */
+  --brand-swaploft-primary: #a8175a;
+  --brand-swaploft-on-primary: #ffffff;    /* 7.15 */
+  --brand-swaploft-accent: #fff6ee;        /* primary on accent: 6.70 */
+  --brand-swaploft-secondary: #f7c6da;     /* decorative only */
+
+  /* Kettle (messenger) */
+  --brand-kettle-primary: #b83a1e;
+  --brand-kettle-on-primary: #ffffff;      /* 5.73 */
+  --brand-kettle-accent: #fff5ec;          /* primary on accent: 5.33 */
+  --brand-kettle-bubble-out: #f9d9cc;
+  --brand-kettle-bubble-out-text: #3a1208; /* 12.46 */
+
+  /* Gatewren (sign-in / e-ID approval app; renamed from Nodkey) */
+  --brand-gatewren-primary: #4b2a5c;
+  --brand-gatewren-on-primary: #ffffff;    /* 11.77 */
+  --brand-gatewren-accent: #f6c8a8;        /* 7.70 on primary */
+
+  /* Wordswap (language-exchange app, arc) */
+  --brand-wordswap-primary: #6e4430;
+  --brand-wordswap-on-primary: #fff3e6;    /* 7.59 */
+  --brand-wordswap-accent: #f4b183;        /* non-text on primary: 4.53 */
+}
+
+/* ------------------------------------------------------------------------- */
+/* 7. Breakpoints (reference — CSS custom properties cannot be used in @media) */
+/*   xs  320px  minimum supported width (reflow, WCAG 1.4.10)                 */
+/*   sm  360px  primary mobile target (360–430)                               */
+/*   md  600px  tablet: phone frame centred, tray below                       */
+/*   lg  1024px desk layout: notebook rail | device stage | action rail        */
+/* ------------------------------------------------------------------------- */

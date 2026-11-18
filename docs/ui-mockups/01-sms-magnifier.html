@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mock-up 1 — SMS with the Check card open (Scam Atlas: Europe)</title>
+<!-- Static mock-up (rework 1). No scripts, no external resources. Values mirror src/styles/tokens.css (light).
+     Scenario: Berlin (slot 1, count shown), customs-fee smishing. State: Tense, Check mode ON, Check card open on the link.
+     <=600px wide: full-bleed (how it ships). Wider: framed phone + notes. Brands fictional; .example domains; masked number. -->
+<style>
+  :root{--bg:#FBF6EC;--surface:#fff;--sunken:#F2EADB;--text:#1C1F2E;--muted:#555B73;--border:#7D8299;--subtle:#E3D3B4;
+    --accent:#1F5FAD;--link:#1A4F91;--bin:#ECE6DA;--warnbg:#FBEBC8;--warntext:#6E4A0B;--pressure:#B4461F;--focus:#1F5FAD;--halo:#fff;
+    --scrim:rgb(20 22 31/.45);--ok:#2E6B3A;
+    --ui:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",Arial,sans-serif;--mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace}
+  *{box-sizing:border-box}
+  body{margin:0;background:#d9d3c6;font-family:var(--ui);color:var(--text);display:flex;gap:32px;justify-content:center;align-items:flex-start;padding:24px;flex-wrap:wrap}
+  :focus-visible{outline:3px solid var(--focus);outline-offset:2px;box-shadow:0 0 0 5px var(--halo)}
+  .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .notes{max-width:340px;font-size:14px;line-height:1.5}
+  .notes h1{font-size:18px}
+  .screen{width:390px;height:844px;background:var(--bg);border-radius:28px;overflow:hidden;position:relative;box-shadow:0 12px 32px rgb(28 31 46/.22);display:flex;flex-direction:column}
+  /* ---------- HUD: Full >=440, Standard 360-439, Compact 320-359, Two-row <320 (UI_SPEC §2.1) ---------- */
+  .hud{position:sticky;top:0;z-index:60;min-height:56px;display:flex;align-items:center;gap:4px;padding:0 8px;background:var(--bg);border-bottom:1px solid var(--subtle)}
+  .prog{flex:none;min-width:44px;height:32px;display:grid;place-items:center;font-size:13px;font-weight:700;border-radius:999px;background:var(--sunken)}
+  .timer{flex:none;min-width:64px;height:36px;display:flex;align-items:center;justify-content:center;gap:4px;padding:0 8px;border-radius:999px;background:var(--sunken);font-variant-numeric:tabular-nums;font-weight:700;position:relative}
+  .timer .bar{position:absolute;left:8px;right:8px;bottom:3px;height:3px;background:#E3D3B4;border-radius:2px;overflow:hidden}
+  .timer .bar i{display:block;height:100%;width:62%;background:var(--text)}
+  .cost{position:absolute;top:-6px;right:-10px;font-size:11px;font-weight:800;color:var(--warntext);background:var(--warnbg);border:1px solid var(--warntext);padding:0 4px;border-radius:999px;white-space:nowrap}
+  .stress{flex:none;display:flex;align-items:center;gap:4px;font-size:13px;font-weight:700;white-space:nowrap}
+  .seg{display:flex;gap:2px}.seg i{display:block;width:14px;height:10px;border:1.5px solid var(--text);border-radius:2px}.seg i.f{background:var(--text)}
+  .grow{flex:1 1 0;min-width:0}
+  .hbtn{flex:none;height:44px;min-width:44px;border:1px solid var(--border);border-radius:999px;background:var(--surface);display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 10px;font:inherit;font-weight:700;color:var(--text)}
+  .progbar{display:none;height:4px;background:var(--sunken)}.progbar i{display:block;height:100%;width:44%;background:var(--text)}
+  .row2{display:contents}
+  @media (max-width:439px){.seg,.hbtn .txt{display:none}}
+  @media (max-width:359px){.prog{display:none}.progbar{display:block}}
+  @media (max-width:319px){
+    .hud{flex-wrap:wrap;padding:4px 8px;row-gap:4px}
+    .row2{display:flex;width:100%;align-items:center;gap:8px;order:5}
+    .stress{order:0}
+    .prog2{display:inline!important;font-size:13px;font-weight:700}
+    .progbar{display:none}
+  }
+  .prog2{display:none}
+  /* ---------- Device layer ---------- */
+  .device{flex:1;display:flex;flex-direction:column;background:#fff;overflow:auto;position:relative}
+  .status{height:24px;font-size:13px;display:flex;justify-content:space-between;padding:0 16px;align-items:center;flex:none}
+  .apphead{min-height:56px;display:flex;align-items:center;gap:12px;padding:6px 12px;border-bottom:1px solid var(--subtle);background:var(--bg);flex:none}
+  .avatar{width:36px;height:36px;border-radius:50%;background:#E4DED3;display:grid;place-items:center;font-weight:700;font-size:14px;flex:none}
+  .sub{font-size:13px;color:var(--muted)}
+  .thread{padding:16px;display:flex;flex-direction:column;gap:6px}
+  .day{align-self:center;font-size:13px;color:var(--muted)}
+  .bubble{max-width:80%;background:var(--bin);padding:10px 12px;border-radius:16px 16px 16px 4px;line-height:1.5}
+  .time{font-size:13px;color:var(--muted)}
+  .tr{align-self:flex-start;min-height:44px;border:0;background:none;color:var(--accent);font:inherit;font-size:14px;font-weight:700;padding:0 4px;text-decoration:underline}
+  /* Check-mode affordance: ::after dashed border + badge, NEVER outline (outline = focus). */
+  .chk{position:relative;display:inline;background:none;border:0;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer}
+  .chkmode .chk::after{content:"";position:absolute;inset:-4px;border:2px dashed var(--accent);border-radius:6px;pointer-events:none}
+  .chk:focus-visible{outline-offset:6px}
+  .lnk{color:var(--link);text-decoration:underline}
+  .owner{white-space:nowrap}
+  .badge{display:inline-grid;place-items:center;vertical-align:middle;margin-left:6px}
+  /* ---------- Tray ---------- */
+  .tray{position:sticky;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--border);padding:12px 16px 16px;display:flex;flex-direction:column;gap:8px;flex:none}
+  .tray h2{font-size:14px;margin:0;color:var(--muted)}
+  .details{min-height:44px;border:1px solid var(--border);border-radius:12px;background:var(--sunken);font:inherit;font-weight:700;text-align:left;padding:8px 12px;display:flex;align-items:center;gap:8px;color:var(--text)}
+  .act{min-height:52px;border:1px solid var(--border);border-radius:12px;background:var(--surface);font:inherit;font-size:18px;text-align:left;padding:8px 14px;color:var(--text)}
+  .act.pressure{background:var(--pressure);color:#fff;border-color:var(--pressure);font-weight:700}
+  /* ---------- Check card (mobile: modal sheet; rest inert) ---------- */
+  .scrim{position:absolute;inset:0;background:var(--scrim);z-index:40}
+  .sheet{position:absolute;left:0;right:0;bottom:0;z-index:50;max-height:62%;background:var(--surface);border-radius:24px 24px 0 0;box-shadow:0 -12px 32px rgb(28 31 46/.22);padding:8px 16px 20px;overflow:auto}
+  .grab{width:40px;height:4px;border-radius:2px;background:var(--border);margin:4px auto 8px}
+  .sheethead{display:flex;align-items:center;gap:8px}
+  .sheethead h2{font-size:18px;margin:0;flex:1}
+  .close{flex:none;width:44px;height:44px;border-radius:50%;border:1px solid var(--border);background:var(--surface);font-size:20px;color:var(--text)}
+  .label{font-size:13px;color:var(--muted);margin:12px 0 4px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+  .seen{font-size:14px;color:var(--muted);margin:0}
+  .anat{overflow-x:auto;font-family:var(--mono);font-size:15px;background:var(--sunken);border-radius:8px;padding:12px;line-height:1.9}
+  .dim{color:var(--muted)}
+  .own{border:2px solid var(--text);border-radius:4px;padding:1px 4px;font-weight:700;white-space:nowrap}
+  .cap{font-size:13px;color:var(--muted);margin-top:6px;display:flex;gap:6px;align-items:center}
+  .reveal{font-size:16px;line-height:1.5;margin:12px 0}
+  .tag{width:100%;min-height:44px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;border:1px solid var(--border);background:var(--surface);font:inherit;font-weight:700;color:var(--text)}
+  /* ---------- Full-bleed (how it ships) ---------- */
+  @media (max-width:600px){
+    body{padding:0;display:block;background:var(--bg)}
+    .screen{width:100%;height:100dvh;border-radius:0;box-shadow:none}
+    .notes{padding:16px}
+  }
+  /* Short viewports (<500 CSS px tall, e.g. 200% zoom): tray joins normal flow; HUD stays sticky. */
+  @media (max-height:499px){
+    .screen{height:auto;overflow:visible}
+    .device{overflow:visible}
+    .tray{position:static}
+    .scrim,.sheet{position:fixed}
+  }
+</style>
+</head>
+<body>
+<div class="screen chkmode">
+  <!-- While the mobile Check card is open, everything except the sheet is inert (UI_SPEC §4.4). -->
+  <div inert style="display:contents">
+  <header class="hud">
+    <span class="prog" aria-label="Progress: scenario 4 of 9">4/9</span>
+    <span class="timer" role="timer" aria-label="Time left">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 3h12M6 21h12M7 3c0 5 10 6 10 9s-10 4-10 9M17 3c0 5-10 6-10 9"/></svg>0:31
+      <span class="bar" aria-hidden="true"><i></i></span>
+      <span class="cost" aria-hidden="true">−2 s</span>
+    </span>
+    <div class="row2">
+      <span class="stress" role="meter" aria-valuemin="0" aria-valuemax="100" aria-valuenow="52" aria-valuetext="Stress: Tense" aria-label="Stress">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M2 12c3-5 5-5 7 0s4 5 7 0 4-5 6 0"/></svg>
+        <span class="seg" aria-hidden="true"><i class="f"></i><i class="f"></i><i></i></span><span aria-hidden="true">Tense</span>
+      </span>
+      <span class="prog2" aria-hidden="true">4/9</span>
+    </div>
+    <span class="grow"></span>
+    <button class="hbtn" aria-label="Pause">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9"/></svg><span class="txt">Pause</span>
+    </button>
+    <button class="hbtn" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+  </header>
+  <div class="progbar" aria-hidden="true"><i></i></div>
+
+  <section class="device" role="region" aria-label="Phone: Messages">
+    <div class="status" aria-hidden="true"><span>09:41</span><span>Waymarker phone</span></div>
+    <div class="apphead">
+      <span class="avatar" aria-hidden="true">#</span>
+      <div>
+        <button class="chk" aria-describedby="hint-chk"><b>+49 ••• ••• 0173</b><span class="vh">, number hidden except the last four digits</span></button>
+        <div class="sub">Text message</div>
+      </div>
+    </div>
+    <div class="thread">
+      <h2 class="vh" tabindex="-1">Text message from +49, hidden, 0173, 09:40</h2>
+      <span class="day">Today</span>
+      <div class="bubble" lang="de">TRUNDLE: Ihr Paket wartet. Zollgebühr 1,99 EUR offen. Heute zahlen, sonst Rücksendung:
+        <button class="chk lnk" aria-describedby="hint-chk"><span>https://</span><wbr><span class="owner">trundle-zoll.example</span><wbr><span>/p/8812</span><span class="vh">, checked</span></button><span class="badge" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2E6B3A" stroke-width="2.5"><circle cx="10" cy="10" r="6"/><path d="M7.5 10l2 2 3.5-4M15 15l6 6"/></svg></span>
+      </div>
+      <button class="tr" aria-expanded="false">Translate</button>
+      <span class="time">09:40</span>
+      <div class="bubble" lang="de">Letzte Erinnerung. Frist endet in 30 Min.</div>
+      <button class="tr" aria-expanded="false">Translate</button>
+      <span class="time">09:41</span>
+    </div>
+    <p id="hint-chk" class="vh">Check. Press Enter.</p>
+  </section>
+
+  <section class="tray" aria-labelledby="acts">
+    <h2 id="acts">Your options</h2>
+    <button class="details" aria-expanded="false">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/></svg>
+      Details you can check · 1 checked</button>
+    <button class="act pressure">Open the link and pay €1.99</button>
+    <button class="act">Open the Trundle app yourself and check</button>
+    <button class="act">Delete and report as spam</button>
+  </section>
+  </div>
+
+  <div class="scrim" aria-hidden="true"></div>
+  <section class="sheet" role="dialog" aria-modal="true" aria-labelledby="lens-t">
+    <div class="grab" aria-hidden="true"></div>
+    <div class="sheethead">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/></svg>
+      <h2 id="lens-t" tabindex="-1">Link details</h2>
+      <button class="close" aria-label="Close">×</button>
+    </div>
+    <p class="label">You see</p>
+    <p class="seen">https://<wbr><span class="owner">trundle-zoll.example</span><wbr>/p/8812</p>
+    <p class="label">It really goes to</p>
+    <div class="anat" tabindex="0" aria-label="Full address"><span class="dim">https://</span><wbr><span class="own">trundle-zoll.example</span><wbr><span class="dim">/p/8812</span></div>
+    <p class="cap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>The boxed part tells you who owns the site.</p>
+    <p class="reveal">trundle-zoll.example is a different address from Trundle's site, trundle.example.</p>
+    <button class="tag" aria-pressed="false">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M5 21V4h11l-2 4 2 4H5"/></svg>
+      Mark as suspicious</button>
+  </section>
+</div>
+
+<aside class="notes">
+  <h1>Mock-up 1 · SMS + Check card (rework 1)</h1>
+  <p><b>HUD</b> follows the §2.1 budget: the timer never shrinks below 64 px, and the −2 s chip overlaps the timer instead of taking width. Below 440 px the stress segments and the Pause text drop out. Below 360 px the progress chip becomes the bar under the HUD. Below 320 px (200 % zoom) the HUD splits into two rows. Timer, stress word, Pause and menu are always visible.</p>
+  <p><b>Tense</b>: the action the message pushes ("pay") gets the pressure style. A genuine message with a request would get it too (§6.3).</p>
+  <p><b>Check mode on</b>: the dashed affordances are <code>::after</code> borders, so the focus outline stays distinct. The link breaks only between scheme / owner / path.</p>
+  <p><b>Translate</b>: inline, free, freezes the timer. It is not part of the Check card. <b>Mark as suspicious</b>: <code>aria-pressed</code>, no cost, no focus move.</p>
+  <p>The mobile sheet is modal and the rest of the screen is <code>inert</code>. The pusher bubble has an ordinary timestamp. Berlin is slot 1, so the count is shown.</p>
+</aside>
+</body>
+</html>

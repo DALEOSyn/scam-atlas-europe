@@ -77,7 +77,7 @@ describe('App shell', () => {
     assertFormsAreSafe(container);
     expect(screen.getAllByRole('button').length).toBe(scenario.actions.length);
 
-    fireEvent.click(screen.getByRole('button', { name: /Open the PaketPilot app yourself/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Open the Trundle app yourself/ }));
     await waitFor(() => screen.getByRole('heading', { name: 'Debrief' }));
     expect(screen.getByText(/No fee\./)).toBeTruthy();
     expect(screen.getByText(/That is the habit that works/)).toBeTruthy();

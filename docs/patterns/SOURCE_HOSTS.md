@@ -87,6 +87,34 @@ These are link targets on the help screen, not citation hosts. Listed so the eng
 
 incydent.cert.pl | CERT Polska incident-report portal | 2
 
+## New hosts from T-R.1 (threat catalogue, 2026-11-18): all marked **new**, not yet in `scripts/lib/source-hosts.ts`
+
+### EU level
+www.frontex.europa.eu | Frontex (European Border and Coast Guard Agency) | 1 | **new**
+civil-protection-humanitarian-aid.ec.europa.eu | European Commission, DG ECHO | 1 | **new**
+home-affairs.ec.europa.eu | European Commission, DG Migration and Home Affairs | 1 | **new**
+eeas.europa.eu | European External Action Service (host without www, as opened) | 1 | **new**
+
+### Belgium
+www.fsma.be | FSMA (Financial Services and Markets Authority) | 3 | **new**
+www.eccbe.eu | European Consumer Centre Belgium (redirect target of eccbelgium.be) | 3 | **new**
+
+### France
+cnil.fr | CNIL (data protection authority; host without www, as opened) | 3 | **new**
+lot.gouv.fr | Services de l'État dans le Lot (prefecture website) | 3 | **new**
+
+### Germany
+www.verbraucherzentrale.nrw | Verbraucherzentrale NRW | 3 | **new**
+polizei-beratung.de | Police crime prevention (ProPK); opened as `Polizei-Beratung.de`, hostnames are case-insensitive | 3 | **new**
+
+### Switzerland (non-EU, supporting only)
+www.ncsc.admin.ch | Swiss NCSC (older host of the federal cyber office; www.bacs.admin.ch is already listed) | 2 | **new**
+
+### Reference / taxonomy (non-EU)
+attack.mitre.org | MITRE ATT&CK (US). Taxonomy only, never evidence of European prevalence. Registry tier 4 because the schema allows tiers 1-4 only | 4 | **new**
+
+T-R.1 also cites new pages on hosts already listed: www.enisa.europa.eu, www.europol.europa.eu, www.police.be (incl. a No More Ransom leaflet), bsi.bund.de, www.bsi.bund.de, www.verbraucherzentrale.de, www.verbraucherzentrale-niedersachsen.de, www.bundesnetzagentur.de, www.garda.ie, cert.pl, www.bacs.admin.ch.
+
 ## Notes for the engineer
 - **New to `scripts/lib/source-hosts.ts`** (not in the allow-list yet, per sceptic review 2026-11-18): `politie.nl` (no www), `moje.cert.pl`, `wiedza.cert.pl`, `www.nummergegenkummer.de`, `www.bmbfsfj.bund.de`, `www.bacs.admin.ch`, `www.verbraucherzentrale-niedersachsen.de`, and `incydent.cert.pl` (help file only). The last two were already used in `content/sources.yaml` before T-2.5 but never added to the allow-list.
 - `www.incibe.es` gained new sources in T-2.5 and is already in the allow-list.

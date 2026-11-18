@@ -18,8 +18,10 @@
  *
  * content/brands.yaml is scanned with two narrow exemptions (see
  * exemptBrandReviewNotes): the review-only fields brands[].checked_against,
- * web_check and rationale may name real brands, and the raw-text pass is
- * skipped for this file because its comments document real-brand collisions.
+ * web_check and rationale may name real brands (only brand-category findings
+ * are dropped there; domains, URLs, phones, IBANs are still errors), and the
+ * raw-text pass is skipped for this file because its comments document
+ * real-brand collisions.
  * Every other value and key (name, short_name, app_name, sms_sender_id,
  * sub-brands, known_channels, email_addresses, look-alikes, ...) is linted
  * from decoded scalars; content:validate additionally enforces strict keys.
@@ -28,8 +30,10 @@ import { readFileSync, existsSync } from 'node:fs';
 import { resolve, relative, basename, sep } from 'node:path';
 import { LineCounter, parse, parseDocument, isMap, isScalar, isSeq, type Node } from 'yaml';
 import { listFiles } from './lib/content.ts';
+import { yamlStructureIssues } from './lib/yaml-safety.ts';
 import { blankSvgGeometry, checkQrPayload, scanText, type Finding, type RuleConfig } from './redline/rules.ts';
 import { compileList } from './redline/lists.ts';
+import { CHECKABLE_TARGETS } from '../src/content/checkables.ts';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const CONTENT = resolve(ROOT, 'content');
@@ -107,6 +111,40 @@ export function exemptSourceIds(file: string, root: Node | null | undefined): Se
   return out;
 }
 
+/** An inspectable target value: a known checkable, optionally numbered (link#2). */
+export function isCheckableTarget(value: string): boolean {
+  const base = value.replace(/#[2-9]$/, '');
+  return (CHECKABLE_TARGETS as readonly string[]).includes(base);
+}
+
+/**
+ * Checkable names such as page.info or payee.name_check look like domains
+ * (.info and .name are real TLDs). Exempt ONLY the scalar value of
+ * inspectables[].target (opening message, beats[] and interrupts[]) in
+ * scenario files, and only when it is a known checkable. Anywhere else
+ * ("Pay at page.info") they are linted like any other domain.
+ */
+export function exemptInspectableTargets(file: string, root: Node | null | undefined): Set<Node> {
+  const out = new Set<Node>();
+  if (!isScenarioFile(file) || !isMap(root)) return out;
+  const fromInspectables = (holder: unknown): void => {
+    if (!isMap(holder)) return;
+    const list = holder.get('inspectables', true);
+    if (!isSeq(list)) return;
+    for (const ins of list.items) {
+      if (!isMap(ins)) continue;
+      const target = ins.get('target', true);
+      if (isScalar(target) && typeof target.value === 'string' && isCheckableTarget(target.value)) out.add(target);
+    }
+  };
+  fromInspectables(root);
+  for (const key of ['beats', 'interrupts']) {
+    const seq = root.get(key, true);
+    if (isSeq(seq)) for (const b of seq.items) fromInspectables(b);
+  }
+  return out;
+}
+
 /** Review-only brand fields that document which real brands a design was kept away from. */
 export const BRAND_REVIEW_FIELDS = ['checked_against', 'web_check', 'rationale'] as const;
 
@@ -116,7 +154,8 @@ export function isBrandsFile(file: string): boolean {
 
 /**
  * In content/brands.yaml only: the value nodes (with all sub-fields) of
- * brands[].checked_against, brands[].web_check and brands[].rationale.
+ * brands[].checked_against, brands[].web_check and brands[].rationale. These
+ * are exempt from the brand-name rule only (lintText re-scans them).
  */
 export function exemptBrandReviewNotes(file: string, root: Node | null | undefined): Set<Node> {
   const out = new Set<Node>();
@@ -181,10 +220,11 @@ export function lintText(file: string, text: string, cfg: RuleConfig): FileFindi
   const lc = new LineCounter();
   const doc = isData ? parseDocument(text, { lineCounter: lc, uniqueKeys: false }) : undefined;
 
-  // Exempt nodes (see exemptSourceIds, exemptBrandReviewNotes) are blanked for the raw pass and skipped when decoding.
+  // Exempt nodes (see exemptSourceIds, exemptInspectableTargets, exemptBrandReviewNotes) are blanked for the raw pass and skipped when decoding.
   let raw = /\.svg$/i.test(file) ? blankSvgGeometry(text) : text;
   const root = doc?.contents as Node | null | undefined;
-  const exempt = new Set<Node>([...exemptSourceIds(file, root), ...exemptBrandReviewNotes(file, root)]);
+  const brandNotes = exemptBrandReviewNotes(file, root);
+  const exempt = new Set<Node>([...exemptSourceIds(file, root), ...exemptInspectableTargets(file, root), ...brandNotes]);
   for (const n of exempt) {
     if (n.range) raw = raw.slice(0, n.range[0]) + raw.slice(n.range[0], n.range[1]).replace(/[^\n]/g, ' ') + raw.slice(n.range[1]);
   }
@@ -193,6 +233,10 @@ export function lintText(file: string, text: string, cfg: RuleConfig): FileFindi
   if (!isBrandsFile(file)) for (const f of scanText(raw, cfg)) add(f);
 
   if (doc) {
+    // Anchors/aliases/merge keys could copy an exempt value into player text unseen.
+    for (const issue of yamlStructureIssues(doc)) {
+      add({ category: 'markup', severity: 'error', match: issue.token, index: issue.offset, line: lc.linePos(issue.offset).line, message: `${issue.message} (Red Lines 1 and 3: every string must be linted where it is shown)` });
+    }
     if (doc.errors.length > 0) {
       add({ category: 'markup', severity: 'error', match: '(parse error)', index: 0, line: 0, message: `cannot parse: ${doc.errors[0]?.message ?? ''}` });
     }
@@ -206,6 +250,18 @@ export function lintText(file: string, text: string, cfg: RuleConfig): FileFindi
       add,
       exempt,
     );
+    // Brand review notes: every rule except the brand-name rule.
+    for (const n of brandNotes) {
+      walkYaml(
+        n,
+        [],
+        lc,
+        (value, line) => {
+          for (const f of scanText(value, cfg)) if (f.category !== 'brand') add({ ...f, line: line + (f.line ?? 1) - 1 });
+        },
+        add,
+      );
+    }
   }
   return found.sort((a, b) => (a.line ?? 0) - (b.line ?? 0));
 }

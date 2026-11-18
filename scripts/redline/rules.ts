@@ -61,6 +61,8 @@ export const NON_DOMAIN_TOKENS = new Set([
   'e.g', 'i.e', 'sender.detail', 'sender.display', 'message.body', 'message.subject', 'message.sender',
   'message.sender.detail', 'message.sender.display', 'message.qr', 'message.qr.payload', 'qr.payload', 'qr.caption',
 ]);
+// Inspectable targets (page.info, payee.name_check, ...) are NOT exempt here: some end in real TLDs
+// (.info, .name). redline-lint.ts exempts them only as the value of inspectables[].target in scenario files.
 
 const LABEL = '[\\p{L}\\p{N}](?:[\\p{L}\\p{N}-]*[\\p{L}\\p{N}])?';
 const DOMAIN_TOKEN_RE = new RegExp(`(?<![\\p{L}\\p{N}_-])${LABEL}(?:\\.${LABEL})+`, 'gu');

@@ -1,10 +1,18 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parse } from 'yaml';
-import { scenarioSchema, type Scenario } from '../../src/content/schema.ts';
+import { balanceSchema, scenarioSchema, type Balance, type Scenario } from '../../src/content/schema.ts';
 
 export const ROOT = resolve(import.meta.dirname, '..', '..');
 
+export function readYaml(rel: string): unknown {
+  return parse(readFileSync(resolve(ROOT, rel), 'utf8'));
+}
+
 export function loadExample(): Scenario {
-  return scenarioSchema.parse(parse(readFileSync(resolve(ROOT, 'content/scenarios/home/example.yaml'), 'utf8')));
+  return scenarioSchema.parse(readYaml('content/scenarios/home/example.yaml'));
+}
+
+export function loadBalanceFile(): Balance {
+  return balanceSchema.parse(readYaml('content/balance.yaml'));
 }

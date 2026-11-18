@@ -1,22 +1,29 @@
 # Example scenario: templates/scenario.template.yaml adapted to pass content:validate
 # and redline:lint. It exists to exercise the engine and tooling; it is not
-# fact-checked game content. Brand and sources are placeholders.
+# fact-checked game content. Sources are placeholders.
 id: home-00-example
 chapter: home
+role: standard
 pattern: smishing-parcel-fee
-learning_objectives: [LO-02, LO-05]
+theme: parcel
+learning_objectives: [LO-02, LO-03, LO-05]
 difficulty: 2
 is_fraud: true
 device: sms
 brands: [trundle]
-pressure: { timer_seconds: 45, levers: [urgency, small_amount] }
+pressure: { timer: true, levers: [urgency, small_amount] }
 
 message:
   sender: { display: "Trundle", detail: "+49 151 •••• 0173" }
   body: |
     Trundle: Ihr Paket wartet. Zollgebühr 1,99 EUR offen. Heute zahlen, sonst Rücksendung:
     trundle-zoll.example/p/8812
-  l10n_note: "German in-world text intentional; EN translation shown on magnifier."
+  lang: de
+  translation: "Trundle: Your parcel is waiting. Customs fee EUR 1.99 due. Pay today or it goes back: trundle-zoll.example/p/8812"
+  request: pay
+  references: ["TR-4471"]
+  phone_numbers: ["0800 ••• 4410"]
+  l10n_note: "German in-world text intentional; the EN translation is shown inline."
 
 inspectables:
   - target: sender.detail
@@ -25,35 +32,84 @@ inspectables:
   - target: link
     reveal: "trundle-zoll.example is not Trundle's site (trundle.example)."
     red_flag: true
+  - target: reference
+    reveal: "TR-4471 looks like a Trundle tracking number. Real and fake messages both use them."
+    red_flag: false
+  - target: phone_number
+    reveal: "A free-phone number in Trundle's format. It looks normal, so it settles nothing."
+    red_flag: false
 
 actions:
   - id: tap_link
     label: "Open the link and pay €1.99"
-    outcome: card_details_stolen
-    score: -10
+    kind: open_link
+    next_beat: fee_page
+    pressure_target: true
   - id: open_app
     label: "Open the Trundle app yourself and check the tracking"
+    kind: verify_in_app
     outcome: no_fee_found
-    score: 15
   - id: delete_report
     label: "Delete and report as spam"
+    kind: report
     outcome: reported
-    score: 10
+
+beats:
+  - id: fee_page
+    device: browser
+    message:
+      page: { address: "trundle-zoll.example/p/8812", title: "Trundle Zoll" }
+      body: "Zollgebühr 1,99 EUR. Kartendaten eingeben, um die Zustellung freizugeben."
+      lang: de
+      translation: "Customs fee EUR 1.99. Enter your card details to release the delivery."
+      request: enter_details
+    inspectables:
+      - target: page.address
+        reveal: "The address bar still says trundle-zoll.example, not trundle.example."
+        red_flag: true
+      - target: page.info
+        reveal: "The padlock only means the connection is encrypted. Scam pages have one too."
+        red_flag: false
+        type: padlock
+    actions:
+      - id: enter_card
+        label: "Enter your card details and pay"
+        kind: enter_details
+        outcome: card_details_stolen
+        pressure_target: true
+      - id: close_page
+        label: "Close the page"
+        kind: ignore
+        outcome: left_page
 
 outcomes:
   card_details_stolen:
     narrative: "Two days later, three payments you don't recognise appear on your card."
-    recovery: [block_card_via_bank_app, call_bank_known_number, report_to_police_online]
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: call_bank_known_number, category: secure }
+      - { step: report_to_police_online, category: report }
+      - { step: reply_ask_money_back, category: harmful }
+      - { step: wait_and_see, category: harmful }
   no_fee_found:
     narrative: "The app shows your parcel is already in the locker. No fee."
   reported:
     narrative: "Message reported. Your carrier blocks the sender."
+  left_page:
+    narrative: "You close the page without typing anything. Nothing happens."
 
 debrief:
-  red_flags:
-    - "Sender is a normal mobile number."
-    - "Link domain is not the courier's real domain."
-    - "Small fee + deadline: a classic pressure combination."
-  habit: "Check deliveries only in the app or site you open yourself."
-  already_clicked: "Block your card in your banking app, call your bank on the number on your card, and report it."
+  variant: standard
+  layer1:
+    tell: "A courier asking for a small fee by text, from a mobile number, with a look-alike link."
+    what_works: "Open the courier's app yourself."
+  layer2:
+    message_flags:
+      - "Small fee plus a same-day deadline: a common pressure combination."
+  device_tip: "On a real phone, press and hold a link to see the full address before you open it."
+  habit_card: open-it-yourself
+  already_clicked:
+    clicked: "Close the page. Opening it alone rarely does harm; do not type anything."
+    entered_details: "Block your card in your banking app now, then call your bank on the number on your card."
+    paid: "Block your card, call your bank on the number on your card and report it to the police."
   sources: [europol-scam-smishing, bsi-smishing]

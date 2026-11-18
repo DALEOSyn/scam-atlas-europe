@@ -70,3 +70,15 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+/* Mini habit card (UI_SPEC §8.2 item 4, §9.1). Full anatomy comes with the debrief task. */
+.habitCard {
+  background: var(--surface);
+  color: var(--on-surface);
+  border: 1px solid var(--muted-on-surface);
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
+  max-width: 32rem;
+}
+.habitCard h3 {
+  margin: 0.25rem 0;
+}

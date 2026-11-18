@@ -1,0 +1,15 @@
+# Habit cards (GDD §11, UI_SPEC §9.1): one per learning objective.
+# STUB for T-2.2: titles from docs/LEARNING_OBJECTIVES.md; the game-designer owns the wording.
+cards:
+  - id: read-the-link
+    lo: LO-02
+    title: "Read the link before you tap"
+    habit: "Hold or hover to see where a link goes. A brand name in the address is not enough."
+    example: "trundle-zoll.example is not trundle.example."
+    already_clicked: "Close the page. If you typed anything, change that password or block that card now."
+  - id: open-it-yourself
+    lo: LO-03
+    title: "Open it yourself"
+    habit: "Go to the app or the address you already know, not the link in the message."
+    example: "A parcel fee? Open the courier's app yourself and check the tracking."
+    already_clicked: "Block your card in your banking app and call your bank on the number on your card."

@@ -380,7 +380,7 @@ describe('re-review extras', () => {
 describe('T-1.8: brand registry and balance tables are linted', () => {
   const BRANDS = resolve(ROOT, 'content/brands.yaml');
   const brandYaml = (fields: string) =>
-    `brands:\n  - id: trundle\n    name: "Trundle"\n${fields}    checked_against: ["DHL", "Deutsche Post", "InPost"]\n    web_check: "Low. Not DHL or bol.com (BRAND_CHECK)."\n    rationale:\n      name: "Not PayPal."\n      colour_shape: "Couriers cluster on yellow (DHL) and orange."\n`;
+    `brands:\n  - id: trundle\n    name: "Trundle"\n${fields}    checked_against: ["DHL", "Deutsche Post", "InPost"]\n    web_check: "Low. Not DHL or bol (BRAND_CHECK)."\n    rationale:\n      name: "Not PayPal."\n      colour_shape: "Couriers cluster on yellow (DHL) and orange."\n`;
   const lintBrands = (fields: string) => lintText(BRANDS, brandYaml(fields), cfg).filter((f) => f.severity === 'error');
 
   it('the real brands.yaml and balance.yaml are scanned and produce no findings', () => {
@@ -392,6 +392,18 @@ describe('T-1.8: brand registry and balance tables are linted', () => {
 
   it('review-only fields may name real brands', () => {
     expect(lintBrands('')).toEqual([]);
+  });
+
+  it('review-only fields are exempt from the brand rule only (T-2.2): domains, phones and URLs still fail', () => {
+    const withNote = (note: string) =>
+      lintText(BRANDS, brandYaml('').replace('web_check: "Low. Not DHL or bol (BRAND_CHECK)."', `web_check: "${note}"`), cfg)
+        .filter((f) => f.severity === 'error')
+        .map((f) => f.category);
+    expect(withNote('Low. trundle.me is a travel app.')).toEqual(['domain']);
+    expect(withNote('See https://trundle.example/about')).toContain('url');
+    expect(withNote('Low. trundle dot me is a travel app.')).toEqual([]);
+    const checked = lintText(BRANDS, brandYaml('').replace('"InPost"]', '"InPost", "bol.com"]'), cfg).filter((f) => f.severity === 'error');
+    expect(checked.map((f) => f.category)).toEqual(['domain']);
   });
 
   it('a denylisted name fails', () => {
@@ -421,5 +433,70 @@ describe('T-1.8: brand registry and balance tables are linted', () => {
 
   it('keys are still scanned in brands.yaml (raw pass is skipped there)', () => {
     expect(lintText(BRANDS, 'brands:\n  - id: t\n    name: T\n    paypal_id: "x"\n', cfg).map((f) => f.category)).toEqual(['brand']);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// T-2.2 rework: checkable names are exempt only as inspectable target values.
+
+describe('checkable names are not a domain loophole (T-2.2)', () => {
+  const SCENARIO = resolve(ROOT, 'content/scenarios/home/x.yaml');
+  const domains = (file: string, yaml: string) =>
+    lintText(file, yaml, cfg)
+      .filter((f) => f.severity === 'error' && f.category === 'domain')
+      .map((f) => f.match.toLowerCase());
+
+  it.each(['page.info', 'PAYEE.NAME', 'Page.Info', 'payee.name_check'])('"Pay at %s" in a message body is flagged', (host) => {
+    expect(domains(SCENARIO, `message:\n  body: "Pay at ${host} today"\n`).length).toBeGreaterThan(0);
+  });
+
+  it('checkable names as inspectables[].target values are exempt (opening, beats, interrupts)', () => {
+    const yaml = [
+      'inspectables:',
+      '  - { target: page.info, reveal: "x", red_flag: false }',
+      '  - { target: payee.name_check, reveal: "x", red_flag: false }',
+      'beats:',
+      '  - id: b',
+      '    inspectables: [{ target: page.address, reveal: "x", red_flag: true }]',
+      'interrupts:',
+      '  - id: i',
+      '    inspectables: [{ target: qr.destination, reveal: "x", red_flag: true }]',
+      '',
+    ].join('\n');
+    expect(domains(SCENARIO, yaml)).toEqual([]);
+  });
+
+  it('the exemption is path-, value- and file-bound', () => {
+    // Not a known checkable in target position.
+    expect(domains(SCENARIO, 'inspectables:\n  - { target: evil.info, reveal: "x", red_flag: true }\n')).toEqual(['evil.info']);
+    // A known checkable under another key.
+    expect(domains(SCENARIO, 'inspectables:\n  - { target: link, reveal: "page.info", red_flag: true }\n')).toEqual(['page.info']);
+    // Same structure outside content/scenarios.
+    expect(domains(resolve(ROOT, 'content/other.yaml'), 'inspectables:\n  - { target: page.info, reveal: "x", red_flag: true }\n')).toEqual(['page.info']);
+  });
+});
+
+describe('YAML anchors, aliases and merge keys are rejected (T-2.2 rework 2)', () => {
+  const SCENARIO = resolve(ROOT, 'content/scenarios/home/x.yaml');
+  const yamlErrors = (file: string, yaml: string) =>
+    lintText(file, yaml, cfg).filter((f) => f.severity === 'error' && /^YAML (alias|anchor|merge key)/.test(f.message));
+
+  it('the alias probe (exempt target copied into the body) fails', () => {
+    const probe = 'inspectables:\n  - target: &t page.info\n    reveal: x\nmessage:\n  body: *t\n';
+    const found = yamlErrors(SCENARIO, probe);
+    expect(found.map((f) => f.message).join('\n')).toMatch(/alias \*t/);
+    expect(found.map((f) => f.message).join('\n')).toMatch(/anchor &t/);
+    expect(found.some((f) => f.line === 5)).toBe(true);
+  });
+
+  it('merge keys fail, in any content file', () => {
+    const merge = 'base: &b\n  body: "hello"\nmessage:\n  <<: *b\n';
+    const msgs = yamlErrors(resolve(ROOT, 'content/other.yaml'), merge).map((f) => f.message).join('\n');
+    expect(msgs).toMatch(/merge key <</);
+    expect(msgs).toMatch(/alias \*b/);
+  });
+
+  it('plain YAML has no such findings', () => {
+    expect(yamlErrors(SCENARIO, 'message:\n  body: "a & b * c"\n')).toEqual([]);
   });
 });

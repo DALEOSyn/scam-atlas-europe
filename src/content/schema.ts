@@ -5,9 +5,13 @@
  * described by YAML validated against these schemas, at build time (Vite
  * plugin), in `npm run content:validate` and in CI.
  *
- * Shape follows `templates/scenario.template.yaml`.
+ * Shape follows `templates/scenario.template.yaml` and GDD §19 (CR-01…CR-13),
+ * balance.yaml and UI_SPEC §14. Rules that need balance.yaml numbers or other
+ * registries live in scripts/lib/rules.ts; this file holds shape and
+ * within-file consistency only.
  */
 import { z } from 'zod';
+import { deriveCheckables } from './checkables.ts';
 
 /** Lower-case kebab-case identifier, e.g. `berlin-03-parcel-customs`. */
 export const slug = z
@@ -19,24 +23,82 @@ export const snakeId = z
   .string()
   .regex(/^[a-z][a-z0-9_]*$/, 'must be snake_case (a-z, 0-9, _)');
 
-export const DEVICES = [
-  'email',
-  'sms',
-  'messenger',
-  'call',
-  'browser',
-  'qr',
-  'banking',
-  'social',
-] as const;
+// ---------------------------------------------------------------------------
+// Enumerations shared with balance.yaml and the GDD.
+
+export const DEVICES = ['email', 'sms', 'messenger', 'call', 'browser', 'qr', 'banking', 'social', 'auth', 'letter'] as const;
 export const deviceSchema = z.enum(DEVICES);
 export type Device = z.infer<typeof deviceSchema>;
+
+/** GDD §6 / balance.yaml action_kinds. content:validate checks balance.yaml covers exactly this set. */
+export const ACTION_KINDS = [
+  'verify_in_app', 'call_back_known', 'check_official_list', 'check_with_platform', 'ask_someone', 'verify_identity',
+  'report', 'block', 'ignore', 'delete', 'hang_up', 'deny_prompt', 'reply', 'open_link', 'call_number_in_message',
+  'scan_qr_and_open', 'pay', 'pay_unprotected', 'enter_details', 'share_code', 'approve_prompt', 'install_or_remote',
+  'proceed', 'pay_protected', 'pause',
+] as const;
+export const actionKindSchema = z.enum(ACTION_KINDS);
+export type ActionKind = z.infer<typeof actionKindSchema>;
+
+export const ACTION_CLASSES = ['verify', 'report', 'dismiss', 'engage', 'comply', 'proceed', 'meta'] as const;
+export type ActionClass = (typeof ACTION_CLASSES)[number];
+
+/** GDD §8 pressure levers (CR-05). */
+export const LEVERS = ['urgency', 'authority', 'fear', 'greed', 'helpfulness', 'affection', 'secrecy', 'small_amount', 'social_proof'] as const;
+
+/** CR-03 scenario roles. Scored roles are standard and boss. */
+export const ROLES = ['standard', 'boss', 'drill', 'arc'] as const;
+export const SCORED_ROLES: readonly (typeof ROLES)[number][] = ['standard', 'boss'];
+
+/**
+ * What the message asks the player to do (UI_SPEC §6.3). Anything but `none`
+ * requires exactly one action with `pressure_target: true`. The high-stakes
+ * requests (GDD §6) decide `stakes` on genuine messages.
+ */
+export const REQUESTS = ['none', 'reply', 'open_link', 'call', 'scan_qr', 'pay', 'log_in', 'enter_details', 'share_code', 'approve', 'install'] as const;
+export const HIGH_STAKES_REQUESTS: readonly (typeof REQUESTS)[number][] = ['pay', 'log_in', 'enter_details', 'share_code', 'approve', 'install'];
+
+/** GDD §9 damage-control categories, assigned per scenario outcome (CR-07). */
+export const RECOVERY_CATEGORIES = ['stop', 'secure', 'report', 'warn', 'harmful'] as const;
+
+/** CR-04 inspectable types. spelling/grammar/language may only be decoys; padlock is never proof. */
+export const INSPECTABLE_TYPES = [
+  'sender', 'link', 'qr', 'payee', 'caller_id', 'padlock', 'page_address', 'logo', 'display_name', 'attachment',
+  'reference', 'phone_number', 'letterhead', 'prompt', 'image', 'request', 'spelling', 'grammar', 'language', 'other',
+] as const;
+export const LANGUAGE_TYPES: readonly (typeof INSPECTABLE_TYPES)[number][] = ['spelling', 'grammar', 'language'];
+export const NEVER_PROOF_TYPES: readonly (typeof INSPECTABLE_TYPES)[number][] = ['logo', 'display_name'];
+
+/** Flag and arc-variable names (CR-08): snake_case, e.g. alex_invested. Dotted names read as domains to the red-line linter. */
+export const flagName = z.string().regex(/^[a-z][a-z0-9_]*$/, 'flags are snake_case, e.g. kettle_hacked or alex_invested');
+
+export const loId = z.string().regex(/^LO-\d{2}$/, 'learning objective ids look like LO-01');
+
+// ---------------------------------------------------------------------------
+// Message parts. Which parts a device needs is checked per beat (DEVICE_PARTS).
+
+/** Non-routable lowercase host (RFC 2606 reserved TLDs; Red Line 3). */
+export const FICTIONAL_HOST = /^[a-z0-9.-]+\.(example|test|invalid)$/;
+
+/** Host part of an address-bar string: optional http(s)://, then host, then optional /path. */
+export function addressHost(address: string): string {
+  const rest = address.replace(/^https?:\/\//, '');
+  return rest.split(/[/?#]/)[0] ?? rest;
+}
+
+const fictionalAddress = (what: string) =>
+  z
+    .string()
+    .min(1)
+    .refine((v) => FICTIONAL_HOST.test(addressHost(v)), `${what} must be a lowercase host ending in .example, .test or .invalid (Red Line 3)`);
 
 /** QR codes may only resolve to an in-game route (Red Line 3). */
 export const QR_PAYLOAD_RE = /^\/qr\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export const qrSchema = z
   .object({
     payload: z.string().regex(QR_PAYLOAD_RE, 'QR payload must be an in-game route /qr/<id>'),
+    /** Host shown on the destination chip ("QR code · opens trundle-redelivery.example"). */
+    destination: fictionalAddress('qr.destination'),
     caption: z.string().min(1).optional(),
   })
   .strict();
@@ -50,52 +112,191 @@ export const senderSchema = z
 
 export const messageSchema = z
   .object({
-    sender: senderSchema,
+    sender: senderSchema.optional(),
+    /** Cast member speaking (content/cast.yaml). Arc characters' lines have a word limit. */
+    from_cast: slug.optional(),
     subject: z.string().min(1).optional(),
-    body: z.string().min(1),
+    body: z.string().min(1).optional(),
+    /** In-world language other than English needs an inline translation (UI_SPEC §4.8). */
+    lang: z.string().regex(/^[a-z]{2}(?:-[A-Z]{2})?$/, 'lang is a BCP 47 tag such as de or pt-PT').optional(),
+    translation: z.string().min(1).optional(),
+    request: z.enum(REQUESTS),
+    attachments: z.array(z.object({ name: z.string().min(1), size: z.string().min(1).optional() }).strict()).optional(),
+    references: z.array(z.string().min(1)).optional(),
+    phone_numbers: z.array(z.string().min(1)).optional(),
     qr: qrSchema.optional(),
+    page: z.object({ address: fictionalAddress('page.address'), title: z.string().min(1).optional() }).strict().optional(),
+    payee: z
+      .object({
+        name: z.string().min(1),
+        iban: z.string().min(1).optional(),
+        name_check: z.enum(['match', 'mismatch', 'close_match', 'unavailable']).optional(),
+        holder: z.string().min(1).optional(),
+      })
+      .strict()
+      .optional(),
+    transcript: z.array(z.object({ speaker: z.enum(['caller', 'you']), text: z.string().min(1) }).strict()).optional(),
+    prompt: z
+      .object({
+        type: z.enum(['sign_in', 'signature', 'qr_login']),
+        service: z.string().min(1),
+        where: z.string().min(1),
+        device: z.string().min(1),
+        when: z.string().min(1),
+        number: z.number().int().min(0).max(99).optional(),
+      })
+      .strict()
+      .optional(),
+    letterhead: z.string().min(1).optional(),
+    image: z.object({ alt: z.string().min(1) }).strict().optional(),
     l10n_note: z.string().min(1).optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((m, ctx) => {
+    if (m.lang && m.lang !== 'en' && !m.translation) {
+      ctx.addIssue({ code: 'custom', path: ['translation'], message: `text in lang "${m.lang}" needs an inline translation` });
+    }
+  });
+export type Message = z.infer<typeof messageSchema>;
+
+/** Message parts each device template needs. */
+export const DEVICE_PARTS: Record<Device, readonly (keyof Message)[]> = {
+  email: ['sender', 'subject', 'body'],
+  sms: ['sender', 'body'],
+  messenger: ['sender', 'body'],
+  call: ['sender', 'transcript'],
+  browser: ['page'],
+  qr: ['qr'],
+  banking: ['payee'],
+  social: ['sender', 'body'],
+  auth: ['prompt'],
+  letter: ['letterhead', 'body'],
+};
 
 export const pressureSchema = z
   .object({
-    timer_seconds: z.number().int().positive().optional(),
-    levers: z.array(snakeId).default([]),
+    /** Timer on/off. Its LENGTH comes from balance.yaml timers.by_slot (never per scenario: length must not be a tell). */
+    timer: z.boolean().default(false),
+    levers: z.array(z.enum(LEVERS)).default([]),
+    /** Authored follow-ups from the sender (CR-05; balance pushers.schedule: authored). */
+    pusher: z
+      .object({ messages: z.array(z.object({ at_seconds: z.number().int().positive(), text: z.string().min(1) }).strict()).min(1) })
+      .strict()
+      .optional(),
+    /** Genuine messages only: the real deadline ("Locker holds your parcel 7 days"). */
+    honest_deadline: z.string().min(1).optional(),
   })
   .strict();
 
 export const inspectableSchema = z
   .object({
-    target: z
-      .string()
-      .regex(/^[a-z_]+(?:\.[a-z_]+)*$/, 'target must be a dotted path such as sender.detail or link'),
+    /** A checkable of the beat's device template (src/content/checkables.ts), e.g. sender.detail, link, link#2, qr.destination. */
+    target: z.string().regex(/^[a-z_]+(?:\.[a-z_]+)*(?:#[2-9])?$/, 'target is a checkable such as sender.detail, link or link#2'),
     reveal: z.string().min(1),
     red_flag: z.boolean(),
+    type: z.enum(INSPECTABLE_TYPES).optional(),
+    /** A detail that fits the genuine story. Never proof on its own (padlock, logo, display name). */
+    reassures: z.boolean().optional(),
+    /** Inside a quoted example (e.g. Teo's screenshot): can be a red flag inside a genuine message. */
+    context: z.literal('quoted').optional(),
   })
   .strict();
+export type Inspectable = z.infer<typeof inspectableSchema>;
 
 export const actionSchema = z
   .object({
     id: snakeId,
     label: z.string().min(1),
-    outcome: snakeId,
-    score: z.number().int(),
+    kind: actionKindSchema,
+    outcome: snakeId.optional(),
+    next_beat: snakeId.optional(),
+    /** Optional override of the balance.yaml star table; needs a reason (CR-01). */
+    score: z.number().int().optional(),
+    score_reason: z.string().min(1).optional(),
+    /** The action the message is pushing (UI_SPEC §6.3). */
+    pressure_target: z.boolean().default(false),
+  })
+  .strict()
+  .superRefine((a, ctx) => {
+    if ((a.outcome === undefined) === (a.next_beat === undefined)) {
+      ctx.addIssue({ code: 'custom', path: ['outcome'], message: 'an action has exactly one of outcome or next_beat' });
+    }
+    if (a.score !== undefined && !a.score_reason) {
+      ctx.addIssue({ code: 'custom', path: ['score_reason'], message: 'a score override needs score_reason (CR-01)' });
+    }
+  });
+export type Action = z.infer<typeof actionSchema>;
+
+const beatBody = {
+  device: deviceSchema,
+  message: messageSchema,
+  inspectables: z.array(inspectableSchema).default([]),
+  actions: z.array(actionSchema).min(1).max(5),
+};
+
+/** CR-03 follow-up beat. Boss beats arrive on a schedule (`arrives_after`, seconds after the previous beat started). */
+export const beatSchema = z
+  .object({
+    id: snakeId.refine((id) => id !== 'start', '"start" is reserved for the opening beat'),
+    ...beatBody,
+    arrives_after: z.number().int().min(0).optional(),
+    /** Boss beats only: later beats can be narrative (balance multi_step.boss.scored_beats_max). */
+    scored: z.boolean().default(true),
+  })
+  .strict();
+export type Beat = z.infer<typeof beatSchema>;
+
+/** CR-06 notification arriving mid-scenario. Unscored. */
+export const interruptSchema = z
+  .object({
+    id: snakeId,
+    at_seconds: z.number().int().positive(),
+    is_fraud: z.boolean(),
+    ...beatBody,
   })
   .strict();
 
 export const outcomeSchema = z
   .object({
     narrative: z.string().min(1),
-    recovery: z.array(snakeId).optional(),
+    /** CR-07: damage-control options for this outcome, each with its category for THIS scenario. */
+    recovery: z
+      .array(z.object({ step: snakeId, category: z.enum(RECOVERY_CATEGORIES) }).strict())
+      .optional(),
+    sets_flags: z.array(flagName).optional(),
+    /** Arc scenarios only, e.g. { alex_invested: 50 }. */
+    arc_effects: z.record(flagName, z.union([z.number(), z.boolean()])).optional(),
   })
   .strict();
+export type Outcome = z.infer<typeof outcomeSchema>;
 
 export const debriefSchema = z
   .object({
-    red_flags: z.array(z.string().min(1)).default([]),
-    habit: z.string().min(1),
-    already_clicked: z.string().min(1).optional(),
+    /** `arc`: no verdict line, no points (GDD §10.2). */
+    variant: z.enum(['standard', 'arc']).default('standard'),
+    /** CR-10 / UI_SPEC §8.1: verdict is generated; tell and what_works are authored. ≤ 40 words with the fixed copy. */
+    layer1: z.object({ tell: z.string().min(1), what_works: z.string().min(1) }).strict(),
+    /** Red flags bound to checkables come from inspectables; flags that live in the message text go here. */
+    layer2: z
+      .object({ message_flags: z.array(z.string().min(1)).default([]), notes: z.string().min(1).optional() })
+      .strict()
+      .default({ message_flags: [] }),
+    /** How to check this on a real phone (UI_SPEC §8.2 item 2). */
+    device_tip: z.string().min(1).optional(),
+    /** Habit card id (content/habit_cards.yaml). */
+    habit_card: slug.optional(),
+    /** UI_SPEC §8.2 item 3: split by situation. */
+    already_clicked: z
+      .object({
+        clicked: z.string().min(1).optional(),
+        entered_details: z.string().min(1).optional(),
+        paid: z.string().min(1).optional(),
+      })
+      .strict()
+      .refine((a) => a.clicked || a.entered_details || a.paid, 'already_clicked needs at least one of clicked, entered_details, paid')
+      .optional(),
+    /** Support line for arc slots 2–3 and other safeguarding moments. */
+    safeguarding_line: z.string().min(1).optional(),
     sources: z.array(slug).min(1, 'every scenario must cite at least one source (Red Line 6)'),
   })
   .strict();
@@ -104,67 +305,279 @@ export const scenarioSchema = z
   .object({
     id: slug,
     chapter: slug,
-    pattern: slug,
-    learning_objectives: z
-      .array(z.string().regex(/^LO-\d{2}$/, 'learning objective ids look like LO-01'))
-      .min(1),
-    difficulty: z.number().int().min(1).max(5),
+    role: z.enum(ROLES),
+    /** docs/patterns/<id>.md. Genuine twins carry the pattern they mirror (gold off-focus rule, CR-02). */
+    pattern: slug.optional(),
+    /** Surface theme for the theme-share rule, e.g. parcel, shop-payment. */
+    theme: slug.optional(),
+    /** The scenario this one mirrors (genuine <-> fraud), same chapter. */
+    twin_of: slug.optional(),
+    /** Arc beats only: 1–9 (GDD §10.1). */
+    arc_slot: z.number().int().min(1).max(9).optional(),
+    /** The player started this (reset link they requested, their own sign-in): in-message action is proceed. */
+    player_started: z.boolean().default(false),
+    learning_objectives: z.array(loId).min(1),
+    difficulty: z.number().int().min(1).max(5).optional(),
     is_fraud: z.boolean(),
+    /** Genuine standard scenarios: high = asks to pay, log in, enter data or a code, or approve (CR-02). */
+    stakes: z.enum(['low', 'high']).optional(),
     device: deviceSchema,
-    /** Fictional brand ids (content/brands.yaml) that appear in this scenario. */
     brands: z.array(slug).default([]),
-    pressure: pressureSchema.optional(),
+    cast: z.array(slug).default([]),
+    requires_flags: z.array(flagName).default([]),
+    arc_branch_on: flagName.optional(),
+    pressure: pressureSchema.default({ timer: false, levers: [] }),
     message: messageSchema,
     inspectables: z.array(inspectableSchema).default([]),
-    actions: z.array(actionSchema).min(2, 'a scenario needs at least two choices'),
+    actions: z.array(actionSchema).min(2, 'a scenario offers 2–5 actions').max(5, 'a scenario offers 2–5 actions'),
+    beats: z.array(beatSchema).default([]),
+    interrupts: z.array(interruptSchema).default([]),
     outcomes: z.record(snakeId, outcomeSchema),
     debrief: debriefSchema,
   })
   .strict()
   .superRefine((s, ctx) => {
-    const seen = new Set<string>();
-    s.actions.forEach((a, i) => {
-      if (seen.has(a.id)) {
-        ctx.addIssue({ code: 'custom', path: ['actions', i, 'id'], message: `duplicate action id "${a.id}"` });
-      }
-      seen.add(a.id);
-      if (!(a.outcome in s.outcomes)) {
-        ctx.addIssue({
-          code: 'custom',
-          path: ['actions', i, 'outcome'],
-          message: `outcome "${a.outcome}" is not defined under outcomes`,
-        });
-      }
+    const issue = (path: (string | number)[], message: string) => ctx.addIssue({ code: 'custom', path, message });
+    const scored = SCORED_ROLES.includes(s.role);
+
+    // Role-dependent fields.
+    if (s.role !== 'arc' && s.difficulty === undefined) issue(['difficulty'], `${s.role} scenarios need a difficulty`);
+    if (scored && !s.pattern) issue(['pattern'], 'scored scenarios need a pattern (genuine twins: the pattern they mirror)');
+    if (scored && !s.theme) issue(['theme'], 'scored scenarios need a surface theme');
+    if (scored && !s.is_fraud && !s.stakes) issue(['stakes'], 'genuine scored scenarios need stakes: low | high');
+    if (s.is_fraud && s.stakes) issue(['stakes'], 'stakes apply to genuine scenarios only');
+    if (s.role === 'boss' && !s.is_fraud) issue(['is_fraud'], 'bosses are always fraud');
+    if (s.role === 'boss' && s.beats.length === 0) issue(['beats'], 'a boss has several beats');
+    if (s.role === 'arc' && s.arc_slot === undefined) issue(['arc_slot'], 'arc beats need arc_slot (1–9)');
+    if (s.role !== 'arc' && s.arc_slot !== undefined) issue(['arc_slot'], 'arc_slot is for arc beats only');
+    if ((s.role === 'arc') !== (s.debrief.variant === 'arc')) issue(['debrief', 'variant'], 'debrief.variant is arc exactly for arc beats');
+    if (s.pressure.honest_deadline && s.is_fraud) issue(['pressure', 'honest_deadline'], 'honest_deadline is for genuine messages');
+    if (s.twin_of === s.id) issue(['twin_of'], 'a scenario cannot be its own twin');
+
+    // Red Line 4 debrief content.
+    if ((s.is_fraud || s.role === 'arc') && !s.debrief.already_clicked) {
+      issue(['debrief', 'already_clicked'], 'fraud and arc debriefs must say what to do if you already fell for it');
+    }
+    if (s.role !== 'arc' && !s.debrief.habit_card) issue(['debrief', 'habit_card'], 'debriefs need a habit_card');
+    if (s.role !== 'arc' && !s.debrief.device_tip) issue(['debrief', 'device_tip'], 'debriefs need a device_tip (how to check on a real phone)');
+    if (s.role === 'arc' && s.arc_slot !== undefined && [2, 3].includes(s.arc_slot) && !s.debrief.safeguarding_line) {
+      issue(['debrief', 'safeguarding_line'], 'arc slots 2 and 3 need the safeguarding line (GDD §10.2)');
+    }
+
+    // Beats: ids, devices, references.
+    const beats: {
+      id: string;
+      device: Device;
+      message: Message;
+      inspectables: Inspectable[];
+      actions: Action[];
+      path: (string | number)[];
+      fraud: boolean;
+    }[] = [
+      { id: 'start', device: s.device, message: s.message, inspectables: s.inspectables, actions: s.actions, path: [], fraud: s.is_fraud },
+      ...s.beats.map((b, i) => ({ ...b, path: ['beats', i], fraud: s.is_fraud })),
+      ...s.interrupts.map((b, i) => ({ ...b, path: ['interrupts', i], fraud: b.is_fraud })),
+    ];
+    const beatIds = new Set<string>(['start']);
+    s.beats.forEach((b, i) => {
+      if (beatIds.has(b.id)) issue(['beats', i, 'id'], `duplicate beat id "${b.id}"`);
+      beatIds.add(b.id);
+      if (s.role === 'boss' && b.arrives_after === undefined) issue(['beats', i, 'arrives_after'], 'boss beats arrive on a schedule: set arrives_after');
+      if (s.role !== 'boss' && b.arrives_after !== undefined) issue(['beats', i, 'arrives_after'], 'arrives_after is for boss beats');
     });
-    const used = new Set(s.actions.map((a) => a.outcome));
+    const actionIds = new Set<string>();
+    const referencedBeats = new Set<string>();
+    const usedOutcomes = new Set<string>();
+    for (const b of beats) {
+      for (const part of DEVICE_PARTS[b.device]) {
+        if (b.message[part] === undefined) issue([...b.path, 'message', part], `a ${b.device} message needs ${part}`);
+      }
+      const visible = new Set(deriveCheckables(b.device, b.message));
+      b.inspectables.forEach((ins, i) => {
+        if (!visible.has(ins.target)) {
+          issue([...b.path, 'inspectables', i, 'target'], `"${ins.target}" is not visible in this ${b.device} message (checkables: ${[...visible].join(', ')})`);
+        }
+      });
+      b.actions.forEach((a, i) => {
+        if (actionIds.has(a.id)) issue([...b.path, 'actions', i, 'id'], `duplicate action id "${a.id}"`);
+        actionIds.add(a.id);
+        if (a.outcome !== undefined) {
+          usedOutcomes.add(a.outcome);
+          if (!(a.outcome in s.outcomes)) issue([...b.path, 'actions', i, 'outcome'], `outcome "${a.outcome}" is not defined under outcomes`);
+        }
+        if (a.next_beat !== undefined) {
+          referencedBeats.add(a.next_beat);
+          if (!beatIds.has(a.next_beat) || a.next_beat === 'start') issue([...b.path, 'actions', i, 'next_beat'], `next_beat "${a.next_beat}" is not a beat id`);
+        }
+      });
+    }
     for (const key of Object.keys(s.outcomes)) {
-      if (!used.has(key)) {
-        ctx.addIssue({ code: 'custom', path: ['outcomes', key], message: `outcome "${key}" is never reached by any action` });
-      }
+      if (!usedOutcomes.has(key)) issue(['outcomes', key], `outcome "${key}" is never reached by any action`);
     }
-    if (!s.actions.some((a) => a.score > 0)) {
-      ctx.addIssue({ code: 'custom', path: ['actions'], message: 'at least one action must score positively' });
+    if (s.role !== 'boss') {
+      s.beats.forEach((b, i) => {
+        if (!referencedBeats.has(b.id)) issue(['beats', i, 'id'], `beat "${b.id}" is never reached (no action has next_beat: ${b.id})`);
+      });
     }
-    // Red Line 4: fraud scenarios must debrief the tells and the recovery path.
-    if (s.is_fraud) {
-      if (s.debrief.red_flags.length === 0) {
-        ctx.addIssue({ code: 'custom', path: ['debrief', 'red_flags'], message: 'fraud scenarios must list red flags' });
-      }
-      if (!s.debrief.already_clicked) {
-        ctx.addIssue({
-          code: 'custom',
-          path: ['debrief', 'already_clicked'],
-          message: 'fraud scenarios must say what to do if you already fell for it',
-        });
-      }
+    for (const [key, o] of Object.entries(s.outcomes)) {
+      if (o.arc_effects && s.role !== 'arc') issue(['outcomes', key, 'arc_effects'], 'arc_effects are for arc beats only');
     }
-    if (s.device === 'qr' && !s.message.qr) {
-      ctx.addIssue({ code: 'custom', path: ['message', 'qr'], message: 'qr scenarios need message.qr.payload' });
+
+    // Red Line 8: a letter is only ever the carrier of a QR code or URL; the scenario hinges on that digital
+    // vector. Checked per letter beat: a later SMS link cannot stand in for the letter's own vector.
+    for (const b of beats) {
+      if (b.device !== 'letter') continue;
+      const vectors = b.inspectables.filter((i) => i.target === 'qr.destination' || /^link(?:#[2-9])?$/.test(i.target));
+      if (vectors.length === 0) {
+        issue([...b.path, 'inspectables'], 'a letter must carry a QR code or URL with its own inspectable (qr.destination or link) (Red Line 8)');
+      } else if (b.fraud && !vectors.some((i) => i.red_flag)) {
+        issue([...b.path, 'inspectables'], 'on fraud, the letter\'s QR code or URL is the vector: mark its qr.destination or link as red_flag: true (Red Line 8)');
+      }
     }
   });
 export type Scenario = z.infer<typeof scenarioSchema>;
-export type Action = z.infer<typeof actionSchema>;
-export type Outcome = z.infer<typeof outcomeSchema>;
+
+// ---------------------------------------------------------------------------
+// Chapters, cast, recovery steps, habit cards (GDD §19, CR-07, CR-12).
+
+/** content/chapters/<city>.yaml. `draft` chapters report mix-rule violations as warnings; `complete` as errors. */
+export const chapterSchema = z
+  .object({
+    slot: z.number().int().min(0).max(10),
+    city: slug,
+    name: z.string().min(1),
+    status: z.enum(['draft', 'complete']),
+    patterns: z.array(slug).min(1),
+    callbacks: z.array(slug).default([]),
+    lo_focus: z.array(loId).min(1),
+    scenario_order: z.object({ am: z.array(slug), pm: z.array(slug) }).strict(),
+    boss: slug.optional(),
+    arc_beat: slug.optional(),
+    intro: z.string().min(1),
+  })
+  .strict()
+  .superRefine((c, ctx) => {
+    const all = [...c.scenario_order.am, ...c.scenario_order.pm];
+    const dup = all.find((id, i) => all.indexOf(id) !== i);
+    if (dup) ctx.addIssue({ code: 'custom', path: ['scenario_order'], message: `"${dup}" appears twice in scenario_order` });
+    if (c.boss && !c.scenario_order.pm.includes(c.boss)) {
+      ctx.addIssue({ code: 'custom', path: ['boss'], message: 'the boss plays in the afternoon (scenario_order.pm)' });
+    }
+    if (c.arc_beat && !all.includes(c.arc_beat)) ctx.addIssue({ code: 'custom', path: ['arc_beat'], message: 'arc_beat must be in scenario_order' });
+    if (c.status === 'complete' && !c.boss) ctx.addIssue({ code: 'custom', path: ['boss'], message: 'a complete chapter has a boss' });
+  });
+export type Chapter = z.infer<typeof chapterSchema>;
+
+/** content/cast.yaml (CR-12). Scammers are never cast members. */
+export const castMemberSchema = z
+  .object({
+    id: slug,
+    name: z.string().min(1),
+    role: z.string().min(1),
+    /** The channel the player already knows for this person (staff directory, saved contact). */
+    known_channel: z.object({ label: z.string().min(1), detail: z.string().min(1).optional() }).strict().optional(),
+    /** Arc characters' lines are limited to balance session.arc_line_max_words. */
+    arc_character: z.boolean().default(false),
+    notes: z.string().optional(),
+  })
+  .strict()
+  .refine((c) => c.arc_character || c.known_channel, { message: 'cast members need a known_channel (arc characters excepted)', path: ['known_channel'] });
+export const castFileSchema = z.object({ cast: z.array(castMemberSchema) }).strict();
+export type CastMember = z.infer<typeof castMemberSchema>;
+
+/** content/recovery_steps.yaml (CR-07). Categories are assigned per scenario outcome. */
+export const recoveryStepsFileSchema = z
+  .object({ steps: z.array(z.object({ id: snakeId, label: z.string().min(1) }).strict()) })
+  .strict();
+
+/** content/habit_cards.yaml: one card per learning objective (GDD §11, UI_SPEC §9.1). */
+export const habitCardSchema = z
+  .object({
+    id: slug,
+    lo: loId,
+    title: z.string().min(1),
+    habit: z.string().min(1),
+    example: z.string().min(1),
+    already_clicked: z.string().min(1),
+  })
+  .strict();
+export const habitCardsFileSchema = z.object({ cards: z.array(habitCardSchema) }).strict();
+export type HabitCard = z.infer<typeof habitCardSchema>;
+
+// ---------------------------------------------------------------------------
+// balance.yaml: the parts content:validate reads. `mix` is strict so a new
+// rule added there fails validation until the validator implements it.
+
+const starValue = z.union([z.number().int().min(0).max(3), z.enum(['non_terminal', 'not_allowed'])]);
+const starRow = z.object({ fraud: starValue, legit_high: starValue, legit_low: starValue }).strict();
+const range = z.tuple([z.number(), z.number()]);
+const ceilShare = z.string().regex(/^ceil\(F\/\d+\)$/, 'expected ceil(F/<n>)');
+
+export const balanceSchema = z
+  .object({
+    version: z.number(),
+    action_kinds: z.record(
+      actionKindSchema,
+      z.object({ class: z.enum(ACTION_CLASSES), los: z.array(loId) }).strict(),
+    ),
+    stars: z
+      .object({
+        verify: starRow,
+        proceed: starRow,
+        report: starRow,
+        dismiss: starRow,
+        engage: starRow,
+        comply: starRow,
+        timer_expiry: z.enum(ACTION_CLASSES),
+      })
+      .strict(),
+    points: z.object({ per_star: z.number().int().positive(), engage_on_fraud: z.object({ terminal: z.boolean(), star_cap: z.number() }).strict() }).passthrough(),
+    multi_step: z.object({ boss: z.object({ scored_beats_max: z.number().int().positive() }).passthrough() }).passthrough(),
+    recovery: z.object({ pick: z.number().int().positive() }).passthrough(),
+    timers: z.object({ by_slot: z.record(z.string(), z.number().int().positive()) }).passthrough(),
+    difficulty: z
+      .object({
+        chapter_slots: z.record(
+          z.string(),
+          z.object({ band: range, scored: range, boss_difficulty: z.number().int(), target_minutes: range }).strict(),
+        ),
+        max_new_patterns_per_chapter: z.number().int(),
+        max_callbacks_per_chapter: z.number().int(),
+      })
+      .passthrough(),
+    mix: z
+      .object({
+        legit_share: z.object({ min: z.number(), max: z.number() }).strict(),
+        boss_is_fraud: z.boolean(),
+        legit_twin_required: z.boolean(),
+        max_consecutive_same_truth: z.number().int(),
+        max_same_theme_share: z.number(),
+        pressure_parity_pp: z.number(),
+        min_checkables: z.object({ fraud: z.number().int(), legit: z.number().int() }).strict(),
+        min_decoys_on_fraud: z.number().int(),
+        sender_or_link_decoy_min_share: ceilShare,
+        genuine_at_every_difficulty_used: z.boolean(),
+        timer_length_parity: z.literal('same_length_by_slot'),
+        genuine_normal_response_kind: actionKindSchema,
+        drill_tags_count: z.boolean(),
+        approve_prompt_only_on_fraud: z.boolean(),
+        no_comply_on_legit_low: z.boolean(),
+        language_never_red_flag: z.boolean(),
+        padlock_never_reassurance_as_proof: z.boolean(),
+        logo_or_sender_name_never_proof: z.boolean(),
+        authoring_rule_applies_to_roles: z.array(z.enum(ROLES)),
+      })
+      .strict(),
+    session: z
+      .object({
+        max_message_words: z.number().int(),
+        debrief_layer1_max_words: z.number().int(),
+        arc_line_max_words: z.number().int(),
+      })
+      .passthrough(),
+  })
+  .passthrough();
+export type Balance = z.infer<typeof balanceSchema>;
 
 const hexColour = z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'colours are #RRGGBB');
 const brandAssetPath = z.string().regex(/^public\/brands\/[a-z0-9-]+\.svg$/, 'logos live at public/brands/<id>.svg');

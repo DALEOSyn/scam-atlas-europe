@@ -1,57 +1,133 @@
-# Scenario template. Copy to content/scenarios/<city>/<id>.yaml
-# All brands fictional (content/brands.yaml). Domains: .example/.test/.invalid only. IBANs must be checksum-invalid.
+# Scenario template (schema: src/content/schema.ts, rules: scripts/lib/rules.ts).
+# Copy to content/scenarios/<city>/<id>.yaml and add the id to content/chapters/<city>.yaml.
+# All brands fictional (content/brands.yaml). Domains: .example/.test/.invalid only.
+# Phone numbers masked. IBANs must be checksum-invalid. QR payloads: /qr/<id> only.
 id: berlin-03-parcel-customs
-chapter: berlin
-pattern: smishing-parcel-fee          # id of docs/patterns/<id>.md
-learning_objectives: [LO-02, LO-05]
-difficulty: 2                         # 1 easy … 5 expert
+chapter: berlin                       # = folder name = content/chapters/<city>.yaml
+role: standard                        # standard | boss | drill | arc
+pattern: smishing-parcel-fee          # docs/patterns/<id>.md; genuine twins carry the pattern they mirror
+theme: parcel                         # surface theme for the theme-share rule
+# twin_of: berlin-02-parcel-locker    # the genuine/fraud mirror, same chapter
+learning_objectives: [LO-02, LO-03, LO-05]
+difficulty: 2                         # 1 easy … 5 expert (not for arc beats)
 is_fraud: true
-device: sms                           # email | sms | messenger | call | browser | qr | banking | social
-pressure: { timer_seconds: 45, levers: [urgency, small_amount] }
+# stakes: low                         # genuine only: low | high (high = asks to pay, log in, enter data or a code, approve, install)
+device: sms                           # email | sms | messenger | call | browser | qr | banking | social | auth | letter
+brands: [trundle]
+cast: []                              # content/cast.yaml ids appearing in this scenario
+# requires_flags: [kettle_hacked]     # snake_case flags set by an earlier outcome
+pressure:
+  timer: true                         # length comes from balance.yaml (timers: by_slot), never per scenario
+  levers: [urgency, small_amount]     # urgency | authority | fear | greed | helpfulness | affection | secrecy | small_amount | social_proof
+  # pusher: { messages: [{ at_seconds: 20, text: "Last reminder: pay today." }] }
+  # honest_deadline: "Locker holds your parcel 7 days"   # genuine only
 
 message:
-  sender: { display: "Trundle", detail: "+49 ••• ••• 0173" }   # Trundle = fictional courier (content/brands.yaml)
+  sender: { display: "Trundle", detail: "+49 ••• ••• 0173" }   # Trundle = fictional courier
   body: |
     Trundle: Ihr Paket wartet. Zollgebühr 1,99 EUR offen. Heute zahlen, sonst Rücksendung:
     trundle-zoll.example/p/8812
-  l10n_note: "German in-world text intentional; EN translation shown on magnifier."
+  lang: de                            # other languages than English need a translation
+  translation: "Trundle: Your parcel is waiting. Customs fee EUR 1.99 due. Pay today or it goes back: trundle-zoll.example/p/8812"
+  request: pay                        # none | reply | open_link | call | scan_qr | pay | log_in | enter_details | share_code | approve | install
+  references: ["TR-4471"]             # each shown element is a checkable (src/content/checkables.ts)
+  phone_numbers: ["0800 ••• 4410"]
+  l10n_note: "German in-world text intentional; the EN translation is shown inline."
 
-inspectables:                         # what the magnifier reveals; each red flag must point at one
+# One entry per checkable that should reveal something; every other checkable says "Nothing unusual here".
+# Targets: CHECKABLE_TARGETS in src/content/checkables.ts (sender detail, caller id, link, link#2, attachment,
+# reference, phone number, QR destination, page address and info, payee name check and IBAN, prompt fields, letterhead, image).
+inspectables:
   - target: sender.detail
     reveal: "A private mobile number, not the courier's short code."
     red_flag: true
   - target: link
     reveal: "trundle-zoll.example is not Trundle's site (trundle.example)."
     red_flag: true
+  - target: reference                 # decoy: fraud needs at least 2
+    reveal: "TR-4471 looks like a Trundle tracking number. Real and fake messages both use them."
+    red_flag: false
+  - target: phone_number
+    reveal: "A free-phone number in Trundle's format. It looks normal, so it settles nothing."
+    red_flag: false
+    # type: spelling | grammar | language (decoys on fraud only) | padlock (never proof) | logo | display_name
 
-actions:
+actions:                              # 2–5; stars come from balance.yaml (kind -> class -> stars)
   - id: tap_link
     label: "Open the link and pay €1.99"
-    outcome: card_details_stolen
-    score: -10
+    kind: open_link                   # engage on fraud is never terminal: next_beat
+    next_beat: fee_page
+    pressure_target: true             # exactly one when request is not none
   - id: open_app
     label: "Open the Trundle app yourself and check the tracking"
+    kind: verify_in_app
     outcome: no_fee_found
-    score: +15                        # the habit we teach scores highest
   - id: delete_report
     label: "Delete and report as spam"
+    kind: report
     outcome: reported
-    score: +10
+    # score: 10                       # optional override, needs score_reason
+
+beats:                                # follow-ups reached via next_beat (bosses: arrives_after)
+  - id: fee_page
+    device: browser
+    message:
+      page: { address: "trundle-zoll.example/p/8812", title: "Trundle Zoll" }
+      body: "Zollgebühr 1,99 EUR. Kartendaten eingeben, um die Zustellung freizugeben."
+      lang: de
+      translation: "Customs fee EUR 1.99. Enter your card details to release the delivery."
+      request: enter_details
+    inspectables:
+      - target: page.address
+        reveal: "The address bar still says trundle-zoll.example, not trundle.example."
+        red_flag: true
+      - target: page.info
+        reveal: "The padlock only means the connection is encrypted. Scam pages have one too."
+        red_flag: false
+        type: padlock
+    actions:
+      - id: enter_card
+        label: "Enter your card details and pay"
+        kind: enter_details
+        outcome: card_details_stolen
+        pressure_target: true
+      - id: close_page
+        label: "Close the page"
+        kind: ignore
+        outcome: left_page
+
+# interrupts: []                      # unscored notifications: { id, at_seconds, is_fraud, device, message, inspectables, actions }
 
 outcomes:
   card_details_stolen:
     narrative: "Two days later, three payments you don't recognise appear on your card."
-    recovery: [block_card_via_bank_app, call_bank_known_number, report_to_police_online]
+    recovery:                         # content/recovery_steps.yaml; pick+2 to pick+3 options, >= 2 harmful, one stop
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: call_bank_known_number, category: secure }
+      - { step: report_to_police_online, category: report }
+      - { step: reply_ask_money_back, category: harmful }
+      - { step: wait_and_see, category: harmful }
+    # sets_flags: [card_stolen]
   no_fee_found:
     narrative: "The app shows your parcel is already in the locker. No fee."
   reported:
     narrative: "Message reported. Your carrier blocks the sender."
+  left_page:
+    narrative: "You close the page without typing anything. Nothing happens."
 
 debrief:
-  red_flags:
-    - "Sender is a normal mobile number."
-    - "Link domain is not the courier's real domain."
-    - "Small fee + deadline: a classic pressure combination."
-  habit: "Check deliveries only in the app or site you open yourself."
-  already_clicked: "Block your card in your banking app, call your bank on the number on your card, and report it."
+  variant: standard                   # arc for arc beats (no verdict, no points)
+  layer1:                             # <= 40 words including the fixed copy
+    tell: "A courier asking for a small fee by text, from a mobile number, with a look-alike link."
+    what_works: "Open the courier's app yourself."
+  layer2:
+    message_flags:                    # flags that live in the text; checkable flags come from inspectables
+      - "Small fee plus a same-day deadline: a common pressure combination."
+  device_tip: "On a real phone, press and hold a link to see the full address before you open it."
+  habit_card: open-it-yourself        # content/habit_cards.yaml; its LO must be in learning_objectives
+  already_clicked:                    # required on fraud and arc; at least one of the three
+    clicked: "Close the page. Opening it alone rarely does harm; do not type anything."
+    entered_details: "Block your card in your banking app now, then call your bank on the number on your card."
+    paid: "Block your card, call your bank on the number on your card and report it to the police."
+  # safeguarding_line: "..."          # arc slots 2 and 3
   sources: [europol-scam-smishing, bsi-smishing]   # ids in content/sources.yaml (placeholders here)

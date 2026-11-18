@@ -1,0 +1,30 @@
+# Recurring characters (GDD §2, CR-12). Scammers are never cast members.
+# known_channel is the contact the player already has (staff directory, saved contact):
+# the safe way to check a message that claims to come from this person.
+cast:
+  - id: adaeze
+    name: "Adaeze Okafor-Lind"
+    role: "Coordinator, Brussels"
+    known_channel: { label: "Staff directory", detail: "Adaeze Okafor-Lind, Coordinator" }
+    notes: "Never asks for money or secrecy; the game says so early."
+  - id: mateus
+    name: "Mateus Ferreira"
+    role: "Field partner"
+    known_channel: { label: "Saved contact", detail: "Mateus (work phone)" }
+  - id: teo
+    name: "Grandpa Teo"
+    role: "Family back home"
+    known_channel: { label: "Saved contact", detail: "Grandpa Teo (home)" }
+  - id: noor
+    name: "Noor"
+    role: "Cousin"
+    known_channel: { label: "Saved contact", detail: "Noor" }
+  - id: alex
+    name: "Alex"
+    role: "Friend met on Wordswap"
+    arc_character: true
+    notes: "Friendship only. Lines are at most 25 words (balance.yaml, session: arc_line_max_words)."
+  - id: jonas
+    name: "Jonas"
+    role: "Neighbour, Berlin"
+    known_channel: { label: "Saved contact", detail: "Jonas (neighbour)" }

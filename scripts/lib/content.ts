@@ -8,7 +8,7 @@ import { parseDocument } from 'yaml';
 import { yamlStructureIssues } from './yaml-safety.ts';
 import type { z } from 'zod';
 import { isAllowedSourceHost } from './source-hosts.ts';
-import { chapterRules, scenarioRules, type Registries } from './rules.ts';
+import { chapterRules, scenarioRules, unregisteredHostIssues, type Registries } from './rules.ts';
 import {
   balanceSchema,
   brandsFileSchema,
@@ -149,6 +149,11 @@ export function loadSources(contentDir: string, report: ContentReport): Map<stri
   return out;
 }
 
+/** Every host content/brands.yaml registers (domains, sub-brand domains, e-mail domains, look-alikes), lowercased. */
+export function registeredHosts(brands: Map<string, Brand>): Set<string> {
+  return new Set([...brands.values()].flatMap((b) => brandHosts(b).map((h) => h.toLowerCase())));
+}
+
 /** Validate a single scenario object (already parsed) against schema + registries. */
 export function checkScenario(
   file: string,
@@ -181,6 +186,7 @@ export function checkScenario(
       (opts.strict ? report.errors : report.warnings).push(`${file}: brands: "${id}" is still a placeholder brand`);
     }
   }
+  report.errors.push(...unregisteredHostIssues(s, registeredHosts(brands)).map((e) => `${file}: ${e}`));
   return s;
 }
 

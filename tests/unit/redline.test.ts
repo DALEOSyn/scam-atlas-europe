@@ -557,3 +557,24 @@ describe('schema identifiers are exempt only at their path and only when known (
     expect(brandHits(CHAPTER, 'device: messenger\n')).toEqual(['messenger']);
   });
 });
+
+describe('schema identifier exemption drops only warnlist hits (T-2.4a follow-up)', () => {
+  const SCENARIO = resolve(ROOT, 'content/scenarios/home/x.yaml');
+  const CHAPTER = resolve(ROOT, 'content/chapters/x.yaml');
+  const briefs = new Set(['whatsapp-code-theft', 'messenger-account-takeover-code']);
+
+  it('a denylisted brand in a known pattern id still errors', () => {
+    for (const [file, yaml] of [
+      [SCENARIO, 'pattern: whatsapp-code-theft\n'],
+      [CHAPTER, 'patterns: [whatsapp-code-theft]\n'],
+      [CHAPTER, 'callbacks:\n  - whatsapp-code-theft\n'],
+    ] as const) {
+      const found = lintText(file, yaml, cfg, briefs);
+      expect(found.some((f) => f.severity === 'error' && f.category === 'brand' && /whatsapp/i.test(f.match))).toBe(true);
+    }
+  });
+
+  it('warnlist hits in the same position are still dropped', () => {
+    expect(lintText(SCENARIO, 'pattern: messenger-account-takeover-code\n', cfg, briefs).filter((f) => f.category === 'brand')).toEqual([]);
+  });
+});

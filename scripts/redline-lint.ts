@@ -26,10 +26,10 @@
  * sub-brands, known_channels, email_addresses, look-alikes, ...) is linted
  * from decoded scalars; content:validate additionally enforces strict keys.
  */
-import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { resolve, relative, basename, sep } from 'node:path';
 import { LineCounter, parse, parseDocument, isMap, isScalar, isSeq, type Node } from 'yaml';
-import { listFiles } from './lib/content.ts';
+import { listFiles, loadPatternIds } from './lib/content.ts';
 import { yamlStructureIssues } from './lib/yaml-safety.ts';
 import { blankSvgGeometry, checkQrPayload, scanText, type Finding, type RuleConfig } from './redline/rules.ts';
 import { compileList } from './redline/lists.ts';
@@ -147,26 +147,14 @@ export function exemptInspectableTargets(file: string, root: Node | null | undef
 }
 
 const CHAPTERS_DIR = resolve(CONTENT, 'chapters');
-export const PATTERNS_DIR = resolve(ROOT, 'docs', 'patterns');
 
 export function isChapterFile(file: string): boolean {
   return resolve(file).startsWith(`${CHAPTERS_DIR}${sep}`);
 }
 
-/** Pattern ids: slug-named briefs docs/patterns/<id>.md (MAP.md and other upper-case notes are not ids). */
-export function loadPatternIds(dir: string = PATTERNS_DIR): Set<string> {
-  if (!existsSync(dir)) return new Set();
-  return new Set(
-    readdirSync(dir)
-      .filter((f) => f.endsWith('.md'))
-      .map((f) => f.slice(0, -3))
-      .filter((id) => SOURCE_ID_RE.test(id)),
-  );
-}
-
 let patternIdCache: Set<string> | undefined;
 function patternIds(): Set<string> {
-  patternIdCache ??= loadPatternIds();
+  patternIdCache ??= loadPatternIds(resolve(ROOT, 'docs')) ?? new Set();
   return patternIdCache;
 }
 
@@ -174,7 +162,9 @@ const isStringScalar = (n: unknown): n is Node & { value: string } => isScalar(n
 
 /**
  * Schema identifiers can contain warnlisted words (device: messenger, pattern
- * messenger-account-takeover-code). Exempt ONLY:
+ * messenger-account-takeover-code). Only warnlist (warn-severity brand) hits
+ * are dropped on these nodes; lintText re-scans them, so denylisted brands,
+ * domains, phones etc. still fail. Applies ONLY to:
  *  - in scenario files: `device` of the opening message, beats[] and
  *    interrupts[] when it is a member of the schema's DEVICES enum (not
  *    message.prompt.device, which is free text), and the top-level `pattern`
@@ -268,7 +258,8 @@ function walkYaml(
   }
 }
 
-export function lintText(file: string, text: string, cfg: RuleConfig): FileFinding[] {
+/** `briefs` overrides the pattern ids from docs/patterns (tests). */
+export function lintText(file: string, text: string, cfg: RuleConfig, briefs?: ReadonlySet<string>): FileFinding[] {
   const found: FileFinding[] = [];
   const seen = new Set<string>();
   const add = (f: Finding): void => {
@@ -286,12 +277,8 @@ export function lintText(file: string, text: string, cfg: RuleConfig): FileFindi
   let raw = /\.svg$/i.test(file) ? blankSvgGeometry(text) : text;
   const root = doc?.contents as Node | null | undefined;
   const brandNotes = exemptBrandReviewNotes(file, root);
-  const exempt = new Set<Node>([
-    ...exemptSourceIds(file, root),
-    ...exemptInspectableTargets(file, root),
-    ...exemptSchemaIdentifiers(file, root),
-    ...brandNotes,
-  ]);
+  const schemaIds = exemptSchemaIdentifiers(file, root, briefs);
+  const exempt = new Set<Node>([...exemptSourceIds(file, root), ...exemptInspectableTargets(file, root), ...schemaIds, ...brandNotes]);
   for (const n of exempt) {
     if (n.range) raw = raw.slice(0, n.range[0]) + raw.slice(n.range[0], n.range[1]).replace(/[^\n]/g, ' ') + raw.slice(n.range[1]);
   }
@@ -325,6 +312,18 @@ export function lintText(file: string, text: string, cfg: RuleConfig): FileFindi
         lc,
         (value, line) => {
           for (const f of scanText(value, cfg)) if (f.category !== 'brand') add({ ...f, line: line + (f.line ?? 1) - 1 });
+        },
+        add,
+      );
+    }
+    // Schema identifiers: everything except warnlist brand hits (denylist errors still fire).
+    for (const n of schemaIds) {
+      walkYaml(
+        n,
+        [],
+        lc,
+        (value, line) => {
+          for (const f of scanText(value, cfg)) if (!(f.category === 'brand' && f.severity === 'warn')) add({ ...f, line: line + (f.line ?? 1) - 1 });
         },
         add,
       );

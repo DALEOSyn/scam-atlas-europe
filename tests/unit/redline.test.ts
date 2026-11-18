@@ -322,7 +322,8 @@ describe('re-review 1: separators only at the name\'s own boundaries or between 
   });
 
   it('docs/ prose produces no brand errors', () => {
-    const docs = listFiles(resolve(ROOT, 'docs'), ['.md']);
+    // docs/patterns/ (research) names real organisations as sources by design, so it is excluded.
+    const docs = listFiles(resolve(ROOT, 'docs'), ['.md']).filter((f) => !/[\\/]docs[\\/]patterns[\\/]/.test(f));
     expect(docs.length).toBeGreaterThan(0);
     const found = docs.flatMap((f) => scanText(readFileSync(f, 'utf8'), cfg).filter((x) => x.category === 'brand' && x.severity === 'error').map((x) => `${f}:${x.line} ${x.match}`));
     expect(found).toEqual([]);

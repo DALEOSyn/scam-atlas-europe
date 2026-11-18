@@ -192,6 +192,12 @@ export const sourceSchema = z
       .refine(isHttpsUrl, 'url must be an absolute https:// URL')
       .optional(),
     accessed: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'accessed must be YYYY-MM-DD').optional(),
+    /** Research metadata (fraud-researcher, T-1.3). */
+    published: z.string().min(1).optional(),
+    region: z.string().min(2).optional(),
+    tier: z.number().int().min(1).max(4).optional(),
+    used_for: z.array(z.string()).optional(),
+    notes: z.string().optional(),
     /** Placeholder ids reserved before fraud-researcher fills them in (T-1.3). */
     placeholder: z.boolean().default(false),
   })

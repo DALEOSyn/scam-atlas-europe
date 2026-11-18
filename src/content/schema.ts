@@ -77,13 +77,28 @@ export const loId = z.string().regex(/^LO-\d{2}$/, 'learning objective ids look 
 // ---------------------------------------------------------------------------
 // Message parts. Which parts a device needs is checked per beat (DEVICE_PARTS).
 
+/** Non-routable lowercase host (RFC 2606 reserved TLDs; Red Line 3). */
+export const FICTIONAL_HOST = /^[a-z0-9.-]+\.(example|test|invalid)$/;
+
+/** Host part of an address-bar string: optional http(s)://, then host, then optional /path. */
+export function addressHost(address: string): string {
+  const rest = address.replace(/^https?:\/\//, '');
+  return rest.split(/[/?#]/)[0] ?? rest;
+}
+
+const fictionalAddress = (what: string) =>
+  z
+    .string()
+    .min(1)
+    .refine((v) => FICTIONAL_HOST.test(addressHost(v)), `${what} must be a lowercase host ending in .example, .test or .invalid (Red Line 3)`);
+
 /** QR codes may only resolve to an in-game route (Red Line 3). */
 export const QR_PAYLOAD_RE = /^\/qr\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export const qrSchema = z
   .object({
     payload: z.string().regex(QR_PAYLOAD_RE, 'QR payload must be an in-game route /qr/<id>'),
     /** Host shown on the destination chip ("QR code · opens trundle-redelivery.example"). */
-    destination: z.string().min(1),
+    destination: fictionalAddress('qr.destination'),
     caption: z.string().min(1).optional(),
   })
   .strict();
@@ -110,7 +125,7 @@ export const messageSchema = z
     references: z.array(z.string().min(1)).optional(),
     phone_numbers: z.array(z.string().min(1)).optional(),
     qr: qrSchema.optional(),
-    page: z.object({ address: z.string().min(1), title: z.string().min(1).optional() }).strict().optional(),
+    page: z.object({ address: fictionalAddress('page.address'), title: z.string().min(1).optional() }).strict().optional(),
     payee: z
       .object({
         name: z.string().min(1),
@@ -350,10 +365,18 @@ export const scenarioSchema = z
     }
 
     // Beats: ids, devices, references.
-    const beats: { id: string; device: Device; message: Message; inspectables: Inspectable[]; actions: Action[]; path: (string | number)[] }[] = [
-      { id: 'start', device: s.device, message: s.message, inspectables: s.inspectables, actions: s.actions, path: [] },
-      ...s.beats.map((b, i) => ({ ...b, path: ['beats', i] })),
-      ...s.interrupts.map((b, i) => ({ ...b, path: ['interrupts', i] })),
+    const beats: {
+      id: string;
+      device: Device;
+      message: Message;
+      inspectables: Inspectable[];
+      actions: Action[];
+      path: (string | number)[];
+      fraud: boolean;
+    }[] = [
+      { id: 'start', device: s.device, message: s.message, inspectables: s.inspectables, actions: s.actions, path: [], fraud: s.is_fraud },
+      ...s.beats.map((b, i) => ({ ...b, path: ['beats', i], fraud: s.is_fraud })),
+      ...s.interrupts.map((b, i) => ({ ...b, path: ['interrupts', i], fraud: b.is_fraud })),
     ];
     const beatIds = new Set<string>(['start']);
     s.beats.forEach((b, i) => {
@@ -400,10 +423,16 @@ export const scenarioSchema = z
       if (o.arc_effects && s.role !== 'arc') issue(['outcomes', key, 'arc_effects'], 'arc_effects are for arc beats only');
     }
 
-    // Red Line 8: a letter is only ever the carrier of a QR code or URL; the scenario hinges on that digital vector.
-    if (beats.some((b) => b.device === 'letter')) {
-      const digital = beats.some((b) => b.inspectables.some((i) => i.target === 'qr.destination' || /^link(?:#\d)?$/.test(i.target)));
-      if (!digital) issue(['inspectables'], 'letter scenarios must carry a QR code or URL with an inspectable (qr.destination or link) (Red Line 8)');
+    // Red Line 8: a letter is only ever the carrier of a QR code or URL; the scenario hinges on that digital
+    // vector. Checked per letter beat: a later SMS link cannot stand in for the letter's own vector.
+    for (const b of beats) {
+      if (b.device !== 'letter') continue;
+      const vectors = b.inspectables.filter((i) => i.target === 'qr.destination' || /^link(?:#[2-9])?$/.test(i.target));
+      if (vectors.length === 0) {
+        issue([...b.path, 'inspectables'], 'a letter must carry a QR code or URL with its own inspectable (qr.destination or link) (Red Line 8)');
+      } else if (b.fraud && !vectors.some((i) => i.red_flag)) {
+        issue([...b.path, 'inspectables'], 'on fraud, the letter\'s QR code or URL is the vector: mark its qr.destination or link as red_flag: true (Red Line 8)');
+      }
     }
   });
 export type Scenario = z.infer<typeof scenarioSchema>;

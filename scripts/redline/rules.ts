@@ -7,7 +7,6 @@
  * domain, IBAN, phone number or brand. When in doubt, rephrase the content
  * (use letters in reference numbers, mask phone numbers with "•").
  */
-import { CHECKABLE_TARGETS } from '../../src/content/checkables.ts';
 import { normalise } from './fold.ts';
 import { findBrandHits, type BrandMatcher, type Severity } from './lists.ts';
 
@@ -61,9 +60,9 @@ const FILE_EXTENSIONS = new Set([
 export const NON_DOMAIN_TOKENS = new Set([
   'e.g', 'i.e', 'sender.detail', 'sender.display', 'message.body', 'message.subject', 'message.sender',
   'message.sender.detail', 'message.sender.display', 'message.qr', 'message.qr.payload', 'qr.payload', 'qr.caption',
-  // Inspectable targets (checkables). Labels stop at "_", so payee.name_check is seen as "payee.name".
-  ...CHECKABLE_TARGETS.filter((t) => t.includes('.')).flatMap((t) => [t, t.split('_')[0] ?? t]),
 ]);
+// Inspectable targets (page.info, payee.name_check, ...) are NOT exempt here: some end in real TLDs
+// (.info, .name). redline-lint.ts exempts them only as the value of inspectables[].target in scenario files.
 
 const LABEL = '[\\p{L}\\p{N}](?:[\\p{L}\\p{N}-]*[\\p{L}\\p{N}])?';
 const DOMAIN_TOKEN_RE = new RegExp(`(?<![\\p{L}\\p{N}_-])${LABEL}(?:\\.${LABEL})+`, 'gu');

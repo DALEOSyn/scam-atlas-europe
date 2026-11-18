@@ -192,9 +192,13 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
     }
   }
   if (scored && !s.is_fraud && s.stakes) {
-    const high = HIGH_STAKES_REQUESTS.includes(s.message.request);
+    // Every story beat counts: a harmless opening that leads to a payment page is high stakes.
+    const requests = story.map((b) => b.message.request);
+    const high = requests.some((r) => HIGH_STAKES_REQUESTS.includes(r));
     if (high !== (s.stakes === 'high')) {
-      errors.push(`stakes: ${s.stakes} does not match the request (${s.message.request}); high stakes = asks to pay, log in, enter data or a code, approve or install`);
+      errors.push(
+        `stakes: ${s.stakes} does not match the requests (${[...new Set(requests)].join(', ')}); high stakes = any beat asks to pay, log in, enter data or a code, approve or install`,
+      );
     }
   }
   if (s.player_started) {

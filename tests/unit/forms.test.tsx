@@ -82,7 +82,10 @@ describe('App shell', () => {
     expect(screen.getByText(/No fee\./)).toBeTruthy();
     expect(screen.getByText(/That is the habit that works/)).toBeTruthy();
     expect(screen.getByText(scenario.debrief.layer1.what_works)).toBeTruthy();
-    expect(screen.getByText(/Already clicked/)).toBeTruthy();
+    // Mini habit card (UI_SPEC §8.2 item 4).
+    expect(screen.getByRole('heading', { level: 3, name: 'Open it yourself' })).toBeTruthy();
+    expect(container.querySelector('[data-habit-card="open-it-yourself"]')).not.toBeNull();
+    expect(screen.getByRole('heading', { name: 'Already clicked? Do this' })).toBeTruthy();
     assertFormsAreSafe(container);
   });
 

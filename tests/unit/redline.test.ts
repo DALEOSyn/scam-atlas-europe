@@ -435,3 +435,43 @@ describe('T-1.8: brand registry and balance tables are linted', () => {
     expect(lintText(BRANDS, 'brands:\n  - id: t\n    name: T\n    paypal_id: "x"\n', cfg).map((f) => f.category)).toEqual(['brand']);
   });
 });
+
+// ---------------------------------------------------------------------------
+// T-2.2 rework: checkable names are exempt only as inspectable target values.
+
+describe('checkable names are not a domain loophole (T-2.2)', () => {
+  const SCENARIO = resolve(ROOT, 'content/scenarios/home/x.yaml');
+  const domains = (file: string, yaml: string) =>
+    lintText(file, yaml, cfg)
+      .filter((f) => f.severity === 'error' && f.category === 'domain')
+      .map((f) => f.match.toLowerCase());
+
+  it.each(['page.info', 'PAYEE.NAME', 'Page.Info', 'payee.name_check'])('"Pay at %s" in a message body is flagged', (host) => {
+    expect(domains(SCENARIO, `message:\n  body: "Pay at ${host} today"\n`).length).toBeGreaterThan(0);
+  });
+
+  it('checkable names as inspectables[].target values are exempt (opening, beats, interrupts)', () => {
+    const yaml = [
+      'inspectables:',
+      '  - { target: page.info, reveal: "x", red_flag: false }',
+      '  - { target: payee.name_check, reveal: "x", red_flag: false }',
+      'beats:',
+      '  - id: b',
+      '    inspectables: [{ target: page.address, reveal: "x", red_flag: true }]',
+      'interrupts:',
+      '  - id: i',
+      '    inspectables: [{ target: qr.destination, reveal: "x", red_flag: true }]',
+      '',
+    ].join('\n');
+    expect(domains(SCENARIO, yaml)).toEqual([]);
+  });
+
+  it('the exemption is path-, value- and file-bound', () => {
+    // Not a known checkable in target position.
+    expect(domains(SCENARIO, 'inspectables:\n  - { target: evil.info, reveal: "x", red_flag: true }\n')).toEqual(['evil.info']);
+    // A known checkable under another key.
+    expect(domains(SCENARIO, 'inspectables:\n  - { target: link, reveal: "page.info", red_flag: true }\n')).toEqual(['page.info']);
+    // Same structure outside content/scenarios.
+    expect(domains(resolve(ROOT, 'content/other.yaml'), 'inspectables:\n  - { target: page.info, reveal: "x", red_flag: true }\n')).toEqual(['page.info']);
+  });
+});

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import type { Action, Device, Message, Scenario } from '../content/schema.ts';
 import { scoring } from '../content/balance.ts';
+import { habitCard } from '../content/habitCards.ts';
 import { resolveAction, type Resolution } from '../engine/outcome.ts';
 import { t } from '../i18n/index.ts';
 import styles from './ScenarioView.module.css';
@@ -105,6 +106,7 @@ export function DebriefView({ scenario, result, onAgain }: DebriefViewProps) {
     .map((i) => i.reveal);
   const flags = [...checkableFlags, ...debrief.layer2.message_flags];
   const ac = debrief.already_clicked;
+  const card = habitCard(debrief.habit_card);
   return (
     <section class={styles.scenario} aria-labelledby="outcome-heading">
       <h2 id="outcome-heading" ref={heading} tabIndex={-1}>
@@ -144,6 +146,18 @@ export function DebriefView({ scenario, result, onAgain }: DebriefViewProps) {
           <h3>{t('debrief_device_tip')}</h3>
           <p>{debrief.device_tip}</p>
         </>
+      ) : null}
+      {card ? (
+        <section class={styles.habitCard} aria-labelledby="habit-card-title" data-habit-card={card.id}>
+          <p class={styles.label}>{t('debrief_habit')}</p>
+          <h3 id="habit-card-title">{card.title}</h3>
+          <p>{card.habit}</p>
+          <p class={styles.detail}>{card.example}</p>
+          <p>
+            <strong>{t('habit_card_already_clicked')} </strong>
+            {card.already_clicked}
+          </p>
+        </section>
       ) : null}
       {ac ? (
         <>

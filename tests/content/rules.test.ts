@@ -74,7 +74,23 @@ describe('per-scenario rules (scenarioRules)', () => {
       expect(errorsOf(r).join('\n')).toMatch(/at least one verify action/);
     });
     it('stakes match the request on genuine messages', () => {
-      expect(errorsOf(rawGenuine('g', { stakes: 'high' })).join('\n')).toMatch(/stakes: high does not match the request/);
+      expect(errorsOf(rawGenuine('g', { stakes: 'high' })).join('\n')).toMatch(/stakes: high does not match the requests/);
+    });
+    it('stakes count the requests of every beat, not just the opening', () => {
+      const g = rawGenuine('g', {
+        message: { ...msg(rawGenuine()), request: 'open_link' },
+        beats: [
+          {
+            id: 'shop',
+            device: 'browser',
+            message: { page: { address: 'trundle.example/pay' }, body: 'Pay the redelivery fee.', request: 'pay' },
+            actions: [{ id: 'pay_it', label: 'Pay', kind: 'pay_protected', outcome: 'done', pressure_target: true }],
+          },
+        ],
+      });
+      actions(g)[0] = { id: 'go_pick_up', label: 'Open the link', kind: 'proceed', next_beat: 'shop', pressure_target: true };
+      expect(errorsOf(g).join('\n')).toMatch(/stakes: low does not match the requests \(open_link, pay\)/);
+      expect(errorsOf({ ...g, stakes: 'high' })).toEqual([]);
     });
     it('a fall on fraud needs recovery options', () => {
       const r = rawFraud();
@@ -227,10 +243,84 @@ describe('schema-level checks', () => {
       { target: 'reference', reveal: 'x', red_flag: false },
       { target: 'phone_number', reveal: 'x', red_flag: false },
     ];
-    expect(schemaErrors(letter(decoys)).join('\n')).toMatch(/letter scenarios must carry a QR code or URL .*Red Line 8/);
+    expect(schemaErrors(letter(decoys)).join('\n')).toMatch(/a letter must carry a QR code or URL with its own inspectable .*Red Line 8/);
     const ok = letter([{ target: 'qr.destination', reveal: 'Not trundle.example.', red_flag: true }, ...decoys]);
     expect(schemaErrors(ok)).toEqual([]);
     expect(errorsOf(ok)).toEqual([]);
+  });
+
+  it('Red Line 8 per beat: a paper letter cannot borrow a later SMS link', () => {
+    const r = rawFraud('l2', {
+      device: 'letter',
+      message: { letterhead: 'Trundle Customs Office', body: 'Your parcel is held. We will text you.', request: 'none', references: ['TR-9'], phone_numbers: ['0800 ••• 4410'] },
+      inspectables: [
+        { target: 'reference', reveal: 'x', red_flag: false },
+        { target: 'phone_number', reveal: 'x', red_flag: false },
+      ],
+      actions: [
+        { id: 'wait_text', label: 'Wait for the text', kind: 'proceed', next_beat: 'sms' },
+        { id: 'open_app', label: 'Open the app yourself', kind: 'verify_in_app', outcome: 'fine' },
+      ],
+      beats: [
+        {
+          id: 'sms',
+          device: 'sms',
+          message: { sender: { display: 'Trundle' }, body: 'Pay at trundle-zoll.example/p/1', request: 'pay' },
+          inspectables: [{ target: 'link', reveal: 'Looks fine.', red_flag: false }],
+          actions: [
+            { id: 'pay_link', label: 'Pay', kind: 'pay', outcome: 'stolen', pressure_target: true },
+            { id: 'report_it', label: 'Report it', kind: 'report', outcome: 'reported' },
+          ],
+        },
+      ],
+      outcomes: { ...(rawFraud().outcomes as Raw), left: undefined },
+    });
+    delete (r.outcomes as Raw).left;
+    expect(schemaErrors(r).join('\n')).toMatch(/^inspectables: a letter must carry a QR code or URL with its own inspectable/m);
+  });
+
+  it('Red Line 8 on fraud: the letter\'s QR or URL must be a red flag, not only a decoy', () => {
+    const r = rawFraud('l3', {
+      device: 'letter',
+      message: {
+        letterhead: 'Trundle Customs Office',
+        body: 'Scan to pay the fee.',
+        request: 'scan_qr',
+        references: ['TR-9'],
+        qr: { payload: '/qr/letter-fee', destination: 'trundle-zoll.example' },
+      },
+      inspectables: [
+        { target: 'qr.destination', reveal: 'Looks fine.', red_flag: false },
+        { target: 'reference', reveal: 'x', red_flag: false },
+      ],
+      actions: [
+        { id: 'scan', label: 'Scan the code', kind: 'scan_qr_and_open', next_beat: 'fee_page', pressure_target: true },
+        { id: 'open_app', label: 'Open the app yourself', kind: 'verify_in_app', outcome: 'fine' },
+        { id: 'report_it', label: 'Report it', kind: 'report', outcome: 'reported' },
+      ],
+    });
+    expect(schemaErrors(r).join('\n')).toMatch(/mark its qr\.destination or link as red_flag: true \(Red Line 8\)/);
+  });
+
+  it('page.address and qr.destination must be fictional lowercase hosts (Red Line 3)', () => {
+    const page = (address: string) => {
+      const r = rawFraud();
+      ((r.beats as Raw[])[0] as Raw).message = { page: { address }, body: 'x', request: 'enter_details' };
+      return schemaErrors(r).join('\n');
+    };
+    expect(page('trundle-zoll.example/p/1')).toBe('');
+    expect(page('https://trundle-zoll.example/p/1')).toBe('');
+    expect(page('trundle-zoll.com/p/1')).toMatch(/page\.address must be a lowercase host/);
+    expect(page('page.info')).toMatch(/page\.address must be a lowercase host/);
+    expect(page('trundle.example.com/x')).toMatch(/page\.address must be a lowercase host/);
+    expect(page('Trundle-zoll.example')).toMatch(/page\.address must be a lowercase host/);
+    const qr = (destination: string) => {
+      const r = rawFraud();
+      r.message = { ...msg(r), qr: { payload: '/qr/x', destination } };
+      return schemaErrors(r).join('\n');
+    };
+    expect(qr('trundle-redelivery.example')).toBe('');
+    expect(qr('trundle-redelivery.de')).toMatch(/qr\.destination must be a lowercase host/);
   });
 
   it('inspectable targets must be visible in the device template', () => {

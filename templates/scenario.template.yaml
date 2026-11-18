@@ -35,8 +35,8 @@ message:
   l10n_note: "German in-world text intentional; the EN translation is shown inline."
 
 # One entry per checkable that should reveal something; every other checkable says "Nothing unusual here".
-# Targets: sender.detail | caller_id | link, link#2 | attachment | reference | phone_number | qr.destination |
-# page.address | page.info | payee.name_check | payee.iban | prompt.service/where/device/when/number | letterhead | image
+# Targets: CHECKABLE_TARGETS in src/content/checkables.ts (sender detail, caller id, link, link#2, attachment,
+# reference, phone number, QR destination, page address and info, payee name check and IBAN, prompt fields, letterhead, image).
 inspectables:
   - target: sender.detail
     reveal: "A private mobile number, not the courier's short code."

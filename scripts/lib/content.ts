@@ -12,6 +12,7 @@ import {
   balanceSchema,
   brandsFileSchema,
   castFileSchema,
+  FICTIONAL_HOST,
   chapterSchema,
   habitCardsFileSchema,
   i18nCatalogueSchema,
@@ -66,6 +67,7 @@ export function loadBrands(contentDir: string, report: ContentReport): Map<strin
   for (const b of res.data.brands) {
     if (out.has(b.id)) report.errors.push(`${file}: duplicate brand id "${b.id}"`);
     out.set(b.id, b);
+    // Hosts in the registry must be non-routable (Red Line 3; FICTIONAL_HOST in schema.ts). Also linted by redline:lint.
     for (const { host, displayTextOnly } of brandHostEntries(b)) {
       // Display-only look-alikes may use capital-letter homoglyphs (trundIe); everything else is a lowercase host.
       if (!FICTIONAL_HOST.test(displayTextOnly ? host.toLowerCase() : host)) {
@@ -77,9 +79,6 @@ export function loadBrands(contentDir: string, report: ContentReport): Map<strin
   }
   return out;
 }
-
-/** Hosts in the registry must be non-routable (Red Line 3). Also enforced by redline:lint on brands.yaml. */
-export const FICTIONAL_HOST = /^[a-z0-9.-]+\.(example|test|invalid)$/;
 
 /** Host part of a domain, URL-ish string ("host/path") or email address. */
 function hostOf(value: string): string {

@@ -32,6 +32,7 @@ import { LineCounter, parse, parseDocument, isMap, isScalar, isSeq, type Node } 
 import { listFiles } from './lib/content.ts';
 import { blankSvgGeometry, checkQrPayload, scanText, type Finding, type RuleConfig } from './redline/rules.ts';
 import { compileList } from './redline/lists.ts';
+import { CHECKABLE_TARGETS } from '../src/content/checkables.ts';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const CONTENT = resolve(ROOT, 'content');
@@ -105,6 +106,40 @@ export function exemptSourceIds(file: string, root: Node | null | undefined): Se
   if (!isSeq(sources)) return out;
   for (const item of sources.items) {
     if (isScalar(item) && typeof item.value === 'string' && SOURCE_ID_RE.test(item.value)) out.add(item);
+  }
+  return out;
+}
+
+/** An inspectable target value: a known checkable, optionally numbered (link#2). */
+export function isCheckableTarget(value: string): boolean {
+  const base = value.replace(/#[2-9]$/, '');
+  return (CHECKABLE_TARGETS as readonly string[]).includes(base);
+}
+
+/**
+ * Checkable names such as page.info or payee.name_check look like domains
+ * (.info and .name are real TLDs). Exempt ONLY the scalar value of
+ * inspectables[].target (opening message, beats[] and interrupts[]) in
+ * scenario files, and only when it is a known checkable. Anywhere else
+ * ("Pay at page.info") they are linted like any other domain.
+ */
+export function exemptInspectableTargets(file: string, root: Node | null | undefined): Set<Node> {
+  const out = new Set<Node>();
+  if (!isScenarioFile(file) || !isMap(root)) return out;
+  const fromInspectables = (holder: unknown): void => {
+    if (!isMap(holder)) return;
+    const list = holder.get('inspectables', true);
+    if (!isSeq(list)) return;
+    for (const ins of list.items) {
+      if (!isMap(ins)) continue;
+      const target = ins.get('target', true);
+      if (isScalar(target) && typeof target.value === 'string' && isCheckableTarget(target.value)) out.add(target);
+    }
+  };
+  fromInspectables(root);
+  for (const key of ['beats', 'interrupts']) {
+    const seq = root.get(key, true);
+    if (isSeq(seq)) for (const b of seq.items) fromInspectables(b);
   }
   return out;
 }
@@ -184,11 +219,11 @@ export function lintText(file: string, text: string, cfg: RuleConfig): FileFindi
   const lc = new LineCounter();
   const doc = isData ? parseDocument(text, { lineCounter: lc, uniqueKeys: false }) : undefined;
 
-  // Exempt nodes (see exemptSourceIds, exemptBrandReviewNotes) are blanked for the raw pass and skipped when decoding.
+  // Exempt nodes (see exemptSourceIds, exemptInspectableTargets, exemptBrandReviewNotes) are blanked for the raw pass and skipped when decoding.
   let raw = /\.svg$/i.test(file) ? blankSvgGeometry(text) : text;
   const root = doc?.contents as Node | null | undefined;
   const brandNotes = exemptBrandReviewNotes(file, root);
-  const exempt = new Set<Node>([...exemptSourceIds(file, root), ...brandNotes]);
+  const exempt = new Set<Node>([...exemptSourceIds(file, root), ...exemptInspectableTargets(file, root), ...brandNotes]);
   for (const n of exempt) {
     if (n.range) raw = raw.slice(0, n.range[0]) + raw.slice(n.range[0], n.range[1]).replace(/[^\n]/g, ' ') + raw.slice(n.range[1]);
   }

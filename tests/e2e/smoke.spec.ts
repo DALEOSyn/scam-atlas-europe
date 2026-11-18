@@ -28,7 +28,8 @@ test('tutorial example: start, choose the habit, read the debrief', async ({ pag
   await page.getByRole('button', { name: /Open the Trundle app yourself/ }).click();
   await expect(page.getByRole('heading', { name: 'Debrief' })).toBeVisible();
   await expect(page.getByText('That is the habit that works.', { exact: false })).toBeVisible();
-  await expect(page.getByText(/Already clicked/)).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Already clicked? Do this' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 3, name: 'Open it yourself' })).toBeVisible();
   expect((await new AxeBuilder({ page }).withTags(WCAG).analyze()).violations).toEqual([]);
 
   // Red Line 7 / privacy: nothing but the game's own origin is ever requested.

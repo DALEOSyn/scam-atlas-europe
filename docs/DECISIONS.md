@@ -47,6 +47,7 @@ Approve `docs/GDD.md`, the chapter list (`docs/patterns/MAP.md`), the learning o
 
 ## Standing rules from Roman
 - **2026-11-18: keep the scams in the cybersecurity realm.** Every scenario must hinge on a digital or cyber vector; purely offline fraud is out of scope. Recorded as Red Line 8 in CLAUDE.md, which the sceptic-reviewer enforces.
+- **2026-11-18: widen the scope to malicious cyber campaigns, not only scams** (Roman: "both yes" to the catalogue questions). Malware and technical campaigns from THREAT_CATALOGUE.md Part B may become scenarios when the player can see the vector and act on it, at the defender's level only. Webcam-blackmail emails: help card only, never a scenario. Recorded in CLAUDE.md Red Line 8.
 
 ## G2 — Vertical slice approved (state: Open)
 Play the tutorial + first city chapter yourself (link to preview build). Approve fun, tone and difficulty before content is mass-produced.

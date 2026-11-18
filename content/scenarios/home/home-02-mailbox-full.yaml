@@ -17,11 +17,9 @@ message:
   sender: { display: "Waymarker mail", detail: "no-reply@waymarker-helpdesk.example" }
   subject: "Urgent: your mailbox is 98% full"
   body: |
-    Your Waymarker mail storage is almost full. From today, new messages may be held back
-    and not delivered.
+    Your Waymarker mail storage is almost full. From today, new messages may be held back and not delivered.
 
-    Sign in to free up space and keep receiving mail:
-    waymarker-it-support.example/mail/quota
+    Sign in to free up space and keep receiving mail: waymarker-it-support.example/mail/quota
 
     Ticket WM-20931 · Questions? IT desk +32 2 ••• •• 00
 
@@ -40,7 +38,7 @@ inspectables:
     red_flag: true
     type: link
   - target: reference
-    reveal: "WM-20931 looks like a ticket number. Anyone can type one; real and fake messages both have them."
+    reveal: "WM-20931 looks like a ticket number. Anyone can type one; real and look-alike messages both have them."
     red_flag: false
     type: reference
   - target: phone_number
@@ -80,7 +78,7 @@ beats:
         red_flag: true
         type: page_address
       - target: page.info
-        reveal: "The connection is encrypted. Necessary, but never proof of who runs the site: scam pages have a padlock too."
+        reveal: "The connection is encrypted. Necessary, but never proof of who runs the site."
         red_flag: false
         type: padlock
     actions:

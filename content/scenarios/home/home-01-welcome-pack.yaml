@@ -23,20 +23,17 @@ message:
   body: |
     Hello and welcome to the Waymarker Network!
 
-    Your travel pack (route, contacts, expenses guide) is on Waymarker Desk:
-    desk.waymarker-network.example/travel-pack
+    Your travel pack (route, contacts, expenses guide) is on Waymarker Desk: desk.waymarker-network.example/travel-pack
 
-    Your staff number is WN-1187. One thing to know from day one: I will never ask you
-    for money, passwords or secrecy. If "I" ever do, check with me through the staff directory.
+    Your staff number is WN-1187. One thing to know from day one: I will never ask you for money, passwords or secrecy. If "I" ever do, check with me through the staff directory.
 
-    Safe travels,
-    Adaeze
+    Safe travels, Adaeze
   request: open_link
   references: ["WN-1187"]
 
 inspectables:
   - target: sender.detail
-    reveal: "adaeze.okafor-lind@waymarker-network.example: Waymarker's own domain, and the name in your staff directory. It fits, but a sender address alone can be faked."
+    reveal: "adaeze.okafor-lind@waymarker-network.example: Waymarker's own domain, and the name in your staff directory. It fits, but a sender address alone proves nothing."
     red_flag: false
     type: sender
     reassures: true

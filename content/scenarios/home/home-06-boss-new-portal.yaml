@@ -27,9 +27,7 @@ message:
   body: |
     Hello inspector,
 
-    We're moving to a new travel portal. Please log in once to carry over your bookings
-    and expenses:
-    desk.waymarker-network.example-sso.test/start
+    We're moving to a new travel portal. Please log in once to carry over your bookings and expenses: desk.waymarker-network.example-sso.test/start
 
     Accounts not moved by Friday will be paused.
 
@@ -81,8 +79,8 @@ beats:
     message:
       sender: { display: "Waymarker IT", detail: "New contact · +32 470 •• •• 17" }
       body: |
-        Hi, IT here. We can see you haven't moved to the new Desk yet. Takes 2 minutes:
-        desk.waymarker-network.example-sso.test/start
+        Hi, IT here. We can see you haven't moved to the new Desk yet. Takes 2 minutes: desk.waymarker-network.example-sso.test/start
+
         Please do it before lunch, or your hotel bookings won't carry over.
       request: log_in
       image: { alt: "Profile picture: the Waymarker Network logo" }
@@ -106,7 +104,7 @@ beats:
         outcome: portal_password_stolen
         pressure_target: true
       - id: ask_adaeze_chat
-        label: "Check with Adaeze first"
+        label: "Check with Adaeze through the staff directory"
         kind: ask_someone
         outcome: adaeze_says_no_move
       - id: block_it_contact
@@ -162,7 +160,7 @@ beats:
         kind: verify_in_app
         outcome: desk_no_notice
       - id: call_it_desk_known
-        label: "Hang up and call the IT desk"
+        label: "Hang up, call the IT desk you know"
         kind: call_back_known
         outcome: it_desk_knows_nothing
       - id: hang_up_it_call
@@ -205,7 +203,7 @@ outcomes:
   it_desk_knows_nothing:
     narrative: "The real IT desk picks up: \"No migration, and we never ask for codes. Thanks, we'll warn everyone.\""
   hung_up_on_it:
-    narrative: "You hang up. Silence. The \"move\" was never real."
+    narrative: "You hang up. If it was real, IT can reach you through Waymarker Desk."
 
 debrief:
   variant: standard

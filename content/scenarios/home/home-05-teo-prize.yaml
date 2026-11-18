@@ -19,8 +19,7 @@ message:
   sender: { display: "Grandpa Teo", detail: "Saved contact: Grandpa Teo (home)" }
   from_cast: teo
   body: |
-    Bit of a pickle, kiddo. A message said I'd won a Thimble & Pine hamper, only €2.95 delivery.
-    I clicked and typed in my card details. Then it asked for even more details, so I stopped. Here's what it said:
+    Bit of a pickle, kiddo. A message said I'd won a Thimble & Pine hamper, only €2.95 delivery. I clicked and typed in my card details. Then it asked for even more, so I stopped. Here's what it said:
 
     "Congratulations! Your hamper is waiting. Pay delivery today: thimble-and-pine-sale.example/prize"
 
@@ -34,7 +33,7 @@ inspectables:
     type: sender
     reassures: true
   - target: link
-    reveal: "In Teo's quote: thimble-and-pine-sale.example. Thimble & Pine's real site is thimbleandpine.example. A prize he never entered, behind a look-alike address."
+    reveal: "In Teo's quote: thimble-and-pine-sale.example. Thimble & Pine's real site is thimbleandpine.example. A prize out of the blue, behind a look-alike address."
     red_flag: true
     type: link
     context: quoted
@@ -70,7 +69,7 @@ debrief:
     what_works: "Block the card first."
   layer2:
     message_flags:
-      - "In Teo's quote: a prize he never entered, a small fee, and pay today."
+      - "In Teo's quote: a prize out of the blue, a small fee, and pay today."
     notes: "Blocking the card stops the damage, so it comes first. Then call the bank on the number on the card, report it, and ignore anyone who calls offering to help: a real bank never asks for a code to \"cancel\" a payment. Anyone who wants a fee up front to get money back is another scam. And Teo did the best thing of all: he told someone."
   device_tip: "In your real banking app, look for a \"block card\" or \"freeze card\" switch so you know where it is before you need it."
   habit_card: stop-the-damage-first

@@ -4,8 +4,6 @@
 # Red flags: the link (real name first, different owner: the subtle one), the page address, plus the
 # code request and the 30-minute lock in the text. Decoys: the sender name (anyone can set "Kettle" as
 # a text sender name) and the case reference.
-# Look-alike host kettle-chat.example-verify.test is not yet in brands.yaml (Kettle has no look-alikes
-# registered); flagged for ux-artist / sceptic-reviewer.
 id: home-04-kettle-locked
 chapter: home
 role: standard
@@ -28,16 +26,15 @@ pressure:
 message:
   sender: { display: "Kettle", detail: "Sender name: Kettle" }
   body: |
-    Kettle: Unusual sign-in to your account from a new device. Not you? Confirm it's you
-    within 30 min or your account will be locked:
-    kettle-chat.example-verify.test/keep
+    Kettle: Unusual sign-in to your account from a new device. Not you? Confirm it's you within 30 min or your account will be locked: kettle-chat.example-verify.test/keep
+
     Case K-55902
   request: open_link
   references: ["K-55902"]
 
 inspectables:
   - target: sender.detail
-    reveal: "The name a text shows can be faked, so it settles nothing."
+    reveal: "Any sender can set the name a text shows, so it settles nothing."
     red_flag: false
     type: sender
   - target: link

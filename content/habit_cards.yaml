@@ -17,7 +17,7 @@ cards:
     lo: LO-01
     title: "Who really sent this?"
     habit: "Look at the address or number behind the name. A familiar name or logo proves nothing: both are easy to copy."
-    example: "\"Waymarker mail\" sent from waymarker-helpdesk.example is not Waymarker (waymarker-network.example)."
+    example: "A text signed \"your bank\" from a number you don't know: the name is easy to copy, the number behind it tells you more."
     already_clicked: "Close it and type nothing. If you already did, change that password from the real app or site."
   - id: pressure-is-the-tell
     lo: LO-04

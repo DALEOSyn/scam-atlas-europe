@@ -1,0 +1,132 @@
+# 0-2 "Mailbox full, log in" from a look-alike of Waymarker mail (GDD §16). Fraud, difficulty 1.
+# New mechanic: tagging ("Mark as suspicious"). Two obvious red flags (sender domain, link domain),
+# two decoys (ticket reference, masked IT phone number). Brief: it-portal-credential-phishing §2–§5.
+id: home-02-mailbox-full
+chapter: home
+role: standard
+pattern: it-portal-credential-phishing
+theme: work-it
+learning_objectives: [LO-01, LO-02, LO-03]
+difficulty: 1
+is_fraud: true
+device: email
+brands: [waymarker]
+pressure: { timer: false, levers: [urgency, fear] }
+
+message:
+  sender: { display: "Waymarker mail", detail: "no-reply@waymarker-helpdesk.example" }
+  subject: "Urgent: your mailbox is 98% full"
+  body: |
+    Your Waymarker mail storage is almost full. From today, new messages may be held back
+    and not delivered.
+
+    Sign in to free up space and keep receiving mail:
+    waymarker-it-support.example/mail/quota
+
+    Ticket WM-20931 · Questions? IT desk +32 2 ••• •• 00
+
+    Waymarker mail · IT Services
+  request: log_in
+  references: ["WM-20931"]
+  phone_numbers: ["+32 2 ••• •• 00"]
+
+inspectables:
+  - target: sender.detail
+    reveal: "no-reply@waymarker-helpdesk.example. Waymarker's mail comes from waymarker-network.example. \"helpdesk\" in the name doesn't make it Waymarker's."
+    red_flag: true
+    type: sender
+  - target: link
+    reveal: "waymarker-it-support.example. The owner part is waymarker-it-support.example, not waymarker-network.example. A brand name inside an address proves nothing."
+    red_flag: true
+    type: link
+  - target: reference
+    reveal: "WM-20931 looks like a ticket number. Anyone can type one; real and fake messages both have them."
+    red_flag: false
+    type: reference
+  - target: phone_number
+    reveal: "A Brussels-style number, masked here. It looks normal, so it settles nothing. The IT desk's real contact is in your staff directory."
+    red_flag: false
+    type: phone_number
+
+actions:
+  - id: tap_free_up_space
+    label: "Tap the link and free up space"
+    kind: open_link
+    next_beat: quota_page
+    pressure_target: true
+  - id: open_mail_yourself
+    label: "Open Waymarker mail yourself and check your storage"
+    kind: verify_in_app
+    outcome: storage_fine
+  - id: report_mailbox
+    label: "Report it with the \"Report phishing\" button"
+    kind: report
+    outcome: mailbox_reported
+  - id: delete_mailbox
+    label: "Delete the email"
+    kind: delete
+    outcome: mailbox_deleted
+
+beats:
+  - id: quota_page
+    device: browser
+    message:
+      page: { address: "waymarker-it-support.example/mail/quota", title: "Waymarker mail · Storage" }
+      body: "Your mailbox is 98% full. Sign in with your Waymarker username and password to release held messages."
+      request: log_in
+    inspectables:
+      - target: page.address
+        reveal: "The address bar still says waymarker-it-support.example. Waymarker mail lives at mail.waymarker-network.example."
+        red_flag: true
+        type: page_address
+      - target: page.info
+        reveal: "The connection is encrypted. Necessary, but never proof of who runs the site: scam pages have a padlock too."
+        red_flag: false
+        type: padlock
+    actions:
+      - id: sign_in_quota
+        label: "Type your Waymarker password and sign in"
+        kind: enter_details
+        outcome: password_stolen
+        pressure_target: true
+      - id: close_quota_page
+        label: "Close the page"
+        kind: ignore
+        outcome: left_quota_page
+
+outcomes:
+  password_stolen:
+    narrative: "The page says \"Thank you\" and nothing else. Next morning, two colleagues ask why you sent them a \"shared document\" link overnight."
+    recovery:
+      - { step: change_password, category: stop }
+      - { step: tell_it_team, category: report }
+      - { step: turn_on_two_step, category: secure }
+      - { step: warn_contacts, category: warn }
+      - { step: keep_quiet, category: harmful }
+      - { step: wait_and_see, category: harmful }
+    sets_flags: [waymarker_mail_phished]
+  storage_fine:
+    narrative: "Waymarker mail opens as usual: 12% used. No warning anywhere."
+  mailbox_reported:
+    narrative: "Reported. IT thanks you and pulls the same email from three other inboxes."
+  mailbox_deleted:
+    narrative: "Gone. Nothing happens, and your mailbox keeps working."
+  left_quota_page:
+    narrative: "You close the page without typing anything. Nothing happens."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "An unexpected warning whose sender and link aren't waymarker-network.example."
+    what_works: "Open Waymarker mail yourself."
+  layer2:
+    message_flags:
+      - "Urgency and a threat: messages \"held back\" from today unless you sign in now."
+      - "It asks you to sign in through a link in an email. Your mail provider doesn't need that."
+    notes: "A logo or familiar name proves nothing. Scammers copy them perfectly."
+  device_tip: "On a real phone, press and hold a link to preview the full address before you open it."
+  habit_card: read-the-link
+  already_clicked:
+    clicked: "Close the page and type nothing. Opening it alone rarely does harm."
+    entered_details: "Change your password now from the real Waymarker mail, and anywhere you reused it. Turn on two-step sign-in and tell your IT team."
+  sources: [es-incibe-mailbox-full-2022, ie-ncsc-phishing-guide, de-bsi-protect-phishing, ch-ncsc-links-2025, pl-cert-phishing-kb-2026]

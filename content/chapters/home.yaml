@@ -1,13 +1,18 @@
-# STUB for T-2.2 (schema migration). The game-designer replaces this with the
-# real chapter 0 (GDD §16). `status: draft` reports mix-rule gaps as warnings.
+# Chapter 0 — Home (tutorial). GDD §16. Slot 0, difficulty 1–2, 5 scored scenarios (2 genuine = 40%)
+# plus 1 drill. One new mechanic per scenario. Patterns: IT-portal credential phishing (0-2, boss;
+# genuine twins 0-1 and 0-3) and account takeover by code (0-4). The drill (0-5) uses the
+# card-phishing brief but is unscored and outside the mix.
+# Slot 0 is exempt from pressure parity (mechanics arrive in a fixed order); the first timer is on
+# a genuine message (0-3).
 slot: 0
 city: home
 name: "Home"
-status: draft
-patterns: [email-phishing-credential, smishing-parcel-fee]
+status: complete
+patterns: [it-portal-credential-phishing, messenger-account-takeover-code]
 callbacks: []
-lo_focus: [LO-01, LO-02, LO-03, LO-05]
+lo_focus: [LO-01, LO-02, LO-03, LO-04, LO-05, LO-08, LO-16, LO-17, LO-18]
 scenario_order:
-  am: [home-00-example]
-  pm: []
+  am: [home-01-welcome-pack, home-02-mailbox-full, home-03-password-reset]
+  pm: [home-04-kettle-locked, home-05-teo-prize, home-06-boss-new-portal]
+boss: home-06-boss-new-portal
 intro: "Before the trip: your phone, your inbox and a few habits that travel well."

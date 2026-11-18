@@ -21,20 +21,26 @@ import {
 const ROOT = resolve(import.meta.dirname, '..', '..');
 const CONTENT = resolve(ROOT, 'content');
 
+/** Template-derived example scenario (test fixture, not game content; cites placeholder sources). */
+const EXAMPLE_FILE = resolve(ROOT, 'tests/fixtures/example-scenario.yaml');
 function example(): Record<string, unknown> {
-  return parse(readFileSync(resolve(CONTENT, 'scenarios/home/example.yaml'), 'utf8')) as Record<string, unknown>;
+  return parse(readFileSync(EXAMPLE_FILE, 'utf8')) as Record<string, unknown>;
 }
 
 describe('content:validate', () => {
   it('all content validates (non-strict)', () => {
     const r = validateContent(CONTENT);
     expect(r.errors).toEqual([]);
-    expect(r.scenarios.has('home-00-example')).toBe(true);
+    expect(r.scenarios.has('home-06-boss-new-portal')).toBe(true);
+    expect(r.scenarios.has('home-00-example')).toBe(false);
   });
 
-  it('strict mode rejects placeholder sources', () => {
-    // The example still cites the two template placeholder sources; its brand (Trundle) is now registered.
-    const r = validateContent(CONTENT, { strict: true });
+  it('strict mode: game content cites no placeholders, and a scenario that does is rejected', () => {
+    expect(validateContent(CONTENT, { strict: true }).errors).toEqual([]);
+    // The example fixture still cites the two template placeholder sources; its brand (Trundle) is registered.
+    const dir = copyContent();
+    writeFileSync(join(dir, 'scenarios', 'home', 'example.yaml'), readFileSync(EXAMPLE_FILE, 'utf8'));
+    const r = validateContent(dir, { strict: true, docsDir: resolve(ROOT, 'docs') });
     expect(r.errors.some((e) => e.includes('placeholder source'))).toBe(true);
     expect(r.errors.some((e) => e.includes('placeholder brand'))).toBe(false);
   });
@@ -51,9 +57,11 @@ describe('content:validate', () => {
     expect(scenarioRules(s, realRegistries())).toEqual({ errors: [], warnings: [] });
   });
 
-  it('the stub chapter, cast, recovery steps and habit cards load without errors', () => {
+  it('the tutorial chapter, cast, recovery steps and habit cards load without errors', () => {
     const r = validateContent(CONTENT);
-    expect(r.chapters?.get('home')?.scenario_order.am).toContain('home-00-example');
+    expect(r.chapters?.get('home')?.status).toBe('complete');
+    expect(r.chapters?.get('home')?.scenario_order.am).toContain('home-01-welcome-pack');
+    expect(r.warnings.join('\n')).not.toMatch(/draft chapter/);
     const reg = realRegistries();
     expect(reg.cast.get('alex')?.arc_character).toBe(true);
     expect(reg.recoverySteps.has('block_card_in_bank_app')).toBe(true);
@@ -71,13 +79,17 @@ describe('content:validate', () => {
   it('a complete chapter turns mix issues into errors', () => {
     const dir = copyContent();
     const file = join(dir, 'chapters', 'home.yaml');
-    writeFileSync(file, readFileSync(file, 'utf8').replace(/^status: draft$/m, 'status: complete').replace('  pm: []', '  pm: []\nboss: home-00-example'));
+    const original = readFileSync(file, 'utf8');
+    expect(original).toMatch(/^status: complete$/m);
+    writeFileSync(file, original.replace(/^boss: .*$/m, 'boss: home-01-welcome-pack'));
     const errs = validateContent(dir, { docsDir: resolve(ROOT, 'docs') }).errors.join('\n');
     expect(errs).toMatch(/boss plays in the afternoon/);
-    writeFileSync(file, readFileSync(file, 'utf8').replace(/\nboss: .*/, ''));
+    writeFileSync(file, original.replace(/\nboss: .*/, ''));
     expect(validateContent(dir, { docsDir: resolve(ROOT, 'docs') }).errors.join('\n')).toMatch(/a complete chapter has a boss/);
-    // Valid complete chapter shape, but the mix is far off: errors, not warnings.
-    writeFileSync(file, readFileSync(file, 'utf8').replace('  am: [home-00-example]\n  pm: []', '  am: []\n  pm: [home-00-example]').replace(/\nintro:/, '\nboss: home-00-example\nintro:'));
+    // Valid complete chapter shape, but the mix is far off (both genuine scenarios removed): errors, not warnings.
+    rmSync(join(dir, 'scenarios', 'home', 'home-01-welcome-pack.yaml'));
+    rmSync(join(dir, 'scenarios', 'home', 'home-03-password-reset.yaml'));
+    writeFileSync(file, original.replace('home-01-welcome-pack, home-02-mailbox-full, home-03-password-reset', 'home-02-mailbox-full'));
     const r = validateContent(dir, { docsDir: resolve(ROOT, 'docs') });
     expect(r.errors.join('\n')).toMatch(/mix: genuine share 0%/);
     expect(r.warnings.join('\n')).not.toMatch(/draft chapter/);
@@ -95,7 +107,7 @@ describe('YAML anchors, aliases and merge keys (T-2.2 rework 2)', () => {
   it('content:validate rejects the alias probe in a scenario', () => {
     const dir = copyContent();
     const file = join(dir, 'scenarios', 'home', 'example.yaml');
-    const text = readFileSync(file, 'utf8')
+    const text = readFileSync(EXAMPLE_FILE, 'utf8')
       .replace('  - target: sender.detail\n', '  - target: &t sender.detail\n')
       .replace(/^ {2}l10n_note: .*$/m, '  l10n_note: *t');
     writeFileSync(file, text);

@@ -18,6 +18,7 @@ Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR 
 - [x] T-0.3 | producer | Recorded Roman's scope decision: malicious cyber campaigns (catalogue Part B) in scope at defender level; webcam blackmail help card only | CLAUDE.md Red Line 8, DECISIONS.md
 - [x] T-1.7 | fraud-researcher | Brand-name web collision check (renamed Nodkey, Corvelle, Hoardly) | docs/patterns/BRAND_CHECK.md
 - [x] T-2.6 | game-designer | GDD/UI_SPEC follow-ups (1-9 caller, high-stakes set, layer-1 budget, snake_case flags) | sceptic: FAIL → PASS
+- [ ] T-2.4a | scenario-writer | Tutorial chapter scenarios | fraud-researcher: pending · sceptic: pending · qa: pending
 
 ## Next up (Phase 2)
 - [ ] T-2.1 | frontend-engineer | Engine: scenario runner, Check + tag, scoring v3.2, debrief layers, save state | reviewers: sceptic, qa

@@ -21,8 +21,9 @@ describe('CLI exit codes', () => {
     expect(res.stderr + res.stdout).toMatch(/warning \[brand\]/);
   });
 
-  it('content:validate exits 0 normally and 1 with --strict while placeholders remain', () => {
+  it('content:validate exits 0, also with --strict now that no scenario cites a placeholder (T-2.4a)', () => {
+    // The strict rejection of placeholder sources is covered in tests/content/content.test.ts with the example fixture.
     expect(run('scripts/content-validate.ts').status).toBe(0);
-    expect(run('scripts/content-validate.ts', '--strict').status).toBe(1);
+    expect(run('scripts/content-validate.ts', '--strict').status).toBe(0);
   });
 }, 30_000);

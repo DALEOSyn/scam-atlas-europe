@@ -1,0 +1,226 @@
+# 0-6 Boss (GDD §16): one fake "IT" request on three channels, arriving on the scammer's schedule.
+# Beat 1 email (log in to a "new travel portal"), beat 2 a Kettle chat from "IT" pushing, beat 3 a call
+# from "IT" asking for a code. Coach mark the first time the call device appears (engine).
+# Verify: ask_someone (Adaeze, staff directory) or verify_in_app (open Waymarker Desk yourself).
+# After a fall, the stop step is changing the password (GDD §16). Brief: it-portal-credential-phishing.
+# Red flags (5): beat 1 sender + link; beat 2 sender + link; beat 3 the call-back number (plus the code
+# request, in the text).
+# Decoys (4): beat 1 reference; beat 2 profile picture (logo); beat 3 caller ID (spoofed, looks right)
+# and ticket reference. The caller-ID decoy is the chapter's sender-or-link decoy (ceil(3/3) = 1).
+# "More channels is more pressure, not more proof" is the brief's framing (§3 item 7), not a quote.
+id: home-06-boss-new-portal
+chapter: home
+role: boss
+pattern: it-portal-credential-phishing
+theme: work-it
+learning_objectives: [LO-01, LO-02, LO-03, LO-04, LO-05, LO-08, LO-18]
+difficulty: 2
+is_fraud: true
+device: email
+brands: [waymarker, kettle]
+cast: [adaeze]
+pressure: { timer: true, levers: [authority, urgency] }
+
+message:
+  sender: { display: "Waymarker Desk", detail: "it-desk@waymarker-helpdesk.example" }
+  subject: "Action needed: move to the new Waymarker Desk by Friday"
+  body: |
+    Hello inspector,
+
+    We're moving to a new travel portal. Please log in once to carry over your bookings
+    and expenses:
+    desk.waymarker-network.example-sso.test/start
+
+    Accounts not moved by Friday will be paused.
+
+    Waymarker Desk team · Change CN-2611
+  request: log_in
+  references: ["CN-2611"]
+
+inspectables:
+  - target: sender.detail
+    reveal: "it-desk@waymarker-helpdesk.example. The real IT desk writes from waymarker-network.example. Same display name, different owner."
+    red_flag: true
+    type: sender
+  - target: link
+    reveal: "desk.waymarker-network.example-sso.test. Read the end: the owner part is example-sso.test. The real Waymarker Desk is desk.waymarker-network.example."
+    red_flag: true
+    type: link
+  - target: reference
+    reveal: "CN-2611 looks like a change number. Anyone can make one up; it proves nothing either way."
+    red_flag: false
+    type: reference
+
+actions:
+  - id: log_in_new_portal
+    label: "Log in through the link"
+    kind: enter_details
+    outcome: portal_password_stolen
+    pressure_target: true
+  - id: open_desk_bookmark
+    label: "Open Waymarker Desk from your bookmark"
+    kind: verify_in_app
+    outcome: desk_no_notice
+  - id: ask_adaeze_email
+    label: "Ask Adaeze via the staff directory"
+    kind: ask_someone
+    outcome: adaeze_says_no_move
+  - id: report_portal_email
+    label: "Report it as phishing"
+    kind: report
+    outcome: portal_email_reported
+  - id: ignore_portal_email
+    label: "Ignore it for now"
+    kind: ignore
+    outcome: portal_email_ignored
+
+beats:
+  - id: kettle_it_chat
+    device: messenger
+    arrives_after: 45
+    message:
+      sender: { display: "Waymarker IT", detail: "New contact · +32 470 •• •• 17" }
+      body: |
+        Hi, IT here. We can see you haven't moved to the new Desk yet. Takes 2 minutes:
+        desk.waymarker-network.example-sso.test/start
+        Please do it before lunch, or your hotel bookings won't carry over.
+      request: log_in
+      image: { alt: "Profile picture: the Waymarker Network logo" }
+    inspectables:
+      - target: sender.detail
+        reveal: "A new contact with a private mobile number. The IT desk isn't in your Kettle contacts, and its real contact is in the staff directory."
+        red_flag: true
+        type: sender
+      - target: link
+        reveal: "The same look-alike as the email: the owner part is example-sso.test, not waymarker-network.example."
+        red_flag: true
+        type: link
+      - target: image
+        reveal: "The Waymarker logo as a profile picture. Anyone can upload a logo. It proves nothing."
+        red_flag: false
+        type: logo
+    actions:
+      - id: log_in_from_chat
+        label: "Tap the link and log in"
+        kind: enter_details
+        outcome: portal_password_stolen
+        pressure_target: true
+      - id: ask_adaeze_chat
+        label: "Check with Adaeze first"
+        kind: ask_someone
+        outcome: adaeze_says_no_move
+      - id: block_it_contact
+        label: "Block and report this contact"
+        kind: block
+        outcome: it_contact_blocked
+      - id: ignore_it_chat
+        label: "Leave the chat unanswered"
+        kind: ignore
+        outcome: it_chat_ignored
+
+  - id: it_call
+    device: call
+    arrives_after: 45
+    message:
+      sender: { display: "Waymarker IT", detail: "Caller ID: Waymarker IT" }
+      transcript:
+        - { speaker: caller, text: "Hello, IT desk here. Your account is about to be paused because the move didn't finish." }
+        - { speaker: caller, text: "No worries, I'll finish it for you. I've just sent a 6-digit code to your phone. Can you read it out?" }
+        - { speaker: caller, text: "Or log in now while I stay on the line, and I'll do the rest." }
+        - { speaker: caller, text: "If we get cut off, call me back on 0800 ••• 3310. Ticket CN-2611." }
+      request: share_code
+      references: ["CN-2611"]
+      phone_numbers: ["0800 ••• 3310"]
+    inspectables:
+      - target: caller_id
+        reveal: "\"Waymarker IT\" looks familiar, but caller ID can be faked. This shows what the network was told, not who is calling."
+        red_flag: false
+        type: caller_id
+      - target: phone_number
+        reveal: "Not the IT desk number in your staff directory. Call back only on a number you already have."
+        red_flag: true
+        type: phone_number
+      - target: reference
+        reveal: "The same change number as the email. Repeating it makes the story hang together; it doesn't make it true."
+        red_flag: false
+        type: reference
+    actions:
+      # GDD §16: hang_up should open the engine's "What now?" step (ask Adaeze / open Waymarker Desk).
+      # The schema has no such step yet (a boss beat needs arrives_after), so both checks are also offered
+      # directly here, and hang_up ends the beat as dismiss.
+      - id: read_out_code
+        label: "Read out the code"
+        kind: share_code
+        outcome: code_shared
+        pressure_target: true
+      - id: hang_up_ask_adaeze
+        label: "Hang up and ask Adaeze"
+        kind: ask_someone
+        outcome: adaeze_says_no_move
+      - id: hang_up_open_desk
+        label: "Hang up, open Waymarker Desk yourself"
+        kind: verify_in_app
+        outcome: desk_no_notice
+      - id: call_it_desk_known
+        label: "Hang up, call the IT desk you know"
+        kind: call_back_known
+        outcome: it_desk_knows_nothing
+      - id: hang_up_it_call
+        label: "Hang up"
+        kind: hang_up
+        outcome: hung_up_on_it
+
+outcomes:
+  portal_password_stolen:
+    narrative: "The page says \"Migration complete\". An hour later, Waymarker Desk says your password is wrong."
+    recovery:
+      - { step: change_password, category: stop }
+      - { step: tell_it_via_desk, category: report }
+      - { step: sign_out_everywhere, category: secure }
+      - { step: warn_contacts, category: warn }
+      - { step: keep_quiet, category: harmful }
+      - { step: wait_and_see, category: harmful }
+    sets_flags: [waymarker_desk_phished]
+  code_shared:
+    narrative: "\"Perfect, all done!\" Ten minutes later, a sign-in alert: a device you don't know is now in your Waymarker Desk account."
+    recovery:
+      - { step: change_password, category: stop }
+      - { step: tell_it_via_desk, category: report }
+      - { step: sign_out_everywhere, category: secure }
+      - { step: reply_to_sender, category: harmful }
+      - { step: keep_quiet, category: harmful }
+    sets_flags: [waymarker_desk_phished]
+  desk_no_notice:
+    narrative: "Waymarker Desk opens as usual. No new portal, no notice, no Friday deadline."
+  adaeze_says_no_move:
+    narrative: "Adaeze replies within a minute: \"No portal move. That's not us. Thanks for checking, I'll warn the team.\""
+  portal_email_reported:
+    narrative: "Reported. IT removes the email from everyone's inbox."
+  portal_email_ignored:
+    narrative: "You leave it. But the sender isn't finished with you yet."
+  it_contact_blocked:
+    narrative: "Blocked and reported. The chat disappears."
+  it_chat_ignored:
+    narrative: "The chat sits unanswered. Then your phone rings."
+  it_desk_knows_nothing:
+    narrative: "The real IT desk picks up: \"No migration, and we never ask for codes. Thanks, we'll warn everyone.\""
+  hung_up_on_it:
+    narrative: "You hang up. Silence. The \"move\" was never real."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "One fake IT request on three channels, ending with a code."
+    what_works: "Ask Adaeze or open Waymarker Desk yourself."
+  layer2:
+    message_flags:
+      - "Pressure from authority and a deadline: \"paused by Friday\", \"before lunch\"."
+      - "A caller asking you to read out a code. Real IT never needs your codes or your password."
+      - "The same request on three channels. More channels is more pressure, not more proof."
+    notes: "Caller ID can be faked and logos can be copied. Hang up and call back on a number you already have, or ask a colleague through a contact you already know."
+  device_tip: "On a real phone, end the call yourself, then dial the number from your own contacts, not the one the caller gave."
+  habit_card: ask-someone
+  already_clicked:
+    clicked: "Close the page and type nothing. Opening it alone rarely does harm."
+    entered_details: "Change your password from the real Waymarker Desk now, sign out other sessions, and tell IT through Waymarker Desk straight away, even if it feels awkward."
+  sources: [eu-enisa-etl-2026, es-incibe-mailbox-full-2022, pl-cert-fake-consultants, ch-ncsc-fake-support-2024, eu-epc-threats-2025, pl-cert-phishing-kb-2026]

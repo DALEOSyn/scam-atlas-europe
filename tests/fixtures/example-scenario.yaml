@@ -1,6 +1,6 @@
-# Example scenario: templates/scenario.template.yaml adapted to pass content:validate
-# and redline:lint. It exists to exercise the engine and tooling; it is not
-# fact-checked game content. Sources are placeholders.
+# Test fixture (moved from content/scenarios/home/example.yaml in T-2.4a): the scenario template
+# adapted to pass the per-scenario rules. Not game content; not in any chapter. It still cites
+# the two template placeholder sources on purpose (strict-mode test).
 id: home-00-example
 chapter: home
 role: standard

@@ -1,0 +1,79 @@
+# 0-5 Teo: "I clicked a prize link and typed my card number. What now?" (GDD §16). Drill: unscored,
+# outside the mix and the chapter maximum. New mechanic: damage control (block the card = stop).
+# Teo's message is genuine; the prize text he quotes is the scam (context: quoted).
+# Brief: card-phishing-payment-failed §2 reward variant (fake prize, small delivery fee) and §5.
+id: home-05-teo-prize
+chapter: home
+role: drill
+pattern: card-phishing-payment-failed
+theme: prize
+learning_objectives: [LO-18, LO-16]
+difficulty: 1
+is_fraud: false
+device: messenger
+brands: [kettle, thimble-pine, larchwick]
+cast: [teo]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Grandpa Teo", detail: "Saved contact: Grandpa Teo (home)" }
+  from_cast: teo
+  body: |
+    Bit of a pickle, kiddo. A message said I'd won a Thimble & Pine hamper, only €2.95 delivery.
+    I clicked and typed my card number. Then it asked for even more details, so I stopped. Here's what it said:
+
+    "Congratulations! Your hamper is waiting. Pay delivery today: thimble-and-pine-sale.example/prize"
+
+    What now? I've got my Larchwick card right here.
+  request: reply
+
+inspectables:
+  - target: sender.detail
+    reveal: "Teo's saved contact, the one you always use. He's asking for advice, not for money or a code."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: link
+    reveal: "In Teo's quote: thimble-and-pine-sale.example. Thimble & Pine's real site is thimbleandpine.example. A prize he never entered, behind a look-alike address."
+    red_flag: true
+    type: link
+    context: quoted
+
+actions:
+  - id: help_teo
+    label: "Talk Teo through what to do now"
+    kind: proceed
+    outcome: helping_teo
+    pressure_target: true
+  - id: tell_teo_not_to_worry
+    label: "Say it was only €2.95, no worries"
+    kind: reply
+    outcome: teo_waits
+
+outcomes:
+  helping_teo:
+    narrative: "Teo puts you on speaker. \"Right, I've got a pen. What first?\""
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: call_bank_known_number, category: secure }
+      - { step: refuse_codes_to_callers, category: secure }
+      - { step: report_to_police_online, category: report }
+      - { step: reply_ask_money_back, category: harmful }
+      - { step: pay_recovery_service, category: harmful }
+  teo_waits:
+    narrative: "Teo relaxes. Three days later, two payments he doesn't recognise appear on his card. He calls you again, and this time you help him block it."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Teo was right to ask. His card went to a fake prize page."
+    what_works: "Block the card first."
+  layer2:
+    message_flags:
+      - "In Teo's quote: a prize he never entered, a small fee, and pay today."
+    notes: "Blocking the card stops the damage, so it comes first. Then call the bank on the number on the card, report it, and ignore anyone who calls offering to help: a real bank never asks for a code to \"cancel\" a payment. Nobody can get money back for a fee. And Teo did the best thing of all: he told someone."
+  device_tip: "In your real banking app, look for a \"block card\" or \"freeze card\" switch so you know where it is before you need it."
+  habit_card: stop-the-damage-first
+  already_clicked:
+    paid: "Block the card in your banking app now, then call your bank on the number on the card and report it to the police."
+  sources: [es-incibe-prize-2021, pl-cert-phishing-kb-2026, ch-ncsc-double-phishing-2026, es-incibe-streaming-renewal-2024]

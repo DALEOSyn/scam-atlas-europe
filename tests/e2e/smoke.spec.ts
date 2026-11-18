@@ -3,7 +3,7 @@ import AxeBuilder from '@axe-core/playwright';
 
 const WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 
-test('tutorial example: start, choose the habit, read the debrief', async ({ page, baseURL }) => {
+test('tutorial 0-1: start, choose the habit, read the debrief', async ({ page, baseURL }) => {
   const origin = new URL(baseURL ?? 'http://127.0.0.1:4173').origin;
   const foreign: string[] = [];
   page.on('request', (req) => {
@@ -21,15 +21,14 @@ test('tutorial example: start, choose the habit, read the debrief', async ({ pag
   expect((await new AxeBuilder({ page }).withTags(WCAG).analyze()).violations).toEqual([]);
 
   await page.getByRole('button', { name: 'Start' }).click();
-  await expect(page.getByText(/Zollgebühr 1,99 EUR/)).toBeVisible();
+  await expect(page.getByText(/Welcome aboard, inspector/)).toBeVisible();
   expect((await new AxeBuilder({ page }).withTags(WCAG).analyze()).violations).toEqual([]);
   await expect(page.locator('form[action]')).toHaveCount(0);
 
-  await page.getByRole('button', { name: /Open the Trundle app yourself/ }).click();
+  await page.getByRole('button', { name: /Find the pack in Waymarker Desk yourself/ }).click();
   await expect(page.getByRole('heading', { name: 'Debrief' })).toBeVisible();
   await expect(page.getByText('That is the habit that works.', { exact: false })).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Already clicked? Do this' })).toBeVisible();
-  await expect(page.getByRole('heading', { level: 3, name: 'Open it yourself' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 3, name: 'Who really sent this?' })).toBeVisible();
   expect((await new AxeBuilder({ page }).withTags(WCAG).analyze()).violations).toEqual([]);
 
   // Red Line 7 / privacy: nothing but the game's own origin is ever requested.
@@ -38,17 +37,16 @@ test('tutorial example: start, choose the habit, read the debrief', async ({ pag
   expect(consoleErrors).toEqual([]);
 });
 
-test('tutorial example: follow the link to the fee page, fall, read the damage control', async ({ page }) => {
+// The fall / training-page path (fee page, damage control) is covered in tests/unit/forms.test.tsx with the
+// example fixture; the stub shell only plays the first tutorial scenario, which is genuine.
+test('tutorial 0-1: report a genuine message, read the debrief', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
-  await page.getByRole('button', { name: /Open the link/ }).click();
-  await expect(page.getByRole('button', { name: /Enter your card details/ })).toBeVisible();
-  await expect(page.getByText('trundle-zoll.example/p/8812', { exact: true })).toBeVisible();
+  await expect(page.getByText('desk.waymarker-network.example/travel-pack', { exact: false })).toBeVisible();
   await expect(page.locator('form[action]')).toHaveCount(0);
-  expect((await new AxeBuilder({ page }).withTags(WCAG).analyze()).violations).toEqual([]);
-  await page.getByRole('button', { name: /Enter your card details/ }).click();
+  await page.getByRole('button', { name: /Report the email as phishing/ }).click();
   await expect(page.getByRole('heading', { name: 'Debrief' })).toBeVisible();
-  await expect(page.getByText('Paid or gave card details')).toBeVisible();
+  await expect(page.getByText('0 of 3 stars.', { exact: false })).toBeVisible();
   expect((await new AxeBuilder({ page }).withTags(WCAG).analyze()).violations).toEqual([]);
 });
 

@@ -18,8 +18,10 @@
  *
  * content/brands.yaml is scanned with two narrow exemptions (see
  * exemptBrandReviewNotes): the review-only fields brands[].checked_against,
- * web_check and rationale may name real brands, and the raw-text pass is
- * skipped for this file because its comments document real-brand collisions.
+ * web_check and rationale may name real brands (only brand-category findings
+ * are dropped there; domains, URLs, phones, IBANs are still errors), and the
+ * raw-text pass is skipped for this file because its comments document
+ * real-brand collisions.
  * Every other value and key (name, short_name, app_name, sms_sender_id,
  * sub-brands, known_channels, email_addresses, look-alikes, ...) is linted
  * from decoded scalars; content:validate additionally enforces strict keys.
@@ -116,7 +118,8 @@ export function isBrandsFile(file: string): boolean {
 
 /**
  * In content/brands.yaml only: the value nodes (with all sub-fields) of
- * brands[].checked_against, brands[].web_check and brands[].rationale.
+ * brands[].checked_against, brands[].web_check and brands[].rationale. These
+ * are exempt from the brand-name rule only (lintText re-scans them).
  */
 export function exemptBrandReviewNotes(file: string, root: Node | null | undefined): Set<Node> {
   const out = new Set<Node>();
@@ -184,7 +187,8 @@ export function lintText(file: string, text: string, cfg: RuleConfig): FileFindi
   // Exempt nodes (see exemptSourceIds, exemptBrandReviewNotes) are blanked for the raw pass and skipped when decoding.
   let raw = /\.svg$/i.test(file) ? blankSvgGeometry(text) : text;
   const root = doc?.contents as Node | null | undefined;
-  const exempt = new Set<Node>([...exemptSourceIds(file, root), ...exemptBrandReviewNotes(file, root)]);
+  const brandNotes = exemptBrandReviewNotes(file, root);
+  const exempt = new Set<Node>([...exemptSourceIds(file, root), ...brandNotes]);
   for (const n of exempt) {
     if (n.range) raw = raw.slice(0, n.range[0]) + raw.slice(n.range[0], n.range[1]).replace(/[^\n]/g, ' ') + raw.slice(n.range[1]);
   }
@@ -206,6 +210,18 @@ export function lintText(file: string, text: string, cfg: RuleConfig): FileFindi
       add,
       exempt,
     );
+    // Brand review notes: every rule except the brand-name rule.
+    for (const n of brandNotes) {
+      walkYaml(
+        n,
+        [],
+        lc,
+        (value, line) => {
+          for (const f of scanText(value, cfg)) if (f.category !== 'brand') add({ ...f, line: line + (f.line ?? 1) - 1 });
+        },
+        add,
+      );
+    }
   }
   return found.sort((a, b) => (a.line ?? 0) - (b.line ?? 0));
 }

@@ -1,11 +1,22 @@
 import { describe, expect, it } from 'vitest';
 import { join, resolve } from 'node:path';
-import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { parse } from 'yaml';
-import { brandHosts, loadBrands, validateContent, validateI18n, checkScenario, type ContentReport } from '../../scripts/lib/content.ts';
+import { brandHosts, loadBrands, loadHabitCards, validateContent, validateI18n, checkScenario, type ContentReport } from '../../scripts/lib/content.ts';
+import { scenarioRules } from '../../scripts/lib/rules.ts';
+import { realRegistries } from './fixtures.ts';
 import { isAllowedSourceHost } from '../../scripts/lib/source-hosts.ts';
-import { brandSchema, i18nCatalogueSchema, lookalikeSchema, scenarioSchema, sourcesFileSchema } from '../../src/content/schema.ts';
+import {
+  balanceSchema,
+  brandSchema,
+  castFileSchema,
+  chapterSchema,
+  i18nCatalogueSchema,
+  lookalikeSchema,
+  scenarioSchema,
+  sourcesFileSchema,
+} from '../../src/content/schema.ts';
 
 const ROOT = resolve(import.meta.dirname, '..', '..');
 const CONTENT = resolve(ROOT, 'content');
@@ -28,10 +39,96 @@ describe('content:validate', () => {
     expect(r.errors.some((e) => e.includes('placeholder brand'))).toBe(false);
   });
 
-  it('the scenario template itself matches the schema', () => {
+  it('the scenario template itself matches the schema and the per-scenario rules', () => {
     const tpl = parse(readFileSync(resolve(ROOT, 'templates/scenario.template.yaml'), 'utf8'));
     const res = scenarioSchema.safeParse(tpl);
     expect(res.success ? [] : res.error.issues).toEqual([]);
+    if (res.success) expect(scenarioRules(res.data, realRegistries())).toEqual({ errors: [], warnings: [] });
+  });
+
+  it('the example passes the per-scenario rules with no warnings', () => {
+    const s = scenarioSchema.parse(example());
+    expect(scenarioRules(s, realRegistries())).toEqual({ errors: [], warnings: [] });
+  });
+
+  it('the stub chapter, cast, recovery steps and habit cards load without errors', () => {
+    const r = validateContent(CONTENT);
+    expect(r.chapters?.get('home')?.scenario_order.am).toContain('home-00-example');
+    const reg = realRegistries();
+    expect(reg.cast.get('alex')?.arc_character).toBe(true);
+    expect(reg.recoverySteps.has('block_card_in_bank_app')).toBe(true);
+    expect(reg.habitCards.get('open-it-yourself')?.lo).toBe('LO-03');
+    expect(reg.los?.size).toBe(18);
+    expect(reg.patterns?.has('smishing-parcel-fee')).toBe(true);
+  });
+
+  it('a scenario whose chapter has no chapter file fails', () => {
+    const dir = copyContent();
+    rmSync(join(dir, 'chapters', 'home.yaml'));
+    expect(validateContent(dir, { docsDir: resolve(ROOT, 'docs') }).errors.join('\n')).toMatch(/chapter "home" has no content\/chapters\/home\.yaml/);
+  });
+
+  it('a complete chapter turns mix issues into errors', () => {
+    const dir = copyContent();
+    const file = join(dir, 'chapters', 'home.yaml');
+    writeFileSync(file, readFileSync(file, 'utf8').replace(/^status: draft$/m, 'status: complete').replace('  pm: []', '  pm: []\nboss: home-00-example'));
+    const errs = validateContent(dir, { docsDir: resolve(ROOT, 'docs') }).errors.join('\n');
+    expect(errs).toMatch(/boss plays in the afternoon/);
+    writeFileSync(file, readFileSync(file, 'utf8').replace(/\nboss: .*/, ''));
+    expect(validateContent(dir, { docsDir: resolve(ROOT, 'docs') }).errors.join('\n')).toMatch(/a complete chapter has a boss/);
+    // Valid complete chapter shape, but the mix is far off: errors, not warnings.
+    writeFileSync(file, readFileSync(file, 'utf8').replace('  am: [home-00-example]\n  pm: []', '  am: []\n  pm: [home-00-example]').replace(/\nintro:/, '\nboss: home-00-example\nintro:'));
+    const r = validateContent(dir, { docsDir: resolve(ROOT, 'docs') });
+    expect(r.errors.join('\n')).toMatch(/mix: genuine share 0%/);
+    expect(r.warnings.join('\n')).not.toMatch(/draft chapter/);
+  });
+});
+
+/** A scratch copy of content/ (tests mutate it). */
+function copyContent(): string {
+  const dir = join(mkdtempSync(join(tmpdir(), 'content-')), 'content');
+  cpSync(CONTENT, dir, { recursive: true });
+  return dir;
+}
+
+describe('registry schemas (T-2.2)', () => {
+  const balanceRaw = () => parse(readFileSync(resolve(CONTENT, 'balance.yaml'), 'utf8')) as Record<string, Record<string, unknown>>;
+
+  it('balance.yaml parses; action_kinds must cover every engine action kind exactly', () => {
+    expect(balanceSchema.safeParse(balanceRaw()).success).toBe(true);
+    const missing = balanceRaw();
+    delete missing.action_kinds?.pause;
+    expect(balanceSchema.safeParse(missing).success).toBe(false);
+    const extra = balanceRaw();
+    (extra.action_kinds as Record<string, unknown>).teleport = { class: 'verify', los: [] };
+    expect(balanceSchema.safeParse(extra).success).toBe(false);
+  });
+
+  it('a new mix rule fails validation until the validator implements it', () => {
+    const b = balanceRaw();
+    (b.mix as Record<string, unknown>).brand_new_rule = true;
+    expect(balanceSchema.safeParse(b).success).toBe(false);
+  });
+
+  it('cast members need a known channel unless they are the arc character', () => {
+    expect(castFileSchema.safeParse({ cast: [{ id: 'x', name: 'X', role: 'r' }] }).success).toBe(false);
+    expect(castFileSchema.safeParse({ cast: [{ id: 'x', name: 'X', role: 'r', arc_character: true }] }).success).toBe(true);
+  });
+
+  it('chapters: no duplicates in the order, boss in the afternoon', () => {
+    const base = { slot: 1, city: 'c', name: 'C', status: 'draft', patterns: ['p'], lo_focus: ['LO-01'], intro: 'i' };
+    expect(chapterSchema.safeParse({ ...base, scenario_order: { am: ['a', 'a'], pm: [] } }).success).toBe(false);
+    expect(chapterSchema.safeParse({ ...base, scenario_order: { am: ['b'], pm: [] }, boss: 'b' }).success).toBe(false);
+    expect(chapterSchema.safeParse({ ...base, scenario_order: { am: [], pm: ['b'] }, boss: 'b' }).success).toBe(true);
+  });
+
+  it('habit cards: one per learning objective', () => {
+    const dir = copyContent();
+    const file = join(dir, 'habit_cards.yaml');
+    writeFileSync(file, readFileSync(file, 'utf8').replace('lo: LO-02', 'lo: LO-03'));
+    const r: ContentReport = { errors: [], warnings: [], scenarios: new Map() };
+    loadHabitCards(dir, r, new Set(['LO-02', 'LO-03']));
+    expect(r.errors.join('\n')).toMatch(/both teach LO-03/);
   });
 });
 
@@ -69,12 +166,13 @@ describe('scenario cross-checks', () => {
     expect(run(s).errors.join()).toMatch(/outcome "missing" is not defined/);
   });
 
-  it('requires a debrief with red flags and recovery for fraud scenarios', () => {
+  it('fraud debriefs need what to do if you already fell for it, a habit card and a device tip', () => {
     const s = example();
-    s.debrief = { habit: 'h', sources: ['bsi-smishing'] };
+    s.debrief = { layer1: { tell: 't', what_works: 'w' }, sources: ['bsi-smishing'] };
     const errs = run(s).errors.join('\n');
-    expect(errs).toMatch(/red flags/);
     expect(errs).toMatch(/already fell for it/);
+    expect(errs).toMatch(/habit_card/);
+    expect(errs).toMatch(/device_tip/);
   });
 
   it('rejects unknown fields and QR payloads outside /qr/', () => {
@@ -172,6 +270,18 @@ describe('brand registry (T-1.8)', () => {
     expect(r.errors.join('\n')).toMatch(/lookalike_exmaples/);
     const sub = loadFrom('brands:\n  - id: trundle\n    name: Trundle\n    sub_brands:\n      - { id: t-pay, name: T Pay, domian: t-pay.com }\n');
     expect(sub.errors.join('\n')).toMatch(/domian/);
+  });
+
+  it('hosts match ^[a-z0-9.-]+\\.(example|test|invalid)$ (display-only look-alikes are lowercased first)', () => {
+    const lookalike = (l: string) =>
+      loadFrom(`brands:\n  - id: trundle\n    name: Trundle\n    domain: trundle.example\n    lookalike_examples: [${l}]\n`).errors.join('\n');
+    expect(lookalike('"trundle-zoll.example"')).toBe('');
+    expect(lookalike('"TrundIe.example"')).toMatch(/must be a lowercase host/);
+    expect(lookalike('"trundle_zoll.example"')).toMatch(/must be a lowercase host/);
+    expect(lookalike('"trundle .example"')).toMatch(/must be a lowercase host/);
+    expect(lookalike('"trundle.EXAMPLE"')).toMatch(/must be a lowercase host/);
+    expect(lookalike('{ host: "TrundIe.example", display_text_only: true }')).toBe('');
+    expect(lookalike('{ host: "trundIe.com", display_text_only: true }')).toMatch(/trundIe\.com/);
   });
 
   it('look-alike objects must be exactly {host, display_text_only}', () => {

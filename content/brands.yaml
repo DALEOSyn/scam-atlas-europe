@@ -110,8 +110,8 @@ brands:
         on yellow, red, brown, orange, purple+orange and blue+yellow. No horn, arrow, smile-arrow, wing,
         paper plane or globe.
       typography: "Lowercase rounded sans; regional couriers mostly use bold uppercase or italic wordmarks."
-    checked_against: ["DHL", "Deutsche Post", "DPD", "GLS", "Hermes/Evri", "UPS", "FedEx", "PostNL", "InPost", "bpost", "La Poste", "Correos", "PostNord", "Royal Mail", "Packeta", "Amazon logistics", "Trunkrs (NL same-day parcels)", "trundle.me (travel-content app)"]
-    web_check: "Low. No courier or logistics company named Trundle; trundle.me is a travel-content app; Trunkrs only partly overlaps in sound (BRAND_CHECK §2)."
+    checked_against: ["DHL", "Deutsche Post", "DPD", "GLS", "Hermes/Evri", "UPS", "FedEx", "PostNL", "InPost", "bpost", "La Poste", "Correos", "PostNord", "Royal Mail", "Packeta", "Amazon logistics", "Trunkrs (NL same-day parcels)", "Trundle (trundle dot me, travel-content app)"]
+    web_check: "Low. No courier or logistics company named Trundle; trundle dot me is a travel-content app; Trunkrs only partly overlaps in sound (BRAND_CHECK §2)."
     lookalike_examples:
       - "trundle-zoll.example"          # "customs" fee page (Berlin 1-7)
       - "trundle-redelivery.example"
@@ -185,7 +185,7 @@ brands:
         has no sewing connotation). Large e-commerce brands use orange, red, blue or black wordmarks with
         arrows or carts.
       typography: "Serif title case; avoids the bold sans wordmarks of large marketplaces."
-    checked_against: ["Amazon", "Zalando", "Otto", "bol.com", "Cdiscount", "Fnac", "Allegro", "Etsy", "AliExpress", "Temu", "Shein", "IKEA", "Thimble and Fabric (UK craft kits)"]
+    checked_against: ["Amazon", "Zalando", "Otto", "bol (bol dot com)", "Cdiscount", "Fnac", "Allegro", "Etsy", "AliExpress", "Temu", "Shein", "IKEA", "Thimble and Fabric (UK craft kits)"]
     web_check: "Low. No exact match; nearest is a UK craft-kit brand, hence non-craft products only (BRAND_CHECK §4)."
     lookalike_examples:
       - "thimble-and-pine-sale.example"

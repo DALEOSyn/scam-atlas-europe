@@ -1,0 +1,21 @@
+# Damage-control options (CR-07). Each scenario outcome lists {step, category};
+# the category (stop, secure, report, warn, harmful) depends on the scenario.
+steps:
+  - id: block_card_in_bank_app
+    label: "Block your card in your banking app"
+  - id: call_bank_known_number
+    label: "Call your bank on the number on the back of your card"
+  - id: change_password
+    label: "Change the password, starting with the account that was hit"
+  - id: turn_on_two_step
+    label: "Turn on two-step sign-in"
+  - id: report_to_police_online
+    label: "Report it to the police online"
+  - id: warn_contacts
+    label: "Warn your contacts that messages from you may be fake"
+  - id: reply_ask_money_back
+    label: "Reply to the scammer and ask for your money back"
+  - id: pay_recovery_service
+    label: "Pay a recovery service that promises to get the money back"
+  - id: wait_and_see
+    label: "Wait and see whether anything happens"

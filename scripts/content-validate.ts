@@ -2,6 +2,10 @@
  * npm run content:validate [-- --strict]
  * Validates every content/scenarios/<chapter>/*.yaml against src/content/schema.ts
  * and cross-checks source ids (content/sources.yaml) and brand ids (content/brands.yaml).
+ * Loads balance.yaml, cast.yaml, recovery_steps.yaml, habit_cards.yaml and
+ * content/chapters/<city>.yaml, and enforces the per-scenario and per-chapter
+ * mix rules (scripts/lib/rules.ts). Mix rules are errors for `status: complete`
+ * chapters and warnings for `status: draft` chapters.
  * --strict also fails on placeholder sources/brands (use from G1 on).
  */
 import { resolve } from 'node:path';

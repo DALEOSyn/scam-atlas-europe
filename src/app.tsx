@@ -61,6 +61,7 @@ export function App({ loadFirst = defaultLoadFirst }: AppProps) {
       ) : null}
       {screen.kind === 'playing' ? (
         <ScenarioView
+          key={screen.scenario.id}
           scenario={screen.scenario}
           onDone={(result) => setScreen({ kind: 'debrief', scenario: screen.scenario, result })}
         />

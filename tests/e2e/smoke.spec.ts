@@ -37,6 +37,20 @@ test('tutorial example: start, choose the habit, read the debrief', async ({ pag
   expect(consoleErrors).toEqual([]);
 });
 
+test('tutorial example: follow the link to the fee page, fall, read the damage control', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: /Open the link/ }).click();
+  await expect(page.getByRole('button', { name: /Enter your card details/ })).toBeVisible();
+  await expect(page.getByText('trundle-zoll.example/p/8812', { exact: true })).toBeVisible();
+  await expect(page.locator('form[action]')).toHaveCount(0);
+  expect((await new AxeBuilder({ page }).withTags(WCAG).analyze()).violations).toEqual([]);
+  await page.getByRole('button', { name: /Enter your card details/ }).click();
+  await expect(page.getByRole('heading', { name: 'Debrief' })).toBeVisible();
+  await expect(page.getByText('Paid or gave card details')).toBeVisible();
+  expect((await new AxeBuilder({ page }).withTags(WCAG).analyze()).violations).toEqual([]);
+});
+
 test('service worker registers (offline-capable)', async ({ page }) => {
   await page.goto('/');
   const scope = await page.evaluate(async () => (await navigator.serviceWorker.ready).scope);

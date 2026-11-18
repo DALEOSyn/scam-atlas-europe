@@ -81,9 +81,27 @@ describe('App shell', () => {
     await waitFor(() => screen.getByRole('heading', { name: 'Debrief' }));
     expect(screen.getByText(/No fee\./)).toBeTruthy();
     expect(screen.getByText(/That is the habit that works/)).toBeTruthy();
-    expect(screen.getByText(scenario.debrief.habit)).toBeTruthy();
+    expect(screen.getByText(scenario.debrief.layer1.what_works)).toBeTruthy();
     expect(screen.getByText(/Already clicked/)).toBeTruthy();
     assertFormsAreSafe(container);
+  });
+
+  it('follows a next_beat to the follow-up page and debriefs the fall without blame', async () => {
+    const scenario = loadExample();
+    const { container } = render(<App loadFirst={async () => scenario} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+    await waitFor(() => screen.getByText(/Zollgebühr 1,99 EUR offen/));
+    fireEvent.click(screen.getByRole('button', { name: /Open the link/ }));
+    await waitFor(() => screen.getByRole('button', { name: /Enter your card details/ }));
+    expect(screen.getByText('trundle-zoll.example/p/8812')).toBeTruthy();
+    assertFormsAreSafe(container);
+    fireEvent.click(screen.getByRole('button', { name: /Enter your card details/ }));
+    await waitFor(() => screen.getByRole('heading', { name: 'Debrief' }));
+    expect(screen.getByText(/This was a scam:/)).toBeTruthy();
+    expect(screen.getByText('0 of 3 stars.')).toBeTruthy();
+    expect(screen.getByText(/could happen to anyone/)).toBeTruthy();
+    expect(screen.getByText(scenario.debrief.already_clicked?.paid ?? '-')).toBeTruthy();
+    expect(screen.queryByText(/That is the habit that works/)).toBeNull();
   });
 });
 

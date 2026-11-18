@@ -1,0 +1,13 @@
+# STUB for T-2.2 (schema migration). The game-designer replaces this with the
+# real chapter 0 (GDD §16). `status: draft` reports mix-rule gaps as warnings.
+slot: 0
+city: home
+name: "Home"
+status: draft
+patterns: [email-phishing-credential, smishing-parcel-fee]
+callbacks: []
+lo_focus: [LO-01, LO-02, LO-03, LO-05]
+scenario_order:
+  am: [home-00-example]
+  pm: []
+intro: "Before the trip: your phone, your inbox and a few habits that travel well."

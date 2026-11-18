@@ -30,6 +30,17 @@ describe('runtime scenario data carries schema defaults (vite content plugin)', 
     for (const b of data.beats) expect(Array.isArray(b.inspectables)).toBe(true);
   });
 
+  it('chapter files ship schema defaults (callbacks: [])', () => {
+    const file = resolve(ROOT, 'content/chapters/home.yaml');
+    const text = readFileSync(file, 'utf8');
+    const data = yamlModuleData(file, text, SCENARIOS) as { callbacks: unknown };
+    expect(Array.isArray(data.callbacks)).toBe(true);
+  });
+
+  it('a scenario that fails the schema fails loudly', () => {
+    expect(() => yamlModuleData(join(SCENARIOS, 'home', 'broken.yaml'), 'id: x\n', SCENARIOS)).toThrow();
+  });
+
   it('other YAML is passed through unchanged', () => {
     expect(yamlModuleData(resolve(ROOT, 'content/brands.yaml'), 'a: 1\n', SCENARIOS)).toEqual({ a: 1 });
   });

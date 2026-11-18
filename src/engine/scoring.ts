@@ -1,13 +1,31 @@
 /**
- * Star table lookups (balance.yaml `action_kinds`, `stars`, `points`). Pure;
+ * Star table lookups and per-scenario scoring (GDD §6–§7, balance.yaml
+ * `action_kinds`, `stars`, `points`, `tags`, `multi_step.boss`). Pure;
  * shared by the engine and the content validator (scripts/lib/rules.ts).
  */
-import type { ActionClass, ActionKind, Balance, Scenario } from '../content/schema.ts';
+import type { Action, ActionClass, ActionKind, Balance, Inspectable, Scenario } from '../content/schema.ts';
 
 export type Truth = 'fraud' | 'legit_high' | 'legit_low';
 
-/** The parts of balance.yaml the scoring needs. */
+/** The parts of balance.yaml the star table needs. */
 export type ScoringTable = Pick<Balance, 'action_kinds' | 'stars' | 'points'>;
+
+/** Every part of balance.yaml the engine reads (validated at build time by balanceSchema). */
+export type EngineBalance = Pick<
+  Balance,
+  | 'action_kinds'
+  | 'stars'
+  | 'points'
+  | 'tags'
+  | 'pause'
+  | 'multi_step'
+  | 'recovery'
+  | 'rating_cap'
+  | 'stamps'
+  | 'timers'
+  | 'pushers'
+  | 'stress'
+>;
 
 export function truthOf(s: Pick<Scenario, 'is_fraud' | 'stakes'>): Truth {
   if (s.is_fraud) return 'fraud';
@@ -26,4 +44,108 @@ export function starsFor(
 ): number | 'non_terminal' | 'not_allowed' | undefined {
   if (cls === 'meta') return undefined;
   return table.stars[cls][truth];
+}
+
+/** A fall: comply or proceed on fraud (GDD §7.1). Scored by damage control instead of stars. */
+export function isFall(cls: ActionClass, truth: Truth): boolean {
+  return truth === 'fraud' && (cls === 'comply' || cls === 'proceed');
+}
+
+/**
+ * The decisive action of one beat group (GDD §6 "Decisive-action rules").
+ * `via` records how the class was reached: `what_now` (hang up → follow-up on a call)
+ * or `timer` (second expiry, scored as balance `stars.timer_expiry`).
+ */
+export interface Decision {
+  cls: ActionClass;
+  kind: ActionKind | 'done' | 'timer_expiry';
+  actionId: string;
+  via?: 'what_now' | 'timer';
+  /** Authored score override (CR-01) of the deciding action, if any. */
+  override?: number;
+}
+
+/**
+ * Merge a newly chosen action into the group's decisive action.
+ * - Verify stands unless the follow-up is comply/proceed on fraud, or report on genuine.
+ * - Engage on fraud never decides (it caps the group at ★★ instead; see `engagedOnFraud`).
+ * - Meta (pause) never decides.
+ * - Otherwise the latest action decides.
+ */
+export function mergeDecision(current: Decision | undefined, next: Decision, truth: Truth, engageTerminalOnFraud: boolean): Decision | undefined {
+  if (next.cls === 'meta') return current;
+  if (next.cls === 'engage' && truth === 'fraud' && !engageTerminalOnFraud) return current;
+  if (current?.cls === 'verify') {
+    const replaces = truth === 'fraud' ? next.cls === 'comply' || next.cls === 'proceed' : next.cls === 'report';
+    return replaces ? next : current;
+  }
+  return next;
+}
+
+export function decisionOf(table: Pick<Balance, 'action_kinds'>, a: Action): Decision {
+  return { cls: classOf(table, a.kind), kind: a.kind, actionId: a.id, ...(a.score !== undefined ? { override: a.score } : {}) };
+}
+
+/** Score of one beat group before tags and damage control. */
+export interface GroupScore {
+  cls: ActionClass;
+  stars: number;
+  /** stars × per_star, report-on-genuine exception, or the authored override. Falls score 0 here. */
+  points: number;
+  fell: boolean;
+  timerExpired: boolean;
+  /** Engage on fraud happened earlier in the group: stars capped (balance points.engage_on_fraud.star_cap). */
+  capped: boolean;
+}
+
+export function scoreGroup(
+  b: Pick<Balance, 'stars' | 'points'>,
+  truth: Truth,
+  decision: Decision | undefined,
+  opts: { engagedOnFraud: boolean; timerExpired: boolean },
+): GroupScore {
+  const cls: ActionClass = opts.timerExpired ? b.stars.timer_expiry : (decision?.cls ?? b.stars.timer_expiry);
+  const raw = starsFor(b, cls, truth);
+  let stars = typeof raw === 'number' ? raw : raw === 'non_terminal' ? b.points.engage_on_fraud.star_cap : 0;
+  const capped = opts.engagedOnFraud && truth === 'fraud';
+  if (capped) stars = Math.min(stars, b.points.engage_on_fraud.star_cap);
+  const fell = !opts.timerExpired && isFall(cls, truth);
+  if (fell) return { cls, stars: 0, points: 0, fell, timerExpired: opts.timerExpired, capped };
+  let points = stars * b.points.per_star;
+  if (cls === 'report' && truth !== 'fraud') points = b.points.exceptions.report_on_legit;
+  if (!opts.timerExpired && decision?.override !== undefined) points = decision.override;
+  return { cls, stars, points, fell, timerExpired: opts.timerExpired, capped };
+}
+
+/** A tag is correct when it marks a red flag (on fraud, or a quoted example anywhere). */
+export function tagIsCorrect(ins: Inspectable | undefined, beatIsFraud: boolean): boolean {
+  if (!ins || !ins.red_flag) return false;
+  return beatIsFraud || ins.context === 'quoted';
+}
+
+export interface TagTally {
+  correct: number;
+  wrong: number;
+}
+
+/**
+ * Tag bonus (balance `tags`): +per_tagged_red_flag per correct tag, capped,
+ * void if any wrong tag, only when the final class qualifies and not on timer expiry.
+ * `eligibleCorrect` counts correct tags in groups whose ending qualifies (boss: per beat).
+ */
+export function tagBonus(b: Pick<Balance, 'tags'>, eligibleCorrect: number, wrongAnywhere: number): { bonus: number; voided: boolean } {
+  const voided = b.tags.void_if_any_non_red_flag_tagged && wrongAnywhere > 0;
+  if (voided) return { bonus: 0, voided };
+  return { bonus: Math.min(b.tags.cap, eligibleCorrect * b.tags.per_tagged_red_flag), voided };
+}
+
+export function groupEarnsTagBonus(b: Pick<Balance, 'tags'>, g: GroupScore): boolean {
+  if (g.timerExpired && b.tags.not_on_timer_expiry) return false;
+  return b.tags.apply_if_final_class_in.includes(g.cls);
+}
+
+/** Max points of one scored scenario: 3 stars per scored group + the tag bonus potential on fraud. */
+export function maxPointsOf(b: Pick<Balance, 'points' | 'tags'>, scoredGroups: number, isFraud: boolean, redFlags: number): number {
+  const bonus = isFraud ? Math.min(b.tags.cap, redFlags * b.tags.per_tagged_red_flag) : 0;
+  return scoredGroups * 3 * b.points.per_star + bonus;
 }

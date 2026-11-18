@@ -3,7 +3,7 @@ import preact from '@preact/preset-vite';
 import { VitePWA } from 'vite-plugin-pwa';
 import { resolve } from 'node:path';
 import { validateContent } from './scripts/lib/content.ts';
-import { yamlModuleData } from './scripts/lib/yaml-module.ts';
+import { yamlModuleSource } from './scripts/lib/yaml-module.ts';
 
 const CONTENT_DIR = resolve(import.meta.dirname, 'content');
 const SCENARIOS_DIR = resolve(CONTENT_DIR, 'scenarios');
@@ -24,7 +24,7 @@ function contentPlugin(): Plugin {
     },
     transform(code, id) {
       if (!/\.ya?ml$/.test(id)) return null;
-      return { code: `export default ${JSON.stringify(yamlModuleData(id, code, SCENARIOS_DIR))};`, map: null };
+      return { code: yamlModuleSource(id, code, SCENARIOS_DIR), map: null };
     },
   };
 }

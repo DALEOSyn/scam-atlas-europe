@@ -227,11 +227,40 @@ export const actionSchema = z
   });
 export type Action = z.infer<typeof actionSchema>;
 
+/**
+ * Optional extras for the engine's "What now?" step after hanging up (GDD §6, §17 1-9).
+ * The step always offers call_back_known (verify), report and Done (dismiss);
+ * `extra` adds engage actions (e.g. "Call back this number") that return to
+ * "What now?" with their note and cap the beat at ★★. No fake next_beat needed.
+ */
+export const whatNowSchema = z
+  .object({
+    /** Label for the built-in call-back option, e.g. "Call the number on your Larchwick card". */
+    call_back_label: z.string().min(1).optional(),
+    extra: z
+      .array(z.object({ id: snakeId, label: z.string().min(1), kind: actionKindSchema, note: z.string().min(1) }).strict())
+      .max(2)
+      .default([]),
+  })
+  .strict();
+export type WhatNow = z.infer<typeof whatNowSchema>;
+
+/**
+ * A notification shown inside the beat (e.g. the code SMS or approval prompt
+ * during a call, GDD §17 1-9). It has no actions of its own, is not checkable
+ * on its own, and can never be reported (so never a "genuine message reported").
+ */
+export const bannerSchema = z
+  .object({ device: z.enum(['sms', 'messenger', 'auth', 'banking', 'email']), message: messageSchema })
+  .strict();
+
 const beatBody = {
   device: deviceSchema,
   message: messageSchema,
   inspectables: z.array(inspectableSchema).default([]),
   actions: z.array(actionSchema).min(1).max(5),
+  banner: bannerSchema.optional(),
+  what_now: whatNowSchema.optional(),
 };
 
 /** CR-03 follow-up beat. Boss beats arrive on a schedule (`arrives_after`, seconds after the previous beat started). */
@@ -330,6 +359,8 @@ export const scenarioSchema = z
     message: messageSchema,
     inspectables: z.array(inspectableSchema).default([]),
     actions: z.array(actionSchema).min(2, 'a scenario offers 2–5 actions').max(5, 'a scenario offers 2–5 actions'),
+    banner: bannerSchema.optional(),
+    what_now: whatNowSchema.optional(),
     beats: z.array(beatSchema).default([]),
     interrupts: z.array(interruptSchema).default([]),
     outcomes: z.record(snakeId, outcomeSchema),
@@ -371,18 +402,21 @@ export const scenarioSchema = z
       message: Message;
       inspectables: Inspectable[];
       actions: Action[];
+      what_now?: WhatNow | undefined;
       path: (string | number)[];
       fraud: boolean;
     }[] = [
-      { id: 'start', device: s.device, message: s.message, inspectables: s.inspectables, actions: s.actions, path: [], fraud: s.is_fraud },
+      { id: 'start', device: s.device, message: s.message, inspectables: s.inspectables, actions: s.actions, what_now: s.what_now, path: [], fraud: s.is_fraud },
       ...s.beats.map((b, i) => ({ ...b, path: ['beats', i], fraud: s.is_fraud })),
       ...s.interrupts.map((b, i) => ({ ...b, path: ['interrupts', i], fraud: b.is_fraud })),
     ];
+    s.interrupts.forEach((b, i) => {
+      if (b.what_now) issue(['interrupts', i, 'what_now'], 'interrupts are single-step: no what_now');
+    });
     const beatIds = new Set<string>(['start']);
     s.beats.forEach((b, i) => {
       if (beatIds.has(b.id)) issue(['beats', i, 'id'], `duplicate beat id "${b.id}"`);
       beatIds.add(b.id);
-      if (s.role === 'boss' && b.arrives_after === undefined) issue(['beats', i, 'arrives_after'], 'boss beats arrive on a schedule: set arrives_after');
       if (s.role !== 'boss' && b.arrives_after !== undefined) issue(['beats', i, 'arrives_after'], 'arrives_after is for boss beats');
     });
     const actionIds = new Set<string>();
@@ -398,6 +432,15 @@ export const scenarioSchema = z
           issue([...b.path, 'inspectables', i, 'target'], `"${ins.target}" is not visible in this ${b.device} message (checkables: ${[...visible].join(', ')})`);
         }
       });
+      if (b.what_now) {
+        const hangUp = b.actions.find((a) => a.kind === 'hang_up');
+        if (!hangUp) issue([...b.path, 'what_now'], 'what_now needs a hang_up action on the same beat');
+        else if (hangUp.outcome === undefined) issue([...b.path, 'what_now'], 'what_now runs after a hang_up with an outcome (not next_beat)');
+        b.what_now.extra.forEach((x, i) => {
+          if (actionIds.has(x.id) || b.actions.some((a) => a.id === x.id)) issue([...b.path, 'what_now', 'extra', i, 'id'], `duplicate action id "${x.id}"`);
+          actionIds.add(x.id);
+        });
+      }
       b.actions.forEach((a, i) => {
         if (actionIds.has(a.id)) issue([...b.path, 'actions', i, 'id'], `duplicate action id "${a.id}"`);
         actionIds.add(a.id);
@@ -418,6 +461,14 @@ export const scenarioSchema = z
       s.beats.forEach((b, i) => {
         if (!referencedBeats.has(b.id)) issue(['beats', i, 'id'], `beat "${b.id}" is never reached (no action has next_beat: ${b.id})`);
       });
+    } else {
+      // Boss beats arrive on a schedule (arrives_after) or follow an action inside a beat (next_beat), never both.
+      s.beats.forEach((b, i) => {
+        const reached = referencedBeats.has(b.id);
+        if (b.arrives_after === undefined && !reached) issue(['beats', i, 'arrives_after'], 'boss beats arrive on a schedule: set arrives_after (or reach the beat with next_beat)');
+        if (b.arrives_after !== undefined && reached) issue(['beats', i, 'arrives_after'], 'a scheduled boss beat cannot also be a next_beat target');
+      });
+      if (!s.beats.some((b) => b.arrives_after !== undefined)) issue(['beats'], 'a boss needs at least one scheduled beat (arrives_after)');
     }
     for (const [key, o] of Object.entries(s.outcomes)) {
       if (o.arc_effects && s.role !== 'arc') issue(['outcomes', key, 'arc_effects'], 'arc_effects are for arc beats only');
@@ -512,6 +563,11 @@ const starValue = z.union([z.number().int().min(0).max(3), z.enum(['non_terminal
 const starRow = z.object({ fraud: starValue, legit_high: starValue, legit_low: starValue }).strict();
 const range = z.tuple([z.number(), z.number()]);
 const ceilShare = z.string().regex(/^ceil\(F\/\d+\)$/, 'expected ceil(F/<n>)');
+/** Spotting thresholds for stamps: ceil(R/3), ceil(2*R/3). Parsed by src/engine/chapter.ts. */
+export const SPOTTED_EXPR_RE = /^ceil\((?:(\d+)\*)?R\/(\d+)\)$/;
+const spottedExpr = z.string().regex(SPOTTED_EXPR_RE, 'expected ceil(R/<n>) or ceil(<k>*R/<n>)');
+const nonNeg = z.number().min(0);
+const stressBand = z.tuple([z.number().int().min(0), z.number().int().min(0)]);
 
 export const balanceSchema = z
   .object({
@@ -531,10 +587,80 @@ export const balanceSchema = z
         timer_expiry: z.enum(ACTION_CLASSES),
       })
       .strict(),
-    points: z.object({ per_star: z.number().int().positive(), engage_on_fraud: z.object({ terminal: z.boolean(), star_cap: z.number() }).strict() }).passthrough(),
-    multi_step: z.object({ boss: z.object({ scored_beats_max: z.number().int().positive() }).passthrough() }).passthrough(),
-    recovery: z.object({ pick: z.number().int().positive() }).passthrough(),
-    timers: z.object({ by_slot: z.record(z.string(), z.number().int().positive()) }).passthrough(),
+    points: z
+      .object({
+        per_star: z.number().int().positive(),
+        exceptions: z.object({ report_on_legit: z.number().int() }).passthrough(),
+        engage_on_fraud: z.object({ terminal: z.boolean(), star_cap: z.number().int().min(0).max(3) }).strict(),
+      })
+      .passthrough(),
+    // Read by the engine (src/engine/*): validated here so the runtime can trust the shape.
+    tags: z
+      .object({
+        per_tagged_red_flag: z.number().int().min(0),
+        cap: z.number().int().min(0),
+        void_if_any_non_red_flag_tagged: z.boolean(),
+        apply_if_final_class_in: z.array(z.enum(ACTION_CLASSES)),
+        not_on_timer_expiry: z.boolean(),
+      })
+      .passthrough(),
+    pause: z
+      .object({ reduces_stress_by: nonNeg, timer_cost_seconds: nonNeg, cooldown_seconds: nonNeg })
+      .passthrough(),
+    multi_step: z
+      .object({ boss: z.object({ scored_beats_max: z.number().int().positive(), max_points: z.number().int().positive() }).passthrough() })
+      .passthrough(),
+    recovery: z
+      .object({
+        pick: z.number().int().positive(),
+        points_per_correct_step: z.number().int().min(0),
+        max_points: z.number().int().min(0),
+        harmful_step_penalty: z.number().int().max(0),
+        floor: z.number().int(),
+      })
+      .passthrough(),
+    rating_cap: z.number().positive(),
+    stamps: z
+      .object({
+        bronze: z.object({ requires: z.literal('finished') }).strict(),
+        silver: z.object({ min_rating: nonNeg, max_genuine_reported: z.number().int().min(0), min_spotted: spottedExpr }).strict(),
+        gold: z
+          .object({
+            min_rating: nonNeg,
+            max_genuine_reported: z.number().int().min(0),
+            min_spotted: spottedExpr,
+            max_offfocus_doublechecks: z.number().int().min(0),
+          })
+          .strict(),
+      })
+      .strict(),
+    timers: z
+      .object({
+        by_slot: z.record(z.string(), z.number().int().positive()),
+        boss_beat: z.number().int().positive(),
+        call_beat: z.number().int().positive(),
+        inspect_cost_seconds: nonNeg,
+        escalation_extra_seconds: nonNeg,
+        modes: z.object({ standard: z.number().positive(), extended: z.number().positive(), off: z.null() }).strict(),
+      })
+      .passthrough(),
+    pushers: z
+      .object({ stress_interval_scale: z.object({ calm: z.number().positive(), tense: z.number().positive(), overwhelmed: z.number().positive() }).strict() })
+      .passthrough(),
+    stress: z
+      .object({
+        start_of_chapter: nonNeg,
+        on_resume: nonNeg,
+        per_pressure_lever: nonNeg,
+        on_pusher_message: nonNeg,
+        on_interrupt: nonNeg,
+        on_timer_expiry: nonNeg,
+        on_fall: nonNeg,
+        decay_after_scenario: nonNeg,
+        thresholds: z.object({ calm: stressBand, tense: stressBand, overwhelmed: stressBand }).strict(),
+        cap: z.number().positive(),
+      })
+      .passthrough(),
     difficulty: z
       .object({
         chapter_slots: z.record(

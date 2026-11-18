@@ -359,6 +359,52 @@ describe('schema-level checks', () => {
   });
 });
 
+describe('"What now?" extras and banners (GDD §6, §17 1-9)', () => {
+  const callFraud = (): Raw => {
+    const r = rawFraud();
+    actions(r).push({ id: 'hang_up', label: 'Hang up', kind: 'hang_up', outcome: 'reported' });
+    return r;
+  };
+  it('what_now needs a hang_up with an outcome on the same beat', () => {
+    const r = rawFraud();
+    r.what_now = { extra: [] };
+    expect(schemaErrors(r).join('\n')).toMatch(/what_now needs a hang_up action/);
+    const ok = callFraud();
+    ok.what_now = { extra: [{ id: 'call_this_number', label: 'Call back this number', kind: 'call_number_in_message', note: 'You cannot tell whose line it is.' }] };
+    expect(schemaErrors(ok)).toEqual([]);
+    expect(errorsOf(ok)).toEqual([]);
+  });
+  it('what_now extras are engage kinds with unique ids', () => {
+    const r = callFraud();
+    r.what_now = { extra: [{ id: 'pay_now', label: 'Pay', kind: 'pay', note: 'x' }] };
+    expect(errorsOf(r).join('\n')).toMatch(/what_now extra "pay_now" must be an engage kind/);
+    const dup = callFraud();
+    dup.what_now = { extra: [{ id: 'open_app', label: 'Call', kind: 'call_number_in_message', note: 'x' }] };
+    expect(schemaErrors(dup).join('\n')).toMatch(/duplicate action id "open_app"/);
+  });
+  it('a banner is a message with no actions of its own', () => {
+    const r = callFraud();
+    r.banner = { device: 'sms', message: { sender: { display: 'Larchwick' }, body: 'Code 1234 to approve a payment.', request: 'none' } };
+    expect(schemaErrors(r)).toEqual([]);
+    const withActions = callFraud();
+    withActions.banner = { device: 'sms', message: { body: 'x', request: 'none' }, actions: [] };
+    expect(schemaErrors(withActions).join('\n')).toMatch(/banner/);
+  });
+});
+
+describe('boss beat scheduling', () => {
+  it('a boss beat arrives on a schedule or follows next_beat, never both, and a boss has a scheduled beat', () => {
+    const unscheduled = rawFraud('b1', { role: 'boss', difficulty: 3 });
+    expect(schemaErrors(unscheduled).join('\n')).toMatch(/a boss needs at least one scheduled beat/);
+    const both = rawFraud('b2', { role: 'boss', difficulty: 3 });
+    both.beats = (both.beats as Raw[]).map((b) => ({ ...b, arrives_after: 30 }));
+    expect(schemaErrors(both).join('\n')).toMatch(/cannot also be a next_beat target/);
+    const orphan = rawFraud('b3', { role: 'boss', difficulty: 3 });
+    actions(orphan)[0] = { ...actions(orphan)[0], next_beat: undefined, outcome: 'fine' };
+    expect(schemaErrors(orphan).join('\n')).toMatch(/boss beats arrive on a schedule: set arrives_after/);
+  });
+});
+
 describe('checkables (UI_SPEC §3)', () => {
   it('derives checkables from the device template, numbering repeats', () => {
     const s = scenario(rawFraud());

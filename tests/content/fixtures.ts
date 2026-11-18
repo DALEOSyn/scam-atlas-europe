@@ -174,8 +174,18 @@ export function validChapter(): { chapter: Chapter; scenarios: Scenario[] } {
     rawGenuine('g3', { difficulty: 3, theme: 'bank' }),
     {
       ...rawFraud('boss', { role: 'boss', difficulty: 3, theme: 'shop' }),
-      // Scheduled boss beats are independent messages: each needs min_checkables.
-      beats: (rawFraud().beats as Raw[]).map((b) => ({ ...b, arrives_after: 30, message: { ...(b.message as Raw), references: ['TR-1'] } })),
+      // The follow-up page stays reached by next_beat; a scheduled boss beat is an independent
+      // message (arrives_after, never a next_beat target) and needs min_checkables.
+      beats: [
+        ...(rawFraud().beats as Raw[]),
+        ...(rawFraud().beats as Raw[]).map((b) => ({
+          ...b,
+          id: 'second_page',
+          arrives_after: 30,
+          message: { ...(b.message as Raw), references: ['TR-1'] },
+          actions: (b.actions as Raw[]).map((a) => ({ ...a, id: `${String(a.id)}_2` })),
+        })),
+      ],
     },
   ];
   const scenarios = raws.map(scenario);

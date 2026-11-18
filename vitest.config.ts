@@ -1,13 +1,16 @@
 import { defineConfig, type Plugin } from 'vitest/config';
 import preact from '@preact/preset-vite';
-import { parse } from 'yaml';
+import { resolve } from 'node:path';
+import { yamlModuleSource } from './scripts/lib/yaml-module.ts';
 
-/** Same YAML-as-JSON import as the build (vite.config.ts), without build-time validation. */
+const SCENARIOS_DIR = resolve(import.meta.dirname, 'content', 'scenarios');
+
+/** Same YAML import as the build (vite.config.ts, scripts/lib/yaml-module.ts), without build-start validation. */
 const yamlData: Plugin = {
   name: 'scam-atlas-yaml-data',
   transform(code, id) {
     if (!/\.ya?ml$/.test(id)) return null;
-    return { code: `export default ${JSON.stringify(parse(code))};`, map: null };
+    return { code: yamlModuleSource(id, code, SCENARIOS_DIR), map: null };
   },
 };
 

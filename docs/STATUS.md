@@ -16,12 +16,12 @@ Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR 
 - [x] T-2.2 | frontend-engineer | Schema for CR-01…CR-12 + UI_SPEC §14 (pressure_target, already_clicked split, checkables from device template, palette sync test), per-chapter mix rules from balance.yaml, Red Line 8 letter check, strict brand hosts, stub chapter/cast/recovery/habit cards; CR-13 left open | branch phase2/schema | sceptic: FAIL → FAIL → PASS (producer exception for a third round)
 - [x] T-R.1 | fraud-researcher | Threat catalogue backlog (86 entries: Part A social engineering/fraud, Part B malware and technical campaigns as users see them; ATT&CK-mapped), 33 sources | sceptic: PASS with notes (applied)
 - [x] T-0.3 | producer | Recorded Roman's scope decision: malicious cyber campaigns (catalogue Part B) in scope at defender level; webcam blackmail help card only | CLAUDE.md Red Line 8, DECISIONS.md
+- [ ] T-2.1 | frontend-engineer | Engine: pure runner (beats, boss schedule, interrupts, slot timers + Calm, authored pushers with stress scale, What now? + extras, banners), Check + tag, scoring v3.2 (calibration-gated stamps, boss summing, recovery), debrief layers 1–2 incl. You chose, chapter progression/unlocking, arc flags + endings, versioned localStorage save; docs/ENGINE.md; schema: what_now, banner, boss beat scheduling, engine balance fields | branch phase2/engine | sceptic: pending, qa: pending
 - [x] T-1.7 | fraud-researcher | Brand-name web collision check (renamed Nodkey, Corvelle, Hoardly) | docs/patterns/BRAND_CHECK.md
 - [x] T-2.6 | game-designer | GDD/UI_SPEC follow-ups (1-9 caller, high-stakes set, layer-1 budget, snake_case flags) | sceptic: FAIL → PASS
 - [x] T-2.4a | scenario-writer | Tutorial chapter scenarios (0-1…0-6) + linter schema-id exemption, registered-host rule, runtime defaults | fraud-researcher: FAIL → PASS · sceptic: FAIL → PASS · qa: FAIL → PASS
 
 ## Next up (Phase 2)
-- [ ] T-2.1 | frontend-engineer | Engine: scenario runner, Check + tag, scoring v3.2, debrief layers, save state | reviewers: sceptic, qa
 - [ ] T-2.3 | ux-artist + frontend-engineer | Devices: mail, SMS/messenger, call, browser, QR, bank, auth, letter | reviewers: sceptic, qa
 - [ ] T-2.4 | scenario-writer | Tutorial (ch0) + Berlin (ch1) scenarios | reviewers: fraud-researcher, sceptic, qa
 

@@ -171,6 +171,14 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
     if (s.role === 'arc' && wordCount(p.text) > arcLimit) errors.push(`pusher at ${p.at_seconds}s: arc lines are at most ${arcLimit} words`);
   }
 
+  // "What now?" extras (GDD §6, §17): engage actions that return to the step and cap the beat at ★★.
+  for (const [where, wn] of [['opening message', s.what_now] as const, ...s.beats.map((b) => [`beat "${b.id}"`, b.what_now] as const)]) {
+    for (const x of wn?.extra ?? []) {
+      if (cls({ kind: x.kind } as Action) !== 'engage') errors.push(`${where}: what_now extra "${x.id}" must be an engage kind (it returns to "What now?"), not ${x.kind}`);
+      if (wordCount(x.label) > 8) errors.push(`${where}: what_now extra "${x.id}" label is over 8 words`);
+    }
+  }
+
   // Actions.
   for (const b of beats) {
     const beatFraud = b.interrupt ? b.interrupt.is_fraud : s.is_fraud;

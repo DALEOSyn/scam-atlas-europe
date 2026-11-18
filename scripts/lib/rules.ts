@@ -64,6 +64,7 @@ interface BeatView {
   message: Message;
   inspectables: Inspectable[];
   actions: Action[];
+  what_now?: Scenario['what_now'];
   interrupt?: { is_fraud: boolean };
   /** Boss beats that arrive on their own schedule (independent messages). */
   scheduled: boolean;
@@ -72,13 +73,14 @@ interface BeatView {
 
 export function beatsOf(s: Scenario): BeatView[] {
   return [
-    { where: 'opening message', device: s.device, message: s.message, inspectables: s.inspectables, actions: s.actions, scheduled: true, scored: true },
+    { where: 'opening message', device: s.device, message: s.message, inspectables: s.inspectables, actions: s.actions, what_now: s.what_now, scheduled: true, scored: true },
     ...s.beats.map((b) => ({
       where: `beat "${b.id}"`,
       device: b.device,
       message: b.message,
       inspectables: b.inspectables,
       actions: b.actions,
+      what_now: b.what_now,
       scheduled: b.arrives_after !== undefined,
       scored: b.scored,
     })),
@@ -101,6 +103,48 @@ export function isDecoy(i: Inspectable): boolean {
   return !i.red_flag && i.context !== 'quoted';
 }
 
+/** UI_SPEC §8.1: action labels are capped so the "You chose" line stays short. */
+export const ACTION_LABEL_MAX_WORDS = 8;
+/** "You chose: " (2) + the timer line "You let the timer run out." (6 words in total). */
+const YOU_CHOSE_PREFIX = 2;
+const TIMER_LINE_WORDS = 6;
+/** Built-in "What now?" choices that can leave a beat below ★★★ (content/i18n/en/ui.json: what_now_report, what_now_done). */
+const WHAT_NOW_BUILTIN_WORDS = { report: 3, done: 1 } as const;
+
+function whatNowsOf(s: Scenario): [string, NonNullable<Scenario['what_now']>][] {
+  const out: [string, NonNullable<Scenario['what_now']>][] = [];
+  if (s.what_now) out.push(['opening message', s.what_now]);
+  for (const b of s.beats) if (b.what_now) out.push([`beat "${b.id}"`, b.what_now]);
+  return out;
+}
+
+/**
+ * choice_worst (UI_SPEC §8.1): the longest "You chose" line this scenario can produce. Every action (and
+ * "What now?" extra or built-in) that can leave it below 3 stars counts, engage actions included; plus
+ * the timer line when the scenario has a timer.
+ */
+export function choiceWorst(s: Scenario, balance: Registries['balance']): number {
+  const truth = truthOf(s);
+  const below3 = (kind: Action['kind']) => {
+    const c = classOf(balance, kind);
+    if (c === 'meta') return false;
+    if (c === 'engage') return true;
+    const st = starsFor(balance, c, truth);
+    return typeof st === 'number' ? st < 3 : true;
+  };
+  const labels: string[] = [];
+  for (const b of beatsOf(s).filter((x) => !x.interrupt)) {
+    for (const a of b.actions) if (below3(a.kind)) labels.push(a.label);
+  }
+  let worst = s.pressure.timer ? TIMER_LINE_WORDS : 0;
+  for (const l of labels) worst = Math.max(worst, YOU_CHOSE_PREFIX + wordCount(l));
+  for (const [, wn] of whatNowsOf(s)) {
+    for (const x of wn.extra) if (below3(x.kind)) worst = Math.max(worst, YOU_CHOSE_PREFIX + wordCount(x.label));
+    worst = Math.max(worst, YOU_CHOSE_PREFIX + Math.max(WHAT_NOW_BUILTIN_WORDS.report, WHAT_NOW_BUILTIN_WORDS.done));
+  }
+  return worst;
+}
+
 export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -111,6 +155,8 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
   const beats = beatsOf(s);
   const story = beats.filter((b) => !b.interrupt);
   const storyActions = story.flatMap((b) => b.actions);
+  // Verify extras in "What now?" are offered to the player like actions (GDD §16: Adaeze, Desk, known desk).
+  const whatNowVerify = whatNowsOf(s).flatMap(([, wn]) => wn.extra.filter((x) => x.outcome !== undefined));
   const cls = (a: Action) => classOf(balance, a.kind);
 
   // Registries.
@@ -171,6 +217,28 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
     if (s.role === 'arc' && wordCount(p.text) > arcLimit) errors.push(`pusher at ${p.at_seconds}s: arc lines are at most ${arcLimit} words`);
   }
 
+  // "What now?" extras (GDD §6, §16, §17): engage extras (note) return to the step and cap the beat at ★★;
+  // verify extras (outcome) end the step as verify.
+  for (const [where, wn] of whatNowsOf(s)) {
+    for (const x of wn.extra) {
+      const c = classOf(balance, x.kind);
+      if (x.note !== undefined && c !== 'engage') errors.push(`${where}: what_now extra "${x.id}" has a note, so it returns to "What now?": it must be an engage kind, not ${x.kind}`);
+      if (x.outcome !== undefined && c !== 'verify') errors.push(`${where}: what_now extra "${x.id}" ends the step with an outcome: it must be a verify kind, not ${x.kind}`);
+    }
+  }
+  for (const b of beats) {
+    for (const a of [...b.actions, ...(b.what_now?.extra ?? [])]) {
+      if (wordCount(a.label) > ACTION_LABEL_MAX_WORDS) errors.push(`${b.where}: action "${a.id}" label is over ${ACTION_LABEL_MAX_WORDS} words (UI_SPEC §8.1)`);
+    }
+  }
+  // Producer ruling (T-2.1): a boss beat may state its own timer length, within the balance bounds.
+  for (const b of s.beats) {
+    if (b.timer_seconds === undefined) continue;
+    const lo = Math.min(balance.timers.call_beat, balance.timers.boss_beat);
+    const hi = Math.max(balance.timers.call_beat, balance.timers.boss_beat);
+    if (b.timer_seconds < lo || b.timer_seconds > hi) errors.push(`beat "${b.id}": timer_seconds ${b.timer_seconds} is outside ${lo}–${hi} (timers.call_beat … timers.boss_beat)`);
+  }
+
   // Actions.
   for (const b of beats) {
     const beatFraud = b.interrupt ? b.interrupt.is_fraud : s.is_fraud;
@@ -208,7 +276,7 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
     if (!storyActions.some((a) => a.kind === 'proceed')) errors.push('the player started this: add a proceed action');
   }
   if (mix.authoring_rule_applies_to_roles.includes(s.role)) {
-    if (!storyActions.some((a) => cls(a) === 'verify')) errors.push(`${s.role} scenarios offer at least one verify action`);
+    if (!storyActions.some((a) => cls(a) === 'verify') && whatNowVerify.length === 0) errors.push(`${s.role} scenarios offer at least one verify action`);
     const tempting = storyActions.some((a) => {
       const st = starsFor(balance, cls(a), truth);
       return st !== undefined && st !== 3;
@@ -237,11 +305,16 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
     if (scoredBeats > max) errors.push(`a boss has at most ${max} scored beats (has ${scoredBeats}); mark later beats scored: false`);
   }
 
-  // Debrief layer 1 word budget.
+  // Debrief layer 1 word budget (UI_SPEC §8.1): fixed + authored + the worst-case "You chose" line.
   const overhead = LAYER1_OVERHEAD[s.debrief.variant];
-  const words = wordCount(s.debrief.layer1.tell) + wordCount(s.debrief.layer1.what_works) + overhead;
+  const arcDebrief = s.debrief.variant === 'arc';
+  const authored = wordCount(s.debrief.layer1.tell) + wordCount(s.debrief.layer1.what_works) + (arcDebrief ? wordCount(s.debrief.safeguarding_line) : 0);
+  const choice = arcDebrief ? 0 : choiceWorst(s, balance);
+  const words = authored + overhead + choice;
   if (words > session.debrief_layer1_max_words) {
-    errors.push(`debrief.layer1 is ${words} words with the fixed copy (${overhead}); the limit is ${session.debrief_layer1_max_words}`);
+    errors.push(
+      `debrief.layer1 is ${words} words in the worst case (authored ${authored} + fixed ${overhead} + "You chose" ${choice}); the limit is ${session.debrief_layer1_max_words}`,
+    );
   }
 
   // Damage control (CR-07).

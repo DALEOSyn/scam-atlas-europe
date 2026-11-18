@@ -59,7 +59,7 @@ actions:                              # 2–5; stars come from balance.yaml (kin
     next_beat: fee_page
     pressure_target: true             # exactly one when request is not none
   - id: open_app
-    label: "Open the Trundle app yourself and check the tracking"
+    label: "Open the Trundle app yourself"
     kind: verify_in_app
     outcome: no_fee_found
   - id: delete_report
@@ -118,7 +118,7 @@ outcomes:
 debrief:
   variant: standard                   # arc for arc beats (no verdict, no points)
   layer1:                             # <= 40 words including the fixed copy
-    tell: "A courier asking for a small fee by text, from a mobile number, with a look-alike link."
+    tell: "A courier fee by text from a mobile number, with a look-alike link."
     what_works: "Open the courier's app yourself."
   layer2:
     message_flags:                    # flags that live in the text; checkable flags come from inspectables

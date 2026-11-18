@@ -6,6 +6,10 @@ import { join, resolve } from 'node:path';
 import { SimulatedForm } from '../../src/ui/SimulatedForm.tsx';
 import { App } from '../../src/app.tsx';
 import { loadExample, ROOT } from './helpers.ts';
+import { createStore } from '../../src/engine/save.ts';
+
+/** No storage in unit tests: every render starts from a fresh save. */
+const memoryless = () => createStore(null);
 
 afterEach(cleanup);
 
@@ -69,13 +73,17 @@ describe('SimulatedForm (Red Line 2)', () => {
 describe('App shell', () => {
   it('starts, renders the example scenario, resolves an action and shows the debrief', async () => {
     const scenario = loadExample();
-    const { container } = render(<App loadFirst={async () => scenario} />);
+    const { container } = render(<App loadFirst={async () => scenario} store={memoryless()} />);
     expect(screen.getByRole('heading', { level: 1, name: 'Scam Atlas: Europe' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Start' }));
 
+    // The timing choice comes before the first timed scenario (GDD §8).
+    await waitFor(() => screen.getByRole('heading', { name: 'How much time do you want?' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Standard timer' }));
     await waitFor(() => screen.getByText(/Zollgebühr 1,99 EUR/));
     assertFormsAreSafe(container);
-    expect(screen.getAllByRole('button').length).toBe(scenario.actions.length);
+    for (const a of scenario.actions) expect(screen.getByRole('button', { name: a.label })).toBeTruthy();
+    expect(screen.getByRole('timer').textContent).toMatch(/1:00 left/);
 
     fireEvent.click(screen.getByRole('button', { name: /Open the Trundle app yourself/ }));
     await waitFor(() => screen.getByRole('heading', { name: 'Debrief' }));
@@ -91,19 +99,32 @@ describe('App shell', () => {
 
   it('follows a next_beat to the follow-up page and debriefs the fall without blame', async () => {
     const scenario = loadExample();
-    const { container } = render(<App loadFirst={async () => scenario} />);
+    const { container } = render(<App loadFirst={async () => scenario} store={memoryless()} />);
     fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+    await waitFor(() => screen.getByRole('button', { name: 'Timers off' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Timers off' }));
     await waitFor(() => screen.getByText(/Zollgebühr 1,99 EUR offen/));
+    expect(screen.queryByRole('timer')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: /Open the link/ }));
     await waitFor(() => screen.getByRole('button', { name: /Enter your card details/ }));
     expect(screen.getByText('trundle-zoll.example/p/8812')).toBeTruthy();
     assertFormsAreSafe(container);
     fireEvent.click(screen.getByRole('button', { name: /Enter your card details/ }));
+    // Damage control (GDD §9): pick the first step, then 2 more.
+    await waitFor(() => screen.getByRole('heading', { name: 'Limit the damage' }));
+    expect(screen.getByText(/payments you don't recognise/)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /Wait and see/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Reply to the scammer/ }));
+    fireEvent.click(screen.getByRole('button', { name: /Block your card/ }));
+    expect(screen.getByText('3 of 3 chosen')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Done' }));
     await waitFor(() => screen.getByRole('heading', { name: 'Debrief' }));
     expect(screen.getByText(/This was a scam:/)).toBeTruthy();
     expect(screen.getByText('0 of 3 stars.')).toBeTruthy();
+    expect(screen.getByText('You chose: Enter your card details and pay.')).toBeTruthy();
     expect(screen.getByText(/could happen to anyone/)).toBeTruthy();
-    expect(screen.getByText(scenario.debrief.already_clicked?.paid ?? '-')).toBeTruthy();
+    // The paid advice is the layer-1 line (card details typed to pay a fee) and in the full list.
+    expect(screen.getAllByText(scenario.debrief.already_clicked?.paid ?? '-').length).toBe(2);
     expect(screen.queryByText(/That is the habit that works/)).toBeNull();
   });
 });
@@ -118,12 +139,12 @@ describe('App error state (finding 13)', () => {
       if (calls === 1) throw new Error('chunk missing');
       return scenario;
     };
-    render(<App loadFirst={loadFirst} />);
+    render(<App loadFirst={loadFirst} store={memoryless()} />);
     fireEvent.click(screen.getByRole('button', { name: 'Start' }));
     await waitFor(() => screen.getByRole('alert'));
     expect(screen.getByRole('alert').textContent).toMatch(/could not be loaded/);
     fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
-    await waitFor(() => screen.getByText(/Zollgebühr 1,99 EUR/));
+    await waitFor(() => screen.getByRole('button', { name: 'Standard timer' }));
     expect(warn).toHaveBeenCalled();
     warn.mockRestore();
   });

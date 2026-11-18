@@ -327,7 +327,8 @@ describe('re-review 1: separators only at the name\'s own boundaries or between 
     expect(docs.length).toBeGreaterThan(0);
     const found = docs.flatMap((f) => scanText(readFileSync(f, 'utf8'), cfg).filter((x) => x.category === 'brand' && x.severity === 'error').map((x) => `${f}:${x.line} ${x.match}`));
     expect(found).toEqual([]);
-  });
+    // Scans every docs/*.md with the full rule set (≈1.5 s locally); generous timeout for loaded CI runners.
+  }, 30_000);
 });
 
 describe('re-review 3: typographic dashes and more IBAN separators', () => {

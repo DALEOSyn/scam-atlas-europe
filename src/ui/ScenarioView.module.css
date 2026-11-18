@@ -82,3 +82,66 @@
 .habitCard h3 {
   margin: 0.25rem 0;
 }
+.secondary {
+  min-height: 44px;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  border: 2px solid var(--accent);
+  background: transparent;
+  color: var(--fg);
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.secondary:focus-visible {
+  outline: 3px solid var(--fg);
+  outline-offset: 3px;
+}
+.secondary[aria-pressed='true'] {
+  box-shadow: inset 0 0 0 2px var(--accent);
+  font-weight: 700;
+}
+.action[aria-pressed='true'] {
+  box-shadow: inset 0 0 0 2px var(--accent);
+  font-weight: 700;
+}
+.styled {
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 700;
+}
+.hud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+.hud p {
+  margin: 0;
+}
+.details {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: grid;
+  gap: 0.5rem;
+  max-width: 32rem;
+}
+.reveal {
+  margin: 0.25rem 0;
+}
+.pushers {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+.breath {
+  border: 2px dashed var(--accent);
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
+  max-width: 32rem;
+}
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}

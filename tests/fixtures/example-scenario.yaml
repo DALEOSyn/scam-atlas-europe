@@ -46,7 +46,7 @@ actions:
     next_beat: fee_page
     pressure_target: true
   - id: open_app
-    label: "Open the Trundle app yourself and check the tracking"
+    label: "Open the Trundle app yourself"
     kind: verify_in_app
     outcome: no_fee_found
   - id: delete_report
@@ -101,7 +101,7 @@ outcomes:
 debrief:
   variant: standard
   layer1:
-    tell: "A courier asking for a small fee by text, from a mobile number, with a look-alike link."
+    tell: "A courier fee by text from a mobile number, with a look-alike link."
     what_works: "Open the courier's app yourself."
   layer2:
     message_flags:

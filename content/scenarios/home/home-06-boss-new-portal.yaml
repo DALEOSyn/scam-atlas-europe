@@ -143,30 +143,31 @@ beats:
         red_flag: false
         type: reference
     actions:
-      # GDD §16: hang_up should open the engine's "What now?" step (ask Adaeze / open Waymarker Desk).
-      # The schema has no such step yet (a boss beat needs arrives_after), so both checks are also offered
-      # directly here, and hang_up ends the beat as dismiss.
+      # GDD §16: hang_up opens the engine's "What now?" step, which offers the beat's verify routes
+      # (Adaeze, Waymarker Desk, the IT desk you know) plus Report and Done.
       - id: read_out_code
         label: "Read out the code"
         kind: share_code
         outcome: code_shared
         pressure_target: true
-      - id: hang_up_ask_adaeze
-        label: "Hang up and ask Adaeze"
-        kind: ask_someone
-        outcome: adaeze_says_no_move
-      - id: hang_up_open_desk
-        label: "Hang up and open Waymarker Desk yourself"
-        kind: verify_in_app
-        outcome: desk_no_notice
-      - id: call_it_desk_known
-        label: "Hang up, call the IT desk you know"
-        kind: call_back_known
-        outcome: it_desk_knows_nothing
       - id: hang_up_it_call
         label: "Hang up"
         kind: hang_up
         outcome: hung_up_on_it
+    what_now:
+      extra:
+        - id: hang_up_ask_adaeze
+          label: "Ask Adaeze through the staff directory"
+          kind: ask_someone
+          outcome: adaeze_says_no_move
+        - id: hang_up_open_desk
+          label: "Open Waymarker Desk yourself"
+          kind: verify_in_app
+          outcome: desk_no_notice
+        - id: call_it_desk_known
+          label: "Call the IT desk you know"
+          kind: call_back_known
+          outcome: it_desk_knows_nothing
 
 outcomes:
   portal_password_stolen:

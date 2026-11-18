@@ -123,7 +123,8 @@ describe('App shell', () => {
     expect(screen.getByText('0 of 3 stars.')).toBeTruthy();
     expect(screen.getByText('You chose: Enter your card details and pay.')).toBeTruthy();
     expect(screen.getByText(/could happen to anyone/)).toBeTruthy();
-    expect(screen.getByText(scenario.debrief.already_clicked?.paid ?? '-')).toBeTruthy();
+    // The paid advice is the layer-1 line (card details typed to pay a fee) and in the full list.
+    expect(screen.getAllByText(scenario.debrief.already_clicked?.paid ?? '-').length).toBe(2);
     expect(screen.queryByText(/That is the habit that works/)).toBeNull();
   });
 });

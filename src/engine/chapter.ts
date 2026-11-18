@@ -13,7 +13,8 @@
  *   that exist are finished.
  * - The summary never shows a per-scenario count of checkables.
  */
-import { SPOTTED_EXPR_RE, type Balance, type Chapter } from '../content/schema.ts';
+import { SPOTTED_EXPR_RE } from '../content/constants.ts';
+import type { Balance, Chapter } from '../content/schema.ts';
 import type { ScenarioResult } from './result.ts';
 
 export type Stamp = 'bronze' | 'silver' | 'gold';
@@ -65,7 +66,10 @@ export interface ChapterSummary {
   max: number;
   /** Inspector rating in percent, capped at balance rating_cap. */
   rating: number;
+  /** Net spotting (correct − wrong): the stamp rules use this. */
   spotted: number;
+  /** For "Red flags you spotted: x of R": net spotting floored at 0 and capped at R (QA E7). */
+  spottedShown: number;
   correctTags: number;
   wrongTags: number;
   redFlags: number;
@@ -122,6 +126,7 @@ export function summarise(b: StampTable, chapter: Pick<Chapter, 'patterns'>, rec
     max,
     rating,
     spotted,
+    spottedShown: Math.max(0, Math.min(redFlags, spotted)),
     correctTags,
     wrongTags,
     redFlags,

@@ -35,6 +35,16 @@ export default tseslint.config(
           message: 'No runtime network calls or new windows; content is bundled at build time.',
         },
       ],
+      // Red Line budget + bundle size: the runtime ships no Zod. Only type imports from the schema.
+      '@typescript-eslint/no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            { regex: '(^|/)content/schema(\\.ts)?$|^\\./schema(\\.ts)?$', allowTypeImports: true, message: 'Runtime code may only import types from schema.ts (it pulls Zod into the bundle). Shared constants live in src/content/constants.ts.' },
+            { regex: '^zod', message: 'No Zod at runtime: content is validated at build time.' },
+          ],
+        },
+      ],
       'no-restricted-globals': [
         'error',
         { name: 'fetch', message: 'No runtime network calls; content is bundled at build time.' },
@@ -43,5 +53,10 @@ export default tseslint.config(
         { name: 'EventSource', message: 'No runtime network calls.' },
       ],
     },
+  },
+  {
+    // The schema is build-time only (vite content plugin, content:validate); it is the one place Zod lives.
+    files: ['src/content/schema.ts'],
+    rules: { '@typescript-eslint/no-restricted-imports': 'off' },
   },
 );

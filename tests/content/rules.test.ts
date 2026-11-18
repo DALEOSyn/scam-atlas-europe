@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { chapterRules, scenarioRules, LAYER1_OVERHEAD, wordCount } from '../../scripts/lib/rules.ts';
+import { chapterRules, choiceWorst, scenarioRules, LAYER1_OVERHEAD, wordCount } from '../../scripts/lib/rules.ts';
 import { deriveCheckables, linksIn } from '../../src/content/checkables.ts';
 import { scenarioSchema, type Scenario } from '../../src/content/schema.ts';
 import { rawFraud, rawGenuine, realRegistries, scenario, validChapter } from './fixtures.ts';
@@ -136,14 +136,30 @@ describe('per-scenario rules (scenarioRules)', () => {
   });
 
   describe('words', () => {
-    it('debrief layer 1 counts the fixed copy towards the 40-word limit', () => {
-      const budget = reg.balance.session.debrief_layer1_max_words - LAYER1_OVERHEAD.standard;
+    it('debrief layer 1 counts the fixed copy and the worst "You chose" line towards the 40-word limit', () => {
       const r = rawFraud();
-      const tell = Array.from({ length: budget }, () => 'word').join(' ');
-      (r.debrief as Raw).layer1 = { tell, what_works: 'Open it.' };
-      expect(errorsOf(r).join('\n')).toMatch(/debrief\.layer1 is \d+ words with the fixed copy/);
-      (r.debrief as Raw).layer1 = { tell: Array.from({ length: budget - 2 }, () => 'word').join(' '), what_works: 'Open it.' };
+      // rawFraud's longest below-3-star label is "Enter card details" (3 words) → "You chose: …" = 5.
+      expect(choiceWorst(scenario(r), reg.balance)).toBe(5);
+      const budget = reg.balance.session.debrief_layer1_max_words - LAYER1_OVERHEAD.standard - 5;
+      const tell = (n: number) => Array.from({ length: n }, () => 'word').join(' ');
+      (r.debrief as Raw).layer1 = { tell: tell(budget - 1), what_works: 'Open it.' };
+      expect(errorsOf(r).join('\n')).toMatch(/debrief\.layer1 is 41 words in the worst case \(authored 22 \+ fixed 14 \+ "You chose" 5\)/);
+      (r.debrief as Raw).layer1 = { tell: tell(budget - 2), what_works: 'Open it.' };
       expect(errorsOf(r)).toEqual([]);
+    });
+    it('choice_worst counts the timer line, engage labels and "What now?" extras', () => {
+      const timed = rawFraud('t1', { pressure: { timer: true, levers: [] } });
+      actions(timed)[0] = { ...actions(timed)[0], label: 'Tap' };
+      expect(choiceWorst(scenario(timed), reg.balance)).toBe(6);
+      const call = rawFraud();
+      actions(call).push({ id: 'hang_up', label: 'Hang up', kind: 'hang_up', outcome: 'reported' });
+      call.what_now = { extra: [{ id: 'call_this_number', label: 'Call back the number they just gave', kind: 'call_number_in_message', note: 'x' }] };
+      expect(choiceWorst(scenario(call), reg.balance)).toBe(2 + 7);
+    });
+    it('action labels are at most 8 words', () => {
+      const r = rawFraud();
+      actions(r)[1] = { ...actions(r)[1], label: 'one two three four five six seven eight nine' };
+      expect(errorsOf(r).join('\n')).toMatch(/action "open_app" label is over 8 words/);
     });
     it('Alex lines are at most arc_line_max_words', () => {
       const limit = reg.balance.session.arc_line_max_words;
@@ -374,10 +390,23 @@ describe('"What now?" extras and banners (GDD §6, §17 1-9)', () => {
     expect(schemaErrors(ok)).toEqual([]);
     expect(errorsOf(ok)).toEqual([]);
   });
-  it('what_now extras are engage kinds with unique ids', () => {
+  it('what_now extras: engage with a note returns, verify with an outcome ends; unique ids; outcomes exist', () => {
     const r = callFraud();
     r.what_now = { extra: [{ id: 'pay_now', label: 'Pay', kind: 'pay', note: 'x' }] };
-    expect(errorsOf(r).join('\n')).toMatch(/what_now extra "pay_now" must be an engage kind/);
+    expect(errorsOf(r).join('\n')).toMatch(/what_now extra "pay_now" has a note, so it returns to "What now\?": it must be an engage kind/);
+    const v = callFraud();
+    v.what_now = { extra: [{ id: 'ask_adaeze', label: 'Ask Adaeze', kind: 'ask_someone', outcome: 'fine' }] };
+    expect(schemaErrors(v)).toEqual([]);
+    expect(errorsOf(v)).toEqual([]);
+    const badVerify = callFraud();
+    badVerify.what_now = { extra: [{ id: 'call_this', label: 'Call', kind: 'call_number_in_message', outcome: 'fine' }] };
+    expect(errorsOf(badVerify).join('\n')).toMatch(/ends the step with an outcome: it must be a verify kind/);
+    const both = callFraud();
+    both.what_now = { extra: [{ id: 'x_both', label: 'X', kind: 'ask_someone', outcome: 'fine', note: 'n' }] };
+    expect(schemaErrors(both).join('\n')).toMatch(/exactly one of note .* or outcome/);
+    const missing = callFraud();
+    missing.what_now = { extra: [{ id: 'x_missing', label: 'X', kind: 'ask_someone', outcome: 'nowhere' }] };
+    expect(schemaErrors(missing).join('\n')).toMatch(/outcome "nowhere" is not defined/);
     const dup = callFraud();
     dup.what_now = { extra: [{ id: 'open_app', label: 'Call', kind: 'call_number_in_message', note: 'x' }] };
     expect(schemaErrors(dup).join('\n')).toMatch(/duplicate action id "open_app"/);
@@ -402,6 +431,18 @@ describe('boss beat scheduling', () => {
     const orphan = rawFraud('b3', { role: 'boss', difficulty: 3 });
     actions(orphan)[0] = { ...actions(orphan)[0], next_beat: undefined, outcome: 'fine' };
     expect(schemaErrors(orphan).join('\n')).toMatch(/boss beats arrive on a schedule: set arrives_after/);
+  });
+  it('timer_seconds: scheduled boss beats only, within call_beat … boss_beat', () => {
+    const boss = rawFraud('b4', { role: 'boss', difficulty: 3 });
+    const page = (boss.beats as Raw[])[0] as Raw;
+    boss.beats = [page, { ...page, id: 'later', arrives_after: 30, timer_seconds: 40, actions: (page.actions as Raw[]).map((a) => ({ ...a, id: `${String(a.id)}_2` })) }];
+    expect(schemaErrors(boss)).toEqual([]);
+    expect(errorsOf(boss).filter((e) => e.includes('timer_seconds'))).toEqual([]);
+    ((boss.beats as Raw[])[1] as Raw).timer_seconds = 90;
+    expect(errorsOf(boss).join('\n')).toMatch(/timer_seconds 90 is outside 30–40/);
+    const std = rawFraud();
+    ((std.beats as Raw[])[0] as Raw).timer_seconds = 40;
+    expect(schemaErrors(std).join('\n')).toMatch(/timer_seconds is for boss beats/);
   });
 });
 

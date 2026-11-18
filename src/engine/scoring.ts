@@ -104,17 +104,20 @@ export function scoreGroup(
   decision: Decision | undefined,
   opts: { engagedOnFraud: boolean; timerExpired: boolean },
 ): GroupScore {
-  const cls: ActionClass = opts.timerExpired ? b.stars.timer_expiry : (decision?.cls ?? b.stars.timer_expiry);
+  // Expiry scores as dismiss only when nothing was decided yet: a verify (or any decision) before the
+  // deadline keeps its own score (sceptic T-2.1 #2).
+  const expired = opts.timerExpired && decision === undefined;
+  const cls: ActionClass = expired ? b.stars.timer_expiry : (decision?.cls ?? b.stars.timer_expiry);
   const raw = starsFor(b, cls, truth);
   let stars = typeof raw === 'number' ? raw : raw === 'non_terminal' ? b.points.engage_on_fraud.star_cap : 0;
   const capped = opts.engagedOnFraud && truth === 'fraud';
   if (capped) stars = Math.min(stars, b.points.engage_on_fraud.star_cap);
-  const fell = !opts.timerExpired && isFall(cls, truth);
-  if (fell) return { cls, stars: 0, points: 0, fell, timerExpired: opts.timerExpired, capped };
+  const fell = !expired && isFall(cls, truth);
+  if (fell) return { cls, stars: 0, points: 0, fell, timerExpired: expired, capped };
   let points = stars * b.points.per_star;
   if (cls === 'report' && truth !== 'fraud') points = b.points.exceptions.report_on_legit;
-  if (!opts.timerExpired && decision?.override !== undefined) points = decision.override;
-  return { cls, stars, points, fell, timerExpired: opts.timerExpired, capped };
+  if (!expired && decision?.override !== undefined) points = decision.override;
+  return { cls, stars, points, fell, timerExpired: expired, capped };
 }
 
 /** A tag is correct when it marks a red flag (on fraud, or a quoted example anywhere). */
@@ -144,8 +147,11 @@ export function groupEarnsTagBonus(b: Pick<Balance, 'tags'>, g: GroupScore): boo
   return b.tags.apply_if_final_class_in.includes(g.cls);
 }
 
-/** Max points of one scored scenario: 3 stars per scored group + the tag bonus potential on fraud. */
-export function maxPointsOf(b: Pick<Balance, 'points' | 'tags'>, scoredGroups: number, isFraud: boolean, redFlags: number): number {
-  const bonus = isFraud ? Math.min(b.tags.cap, redFlags * b.tags.per_tagged_red_flag) : 0;
+/**
+ * Max points of one scored scenario: 3 stars per scored group + the tag bonus potential, which exists
+ * whenever there are taggable red flags (fraud, or quoted examples inside a genuine message).
+ */
+export function maxPointsOf(b: Pick<Balance, 'points' | 'tags'>, scoredGroups: number, redFlags: number): number {
+  const bonus = redFlags > 0 ? Math.min(b.tags.cap, redFlags * b.tags.per_tagged_red_flag) : 0;
   return scoredGroups * 3 * b.points.per_star + bonus;
 }

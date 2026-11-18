@@ -27,7 +27,7 @@ import { firePusher, startPushers, type PusherState } from './pushers.ts';
 import { orderOptions, recoveryOptionsOf, scoreRecovery, type RecoveryOption, type RecoveryResult } from './recovery.ts';
 import { classOf, decisionOf, isFall, mergeDecision, truthOf, type Decision, type EngineBalance, type Truth } from './scoring.ts';
 import { clampStress, onArrival, pressureStyled, stressState, type StressState } from './stress.ts';
-import { chargeTimer, startTimer, tickTimer, timerLength, type TimerKind, type TimerMode, type TimerState } from './timer.ts';
+import { chargeTimer, modeFactor, startTimer, tickTimer, timerLength, type TimerKind, type TimerMode, type TimerState } from './timer.ts';
 
 /** How long the non-modal "Take a breath" panel stays open by itself (UI_SPEC §6.4). */
 export const BREATH_SECONDS = 5;
@@ -53,6 +53,12 @@ export type Phase = 'playing' | 'what_now' | 'consequence' | 'damage_control' | 
 export type WhatNowBuiltin = 'call_back_known' | 'report' | 'done';
 export const WHAT_NOW_BUILTINS: readonly WhatNowBuiltin[] = ['call_back_known', 'report', 'done'];
 
+/** Built-ins offered on a beat: an authored call_back_known extra replaces the generic call-back. */
+export function builtinsFor(wn: WhatNow | undefined): WhatNowBuiltin[] {
+  const replaced = wn?.extra.some((x) => x.kind === 'call_back_known') ?? false;
+  return WHAT_NOW_BUILTINS.filter((b) => !(replaced && b === 'call_back_known'));
+}
+
 export interface GroupState {
   /** The scheduled beat that opened the group ('start' for the opening message). */
   beatId: string;
@@ -63,6 +69,8 @@ export interface GroupState {
   decision: Decision | undefined;
   engagedOnFraud: boolean;
   kinds: ActionKind[];
+  /** Actions in order with the beat they were taken on (for the "Already clicked?" situation). */
+  steps: { beatId: string; kind: ActionKind }[];
   timerExpired: boolean;
   /** Outcome waiting for the "What now?" step after hanging up a call. */
   pendingOutcome: string | undefined;
@@ -175,8 +183,13 @@ function timerKindFor(s: Scenario, device: Device, scheduled: boolean): TimerKin
   return 'slot';
 }
 
-function newTimer(s: Scenario, ctx: RunnerContext, device: Device, scheduled: boolean): TimerState | null {
+function newTimer(s: Scenario, ctx: RunnerContext, device: Device, scheduled: boolean, seconds?: number): TimerState | null {
   if (!s.pressure.timer) return null;
+  if (seconds !== undefined) {
+    // Authored boss-beat length (producer ruling, T-2.1), scaled by the mode like every other timer.
+    const f = modeFactor(ctx.balance, ctx.settings.timerMode);
+    return f === null ? null : startTimer(seconds * f);
+  }
   const len = timerLength(ctx.balance, ctx.slot, timerKindFor(s, device, scheduled), ctx.settings.timerMode);
   return len === null ? null : startTimer(len);
 }
@@ -191,6 +204,7 @@ function newGroup(s: Scenario, beatId: string): GroupState {
     decision: undefined,
     engagedOnFraud: false,
     kinds: [],
+    steps: [],
     timerExpired: false,
     pendingOutcome: undefined,
     whatNowNote: undefined,
@@ -302,7 +316,8 @@ function moveToBeat(s: Scenario, ctx: RunnerContext, st: RunnerState, g: GroupSt
   const g2: GroupState = { ...g, current: beatId, visited: g.visited.includes(beatId) ? g.visited : [...g.visited, beatId] };
   const prev = storyBeat(s, g.current);
   // A call beat runs on its own call length; other follow-ups keep the running timer.
-  const timer = beat.device === 'call' && prev?.device !== 'call' ? newTimer(s, ctx, 'call', false) : st.timer;
+  const verified = g.decision?.cls === 'verify';
+  const timer = !verified && beat.device === 'call' && prev?.device !== 'call' ? newTimer(s, ctx, 'call', false) : st.timer;
   return noteStyling(s, ctx, withGroup({ ...st, timer }, g2));
 }
 
@@ -399,7 +414,8 @@ function advanceClock(s: Scenario, ctx: RunnerContext, st: RunnerState, dt: numb
 // Pause
 
 function doPause(ctx: RunnerContext, st: RunnerState): RunnerState {
-  if (st.real < st.pause.cooldownUntil || st.phase === 'done' || st.phase === 'damage_control') return st;
+  // Pause only while a message is live (QA E6).
+  if (st.real < st.pause.cooldownUntil || (st.phase !== 'playing' && st.phase !== 'what_now')) return st;
   const g = activeGroup(st);
   const lo04 = !!g && !g.resolved && g.decision === undefined && underPressure(ctx, st);
   let next = setStress(ctx, st, st.stress - ctx.balance.pause.reduces_stress_by);
@@ -426,6 +442,16 @@ export function visibleBeatIds(st: RunnerState): string[] {
   return [...st.groups.flatMap((g) => g.visited), ...st.interrupts.filter((i) => i.arrived).map((i) => i.id)];
 }
 
+/**
+ * Beats the player may Check or tag right now: the active, unresolved group's beats and
+ * arrived interrupts not yet answered. A resolved beat is closed: its tags are final.
+ */
+export function checkableBeatIds(st: RunnerState): string[] {
+  const g = activeGroup(st);
+  const group = g && !g.resolved ? g.visited : [];
+  return [...group, ...st.interrupts.filter((i) => i.arrived && i.actionId === undefined).map((i) => i.id)];
+}
+
 // ---------------------------------------------------------------------------
 // The reducer
 
@@ -447,7 +473,7 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
       const action = beat?.actions.find((a) => a.id === ev.actionId);
       if (!beat || !action) return st;
       let next = st;
-      let g2: GroupState = { ...g, kinds: [...g.kinds, action.kind] };
+      let g2: GroupState = { ...g, kinds: [...g.kinds, action.kind], steps: [...g.steps, { beatId: beat.id, kind: action.kind }] };
       const cls = classOf(ctx.balance, action.kind);
       if (cls === 'meta') {
         next = doPause(ctx, next);
@@ -463,6 +489,8 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
           engagedOnFraud: g.engagedOnFraud || (cls === 'engage' && st.truth === 'fraud'),
         };
       }
+      // Verify shows the truth: the deadline pressure is over for this group (sceptic T-2.1 #2).
+      if (g2.decision?.cls === 'verify') next = { ...next, timer: null };
       if (action.next_beat !== undefined) return moveToBeat(s, ctx, next, g2, action.next_beat);
       if (action.outcome !== undefined) return finishWithOutcome(s, ctx, next, g2, action.outcome);
       return withGroup(next, g2);
@@ -472,31 +500,38 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
       if (st.phase !== 'what_now') return st;
       const g = activeGroup(st);
       if (!g || g.pendingOutcome === undefined) return st;
-      const extra = storyBeat(s, g.current)?.what_now?.extra.find((x) => x.id === ev.choice);
+      const wn = storyBeat(s, g.current)?.what_now;
+      const extra = wn?.extra.find((x) => x.id === ev.choice);
+      if (extra && extra.outcome !== undefined) {
+        // A verify extra ("Hang up and ask Adaeze") ends the step as verify with its own outcome.
+        const decision = mergeDecision(g.decision, { cls: classOf(ctx.balance, extra.kind), kind: extra.kind, actionId: extra.id, via: 'what_now' }, st.truth, ctx.balance.points.engage_on_fraud.terminal);
+        return finishWithOutcome(s, ctx, { ...st, phase: 'playing' }, { ...g, kinds: [...g.kinds, extra.kind], decision, whatNowNote: undefined }, extra.outcome);
+      }
       if (extra) {
         // An extra (e.g. "Call back this number") returns to "What now?" with its note; engage on fraud caps at ★★.
         const cls = classOf(ctx.balance, extra.kind);
         const g2: GroupState = {
           ...g,
           kinds: [...g.kinds, extra.kind],
-          whatNowNote: extra.note,
+          whatNowNote: extra.note ?? undefined,
           firstEngage: g.firstEngage ?? (cls === 'engage' ? { id: extra.id, label: extra.label } : undefined),
           engagedOnFraud: g.engagedOnFraud || (cls === 'engage' && st.truth === 'fraud'),
           decision: mergeDecision(g.decision, { cls, kind: extra.kind, actionId: extra.id, via: 'what_now' }, st.truth, ctx.balance.points.engage_on_fraud.terminal),
         };
         return withGroup(st, g2);
       }
-      if (!(WHAT_NOW_BUILTINS as readonly string[]).includes(ev.choice)) return st;
+      if (!builtinsFor(wn).includes(ev.choice as WhatNowBuiltin)) return st;
       const choice = ev.choice as WhatNowBuiltin;
       const cls = choice === 'call_back_known' ? 'verify' : choice === 'report' ? 'report' : 'dismiss';
       const kind = choice === 'call_back_known' ? 'call_back_known' : choice === 'report' ? 'report' : 'done';
       const decision = mergeDecision(g.decision, { cls, kind, actionId: choice, via: 'what_now' }, st.truth, false);
-      return finishWithOutcome(s, ctx, { ...st, phase: 'playing' }, { ...g, kinds: kind === 'done' ? g.kinds : [...g.kinds, kind], decision, whatNowNote: undefined }, g.pendingOutcome);
+      const outcome = wn?.outcomes?.[choice] ?? g.pendingOutcome;
+      return finishWithOutcome(s, ctx, { ...st, phase: 'playing' }, { ...g, kinds: kind === 'done' ? g.kinds : [...g.kinds, kind], decision, whatNowNote: undefined }, outcome);
     }
 
     case 'check': {
       if (st.phase !== 'playing' && st.phase !== 'what_now') return st;
-      if (!visibleBeatIds(st).includes(ev.beatId)) return st;
+      if (!checkableBeatIds(st).includes(ev.beatId)) return st;
       const beat = beatById(s, ev.beatId);
       if (!beat || !checkablesOf(beat).some((c) => c.target === ev.target)) return st;
       const key = keyOf(ev.beatId, ev.target);
@@ -510,6 +545,7 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
 
     case 'tag': {
       if (st.phase !== 'playing' && st.phase !== 'what_now') return st;
+      if (!checkableBeatIds(st).includes(ev.beatId)) return st;
       const key = keyOf(ev.beatId, ev.target);
       if (!st.checks.includes(key)) return st; // you can't tag what you haven't looked at
       const has = st.tags.includes(key);
@@ -547,7 +583,7 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
       if (next.phase !== 'playing') return next;
       if (!next.arrived.includes(nextBeat.beatId)) next = { ...next, arrived: [...next.arrived, nextBeat.beatId] };
       const beat = s.beats.find((b) => b.id === nextBeat.beatId);
-      next = { ...next, groups: [...next.groups, newGroup(s, nextBeat.beatId)], timer: beat ? newTimer(s, ctx, beat.device, true) : null };
+      next = { ...next, groups: [...next.groups, newGroup(s, nextBeat.beatId)], timer: beat ? newTimer(s, ctx, beat.device, true, beat.timer_seconds) : null };
       return noteStyling(s, ctx, next);
     }
 
@@ -615,6 +651,8 @@ export interface RunnerView {
   whatNow: WhatNowView | null;
   /** Narrative of the last resolved beat (boss consequence step, damage control intro). */
   consequence: string | null;
+  /** The last beat ended by timer expiry with no outcome: show "The deadline was fake. Nothing happened." (QA E1). */
+  consequenceTimerExpired: boolean;
   recovery: { options: RecoveryOption[]; pick: number } | null;
 }
 
@@ -658,10 +696,12 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
     beat,
     thread,
     checkables,
-    checkedCount: st.checks.length,
+    // "k checked" counts the beat on screen only (QA E3).
+    checkedCount: checkables.filter((c) => c.checked).length,
     waitingBeats: st.arrived.filter((id) => !st.groups.some((x) => x.beatId === id)),
+    // Hidden while a consequence or damage control is on screen (QA E10).
     interrupts: st.interrupts
-      .filter((i) => i.arrived && i.actionId === undefined)
+      .filter((i) => i.arrived && i.actionId === undefined && (st.phase === 'playing' || st.phase === 'what_now'))
       .flatMap((i) => {
         const def = s.interrupts.find((x) => x.id === i.id);
         return def ? [{ id: def.id, device: def.device, message: def.message, actions: actionViews(def.actions, state) }] : [];
@@ -674,20 +714,22 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
     stress: { value: st.stress, state },
     pause: {
       open: st.pause.open,
-      available: st.real >= st.pause.cooldownUntil && st.phase !== 'done' && st.phase !== 'damage_control',
+      available: st.real >= st.pause.cooldownUntil && (st.phase === 'playing' || st.phase === 'what_now'),
       cooldownLeft: Math.max(0, st.pause.cooldownUntil - st.real),
     },
     whatNow:
       st.phase === 'what_now' && g
         ? {
             choices: [
-              ...WHAT_NOW_BUILTINS.map((b) => ({ id: b, builtin: b, label: b === 'call_back_known' ? (cur?.what_now?.call_back_label ?? null) : null })),
+              // Authored extras first (they are the beat's own verify routes), then the built-ins.
               ...(cur?.what_now?.extra ?? []).map((x) => ({ id: x.id, builtin: null, label: x.label })),
+              ...builtinsFor(cur?.what_now).map((b) => ({ id: b, builtin: b, label: b === 'call_back_known' ? (cur?.what_now?.call_back_label ?? null) : null })),
             ],
             note: g.whatNowNote ?? null,
           }
         : null,
     consequence: last?.outcome ? (s.outcomes[last.outcome]?.narrative ?? null) : null,
+    consequenceTimerExpired: !!last && last.timerExpired && !last.outcome,
     recovery: st.phase === 'damage_control' && st.recovery ? { options: st.recovery.options, pick: ctx.balance.recovery.pick } : null,
   };
 }

@@ -73,7 +73,7 @@
   "pusher_from": "New message",
   "interrupt_title": "New notification",
   "banner_title": "Notification",
-  "waiting_beats": "{count} new messages are waiting.",
+  "waiting_beats": "{count, plural, one {# new message is waiting.} other {# new messages are waiting.}}",
   "what_now_title": "What now?",
   "what_now_call_back_known": "Call a number you already know",
   "what_now_report": "Report the call",
@@ -104,6 +104,6 @@
   "stamp_silver": "Passport stamp: silver",
   "stamp_gold": "Passport stamp: gold",
   "stamp_gold_copy": "Gold: you spotted the red flags, checked when it mattered, and didn't report genuine messages.",
-  "chapter_summary": "Red flags you spotted: {spotted} · Genuine messages you reported: {reported} · Harmless messages you double-checked: {doubles}",
+  "chapter_summary": "Red flags you spotted: {spotted} of {total} · Genuine messages you reported: {reported} · Harmless messages you double-checked: {doubles}",
   "chapter_rating": "Inspector rating: {rating}%"
 }

@@ -273,7 +273,9 @@ export function ScenarioView({ scenario, ctx, onDone }: ScenarioViewProps) {
           </ul>
         </>
       ) : null}
-      {view.phase === 'consequence' || view.phase === 'damage_control' ? <p>{view.consequence}</p> : null}
+      {view.phase === 'consequence' || view.phase === 'damage_control' ? (
+        view.consequenceTimerExpired ? <p>{t('deadline_fake')}</p> : view.consequence ? <p>{view.consequence}</p> : null
+      ) : null}
       {view.phase === 'consequence' ? (
         <button type="button" class={styles.primary} onClick={runner.continueBoss}>
           {t('app_continue')}

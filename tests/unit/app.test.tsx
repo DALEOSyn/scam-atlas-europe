@@ -47,7 +47,7 @@ describe('App: Check, tag, debrief layer 2, chapter stamp, save', () => {
     await waitFor(() => screen.getByRole('heading', { name: 'Chapter complete' }));
     const done = screen.getByRole('heading', { name: 'Chapter complete' }).parentElement as HTMLElement;
     expect(within(done).getByText('Passport stamp: gold')).toBeTruthy();
-    expect(within(done).getByText(/Red flags you spotted: 2 · Genuine messages you reported: 0/)).toBeTruthy();
+    expect(within(done).getByText(/Red flags you spotted: 2 of 2 · Genuine messages you reported: 0/)).toBeTruthy();
 
     const saved = JSON.parse(mem.data.get(SAVE_KEY) ?? '{}') as { settings: { timerMode: string; pushers: boolean }; chapters: Record<string, { bestStamp: string; finished: boolean }> };
     expect(saved.settings).toMatchObject({ timerMode: 'off', pushers: false });

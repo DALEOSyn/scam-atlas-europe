@@ -36,13 +36,13 @@ describe('runner: actions, beats and outcomes', () => {
     expect(v.checkables.find((c) => c.target === 'reference')).toMatchObject({ checked: true, reveal: undefined });
   });
 
-  it('engage then dismiss on the follow-up page: capped at ★★ and the debrief names the engage', () => {
+  it('engage then dismiss on the follow-up page: capped at ★★ and the debrief names the engage (producer ruling)', () => {
     const s = fraud();
     const { st, r } = play(s, ctx(), [act('tap_link'), act('close_page')]);
     expect(r).toMatchObject({ stars: 2, points: 10 });
     expect(r.beats[0]?.capped).toBe(true);
     const d = debriefOf(s, st, r, seen);
-    expect(d.layer1.youChose).toEqual([{ beatId: 'start', kind: 'action', label: 'Close the page' }]);
+    expect(d.layer1.youChose).toEqual([{ beatId: 'start', kind: 'action', label: 'Open the link' }]);
   });
 
   it('a fall runs damage control: ★ and its points when ≥ 6, else 0', () => {
@@ -51,7 +51,8 @@ describe('runner: actions, beats and outcomes', () => {
     expect(fell.phase).toBe('damage_control');
     expect(viewOf(s, ctx(), fell).recovery?.options).toHaveLength(5);
     const good = resultOf(s, B, step(s, ctx(), fell, { type: 'recovery', picks: ['block_card_in_bank_app', 'call_bank_known_number', 'report_to_police_online'] }));
-    expect(good).toMatchObject({ fell: true, stars: 1, points: 9, situation: 'entered_details' });
+    // Card details typed to pay a fee get the "paid" advice.
+    expect(good).toMatchObject({ fell: true, stars: 1, points: 9, situation: 'paid' });
     expect(good.recovery?.lo16).toBe(true);
     const poor = resultOf(s, B, step(s, ctx(), fell, { type: 'recovery', picks: ['wait_and_see', 'reply_ask_money_back', 'block_card_in_bank_app'] }));
     expect(poor).toMatchObject({ stars: 0, points: 0 });
@@ -304,8 +305,8 @@ describe('runner: bosses (scammer-driven beats, summed scores)', () => {
     let st = run(s, ctx(), [act('open_app'), { type: 'continue' }, act('check_app_2'), { type: 'continue' }, act('hang_up')]);
     expect(st.phase).toBe('what_now');
     let v = viewOf(s, ctx(), st);
-    expect(v.whatNow?.choices.map((c) => c.id)).toEqual(['call_back_known', 'report', 'done', 'call_this_number']);
-    expect(v.whatNow?.choices[0]?.label).toBe('Call the number on your card');
+    expect(v.whatNow?.choices.map((c) => c.id)).toEqual(['call_this_number', 'call_back_known', 'report', 'done']);
+    expect(v.whatNow?.choices[1]?.label).toBe('Call the number on your card');
     expect(v.beat?.banner?.message.body).toMatch(/approves a payment/);
     st = step(s, ctx(), st, { type: 'what_now', choice: 'call_this_number' });
     expect(st.phase).toBe('what_now');

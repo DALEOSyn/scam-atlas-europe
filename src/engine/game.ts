@@ -23,7 +23,7 @@ export function beginChapter(save: SaveState, city: string): SaveState {
   const p = chapterProgress(save, city);
   if (p.run) return save;
   const position = p.position ?? Object.values(save.chapters).filter((c) => c.position !== null).length;
-  return { ...save, chapters: { ...save.chapters, [city]: { ...p, position, run: { index: 0, records: [] } } } };
+  return { ...save, chapters: { ...save.chapters, [city]: { ...p, position, run: { index: 0, records: [], flags: [] } } } };
 }
 
 /** Stress the next scenario starts with: decayed after a scenario, 10 on resume (balance stress.on_resume). */
@@ -40,10 +40,14 @@ export function commitScenario(
   r: ScenarioResult,
 ): SaveState {
   const p = chapterProgress(save, chapter.city);
-  const run = p.run ?? { index: 0, records: [] };
+  const run = p.run ?? { index: 0, records: [], flags: [] };
   const seq = sequenceOf(chapter);
   const at = seq.findIndex((e) => e.id === s.id);
-  const records = [...run.records.filter((x) => x.id !== s.id), recordOf(r, s.pattern)];
+  // A replay inside the run keeps the best attempt per scenario (producer decision), never just the latest.
+  const record = recordOf(r, s.pattern);
+  const previous = run.records.find((x) => x.id === s.id);
+  const best = previous && previous.points >= record.points ? previous : record;
+  const records = [...run.records.filter((x) => x.id !== s.id), best];
   const index = Math.max(run.index, at + 1);
 
   const callout = pressureCalloutFor(st.styledShown, !s.is_fraud, save.callouts);
@@ -57,18 +61,29 @@ export function commitScenario(
 
   return {
     ...save,
-    flags: setFlags(save.flags, r.flagsSet),
+    // Echo flags belong to this run (a replay starts clean); only arc flags are game-wide.
+    flags: s.role === 'arc' ? setFlags(save.flags, r.flagsSet) : save.flags,
     arc,
     habits,
     callouts,
-    chapters: { ...save.chapters, [chapter.city]: { ...p, run: { index, records } } },
+    chapters: { ...save.chapters, [chapter.city]: { ...p, run: { index, records, flags: setFlags(run.flags, r.flagsSet) } } },
   };
+}
+
+/** Flags visible to `requires_flags` in a chapter run: this run's flags plus the game-wide arc flags. */
+export function runFlags(save: SaveState, city: string): Set<string> {
+  return new Set([...save.flags, ...(chapterProgress(save, city).run?.flags ?? [])]);
+}
+
+/** The run's next index, clamped to the chapter's sequence (a corrupt or stale save never skips past the end). */
+export function runIndex(save: SaveState, chapter: Pick<Chapter, 'city' | 'scenario_order'>): number {
+  const raw = chapterProgress(save, chapter.city).run?.index ?? 0;
+  return Number.isInteger(raw) && raw >= 0 ? Math.min(raw, sequenceOf(chapter).length) : 0;
 }
 
 /** Next scenario id to play in the chapter run, or null when the chapter is done. */
 export function nextScenarioId(save: SaveState, chapter: Pick<Chapter, 'city' | 'scenario_order'>, requires: (id: string) => readonly string[]): string | null {
-  const run = chapterProgress(save, chapter.city).run;
-  const i = nextIndex(chapter, run?.index ?? 0, requires, new Set(save.flags));
+  const i = nextIndex(chapter, runIndex(save, chapter), requires, runFlags(save, chapter.city));
   return i < 0 ? null : (sequenceOf(chapter)[i]?.id ?? null);
 }
 

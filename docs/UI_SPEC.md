@@ -375,8 +375,9 @@ Reduced motion is on when the OS asks **or** `data-motion="reduced"`; `data-moti
 Focus lands on the `h1`. Reading and focus order:
 1. **`h1` = verdict + tell in one heading** [U4]: "**This was a scam:** the link went to trundle-zoll.example, not trundle.example." The verdict part is styled as a chip *inside* the heading (tag-crossed icon, `--color-flag-bg`/`--color-flag-text`); genuine: check-seal + "This was genuine:" with `--color-ok-*`. Genuine tells say why it was safe to act and never present a reassuring detail as proof ("It asked for nothing and matched your order. The sender fits, but senders can be faked.").
 2. **What works**: one line naming the verification step ("What works: open the Trundle app yourself."), from `debrief.layer1.what_works`. **"You chose" line**, only when the scenario (or boss beat) scored fewer than 3 stars: "You chose: <action label>." using the `label` of the action that cost the stars:
-   - a fall, report or dismiss: the decisive action's label;
-   - **an engage cap** (GDD §6: engage on fraud caps at ★★): the label of the **first engage action** the player picked, **not** the later correct action. E.g. 1-9 beat 3: "You chose: Call back this number." even though the player then called the number on the card;
+   - a fall: the decisive action's label (always, even after an engage);
+   - **an engage cap** (GDD §6: engage on fraud caps at ★★): the label of the **first engage action** the player picked, **not** the later action, also when that later action was a dismiss or report (producer ruling, T-2.1: the engage is what cost the stars and teaches more). E.g. 1-9 beat 3: "You chose: Call back this number." even though the player then called the number on the card; "You chose: Open the link." when the player then closed the page;
+   - otherwise a report or dismiss: the decisive action's label;
    - a verify followed by comply, proceed or report (GDD §6): the follow-up action's label;
    - timer expiry: "You let the timer run out."
    Never shown on arc debriefs.

@@ -49,8 +49,9 @@ describe('star table (GDD §7.1, balance stars)', () => {
     expect(scoreGroup(B, 'fraud', d('verify'), { engagedOnFraud: true, timerExpired: false })).toMatchObject({ stars: 2, points: 10, capped: true });
   });
 
-  it('timer expiry scores as dismiss, ignoring the override', () => {
-    expect(scoreGroup(B, 'fraud', d('verify', 99), { engagedOnFraud: false, timerExpired: true })).toMatchObject({ cls: 'dismiss', stars: 2, points: 10, timerExpired: true });
+  it('timer expiry with nothing decided scores as dismiss; a decision made before the deadline stands', () => {
+    expect(scoreGroup(B, 'fraud', undefined, { engagedOnFraud: false, timerExpired: true })).toMatchObject({ cls: 'dismiss', stars: 2, points: 10, timerExpired: true });
+    expect(scoreGroup(B, 'fraud', d('verify', 99), { engagedOnFraud: false, timerExpired: true })).toMatchObject({ cls: 'verify', stars: 3, points: 99, timerExpired: false });
     expect(scoreGroup(B, 'legit_high', undefined, { engagedOnFraud: false, timerExpired: true })).toMatchObject({ stars: 0, points: 0 });
   });
 
@@ -94,16 +95,16 @@ describe('tag bonus (balance tags)', () => {
     expect(tagBonus(B, 3, 1)).toEqual({ bonus: 0, voided: true });
   });
   it('applies only to verify, report or dismiss endings, never on timer expiry', () => {
-    const g = (cls: ActionClass, timerExpired = false) => scoreGroup(B, 'fraud', d(cls), { engagedOnFraud: false, timerExpired });
+    const g = (cls: ActionClass, timerExpired = false) => scoreGroup(B, 'fraud', timerExpired ? undefined : d(cls), { engagedOnFraud: false, timerExpired });
     expect(groupEarnsTagBonus(B, g('verify'))).toBe(true);
     expect(groupEarnsTagBonus(B, g('report'))).toBe(true);
     expect(groupEarnsTagBonus(B, g('dismiss'))).toBe(true);
     expect(groupEarnsTagBonus(B, g('comply'))).toBe(false);
     expect(groupEarnsTagBonus(B, g('verify', true))).toBe(false);
   });
-  it('max points: 15 + min(6, 2R) on fraud, 15 on genuine, boss 3 × 15 + 6 = 51', () => {
-    expect(maxPointsOf(B, 1, true, 2)).toBe(19);
-    expect(maxPointsOf(B, 1, false, 0)).toBe(15);
-    expect(maxPointsOf(B, 3, true, 4)).toBe(B.multi_step.boss.max_points);
+  it('max points: 15 + min(6, 2R) when there are red flags, 15 without, boss 3 × 15 + 6 = 51', () => {
+    expect(maxPointsOf(B, 1, 2)).toBe(19);
+    expect(maxPointsOf(B, 1, 0)).toBe(15);
+    expect(maxPointsOf(B, 3, 4)).toBe(B.multi_step.boss.max_points);
   });
 });

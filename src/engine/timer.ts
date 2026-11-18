@@ -51,7 +51,11 @@ export function tickTimer(b: TimerTable, t: TimerState, dt: number, mode: TimerM
   const before = t.remaining;
   const after = Math.max(0, before - dt);
   if (before > t.length / 2 && after <= t.length / 2 && after > 0) events.push('half');
-  if (before > 10 && after <= 10 && after > 0) events.push('ten_left');
+  if (before > 10 && after <= 10 && after > 0) {
+    // One announcement when half time and "10 s left" fall in the same step (QA E5).
+    if (events[events.length - 1] === 'half') events.pop();
+    events.push('ten_left');
+  }
   if (after > 0) return { timer: { ...t, remaining: after }, events };
   if (t.expiries === 0) {
     const extra = b.timers.escalation_extra_seconds * (modeFactor(b, mode) ?? 1);

@@ -90,7 +90,9 @@ describe('game bookkeeping', () => {
     const c = ctx({ stress: 45 });
     const st1 = run(f, c, [check('sender.detail'), tag('sender.detail'), check('link'), tag('link'), act('open_app')]);
     save = commitScenario(save, B, chapter, f, st1, resultOf(f, B, st1));
-    expect(save.flags).toEqual(['checked_trundle']);
+    // Echo flags live in the chapter run; game-wide flags are for the arc only.
+    expect(save.flags).toEqual([]);
+    expect(save.chapters.testcity?.run?.flags).toEqual(['checked_trundle']);
     expect(save.callouts.pressureAny).toBe(true);
     expect(Object.keys(save.habits).sort()).toEqual(['LO-01', 'LO-02', 'LO-03', 'LO-05']);
     expect(nextScenarioId(save, chapter, () => [])).toBe('g1');

@@ -10,6 +10,15 @@ import { browserStorage, createStore, type SaveState, type SaveStore } from './s
 
 /** Clock resolution. Time only advances while the page is visible. */
 export const TICK_MS = 250;
+/**
+ * Largest step one tick may take. A device that sleeps (or a throttled background tab) can deliver
+ * a huge gap between intervals; without the clamp a timer would expire twice in one tick.
+ */
+export const MAX_TICK_SECONDS = 1;
+
+export function clampDt(dt: number): number {
+  return Number.isFinite(dt) ? Math.max(0, Math.min(MAX_TICK_SECONDS, dt)) : 0;
+}
 
 export interface ScenarioRunner {
   state: RunnerState;
@@ -47,7 +56,7 @@ export function useScenarioRunner(scenario: Scenario, ctx: RunnerContext, now: (
       const dt = (t - last) / 1000;
       last = t;
       if (typeof document !== 'undefined' && document.visibilityState === 'hidden') return;
-      dispatch({ type: 'tick', dt });
+      dispatch({ type: 'tick', dt: clampDt(dt) });
     }, TICK_MS);
     return () => clearInterval(id);
   }, [running, dispatch, now]);
@@ -75,14 +84,17 @@ export function useScenarioRunner(scenario: Scenario, ctx: RunnerContext, now: (
 
 /** Persistent progress in localStorage (Red Line 7). Works without storage. */
 export function useSave(store?: SaveStore): [SaveState, (update: (s: SaveState) => SaveState) => void] {
-  const storeRef = useRef<SaveStore>(store ?? createStore(browserStorage()));
-  const [save, setSave] = useState<SaveState>(() => storeRef.current.load());
+  const storeRef = useRef<SaveStore | null>(null);
+  storeRef.current ??= store ?? createStore(browserStorage());
+  const [save, setSave] = useState<SaveState>(() => (storeRef.current as SaveStore).load());
+  // The latest save, so several updates in one event chain compose and the write happens outside the
+  // state updater (updaters must stay pure; Preact may call them more than once).
+  const latest = useRef(save);
   const update = useCallback((fn: (s: SaveState) => SaveState) => {
-    setSave((prev) => {
-      const next = fn(prev);
-      storeRef.current.save(next);
-      return next;
-    });
+    const next = fn(latest.current);
+    latest.current = next;
+    storeRef.current?.save(next);
+    setSave(next);
   }, []);
   return [save, update];
 }

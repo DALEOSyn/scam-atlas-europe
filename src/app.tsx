@@ -5,7 +5,7 @@ import type { Chapter, Scenario } from './content/schema.ts';
 import { listScenarios } from './content/scenarios.ts';
 import type { ChapterSummary } from './engine/chapter.ts';
 import { debriefOf, type DebriefData } from './engine/debrief.ts';
-import { beginChapter, carriedStress, commitScenario, finishChapter } from './engine/game.ts';
+import { beginChapter, carriedStress, commitScenario, finishChapter, runFlags, runIndex } from './engine/game.ts';
 import { nextIndex, sequenceOf } from './engine/chapter.ts';
 import { useSave } from './engine/hooks.ts';
 import type { ScenarioResult } from './engine/result.ts';
@@ -95,8 +95,8 @@ export function App({ loadFirst, store }: AppProps) {
       }
       const started = beginChapter(current, chapter.city);
       if (started !== current) update(() => started);
-      const flags = new Set(started.flags);
-      let from = started.chapters[chapter.city]?.run?.index ?? 0;
+      const flags = runFlags(started, chapter.city);
+      let from = runIndex(started, chapter);
       for (;;) {
         const i = nextIndex(chapter, from, () => [], flags);
         const id = i < 0 ? undefined : sequenceOf(chapter)[i]?.id;
@@ -187,7 +187,7 @@ export function App({ loadFirst, store }: AppProps) {
             </p>
           ) : null}
           {screen.summary.stamp === 'gold' ? <p>{t('stamp_gold_copy')}</p> : null}
-          <p>{t('chapter_summary', { spotted: screen.summary.spotted, reported: screen.summary.genuineReported, doubles: screen.summary.doubleChecks })}</p>
+          <p>{t('chapter_summary', { spotted: screen.summary.spottedShown, total: screen.summary.redFlags, reported: screen.summary.genuineReported, doubles: screen.summary.doubleChecks })}</p>
           <details>
             <summary>{t('debrief_points')}</summary>
             <p>{t('chapter_rating', { rating: Math.round(screen.summary.rating) })}</p>

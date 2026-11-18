@@ -94,7 +94,7 @@ export function scoredGroupCount(s: Scenario): number {
 }
 
 export function maxPointsOfScenario(b: EngineBalance, s: Scenario): number {
-  return maxPointsOf(b, scoredGroupCount(s), s.is_fraud, redFlagCount(s));
+  return maxPointsOf(b, scoredGroupCount(s), redFlagCount(s));
 }
 
 export function resultOf(s: Scenario, b: EngineBalance, st: RunnerState): ScenarioResult {
@@ -129,6 +129,13 @@ export function resultOf(s: Scenario, b: EngineBalance, st: RunnerState): Scenar
   }
 
   const allKinds = st.groups.flatMap((g) => g.kinds);
+  // Card details typed in a payment flow (the entry beat, or an earlier beat of the same group, asks to pay)
+  // are a payment for the "Already clicked?" advice.
+  const paymentFlow = (g: GroupState) => g.visited.some((id) => beatById(s, id)?.message.request === 'pay');
+  const effectiveKinds: ActionKind[] = [
+    ...allKinds,
+    ...st.groups.filter(paymentFlow).flatMap((g) => g.steps.filter((x) => x.kind === 'enter_details').map(() => 'pay' as const)),
+  ];
   const storyReported = truth !== 'fraud' && scoredBeats.some((x) => x.cls === 'report');
   const interruptReports = st.interrupts.filter((i) => {
     const def = s.interrupts.find((x) => x.id === i.id);
@@ -162,7 +169,7 @@ export function resultOf(s: Scenario, b: EngineBalance, st: RunnerState): Scenar
     best: !fell && scoredBeats.length > 0 && scoredBeats.every((x) => x.stars === 3),
     beats,
     pausedUnderPressure: st.groups.some((g) => g.pausedUnderPressure),
-    situation: situationOf(allKinds),
+    situation: situationOf(effectiveKinds),
     outcomes,
     flagsSet,
     arcEffects,

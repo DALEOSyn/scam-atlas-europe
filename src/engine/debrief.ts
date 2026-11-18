@@ -32,7 +32,7 @@ export interface DebriefWrongTag {
 /**
  * The action that cost the stars (UI_SPEC §8.1):
  * - a fall, report or dismiss: the decisive action;
- * - an engage cap: the first engage action, not the later correct one;
+ * - an engage cap (no fall): the first engage action, not the later one, also when that was a dismiss or report;
  * - verify then comply/proceed/report: the follow-up (it is the decisive action);
  * - timer expiry: "You let the timer run out."
  * `what_now` = a built-in "What now?" choice (label from i18n).
@@ -57,7 +57,7 @@ export interface DebriefData {
      * (standard: at most one; boss: per beat). Empty on arc debriefs.
      */
     youChose: ChoiceLine[];
-    /** null on arc beats (no stars, no points). */
+    /** null on arc beats and drills (no stars, no points). */
     stars: number | null;
     alreadyClicked: { situation: AlreadySituation; text: string } | null;
     /** On fraud timer expiry: "The deadline was fake. Nothing happened." */
@@ -136,7 +136,9 @@ export function debriefOf(
     return correct ? [] : [{ beatId, target, reveal: ins?.reveal }];
   });
 
-  const youChose = arc ? [] : st.groups.flatMap((g, i) => {
+  // Drills are unscored teaching moments (GDD §4): no stars, points or "You chose" line, like arc beats (QA E2).
+  const unscored = arc || s.role === 'drill';
+  const youChose = unscored ? [] : st.groups.flatMap((g, i) => {
     const beat = r.beats[i];
     const line = beat && beat.scored ? choiceLine(s, g, beat) : null;
     return line ? [line] : [];
@@ -149,7 +151,7 @@ export function debriefOf(
       tell: d.layer1.tell,
       whatWorks: d.layer1.what_works,
       youChose,
-      stars: arc ? null : r.stars,
+      stars: unscored ? null : r.stars,
       alreadyClicked: alreadyClickedLine(s, r.situation) ?? null,
       deadlineWasFake: s.is_fraud && r.timerExpired,
     },
@@ -165,11 +167,12 @@ export function debriefOf(
       sources: [...d.sources],
       notes: d.layer2.notes ?? null,
       safeguardingLine: d.safeguarding_line ?? null,
-      points: arc
+      points: unscored
         ? null
         : { base: r.base, tagBonus: r.tagBonus, tagBonusVoided: r.tagBonusVoided, recovery: r.fell ? (r.recovery?.points ?? 0) : null, total: r.points, max: r.maxPoints },
     },
-    narratives: r.outcomes.flatMap((o) => (s.outcomes[o] ? [s.outcomes[o].narrative] : [])),
+    // A boss can reach the same outcome on several beats: say it once (QA E4).
+    narratives: [...new Set(r.outcomes.flatMap((o) => (s.outcomes[o] ? [s.outcomes[o].narrative] : [])))],
   };
 }
 
@@ -187,8 +190,9 @@ export function choiceLine(s: Scenario, g: GroupState, beat: BeatResult): Choice
   if (beat.stars >= 3 && !beat.fell) return null;
   if (beat.timerExpired) return { beatId: g.beatId, kind: 'timer' };
   const d = g.decision;
-  const costByCap = beat.capped && g.firstEngage && (!d || d.cls === 'verify' || d.cls === 'proceed' || d.cls === 'engage');
-  if (costByCap && g.firstEngage) return { beatId: g.beatId, kind: 'action', label: g.firstEngage.label };
+  // A fall always names the decisive action. Otherwise an engage cap names the first engage action, even
+  // when the later choice was a dismiss or report (producer ruling, T-2.1: it teaches more).
+  if (!beat.fell && beat.capped && g.firstEngage) return { beatId: g.beatId, kind: 'action', label: g.firstEngage.label };
   if (!d) return null;
   if (d.via === 'what_now' && (WHAT_NOW_BUILTINS as readonly string[]).includes(d.actionId)) {
     return { beatId: g.beatId, kind: 'what_now', choice: d.actionId as WhatNowBuiltin };

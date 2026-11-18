@@ -36,6 +36,8 @@ export interface ChapterRun {
   /** Index into the chapter sequence of the next scenario to play. */
   index: number;
   records: ScenarioRecord[];
+  /** Flags set by outcomes in this run (echoes read them). A replay starts with none. */
+  flags: string[];
 }
 
 export interface ChapterProgress {
@@ -51,6 +53,7 @@ export interface SaveState {
   version: typeof SAVE_VERSION;
   settings: Settings;
   chapters: Record<string, ChapterProgress>;
+  /** Game-wide flags: only those set by arc beats (the arc spans chapters). Echo flags live in the chapter run. */
   flags: string[];
   arc: ArcState;
   habits: Record<string, HabitProgress>;
@@ -100,6 +103,7 @@ const LO = /^LO-\d{2}$/;
 const strings = (v: unknown, re: RegExp): string[] => (Array.isArray(v) ? [...new Set(v.filter((x): x is string => typeof x === 'string' && re.test(x)))] : []);
 const oneOf = <T extends string>(v: unknown, opts: readonly T[], d: T): T => (typeof v === 'string' && (opts as readonly string[]).includes(v) ? (v as T) : d);
 const NICKNAME_MAX = 24;
+const MAX_RUN_INDEX = 100;
 
 function sanitiseSettings(v: unknown): Settings {
   const o = isObj(v) ? v : {};
@@ -135,8 +139,10 @@ function sanitiseChapter(v: unknown): ChapterProgress {
   const o = isObj(v) ? v : {};
   const run = isObj(o.run)
     ? {
-        index: Math.max(0, Math.floor(num(o.run.index, 0))),
+        // Upper bound: no chapter has this many scenarios; game.ts clamps to the real sequence (QA E8).
+        index: Math.min(MAX_RUN_INDEX, Math.max(0, Math.floor(num(o.run.index, 0)))),
         records: Array.isArray(o.run.records) ? o.run.records.map(sanitiseRecord).filter((r): r is ScenarioRecord => r !== null) : [],
+        flags: strings(o.run.flags, SNAKE),
       }
     : null;
   return {

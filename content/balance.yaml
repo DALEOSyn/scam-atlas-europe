@@ -1,0 +1,228 @@
+# Scam Atlas: Europe — balance and scoring tables
+# Owner: game-designer. v3 (final consolidated revision for G1, 2026-11-18).
+# Addresses sceptic re-review (B1–B3, N1–N3) and QA paper playtest (docs/qa/2026-11-18-gdd-paper-playtest.md).
+# Rules these numbers feed: docs/GDD.md §6–§9. Strategy check: GDD §7.2.
+# Player-facing: stars per scenario + stamp per chapter. Points and rating live behind "Details".
+
+version: 3.1   # v3.1: net spotting, 2 decoys, slot-bound timers/list, boss-fall rule, ceil thresholds, rating cap
+
+# ---------------------------------------------------------------------------
+# Action kinds -> class. Scenario YAML uses `kind`.
+# ---------------------------------------------------------------------------
+action_kinds:
+  verify_in_app:          { class: verify,  los: [LO-03] }
+  call_back_known:        { class: verify,  los: [LO-06, LO-07, LO-08] }
+  check_official_list:    { class: verify,  los: [LO-11, LO-13] }
+  check_with_platform:    { class: verify,  los: [LO-10] }
+  ask_someone:            { class: verify,  los: [LO-18] }
+  verify_identity:        { class: verify,  los: [LO-14] }       # in-game photo/profile check only
+  report:                 { class: report,  los: [] }
+  block:                  { class: report,  los: [] }
+  ignore:                 { class: dismiss, los: [] }
+  delete:                 { class: dismiss, los: [] }
+  hang_up:                { class: dismiss, los: [LO-08] }       # non-terminal on `call`: opens the "What now?" beat
+  deny_prompt:            { class: dismiss, los: [LO-09] }
+  reply:                  { class: engage,  los: [] }
+  open_link:              { class: engage,  los: [] }
+  call_number_in_message: { class: engage,  los: [] }
+  scan_qr_and_open:       { class: engage,  los: [] }
+  pay:                    { class: comply,  los: [] }
+  pay_unprotected:        { class: comply,  los: [] }
+  enter_details:          { class: comply,  los: [] }
+  share_code:             { class: comply,  los: [] }
+  approve_prompt:         { class: comply,  los: [] }            # fraud only (validator)
+  install_or_remote:      { class: comply,  los: [] }
+  proceed:                { class: proceed, los: [LO-17, LO-09] } # normal action on genuine; ALSO the in-message action of anything the player started (reset link, own sign-in)
+  pay_protected:          { class: proceed, los: [LO-11] }
+  pause:                  { class: meta,    los: [LO-04] }       # unscored, see pause
+
+# ---------------------------------------------------------------------------
+# Stars (0–3) per class x truth. Points = stars x 5, with the two exceptions below.
+# Stars and points therefore always rank choices in the same order.
+# ---------------------------------------------------------------------------
+stars:
+  #           fraud            legit_high   legit_low
+  verify:   { fraud: 3,        legit_high: 3, legit_low: 3 }   # legit_low verify: "good habit, optional this time"
+  proceed:  { fraud: 0,        legit_high: 3, legit_low: 3 }
+  report:   { fraud: 2,        legit_high: 0, legit_low: 0 }   # + points exception: -5
+  dismiss:  { fraud: 2,        legit_high: 0, legit_low: 2 }
+  engage:   { fraud: non_terminal, legit_high: 2, legit_low: 2 }
+  comply:   { fraud: 0,        legit_high: 1, legit_low: not_allowed }  # validator: no comply actions on legit_low
+  timer_expiry: dismiss        # scored as dismiss, never with a tag bonus
+
+points:
+  per_star: 5
+  exceptions:
+    report_on_legit: -5        # 0 stars, -5 points: the over-reporting cost
+    fall_on_fraud: recovery    # comply/proceed on fraud: points = recovery points (floor 0); stars 1 if recovery >= 6, else 0
+  engage_on_fraud: { terminal: false, star_cap: 2 }   # every fraud engage must have next_beat (validator)
+
+tags:
+  # Player may mark a checked detail "suspicious". Only fraud scenarios (and quoted examples) pay.
+  per_tagged_red_flag: 2
+  cap: 6
+  void_if_any_non_red_flag_tagged: true   # one wrong tag (decoy or reassuring detail) => bonus 0 for that scenario
+  apply_if_final_class_in: [verify, report, dismiss]
+  not_on_timer_expiry: true
+  legit_tags: no_points                    # tagging on genuine messages costs nothing and earns nothing; shown in Details
+  quoted_examples: score_like_fraud        # inspectables with context: quoted (e.g. Teo's screenshot) can be red flags inside a genuine message
+  drills_count: false                      # tags in drills never earn points and never count toward spotted
+  # "Red flags spotted" for stamps is NET across the whole chapter (v3.1):
+  #   spotted = correct tags (red flags, incl. quoted examples) - wrong tags (decoys on fraud AND any tag on a
+  #   genuine message's own details), counted over all scored scenarios and boss beats; drills excluded.
+  spotted_formula: correct_minus_wrong_chapter_wide
+
+pause:
+  scored: false
+  counts_for_lo04_if: "used before the decisive action while a timer or pusher is active, or while stress is tense/overwhelmed"
+  # stress clause keeps Calm mode (no timers, no pushers) able to earn LO-04
+  reduces_stress_by: 25
+  timer_cost_seconds: 5          # 0 when timers are off
+  cooldown_seconds: 10
+
+multi_step:
+  decisive_action: "the action whose class decides stars; it is not always the action that ends the scenario"
+  verify: { terminal: false, rule: "verify shows the truth, then the player picks a follow-up. Verify stars stand unless the follow-up is comply/proceed on fraud or report on legit, which replaces them." }
+  hang_up_on_call: { terminal: false, opens: [call_back_known, report, done], rule: "hang_up then call_back_known = verify; hang_up then report = report; hang_up then done = dismiss" }
+  engage: { terminal_on_legit: true, terminal_on_fraud: false }
+  boss:
+    beats_arrive: scammer_driven  # beats 2..n arrive on schedule whatever the player did at beat 1
+    scored_beats_max: 3           # later beats are narrative
+    scoring: per_beat_summed       # each beat: stars x 5 (or exception), then sum
+    tag_bonus: once_per_boss       # cap 6, voided by any wrong tag across the boss
+    damage_control: once_at_end    # if any beat was a fall
+    fallen_beats_score: 0          # a fallen beat scores 0; other beats score normally
+    damage_control_points: once_per_boss   # 0–9 added once to the boss total, however many beats fell
+    displayed_stars: "rounded mean of beat stars"
+    max_points: 51                 # 3 x 15 + 6
+
+recovery:
+  pick: 3                          # "Pick the step you'd do first, then 2 more"
+  points_per_correct_step: 3
+  max_points: 9
+  harmful_step_penalty: -2
+  floor: 0
+  categories_are_per_scenario: true   # outcome.recovery lists {step, category}; "change password" is `stop` after credential theft
+  lo16_demonstrated_if: "points >= 6 AND first pick has category stop in this scenario"
+
+# ---------------------------------------------------------------------------
+# Chapter result. "Inspector rating" = points / chapter max (Details only).
+# Chapter max = per scored scenario 15 (+ 2 x red flags, cap 6, on fraud); boss 51.
+# Excluded: drills, arc beats, interrupts, pause.
+# ---------------------------------------------------------------------------
+rating_cap: 100
+stamps:
+  # R = number of red flags in the chapter's scored scenarios (drills excluded). spotted = net (see tags).
+  bronze: { requires: finished }
+  silver: { min_rating: 75, max_genuine_reported: 1, min_spotted: "ceil(R/3)" }
+  gold:   { min_rating: 90, max_genuine_reported: 0, min_spotted: "ceil(2*R/3)", max_offfocus_doublechecks: 0 }
+  # offfocus double-check = verify on a legit_low scenario whose `pattern` is NOT in the chapter's patterns.
+  # Checking a genuine delivery SMS in the delivery chapter never costs anything (QA L2).
+arc:
+  points_banked_for: finale_timeline
+  feeds_rating: false
+interrupts:
+  scored: false
+  reporting_genuine_interrupt_counts_as_genuine_reported: true
+
+# ---------------------------------------------------------------------------
+# Timers (seconds). Pressure, never a fail state. No score element depends on timer, pushers or stress.
+# ---------------------------------------------------------------------------
+timers:
+  # v3.1: timer LENGTH is set by chapter slot, identical for genuine and fraud scenarios in that chapter,
+  # so length is never a tell. Whether a scenario has a timer is authored, subject to mix.pressure_parity_pp.
+  by_slot: { 0: 60, 1: 60, 2: 55, 3: 50, 4: 50, 5: 45, 6: 45, 7: 40, 8: 40, 9: 35, 10: 35 }
+  honest_timer_allowed_on_legit: true   # genuine deadlines ("link valid 15 min") use the same slot length
+  boss_beat: 40                   # bosses are always fraud and announced as the boss, so no tell
+  call_beat: 30                   # every call beat, genuine or fraud
+  inspect_cost_seconds: 2
+  tag_cost_seconds: 0
+  translation_cost_seconds: 0
+  on_first_expiry: escalate
+  escalation_extra_seconds: 20
+  on_second_expiry: dismiss
+  freeze_while_open: [pause_menu, settings, help, debrief, take_a_breath, translation]
+  modes: { standard: 1.0, extended: 2.0, off: null }
+  mode_choice: onboarding_before_first_timed_scenario
+  default_mode: { standard: true, extended_if: prefers_reduced_motion }
+
+pushers:
+  setting: on_off                 # separate "Pushy follow-ups" setting; Calm preset = timers off + pushers off
+  schedule: authored              # v3.2: genuine AND fraud pushers fire at authored `at_seconds`, independent of stress
+  stress_interval_scale: { calm: 1.0, tense: 0.85, overwhelmed: 0.7 }   # applied equally to genuine and fraud pushers
+  sr_announce_min_interval_seconds: 15   # coalesced: "2 more messages from unknown sender"
+
+stress:
+  start_of_chapter: 10
+  on_resume: 10                   # resuming after the half-day stop or a reload
+  per_pressure_lever: 8
+  on_pusher_message: 10
+  on_interrupt: 10
+  on_timer_expiry: 15
+  on_fall: 15
+  decay_after_scenario: 15
+  thresholds: { calm: [0, 39], tense: [40, 69], overwhelmed: [70, 100] }
+  heartbeat_audio_default: off
+  cap: 100
+
+# ---------------------------------------------------------------------------
+# Difficulty by chapter SLOT (position), not city. decoys = non-red-flag checkables on fraud (min 2).
+# ---------------------------------------------------------------------------
+difficulty:
+  scenario_levels:
+    1: { red_flags: "2-3 obvious", decoys: 2, channels: 1, interrupts: 0 }
+    2: { red_flags: "2-3, one subtle", decoys: 2, channels: 1, interrupts: 0 }
+    3: { red_flags: "2-3 subtle", decoys: 2, channels: "1-2", interrupts: "0-1" }
+    4: { red_flags: "1-2 subtle, real details mixed in", decoys: 2, channels: 2, interrupts: 1 }
+    5: { red_flags: "1 subtle; the main tell is the request itself", decoys: "2-3", channels: "2-3", interrupts: "1-2" }
+  # v3.1: Check-list presentation is set per chapter SLOT, identical for every scenario in the chapter.
+  checkable_list_by_slot:
+    show_count: []                # v3.2: never show a count (a count of 4 vs 2 told fraud from genuine)
+    neutral_fillers_from_slot: 0  # every element without an authored reveal says "Nothing unusual here", in every chapter
+  chapter_slots:
+    0:  { band: [1, 2], scored: [5, 6], boss_difficulty: 2, target_minutes: [10, 14] }
+    1:  { band: [1, 3], scored: [7, 8], boss_difficulty: 3, target_minutes: [14, 18] }
+    2:  { band: [2, 3], scored: [7, 8], boss_difficulty: 3, target_minutes: [12, 18] }
+    3:  { band: [2, 4], scored: [7, 8], boss_difficulty: 4, target_minutes: [12, 18] }
+    4:  { band: [2, 4], scored: [7, 8], boss_difficulty: 4, target_minutes: [12, 18] }
+    5:  { band: [3, 4], scored: [7, 8], boss_difficulty: 4, target_minutes: [12, 18] }
+    6:  { band: [3, 4], scored: [7, 8], boss_difficulty: 4, target_minutes: [12, 18] }
+    7:  { band: [3, 5], scored: [7, 8], boss_difficulty: 5, target_minutes: [12, 18] }
+    8:  { band: [3, 5], scored: [7, 8], boss_difficulty: 5, target_minutes: [12, 18] }
+    9:  { band: [3, 5], scored: [7, 8], boss_difficulty: 5, target_minutes: [12, 18] }
+    10: { band: [4, 5], scored: [7, 9], boss_difficulty: 5, target_minutes: [14, 20] }
+  max_new_patterns_per_chapter: 2
+  max_callbacks_per_chapter: 2
+  half_day_split: true            # each chapter = morning + afternoon with a stop point; boss in the afternoon
+
+# ---------------------------------------------------------------------------
+# Content mix rules (content:validate per chapter; GDD CR-11).
+# ---------------------------------------------------------------------------
+mix:
+  legit_share: { min: 0.30, max: 0.40 }   # over scored scenarios (standard + boss); drills, arc, interrupts excluded
+  boss_is_fraud: true
+  legit_twin_required: true
+  max_consecutive_same_truth: 3
+  max_same_theme_share: 0.5               # e.g. Berlin: <= 4 of 8 scored scenarios parcel-themed; no two adjacent
+  pressure_parity_pp: 15                  # share of legit vs fraud scenarios with timer or pusher differ by <= 15 points (slots >= 1)
+  min_checkables: { fraud: 3, legit: 2 }
+  min_decoys_on_fraud: 2
+  sender_or_link_decoy_min_share: "ceil(F/3)"   # F = fraud scenarios in the chapter; at least this many have the sender or the link as a decoy
+  genuine_at_every_difficulty_used: true        # each difficulty level used in a chapter has >= 1 genuine scenario
+  timer_length_parity: same_length_by_slot      # see timers.by_slot
+  genuine_normal_response_kind: proceed         # the expected response to a genuine message is `proceed`, even if it is a reply or opening a link
+  drill_tags_count: false
+  approve_prompt_only_on_fraud: true
+  no_comply_on_legit_low: true
+  language_never_red_flag: true           # spelling/grammar/language inspectables may only be decoys
+  padlock_never_reassurance_as_proof: true
+  logo_or_sender_name_never_proof: true   # inspectables of type logo/display_name may not be `reassures: true` as sole reason in a debrief
+  authoring_rule_applies_to_roles: [standard, boss]   # >=1 verify and >=1 tempting wrong action
+
+session:
+  scenario_minutes: [1, 2.5]
+  game_hours: [2.5, 3]                    # re-baseline after the vertical slice (QA F3)
+  save_points: after_each_scenario        # localStorage only
+  max_message_words: 80
+  debrief_layer1_max_words: 40
+  arc_line_max_words: 25

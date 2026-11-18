@@ -1,0 +1,10 @@
+<!-- Fictional brand for Scam Atlas: Europe (educational game). Original artwork, CC BY-SA 4.0. Not affiliated with, and not modelled on, any real organisation. Registry: content/brands.yaml -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 208 64" width="208" height="64" role="img" aria-labelledby="t" style="color:#0E5E63"><title id="t">Trundle (fictional brand)</title>
+<g><rect width="64" height="64" rx="14" fill="#0E5E63"/>
+<rect x="21" y="17" width="28" height="22" rx="3.5" fill="#A8E6CF"/>
+<rect x="33" y="17" width="4" height="22" fill="#0E5E63" opacity="0.35"/>
+<circle cx="27" cy="45" r="4.5" fill="#FFFFFF"/>
+<circle cx="43" cy="45" r="4.5" fill="#FFFFFF"/>
+<path d="M6 33 h3 M12 33 h3 M6 41 h3 M12 41 h3" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/></g>
+<text x="76" y="41" font-family="ui-rounded, system-ui, sans-serif" font-size="26" font-weight="800" letter-spacing="-0.5" fill="currentColor">trundle</text>
+</svg>

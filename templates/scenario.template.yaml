@@ -10,10 +10,10 @@ device: sms                           # email | sms | messenger | call | browser
 pressure: { timer_seconds: 45, levers: [urgency, small_amount] }
 
 message:
-  sender: { display: "PaketPilot", detail: "+49 ••• ••• 0173" }   # PaketPilot = fictional courier
+  sender: { display: "Trundle", detail: "+49 ••• ••• 0173" }   # Trundle = fictional courier (content/brands.yaml)
   body: |
-    PaketPilot: Ihr Paket wartet. Zollgebühr 1,99 EUR offen. Heute zahlen, sonst Rücksendung:
-    paketpilot-zoll.example/p/8812
+    Trundle: Ihr Paket wartet. Zollgebühr 1,99 EUR offen. Heute zahlen, sonst Rücksendung:
+    trundle-zoll.example/p/8812
   l10n_note: "German in-world text intentional; EN translation shown on magnifier."
 
 inspectables:                         # what the magnifier reveals; each red flag must point at one
@@ -21,7 +21,7 @@ inspectables:                         # what the magnifier reveals; each red fla
     reveal: "A private mobile number, not the courier's short code."
     red_flag: true
   - target: link
-    reveal: "paketpilot-zoll.example is not PaketPilot's site (paketpilot.example)."
+    reveal: "trundle-zoll.example is not Trundle's site (trundle.example)."
     red_flag: true
 
 actions:
@@ -30,7 +30,7 @@ actions:
     outcome: card_details_stolen
     score: -10
   - id: open_app
-    label: "Open the PaketPilot app yourself and check the tracking"
+    label: "Open the Trundle app yourself and check the tracking"
     outcome: no_fee_found
     score: +15                        # the habit we teach scores highest
   - id: delete_report

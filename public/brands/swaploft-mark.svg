@@ -1,0 +1,10 @@
+<!-- Fictional brand for Scam Atlas: Europe (educational game). Original artwork, CC BY-SA 4.0. Not affiliated with, and not modelled on, any real organisation. Registry: content/brands.yaml -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-labelledby="t"><title id="t">Swaploft logo (fictional)</title>
+<rect width="64" height="64" rx="14" fill="#A8175A"/>
+<path d="M12 27 L32 12 L52 27" fill="none" stroke="#FFF6EE" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="25" cy="30" r="4.5" fill="#F7C6DA"/>
+<rect x="31" y="25" width="8" height="8" rx="1.5" fill="#F7C6DA" transform="rotate(14 35 29)"/>
+<path d="M41 34 L45 26 L49 34 Z" fill="#FFF6EE" stroke="#FFF6EE" stroke-width="1.5" stroke-linejoin="round"/>
+<path d="M15 35 H49 L47 52 H17 Z" fill="#FFF6EE" stroke="#FFF6EE" stroke-width="2" stroke-linejoin="round"/>
+<path d="M23 42 H41" stroke="#A8175A" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

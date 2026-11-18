@@ -55,8 +55,30 @@ export function loadBrands(contentDir: string, report: ContentReport): Map<strin
   for (const b of res.data.brands) {
     if (out.has(b.id)) report.errors.push(`${file}: duplicate brand id "${b.id}"`);
     out.set(b.id, b);
+    for (const host of brandHosts(b)) {
+      if (!FICTIONAL_HOST.test(host)) {
+        report.errors.push(`${file}: brand "${b.id}": "${host}" must end in .example, .test or .invalid (Red Line 3)`);
+      }
+    }
   }
   return out;
+}
+
+/** brands.yaml is excluded from redline:lint (it names real brands in checked_against), so its own hosts are checked here. */
+const FICTIONAL_HOST = /\.(example|test|invalid)$/i;
+export function brandHosts(b: Record<string, unknown>): string[] {
+  const hosts: string[] = [];
+  const add = (v: unknown) => {
+    if (typeof v === 'string') hosts.push(v.includes('@') ? v.slice(v.lastIndexOf('@') + 1) : (v.split('/')[0] ?? v));
+  };
+  add(b.domain);
+  for (const key of ['lookalike_examples', 'email_addresses'] as const) {
+    const list = b[key];
+    if (Array.isArray(list)) list.forEach(add);
+  }
+  const subs = b.sub_brands;
+  if (Array.isArray(subs)) for (const sb of subs) if (sb && typeof sb === 'object') add((sb as Record<string, unknown>).domain);
+  return hosts;
 }
 
 export function loadSources(contentDir: string, report: ContentReport): Map<string, Source> {

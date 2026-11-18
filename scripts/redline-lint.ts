@@ -14,7 +14,9 @@
  * scalars). Results are de-duplicated.
  *
  * Not scanned: content/sources.yaml (real reference URLs by design, checked by
- * content:validate) and the linter's own list files.
+ * content:validate), content/brands.yaml (names real brands in checked_against
+ * by design; its hosts are checked by content:validate), content/balance.yaml
+ * (tuning numbers, no player-facing text) and the linter's own list files.
  */
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve, relative, basename, sep } from 'node:path';
@@ -33,7 +35,7 @@ export const ASSETS_MANIFEST = resolve(PUBLIC, 'assets-manifest.yaml');
 
 const SCANNED_EXTS = ['.yaml', '.yml', '.json', '.md', '.txt', '.svg', '.html', '.webmanifest'] as const;
 const RASTER_EXTS = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.avif', '.ico', '.bmp', '.heic'] as const;
-const EXCLUDED = new Set([resolve(CONTENT, 'sources.yaml'), DENYLIST_FILE, WARNLIST_FILE, ALLOWLIST_FILE]);
+const EXCLUDED = new Set([resolve(CONTENT, 'sources.yaml'), resolve(CONTENT, 'brands.yaml'), resolve(CONTENT, 'balance.yaml'), DENYLIST_FILE, WARNLIST_FILE, ALLOWLIST_FILE]);
 
 export interface FileFinding extends Finding {
   file: string;

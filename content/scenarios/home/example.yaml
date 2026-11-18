@@ -8,14 +8,14 @@ learning_objectives: [LO-02, LO-05]
 difficulty: 2
 is_fraud: true
 device: sms
-brands: [paketpilot]
+brands: [trundle]
 pressure: { timer_seconds: 45, levers: [urgency, small_amount] }
 
 message:
-  sender: { display: "PaketPilot", detail: "+49 151 •••• 0173" }
+  sender: { display: "Trundle", detail: "+49 151 •••• 0173" }
   body: |
-    PaketPilot: Ihr Paket wartet. Zollgebühr 1,99 EUR offen. Heute zahlen, sonst Rücksendung:
-    paketpilot-zoll.example/p/8812
+    Trundle: Ihr Paket wartet. Zollgebühr 1,99 EUR offen. Heute zahlen, sonst Rücksendung:
+    trundle-zoll.example/p/8812
   l10n_note: "German in-world text intentional; EN translation shown on magnifier."
 
 inspectables:
@@ -23,7 +23,7 @@ inspectables:
     reveal: "+49 151 is a German mobile prefix: a private phone, not the courier's short code."
     red_flag: true
   - target: link
-    reveal: "paketpilot-zoll.example is not PaketPilot's site (paketpilot.example)."
+    reveal: "trundle-zoll.example is not Trundle's site (trundle.example)."
     red_flag: true
 
 actions:
@@ -32,7 +32,7 @@ actions:
     outcome: card_details_stolen
     score: -10
   - id: open_app
-    label: "Open the PaketPilot app yourself and check the tracking"
+    label: "Open the Trundle app yourself and check the tracking"
     outcome: no_fee_found
     score: 15
   - id: delete_report

@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { resolve } from 'node:path';
-import { readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { parse } from 'yaml';
-import { validateContent, validateI18n, checkScenario, type ContentReport } from '../../scripts/lib/content.ts';
+import { brandHosts, loadBrands, validateContent, validateI18n, checkScenario, type ContentReport } from '../../scripts/lib/content.ts';
 import { isAllowedSourceHost } from '../../scripts/lib/source-hosts.ts';
 import { i18nCatalogueSchema, scenarioSchema, sourcesFileSchema } from '../../src/content/schema.ts';
 
@@ -20,10 +21,11 @@ describe('content:validate', () => {
     expect(r.scenarios.has('home-00-example')).toBe(true);
   });
 
-  it('strict mode rejects placeholder sources and brands', () => {
+  it('strict mode rejects placeholder sources', () => {
+    // The example still cites the two template placeholder sources; its brand (Trundle) is now registered.
     const r = validateContent(CONTENT, { strict: true });
     expect(r.errors.some((e) => e.includes('placeholder source'))).toBe(true);
-    expect(r.errors.some((e) => e.includes('placeholder brand'))).toBe(true);
+    expect(r.errors.some((e) => e.includes('placeholder brand'))).toBe(false);
   });
 
   it('the scenario template itself matches the schema', () => {
@@ -34,7 +36,7 @@ describe('content:validate', () => {
 });
 
 describe('scenario cross-checks', () => {
-  const brands = new Map([['paketpilot', { id: 'paketpilot', name: 'PaketPilot', kind: 'courier' as const, placeholder: false }]]);
+  const brands = new Map([['trundle', { id: 'trundle', name: 'Trundle', kind: 'courier' as const, placeholder: false }]]);
   const sources = new Map([
     ['europol-scam-smishing', { id: 'europol-scam-smishing', title: 't', placeholder: false }],
     ['bsi-smishing', { id: 'bsi-smishing', title: 't', placeholder: false }],
@@ -121,5 +123,24 @@ describe('i18n catalogues (finding 5)', () => {
     expect(i18nCatalogueSchema.safeParse({ app_title: '' }).success).toBe(false);
     expect(i18nCatalogueSchema.safeParse({ app_title: '{n, plural, one {#}}' }).success).toBe(false);
     expect(i18nCatalogueSchema.safeParse({ app_title: 'Score: {score}' }).success).toBe(true);
+  });
+});
+
+describe('brand registry hosts', () => {
+  it('collects domain, look-alikes, email hosts and sub-brand domains', () => {
+    const hosts = brandHosts({
+      domain: 'a.example',
+      lookalike_examples: ['c.test/x'],
+      email_addresses: ['x@d.invalid'],
+      sub_brands: [{ domain: 'b.a.example' }],
+    });
+    expect(hosts).toEqual(['a.example', 'c.test', 'd.invalid', 'b.a.example']);
+  });
+  it('loadBrands rejects a real-looking host in the registry', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'brands-'));
+    writeFileSync(join(dir, 'brands.yaml'), 'brands:\n  - id: trundle\n    name: Trundle\n    domain: trundle.example\n    lookalike_examples: ["trundle-parcel.com"]\n');
+    const report: ContentReport = { errors: [], warnings: [], scenarios: new Map() };
+    loadBrands(dir, report);
+    expect(report.errors.join('\n')).toMatch(/trundle-parcel\.com/);
   });
 });

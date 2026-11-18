@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Training page · Mock-up 2 — Mail + in-game browser (Scam Atlas: Europe)</title>
+<!-- Static mock-up (rework 1). No scripts, no external resources, no form element, no input element.
+     Scenario: chapter 0 boss (0-6, slot 0: count shown), beat 2: a "Waymarker IT" email opened a look-alike staff portal.
+     Timers off (Calm preset), stress Calm, Check mode OFF (so no dashed affordances). Desk layout >=1024px; stacks below.
+     Brands fictional; domains .example/.test. Owner part = last two labels of the host (UI_SPEC §4.4). -->
+<style>
+  :root{--bg:#FBF6EC;--surface:#fff;--sunken:#F2EADB;--text:#1C1F2E;--muted:#555B73;--border:#7D8299;--subtle:#E3D3B4;
+    --accent:#1F5FAD;--simbg:#EFE6F7;--simtext:#4A2B63;--simborder:#6B4C86;--ok:#2E6B3A;--focus:#1F5FAD;--halo:#fff;
+    --way:#22223B;--amber:#F2B24C;--stone:#EDE8DD;--av3:#E7E0F0;
+    --ui:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",Arial,sans-serif;--mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);font-family:var(--ui);color:var(--text)}
+  :focus-visible{outline:3px solid var(--focus);outline-offset:2px;box-shadow:0 0 0 5px var(--halo)}
+  .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  /* HUD (same budget as mock-up 1, UI_SPEC §2.1) */
+  .hud{position:sticky;top:0;z-index:60;min-height:56px;display:flex;align-items:center;gap:4px;padding:0 8px;border-bottom:1px solid var(--subtle);background:var(--bg)}
+  .prog{flex:none;min-width:44px;height:32px;display:grid;place-items:center;padding:0 8px;font-size:13px;font-weight:700;border-radius:999px;background:var(--sunken);white-space:nowrap}
+  .timer{flex:none;min-width:64px;height:36px;display:flex;gap:6px;align-items:center;justify-content:center;padding:0 10px;font-size:13px;font-weight:700;border-radius:999px;background:var(--sunken);white-space:nowrap}
+  .stress{flex:none;display:flex;align-items:center;gap:4px;font-size:13px;font-weight:700;white-space:nowrap}
+  .seg{display:flex;gap:2px}.seg i{display:block;width:14px;height:10px;border:1.5px solid var(--text);border-radius:2px}.seg i.f{background:var(--text)}
+  .grow{flex:1 1 0;min-width:0}
+  .hbtn{flex:none;height:44px;min-width:44px;border:1px solid var(--border);border-radius:999px;background:var(--surface);font:inherit;font-weight:700;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;gap:6px;color:var(--text)}
+  .progbar{display:none;height:4px;background:var(--sunken)}.progbar i{display:block;height:100%;width:100%;background:var(--text)}
+  .row2{display:contents}.prog2{display:none}
+  @media (max-width:439px){.seg,.hbtn .txt,.nbbtn{display:none}}
+  .timer .short{display:none}
+  @media (max-width:319px){.timer .txt{display:none}.timer .short{display:inline}}
+  @media (max-width:359px){.prog{display:none}.progbar{display:block}}
+  @media (max-width:319px){.hud{flex-wrap:wrap;padding:4px 8px;row-gap:4px}.row2{display:flex;width:100%;gap:8px;align-items:center;order:5}.prog2{display:inline;font-size:13px;font-weight:700}.progbar{display:none}}
+  /* desk */
+  .desk{display:grid;grid-template-columns:240px minmax(0,1fr) 320px;gap:16px;padding:16px;min-height:calc(100vh - 56px);
+    background:radial-gradient(circle at 30% 20%,#F2EADB 0,#E9DFCB 60%,#E3D3B4 100%)}
+  .rail{background:var(--surface);border:1px solid var(--subtle);border-radius:16px;padding:16px;align-self:start}
+  .rail h2{font-size:16px;margin:0 0 12px}
+  .note{font-size:14px;border-top:1px solid var(--subtle);padding:10px 0;display:flex;gap:8px}
+  .mono{font-family:var(--mono);font-size:13px}
+  .laptop{align-self:start;background:#1C1F2E;border-radius:18px;padding:10px;box-shadow:0 12px 32px rgb(28 31 46/.22);min-width:0}
+  .laptop .base{height:8px;background:#2A2D3D;border-radius:0 0 8px 8px;margin:10px -10px -10px}
+  .screen{background:#fff;border-radius:8px;overflow:hidden;display:grid;grid-template-columns:260px minmax(0,1fr);min-height:600px}
+  .mail{border-right:1px solid var(--subtle);background:var(--bg);font-size:14px}
+  .mail h3{font-size:13px;color:var(--muted);margin:12px;text-transform:uppercase;letter-spacing:.06em}
+  .row{display:flex;gap:10px;padding:10px 12px;border-bottom:1px solid var(--subtle)}
+  .row.sel{background:#D9E6F6}
+  .av{width:32px;height:32px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:12px;font-weight:700;overflow:hidden}
+  .row b{display:block}.row span{color:var(--muted)}
+  .browser{display:flex;flex-direction:column;min-width:0}
+  .chrome{height:52px;background:var(--sunken);display:flex;align-items:center;gap:6px;padding:0 8px;border-bottom:1px solid var(--subtle)}
+  .icon{flex:none;width:44px;height:44px;border-radius:8px;display:grid;place-items:center;border:0;background:transparent;color:var(--text)}
+  /* Address bar: owner part strong; truncates from the LEFT with a visible "…" (UI_SPEC §3.5). No dashed outline: Check mode is off. */
+  .addr{flex:1;min-width:0;height:36px;background:#fff;border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;justify-content:flex-end;overflow:hidden;padding:0 10px;font-family:var(--mono);font-size:14px;white-space:nowrap;color:var(--text);position:relative}
+  .addr > span:not(.ell){white-space:nowrap;flex:none}
+  .addr .ell{display:none;position:absolute;left:0;top:0;bottom:0;padding:0 4px 0 10px;background:#fff;align-items:center;color:var(--muted)}
+  .dim{color:var(--muted)}.strong{font-weight:700}
+  .chkd{flex:none;margin-left:4px;display:inline-grid;place-items:center}
+  .page{position:relative;flex:1;background:#F7F5F0;overflow:auto}
+  .simwrap{position:sticky;top:0;height:0;z-index:4;display:flex;justify-content:flex-end}
+  .simpill{margin:64px 12px 0 0;display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:4px 12px;border-radius:999px;background:var(--simbg);color:var(--simtext);border:1.5px solid var(--simborder);font:inherit;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;position:relative}
+  .simpill::before{content:"";position:absolute;inset:-8px 0}  /* 44px hit area */
+  .brandbar{background:var(--way);height:56px;display:flex;align-items:center;padding:0 20px}
+  .card{position:relative;max-width:380px;width:calc(100% - 24px);margin:40px auto 24px;background:#fff;border-radius:12px;padding:24px;box-shadow:0 4px 12px rgb(28 31 46/.14);border:1.5px dashed var(--simborder);overflow:hidden}
+  .wm{position:absolute;inset:0;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='120'><text x='0' y='70' transform='rotate(-24 110 60)' font-family='sans-serif' font-size='22' font-weight='800' fill='rgb(74,43,99)' fill-opacity='0.06' letter-spacing='4'>SIMULATION</text></svg>")}
+  .card h1{font-size:22px;margin:0 0 4px}
+  .card p.sub{color:var(--muted);margin:0 0 20px;font-size:14px}
+  .field{margin:0 0 14px}
+  .field .l{display:block;font-size:14px;font-weight:700;margin-bottom:6px}
+  .field .v{display:flex;align-items:center;min-height:44px;border:1px solid var(--border);border-radius:8px;padding:0 12px;background:#FAFAF7;font-size:16px;overflow-wrap:anywhere}
+  .demo{font-size:13px;color:var(--muted);margin:0 0 14px}
+  .signin{width:100%;height:48px;border-radius:10px;border:0;background:var(--way);color:var(--amber);font:inherit;font-weight:800;font-size:16px}
+  .actions{display:flex;flex-direction:column;gap:8px}
+  .details{min-height:44px;border:1px solid var(--border);border-radius:12px;background:var(--sunken);font:inherit;font-weight:700;text-align:left;padding:8px 12px;color:var(--text)}
+  .dlist{list-style:none;margin:0 0 8px;padding:0;font-size:14px}
+  .dlist li{padding:6px 2px;border-bottom:1px solid var(--subtle)}
+  .dlist .top{display:flex;justify-content:space-between;gap:8px;align-items:center;min-height:32px}
+  .dlist .open{border:0;background:none;font:inherit;color:var(--text);text-align:left;min-height:44px;padding:0;text-decoration:underline}
+  .ck{color:var(--ok);font-weight:700;display:inline-flex;gap:4px;align-items:center;white-space:nowrap}
+  .tagbtn{margin-top:4px;min-height:44px;width:100%;display:flex;align-items:center;gap:8px;padding:0 10px;border-radius:10px;border:1px solid var(--border);background:var(--surface);font:inherit;font-size:14px;font-weight:700;color:var(--text)}
+  .tagbtn[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--text);background:var(--sunken)}
+  .act{min-height:52px;border:1px solid var(--border);border-radius:12px;background:var(--surface);font:inherit;font-size:17px;text-align:left;padding:8px 14px;color:var(--text)}
+  @media (max-width:1499px){.addr .ell{display:flex}.addr .sch{display:none}}
+  @media (max-width:1023px){.desk{grid-template-columns:minmax(0,1fr);padding:8px}.screen{grid-template-columns:minmax(0,1fr)}.mail,.rail.nb{display:none}}
+  @media (max-width:420px){.simpill .long{display:none}}
+  @media (max-width:519px){.chrome{flex-wrap:wrap;height:auto;padding:4px 8px}.addr{flex:1 1 100%;order:3;margin-bottom:4px}}
+  @media (max-width:319px){.addr .path,.addr .sub{display:none}.addr{font-size:12px;padding:0 6px}.icon[aria-label=Back]{display:none}.desk{padding:4px}.laptop{padding:4px;border-radius:12px}.chrome{padding:4px}}
+  .note .mono{white-space:nowrap;overflow-x:auto}
+  @media (max-height:499px){.hud{position:static}}
+</style>
+</head>
+<body>
+<header class="hud">
+  <span class="prog" aria-label="Progress: boss, 6 of 6">6/6</span>
+  <span class="timer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9"/></svg><span class="txt" aria-hidden="true">Timers off</span><span class="short" aria-hidden="true">Off</span><span class="vh">Timers off</span></span>
+  <div class="row2">
+    <span class="stress" role="meter" aria-label="Stress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="18" aria-valuetext="Stress: Calm"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 12h20"/></svg><span class="seg" aria-hidden="true"><i class="f"></i><i></i><i></i></span><span aria-hidden="true">Calm</span></span>
+    <span class="prog2" aria-hidden="true">6/6</span>
+  </div>
+  <span class="grow"></span>
+  <button class="hbtn" aria-label="Pause"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9"/></svg><span class="txt">Pause</span></button>
+  <button class="hbtn nbbtn">Notebook</button>
+  <button class="hbtn" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+</header>
+<div class="progbar" aria-hidden="true"><i></i></div>
+
+<div class="desk">
+  <aside class="rail nb" aria-labelledby="nb-h">
+    <h2 id="nb-h">Notebook</h2>
+    <p class="mono" style="font-family:var(--ui);color:var(--muted);margin:0 0 8px">Red flags confirmed in earlier debriefs</p>
+    <div class="note"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A3361F" stroke-width="2" aria-hidden="true"><path d="M5 21V4h11l-2 4 2 4H5"/></svg><div><b>Link owner</b> · 0-2<div class="mono">mail-quota-check.example</div></div></div>
+    <div class="note"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#A3361F" stroke-width="2" aria-hidden="true"><path d="M5 21V4h11l-2 4 2 4H5"/></svg><div><b>Sender</b> · 0-4<div class="mono">+44 ••• ••• 0199</div></div></div>
+  </aside>
+
+  <main>
+    <div class="laptop">
+      <div class="screen">
+        <section class="mail" role="region" aria-label="Laptop: Mail">
+          <h3>Inbox</h3>
+          <!-- Same display-name family -> same Waymarker mark, genuine or spoof (UI_SPEC §2.5). -->
+          <div class="row sel">
+            <span class="av" style="background:#22223B" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 64 64"><ellipse cx="32" cy="47" rx="17" ry="6.5" fill="#EDE8DD"/><ellipse cx="31" cy="36" rx="12" ry="5.5" fill="#EDE8DD"/><ellipse cx="33" cy="26" rx="7.5" ry="5" fill="#F2B24C"/></svg></span>
+            <div><b>Waymarker IT</b>Action needed: activate the new travel portal<span> · 08:12</span></div>
+          </div>
+          <div class="row"><span class="av" style="background:var(--av3)" aria-hidden="true">AO</span><div><b>Adaeze Okafor-Lind</b>Your first trip: Berlin<span> · Mon</span></div></div>
+          <div class="row">
+            <span class="av" style="background:#22223B" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 64 64"><ellipse cx="32" cy="47" rx="17" ry="6.5" fill="#EDE8DD"/><ellipse cx="31" cy="36" rx="12" ry="5.5" fill="#EDE8DD"/><ellipse cx="33" cy="26" rx="7.5" ry="5" fill="#F2B24C"/></svg></span>
+            <div><b>Waymarker Network</b>Welcome! Your travel pack<span> · Mon</span></div>
+          </div>
+        </section>
+
+        <section class="browser" role="region" aria-label="Laptop: Browser, training page">
+          <div class="chrome">
+            <button class="icon" aria-label="Back" tabindex="-1">‹</button>
+            <button class="icon" aria-label="Page info" aria-describedby="chk-hint">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></button>
+            <button class="addr" aria-describedby="addr-desc">
+              <span class="ell" aria-hidden="true">…</span>
+              <span><span class="dim sch">https://</span><span class="dim sub">desk.waymarker-network.</span><wbr><span class="strong">example-sso.test</span><wbr><span class="dim path">/login</span></span>
+            </button>
+            <span class="chkd" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2E6B3A" stroke-width="2.5"><circle cx="10" cy="10" r="6"/><path d="M7.5 10l2 2 3.5-4M15 15l6 6"/></svg></span>
+          </div>
+          <p id="addr-desc" class="vh">Owner part: example-sso.test. Checked. Check again, press Enter.</p>
+          <p id="chk-hint" class="vh">Check. Press Enter.</p>
+          <div class="page">
+            <div class="simwrap"><button class="simpill" aria-describedby="sim-desc">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" stroke-dasharray="4 3"/></svg>
+              <span>Simulation<span class="long">, nothing is sent</span></span></button></div>
+            <p id="sim-desc" class="vh">This is a training page inside the game. It cannot send anything, anywhere.</p>
+            <div class="brandbar">
+              <svg width="200" height="40" viewBox="0 0 330 64" role="img" aria-label="Waymarker Desk"><ellipse cx="32" cy="47" rx="17" ry="6.5" fill="#EDE8DD"/><ellipse cx="31" cy="36" rx="12" ry="5.5" fill="#EDE8DD"/><ellipse cx="33" cy="26" rx="7.5" ry="5" fill="#F2B24C"/><path d="M25 15.5 q-2 -2.5 -1 -5.5 M33 13 v-5 M41 15.5 q2 -2.5 1 -5.5" fill="none" stroke="#F2B24C" stroke-width="2.5" stroke-linecap="round"/><text x="76" y="41" font-family="system-ui,sans-serif" font-size="26" font-weight="800" fill="#fff">Waymarker<tspan font-weight="400" dx="6">Desk</tspan></text></svg>
+            </div>
+            <div class="card" role="group" aria-labelledby="f-h" aria-describedby="demo-note">
+              <div class="wm" aria-hidden="true"></div>
+              <h1 id="f-h">Sign in to activate</h1>
+              <p class="sub">Use your Waymarker account to continue to the travel portal.</p>
+              <div class="field"><span class="l" id="l1">Work email</span><div class="v" role="textbox" aria-readonly="true" aria-labelledby="l1" aria-describedby="demo-note">sam@waymarker-<wbr>network.example</div></div>
+              <div class="field"><span class="l" id="l2">Password</span><div class="v" role="textbox" aria-readonly="true" aria-labelledby="l2" aria-describedby="demo-note"><span aria-hidden="true">••••••••••</span><span class="vh">hidden demo password</span></div></div>
+              <p class="demo" id="demo-note">Demo fields. Nothing can be typed or sent.</p>
+              <button class="signin" type="button">Sign in</button>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div class="base" aria-hidden="true"></div>
+    </div>
+  </main>
+
+  <section class="rail" aria-labelledby="acts">
+    <h2 id="acts">Your options</h2>
+    <div class="actions">
+      <button class="details" aria-expanded="true" aria-controls="dl">Details you can check · 2 checked</button>
+      <ul class="dlist" id="dl">
+        <li><div class="top"><button class="open">Sender of the email</button><span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="M7.5 10l2 2 3.5-4M15 15l6 6"/></svg>checked</span></div>
+          <button class="tagbtn" aria-pressed="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 21V4h11l-2 4 2 4H5z"/></svg>Marked suspicious</button></li>
+        <li><div class="top"><button class="open">Page address</button><span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="M7.5 10l2 2 3.5-4M15 15l6 6"/></svg>checked</span></div>
+          <button class="tagbtn" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 21V4h11l-2 4 2 4H5"/></svg>Mark as suspicious</button></li>
+        <li><div class="top"><button class="open">Page info</button></div></li>
+        <li><div class="top"><button class="open">Who signed the email</button></div></li>
+        <li><div class="top"><button class="open">Sent time</button></div></li>
+      </ul>
+      <button class="act">Sign in on this page</button>
+      <button class="act">Type desk.waymarker-network.example yourself and check there</button>
+      <button class="act">Ask Adaeze via the staff directory</button>
+      <button class="act">Report the email to IT</button>
+    </div>
+  </section>
+</div>
+</body>
+</html>

@@ -170,15 +170,21 @@ export const brandSchema = z
   .object({
     id: slug,
     name: z.string().min(1),
-    kind: z.enum(['bank', 'courier', 'marketplace', 'payment', 'telecom', 'utility', 'government', 'tech', 'retail', 'other']),
+    kind: z.enum(['bank', 'courier', 'marketplace', 'payment', 'telecom', 'utility', 'government', 'tech', 'retail', 'other']).optional(),
+    /** Free-text sector from the ux-artist registry (T-1.6). */
+    sector: z.string().min(1).optional(),
     /** Must be non-routable; red-line lint enforces .example/.test/.invalid. */
     domain: z.string().min(1).optional(),
     notes: z.string().optional(),
     /** Stub entries awaiting the ux-artist brand registry (T-1.6). */
     placeholder: z.boolean().default(false),
   })
+  // The registry carries design metadata (palette, rationale, checks, look-alikes);
+  // only the fields above are validated here.
+  .passthrough();
+export const brandsFileSchema = z
+  .object({ version: z.number().int().optional(), common: z.unknown().optional(), brands: z.array(brandSchema) })
   .strict();
-export const brandsFileSchema = z.object({ brands: z.array(brandSchema) }).strict();
 export type Brand = z.infer<typeof brandSchema>;
 
 export const sourceSchema = z

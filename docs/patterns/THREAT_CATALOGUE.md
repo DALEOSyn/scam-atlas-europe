@@ -6,7 +6,7 @@
 
 **Scope.**
 - **Part A** covers social engineering and fraud.
-- **Part B** covers malware and technical campaigns *as users experience them* . Part B widens the *research backlog* to these campaigns (Roman's request, 2026-11-18). Red Line 8 is unchanged: any Part B scenario still needs a digital vector the player can see, and a recorded decision in DECISIONS.md, before briefing.
+- **Part B** covers malware and technical campaigns *as users experience them* . Part B widens the *research backlog* to these campaigns (Roman's request, 2026-11-18). Roman approved Part B for scenarios on 2026-11-18 (DECISIONS.md, standing rules; CLAUDE.md Red Line 8): each Part B scenario still needs a digital vector the player can see and act on, and stays at the defender's level.
 - Every entry hinges on a digital vector (Red Line 8). Offline-only frauds are listed at the end under "Excluded".
 - Brands are described generically. Source titles in `content/sources.yaml` may contain real names, as references only (Red Line 1).
 
@@ -575,7 +575,7 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Channel:** email. **Audience:** adult. **ATT&CK:** T1684.001, T1657.
 - **Red flags:** generic text; an old leaked password as "proof"; a payment deadline.
 - **Habit:** don't pay or reply; change any password shown; report.
-- **Reported in:** FR (prefecture alert, campaign since 2018), BE (fake-police variants claiming a hacked computer). **Status:** candidate. **Fit:** medium (adult-only; needs a Roman decision because it touches sexual shame, though G1 covered only social-media sextortion). **Conf.:** Medium (French source undated, about 2018; the Cybermalveillance fiche could not be read this session).
+- **Reported in:** FR (prefecture alert, campaign since 2018), BE (fake-police variants claiming a hacked computer). **Status:** help card only (Roman, 2026-11-18), never a scenario. **Fit:** help card. **Conf.:** Medium (French source undated, about 2018; the Cybermalveillance fiche could not be read this session).
 - **Sources:** fr-lot-prefecture-webcam-2018, be-police-fake-police-messages-2026.
 
 **A15.4 `violent-online-community-grooming`**: minors groomed into violent online networks

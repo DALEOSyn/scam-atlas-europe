@@ -10,7 +10,7 @@ export function readYaml(rel: string): unknown {
 }
 
 export function loadExample(): Scenario {
-  return scenarioSchema.parse(readYaml('content/scenarios/home/example.yaml'));
+  return scenarioSchema.parse(readYaml('tests/fixtures/example-scenario.yaml'));
 }
 
 export function loadBalanceFile(): Balance {

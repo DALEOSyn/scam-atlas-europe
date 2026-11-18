@@ -19,3 +19,21 @@ steps:
     label: "Pay a recovery service that promises to get the money back"
   - id: wait_and_see
     label: "Wait and see whether anything happens"
+  - id: tell_it_team
+    label: "Tell your IT team straight away, through the contact you already have"
+  - id: sign_out_everywhere
+    label: "Sign out of every other session and remove devices you don't recognise"
+  - id: log_out_unknown_devices
+    label: "Open the app's linked-devices list and log out any device you don't recognise"
+  - id: reregister_app_own_number
+    label: "If you're locked out, set the app up again with your own number (it can take a while)"
+  - id: refuse_codes_to_callers
+    label: "Don't read out codes or approve payments for anyone who calls about it"
+  - id: reply_to_sender
+    label: "Reply to the message and ask them to undo it"
+  - id: keep_quiet
+    label: "Keep it to yourself and hope nobody notices"
+  - id: tell_it_via_desk
+    label: "Tell IT through Waymarker Desk, opened yourself"
+  - id: change_password_sign_out
+    label: "Change the password and sign out other sessions"

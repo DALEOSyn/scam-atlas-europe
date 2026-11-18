@@ -29,11 +29,12 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve, relative, basename, sep } from 'node:path';
 import { LineCounter, parse, parseDocument, isMap, isScalar, isSeq, type Node } from 'yaml';
-import { listFiles } from './lib/content.ts';
+import { listFiles, loadPatternIds } from './lib/content.ts';
 import { yamlStructureIssues } from './lib/yaml-safety.ts';
 import { blankSvgGeometry, checkQrPayload, scanText, type Finding, type RuleConfig } from './redline/rules.ts';
 import { compileList } from './redline/lists.ts';
 import { CHECKABLE_TARGETS } from '../src/content/checkables.ts';
+import { DEVICES } from '../src/content/schema.ts';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const CONTENT = resolve(ROOT, 'content');
@@ -145,6 +146,57 @@ export function exemptInspectableTargets(file: string, root: Node | null | undef
   return out;
 }
 
+const CHAPTERS_DIR = resolve(CONTENT, 'chapters');
+
+export function isChapterFile(file: string): boolean {
+  return resolve(file).startsWith(`${CHAPTERS_DIR}${sep}`);
+}
+
+let patternIdCache: Set<string> | undefined;
+function patternIds(): Set<string> {
+  patternIdCache ??= loadPatternIds(resolve(ROOT, 'docs')) ?? new Set();
+  return patternIdCache;
+}
+
+const isStringScalar = (n: unknown): n is Node & { value: string } => isScalar(n) && typeof n.value === 'string';
+
+/**
+ * Schema identifiers can contain warnlisted words (device: messenger, pattern
+ * messenger-account-takeover-code). Only warnlist (warn-severity brand) hits
+ * are dropped on these nodes; lintText re-scans them, so denylisted brands,
+ * domains, phones etc. still fail. Applies ONLY to:
+ *  - in scenario files: `device` of the opening message, beats[] and
+ *    interrupts[] when it is a member of the schema's DEVICES enum (not
+ *    message.prompt.device, which is free text), and the top-level `pattern`
+ *    when it names an existing brief docs/patterns/<id>.md;
+ *  - in chapter files: patterns[] and callbacks[] items naming an existing brief.
+ */
+export function exemptSchemaIdentifiers(file: string, root: Node | null | undefined, briefs: ReadonlySet<string> = patternIds()): Set<Node> {
+  const out = new Set<Node>();
+  if (!isMap(root)) return out;
+  const isBrief = (n: unknown): n is Node => isStringScalar(n) && briefs.has(n.value);
+  if (isScenarioFile(file)) {
+    const fromDevice = (holder: unknown): void => {
+      if (!isMap(holder)) return;
+      const device = holder.get('device', true);
+      if (isStringScalar(device) && (DEVICES as readonly string[]).includes(device.value)) out.add(device);
+    };
+    fromDevice(root);
+    for (const key of ['beats', 'interrupts']) {
+      const seq = root.get(key, true);
+      if (isSeq(seq)) for (const b of seq.items) fromDevice(b);
+    }
+    const pattern = root.get('pattern', true);
+    if (isBrief(pattern)) out.add(pattern);
+  } else if (isChapterFile(file)) {
+    for (const key of ['patterns', 'callbacks']) {
+      const seq = root.get(key, true);
+      if (isSeq(seq)) for (const item of seq.items) if (isBrief(item)) out.add(item);
+    }
+  }
+  return out;
+}
+
 /** Review-only brand fields that document which real brands a design was kept away from. */
 export const BRAND_REVIEW_FIELDS = ['checked_against', 'web_check', 'rationale'] as const;
 
@@ -206,7 +258,8 @@ function walkYaml(
   }
 }
 
-export function lintText(file: string, text: string, cfg: RuleConfig): FileFinding[] {
+/** `briefs` overrides the pattern ids from docs/patterns (tests). */
+export function lintText(file: string, text: string, cfg: RuleConfig, briefs?: ReadonlySet<string>): FileFinding[] {
   const found: FileFinding[] = [];
   const seen = new Set<string>();
   const add = (f: Finding): void => {
@@ -220,11 +273,12 @@ export function lintText(file: string, text: string, cfg: RuleConfig): FileFindi
   const lc = new LineCounter();
   const doc = isData ? parseDocument(text, { lineCounter: lc, uniqueKeys: false }) : undefined;
 
-  // Exempt nodes (see exemptSourceIds, exemptInspectableTargets, exemptBrandReviewNotes) are blanked for the raw pass and skipped when decoding.
+  // Exempt nodes (see exemptSourceIds, exemptInspectableTargets, exemptSchemaIdentifiers, exemptBrandReviewNotes) are blanked for the raw pass and skipped when decoding.
   let raw = /\.svg$/i.test(file) ? blankSvgGeometry(text) : text;
   const root = doc?.contents as Node | null | undefined;
   const brandNotes = exemptBrandReviewNotes(file, root);
-  const exempt = new Set<Node>([...exemptSourceIds(file, root), ...exemptInspectableTargets(file, root), ...brandNotes]);
+  const schemaIds = exemptSchemaIdentifiers(file, root, briefs);
+  const exempt = new Set<Node>([...exemptSourceIds(file, root), ...exemptInspectableTargets(file, root), ...schemaIds, ...brandNotes]);
   for (const n of exempt) {
     if (n.range) raw = raw.slice(0, n.range[0]) + raw.slice(n.range[0], n.range[1]).replace(/[^\n]/g, ' ') + raw.slice(n.range[1]);
   }
@@ -258,6 +312,18 @@ export function lintText(file: string, text: string, cfg: RuleConfig): FileFindi
         lc,
         (value, line) => {
           for (const f of scanText(value, cfg)) if (f.category !== 'brand') add({ ...f, line: line + (f.line ?? 1) - 1 });
+        },
+        add,
+      );
+    }
+    // Schema identifiers: everything except warnlist brand hits (denylist errors still fire).
+    for (const n of schemaIds) {
+      walkYaml(
+        n,
+        [],
+        lc,
+        (value, line) => {
+          for (const f of scanText(value, cfg)) if (!(f.category === 'brand' && f.severity === 'warn')) add({ ...f, line: line + (f.line ?? 1) - 1 });
         },
         add,
       );

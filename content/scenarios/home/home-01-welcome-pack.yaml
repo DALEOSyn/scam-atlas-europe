@@ -1,0 +1,89 @@
+# 0-1 Welcome email with your travel pack (GDD §16). Genuine, low stakes. New mechanic: the Check tool.
+# Genuine twin of home-02-mailbox-full: same organisation, same inbox, but expected, asks for nothing
+# secret, and every link goes to Waymarker's own domain (it-portal-credential-phishing brief §7).
+id: home-01-welcome-pack
+chapter: home
+role: standard
+pattern: it-portal-credential-phishing
+theme: onboarding
+twin_of: home-02-mailbox-full
+learning_objectives: [LO-01, LO-17]
+difficulty: 1
+is_fraud: false
+stakes: low
+device: email
+brands: [waymarker]
+cast: [adaeze]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Adaeze Okafor-Lind", detail: "adaeze.okafor-lind@waymarker-network.example" }
+  from_cast: adaeze
+  subject: "Welcome aboard, inspector: your travel pack"
+  body: |
+    Hello and welcome to the Waymarker Network!
+
+    Your travel pack (route, contacts, expenses guide) is on Waymarker Desk: desk.waymarker-network.example/travel-pack
+
+    Your staff number is WN-1187. One thing to know from day one: I will never ask you for money, passwords or secrecy. If "I" ever do, check with me through the staff directory.
+
+    Safe travels, Adaeze
+  request: open_link
+  references: ["WN-1187"]
+
+inspectables:
+  - target: sender.detail
+    reveal: "adaeze.okafor-lind@waymarker-network.example: Waymarker's own domain, and the name in your staff directory. It fits, but a sender address alone proves nothing."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: link
+    reveal: "desk.waymarker-network.example: the owner part is waymarker-network.example, Waymarker's own site. Waymarker Desk is where you'd find the pack anyway."
+    red_flag: false
+    type: link
+    reassures: true
+  - target: reference
+    reveal: "WN-1187 is the staff number from your contract. Nothing secret: it isn't a password."
+    red_flag: false
+    type: reference
+
+actions:
+  - id: open_pack
+    label: "Open the travel pack from the link"
+    kind: proceed
+    outcome: pack_opened
+    pressure_target: true
+  - id: open_desk_yourself
+    label: "Find the pack in Waymarker Desk yourself"
+    kind: verify_in_app
+    outcome: pack_found_in_desk
+  - id: report_welcome
+    label: "Report the email as phishing"
+    kind: report
+    outcome: welcome_reported
+  - id: leave_for_later
+    label: "Leave it for later"
+    kind: ignore
+    outcome: left_for_later
+
+outcomes:
+  pack_opened:
+    narrative: "The pack opens on Waymarker Desk: your route, a contacts list and a very detailed guide to expense receipts."
+  pack_found_in_desk:
+    narrative: "Same pack, same place. Good habit, though this time the link was fine too."
+  welcome_reported:
+    narrative: "IT replies: \"Thanks for being careful! This one is really from Adaeze.\" Your travel pack is still waiting."
+  left_for_later:
+    narrative: "The pack waits in your inbox. Nothing is lost, but you start the trip without your route."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "It fit your first day and asked for nothing secret."
+    what_works: "Open it, or use Waymarker Desk."
+  layer2:
+    message_flags: []
+    notes: "Why it was safe to act: you had just joined, the email asked only that you read something, and the link stayed on Waymarker's own site. None of those alone is proof (senders can be faked); together they fit. Adaeze also told you how to check her: the staff directory."
+  device_tip: "On a real phone, tap the sender's name to see the full email address behind it."
+  habit_card: who-really-sent
+  sources: [ie-ncsc-phishing-guide, de-bsi-protect-phishing, eu-europol-phishing-leaflet]

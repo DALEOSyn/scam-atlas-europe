@@ -391,3 +391,33 @@ export function chapterRules(c: Chapter, fileBase: string, scenarios: Scenario[]
 
 export { classOf, starsFor, truthOf };
 export type { Truth } from '../../src/engine/scoring.ts';
+
+/** Hosts on the reserved TLDs anywhere in a string, including the host part of e-mail addresses. */
+const HOST_RE = /(?<![a-z0-9.-])(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:example|test|invalid)(?![a-z0-9-])/gi;
+
+function stringsIn(value: unknown): string[] {
+  if (typeof value === 'string') return [value];
+  if (Array.isArray(value)) return value.flatMap(stringsIn);
+  if (value && typeof value === 'object') return Object.values(value).flatMap(stringsIn);
+  return [];
+}
+
+/** Every reserved-TLD host a message shows: page.address, qr.destination, sender addresses, links in body/transcript, ... (lowercased). */
+export function messageHosts(m: Message): string[] {
+  return [...new Set(stringsIn(m).flatMap((t) => [...t.matchAll(HOST_RE)].map((x) => x[0].toLowerCase())))];
+}
+
+/**
+ * Every host a scenario message shows must be registered in content/brands.yaml
+ * (a brand or sub-brand domain, e-mail domain or lookalike_examples entry), so
+ * look-alikes get a brand-resemblance review before they reach players.
+ */
+export function unregisteredHostIssues(s: Scenario, registered: ReadonlySet<string>): string[] {
+  const out: string[] = [];
+  for (const b of beatsOf(s)) {
+    for (const host of messageHosts(b.message)) {
+      if (!registered.has(host)) out.push(`${b.where}: host "${host}" is not registered in content/brands.yaml (brand domain or lookalike_examples)`);
+    }
+  }
+  return out;
+}

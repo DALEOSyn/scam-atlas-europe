@@ -13,3 +13,33 @@ cards:
     habit: "Go to the app or the address you already know, not the link in the message."
     example: "A parcel fee? Open the courier's app yourself and check the tracking."
     already_clicked: "Block your card in your banking app and call your bank on the number on your card."
+  - id: who-really-sent
+    lo: LO-01
+    title: "Who really sent this?"
+    habit: "Look at the address or number behind the name. A familiar name or logo proves nothing: both are easy to copy."
+    example: "A text signed \"your bank\" from a number you don't know: the name is easy to copy, the number behind it tells you more."
+    already_clicked: "Close it and type nothing. If you already did, change that password from the real app or site."
+  - id: pressure-is-the-tell
+    lo: LO-04
+    title: "Pressure is the tell"
+    habit: "A countdown, a threat or a string of reminders is a reason to slow down. Pause, then check in the app yourself."
+    example: "\"Locked in 30 minutes\"? Open the app yourself: if something is really wrong, it will show there."
+    already_clicked: "Stop where you are. If you typed a password or a code, secure that account first."
+  - id: stop-the-damage-first
+    lo: LO-16
+    title: "Stop the damage first"
+    habit: "After a slip, do the step that stops the damage first: block the card, or change the stolen password. Then secure, report and warn."
+    example: "Card number typed into a fake page? Block the card in your banking app before anything else."
+    already_clicked: "Never pay anyone who promises to get your money back. Your bank and the police are free."
+  - id: calm-not-paranoid
+    lo: LO-17
+    title: "Calm, not paranoid"
+    habit: "Most messages are fine. Save your extra checks for the ones that ask for money, data, codes or approval, and ask: did I start this?"
+    example: "You tapped \"forgot password\" a minute ago, and the reset email arrives. That one you started."
+    already_clicked: "Reported a genuine message by mistake? No harm done. Let the sender know through a channel you trust."
+  - id: ask-someone
+    lo: LO-18
+    title: "Ask someone"
+    habit: "Before acting on an odd request, check with someone you trust, on a contact you already have. And be that someone for others."
+    example: "\"IT\" is chasing you on three channels? Message Adaeze from the staff directory first."
+    already_clicked: "Tell someone now, even if it feels awkward. Early help limits the damage."

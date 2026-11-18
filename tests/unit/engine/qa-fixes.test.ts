@@ -140,3 +140,77 @@ describe('producer decisions', () => {
     expect(save.chapters.testcity?.run?.records.map((r) => r.points)).toEqual([17]);
   });
 });
+
+describe('T-2.3 carry-overs: no checks after hang-up, QA E8 tampered run index', () => {
+  it('after hanging up nothing can be checked or tagged, and the view lists no checkables', () => {
+    const s = boss();
+    const go = [act('open_app'), { type: 'continue' as const }, act('check_app_2'), { type: 'continue' as const }, act('hang_up')];
+    const st = run(s, ctx(), [...go, { type: 'check', beatId: 'support_call', target: 'caller_id' }]);
+    expect(st.phase).toBe('what_now');
+    expect(st.checks.filter((k) => k.startsWith('support_call|'))).toEqual([]);
+    expect(viewOf(s, ctx(), st).checkables).toEqual([]);
+  });
+
+  it('a saved run index beyond the recorded scenarios restarts the run', () => {
+    const chapter = { city: 'testcity', scenario_order: { am: ['f1', 'g1'], pm: ['f2'] } };
+    const base = beginChapter(freshSave(), 'testcity', chapter);
+    const current = base.chapters.testcity;
+    if (!current) throw new Error('chapter not started');
+    const tampered = { ...base, chapters: { testcity: { ...current, run: { index: 2, records: [], flags: ['x_flag'] } } } };
+    const again = beginChapter(tampered, 'testcity', chapter);
+    expect(again.chapters.testcity?.run).toEqual({ index: 0, records: [], flags: [] });
+    expect(nextScenarioId(again, chapter, () => [])).toBe('f1');
+    // An honest run (index explained by its records) is kept.
+    const s = scenario(rawFraud('f1'));
+    const st = run(s, ctx(), [act('open_app')]);
+    const honest = commitScenario(base, B, chapter, s, st, resultOf(s, B, st));
+    expect(beginChapter(honest, 'testcity', chapter)).toBe(honest);
+  });
+});
+
+describe('CR-15: a boss debrief shows one "You chose" line in layer 1', () => {
+  const s = boss();
+  it('the beat with the fewest stars leads; the others move to layer 2', () => {
+    const { st, r } = play(s, ctx(), [act('report_it'), { type: 'continue' }, act('pay_invoice'), { type: 'continue' }, act('hang_up'), { type: 'what_now', choice: 'done' }, { type: 'recovery', picks: [] }]);
+    expect(st.phase).toBe('done');
+    const d = debriefOf(s, st, r, none);
+    expect(d.layer1.youChose).toEqual([{ beatId: 'invoice', kind: 'action', label: 'Pay the invoice' }]);
+    expect(d.layer2.youChoseOther).toEqual([
+      { beatId: 'start', kind: 'action', label: 'Report it' },
+      { beatId: 'support_call', kind: 'what_now', choice: 'done' },
+    ]);
+  });
+  it('on a tie the latest beat leads', () => {
+    const { st, r } = play(s, ctx(), [act('report_it'), { type: 'continue' }, act('report_2'), { type: 'continue' }, act('hang_up'), { type: 'what_now', choice: 'done' }]);
+    const d = debriefOf(s, st, r, none);
+    expect(d.layer1.youChose.map((c) => c.beatId)).toEqual(['support_call']);
+    expect(d.layer2.youChoseOther.map((c) => c.beatId)).toEqual(['start', 'invoice']);
+  });
+  it('no line when every beat scored three stars', () => {
+    const { st, r } = play(s, ctx(), [act('open_app'), { type: 'continue' }, act('check_app_2'), { type: 'continue' }, act('hang_up'), { type: 'what_now', choice: 'call_back_known' }]);
+    const d = debriefOf(s, st, r, none);
+    expect(d.layer1.youChose).toEqual([]);
+    expect(d.layer2.youChoseOther).toEqual([]);
+  });
+});
+
+describe('CR-15: the layer-1 validator counts one "You chose" line for a boss', () => {
+  it('choice_worst is the longest single line, never the sum over beats', async () => {
+    const { choiceWorst } = await import('../../../scripts/lib/rules.ts');
+    const { loadBalanceFile } = await import('../helpers.ts');
+    const s = boss();
+    const labels = [...s.actions, ...s.beats.flatMap((b) => b.actions)].map((a) => a.label.split(/\s+/).length);
+    const worst = choiceWorst(s, loadBalanceFile());
+    expect(worst).toBeLessThanOrEqual(2 + Math.max(...labels, 4));
+    expect(worst).toBeLessThan(labels.reduce((a, b) => a + b, 0));
+  });
+});
+
+describe('CR-14: pusher view carries lang and translation', () => {
+  it('passes the authored lang/translation through to the device', () => {
+    const raw = rawFraud('p1', { pressure: { timer: false, levers: ['urgency'], pusher: { messages: [{ at_seconds: 5, text: 'Heute zahlen!', lang: 'de', translation: 'Pay today!' }] } } });
+    const s = scenario(raw);
+    const st = run(s, ctx(), [tick(1), tick(1), tick(1), tick(1), tick(1), tick(1)]);
+    expect(viewOf(s, ctx(), st).pusherMessages).toEqual([{ text: 'Heute zahlen!', at: 5, lang: 'de', translation: 'Pay today!' }]);
+  });
+});

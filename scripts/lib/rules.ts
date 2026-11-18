@@ -31,6 +31,8 @@ export interface Registries {
   balance: Balance;
   cast: Map<string, CastMember>;
   recoverySteps: Set<string>;
+  /** Steps with a harmful-pick feedback line (GDD §9); undefined skips the check. */
+  recoveryFeedback?: Set<string> | undefined;
   habitCards: Map<string, HabitCard>;
   /** Known learning objectives (docs/LEARNING_OBJECTIVES.md); undefined skips the check. */
   los?: Set<string> | undefined;
@@ -121,7 +123,8 @@ function whatNowsOf(s: Scenario): [string, NonNullable<Scenario['what_now']>][] 
 /**
  * choice_worst (UI_SPEC §8.1): the longest "You chose" line this scenario can produce. Every action (and
  * "What now?" extra or built-in) that can leave it below 3 stars counts, engage actions included; plus
- * the timer line when the scenario has a timer.
+ * the timer line when the scenario has a timer. Layer 1 shows ONE line, also for a boss (CR-15: the beat
+ * with the fewest stars; the other beats' lines are in layer 2), so this is a maximum, never a sum.
  */
 export function choiceWorst(s: Scenario, balance: Registries['balance']): number {
   const truth = truthOf(s);
@@ -334,6 +337,11 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
     const ids = o.recovery.map((r) => r.step);
     for (const id of ids) if (!reg.recoverySteps.has(id)) errors.push(`outcomes.${key}.recovery: unknown step "${id}" (content/recovery_steps.yaml)`);
     if (new Set(ids).size !== ids.length) errors.push(`outcomes.${key}.recovery: duplicate steps`);
+    for (const r of o.recovery) {
+      if (r.category === 'harmful' && reg.recoveryFeedback && !reg.recoveryFeedback.has(r.step)) {
+        errors.push(`outcomes.${key}.recovery: harmful step "${r.step}" needs a feedback line in content/recovery_steps.yaml (GDD §9: why it hurts, what works instead, no blame)`);
+      }
+    }
     const harmful = o.recovery.filter((r) => r.category === 'harmful').length;
     if (o.recovery.length < pick + 2 || o.recovery.length > pick + 3) errors.push(`outcomes.${key}.recovery: offer ${pick + 2}–${pick + 3} options (has ${o.recovery.length})`);
     if (harmful < 2) errors.push(`outcomes.${key}.recovery: include at least 2 harmful options (has ${harmful})`);

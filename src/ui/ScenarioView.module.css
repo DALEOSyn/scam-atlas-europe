@@ -1,147 +1,277 @@
-.scenario {
+/* Game layer: shell, stage and the action tray / rail (UI_SPEC §1, §2.2). */
+.play {
+  min-height: 100dvh;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+.skip {
+  position: absolute;
+  left: var(--space-2);
+  top: -100px;
+  z-index: var(--z-toast);
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+}
+.skip:focus {
+  top: var(--space-2);
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+.main {
   display: grid;
-  gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  padding: var(--space-3);
+  max-width: 1400px;
+  margin: 0 auto;
 }
-.device {
-  background: var(--surface);
-  color: var(--on-surface);
-  border-radius: 1rem;
-  padding: 1rem 1.25rem;
-  max-width: 32rem;
+@media (min-width: 1024px) {
+  .main {
+    grid-template-columns: minmax(0, 1fr) var(--rail-w);
+    align-items: start;
+    padding: var(--space-4);
+  }
+  .tray {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    position: sticky;
+    top: calc(var(--hud-h) + var(--space-4));
+  }
+  .interrupts {
+    grid-column: 1;
+  }
+  /* Consequence and damage control: no device on screen, the panel takes the stage. */
+  .solo {
+    grid-template-columns: minmax(0, 40rem);
+    justify-content: center;
+  }
+  .solo .tray {
+    grid-column: 1;
+    position: static;
+  }
 }
-.sender {
-  margin: 0 0 0.5rem;
+.stage {
+  position: relative;
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
 }
-.label {
-  color: var(--muted-on-surface);
+/* Overwhelmed: static vignette inside the device layer only, never over HUD or tray (UI_SPEC §6.3). */
+.vignette::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-vignette);
+  pointer-events: none;
+  border-radius: var(--radius-md);
+  box-shadow: inset 0 0 120px 40px var(--color-vignette);
 }
-.detail {
-  color: var(--muted-on-surface);
+.tray {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: var(--border-w) solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
 }
-.subject {
-  font-weight: 600;
-  margin: 0 0 0.5rem;
+.tray:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }
-.body {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
+.trayTitle {
+  margin: 0;
+  font-size: var(--fs-lg);
+}
+.panel {
+  display: grid;
+  gap: var(--space-3);
+}
+.panel h3 {
+  margin: 0;
+  font-size: var(--fs-lg);
+}
+.panel p {
   margin: 0;
 }
-.pressure {
-  font-weight: 600;
+.panel h3:focus-visible,
+.trayTitle:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+.note {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+.caption,
+.whatNowNote {
+  margin: 0;
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken);
+}
+.caption svg,
+.whatNowNote svg {
+  flex: none;
+  margin-top: 2px;
 }
 .actions {
   list-style: none;
   padding: 0;
   margin: 0;
   display: grid;
-  gap: 0.5rem;
-  max-width: 32rem;
+  gap: var(--space-2);
 }
 .action,
-.primary {
+.option {
   width: 100%;
-  min-height: 44px;
+  min-height: 52px;
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
   text-align: left;
-  padding: 0.75rem 1rem;
-  border-radius: 0.75rem;
-  border: 2px solid var(--accent);
-  background: transparent;
-  color: var(--fg);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  border: var(--border-w) solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
   font: inherit;
+  font-size: var(--fs-lg);
   cursor: pointer;
 }
+.option {
+  min-height: 56px;
+  font-size: var(--fs-md);
+}
+/* Pressure style (UI_SPEC §6.3): stress state only, never truth. Position and order never change. */
+.pressure {
+  background: var(--color-pressure);
+  color: var(--color-on-pressure);
+  border-color: var(--color-pressure);
+  font-weight: var(--fw-bold);
+}
+.action:active {
+  box-shadow: inset 0 0 0 2px var(--color-accent);
+}
+.option[aria-pressed='true'] {
+  box-shadow: inset 0 0 0 2px var(--color-accent);
+  font-weight: var(--fw-bold);
+}
+.order {
+  flex: none;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-sunken);
+  font-size: var(--fs-sm);
+}
+.moves {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+.small {
+  min-height: var(--tap-min);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  border: var(--border-w) solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+.small[aria-disabled='true'] {
+  color: var(--color-text-muted);
+}
 .primary {
-  width: auto;
-  background: var(--accent);
-  color: var(--bg);
-  font-weight: 700;
+  justify-self: start;
+  min-height: 48px;
+  padding: 0 var(--space-6);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font: inherit;
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+}
+.primary[aria-disabled='true'] {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 .action:focus-visible,
-.primary:focus-visible {
-  outline: 3px solid var(--fg);
-  outline-offset: 2px;
+.option:focus-visible,
+.primary:focus-visible,
+.small:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+  box-shadow: 0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-w)) var(--color-focus-halo);
 }
-.visuallyHidden {
+.feedback {
+  margin: 0;
+  padding-left: var(--space-5);
+  display: grid;
+  gap: var(--space-3);
+}
+.feedback p {
+  margin: var(--space-1) 0 0;
+}
+.feedbackHead {
+  display: inline-flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+.waiting,
+.toast {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: var(--border-w) solid var(--color-border);
+}
+.toast {
+  position: sticky;
+  bottom: var(--space-3);
+  z-index: var(--z-toast);
+  box-shadow: var(--shadow-2);
+}
+/* Interrupts: their own container, outside the device and the tray. */
+.interrupts {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border: var(--border-w-strong) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-sunken);
+}
+.interruptsTitle {
+  margin: 0;
+  font-size: var(--fs-md);
+}
+.interrupt {
+  display: grid;
+  gap: var(--space-2);
+}
+.interruptMeta {
+  margin: 0;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  color: var(--color-text-muted);
+}
+.interruptBody {
+  margin: 0;
+  white-space: pre-wrap;
+}
+.vh {
   position: absolute;
   width: 1px;
   height: 1px;
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
-}
-/* Mini habit card (UI_SPEC §8.2 item 4, §9.1). Full anatomy comes with the debrief task. */
-.habitCard {
-  background: var(--surface);
-  color: var(--on-surface);
-  border: 1px solid var(--muted-on-surface);
-  border-radius: 1rem;
-  padding: 0.75rem 1rem;
-  max-width: 32rem;
-}
-.habitCard h3 {
-  margin: 0.25rem 0;
-}
-.secondary {
-  min-height: 44px;
-  padding: 0.5rem 1rem;
-  border-radius: 0.75rem;
-  border: 2px solid var(--accent);
-  background: transparent;
-  color: var(--fg);
-  font: inherit;
-  cursor: pointer;
-  text-align: left;
-}
-.secondary:focus-visible {
-  outline: 3px solid var(--fg);
-  outline-offset: 3px;
-}
-.secondary[aria-pressed='true'] {
-  box-shadow: inset 0 0 0 2px var(--accent);
-  font-weight: 700;
-}
-.action[aria-pressed='true'] {
-  box-shadow: inset 0 0 0 2px var(--accent);
-  font-weight: 700;
-}
-.styled {
-  background: var(--accent);
-  color: var(--bg);
-  font-weight: 700;
-}
-.hud {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: center;
-}
-.hud p {
-  margin: 0;
-}
-.details {
-  list-style: none;
-  padding: 0;
-  margin: 0.5rem 0 0;
-  display: grid;
-  gap: 0.5rem;
-  max-width: 32rem;
-}
-.reveal {
-  margin: 0.25rem 0;
-}
-.pushers {
-  margin: 0;
-  padding-left: 1.25rem;
-}
-.breath {
-  border: 2px dashed var(--accent);
-  border-radius: 1rem;
-  padding: 0.75rem 1rem;
-  max-width: 32rem;
-}
-.footer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
 }

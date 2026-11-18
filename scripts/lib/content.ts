@@ -270,6 +270,12 @@ export function loadRecoverySteps(contentDir: string, report: ContentReport): Se
   return new Set(uniqueMap(file, 'recovery step', loadYamlFile(file, recoveryStepsFileSchema, report)?.steps ?? [], report).keys());
 }
 
+/** Recovery steps that carry a harmful-pick feedback line (GDD §9). */
+export function loadRecoveryFeedback(contentDir: string, report: ContentReport): Set<string> {
+  const file = join(contentDir, 'recovery_steps.yaml');
+  return new Set((loadYamlFile(file, recoveryStepsFileSchema, report)?.steps ?? []).filter((s) => s.feedback).map((s) => s.id));
+}
+
 export function loadHabitCards(contentDir: string, report: ContentReport, los: Set<string> | undefined): Map<string, HabitCard> {
   const file = join(contentDir, 'habit_cards.yaml');
   const cards = uniqueMap(file, 'habit card', loadYamlFile(file, habitCardsFileSchema, report)?.cards ?? [], report);
@@ -333,6 +339,7 @@ export function validateContent(contentDir: string, opts: ValidateOptions = {}):
   const balance = loadBalance(contentDir, report);
   const cast = loadCast(contentDir, report);
   const recoverySteps = loadRecoverySteps(contentDir, report);
+  const recoveryFeedback = loadRecoveryFeedback(contentDir, { errors: [], warnings: [], scenarios: new Map(), chapters: new Map() });
   const habitCards = loadHabitCards(contentDir, report, los);
   const chapters = loadChapters(contentDir, report);
 
@@ -371,6 +378,7 @@ export function validateContent(contentDir: string, opts: ValidateOptions = {}):
     balance,
     cast,
     recoverySteps,
+    recoveryFeedback,
     habitCards,
     los,
     patterns,

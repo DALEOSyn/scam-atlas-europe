@@ -11,6 +11,7 @@ import {
   loadLearningObjectives,
   loadPatternIds,
   loadRecoverySteps,
+  loadRecoveryFeedback,
   type ContentReport,
 } from '../../scripts/lib/content.ts';
 import type { Registries } from '../../scripts/lib/rules.ts';
@@ -30,6 +31,7 @@ export function realRegistries(extra: Partial<Registries> = {}): Registries {
     balance,
     cast: loadCast(CONTENT, r),
     recoverySteps: loadRecoverySteps(CONTENT, r),
+    recoveryFeedback: loadRecoveryFeedback(CONTENT, r),
     habitCards: loadHabitCards(CONTENT, r, los),
     los,
     patterns: loadPatternIds(DOCS),

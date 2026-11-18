@@ -1,48 +1,57 @@
 .shell {
   max-width: 48rem;
   margin: 0 auto;
-  padding: 1.5rem 1rem 3rem;
+  padding: var(--space-6) var(--space-4) var(--space-12);
 }
 .title {
   font-size: clamp(1.75rem, 5vw, 2.5rem);
-  margin: 0 0 0.25rem;
+  margin: 0 0 var(--space-1);
+}
+.screenTitle {
+  font-size: var(--fs-xl);
+  margin: 0;
+}
+.screenTitle:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }
 .tagline {
-  margin: 0 0 1.5rem;
+  margin: 0 0 var(--space-6);
 }
 .start {
   min-height: 48px;
-  padding: 0.75rem 2rem;
+  padding: var(--space-3) var(--space-8);
   font: inherit;
-  font-weight: 700;
-  font-size: 1.125rem;
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-lg);
   border: none;
-  border-radius: 999px;
-  background: var(--accent);
-  color: var(--bg);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
   cursor: pointer;
-}
-.start:focus-visible {
-  outline: 3px solid var(--fg);
-  outline-offset: 3px;
 }
 .choices {
   display: grid;
-  gap: 0.5rem;
+  gap: var(--space-2);
   max-width: 32rem;
 }
+.choices p {
+  margin: 0;
+}
 .choice {
-  min-height: 44px;
-  padding: 0.75rem 1rem;
-  border-radius: 0.75rem;
-  border: 2px solid var(--accent);
-  background: transparent;
-  color: var(--fg);
+  min-height: var(--tap-min);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  border: var(--border-w) solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
   font: inherit;
   text-align: left;
   cursor: pointer;
 }
+.start:focus-visible,
 .choice:focus-visible {
-  outline: 3px solid var(--fg);
-  outline-offset: 3px;
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+  box-shadow: 0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-w)) var(--color-focus-halo);
 }

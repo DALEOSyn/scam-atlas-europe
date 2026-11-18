@@ -19,11 +19,21 @@ export function chapterProgress(save: SaveState, city: string): ChapterProgress 
 }
 
 /** Start (or resume) a chapter run. Records its play position the first time. */
-export function beginChapter(save: SaveState, city: string): SaveState {
+export function beginChapter(save: SaveState, city: string, chapter?: Pick<Chapter, 'scenario_order'>): SaveState {
   const p = chapterProgress(save, city);
-  if (p.run) return save;
+  if (p.run && !(chapter && runIsTampered(p.run, chapter))) return save;
   const position = p.position ?? Object.values(save.chapters).filter((c) => c.position !== null).length;
   return { ...save, chapters: { ...save.chapters, [city]: { ...p, position, run: { index: 0, records: [], flags: [] } } } };
+}
+
+/**
+ * QA E8: a run whose index is beyond what its records explain (index = 1 + the furthest recorded
+ * scenario) can only come from an edited save. Such a run starts again instead of skipping scenarios.
+ */
+export function runIsTampered(run: { index: number; records: readonly { id: string }[] }, chapter: Pick<Chapter, 'scenario_order'>): boolean {
+  const seq = sequenceOf(chapter);
+  const explained = run.records.reduce((m, r) => Math.max(m, seq.findIndex((e) => e.id === r.id) + 1), 0);
+  return run.index > explained;
 }
 
 /** Stress the next scenario starts with: decayed after a scenario, 10 on resume (balance stress.on_resume). */

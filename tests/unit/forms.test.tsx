@@ -57,7 +57,7 @@ describe('SimulatedForm (Red Line 2)', () => {
 
   it('is visibly marked as part of the game', () => {
     render(<SimulatedForm label="x" onSimulatedSubmit={() => undefined}><span /></SimulatedForm>);
-    expect(screen.getByText(/nothing you type here is sent anywhere/i)).toBeTruthy();
+    expect(screen.getByText('Demo fields. Nothing can be typed or sent.')).toBeTruthy();
   });
 
   it('src/ renders <form> only inside SimulatedForm.tsx', () => {
@@ -83,17 +83,25 @@ describe('App shell', () => {
     await waitFor(() => screen.getByText(/Zollgebühr 1,99 EUR/));
     assertFormsAreSafe(container);
     for (const a of scenario.actions) expect(screen.getByRole('button', { name: a.label })).toBeTruthy();
-    expect(screen.getByRole('timer').textContent).toMatch(/1:00 left/);
+    expect(screen.getByRole('timer').textContent).toMatch(/1:00/);
 
     fireEvent.click(screen.getByRole('button', { name: /Open the Trundle app yourself/ }));
-    await waitFor(() => screen.getByRole('heading', { name: 'Debrief' }));
+    await waitFor(() => screen.getByRole('heading', { level: 1, name: /This was a scam/ }));
+    expect(document.activeElement).toBe(screen.getByRole('heading', { level: 1 }));
     expect(screen.getByText(/No fee\./)).toBeTruthy();
     expect(screen.getByText(/That is the habit that works/)).toBeTruthy();
     expect(screen.getByText(scenario.debrief.layer1.what_works)).toBeTruthy();
+    // No fall: no "could happen to anyone" line (Red Line 5 wording is for after a fall).
+    expect(screen.queryByText(/could happen to anyone/)).toBeNull();
+    // Layer 1 carries one link into layer 2, never the advice inline.
+    const layer1 = container.querySelector('#debrief-h1')?.closest('section')?.textContent ?? '';
+    expect(layer1).not.toContain(scenario.debrief.already_clicked?.paid ?? '-');
+    fireEvent.click(screen.getByRole('button', { name: 'Already clicked or paid? See what to do' }));
+    expect(screen.getByRole('button', { name: 'More' }).getAttribute('aria-expanded')).toBe('true');
+    expect(document.activeElement).toBe(screen.getByRole('heading', { level: 2, name: 'If you already…' }));
     // Mini habit card (UI_SPEC §8.2 item 4).
     expect(screen.getByRole('heading', { level: 3, name: 'Open it yourself' })).toBeTruthy();
     expect(container.querySelector('[data-habit-card="open-it-yourself"]')).not.toBeNull();
-    expect(screen.getByRole('heading', { name: 'Already clicked? Do this' })).toBeTruthy();
     assertFormsAreSafe(container);
   });
 
@@ -107,7 +115,8 @@ describe('App shell', () => {
     expect(screen.queryByRole('timer')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: /Open the link/ }));
     await waitFor(() => screen.getByRole('button', { name: /Enter your card details/ }));
-    expect(screen.getByText('trundle-zoll.example/p/8812')).toBeTruthy();
+    expect(container.querySelector('[data-check="page.address"]')?.textContent).toBe('trundle-zoll.example/p/8812');
+    expect(screen.getByRole('region', { name: 'Laptop: Browser, training page' })).toBeTruthy();
     assertFormsAreSafe(container);
     fireEvent.click(screen.getByRole('button', { name: /Enter your card details/ }));
     // Damage control (GDD §9): pick the first step, then 2 more.
@@ -118,13 +127,17 @@ describe('App shell', () => {
     fireEvent.click(screen.getByRole('button', { name: /Block your card/ }));
     expect(screen.getByText('3 of 3 chosen')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Done' }));
-    await waitFor(() => screen.getByRole('heading', { name: 'Debrief' }));
-    expect(screen.getByText(/This was a scam:/)).toBeTruthy();
-    expect(screen.getByText('0 of 3 stars.')).toBeTruthy();
+    // Feedback per pick; harmful picks explain why without blame (GDD §9).
+    await waitFor(() => screen.getByRole('heading', { name: 'Your steps' }));
+    expect(screen.getAllByText("Doesn't help:")).toHaveLength(2);
+    expect(screen.getByText(/invites a second scam/)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    await waitFor(() => screen.getByRole('heading', { level: 1, name: /This was a scam/ }));
+    expect(screen.getByRole('img', { name: '0 of 3 stars' })).toBeTruthy();
     expect(screen.getByText('You chose: Enter your card details and pay.')).toBeTruthy();
     expect(screen.getByText(/could happen to anyone/)).toBeTruthy();
-    // The paid advice is the layer-1 line (card details typed to pay a fee) and in the full list.
-    expect(screen.getAllByText(scenario.debrief.already_clicked?.paid ?? '-').length).toBe(2);
+    // The advice lives in layer 2 only (no inline duplicate in layer 1).
+    expect(screen.getAllByText(scenario.debrief.already_clicked?.paid ?? '-').length).toBe(1);
     expect(screen.queryByText(/That is the habit that works/)).toBeNull();
   });
 });

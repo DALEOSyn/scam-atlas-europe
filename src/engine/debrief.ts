@@ -47,14 +47,19 @@ export type PressureCallout = 'first_any' | 'first_genuine' | null;
 
 export interface DebriefData {
   variant: 'standard' | 'arc';
+  /** Drills are unscored teaching moments: no verdict chip, stars or "You chose" (QA, drill layout). */
+  drill: boolean;
+  /** The player fell for it (a fall's decisive action): "This could happen to anyone" is shown then. */
+  fell: boolean;
   layer1: {
-    /** null on arc beats (no verdict line). */
+    /** null on arc beats and drills (no verdict line). */
     verdict: 'fraud' | 'genuine' | null;
     tell: string;
     whatWorks: string;
     /**
-     * "You chose" lines (UI_SPEC §8.1), one per scored beat group below 3 stars
-     * (standard: at most one; boss: per beat). Empty on arc debriefs.
+     * The "You chose" line (UI_SPEC §8.1): at most ONE line in layer 1 (CR-15). A boss shows the
+     * line of the beat with the fewest stars (tie → the latest beat); the other beats' lines are in
+     * layer2.youChoseOther. Empty when everything scored ★★★, and on arc debriefs and drills.
      */
     youChose: ChoiceLine[];
     /** null on arc beats and drills (no stars, no points). */
@@ -64,6 +69,8 @@ export interface DebriefData {
     deadlineWasFake: boolean;
   };
   layer2: {
+    /** Boss: "You chose" lines of the other beats below ★★★, in beat order (CR-15). */
+    youChoseOther: ChoiceLine[];
     flags: DebriefFlag[];
     wrongTags: DebriefWrongTag[];
     /** "You spotted {marked} of {could} you could mark." */
@@ -138,16 +145,23 @@ export function debriefOf(
 
   // Drills are unscored teaching moments (GDD §4): no stars, points or "You chose" line, like arc beats (QA E2).
   const unscored = arc || s.role === 'drill';
-  const youChose = unscored ? [] : st.groups.flatMap((g, i) => {
-    const beat = r.beats[i];
-    const line = beat && beat.scored ? choiceLine(s, g, beat) : null;
-    return line ? [line] : [];
-  });
+  const lines = unscored
+    ? []
+    : st.groups.flatMap((g, i) => {
+        const beat = r.beats[i];
+        const line = beat && beat.scored ? choiceLine(s, g, beat) : null;
+        return line && beat ? [{ line, stars: beat.stars }] : [];
+      });
+  const lead = layerOneChoice(lines);
+  const youChose = lead ? [lead.line] : [];
+  const youChoseOther = lines.filter((x) => x !== lead).map((x) => x.line);
 
   return {
     variant: d.variant,
+    drill: s.role === 'drill',
+    fell: r.fell,
     layer1: {
-      verdict: arc ? null : s.is_fraud ? 'fraud' : 'genuine',
+      verdict: unscored ? null : s.is_fraud ? 'fraud' : 'genuine',
       tell: d.layer1.tell,
       whatWorks: d.layer1.what_works,
       youChose,
@@ -156,6 +170,7 @@ export function debriefOf(
       deadlineWasFake: s.is_fraud && r.timerExpired,
     },
     layer2: {
+      youChoseOther,
       flags,
       wrongTags,
       spotted: { marked, could },
@@ -174,6 +189,13 @@ export function debriefOf(
     // A boss can reach the same outcome on several beats: say it once (QA E4).
     narratives: [...new Set(r.outcomes.flatMap((o) => (s.outcomes[o] ? [s.outcomes[o].narrative] : [])))],
   };
+}
+
+/** CR-15: the beat with the fewest stars leads layer 1; on a tie the latest beat. */
+export function layerOneChoice<T extends { stars: number }>(lines: readonly T[]): T | undefined {
+  let best: T | undefined;
+  for (const x of lines) if (!best || x.stars <= best.stars) best = x;
+  return best;
 }
 
 /** Label of an authored action or What-now extra anywhere in the scenario. */

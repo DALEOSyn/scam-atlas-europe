@@ -30,6 +30,7 @@ jobs:
       - run: npm run redline:lint
       - run: npm test
       - run: npm run build
+      - run: npm run test:bundle
 
   e2e:
     name: e2e (Playwright + axe)

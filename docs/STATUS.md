@@ -20,27 +20,24 @@ Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR 
 - [x] T-1.7 | fraud-researcher | Brand-name web collision check (renamed Nodkey, Corvelle, Hoardly) | docs/patterns/BRAND_CHECK.md
 - [x] T-2.6 | game-designer | GDD/UI_SPEC follow-ups (1-9 caller, high-stakes set, layer-1 budget, snake_case flags) | sceptic: FAIL → PASS
 - [x] T-2.4a | scenario-writer | Tutorial chapter scenarios (0-1…0-6) + linter schema-id exemption, registered-host rule, runtime defaults | fraud-researcher: FAIL → PASS · sceptic: FAIL → PASS · qa: FAIL → PASS
+- [x] T-2.3 | frontend-engineer | Devices (mail, SMS/chat incl. Kettle, call with transcript + What now?, browser with owner-part highlight + SimulatedForm, QR (non-decodable, /qr/<id>), bank, auth prompt, letter, banners, interrupts, pushers), HUD + Take a breath, Check card + tag + Details list, announcer queue, two-layer debrief, chapter screen; T-2.1 QA carry-overs fixed; `request` checkable for banners; recovery `feedback` (keep_quiet + harmful steps); QA E8; bundle guard after build; CR-14 (pusher translations), CR-15 (one "You chose" in boss layer 1) | branch phase2/devices | sceptic: pending, qa: pending
 
 ## Next up (Phase 2)
-- [ ] T-2.3 | ux-artist + frontend-engineer | Devices: mail, SMS/messenger, call, browser, QR, bank, auth, letter | reviewers: sceptic, qa
 - [ ] T-2.4 | scenario-writer | Tutorial (ch0) + Berlin (ch1) scenarios | reviewers: fraud-researcher, sceptic, qa
 
 ## Follow-ups (non-blocking, from reviews)
 - Linter: brand letters split by `/` `,` `*`; "x dot com"; source-host check warning-only → error before G4; `St.Gallen`-style false positives; pin Actions by SHA.
 - Brands: formal TMview/EUIPO search for all 8 names before G4; Kettle is spoofed in 0-4, so register look-alike domains and update role_in_game; add Swappie and Swapfiets to Swaploft's checked_against.
 - Research: verify 116 111 / 116 006 per country before G3; confirm the Safeonweb address per language.
-- UI: QA notes N1 (tag toggle label constant, show state by icon), N3 (first recovery step in debrief layer 1).
+- UI: QA note N3 (first recovery step in debrief layer 1). T-2.3 open points for ux-artist/game-designer: owner part highlighted only after a check; Check card on desk is a rail panel (not an anchored popover); avatar tokens added to tokens.css; nextTier copy and recovery `feedback` lines drafted by the engineer; sources "Learn more" and coach marks not built yet.
 - Engine/schema: a "What now?" step construct (GDD §6/§17), so 1-9 beat 3 engage ("Call back this number") can return to it without a fake next_beat; GDD §6 "What now?" list should mention beat-added engage actions; state that 1-9 `message.request` sits on beat 3's message, not the banner.
-- T-2.4a design rulings (GDD §16): when T-2.1 ships "What now?", migrate 0-6 beat 3 to `hang_up` → "What now?" (scenario-writer). Engine scoring: an opener beat's `proceed` is not decisive once the next beat is reached (0-3). Damage control needs a non-blaming feedback line for harmful picks, starting with `keep_quiet` (GDD §9; scenario-writer + frontend-engineer).
+- T-2.4a design rulings (GDD §16): when T-2.1 ships "What now?", migrate 0-6 beat 3 to `hang_up` → "What now?" (scenario-writer). Engine scoring: an opener beat's `proceed` is not decisive once the next beat is reached (0-3).
 - Validator (`scripts/lib/rules.ts`): the layer-1 check needs the UI_SPEC §8.1 worst case. Add choice_worst (2 + longest label of any action that can leave the scenario below ★★★, including engage; 6 if timed) for standard debriefs. Count `debrief.safeguarding_line` on arc debriefs. Cap action labels at 8 words. LAYER1_OVERHEAD 14/10 and the flag-name regex already match.
 - Help screen: engineer adds single-file linter exemption + help checker (https, no query, checked, source ids, hosts incl. incydent.cert.pl, review_note never rendered) + test, then moves docs/patterns/where-to-report.draft.en.yaml to content/help/ (before G3). Update scripts/lib/source-hosts.ts from SOURCE_HOSTS.md.
 - Example scenario still cites the two placeholder sources; replace when the first real scenario is written.
 
 - Registered-host rule: extend to all player-visible scenario text (pusher messages first, reveals, narratives, debriefs, labels), allowing bare owner parts of registered hosts. Keep Larchwick's example-verify.test look-alike a few chapters away from 0-4.
-- T-2.1 QA, carry into T-2.3: announcer wiring, focus loss on What now?/timing screen, layer-1 inline already-clicked duplication, wrong-tag bonus explanation, drill debrief layout, Take a breath label, HUD hidden during consequence, skip link, interrupt container, nextTier/x of R on chapter screen, Continue after reload, no checks after hang-up; `keep_quiet` harmful-pick feedback line.
-- Spoken forms for masked phone numbers (screen readers); timer coach mark explaining compressed game time (0-3).
-
-- Engine: reset the run when a saved run index is beyond recorded results (QA E8, tampered saves only). Run the bundle-guard dist check after build.
+- Timer coach mark explaining compressed game time (0-3).
 
 ## Blocked
 _(none)_

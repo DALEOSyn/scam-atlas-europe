@@ -232,6 +232,22 @@ describe('per-scenario rules (scenarioRules)', () => {
       expect(errs).toMatch(/at least 2 harmful/);
       expect(errs).toMatch(/one option must be the stop step/);
     });
+    it('a harmful step needs a non-blaming feedback line (GDD §9)', () => {
+      const r = rawFraud();
+      (r.outcomes as Record<string, Raw>).stolen = {
+        narrative: 'x',
+        recovery: [
+          { step: 'block_card_in_bank_app', category: 'stop' },
+          { step: 'call_bank_known_number', category: 'secure' },
+          { step: 'report_to_police_online', category: 'report' },
+          { step: 'change_password', category: 'harmful' },
+          { step: 'keep_quiet', category: 'harmful' },
+        ],
+      };
+      const errs = errorsOf(r).join('\n');
+      expect(errs).toMatch(/harmful step "change_password" needs a feedback line/);
+      expect(errs).not.toMatch(/"keep_quiet" needs a feedback line/);
+    });
   });
 });
 
@@ -418,6 +434,48 @@ describe('"What now?" extras and banners (GDD §6, §17 1-9)', () => {
     const withActions = callFraud();
     withActions.banner = { device: 'sms', message: { body: 'x', request: 'none' }, actions: [] };
     expect(schemaErrors(withActions).join('\n')).toMatch(/banner/);
+  });
+  it('a banner adds the beat\'s request checkable; its reveal is the request inspectable (GDD §17 1-9 beat 3)', () => {
+    const r = callFraud();
+    msg(r).request = 'share_code';
+    r.banner = { device: 'sms', message: { sender: { display: 'Larchwick' }, body: 'Code 4471 approves a payment of EUR 900.', request: 'none' } };
+    (r.inspectables as Raw[]).push({ target: 'request', reveal: 'The code is for a payment, not a cancellation.', red_flag: true, type: 'request' });
+    expect(schemaErrors(r)).toEqual([]);
+    const parsed = scenarioSchema.parse(r);
+    expect(deriveCheckables(parsed.device, parsed.message, parsed.banner)).toContain('request');
+    expect(deriveCheckables(parsed.device, parsed.message)).not.toContain('request');
+
+    const noBanner = callFraud();
+    msg(noBanner).request = 'share_code';
+    (noBanner.inspectables as Raw[]).push({ target: 'request', reveal: 'x', red_flag: true });
+    expect(schemaErrors(noBanner).join('\n')).toMatch(/"request" is not visible .*needs a banner/);
+
+    const wrongType = structuredClone(r);
+    const last = (wrongType.inspectables as Raw[]).at(-1);
+    if (last) last.type = 'sender';
+    expect(schemaErrors(wrongType).join('\n')).toMatch(/a request checkable has type: request/);
+
+    const asksNothing = structuredClone(r);
+    msg(asksNothing).request = 'none';
+    expect(schemaErrors(asksNothing).join('\n')).toMatch(/needs message.request on the same beat/);
+
+    const emptyBanner = structuredClone(r);
+    emptyBanner.banner = { device: 'sms', message: { sender: { display: 'Larchwick' }, request: 'none' } };
+    expect(schemaErrors(emptyBanner).join('\n')).toMatch(/a banner needs a body/);
+  });
+});
+
+describe('CR-14: pusher messages can carry lang and translation', () => {
+  it('a foreign-language pusher needs its inline translation', () => {
+    const ok = rawFraud();
+    ok.pressure = { timer: true, levers: ['urgency'], pusher: { messages: [{ at_seconds: 20, text: 'Letzte Erinnerung: heute zahlen.', lang: 'de', translation: 'Last reminder: pay today.' }] } };
+    expect(schemaErrors(ok)).toEqual([]);
+    const missing = rawFraud();
+    missing.pressure = { timer: true, levers: ['urgency'], pusher: { messages: [{ at_seconds: 20, text: 'Letzte Erinnerung.', lang: 'de' }] } };
+    expect(schemaErrors(missing).join('\n')).toMatch(/pusher text in lang "de" needs an inline translation/);
+    const en = rawFraud();
+    en.pressure = { timer: true, levers: ['urgency'], pusher: { messages: [{ at_seconds: 20, text: 'Reminder.', lang: 'en' }] } };
+    expect(schemaErrors(en)).toEqual([]);
   });
 });
 

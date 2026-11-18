@@ -7,7 +7,7 @@
  * Authored inspectables only supply reveal text; every other checkable reveals
  * the neutral filler ("Nothing unusual here"). The list never shows a count.
  */
-import { deriveCheckables, linksIn } from '../content/checkables.ts';
+import { deriveCheckables, linksIn, type BannerLike } from '../content/checkables.ts';
 import type { Device, Inspectable, Message } from '../content/schema.ts';
 import { tagIsCorrect, type TagTally } from './scoring.ts';
 
@@ -17,6 +17,8 @@ export interface CheckableBeat {
   device: Device;
   message: Message;
   inspectables: Inspectable[];
+  /** In-beat notification; its text is the `request` checkable. */
+  banner?: BannerLike | undefined;
 }
 
 export interface CheckableItem {
@@ -44,7 +46,7 @@ function nth<T>(list: readonly T[] | undefined, target: string): T | undefined {
 }
 
 /** What the player sees for a checkable (address-bar host, number, file name…). */
-export function shownText(device: Device, m: Message, target: string, links: readonly string[]): string | undefined {
+export function shownText(device: Device, m: Message, target: string, links: readonly string[], banner?: BannerLike): string | undefined {
   const base = target.replace(/#\d$/, '');
   switch (base) {
     case 'sender.detail':
@@ -82,6 +84,8 @@ export function shownText(device: Device, m: Message, target: string, links: rea
       return m.letterhead;
     case 'image':
       return m.image?.alt;
+    case 'request':
+      return banner?.message.body ?? banner?.message.subject;
     default:
       return device === 'call' ? m.sender?.detail : undefined;
   }
@@ -91,11 +95,11 @@ export function shownText(device: Device, m: Message, target: string, links: rea
 export function checkablesOf(beat: CheckableBeat): CheckableItem[] {
   const transcript = beat.message.transcript?.map((l) => l.text).join('\n');
   const links = [...linksIn(beat.message.body), ...linksIn(transcript)];
-  return deriveCheckables(beat.device, beat.message).map((target) => ({
+  return deriveCheckables(beat.device, beat.message, beat.banner).map((target) => ({
     key: keyOf(beat.id, target),
     beatId: beat.id,
     target,
-    shown: shownText(beat.device, beat.message, target, links),
+    shown: shownText(beat.device, beat.message, target, links, beat.banner),
     reveal: inspectableFor(beat, target)?.reveal,
   }));
 }

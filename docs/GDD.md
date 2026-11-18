@@ -47,6 +47,7 @@ Scammers are faceless: "unknown sender", a spoofed fictional brand, or a transcr
 - **Drills.** Unscored teaching moments (e.g. Teo's tip). They are outside the mix and the chapter maximum.
 - **Interrupts.** Genuine or fake notifications arriving mid-scenario. They are unscored, except that reporting a genuine interrupt counts as "genuine message reported" for stamps.
 - **Echo.** At most one per chapter. A compromise earlier in the chapter (`sets_flags`) shows up later.
+- **Flag names are snake_case** (e.g. `alex_invested`): lowercase letters, digits and underscores only, never dots. Dotted names like `alex.invested` read as domains to the red-line linter (Red Line 3).
 - **Chapter end.** A stamp (§7) and habit cards. The summary is in plain words: "Red flags you spotted: 9 (after 1 wrong guess) · Genuine messages you reported: 0 · Harmless messages you double-checked: 1".
 - **Unlocking** is never score-gated, and every chapter can be replayed.
 
@@ -103,7 +104,7 @@ Scammers are faceless: "unknown sender", a spoofed fictional brand, or a transcr
 **Authoring rules (validated where possible):**
 - Each `standard` or `boss` scenario offers at least one verify action and one tempting wrong action. Drills are exempt.
 - **Anything the player started** (a reset link they requested, a sign-in they began): the in-message action is `proceed`, never `open_link` or `approve_prompt`.
-- No comply actions on low-stakes genuine messages. "High stakes" means the message asks you to pay, log in, enter data or a code, or approve something.
+- No comply actions on low-stakes genuine messages. **"High stakes"** means the message's request is one of exactly six: `pay`, `log_in`, `enter_details`, `share_code`, `approve` or `install` (install an app or allow remote access; its comply kind is `install_or_remote`). The validator uses this set; any other request is low stakes.
 - Labels describe behaviour, never the verdict.
 - **Pressure parity:** from slot 1, the share of genuine scenarios with a timer or pusher stays within 15 percentage points of the share of fraud scenarios that have one. Genuine messages use honest deadlines ("Locker holds your parcel 7 days", "Link valid 15 minutes").
 - **Cyber scope (Red Line 8):** every scenario hinges on a digital vector (email, SMS, messenger, spoofed or cloned-voice call, fake site, shop or app, QR code, account takeover, code or MFA/e-ID abuse, remote access, social ads). No doorstep, street, ATM, in-person or paper-only tricks. Where a real-world scam would continue offline (e.g. someone coming to collect cash), the scenario ends at the digital request and the debrief stays on that vector.
@@ -151,7 +152,7 @@ The player sees **stars per scenario** and a **stamp per chapter**. Points and t
 - **Genuine:** 3 scenarios, max 15 each, with 2 checkable details each: 1-1 sender + pick-up code; 1-2 sender + meeting time; 1-6 sender + link.
 - **Boss:** 3 beats, max 51.
   - 4 red flags: beat 1 link, beat 2 sender and link, beat 3 the request.
-  - 3 decoys: beat 1 sender ID, beat 2 logo, beat 3 caller ID.
+  - 3 decoys: beat 1 sender ID, beat 2 logo, beat 3 caller ID (it shows "Larchwick Bank").
 - **Sender-or-link decoys:** 1-5 and the boss = 2 = ceil(5/3) ✓.
 - **Totals:** max = 4×19 + 3×15 + 51 = **172**. R = 8 + 4 = 12, so silver needs spotted ≥ ceil(12/3) = **4** and gold needs ≥ ceil(24/3) = **8**.
 
@@ -253,8 +254,8 @@ Alex is a **friend** met on Wordswap. There is no flirting or romance and no pla
 
 ### 10.3 Ending rule (ordered; the first match wins, evaluated when the arc closes)
 The arc closes at a report, at Tell me now, at a second Close, or at the finale.
-1. "Tell me now" was used → **R, "Revealed"** (a neutral label that implies no judgement). If `alex.invested > 0`, it plays C's damage control and recovery-agency test; otherwise it plays the Teo scene from A.
-2. `alex.invested > 0` → **C, "Recovered":** damage control, then a "recovery agency" offers to get the money back for a fee. Spotting it is the final test (LO-13, LO-16).
+1. "Tell me now" was used → **R, "Revealed"** (a neutral label that implies no judgement). If `alex_invested > 0`, it plays C's damage control and recovery-agency test; otherwise it plays the Teo scene from A.
+2. `alex_invested > 0` → **C, "Recovered":** damage control, then a "recovery agency" offers to get the money back for a fee. Spotting it is the final test (LO-13, LO-16).
 3. The arc was closed by "Close the app" twice → **A′, "Stepped away":** in the finale, Teo is approached by a similar friendly profile and you guide him.
 4. Reported at slot ≤ 6 → **A, "Caught it early":** same Teo scene as A′, plus your timeline.
 5. Otherwise (reported at slots 7–9, or the finale reached having refused every request) → **B, "Caught it in time":** you report it, and the team walks through the timeline.
@@ -325,14 +326,14 @@ All endings show the red-flag timeline (slot 1 is shown as "Nothing to notice ye
 | 0-3 | Password-reset email right after *you* tapped "forgot password"; "link valid 15 minutes" (honest timer). The in-message link is `proceed`. | email | genuine / high | 1 | Timer; things you started | LO-17, LO-03 |
 | 0-4 | "Unusual sign-in to your Kettle account. Locked in 30 min" | sms | fraud | 2 | Pusher, stress, pause, "deadline was fake" | LO-04, LO-05, LO-02 |
 | 0-5 | Teo: "I clicked a prize link and typed my card number. What now?" | messenger | drill | 1 | Damage control (block card = stop) | LO-18, LO-16 |
-| 0-6 **Boss** | Beat 1: "Waymarker Desk" email to log in to a new travel portal. Beat 2: a Kettle chat from "IT" pushing. Beat 3: a call from "IT". | email → messenger → call | fraud | 2 | Combine; **coach mark the first time the call device appears** (beat 3: answer, hang up, dialler) | LO-01–05, LO-08, LO-18 |
+| 0-6 **Boss** | Beat 1: "Waymarker Desk" email to log in to a new travel portal. Beat 2: a Kettle chat from "IT" pushing. Beat 3: a call showing a familiar "Waymarker IT" caller name; the caller asks you to read out a code or log in while they "help". | email → messenger → call | fraud | 2 | Combine; **coach mark the first time the call device appears** (beat 3: answer, hang up, dialler) | LO-01–05, LO-08, LO-18 |
 
-0-6: verify through `ask_someone` (Adaeze, from the staff directory) or `verify_in_app` (open Waymarker Desk yourself). After a fall, the `stop` step is changing the password.
+0-6: verify through `ask_someone` (Adaeze, from the staff directory) or `verify_in_app` (open Waymarker Desk yourself). On beat 3, `hang_up` opens "What now?", which offers the same two. The caller name is a decoy: "Caller ID can be faked". After a fall, the `stop` step is changing the password; "tell IT through Waymarker Desk" is the second correct step (`report`). Brief: `docs/patterns/it-portal-credential-phishing.md`.
 
 ## 17. Chapter 1 — Berlin
 - **Goal:** check deliveries in the official app you open yourself.
 - **Shape:** slot 1, difficulty 1–3. 8 scored scenarios: 3 genuine (37.5%) and 5 fraud. Plus 1 drill and 1 arc beat.
-- **Patterns** (pending the brief): `smishing-parcel-fee`, fake customs fee. Plus 2 callbacks: 0-2 credential phishing on a shop pretext, and 0-4 Kettle account takeover.
+- **Patterns** (pending the brief): `smishing-parcel-fee`, fake customs fee, and for the boss `multichannel-support-callback` (parcel → customs invoice → fake bank fraud-team call). Plus 2 callbacks: 0-2 credential phishing on a shop pretext, and 0-4 Kettle account takeover.
 - **Flavour:** German in-world text (`lang="de"`, inline translation), lockers, the courier **Trundle**, the shop **Thimble & Pine**, neighbour **Jonas**.
 - **Parcel-themed scored scenarios:** 4 of 8 (1-1, 1-3, 1-7, boss), never adjacent.
 - **Pressure parity:** timer or pusher on 2 of 3 genuine (67%) vs 4 of 5 fraud (80%), a 13-point gap ✓. Every timer is 60 s (the slot-1 length), genuine or fraud; boss beats are 40 s.
@@ -351,7 +352,7 @@ All endings show the red-flag timeline (slot 1 is shown as "Nothing to notice ye
 | 1-7 | PM | Customs fee €1.99, pay today or it goes back (template scenario) | sms → browser | fraud | 2 | timer 60 | LO-02, LO-03, LO-04, LO-05 |
 | *arc* | PM | Alex on Wordswap: "Your German is better than you think!" | messenger | arc, slot 1 | — | — | LO-14 (seed) |
 | 1-8 | PM | Look-alike "Thimble & Pine" payment-failed email with a padlocked login page (padlock = decoy) | email → browser | fraud (twin of 1-6) | 3 | timer 60 | LO-02, LO-03, LO-05 |
-| 1-9 **Boss** | PM | You expect real Waymarker documents. Beat 1: fake Trundle SMS with correct-looking details. Beat 2: fake customs invoice email. Beat 3: call from "Trundle support". Genuine interrupt during beat 3: Jonas says he took a parcel in (unscored; reporting him counts as a genuine report). | sms → email → call | fraud | 3 | boss timers + pusher | LO-01–05, LO-08, LO-16 |
+| 1-9 **Boss** | PM | You expect real Waymarker documents. Beat 1: fake Trundle SMS with correct-looking details. Beat 2: fake customs invoice email. Beat 3: call showing "Larchwick Bank" from its "fraud team": a suspicious charge is under way, so read out the code just texted or approve the request in the Larchwick app "to stop the charge". Genuine interrupt during beat 3: Jonas says he took a parcel in (unscored; reporting him counts as a genuine report). | sms → email → call | fraud | 3 | boss timers + pusher | LO-01–05, LO-08, LO-16 |
 
 **Notes:**
 - 1-6 is high stakes because it asks you to update payment details. It has **no separate `proceed` action**. The actions are:
@@ -359,7 +360,13 @@ All endings show the red-flag timeline (slot 1 is shown as "Nothing to notice ye
   - `comply` (update via the email link; ★);
   - `ignore` (the order is cancelled; 0);
   - `report` (0, −5).
-- In the boss, `hang_up` → `call_back_known` on the number in the Trundle app is verify. Beats keep arriving even after a beat-1 verify, so skilled players see the whole boss.
+- **Boss beat 3 (1-9), per `docs/patterns/multichannel-support-callback.md` §8:**
+  - The caller does **not** ask for the customs invoice to be paid. The request is the code or the in-app approval "to stop the charge". During the call a Larchwick code SMS (in the genuine Larchwick thread) or a Larchwick approval prompt arrives, and its own text says it is for a payment, not a cancellation. Any number shown is masked or from a range reserved for fiction (Red Line 3); spoofing is never shown, only that it happens.
+  - **Red flag:** the request (read out a code or approve in the app). **Decoy:** the caller ID showing "Larchwick Bank". This keeps §7.2's counts (beat 3: 1 red flag, 1 decoy).
+  - **Actions:** `hang_up` → "What now?" → `call_back_known` on the number on the Larchwick card or in the Larchwick app you open yourself = **verify** (★★★). `share_code` and `approve_prompt` = comply (a fall). In "What now?", "Call back this number" (the one that called) = `call_number_in_message` (engage): it reconnects to the same caller, who repeats the request, and caps the beat at ★★.
+  - **Debrief, beat 3.** Layer-1 tell: "the caller wanted your code to 'stop' a charge." What works: "hang up, call the number on your card." (17 authored words, inside the UI_SPEC §8.1 budget.) Layer-2 habit and red flags: "Hang up. Call Larchwick back on the number on your card or in the app you open yourself. A real fraud team never needs your code or an approval to stop a payment. Caller ID can be faked. Read what a code or approval is for."
+  - **After a fall:** the `stop` step is calling Larchwick on the number on your card (or blocking the card in the Larchwick app) and asking it to stop or recall the payment; then `report` (police, keep the numbers and times).
+  - Beats keep arriving even after a beat-1 verify, so skilled players see the whole boss.
 - **Red Line 8 check:** every Berlin scenario is SMS, email, messenger, browser or call. There is no customs *letter*: the customs fee arrives by SMS (1-7) and as an emailed invoice (boss beat 2).
 - The delivery-card QR candidate is held as a swap for 1-5 if research doesn't support the Kettle-code callback. If used, the card is only a `letter` carrying a QR code, and the lesson is checking the QR destination (LO-02).
 
@@ -434,9 +441,9 @@ Requests to `frontend-engineer`:
 - **CR-05** `pressure.levers` enum, `pressure.pusher`, `pressure.honest_deadline` for genuine messages.
 - **CR-06** `interrupts[]` (`at_seconds`, `message`, `is_fraud`, `actions`).
 - **CR-07** `recovery_steps.yaml` (id, label). Outcomes reference `{step, category}` per scenario.
-- **CR-08** `sets_flags[]`, `requires_flags[]`, `arc_effects`, `arc_branch_on` (e.g. `alex.invested`).
+- **CR-08** `sets_flags[]`, `requires_flags[]`, `arc_effects`, `arc_branch_on` (e.g. `alex_invested`). Flag names must match `^[a-z][a-z0-9_]*$` (snake_case, no dots; §4).
 - **CR-09** Devices `auth` and `letter`. A `letter` must contain a QR code or URL inspectable, and that must be its red flag or decoy focus (validator, Red Line 8). Inspectable targets `qr.destination` and `payee.name_check`.
-- **CR-10** `debrief.layer1` (≤ 40 words: verdict or arc text, tell, habit, `already_clicked`), `debrief.layer2`, `debrief.device_tip`, `debrief.habit_card`, `debrief.variant: arc`, `debrief.safeguarding_line`.
+- **CR-10** `debrief.layer1` (≤ 40 rendered words in the worst case, counted as in UI_SPEC §8.1: fixed copy + authored tell and habit + the longest possible "You chose" line), `debrief.layer2`, `debrief.device_tip`, `debrief.habit_card`, `debrief.variant: arc`, `debrief.safeguarding_line`.
 - **CR-11** Per-chapter validation of all `mix` rules (balance.yaml), including pressure parity, theme share, `approve_prompt` only on fraud, no comply on low-stakes genuine, and Alex lines ≤ 25 words.
 - **CR-12** `content/cast.yaml` (id, name, role, known-channel contact).
 - **CR-13** Red-line linter: decode every QR asset; fail unless it is non-decodable or decodes to a `.invalid` string.

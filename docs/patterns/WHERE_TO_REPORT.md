@@ -36,6 +36,7 @@
 - **116 111** (EU harmonised child helpline). The EU's Your Europe page (last checked by the Commission 22 Jun 2026) says the 116 numbers work "in most EU countries (though coverage is not yet EU-wide)" but has no country list [eu-youreurope-116].
   - Child Helpline International (an NGO, not an official body) lists 116 111 operators for DE, IE, NL, PL, PT, ES and SE. It lists none for BE, FR or IT. That page was last modified in 2023 [chi-116111-eu].
   - Recommendation: before G3, verify each country on the national operator's or regulator's own site. Then show 116 111 on the under-18 card as "free and confidential in most EU countries".
+- **T-2.5 update (2026-11-18):** 116 111 verified for **Germany only**, from the operator's own 2026 flyer [de-ngk-116111-flyer-2026] and a poster on the federal family ministry's site [de-bmbfsfj-ngk-poster]. It is in `docs/patterns/where-to-report.draft.en.yaml` under DE (the help-screen draft, parked in docs/ until the engineer adds a linter exemption and moves it to `content/help/`). Every other country still gets the fallback line, which gives no number.
 - The screen can already say "In most EU countries, 116 111 is a free helpline for children and young people", citing [eu-youreurope-116], **if** sceptic-reviewer accepts EU-level wording without a per-country list.
 
 ## 3. Country entries verified this session (for the "Learn more" screen)

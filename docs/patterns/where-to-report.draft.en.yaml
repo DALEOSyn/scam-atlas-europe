@@ -1,0 +1,297 @@
+# docs/patterns/where-to-report.draft.en.yaml: "Where to report / get help" screen data, English launch (EU-wide).
+# Owner: fraud-researcher. Status: DRAFT, rework 1 after sceptic FAIL (T-2.5). All entries checked 2026-11-18.
+#
+# LOCATION: parked under docs/ because it trips redline:lint under content/. The engineer adds a path-specific
+# exemption plus a dedicated checker, then moves it back to content/help/where-to-report.en.yaml.
+#
+# G1 question 6 conditions (docs/DECISIONS.md, approved 2026-11-18):
+#   - This is the ONE data file allowed to hold real reporting bodies' phone numbers and URLs.
+#   - Every link renders with rel="noopener noreferrer", opens in a new tab, and carries NO tracking or
+#     query parameters added by the game. URLs below are stored exactly as verified.
+#   - Every entry carries `checked` (the date the researcher read it on the body's own site / document).
+#     The UI shows it as "Checked on <date>".
+#   - 116 111 / 116 006 appear only for countries verified one by one. Today: 116 111 for DE only.
+#     All other countries get the fallback line (fallbacks.child_helpline).
+#   - Real bodies appear ONLY on this screen, never as scam props (Red Line 1).
+#
+# Fields:
+#   id           stable id
+#   title/name   short heading shown to the player
+#   body         one or two plain-English sentences (age 14+ reading level)          [shown]
+#   phones       optional list; one number per item, exactly as published            [shown]
+#                  each item: { number, label }  (label = when to use it)
+#   email        optional; exactly as published                                       [shown]
+#   url          optional; the official page that was read (https only)               [shown as link]
+#   scope        optional; PLAYER TEXT ONLY: what the contact is for, when narrower   [shown]
+#   checked      date verified (YYYY-MM-DD)                                           [shown]
+#   sources      ids in content/sources.yaml that back the entry ([] = safeguarding wording, no claim)  [not shown]
+#   review_note  internal note for reviewers/engineer; NEVER rendered                 [not shown]
+#
+# Re-verify every entry at G3 and again within 30 days before G4 (PLAN risk table).
+
+meta:
+  locale: en
+  checked: 2026-11-18
+  link_rel: "noopener noreferrer"
+  link_target: "_blank"
+  intro: "Something went wrong? You're not alone, and acting fast helps. Start at the top."
+  disclaimer: "This list covers only contacts we have checked on official sites. If your country isn't listed, your local police can always help."
+  external_links_note: "These links open official websites outside the game. They have their own privacy policies; the game sends them nothing about you."
+  review_note: "Linked official sites may run their own first-party analytics (e.g. incydent.cert.pl loads analytics.cert.pl). The game adds no tracking; external_links_note tells the player this."
+
+# ---------------------------------------------------------------- 1. First steps (order matters)
+first_steps:
+  - id: under-18
+    title: "Under 18? Tell an adult you trust first"
+    body: "Tell a parent, carer, teacher or another adult you trust. You're not in trouble for asking for help. They can call the bank or the police with you."
+    checked: 2026-11-18
+    sources: []
+    review_note: "Safeguarding step for the 14+ audience; wording to be checked by sceptic-reviewer and qa-playtester."
+
+  - id: not-your-fault
+    title: "It's not your fault"
+    body: "Scams are built to fool people. Many people never report, and every report helps stop the next attempt."
+    checked: 2026-11-18
+    sources: [nl-fraudehelpdesk-police-pilot]
+
+  - id: bank-now
+    title: "Money or card details involved? Call your bank now"
+    body: "Use the number on your card or in your banking app, never one from the message or the caller. Ask them to block the card and to try to stop or recall the payment. Speed matters."
+    checked: 2026-11-18
+    sources: [fr-gendarmerie-fovi, es-incibe-smishing-bank-callback-2025, eu-esas-ai-scams-factsheet-nl, ch-ncsc-double-phishing-2026]
+
+  - id: no-codes
+    title: "Someone now asks for a code or an approval? Hang up"
+    body: "Never read out a code or approve anything in your banking or messaging app for someone who contacted you. Call back on a number you find yourself."
+    checked: 2026-11-18
+    sources: [ch-ncsc-double-phishing-2026, pl-cert-fake-consultants, pl-cert-phishing-kb-2026]
+
+  - id: change-password
+    title: "Typed a password? Change it"
+    body: "Change it on the real site or app, and everywhere you used the same password. Turn on two-step verification and log out devices you don't recognise."
+    checked: 2026-11-18
+    sources: [fr-cybermalveillance-fiche-hameconnage, es-incibe-mailbox-full-2022, pl-cert-phishing-kb-2026, de-vzn-ghost-pairing-2026]
+
+  - id: disconnect
+    title: "Installed an app or let someone control your screen? Stop using the device"
+    body: "Stop using it and take it offline (for example, switch on airplane mode). Don't use it for banking until someone you trust has checked it."
+    checked: 2026-11-18
+    sources: [ch-ncsc-parcel-calls-2022, eu-esas-ai-scams-factsheet-nl, de-vz-paketdienst-sms]
+
+  - id: evidence
+    title: "Keep the evidence"
+    body: "Take screenshots of messages, sender numbers and addresses, links, times and payment references. Don't delete the chat yet."
+    checked: 2026-11-18
+    sources: [fr-cybermalveillance-fiche-hameconnage, es-incibe-smishing-bank-callback-2025]
+
+  - id: report-platform
+    title: "Report it in the app or site where it happened"
+    body: "Use the report button of the messenger, social network, marketplace or mail app. Many mail apps have a 'report phishing' option."
+    checked: 2026-11-18
+    sources: [ie-ncsc-phishing-guide, be-police-romance-2026, eu-europol-mule-flyer-ie]
+
+  - id: report-police
+    title: "Report it to the police"
+    body: "Many countries have online police reporting; otherwise go to a local station. Keep a copy of your report for your bank."
+    checked: 2026-11-18
+    sources: [eu-europol-report-cybercrime, es-incibe-smishing-bank-callback-2025]
+
+  - id: warn-contacts
+    title: "Warn the people around you"
+    body: "If your messenger or social account was taken over, tell your contacts another way not to send money or codes."
+    checked: 2026-11-18
+    sources: [nl-politie-whatsapp-takeover-2024, de-vzn-ghost-pairing-2026, pl-nask-metoda-na-2020]
+
+  - id: recovery-warning
+    title: "Beware of 'we'll get your money back' offers"
+    body: "Genuine recovery never needs a fee. Anyone who asks for one to get your money back is almost certainly running a second scam."
+    checked: 2026-11-18
+    sources: [ie-bpfi-recovery-2024, eu-esas-ai-scams-factsheet-nl]
+
+# ---------------------------------------------------------------- 2. Fallbacks (shown when no verified country entry exists)
+fallbacks:
+  child_helpline:
+    body: "Want to talk to someone? Ask an adult you trust to help you find your country's free child and youth helpline. In many EU countries it is a free 116 number."
+    checked: 2026-11-18
+    sources: [eu-youreurope-116]
+    review_note: "Deliberately gives no number: 116 111 is verified for DE only today (G1 Q6). Your Europe says the 116 numbers work 'in most EU countries (though coverage is not yet EU-wide)'."
+  police:
+    body: "Your country isn't listed yet. Contact your local police, online or in person."
+    checked: 2026-11-18
+    sources: [eu-europol-report-cybercrime]
+
+# ---------------------------------------------------------------- 3. EU-wide
+eu:
+  - id: europol-report-signpost
+    name: "Europol: Report cybercrime online"
+    body: "Europol does not take reports itself. Its page sends you to your country's official online reporting site."
+    url: https://www.europol.europa.eu/report-a-crime/report-cybercrime-online
+    checked: 2026-11-18
+    sources: [eu-europol-report-cybercrime]
+
+  - id: ecc-net
+    name: "European Consumer Centres Network (ECC-Net)"
+    body: "Free advice if you bought something from a trader in another EU country, Norway or Iceland and it went wrong. It is not the police."
+    url: https://www.eccnet.eu/node/33
+    checked: 2026-11-18
+    sources: [eu-eccnet-about]
+
+# ---------------------------------------------------------------- 4. Countries (verified entries only)
+# A country missing here means "not verified yet", not "no service exists". UI falls back to `fallbacks`.
+countries:
+  BE:
+    - id: be-safeonweb-forward
+      name: "Safeonweb"
+      body: "Forward suspicious messages so the links can be checked."
+      email: suspicious@safeonweb.be
+      checked: 2026-11-18
+      sources: [be-ccb-safeonweb-2025]
+    - id: be-card-stop
+      name: "Card Stop"
+      body: "Block your bank cards if you shared card details or money is leaving your account."
+      phones:
+        - number: "078 170 170"
+          label: "Block your cards"
+      checked: 2026-11-18
+      sources: [be-safeonweb-qr-chargers, be-police-romance-2026]
+    - id: be-police
+      name: "Local police"
+      body: "File a complaint after a fraud."
+      checked: 2026-11-18
+      sources: [be-police-romance-2026]
+
+  DE:
+    - id: de-116111
+      name: "Nummer gegen Kummer: Kinder- und Jugendtelefon"
+      body: "Free, anonymous and confidential helpline for children and young people. Doesn't show on the phone bill."
+      phones:
+        - number: "116 111"
+          label: "Children and young people"
+      scope: "Open Monday to Saturday, 14:00-20:00."
+      checked: 2026-11-18
+      sources: [de-ngk-116111-flyer-2026, de-bmbfsfj-ngk-poster]
+      review_note: "Opening hours from the operator's flyer published July 2026; re-check at G3."
+    - id: de-police
+      name: "Police"
+      body: "Report online or at any police station. If an app was installed, bring the phone."
+      checked: 2026-11-18
+      sources: [de-vz-paketdienst-sms, de-vzn-smishing]
+    - id: de-bnetza
+      name: "Bundesnetzagentur (telecom regulator)"
+      body: "Report unwanted or fake SMS. This page links to its complaint form."
+      url: https://www.bundesnetzagentur.de/DE/Vportal/TK/Aerger/Aktuelles/Hinweise/AktHinw2023/Zollgebuehren.html
+      checked: 2026-11-18
+      sources: [de-bnetza-zoll-sms-2023]
+      review_note: "Links to the regulator's 2023 warning page, which links on to its SMS-spam complaint form. Site navigation query parameter (?nn=...) removed and the clean URL re-checked 2026-11-18. The form's own URL was not opened directly."
+
+  ES:
+    - id: es-017
+      name: "INCIBE: Tu Ayuda en Ciberseguridad"
+      body: "Free helpline for advice after a scam or online problem."
+      phones:
+        - number: "017"
+          label: "Free advice"
+      checked: 2026-11-18
+      sources: [es-incibe-smishing-bank-callback-2025, es-incibe-prize-2021]
+    - id: es-police
+      name: "Police report (denuncia)"
+      body: "File a report and keep a copy for your bank."
+      checked: 2026-11-18
+      sources: [es-incibe-smishing-bank-callback-2025]
+
+  FR:
+    - id: fr-info-escroqueries
+      name: "Info Escroqueries"
+      body: "Free advice line after a scam."
+      phones:
+        - number: "0 805 805 817"
+          label: "Free advice"
+      checked: 2026-11-18
+      sources: [fr-cybermalveillance-fiche-hameconnage]
+    - id: fr-cybermalveillance
+      name: "Cybermalveillance.gouv.fr"
+      body: "Official guidance sheet on what to do after phishing, including where to report phishing messages and sites."
+      url: https://www.cybermalveillance.gouv.fr/medias/2026/02/260129_FicheReflexe_Hameconnage.pdf
+      checked: 2026-11-18
+      sources: [fr-cybermalveillance-fiche-hameconnage]
+    - id: fr-police
+      name: "Police, gendarmerie or public prosecutor"
+      body: "File a complaint."
+      checked: 2026-11-18
+      sources: [fr-cybermalveillance-fiche-hameconnage]
+
+  IE:
+    - id: ie-garda
+      name: "Local Garda station"
+      body: "Report phishing, smishing, scam calls and fraud."
+      checked: 2026-11-18
+      sources: [ie-ncsc-phishing-guide, ie-garda-investment-2025]
+
+  IT:
+    - id: it-112
+      name: "112"
+      body: "Call if someone claiming to be police or a relative 'in trouble' is pressuring you right now."
+      phones:
+        - number: "112"
+          label: "Emergency"
+      checked: 2026-11-18
+      sources: [it-carabinieri-contro-truffe]
+
+  NL:
+    - id: nl-fraudehelpdesk
+      name: "Fraudehelpdesk"
+      body: "National reporting point for fraud. Gives advice and can refer you to the police."
+      checked: 2026-11-18
+      sources: [nl-fraudehelpdesk-police-pilot]
+    - id: nl-police-account-takeover
+      name: "Police (aangifte)"
+      body: "Report to the police. They publish a form to help you prepare a report if your messenger account was taken over."
+      url: https://politie.nl/binaries/content/assets/politie/onderwerpen/whatsapp-account-overgenomen-gehackt/%E2%80%8B%E2%80%8Binvulformulier-bij-aangifte-doen-als-uw-whatsapp-account-is-overgenomen-gehackt.pdf
+      checked: 2026-11-18
+      sources: [nl-politie-whatsapp-takeover-2024]
+      review_note: "URL contains two percent-encoded zero-width spaces (%E2%80%8B) in the file name, exactly as published by politie.nl. Fragile: re-check at G3 and prefer a stable landing page on politie.nl if one exists."
+
+  PL:
+    - id: pl-8080
+      name: "Forward suspicious SMS to 8080"
+      body: "Free. Forward a suspicious text so CERT Polska can block the link."
+      phones:
+        - number: "8080"
+          label: "SMS only"
+      checked: 2026-11-18
+      sources: [pl-cert-monthly-2025-12, pl-cert-vote-takeover-2026]
+    - id: pl-cert-incident
+      name: "CERT Polska incident report"
+      body: "Report phishing sites and other online incidents."
+      url: https://incydent.cert.pl
+      checked: 2026-11-18
+      sources: [pl-cert-monthly-2025-12, pl-cert-vote-takeover-2026]
+      review_note: "Page loaded 2026-11-18 (title 'Zgłoś incydent | CERT.PL', JavaScript app). The destination runs its own first-party analytics (analytics.cert.pl); the game adds no tracking. See meta.external_links_note."
+
+  PT:
+    - id: pt-police
+      name: "Police (PSP or GNR)"
+      body: "File a complaint."
+      checked: 2026-11-18
+      sources: [pt-gnr-phishing, pt-dn-psp-airbnb-2026]
+
+  SE:
+    - id: se-police
+      name: "Polisen"
+      body: "Call 112 if the crime is happening now; otherwise call 114 14."
+      phones:
+        - number: "112"
+          label: "Crime happening now"
+        - number: "114 14"
+          label: "Other police matters"
+      checked: 2026-11-18
+      sources: [se-polisen-vishing-2026, se-polisen-campaign-2026]
+
+# ---------------------------------------------------------------- 5. Not included on purpose (keep out until verified)
+# - 116 111 for any country other than DE; 116 006 anywhere (FRA table is from 2014).
+# - Garda Confidential Line 1800 666 111: verified, but the Garda source gives it for suspected investment fraud only.
+#   Add under IE with scope "suspected investment fraud" when chapter content needs it.
+# - phishing@ncsc.gov.ie: scoped to suspected fake QR codes only (NCSC Ireland QR guide).
+# - Fraudehelpdesk phone number / report URL, German Länder police portals, Portuguese online complaint portal,
+#   INCIBE incident-report email, Safeonweb language variants (verdacht@): not verified.
+# - Sextortion help card (GDD §9): separate content, not drafted here.

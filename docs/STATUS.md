@@ -12,6 +12,7 @@ Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR 
 - [x] T-1.3/1.4 | fraud-researcher | Pattern briefs ch0–1, city map, where-to-report, 64 sources | PR #1 | sceptic: FAIL → PASS
 - [x] T-1.5 | game-designer | GDD v3.2, 18 LOs, balance v3.2 | sceptic: FAIL ×3 → all G1 blockers fixed (v3.2 count/pusher tells fixed by producer) · QA: FAIL → PASS conditions met | producer exception logged
 - [x] T-1.6 | ux-artist | UI spec v2, tokens, 8 fictional brands, 3 mock-ups | sceptic: FAIL → PASS · QA: FAIL → PASS
+- [x] T-2.5 | fraud-researcher | Pattern briefs for ch0–1 scenarios (messenger code takeover, IT-portal phishing, card phishing, multichannel callback), 14 sources, SOURCE_HOSTS, where-to-report help draft (parked in docs/patterns) | sceptic: FAIL → PASS · 1-9 caller switched to Larchwick Bank fraud team
 - [x] T-1.7 | fraud-researcher | Brand-name web collision check (renamed Nodkey, Corvelle, Hoardly) | docs/patterns/BRAND_CHECK.md
 
 ## Next up (Phase 2)
@@ -25,6 +26,8 @@ Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR 
 - Brands: formal TMview/EUIPO search for all 8 names before G4; Kettle is spoofed in 0-4, so register look-alike domains and update role_in_game; add Swappie and Swapfiets to Swaploft's checked_against.
 - Research: verify 116 111 / 116 006 per country before G3; confirm the Safeonweb address per language.
 - UI: QA notes N1 (tag toggle label constant, show state by icon), N3 (first recovery step in debrief layer 1).
+- GDD §17 (1-9): call-back target becomes the number on the Larchwick card/app (game-designer, before 1-9 is authored).
+- Help screen: engineer adds single-file linter exemption + help checker (https, no query, checked, source ids, hosts incl. incydent.cert.pl, review_note never rendered) + test, then moves docs/patterns/where-to-report.draft.en.yaml to content/help/ (before G3). Update scripts/lib/source-hosts.ts from SOURCE_HOSTS.md.
 - Example scenario still cites the two placeholder sources; replace when the first real scenario is written.
 
 ## Blocked

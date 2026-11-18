@@ -714,7 +714,7 @@ sources:
     accessed: 2026-11-18
     region: BE
     tier: 3
-    used_for: [MAP-ch10, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    used_for: [MAP-ch10, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue, berlin-arc-alex-01, arc]
     notes: "Romance-scam red flags: a too-good profile, far away, fast relationship, money requests, avoids meeting. Advice: reverse image search; live video check (beware AI); never send money. Complaint to the local police; REPORT THE PROFILE TO THE SITE OR APP; Card Stop; beware recovery-room scams. The EUR 9m+ figure (2021, FPS Economy) is old."
 
   - id: be-febelfin-phishing-2025
@@ -1310,7 +1310,7 @@ sources:
     accessed: 2026-11-18
     region: DE
     tier: 3
-    used_for: [berlin-arc-alex-01, arc]
+    used_for: []
     notes: "Opened via klicksafe.de/en/cybergrooming, which redirects here. Perpetrators 'often try to switch to more private communication channels' to get around platform safeguards; teens should end contact if the chat is 'quickly shifted to a more private communication channel'. Relationship of trust or dependence built through harmless-seeming chats. Does NOT mention a secrecy request or compliments. Supports: move apps."
 
   - id: eu-europol-osce-2017
@@ -1321,7 +1321,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [berlin-arc-alex-01, arc]
+    used_for: []
     notes: "OLDER (2017). Supporting EU-level evidence only. Offenders typically approach a child on a social networking site and then deliberately move the communication to another platform, such as an anonymous messaging app. Does NOT describe offenders asking for secrecy (mentions only 'prohibiting disclosure' in general terms). Supports: move apps. Explicit-content parts of the report are not used anywhere in the game."
 
   # ------------------------------------------------ placeholders (example scenario only)

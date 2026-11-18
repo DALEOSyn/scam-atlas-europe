@@ -62,7 +62,7 @@ outcomes:
   teo_compares_notes:
     narrative: "Teo: \"Ha! Same two as me. A mobile number instead of Trundle's usual name, and 'trundie' with an i. And I'm not waiting for anything. I deleted it and checked my orders myself. Nothing there.\""
   teo_explains:
-    narrative: "Teo: \"That's what they want you to think, kiddo! Look again: a mobile number, not Trundle's usual name. And the link says 'trundie', with an i. I'm not waiting for anything, so I deleted it and checked my orders myself.\""
+    narrative: "Teo: \"Look again, kiddo: a mobile number, not Trundle's usual name. And the link says 'trundie', with an i. I'm not waiting for anything, so I deleted it and checked my orders myself.\""
 
 debrief:
   variant: standard

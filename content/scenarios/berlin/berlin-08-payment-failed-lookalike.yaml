@@ -131,7 +131,7 @@ debrief:
       - "It names an order number but no item or price, and the order isn't in your account."
       - "A sign-in page from an email link that then asks for your full card number, expiry and security code."
     notes: "A logo or familiar name proves nothing. Scammers copy them perfectly. The padlock on the sign-in page only means the connection is encrypted, not who runs the site."
-  device_tip: "On a real phone, press and hold the button or link to preview the address. Read the end of the address: the owner is the last part before the first \"/\", not the name at the start."
+  device_tip: "On a real phone, press and hold the button or link to preview the address. Read the end of the address: the owner is the last two parts of the name before the first \"/\", not the name at the start."
   habit_card: read-the-link
   already_clicked:
     clicked: "Close the page and type nothing. Delete the email or report it as phishing."

@@ -234,7 +234,7 @@ export type Action = z.infer<typeof actionSchema>;
  * extra of kind call_back_known replaces it. Extras are either
  * - engage (`note`, no outcome): e.g. "Call back this number"; returns to "What now?" with the
  *   note and caps the beat at ★★; or
- * - verify (`outcome`, no note): e.g. "Hang up and ask Adaeze"; ends the step as verify with
+ * - verify (`outcome`, no note): e.g. "Ask Adaeze through the staff directory"; ends the step as verify with
  *   its own outcome.
  * The class rule (engage/verify) needs balance.yaml, so it lives in scripts/lib/rules.ts.
  */

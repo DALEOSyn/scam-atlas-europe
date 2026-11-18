@@ -157,15 +157,15 @@ beats:
     what_now:
       extra:
         - id: hang_up_ask_adaeze
-          label: "Hang up and ask Adaeze"
+          label: "Ask Adaeze through the staff directory"
           kind: ask_someone
           outcome: adaeze_says_no_move
         - id: hang_up_open_desk
-          label: "Hang up and open Waymarker Desk yourself"
+          label: "Open Waymarker Desk yourself"
           kind: verify_in_app
           outcome: desk_no_notice
         - id: call_it_desk_known
-          label: "Hang up, call the IT desk you know"
+          label: "Call the IT desk you know"
           kind: call_back_known
           outcome: it_desk_knows_nothing
 

@@ -503,7 +503,7 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
       const wn = storyBeat(s, g.current)?.what_now;
       const extra = wn?.extra.find((x) => x.id === ev.choice);
       if (extra && extra.outcome !== undefined) {
-        // A verify extra ("Hang up and ask Adaeze") ends the step as verify with its own outcome.
+        // A verify extra ("Ask Adaeze through the staff directory") ends the step as verify with its own outcome.
         const decision = mergeDecision(g.decision, { cls: classOf(ctx.balance, extra.kind), kind: extra.kind, actionId: extra.id, via: 'what_now' }, st.truth, ctx.balance.points.engage_on_fraud.terminal);
         return finishWithOutcome(s, ctx, { ...st, phase: 'playing' }, { ...g, kinds: [...g.kinds, extra.kind], decision, whatNowNote: undefined }, extra.outcome);
       }

@@ -82,7 +82,7 @@ test('tutorial chapter: full play-through with the habits, What now?, stamp and 
   await page.getByRole('button', { name: 'Hang up', exact: true }).click();
   await expect(page.getByRole('heading', { name: 'What now?' })).toBeVisible();
   await axeClean(page);
-  await page.getByRole('button', { name: 'Hang up and ask Adaeze' }).click();
+  await page.getByRole('button', { name: 'Ask Adaeze through the staff directory' }).click();
   await expect(page.getByText('3 of 3 stars.')).toBeVisible();
   await axeClean(page);
   await continueToNext(page);

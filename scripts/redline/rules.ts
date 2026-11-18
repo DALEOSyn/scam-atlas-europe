@@ -12,7 +12,7 @@ import { findBrandHits, type BrandMatcher, type Severity } from './lists.ts';
 
 export { normalise, foldForBrand } from './fold.ts';
 
-export type Category = 'domain' | 'url' | 'markup' | 'iban' | 'phone' | 'brand' | 'qr' | 'asset';
+export type Category = 'domain' | 'url' | 'markup' | 'iban' | 'card' | 'phone' | 'brand' | 'qr' | 'asset';
 
 export interface Finding {
   category: Category;
@@ -73,8 +73,33 @@ export function isAllowedDomain(domain: string, allowlist: readonly string[]): b
   return allowlist.some((a) => d === a || d.endsWith(`.${a}`));
 }
 
-export function findDomains(text: string, allowlist: readonly string[]): Finding[] {
+/** Defanged dots as used in security write-ups: "bank[.]com", "bank(dot)com", "bank [dot] com". */
+const DEFANG_RE = /[ \t]?[[({][ \t]*(?:\.|dot)[ \t]*[\])}][ \t]?/gi;
+
+/** Replace defanged dots with "." and keep a map back to original offsets. */
+function refang(text: string): { text: string; origin: number[] } {
+  let out = '';
+  const origin: number[] = [];
+  let last = 0;
+  for (const m of text.matchAll(DEFANG_RE)) {
+    for (let i = last; i < m.index; i++) {
+      out += text[i];
+      origin.push(i);
+    }
+    out += '.';
+    origin.push(m.index);
+    last = m.index + m[0].length;
+  }
+  for (let i = last; i < text.length; i++) {
+    out += text[i];
+    origin.push(i);
+  }
+  return { text: out, origin };
+}
+
+export function findDomains(raw: string, allowlist: readonly string[]): Finding[] {
   const out: Finding[] = [];
+  const { text, origin } = refang(raw);
   for (const m of text.matchAll(DOMAIN_TOKEN_RE)) {
     const token = m[0];
     const lower = token.toLowerCase();
@@ -82,7 +107,10 @@ export function findDomains(text: string, allowlist: readonly string[]): Finding
     if (!ALPHA_TLD_RE.test(tld)) continue; // 1.99, v2.0, 18.11.2026
     if (FILE_EXTENSIONS.has(tld) || NON_DOMAIN_TOKENS.has(lower)) continue;
     if (isAllowedDomain(lower, allowlist)) continue;
-    out.push(err('domain', token, m.index, `"${token}" looks like a real domain; use .example, .test or .invalid (Red Line 3)`));
+    const start = origin[m.index] ?? m.index;
+    const end = (origin[m.index + token.length - 1] ?? start) + 1;
+    const shown = raw.slice(start, end);
+    out.push(err('domain', shown, start, `"${shown}" looks like a real domain; use .example, .test or .invalid (Red Line 3)`));
   }
   return out;
 }
@@ -149,11 +177,11 @@ export function ibanChecksumValid(compact: string): boolean {
 
 /**
  * Country code, 2 check digits, then 11–30 alphanumerics with any single
- * [ .-] separators (upper case, as IBANs are printed), or a compact
+ * [ . _ / -] separators (upper case, as IBANs are printed), or a compact
  * lower-case run.
  */
 const IBAN_CANDIDATE_RES = [
-  /(?<![A-Za-z0-9])[A-Z]{2}[ .-]?[0-9]{2}(?:[ .-]?[A-Z0-9]){11,30}(?![A-Za-z0-9])/g,
+  /(?<![A-Za-z0-9])[A-Z]{2}[ ._/-]?[0-9]{2}(?:[ ._/-]?[A-Z0-9]){11,30}(?![A-Za-z0-9])/g,
   /(?<![A-Za-z0-9])[a-z]{2}[0-9]{2}[a-z0-9]{11,30}(?![A-Za-z0-9])/g,
 ];
 
@@ -164,7 +192,7 @@ export function ibanCandidates(text: string): { match: string; index: number }[]
 export function findIbans(text: string): Finding[] {
   const out: Finding[] = [];
   for (const c of ibanCandidates(text)) {
-    const compact = c.match.replace(/[ .-]/g, '').toUpperCase();
+    const compact = c.match.replace(/[ ._/-]/g, '').toUpperCase();
     // Shortest real IBAN is 15 chars (NO); try every prefix so trailing text can't hide a valid one.
     for (let len = 15; len <= Math.min(34, compact.length); len++) {
       if (ibanChecksumValid(compact.slice(0, len))) {
@@ -174,6 +202,47 @@ export function findIbans(text: string): Finding[] {
     }
   }
   return out;
+}
+
+// ---------------------------------------------------------------------------
+// Payment card numbers
+
+/** Luhn (mod 10) check over a digit string. */
+export function luhnValid(digits: string): boolean {
+  if (!/^\d+$/.test(digits)) return false;
+  let sum = 0;
+  for (let i = 0; i < digits.length; i++) {
+    let d = Number(digits[digits.length - 1 - i]);
+    if (i % 2 === 1) {
+      d *= 2;
+      if (d > 9) d -= 9;
+    }
+    sum += d;
+  }
+  return sum % 10 === 0;
+}
+
+/**
+ * Card-shaped numbers: groups of four with a consistent space/dash separator
+ * (4111 1111 1111 1111, Amex-style 4-6-5 too), or 13–19 compact digits.
+ * Never starting with "+" or 0 (those are read as phone numbers).
+ */
+const CARD_CANDIDATE_RES = [
+  /(?<![\d+])[1-9]\d{3}([ -])\d{4,6}\1\d{4,5}(?:\1\d{1,4})?(?![\d])/g,
+  /(?<![\d+])[1-9]\d{12,18}(?!\d)/g,
+];
+
+export function cardCandidates(text: string): { match: string; index: number }[] {
+  return CARD_CANDIDATE_RES.flatMap((re) => [...text.matchAll(re)].map((m) => ({ match: m[0], index: m.index })));
+}
+
+export function findCards(text: string): Finding[] {
+  return cardCandidates(text)
+    .filter((c) => {
+      const digits = c.match.replace(/\D/g, '');
+      return digits.length >= 13 && digits.length <= 19 && luhnValid(digits);
+    })
+    .map((c) => err('card', c.match, c.index, `"${c.match}" passes the Luhn check like a real card number; change a digit so it fails (Red Line 3)`));
 }
 
 // ---------------------------------------------------------------------------
@@ -216,7 +285,7 @@ const DATE_RES = [
  * Mask characters (•, *, #, x, …) are not part of a run, so every unmasked
  * run is judged on its own and trailing masks cannot hide a full number.
  */
-const PHONE_RUN_RE = /(?<![\p{L}\p{N}])\+?\(?\d(?:[ \-./()]{0,2}\d)*/gu;
+const PHONE_RUN_RE = /(?<![\p{L}\p{N}])\+?\(?\d(?:[ \-./()]{0,3}\d)*/gu;
 
 function blank(text: string, start: number, length: number): string {
   return text.slice(0, start) + ' '.repeat(length) + text.slice(start + length);
@@ -226,6 +295,9 @@ export function findPhones(text: string): Finding[] {
   let scrubbed = text;
   for (const re of DATE_RES) for (const m of text.matchAll(re)) scrubbed = blank(scrubbed, m.index, m[0].length);
   for (const c of ibanCandidates(scrubbed)) scrubbed = blank(scrubbed, c.index, c.match.length);
+  // Grouped card-shaped numbers (4111 1111 1111 1112) are judged by findCards (Luhn), not as phones.
+  // Compact digit runs stay in the phone check so an unprefixed phone cannot hide behind a failing Luhn.
+  for (const m of scrubbed.matchAll(CARD_CANDIDATE_RES[0] ?? /$^/g)) scrubbed = blank(scrubbed, m.index, m[0].length);
   const out: Finding[] = [];
   for (const m of scrubbed.matchAll(PHONE_RUN_RE)) {
     const cand = m[0];
@@ -287,6 +359,7 @@ export function scanText(text: string, cfg: RuleConfig): Finding[] {
     ...findUrls(t),
     ...findMarkup(t),
     ...findIbans(t),
+    ...findCards(t),
     ...findPhones(t),
     ...findBrands(t, cfg.brands),
   ].map((f) => ({ ...f, line: lineOf(t, f.index) }));

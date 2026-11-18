@@ -10,8 +10,9 @@
  *   except:   phrases (same fold as the text) inside which a hit is ignored,
  *             e.g. "Revolut | except: revolution; revolutionary".
  *
- * Every mode also matches the name with optional separators between its
- * letters ("Pay Pal", "Pay-Pal", "D.H.L", "N 26") as a stand-alone word.
+ * Every mode also matches separated spellings as a stand-alone word: at the
+ * name's own word/camelCase/digit boundaries ("Pay Pal", "Deutsche-Bank",
+ * "N 26") or with a separator between every letter ("D.H.L"). See compileEntry().
  */
 import { foldForBrand, foldWithOrigin, normalise } from './fold.ts';
 
@@ -75,15 +76,60 @@ function escapeRe(s: string): string {
 
 /** Separators allowed between letters, folded like the text so they line up. */
 const SEP_SOURCE = [' ', '\t', '\n', '\r', '.', '-', '_', "'", String.fromCodePoint(0x00b7), String.fromCodePoint(0x2019)];
-const SEP_CLASS = `[${[...new Set(SEP_SOURCE.map((c) => foldForBrand(c) || c))].map(escapeRe).join('')}]*`;
+const SEP_CHARS = `[${[...new Set(SEP_SOURCE.map((c) => foldForBrand(c) || c))].map(escapeRe).join('')}]`;
 const B_BEFORE = '(?<![\\p{L}\\p{N}])';
 const B_AFTER = '(?![\\p{L}\\p{N}])';
+/** camelCase splits are honoured only when both sides have at least this many letters (Pay|Pal, not In|Post). */
+const CAMEL_MIN = 3;
 
+/**
+ * Split a list name into the segments between which separators are allowed:
+ * the name's own word boundaries ("Deutsche Bank", "Smart-ID"), letter/digit
+ * boundaries ("N26" -> N|26) and camelCase boundaries where both sides have
+ * 3+ letters ("PayPal" -> Pay|Pal; "InPost", "WeChat", "LinkedIn" stay whole).
+ */
+export function nameSegments(name: string): string[] {
+  const out: string[] = [];
+  for (const word of name.split(/[^\p{L}\p{N}]+/u).filter(Boolean)) {
+    for (const run of word.split(/(?<=\p{L})(?=\p{N})|(?<=\p{N})(?=\p{L})/u)) {
+      const parts = run.split(/(?<=\p{Ll})(?=\p{Lu})/u);
+      let current = parts[0] ?? '';
+      for (const part of parts.slice(1)) {
+        if (current.length >= CAMEL_MIN && part.replace(/\P{L}/gu, '').length >= CAMEL_MIN) {
+          out.push(current);
+          current = part;
+        } else {
+          current += part;
+        }
+      }
+      if (current) out.push(current);
+    }
+  }
+  return out;
+}
+
+/** One regex unit per source character, so "m" (folded to "rn") stays a single letter in spelled-out forms. */
+const skeletonOf = (s: string): string[] =>
+  [...s].map((c) => foldForBrand(c).replace(/[^\p{L}\p{N}]/gu, '')).filter(Boolean).map(escapeRe);
+
+/**
+ * Accepted spellings (always as a stand-alone word):
+ *  - segments joined with optional separators: "PayPal", "Pay Pal", "Pay-Pal", "Deutsche-Bank", "N 26";
+ *  - fully spelled out, a separator between EVERY letter: "D H L", "D.H.L", "P a y P a l".
+ * Arbitrary partial splits ("in all" for INAIL, "in post" for InPost) do not match.
+ * mode affix/prefix additionally match the compact form inside/at the start of longer words.
+ */
 export function compileEntry(entry: ListEntry): BrandMatcher {
-  const letters = [...foldForBrand(entry.name).replace(/[^\p{L}\p{N}]/gu, '')].map(escapeRe);
+  const segments = nameSegments(entry.name).map(skeletonOf).filter((seg) => seg.length > 0);
+  const letters = segments.flat();
   const compact = letters.join('');
-  const spaced = entry.nosep ? compact : letters.join(SEP_CLASS);
-  const alts = [`${B_BEFORE}${spaced}${B_AFTER}`];
+  const alts: string[] = [];
+  if (entry.nosep) {
+    alts.push(`${B_BEFORE}${compact}${B_AFTER}`);
+  } else {
+    alts.push(`${B_BEFORE}${segments.map((seg) => seg.join('')).join(`${SEP_CHARS}*`)}${B_AFTER}`);
+    if (letters.length > 1) alts.push(`${B_BEFORE}${letters.join(`${SEP_CHARS}+`)}${B_AFTER}`);
+  }
   if (entry.mode === 'affix') alts.push(compact);
   if (entry.mode === 'prefix') alts.push(`${B_BEFORE}${compact}`);
   return {

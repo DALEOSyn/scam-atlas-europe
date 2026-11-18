@@ -1,0 +1,6 @@
+# A `sources:` list outside scenarios' debrief.sources gets no exemption.
+references:
+  sources:
+    - realbank-help.com
+    - "+49 30 1234567"
+    - "DE89 3704 0044 0532 0130 00"

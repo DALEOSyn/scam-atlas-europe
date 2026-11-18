@@ -107,7 +107,7 @@ Revolut | except: revolution; revolutions; revolutionary; revolutionise; revolut
 Nordea
 Danske Bank
 Swedbank
-SEB
+
 Handelsbanken
 DNB
 SpareBank

@@ -17,7 +17,7 @@
  * content:validate) and the linter's own list files.
  */
 import { readFileSync, existsSync } from 'node:fs';
-import { resolve, relative, basename } from 'node:path';
+import { resolve, relative, basename, sep } from 'node:path';
 import { LineCounter, parse, parseDocument, isMap, isScalar, isSeq, type Node } from 'yaml';
 import { listFiles } from './lib/content.ts';
 import { blankSvgGeometry, checkQrPayload, scanText, type Finding, type RuleConfig } from './redline/rules.ts';
@@ -73,17 +73,29 @@ const QR_KEY_RE = /^qr(?:_?(?:payload|url|link|target))?$/i;
 const QR_CHILD_KEYS = new Set(['payload', 'url', 'href', 'link', 'target', 'data', 'value']);
 
 /** Walk a YAML document, yielding decoded string scalars and QR payload findings. */
-/** Character ranges of scalars inside any `sources:` sequence (source ids). */
-function sourceIdRanges(node: Node | null | undefined, inSources = false): [number, number][] {
-  if (!node) return [];
-  if (isScalar(node)) return inSources && node.range ? [[node.range[0], node.range[1]]] : [];
-  if (isSeq(node)) return node.items.flatMap((i) => sourceIdRanges(i as Node | null, inSources));
-  if (isMap(node)) {
-    return node.items.flatMap((p) =>
-      sourceIdRanges(p.value as Node | null, isScalar(p.key) && p.key.value === 'sources' && isSeq(p.value)),
-    );
+const SCENARIOS_DIR = resolve(CONTENT, 'scenarios');
+const SOURCE_ID_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+export function isScenarioFile(file: string): boolean {
+  return resolve(file).startsWith(`${SCENARIOS_DIR}${sep}`);
+}
+
+/**
+ * Source ids name real publishers by design (e.g. europol-iocta-2025) and are
+ * checked against content/sources.yaml by content:validate. Exempt ONLY
+ * slug-shaped scalars at the path debrief.sources, in scenario files.
+ */
+export function exemptSourceIds(file: string, root: Node | null | undefined): Set<Node> {
+  const out = new Set<Node>();
+  if (!isScenarioFile(file) || !isMap(root)) return out;
+  const debrief = root.get('debrief', true);
+  if (!isMap(debrief)) return out;
+  const sources = debrief.get('sources', true);
+  if (!isSeq(sources)) return out;
+  for (const item of sources.items) {
+    if (isScalar(item) && typeof item.value === 'string' && SOURCE_ID_RE.test(item.value)) out.add(item);
   }
-  return [];
+  return out;
 }
 
 function walkYaml(
@@ -92,14 +104,14 @@ function walkYaml(
   lc: LineCounter,
   onString: (value: string, line: number) => void,
   onQr: (f: Finding) => void,
+  exempt: ReadonlySet<Node> = new Set(),
 ): void {
-  if (!node) return;
+  if (!node || exempt.has(node)) return;
   const lineOf = (n: Node): number => (n.range ? lc.linePos(n.range[0]).line : 0);
   if (isScalar(node)) {
     if (typeof node.value !== 'string') return;
     const value = node.value;
     const key = keys[keys.length - 1] ?? '';
-    if (key === 'sources') return; // source ids, see sourceIdRanges()
     onString(value, lineOf(node));
     const inQr = keys.slice(0, -1).some((k) => /qr/i.test(k));
     if (QR_KEY_RE.test(key) || (inQr && QR_CHILD_KEYS.has(key.toLowerCase()))) {
@@ -111,12 +123,12 @@ function walkYaml(
     for (const pair of node.items) {
       const k = isScalar(pair.key) ? String(pair.key.value) : '';
       if (isScalar(pair.key) && typeof pair.key.value === 'string') onString(pair.key.value, lineOf(pair.key));
-      walkYaml(pair.value as Node | null, [...keys, k], lc, onString, onQr);
+      walkYaml(pair.value as Node | null, [...keys, k], lc, onString, onQr, exempt);
     }
     return;
   }
   if (isSeq(node)) {
-    for (const item of node.items) walkYaml(item as Node | null, keys, lc, onString, onQr);
+    for (const item of node.items) walkYaml(item as Node | null, keys, lc, onString, onQr, exempt);
   }
 }
 
@@ -134,10 +146,12 @@ export function lintText(file: string, text: string, cfg: RuleConfig): FileFindi
   const lc = new LineCounter();
   const doc = isData ? parseDocument(text, { lineCounter: lc, uniqueKeys: false }) : undefined;
 
-  // Source ids (debrief.sources) name real publishers by design and are checked
-  // against content/sources.yaml by content:validate; blank them for the raw pass.
+  // Exempt source ids (see exemptSourceIds) are blanked for the raw pass and skipped when decoding.
   let raw = /\.svg$/i.test(file) ? blankSvgGeometry(text) : text;
-  if (doc) for (const [start, end] of sourceIdRanges(doc.contents as Node | null)) raw = raw.slice(0, start) + ' '.repeat(end - start) + raw.slice(end);
+  const exempt = exemptSourceIds(file, doc?.contents as Node | null | undefined);
+  for (const n of exempt) {
+    if (n.range) raw = raw.slice(0, n.range[0]) + ' '.repeat(n.range[1] - n.range[0]) + raw.slice(n.range[1]);
+  }
 
   for (const f of scanText(raw, cfg)) add(f);
 
@@ -153,6 +167,7 @@ export function lintText(file: string, text: string, cfg: RuleConfig): FileFindi
         for (const f of scanText(value, cfg)) add({ ...f, line: line + (f.line ?? 1) - 1 });
       },
       add,
+      exempt,
     );
   }
   return found.sort((a, b) => (a.line ?? 0) - (b.line ?? 0));

@@ -2,7 +2,8 @@
  * Text normalisation for the red-line linter.
  *
  * normalise(): NFKC, strip invisible characters, map look-alike full stops to
- *   "." (so "paketpilot。com" is read as a domain). Used by every rule.
+ *   "." (so "paketpilot。com" is read as a domain) and typographic dashes and
+ *   minus signs to "-" (so "030–1234567" is read as a phone). Used by every rule.
  * foldForBrand(): a UTS #39-style skeleton for brand matching. Accents are
  *   stripped, confusables (UTS #39 data via `unicode-confusables`, plus a hand
  *   map for small capitals) and leetspeak are folded, everything is lower-cased,
@@ -29,11 +30,16 @@ const INVISIBLE = new Set<string>([
 /** Ideographic, halfwidth ideographic, small and fullwidth full stops, one-dot leader. */
 const DOT_LOOKALIKES = new Set<string>([0x3002, 0xff61, 0xfe52, 0xff0e, 0x2024].map((p) => cp(p)));
 
+/** Hyphens and dashes (U+2010..U+2015), minus sign, small/fullwidth hyphen-minus. */
+const DASH_LOOKALIKES = new Set<string>(
+  [0x2010, 0x2011, 0x2012, 0x2013, 0x2014, 0x2015, 0x2212, 0xfe58, 0xfe63, 0xff0d].map((p) => cp(p)),
+);
+
 export function normalise(text: string): string {
   let out = '';
   for (const ch of text.normalize('NFKC')) {
     if (INVISIBLE.has(ch)) continue;
-    out += DOT_LOOKALIKES.has(ch) ? '.' : ch;
+    out += DOT_LOOKALIKES.has(ch) ? '.' : DASH_LOOKALIKES.has(ch) ? '-' : ch;
   }
   return out;
 }

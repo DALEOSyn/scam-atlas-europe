@@ -12,11 +12,14 @@ import {
   findUrls,
   ibanChecksumValid,
   isFictionalPhone,
+  luhnValid,
+  normalise,
   scanText,
   type Category,
   type Finding,
 } from '../../scripts/redline/rules.ts';
-import { compileList, parseList } from '../../scripts/redline/lists.ts';
+import { compileList, nameSegments, parseList } from '../../scripts/redline/lists.ts';
+import { listFiles } from '../../scripts/lib/content.ts';
 
 const ROOT = resolve(import.meta.dirname, '..', '..');
 const FIX = resolve(ROOT, 'tests/fixtures/redline');
@@ -45,13 +48,17 @@ describe('redline:lint fixtures', () => {
     ['bad-escaped.yaml', 'domain'],
     ['bad-qr.yaml', 'qr'],
     ['bad-logo.svg', 'url'],
+    ['bad-card.yaml', 'card'],
+    ['bad-sources-list.yaml', 'domain'],
+    ['bad-sources-list.yaml', 'phone'],
+    ['bad-sources-list.yaml', 'iban'],
   ];
   it.each(cases)('%s is caught as %s', (file, category) => {
     expect(categories(file)).toContain(category);
   });
 
   it('every error category of the linter has a fixture', () => {
-    expect([...new Set(cases.map(([, c]) => c))].sort()).toEqual(['brand', 'domain', 'iban', 'markup', 'phone', 'qr', 'url']);
+    expect([...new Set(cases.map(([, c]) => c))].sort()).toEqual(['brand', 'card', 'domain', 'iban', 'markup', 'phone', 'qr', 'url']);
   });
 
   it('bad-escaped.yaml is only visible after YAML decoding', () => {
@@ -81,10 +88,21 @@ describe('redline:lint on real content', () => {
     expect(cfg.domainAllowlist).toEqual([]);
   });
 
-  it('source ids may name real publishers, other fields may not', () => {
+  it('source ids may name real publishers only at debrief.sources in scenario files', () => {
+    const scenarioFile = resolve(ROOT, 'content/scenarios/home/x.yaml');
     const yaml = 'debrief:\n  sources: [europol-scam-smishing]\n  habit: "Europol says hi"\n';
-    const found = lintText('x.yaml', yaml, cfg).filter((f) => f.category === 'brand');
-    expect(found.map((f) => f.line)).toEqual([3]);
+    expect(lintText(scenarioFile, yaml, cfg).map((f) => f.line)).toEqual([3]);
+    // Same text outside content/scenarios/: no exemption.
+    expect(lintText(resolve(ROOT, 'content/other.yaml'), yaml, cfg).map((f) => f.line)).toEqual([2, 3]);
+  });
+
+  it('the source-id exemption is narrow (finding 2 of the re-review)', () => {
+    const scenarioFile = resolve(ROOT, 'content/scenarios/home/x.yaml');
+    // Not slug-shaped: linted.
+    expect(lintText(scenarioFile, 'debrief:\n  sources: [realbank.com]\n', cfg).map((f) => f.category)).toEqual(['domain']);
+    // A sources list at another path: linted.
+    const other = 'message:\n  sources: [europol-scam-smishing, "+49 30 1234567"]\n';
+    expect(lintText(scenarioFile, other, cfg).map((f) => f.category).sort()).toEqual(['brand', 'phone']);
   });
 
   it('reports line numbers', () => {
@@ -140,6 +158,10 @@ describe('finding 3: brand matching bypasses', () => {
     'amazonsupport',
     'Sparkassen',
     'Caisse d’Épargne',
+    'P a y P a l',
+    'Deutsche-Bank',
+    'M o n z o',
+    'InPost',
   ])('%s is caught', (s) => {
     expect(errors(s, 'brand').length).toBeGreaterThan(0);
   });
@@ -168,6 +190,13 @@ describe('finding 3: brand matching bypasses', () => {
       'Amélie and Amelia',
       'interpolate the values',
       'all express trains',
+      'In all cases',
+      'Fill in all fields',
+      'all or nothing',
+      'Tell a friend',
+      'post I',
+      'Is she in?',
+      'in post',
     ]) {
       expect(errors(s, 'brand'), s).toEqual([]);
     }
@@ -277,5 +306,69 @@ describe('fictional phone ranges and QR payloads', () => {
     expect(checkQrPayload('/qr/lisbon-parking-01')).toEqual([]);
     expect(checkQrPayload('https://x.example')).toHaveLength(1);
     expect(checkQrPayload('/qr/../admin')).toHaveLength(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Re-review findings (final narrow fix). Exact strings from the review.
+
+describe('re-review 1: separators only at the name\'s own boundaries or between every letter', () => {
+  it('segments follow word, digit and 3+3 camelCase boundaries', () => {
+    expect(nameSegments('PayPal')).toEqual(['Pay', 'Pal']);
+    expect(nameSegments('InPost')).toEqual(['InPost']);
+    expect(nameSegments('N26')).toEqual(['N', '26']);
+    expect(nameSegments('Deutsche Bank')).toEqual(['Deutsche', 'Bank']);
+    expect(nameSegments('WeChat')).toEqual(['WeChat']);
+  });
+
+  it('docs/ prose produces no brand errors', () => {
+    const docs = listFiles(resolve(ROOT, 'docs'), ['.md']);
+    expect(docs.length).toBeGreaterThan(0);
+    const found = docs.flatMap((f) => scanText(readFileSync(f, 'utf8'), cfg).filter((x) => x.category === 'brand' && x.severity === 'error').map((x) => `${f}:${x.line} ${x.match}`));
+    expect(found).toEqual([]);
+  });
+});
+
+describe('re-review 3: typographic dashes and more IBAN separators', () => {
+  const c = (n: number) => String.fromCodePoint(n);
+  const EN = c(0x2013);
+  it.each([
+    ['030' + EN + '1234567', 'phone'],
+    ['0151 ' + EN + ' 2345678', 'phone'],
+    ['030' + c(0x2212) + '1234567', 'phone'],
+    ['0151' + c(0x2012) + '2345678', 'phone'],
+    ['DE89' + EN + '3704' + EN + '0044' + EN + '0532' + EN + '0130' + EN + '00', 'iban'],
+    ['+49 151 2345' + EN + '678', 'phone'],
+    ['DE89_3704_0044_0532_0130_00', 'iban'],
+    ['DE89/3704/0044/0532/0130/00', 'iban'],
+  ] as [string, Category][])('%s is caught as %s', (s, category) => {
+    expect(errors(s, category)).toHaveLength(1);
+  });
+
+  it('every listed dash maps to "-"', () => {
+    for (const p of [0x2010, 0x2011, 0x2012, 0x2013, 0x2014, 0x2015, 0x2212, 0xfe58, 0xfe63, 0xff0d]) {
+      expect(normalise('a' + String.fromCodePoint(p) + 'b'), p.toString(16)).toBe('a-b');
+    }
+  });
+});
+
+describe('re-review extras', () => {
+  it('defanged domains are caught', () => {
+    for (const s of ['bank[.]com', 'bank(dot)com', 'bank[dot]com', 'bank (dot) com', 'bank{.}co.uk']) expect(errors(s, 'domain'), s).toHaveLength(1);
+    expect(errors('paketpilot[.]example', 'domain')).toEqual([]);
+  });
+
+  it('Luhn-valid card numbers fail, invalid ones pass', () => {
+    expect(luhnValid('4111111111111111')).toBe(true);
+    expect(luhnValid('4111111111111112')).toBe(false);
+    for (const s of ['4111 1111 1111 1111', '4111-1111-1111-1111', '4111111111111111', '3782 822463 10005']) expect(errors(s, 'card'), s).toHaveLength(1);
+    expect(errors('4111 1111 1111 1112')).toEqual([]);
+    // A compact unprefixed phone is still a phone even if it fails Luhn.
+    expect(errors('4930123456789', 'phone')).toHaveLength(1);
+  });
+
+  it('SEB moved to the warnlist', () => {
+    expect(errors('SEB', 'brand')).toEqual([]);
+    expect(warnings('SEB')).toHaveLength(1);
   });
 });

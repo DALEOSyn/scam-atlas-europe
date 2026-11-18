@@ -8,7 +8,7 @@
 # Play, Plus, Salt, Line, Teams, Windows, Meta, X, EE, O2, BT, A1, OP.
 
 # --- Couriers / postal
-UPS | word | except: ups and downs
+UPS | word | except: ups and downs; mock-ups; mock ups; follow-ups; sign-ups; pop-ups; set-ups; start-ups; check-ups; warm-ups; grown-ups; line-ups; top-ups; pick-ups
 Hermes | word
 Bring | word
 
@@ -43,6 +43,7 @@ Nationwide | word
 Starling | word
 Millennium | word
 Erste | word
+SEB | word
 
 # --- Telecoms
 Orange | word | except: orange juice

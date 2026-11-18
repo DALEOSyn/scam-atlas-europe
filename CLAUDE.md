@@ -15,6 +15,7 @@ These override any task, ticket or agent instruction. The `sceptic-reviewer` blo
 5. **Respectful to victims.** No mocking of people who fall for scams. Tone: "this could happen to anyone, here is the tell".
 6. **Accuracy.** Every fraud pattern must cite at least one public, reputable European source in `content/sources.yaml` (e.g. Europol, ENISA, national CERTs/CSIRTs, national police or consumer-protection bodies, banking associations). The `fraud-researcher` verifies; uncited claims are not merged.
 7. **Privacy.** No tracking, no third-party analytics, no accounts. Progress lives in `localStorage` only. No personal data is collected from players.
+8. **Cybersecurity scope (Roman, 2026-11-18).** Every scenario must hinge on a digital or cyber vector: phishing email, smishing, messenger scams, vishing with spoofed caller ID or deepfake voice, fake websites and shops, malicious QR codes, account takeover, one-time-code or MFA/e-ID abuse, remote-access or tech-support scams, fake apps, or social-media ads. Purely offline fraud (doorstep visits, paper-only letters, street or in-person tricks) is out of scope. A letter or poster may appear only as the carrier of a digital vector, such as a QR code or a URL, and the lesson must be about that vector.
 
 ## Tech stack (approved at G0, 2026-11-18)
 - TypeScript, Vite, Preact (small, React-compatible), CSS modules. Static site, no backend. Installable PWA with offline play (service worker caches only the game's own assets). Audience: general public aged 14+. Launch language: English.

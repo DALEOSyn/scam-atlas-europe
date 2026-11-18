@@ -25,7 +25,7 @@ You've joined the **Waymarker Network**, a fictional non-profit (not an EU body,
 | **Grandpa Teo** (74) | Family back home | Sharp and funny. **Spots scams and teaches you** (Berlin 1-4, Rome). Slips once (0-5) and asks you for help. |
 | **Noor** (15) | Cousin | Messenger-native. New-number scenario (Amsterdam) and the easy-money offer (finale). |
 | **Alex** | Friend met on Wordswap | The arc character (§10). **Friendship only.** Illustrated, never a photo. |
-| **Locals** | Per chapter (`content/cast.yaml`) | E.g. Jonas (Berlin neighbour); Signora Bruna (72, Rome B&B owner, capable) and her grandson Davide (19). |
+| **Locals** | Per chapter (`content/cast.yaml`) | E.g. Jonas (Berlin neighbour); Signora Bruna (72, Rome B&B owner, capable) and her grandson Davide (19). They reach you by message or call, never on the doorstep. |
 
 Scammers are faceless: "unknown sender", a spoofed fictional brand, or a transcript. No names pointing to an ethnicity, no accents. **Spelling, grammar and foreign phrasing are never red flags** (validator rule). They may appear only as decoys.
 
@@ -56,13 +56,13 @@ Scammers are faceless: "unknown sender", a spoofed fictional brand, or a transcr
 | `email` | Inbox, threads | Display name vs. address. |
 | `sms` | Texts, including in existing genuine threads | Short code vs. mobile number. |
 | `messenger` | Kettle chats, new-number messages, the arc | Profile, number, "new contact" banner. |
-| `call` | Transcript, optional audio | `hang_up` and the dialler are always visible. |
+| `call` | Transcript, optional audio. Vishing with spoofed caller ID or a cloned voice. | `hang_up` and the dialler are always visible. The Check tool on the caller ID says "Caller ID can be faked". |
 | `browser` | Shops, rentals, login pages, ads | Training pages (see below). |
 | `qr` | Posters, meters, letters | The destination is shown as text before anything opens. |
 | `banking` | Larchwick Bank app | Balances, payees, transfers, and the **payee-name check** (fictional "Name doesn't match" / "Name matches" banners). |
 | `social` | Feeds, ads | Fictional people only. |
 | `auth` | Gatewren approvals | Sign-in, e-ID signature and QR-login prompts, with context. |
-| `letter` | Post, delivery cards, doorstep notes | **Rendered as styled real text.** Images are decorative only. |
+| `letter` | **Only as the carrier of a digital vector** (a QR code or URL on a delivery card, poster or letter). The lesson must be about that vector. No doorstep notes, no paper-only letters (Red Line 8). | **Rendered as styled real text.** Images are decorative only. |
 
 **Check tool.**
 - Every visible element of a message is a native button ("Check sender", "Check link"), in reading order.
@@ -106,6 +106,7 @@ Scammers are faceless: "unknown sender", a spoofed fictional brand, or a transcr
 - No comply actions on low-stakes genuine messages. "High stakes" means the message asks you to pay, log in, enter data or a code, or approve something.
 - Labels describe behaviour, never the verdict.
 - **Pressure parity:** from slot 1, the share of genuine scenarios with a timer or pusher stays within 15 percentage points of the share of fraud scenarios that have one. Genuine messages use honest deadlines ("Locker holds your parcel 7 days", "Link valid 15 minutes").
+- **Cyber scope (Red Line 8):** every scenario hinges on a digital vector (email, SMS, messenger, spoofed or cloned-voice call, fake site, shop or app, QR code, account takeover, code or MFA/e-ID abuse, remote access, social ads). No doorstep, street, ATM, in-person or paper-only tricks. Where a real-world scam would continue offline (e.g. someone coming to collect cash), the scenario ends at the digital request and the debrief stays on that vector.
 - **Theme variety:** at most half of a chapter's scored scenarios share a surface theme, and no two of them sit next to each other.
 - **Timer length** is set by chapter slot (`timers.by_slot`) and is the same for genuine and fraud scenarios. Only bosses (always fraud, announced as the boss) and call beats use their own fixed lengths.
 - **Difficulty parity:** every difficulty level a chapter uses includes at least one genuine scenario.
@@ -308,7 +309,7 @@ All endings show the red-flag timeline (slot 1 is shown as "Nothing to notice ye
 ## 15. Tone
 - Warm, brisk, lightly witty. Humour targets the trick, never the victim.
 - Never use "stupid", "gullible", "obviously" or "you should have known". Lead with the tell.
-- Older characters are capable. Teo and Signora Bruna lead in Rome, and it is the 19-year-old Davide who falls for the family-emergency script: it can happen to anyone.
+- Older characters are capable. Teo and Signora Bruna lead in Rome, and it is the 19-year-old Davide who falls for the cloned-voice family-emergency message: it can happen to anyone.
 - Scammers are faceless. Language mistakes never signal a scam.
 - Every debrief ends forward-looking. Red Lines 1 and 3 apply everywhere, including jokes.
 
@@ -359,18 +360,19 @@ All endings show the red-flag timeline (slot 1 is shown as "Nothing to notice ye
   - `ignore` (the order is cancelled; 0);
   - `report` (0, −5).
 - In the boss, `hang_up` → `call_back_known` on the number in the Trundle app is verify. Beats keep arriving even after a beat-1 verify, so skilled players see the whole boss.
-- The delivery-card QR candidate is held as a swap for 1-5 if research doesn't support the Kettle-code callback.
+- **Red Line 8 check:** every Berlin scenario is SMS, email, messenger, browser or call. There is no customs *letter*: the customs fee arrives by SMS (1-7) and as an emailed invoice (boss beat 2).
+- The delivery-card QR candidate is held as a swap for 1-5 if research doesn't support the Kettle-code callback. If used, the card is only a `letter` carrying a QR code, and the lesson is checking the QR destination (LO-02).
 
 ## 18. Chapters 2–10 (map owned by `fraud-researcher`)
 **2 Amsterdam (slot 2, diff 2–3).**
 - Patterns: the "Hi Mum / new number" messenger scam, and the **task / easy-work job scam**.
 - Noor writes from a "new number" while her real number also messages you; call the old number (LO-07).
-- A job offer that pays small amounts, then asks you to pay in to "unlock" tasks (LO-12).
+- **Task scam:** a Kettle message recruits you for "easy online work". It leads to a fake task-platform website or app that shows small earnings and then asks for deposits to "unlock" tasks (LO-12, LO-02). The genuine twin is a real job message from a known contact that asks for nothing.
 - The Larchwick **payee-name check** shows "Name doesn't match" on the new-number request (LO-06).
 - Arc slot 2.
 
 **3 Paris (slot 3, diff 2–4).**
-- Patterns: CEO fraud and invoice IBAN change at a partner office (LO-06, LO-18), with genuine supplier invoices as twins.
+- Patterns: CEO fraud and invoice IBAN change by **email** (business email compromise) at a partner office, plus a spoofed-caller-ID follow-up call (LO-06, LO-18). Genuine emailed supplier invoices are the twins.
 - The payee-name check appears twice: once mismatching, once **matching** while the request is still fake. Lesson: a match doesn't prove it's genuine.
 - Boss: a "CEO" email + call + secrecy, won by the four-eyes rule.
 
@@ -384,14 +386,23 @@ All endings show the red-flag timeline (slot 1 is shown as "Nothing to notice ye
 - Echo of earlier account choices.
 
 **6 Rome (slot 6, diff 3–4).**
-- Patterns: fake police or official calls, and family-emergency calls.
-- **Teo and Signora Bruna lead.** Teo recognises a fake call and coaches you through hanging up and calling back.
-- **Davide (19)** falls for a family-emergency script, and Bruna and you help him recover.
-- You agree a family code word with Teo (LO-18, LO-08, LO-04, LO-07).
+- Patterns: calls from "police" or "Larchwick Bank" with a **spoofed caller ID**, and family-emergency messages or calls using a **cloned voice** or a **"new number" on Kettle**. Doorstep and utility-visit content is cut (Red Line 8).
+- **Habit:** verify through a number you already know. Caller ID and a familiar voice prove nothing.
+- **Teo and Signora Bruna lead.** Teo gets a "police" call showing an official-looking number. He hangs up, calls back on the number he looks up himself, and coaches you through the same.
+- **Davide (19)** gets a voice message that sounds like his sister, from a new number, asking for an urgent transfer. He pays. Bruna and you guide his damage control.
+- You agree a family code word with Teo for calls and voice messages (LO-08, LO-07, LO-18, LO-04).
+- Scenarios end at the digital request (the call or the transfer). No in-person cash pickups.
 
 **7 Lisbon (slot 7, diff 3–5).**
-- Patterns: **holiday and student rental scams lead** (LO-11: `check_official_list`, `pay_protected`), plus tampered QR stickers on parking meters (LO-02).
-- Twins: genuine rentals and a genuine *(fictional)* parking app.
+- Patterns: **holiday and student rental scams, digital vectors only**:
+  - fake listing pages cloning a fictional rental platform;
+  - off-platform payment links sent by the "host";
+  - phishing for your rental-platform login.
+- Rental LOs: LO-11 (`pay_protected` inside the platform), LO-10 (stay on the platform), LO-02 (check the domain), LO-05 (don't log in via a message).
+- Tampered **QR stickers on parking meters** stay; the lesson is the QR destination (LO-02).
+- No ATM, street or in-person tricks.
+- Twins: genuine listings on the platform and a genuine *(fictional)* parking app.
+- Needs a fictional rental-platform brand in `brands.yaml` (ux-artist).
 
 **8 Dublin (slot 8, diff 3–5).**
 - Patterns: investment ads with fake endorsements by fictional celebrities, checked against an in-world regulator list (LO-13), then recovery-scam offers.
@@ -404,7 +415,11 @@ All endings show the red-flag timeline (slot 1 is shown as "Nothing to notice ye
 - One remote-access "support" call previews the finale (LO-15).
 
 **10 Brussels: finale (slot 10, diff 4–5).**
-- New patterns: tech-support remote access (boss, LO-15) and **money-mule recruitment**. Noor asks your advice about an offer to "lend" her bank account. The tone is non-threatening: "If you've already said yes, it's not too late: stop, tell a trusted adult, talk to your bank" (LO-12, LO-18).
+- New patterns: tech-support remote access (boss, LO-15) and **money-mule recruitment**.
+  - The hook is a social-media or Kettle DM offering Noor easy money.
+  - She asks your advice: they want her **banking-app login, card or account access** "just for a few transfers".
+  - The cyber lesson: never hand over your banking-app login, card or account access.
+  - The tone is non-threatening: "If you've already shared it, it's not too late: change your login, call your bank on the number on your card, and tell a trusted adult" (LO-12, LO-05, LO-18).
 - Plus callbacks and the Alex resolution (§10.3).
 - End screen: habit cards and the help list.
 
@@ -420,7 +435,7 @@ Requests to `frontend-engineer`:
 - **CR-06** `interrupts[]` (`at_seconds`, `message`, `is_fraud`, `actions`).
 - **CR-07** `recovery_steps.yaml` (id, label). Outcomes reference `{step, category}` per scenario.
 - **CR-08** `sets_flags[]`, `requires_flags[]`, `arc_effects`, `arc_branch_on` (e.g. `alex.invested`).
-- **CR-09** Devices `auth` and `letter`. Inspectable targets `qr.destination` and `payee.name_check`.
+- **CR-09** Devices `auth` and `letter`. A `letter` must contain a QR code or URL inspectable, and that must be its red flag or decoy focus (validator, Red Line 8). Inspectable targets `qr.destination` and `payee.name_check`.
 - **CR-10** `debrief.layer1` (≤ 40 words: verdict or arc text, tell, habit, `already_clicked`), `debrief.layer2`, `debrief.device_tip`, `debrief.habit_card`, `debrief.variant: arc`, `debrief.safeguarding_line`.
 - **CR-11** Per-chapter validation of all `mix` rules (balance.yaml), including pressure parity, theme share, `approve_prompt` only on fraud, no comply on low-stakes genuine, and Alex lines ≤ 25 words.
 - **CR-12** `content/cast.yaml` (id, name, role, known-channel contact).

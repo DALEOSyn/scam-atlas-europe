@@ -45,6 +45,9 @@ Approve `docs/GDD.md`, the chapter list (`docs/patterns/MAP.md`), the learning o
 
 **Roman, 2026-11-18: "continue as recommended". All 7 answered as recommended:** friendship-only arc with "Tell me now"; sextortion as a help card only; free city choice after Berlin; about 2.5–3 h length, re-measured at G2; strict gold, tuned after G2; real reporting bodies on the help screen under the stated conditions; lucky-silver risk accepted for now. ✅
 
+## Standing rules from Roman
+- **2026-11-18: keep the scams in the cybersecurity realm.** Every scenario must hinge on a digital or cyber vector; purely offline fraud is out of scope. Recorded as Red Line 8 in CLAUDE.md, which the sceptic-reviewer enforces.
+
 ## G2 — Vertical slice approved (state: Open)
 Play the tutorial + first city chapter yourself (link to preview build). Approve fun, tone and difficulty before content is mass-produced.
 

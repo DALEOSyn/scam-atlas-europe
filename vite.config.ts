@@ -4,13 +4,18 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { resolve } from 'node:path';
 import { parse } from 'yaml';
 import { validateContent } from './scripts/lib/content.ts';
+import { scenarioSchema } from './src/content/schema.ts';
 
 const CONTENT_DIR = resolve(import.meta.dirname, 'content');
+
+const SCENARIOS_DIR = resolve(CONTENT_DIR, 'scenarios');
 
 /**
  * Imports *.yaml as plain JSON data. Scenario files are validated (schema +
  * source/brand cross-references) at build start, so the runtime bundle
- * ships data only and needs no Zod.
+ * ships data only and needs no Zod. Scenario files are emitted as the
+ * schema's parse output, so defaults (beats: [], inspectables: [], ...) are
+ * present at runtime exactly as the Scenario type promises.
  */
 function contentPlugin(): Plugin {
   return {
@@ -22,7 +27,9 @@ function contentPlugin(): Plugin {
     },
     transform(code, id) {
       if (!/\.ya?ml$/.test(id)) return null;
-      return { code: `export default ${JSON.stringify(parse(code))};`, map: null };
+      const raw: unknown = parse(code);
+      const data = resolve(id).startsWith(`${SCENARIOS_DIR}/`) ? scenarioSchema.parse(raw) : raw;
+      return { code: `export default ${JSON.stringify(data)};`, map: null };
     },
   };
 }

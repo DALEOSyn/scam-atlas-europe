@@ -500,3 +500,60 @@ describe('YAML anchors, aliases and merge keys are rejected (T-2.2 rework 2)', (
     expect(yamlErrors(SCENARIO, 'message:\n  body: "a & b * c"\n')).toEqual([]);
   });
 });
+
+// T-2.4a: schema identifiers (device enum values, pattern ids) may contain warnlisted words.
+
+describe('schema identifiers are exempt only at their path and only when known (T-2.4a)', () => {
+  const SCENARIO = resolve(ROOT, 'content/scenarios/home/x.yaml');
+  const CHAPTER = resolve(ROOT, 'content/chapters/x.yaml');
+  const brandHits = (file: string, yaml: string) =>
+    lintText(file, yaml, cfg)
+      .filter((f) => f.category === 'brand')
+      .map((f) => f.match.toLowerCase());
+
+  it('device enum values are exempt (opening message, beats, interrupts)', () => {
+    const yaml = [
+      'device: messenger',
+      'beats:',
+      '  - id: b',
+      '    device: messenger',
+      'interrupts:',
+      '  - id: i',
+      '    device: messenger',
+      '',
+    ].join('\n');
+    expect(brandHits(SCENARIO, yaml)).toEqual([]);
+  });
+
+  it('a known pattern id is exempt in scenario pattern and chapter patterns/callbacks', () => {
+    expect(brandHits(SCENARIO, 'pattern: messenger-account-takeover-code\n')).toEqual([]);
+    expect(brandHits(CHAPTER, 'patterns: [messenger-account-takeover-code]\ncallbacks:\n  - messenger-account-takeover-code\n')).toEqual([]);
+  });
+
+  it('the same word in free text still warns', () => {
+    expect(brandHits(SCENARIO, 'device: messenger\nmessage:\n  body: "Write to me on Messenger"\n')).toEqual(['messenger']);
+    // message.prompt.device is free text, not the enum.
+    expect(brandHits(SCENARIO, 'message:\n  prompt:\n    device: messenger\n')).toEqual(['messenger']);
+    // An enum value under another key.
+    expect(brandHits(SCENARIO, 'theme: messenger\n')).toEqual(['messenger']);
+  });
+
+  it('values that are not the enum or a known brief still warn', () => {
+    expect(brandHits(SCENARIO, 'device: Messenger\n')).toEqual(['messenger']);
+    expect(brandHits(SCENARIO, 'device: messenger-app-clone\n').length).toBeGreaterThan(0);
+    expect(brandHits(SCENARIO, 'pattern: messenger-unknown-brief\n').length).toBeGreaterThan(0);
+    expect(brandHits(CHAPTER, 'patterns: [messenger-unknown-brief]\n').length).toBeGreaterThan(0);
+    // A denylisted brand as a device value is still an error.
+    expect(lintText(SCENARIO, 'device: WhatsApp\n', cfg).some((f) => f.severity === 'error' && f.category === 'brand')).toBe(true);
+  });
+
+  it('the same paths outside content/scenarios and content/chapters still warn', () => {
+    const other = resolve(ROOT, 'content/other.yaml');
+    expect(brandHits(other, 'device: messenger\n')).toEqual(['messenger']);
+    expect(brandHits(other, 'pattern: messenger-account-takeover-code\n').length).toBeGreaterThan(0);
+    expect(brandHits(other, 'patterns: [messenger-account-takeover-code]\n').length).toBeGreaterThan(0);
+    // Chapter-only fields do not exempt in scenarios, and vice versa.
+    expect(brandHits(SCENARIO, 'patterns: [messenger-account-takeover-code]\n').length).toBeGreaterThan(0);
+    expect(brandHits(CHAPTER, 'device: messenger\n')).toEqual(['messenger']);
+  });
+});

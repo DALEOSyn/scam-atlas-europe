@@ -26,7 +26,7 @@
  * sub-brands, known_channels, email_addresses, look-alikes, ...) is linted
  * from decoded scalars; content:validate additionally enforces strict keys.
  */
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { resolve, relative, basename, sep } from 'node:path';
 import { LineCounter, parse, parseDocument, isMap, isScalar, isSeq, type Node } from 'yaml';
 import { listFiles } from './lib/content.ts';
@@ -34,6 +34,7 @@ import { yamlStructureIssues } from './lib/yaml-safety.ts';
 import { blankSvgGeometry, checkQrPayload, scanText, type Finding, type RuleConfig } from './redline/rules.ts';
 import { compileList } from './redline/lists.ts';
 import { CHECKABLE_TARGETS } from '../src/content/checkables.ts';
+import { DEVICES } from '../src/content/schema.ts';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const CONTENT = resolve(ROOT, 'content');
@@ -145,6 +146,67 @@ export function exemptInspectableTargets(file: string, root: Node | null | undef
   return out;
 }
 
+const CHAPTERS_DIR = resolve(CONTENT, 'chapters');
+export const PATTERNS_DIR = resolve(ROOT, 'docs', 'patterns');
+
+export function isChapterFile(file: string): boolean {
+  return resolve(file).startsWith(`${CHAPTERS_DIR}${sep}`);
+}
+
+/** Pattern ids: slug-named briefs docs/patterns/<id>.md (MAP.md and other upper-case notes are not ids). */
+export function loadPatternIds(dir: string = PATTERNS_DIR): Set<string> {
+  if (!existsSync(dir)) return new Set();
+  return new Set(
+    readdirSync(dir)
+      .filter((f) => f.endsWith('.md'))
+      .map((f) => f.slice(0, -3))
+      .filter((id) => SOURCE_ID_RE.test(id)),
+  );
+}
+
+let patternIdCache: Set<string> | undefined;
+function patternIds(): Set<string> {
+  patternIdCache ??= loadPatternIds();
+  return patternIdCache;
+}
+
+const isStringScalar = (n: unknown): n is Node & { value: string } => isScalar(n) && typeof n.value === 'string';
+
+/**
+ * Schema identifiers can contain warnlisted words (device: messenger, pattern
+ * messenger-account-takeover-code). Exempt ONLY:
+ *  - in scenario files: `device` of the opening message, beats[] and
+ *    interrupts[] when it is a member of the schema's DEVICES enum (not
+ *    message.prompt.device, which is free text), and the top-level `pattern`
+ *    when it names an existing brief docs/patterns/<id>.md;
+ *  - in chapter files: patterns[] and callbacks[] items naming an existing brief.
+ */
+export function exemptSchemaIdentifiers(file: string, root: Node | null | undefined, briefs: ReadonlySet<string> = patternIds()): Set<Node> {
+  const out = new Set<Node>();
+  if (!isMap(root)) return out;
+  const isBrief = (n: unknown): n is Node => isStringScalar(n) && briefs.has(n.value);
+  if (isScenarioFile(file)) {
+    const fromDevice = (holder: unknown): void => {
+      if (!isMap(holder)) return;
+      const device = holder.get('device', true);
+      if (isStringScalar(device) && (DEVICES as readonly string[]).includes(device.value)) out.add(device);
+    };
+    fromDevice(root);
+    for (const key of ['beats', 'interrupts']) {
+      const seq = root.get(key, true);
+      if (isSeq(seq)) for (const b of seq.items) fromDevice(b);
+    }
+    const pattern = root.get('pattern', true);
+    if (isBrief(pattern)) out.add(pattern);
+  } else if (isChapterFile(file)) {
+    for (const key of ['patterns', 'callbacks']) {
+      const seq = root.get(key, true);
+      if (isSeq(seq)) for (const item of seq.items) if (isBrief(item)) out.add(item);
+    }
+  }
+  return out;
+}
+
 /** Review-only brand fields that document which real brands a design was kept away from. */
 export const BRAND_REVIEW_FIELDS = ['checked_against', 'web_check', 'rationale'] as const;
 
@@ -220,11 +282,16 @@ export function lintText(file: string, text: string, cfg: RuleConfig): FileFindi
   const lc = new LineCounter();
   const doc = isData ? parseDocument(text, { lineCounter: lc, uniqueKeys: false }) : undefined;
 
-  // Exempt nodes (see exemptSourceIds, exemptInspectableTargets, exemptBrandReviewNotes) are blanked for the raw pass and skipped when decoding.
+  // Exempt nodes (see exemptSourceIds, exemptInspectableTargets, exemptSchemaIdentifiers, exemptBrandReviewNotes) are blanked for the raw pass and skipped when decoding.
   let raw = /\.svg$/i.test(file) ? blankSvgGeometry(text) : text;
   const root = doc?.contents as Node | null | undefined;
   const brandNotes = exemptBrandReviewNotes(file, root);
-  const exempt = new Set<Node>([...exemptSourceIds(file, root), ...exemptInspectableTargets(file, root), ...brandNotes]);
+  const exempt = new Set<Node>([
+    ...exemptSourceIds(file, root),
+    ...exemptInspectableTargets(file, root),
+    ...exemptSchemaIdentifiers(file, root),
+    ...brandNotes,
+  ]);
   for (const n of exempt) {
     if (n.range) raw = raw.slice(0, n.range[0]) + raw.slice(n.range[0], n.range[1]).replace(/[^\n]/g, ' ') + raw.slice(n.range[1]);
   }

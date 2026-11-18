@@ -1,0 +1,128 @@
+# 1-7 Customs fee €1.99, pay today or it goes back (GDD §17, the template scenario).
+# Fraud, difficulty 2, timer 60. SMS → browser. Brief: smishing-parcel-fee §2 (customs-fee variant,
+# de-bnetza-zoll-sms-2023), §3 red flags 1, 3, 4, 7; §5 recovery; §7 "match it to your own order".
+# Red flags (R): sender (private mobile number) and link (trundle-zoll.example, registered).
+# Decoys: tracking number (same reveal as 1-1, 1-3 and the boss) and the padlock on the fee page.
+# The fee page address is also a red flag, not counted in R.
+id: berlin-07-customs-fee
+chapter: berlin
+role: standard
+pattern: smishing-parcel-fee
+theme: parcel
+learning_objectives: [LO-02, LO-03, LO-04, LO-05]
+difficulty: 2
+is_fraud: true
+device: sms
+brands: [trundle]
+cast: []
+pressure:
+  timer: true
+  levers: [urgency, small_amount]
+
+message:
+  sender: { display: "+49 1•• •••• ••53", detail: "Mobile number: +49 1•• •••• ••53" }
+  body: |
+    Trundle: Ihr Paket TR-30F6-92 wartet beim Zoll. Offene Zollgebühr: 1,99 EUR. Bitte heute zahlen, sonst geht es zurück: trundle-zoll.example/p/8812
+  lang: de
+  translation: "Trundle: Your parcel TR-30F6-92 is waiting at customs. Customs fee due: EUR 1.99. Please pay today, or it goes back: trundle-zoll.example/p/8812"
+  request: pay
+  references: ["TR-30F6-92"]
+  l10n_note: "German in-world text is intentional (Berlin chapter); the English translation is shown inline. \"Zoll\" means customs."
+
+inspectables:
+  - target: sender.detail
+    reveal: "+49 1•• •••• ••53, a private mobile number. Trundle's texts come from the sender name TRUNDLE."
+    red_flag: true
+    type: sender
+  - target: link
+    reveal: "trundle-zoll.example. The owner part is trundle-zoll.example, not trundle.example. \"Zoll\" (customs) in the name doesn't make it Trundle's."
+    red_flag: true
+    type: link
+  - target: reference
+    reveal: "A tracking number in Trundle's format. Real and look-alike texts both carry them; the Trundle app you open yourself shows which parcels are really yours."
+    red_flag: false
+    type: reference
+
+actions:
+  - id: tap_pay_fee
+    label: "Open the link and pay €1.99"
+    kind: open_link
+    next_beat: fee_page
+    pressure_target: true
+  - id: open_trundle_app_fee
+    label: "Open the Trundle app yourself"
+    kind: verify_in_app
+    outcome: no_fee_found
+  - id: report_fee_text
+    label: "Report the text as spam"
+    kind: report
+    outcome: fee_text_reported
+  - id: delete_fee_text
+    label: "Delete the text"
+    kind: delete
+    outcome: fee_text_deleted
+
+beats:
+  - id: fee_page
+    device: browser
+    message:
+      page: { address: "trundle-zoll.example/p/8812", title: "Trundle Zoll" }
+      body: "Zollgebühr 1,99 EUR. Geben Sie Ihre Kartendaten ein, um die Zustellung freizugeben."
+      lang: de
+      translation: "Customs fee EUR 1.99. Enter your card details to release the delivery."
+      request: pay
+    inspectables:
+      - target: page.address
+        reveal: "The address bar still says trundle-zoll.example, not trundle.example."
+        red_flag: true
+        type: page_address
+      - target: page.info
+        reveal: "The connection is encrypted. Necessary, but never proof of who runs the site."
+        red_flag: false
+        type: padlock
+    actions:
+      - id: enter_card_pay_fee
+        label: "Enter your card and pay €1.99"
+        kind: pay
+        outcome: card_details_stolen
+        pressure_target: true
+      - id: close_fee_page
+        label: "Close the page"
+        kind: ignore
+        outcome: left_fee_page
+
+outcomes:
+  card_details_stolen:
+    narrative: "\"Payment received.\" €1.99 leaves your account. Two days later, three payments you don't recognise appear on your card."
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: call_bank_known_number, category: secure }
+      - { step: refuse_codes_to_callers, category: secure }
+      - { step: report_to_police_online, category: report }
+      - { step: reply_ask_money_back, category: harmful }
+      - { step: pay_recovery_service, category: harmful }
+  no_fee_found:
+    narrative: "The Trundle app shows no parcel at customs and nothing to pay. No TR-30F6-92 either."
+  fee_text_reported:
+    narrative: "Reported. Your phone files the text under spam."
+  fee_text_deleted:
+    narrative: "Deleted. The day ends, and nothing goes back anywhere."
+  left_fee_page:
+    narrative: "You close the page without typing anything. Nothing happens."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A same-day customs fee, from a mobile number, via trundle-zoll.example."
+    what_works: "Pause, then open the Trundle app yourself."
+  layer2:
+    message_flags:
+      - "A fee asked for by text link before delivery. In Germany, customs duties are usually collected by the carrier at the door, or customs writes to you."
+      - "A tiny amount and a same-day deadline: easy to pay without thinking."
+    notes: "Genuine duties and carrier fees do exist. The test is whether you can match the fee to an order you placed and see it in the courier's app that you open yourself."
+  device_tip: "On a real phone, press and hold a link to see the full address before you open it. If your phone offers a spam filter for texts, it's worth switching on."
+  habit_card: pressure-is-the-tell
+  already_clicked:
+    clicked: "Close the page and type nothing. Opening it alone rarely does harm. Delete the text or report it as spam."
+    paid: "Block your card in your banking app now, call your bank on the number on your card and ask about a chargeback, then report it to the police."
+  sources: [de-zoll-phishing, de-bnetza-zoll-sms-2023, de-vz-paketdienst-sms, eu-enisa-etl-2026, ch-ncsc-links-2025]

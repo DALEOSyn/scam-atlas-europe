@@ -1,0 +1,26 @@
+# Chapter 1 — Berlin. GDD §17. Slot 1, difficulty 1–3, 8 scored scenarios (3 genuine = 37.5%),
+# plus 1 drill (1-4) and 1 arc beat (Alex, slot 1). Goal: check deliveries in the official app you
+# open yourself.
+# New patterns: smishing-parcel-fee (1-1 genuine twin, 1-3, 1-7, drill 1-4) and
+# multichannel-support-callback (boss 1-9). Callbacks: Kettle code takeover (0-4 → 1-5)
+# and card-phishing-payment-failed (0-5 → 1-6 genuine twin, 1-8). GDD §17 names the second callback
+# "0-2 credential phishing on a shop pretext"; 1-8 is that scenario, filed under the card-phishing
+# brief, which covers it (brief header: chapters 1 and 0).
+# Mix (GDD §17): parcel theme on 1-1, 1-3, 1-7, boss (4 of 8, never adjacent); pressure parity
+# genuine 2/3 (1-2 pusher, 1-6 timer) vs fraud 4/5 (1-5, 1-7, 1-8, boss); difficulty parity
+# genuine at 1, 2, 3; sender-or-link decoys in 1-5 and the boss.
+# 1-2 carries an off-focus pattern (it-portal-credential-phishing) so checking it counts against gold
+# (GDD §7.2 row 3).
+slot: 1
+city: berlin
+name: "Berlin"
+status: complete
+patterns: [smishing-parcel-fee, multichannel-support-callback]
+callbacks: [messenger-account-takeover-code, card-phishing-payment-failed]
+lo_focus: [LO-01, LO-02, LO-03, LO-04, LO-05, LO-08, LO-14, LO-16, LO-17, LO-18]
+scenario_order:
+  am: [berlin-01-locker-code, berlin-02-briefing-moved, berlin-03-address-incomplete, berlin-04-teo-customs]
+  pm: [berlin-05-kettle-code, berlin-06-payment-failed, berlin-07-customs-fee, berlin-arc-alex-01, berlin-08-payment-failed-lookalike, berlin-09-boss-fraud-team]
+boss: berlin-09-boss-fraud-team
+arc_beat: berlin-arc-alex-01
+intro: "Berlin: a parcel locker on every other corner, and your inspector documents on their way from Brussels by Trundle."

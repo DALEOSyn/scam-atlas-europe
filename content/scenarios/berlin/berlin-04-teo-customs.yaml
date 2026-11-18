@@ -1,0 +1,81 @@
+# 1-4 Drill: Teo spots one first (GDD §17). His screenshot of a customs-fee text, quoted inside his
+# genuine message (context: quoted). He walks you through the sender and the link; you can tag along.
+# Drill: unscored, outside the mix and the chapter maximum; tags never count (balance: drills_count).
+# Teo is "back home", so the quoted text is in English; the lure is the same as in Berlin
+# (smishing-parcel-fee §2, customs-fee variant; §3 red flags 2, 3, 4).
+# Quoted red flags: the sender number and the look-alike link (trundie.example, "i" for "l";
+# registered in brands.yaml). Teo's own contact reassures.
+id: berlin-04-teo-customs
+chapter: berlin
+role: drill
+pattern: smishing-parcel-fee
+theme: parcel
+learning_objectives: [LO-18, LO-01, LO-02]
+difficulty: 1
+is_fraud: false
+device: messenger
+brands: [kettle, trundle]
+cast: [teo]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Grandpa Teo", detail: "Saved contact: Grandpa Teo (home)" }
+  from_cast: teo
+  body: |
+    Your turn to learn from me, kiddo. This landed on my phone this morning, from a mobile number ending 82:
+
+    "Trundle: your parcel is held at customs. Fee EUR 2.49. Pay today or it is returned: trundie.example/customs"
+
+    I'm not expecting any parcel, so I had a closer look before doing anything. I spotted two things. Can you?
+  request: reply
+  phone_numbers: ["Mobile number •••• ••82"]
+
+inspectables:
+  - target: sender.detail
+    reveal: "Teo's saved contact, the one you always use. He's sharing something he spotted, not asking for money or a code."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: phone_number
+    reveal: "In Teo's quote: a private mobile number. Trundle's texts come from the sender name TRUNDLE."
+    red_flag: true
+    type: phone_number
+    context: quoted
+  - target: link
+    reveal: "In Teo's quote: trundie.example. Read it slowly: t-r-u-n-d-i-e. Trundle's site is trundle.example."
+    red_flag: true
+    type: link
+    context: quoted
+
+actions:
+  - id: tell_teo_what_you_spotted
+    label: "Tell Teo what you spotted"
+    kind: proceed
+    outcome: teo_compares_notes
+    pressure_target: true
+  - id: tell_teo_probably_fine
+    label: "Say it's probably nothing"
+    kind: reply
+    outcome: teo_explains
+
+outcomes:
+  teo_compares_notes:
+    narrative: "Teo: \"Ha! Same two as me. A mobile number instead of Trundle's usual name, and 'trundie' with an i. And I'm not waiting for anything. I deleted it and checked my orders myself. Nothing there.\""
+  teo_explains:
+    narrative: "Teo: \"That's what they want you to think, kiddo! Look again: a mobile number, not Trundle's usual name. And the link says 'trundie', with an i. I'm not waiting for anything, so I deleted it and checked my orders myself.\""
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Teo checked the sender and the link before doing anything."
+    what_works: "Check those two, then open the courier's app yourself."
+  layer2:
+    message_flags:
+      - "In Teo's quote: a fee for a parcel he wasn't expecting, with a pay-today deadline."
+    notes: "Teo did three things right: he noticed he wasn't expecting a parcel, he read the sender and the link slowly, and he checked his orders himself instead of using the link. Then he did a fourth: he told someone. Real customs fees exist, but you can match them to an order in the courier's app you open yourself."
+  device_tip: "On a real phone, press and hold a link to preview it, and look closely at the address: one swapped letter is easy to miss."
+  habit_card: read-the-link
+  already_clicked:
+    clicked: "Close the page and type nothing."
+    paid: "Block the card in your banking app, call your bank on the number on the card, and report it to the police."
+  sources: [de-vz-paketdienst-sms, de-vzn-smishing, ch-ncsc-links-2025]

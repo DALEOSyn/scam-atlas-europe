@@ -26,6 +26,7 @@ Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR 
 
 ## Next up (Phase 2)
 - [ ] T-2.4 | scenario-writer | Tutorial (ch0) + Berlin (ch1) scenarios | reviewers: fraud-researcher, sceptic, qa
+- [ ] T-2.4b | scenario-writer | Berlin chapter scenarios | fraud-researcher: pending · sceptic: pending · qa: pending
 
 ## Follow-ups (non-blocking, from reviews)
 - Linter: brand letters split by `/` `,` `*`; "x dot com"; source-host check warning-only → error before G4; `St.Gallen`-style false positives; pin Actions by SHA.

@@ -1,0 +1,90 @@
+# 1-1 Trundle: parcel in the locker, pick-up code, from the short code, no link (GDD §17).
+# Genuine, low stakes, difficulty 1. Genuine twin of berlin-03-address-incomplete: same courier,
+# same thread, but from Trundle's usual sender name, no link, asks for nothing, and matches an order
+# the player placed (smishing-parcel-fee brief §7, multichannel-support-callback brief §7).
+# Checkables: sender, tracking number, pick-up code (GDD §7.2 "sender + pick-up code"; the tracking
+# number keeps twin parity with 1-3). The tracking-number reveal is word-for-word the one in 1-3 and
+# the boss, so it never hints at the verdict.
+id: berlin-01-locker-code
+chapter: berlin
+role: standard
+pattern: smishing-parcel-fee
+theme: parcel
+twin_of: berlin-03-address-incomplete
+learning_objectives: [LO-01, LO-17]
+difficulty: 1
+is_fraud: false
+stakes: low
+device: sms
+brands: [trundle, thimble-pine]
+cast: []
+pressure:
+  timer: false
+  levers: []
+  honest_deadline: "Locker holds your parcel 7 days"
+
+message:
+  sender: { display: "TRUNDLE", detail: "Sender name: TRUNDLE" }
+  body: |
+    TRUNDLE: Ihre Sendung TR-58K2-41 von Thimble & Pine liegt im Trundle Locker Weserstraße. Abholcode: 7314. Das Fach hält Ihre Sendung 7 Tage. Den Code finden Sie auch in der Trundle-App.
+  lang: de
+  translation: "TRUNDLE: Your parcel TR-58K2-41 from Thimble & Pine is in the Trundle Locker on Weserstraße. Pick-up code: 7314. The locker holds your parcel for 7 days. You'll also find the code in the Trundle app."
+  request: none
+  references: ["TR-58K2-41", "7314"]
+  l10n_note: "German in-world text is intentional (Berlin chapter); the English translation is shown inline. Weserstraße is an ordinary Berlin street name with no house number."
+
+inspectables:
+  - target: sender.detail
+    reveal: "TRUNDLE, the sender name your earlier Trundle texts came from, in the same thread. It fits, but a sender name can be copied, so it isn't proof on its own."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: reference
+    reveal: "A tracking number in Trundle's format. Real and look-alike texts both carry them; the Trundle app you open yourself shows which parcels are really yours."
+    red_flag: false
+    type: reference
+  - target: reference#2
+    reveal: "A 4-digit pick-up code. It opens a locker door; it isn't a sign-in, payment or account code."
+    red_flag: false
+    type: reference
+    reassures: true
+
+actions:
+  - id: collect_parcel
+    label: "Collect the parcel with the code"
+    kind: proceed
+    outcome: parcel_collected
+  - id: check_trundle_app
+    label: "Check the code in the Trundle app"
+    kind: verify_in_app
+    outcome: app_shows_code
+  - id: report_locker_text
+    label: "Report the text as spam"
+    kind: report
+    outcome: locker_text_reported
+  - id: leave_locker_text
+    label: "Leave it for later"
+    kind: ignore
+    outcome: locker_text_left
+
+outcomes:
+  parcel_collected:
+    narrative: "Locker 14 clicks open on 7314. Inside: the travel adapter set you ordered from Thimble & Pine. Berlin sockets, conquered."
+  app_shows_code:
+    narrative: "The Trundle app shows the same parcel, the same locker and the same code. Good habit, though this time the text was fine too."
+  locker_text_reported:
+    narrative: "Your phone files the text under spam. The parcel is still in the locker, and the code still works. Trundle sends a reminder in two days."
+  locker_text_left:
+    narrative: "The parcel waits in the locker. Nothing is lost, but your phone stays on its last bit of battery without that adapter."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "It asked for nothing and matched an order you placed."
+    what_works: "Collect it, or check the Trundle app."
+  layer2:
+    message_flags: []
+    notes: "Why it was safe to act: you had ordered something from Thimble & Pine, the text came in Trundle's usual thread, it had no link, and it asked for nothing: no fee, no details, no code to pass on. A pick-up code only opens a locker. None of these alone is proof (sender names can be copied); together they fit. When a parcel text does ask for something, open the courier's app yourself and look there."
+  device_tip: "On a real phone, tap the sender name at the top of the thread to see the name or number behind it, and scroll up to see the earlier texts from the same sender."
+  habit_card: calm-not-paranoid
+  sources: [de-vz-paketdienst-sms, de-vzn-smishing]

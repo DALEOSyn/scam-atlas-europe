@@ -97,7 +97,7 @@ describe('YAML anchors, aliases and merge keys (T-2.2 rework 2)', () => {
     const file = join(dir, 'scenarios', 'home', 'example.yaml');
     const text = readFileSync(file, 'utf8')
       .replace('  - target: sender.detail\n', '  - target: &t sender.detail\n')
-      .replace(/^  l10n_note: .*$/m, '  l10n_note: *t');
+      .replace(/^ {2}l10n_note: .*$/m, '  l10n_note: *t');
     writeFileSync(file, text);
     expect(validateContent(dir, { docsDir: resolve(ROOT, 'docs') }).errors.join('\n')).toMatch(/example\.yaml: YAML error: .*anchor &t.*alias \*t|example\.yaml: YAML error: .*alias \*t/);
   });

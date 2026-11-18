@@ -13,11 +13,11 @@ Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR 
 - [x] T-1.5 | game-designer | GDD v3.2, 18 LOs, balance v3.2 | sceptic: FAIL ×3 → all G1 blockers fixed (v3.2 count/pusher tells fixed by producer) · QA: FAIL → PASS conditions met | producer exception logged
 - [x] T-1.6 | ux-artist | UI spec v2, tokens, 8 fictional brands, 3 mock-ups | sceptic: FAIL → PASS · QA: FAIL → PASS
 - [x] T-2.5 | fraud-researcher | Pattern briefs for ch0–1 scenarios (messenger code takeover, IT-portal phishing, card phishing, multichannel callback), 14 sources, SOURCE_HOSTS, where-to-report help draft (parked in docs/patterns) | sceptic: FAIL → PASS · 1-9 caller switched to Larchwick Bank fraud team
+- [x] T-2.2 | frontend-engineer | Schema for CR-01…CR-12 + UI_SPEC §14 (pressure_target, already_clicked split, checkables from device template, palette sync test), per-chapter mix rules from balance.yaml, Red Line 8 letter check, strict brand hosts, stub chapter/cast/recovery/habit cards; CR-13 left open | branch phase2/schema | sceptic: FAIL → FAIL → PASS (producer exception for a third round)
 - [x] T-1.7 | fraud-researcher | Brand-name web collision check (renamed Nodkey, Corvelle, Hoardly) | docs/patterns/BRAND_CHECK.md
 
 ## Next up (Phase 2)
 - [ ] T-2.1 | frontend-engineer | Engine: scenario runner, Check + tag, scoring v3.2, debrief layers, save state | reviewers: sceptic, qa
-- [ ] T-2.2 | frontend-engineer | Schema change requests CR-01…CR-13 (GDD §19) + UI_SPEC §14 (pressure_target, already_clicked split, palette sync test) | reviewers: sceptic
 - [ ] T-2.3 | ux-artist + frontend-engineer | Devices: mail, SMS/messenger, call, browser, QR, bank, auth, letter | reviewers: sceptic, qa
 - [ ] T-2.4 | scenario-writer | Tutorial (ch0) + Berlin (ch1) scenarios | reviewers: fraud-researcher, sceptic, qa
 

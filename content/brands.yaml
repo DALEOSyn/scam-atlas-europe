@@ -1,0 +1,9 @@
+# Fictional brand registry (Red Line 1). STUB: the real registry is owned by
+# ux-artist (T-1.6). Entries below exist only for the example scenario.
+brands:
+  - id: paketpilot
+    name: PaketPilot
+    kind: courier
+    domain: paketpilot.example
+    notes: "Template placeholder courier. Replace or confirm in T-1.6 brand-resemblance check."
+    placeholder: true

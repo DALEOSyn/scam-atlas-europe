@@ -1,0 +1,3 @@
+# "PаyPal" below uses a Cyrillic "а" (U+0430); the linter folds homoglyphs.
+message:
+  sender: { display: "PаyPal" }

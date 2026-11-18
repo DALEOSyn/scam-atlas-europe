@@ -1,5 +1,5 @@
-# content/sources.research.yaml
-# Owner: fraud-researcher. Staging file for T-1.3 / T-1.4; to be merged into content/sources.yaml by the producer.
+# content/sources.yaml: source registry (Red Line 6). Owner: fraud-researcher.
+# Excluded from redline:lint because real sources carry real URLs; URLs are schema-checked (https only).
 # Rework 1 (2026-11-18), after sceptic FAIL: tiers fixed, used_for regenerated from actual citations, new sources added.
 # Every entry was opened (fetched) in the research session of 2026-11-18.
 #
@@ -544,7 +544,7 @@ sources:
     publisher: NASK (national research institute running CERT Polska), via Polish Police district site
     title: "Metoda na..., czyli metody oszustw w sieci - poradnik dla seniora"
     url: https://zabkowice-slaskie.policja.gov.pl/download/436/212465/poradnik-dla-seniora-5-metoda-na-czyli-metody-oszustw-w-sieci.pdf
-    published: 2020
+    published: "2020"
     accessed: 2026-11-18
     region: PL
     tier: 2
@@ -719,3 +719,11 @@ sources:
     tier: 3
     used_for: [MAP-ch10, MAP-missing]
     notes: "~EUR 49m stolen via phishing in BE in 2024. Young people: 23% don't know what phishing is; 14% would share bank card + PIN for money (money mule) vs 5% overall; 45% have never heard of money muling. Designer context only, not for on-screen use."
+
+  # ------------------------------------------------ placeholders (example scenario only)
+  - id: europol-scam-smishing
+    title: "PLACEHOLDER: Europol guidance on SMS phishing (to be filled by fraud-researcher)"
+    placeholder: true
+  - id: bsi-smishing
+    title: "PLACEHOLDER: BSI guidance on smishing (to be filled by fraud-researcher)"
+    placeholder: true

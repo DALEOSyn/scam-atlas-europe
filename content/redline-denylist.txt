@@ -1,0 +1,457 @@
+# Red-line DENYLIST: real organisations that must never appear in game content (Red Line 1).
+# A hit fails `npm run redline:lint`. Ambiguous everyday words live in redline-warnlist.txt.
+#
+# Format:  Name [| option, option] [| except: phrase; phrase]
+#   Matching is case-insensitive and accent-insensitive, folds homoglyphs/confusables and
+#   leetspeak, and allows separators between letters ("Pay Pal", "D.H.L", "N 26").
+#   Names with 5+ letters are also caught inside longer words ("amazonsupport");
+#   shorter names only as whole words. Options: word | affix | prefix | nosep.
+#   except: phrases inside which a hit is ignored (e.g. "revolution" for Revolut).
+# Real organisations may be named only on the "Where to report" / "Learn more" screens.
+# Coverage: EU member states plus UK, Norway and Switzerland. Grows with each chapter.
+
+# --- Banks and neobanks: Germany, Austria
+Deutsche Bank
+Commerzbank
+Postbank
+Sparkasse
+Volksbank
+Raiffeisen
+Comdirect
+Consorsbank
+Targobank
+HypoVereinsbank
+DKB
+ING
+N26
+Trade Republic
+Scalable Capital
+Bank Austria
+BAWAG
+Erste Bank
+Erste Group
+
+# --- Banks: France, Belgium, Luxembourg
+BNP Paribas
+Societe Generale
+Credit Agricole
+Credit Mutuel
+LCL
+La Banque Postale
+Caisse d'Epargne
+Boursorama
+Hello bank
+BPCE
+CIC
+KBC
+Belfius
+Argenta
+Crelan
+Spuerkeess
+
+# --- Banks: Spain, Portugal, Italy, Malta, Cyprus, Greece
+Santander
+BBVA
+CaixaBank
+Bankinter
+Sabadell
+Unicaja
+Kutxabank
+Ibercaja
+Abanca
+Caixa Geral
+Millennium bcp
+Novo Banco
+Banco BPI
+Montepio
+UniCredit
+Intesa Sanpaolo
+BPER
+Banco BPM
+Monte dei Paschi
+Fineco
+Mediolanum
+BancoPosta
+Bank of Valletta
+Bank of Cyprus
+Eurobank
+Alpha Bank
+Piraeus Bank
+National Bank of Greece
+
+# --- Banks: Netherlands, Ireland, UK
+Rabobank
+ABN AMRO
+SNS Bank
+ASN Bank
+Triodos
+Knab
+bunq
+Bank of Ireland
+AIB
+PTSB
+HSBC
+Barclays
+Lloyds
+NatWest
+Santander UK
+TSB
+RBS
+Metro Bank
+Virgin Money
+Monzo
+Starling Bank
+Revolut | except: revolution; revolutions; revolutionary; revolutionise; revolutionize; revolute
+
+# --- Banks: Nordics, Baltics, Switzerland
+Nordea
+Danske Bank
+Swedbank
+
+Handelsbanken
+DNB
+SpareBank
+Jyske Bank
+Nykredit
+Arion | word
+Landsbankinn
+Luminor
+Citadele
+UBS
+Credit Suisse
+PostFinance
+Zurcher Kantonalbank
+
+# --- Banks: Central and Eastern Europe
+PKO
+Pekao
+mBank | word
+Alior | word
+Santander Bank Polska
+Ceska sporitelna
+CSOB
+Komercni banka
+Tatra banka
+Slovenska sporitelna
+OTP Bank
+Banca Transilvania
+BCR
+Zagrebacka banka
+NLB
+DSK Bank
+
+# --- Couriers and postal services
+DHL | prefix
+DPD | affix
+GLS
+FedEx
+TNT
+Evri
+Yodel | word
+Parcelforce
+Royal Mail
+An Post
+PostNL
+bpost
+PostNord
+Posten
+Posti | word
+Swiss Post
+Deutsche Post
+Austrian Post
+La Poste
+Colissimo
+Chronopost
+Mondial Relay
+Relais Colis
+Correos
+SEUR
+Nacex
+CTT
+Poste Italiane
+BRT
+InPost
+Poczta Polska
+Packeta
+Zasilkovna
+Ceska posta
+Magyar Posta
+Omniva
+Budbee
+Instabox
+Hellenic Post
+Aramex
+Asendia
+
+# --- Marketplaces, shops, travel and delivery platforms
+Amazon | except: amazon river; amazon rainforest; amazonas; amazonia; amazonian
+eBay
+Vinted
+OLX
+Wallapop
+Leboncoin
+Marktplaats
+2dehands
+Kleinanzeigen
+Willhaben
+Blocket
+FINN.no
+Tori.fi
+Jofogas
+Bazos
+Zalando
+AliExpress | except: all express
+Temu
+Shein
+Etsy
+Cdiscount
+Fnac
+MediaMarkt
+IKEA
+Lidl
+Aldi
+Carrefour
+Tesco
+Decathlon
+Primark
+Bol.com
+Coolblue
+Allegro.pl
+Ceneo
+eMAG
+Idealo | word
+Veepee
+Rakuten
+Galaxus
+Digitec
+Booking.com
+Airbnb
+Expedia
+Trivago
+Ryanair
+easyJet
+Lufthansa
+Deutsche Bahn
+SNCF
+Trenitalia
+Renfe
+FlixBus
+Glovo
+Deliveroo
+Just Eat | nosep
+Lieferando
+Thuisbezorg
+Wolt
+
+# --- Payment apps, cards, money transfer
+PayPal
+Klarna
+Bizum
+MobilePay
+Vipps
+Twint
+BLIK
+Satispay
+Payconiq
+Bancontact
+Giropay
+Paysafecard
+Skrill
+Neteller | prefix
+Western Union
+MoneyGram
+Mastercard
+American Express
+Amex
+Diners Club
+Adyen
+SumUp | nosep
+Zettle
+Viva Wallet
+Paylib
+Wero
+MB Way
+Multibanco
+Postepay
+Twisto
+Apple Pay
+Google Pay
+
+# --- Crypto exchanges and wallets
+Coinbase
+Binance
+Bitpanda
+Crypto.com
+Bitvavo
+Bitstamp
+Blockchain.com
+MetaMask
+Trezor
+eToro
+Degiro
+
+# --- Big tech, software, cloud and security brands
+Google
+Gmail
+Apple | prefix | except: apples; apple pie; apple juice; apple tree; apple cake; apple strudel
+iCloud | prefix
+iPhone | prefix
+Microsoft
+Outlook.com
+Hotmail
+OneDrive | except: one drive
+SharePoint | except: share point
+Office 365
+Netflix
+Spotify
+Disney+
+Samsung
+Huawei
+Xiaomi
+McAfee
+Avast
+Kaspersky
+Dropbox | except: drop box
+Adobe
+DocuSign
+WeTransfer | except: we transfer
+AnyDesk
+TeamViewer
+Yahoo
+ProtonMail
+GMX
+Web.de | word
+T-Online
+Seznam
+Interia | word
+
+# --- Messengers, social networks and dating apps
+WhatsApp
+Facebook
+Instagram
+TikTok
+Snapchat
+Twitter | prefix
+LinkedIn | except: linked in
+YouTube
+Pinterest
+Reddit
+Viber
+Threema
+WeChat | except: we chat
+Skype
+Tinder | word
+Bumble | word
+Badoo
+Meetic
+Parship
+OkCupid
+
+# --- Gaming platforms
+Steam | prefix | except: steamed; steamer; steaming; steamy; steam train; steam engine; steamboat; steamship
+Roblox
+Epic Games
+Fortnite
+PlayStation
+Xbox
+Discord | except: discordant; discordanc
+Twitch | prefix | except: twitching; twitched; twitches; twitchy
+Nintendo
+Ubisoft
+Battle.net
+Minecraft
+Riot Games
+Valorant
+
+# --- Telecoms
+Vodafone
+Deutsche Telekom
+T-Mobile
+Telefonica
+Movistar
+SFR
+Bouygues
+Free Mobile | nosep
+Freebox
+WindTre
+Fastweb | nosep
+KPN
+Odido
+Ziggo
+Proximus
+Telenet
+Swisscom
+Telenor
+Telia | word
+Tele2
+Lycamobile
+Lebara
+Yoigo
+MasMovil
+Cosmote
+Vivacom
+Virgin Media
+MEO
+Eir
+
+# --- Government, tax, benefits, health and police bodies
+HMRC
+DVLA
+DVSA
+TV Licensing
+NHS
+Action Fraud
+Europol
+Interpol | prefix | except: interpolat
+ENISA | word
+Bundespolizei
+Bundeskriminalamt
+Bundeszentralamt fur Steuern
+Deutsche Rentenversicherung
+Bundesagentur fur Arbeit
+Techniker Krankenkasse
+AOK
+Barmer
+DGFiP
+ANTAI | word
+URSSAF
+Ameli | word | except: amelia; amelie
+CAF
+CPAM
+France Travail
+Pole emploi
+Gendarmerie
+Agenzia delle Entrate
+INPS
+INAIL | word
+Carabinieri
+Polizia di Stato
+Agencia Tributaria
+Seguridad Social
+Guardia Civil
+Policia Nacional
+DGT
+Belastingdienst
+Politie | word
+Skatteverket
+Skatteetaten
+Policja
+SPF Finances
+
+# --- eID and login schemes
+BankID
+itsme | nosep
+DigiD
+MitID
+NemID
+SPID
+FranceConnect
+BundID
+AusweisApp
+GOV.UK
+mObywatel
+Profil Zaufany
+Smart-ID
+Mobiil-ID
+Suomi.fi
+Chave Movel Digital

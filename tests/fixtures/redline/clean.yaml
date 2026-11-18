@@ -1,0 +1,17 @@
+# Tricky but allowed content: must produce zero findings (errors or warnings).
+message:
+  sender: { display: "PaketPilot", detail: "+49 151 •••• 0173" }
+  body: |
+    Your parcel PP-AX93 arrives on 18.11.2026 at 14:30 (2026-11-18). Fee 1,99 EUR.
+    Track it at paketpilot.example/t/8812 or help.paketpilot.test.
+    Attachment: invoice_2026.pdf (v2.0), e.g. a receipt. Questions? Call 07700 900123.
+    Pay to DE00 3704 0044 0532 0130 00 (checksum-invalid on purpose).
+    Masked card: **** **** **** 4242. Score +15, LO-02.
+    Hi Mum, it's me. Can we chat later? It is a revolution in thinking, during the morning.
+    In all cases, Fill in all fields, all or nothing. Tell a friend. Reply "post I". Is she in?
+    It arrived in post. Mock-ups and follow-ups. Card shown as 4111 1111 1111 1112 (fails Luhn).
+  qr:
+    payload: "/qr/home-parking-meter"
+inspectables:
+  - target: sender.detail
+    reveal: "Not the courier's short code."

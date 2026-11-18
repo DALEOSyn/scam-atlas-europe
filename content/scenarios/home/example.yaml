@@ -1,0 +1,59 @@
+# Example scenario: templates/scenario.template.yaml adapted to pass content:validate
+# and redline:lint. It exists to exercise the engine and tooling; it is not
+# fact-checked game content. Brand and sources are placeholders.
+id: home-00-example
+chapter: home
+pattern: smishing-parcel-fee
+learning_objectives: [LO-02, LO-05]
+difficulty: 2
+is_fraud: true
+device: sms
+brands: [paketpilot]
+pressure: { timer_seconds: 45, levers: [urgency, small_amount] }
+
+message:
+  sender: { display: "PaketPilot", detail: "+49 151 •••• 0173" }
+  body: |
+    PaketPilot: Ihr Paket wartet. Zollgebühr 1,99 EUR offen. Heute zahlen, sonst Rücksendung:
+    paketpilot-zoll.example/p/8812
+  l10n_note: "German in-world text intentional; EN translation shown on magnifier."
+
+inspectables:
+  - target: sender.detail
+    reveal: "+49 151 is a German mobile prefix: a private phone, not the courier's short code."
+    red_flag: true
+  - target: link
+    reveal: "paketpilot-zoll.example is not PaketPilot's site (paketpilot.example)."
+    red_flag: true
+
+actions:
+  - id: tap_link
+    label: "Open the link and pay €1.99"
+    outcome: card_details_stolen
+    score: -10
+  - id: open_app
+    label: "Open the PaketPilot app yourself and check the tracking"
+    outcome: no_fee_found
+    score: 15
+  - id: delete_report
+    label: "Delete and report as spam"
+    outcome: reported
+    score: 10
+
+outcomes:
+  card_details_stolen:
+    narrative: "Two days later, three payments you don't recognise appear on your card."
+    recovery: [block_card_via_bank_app, call_bank_known_number, report_to_police_online]
+  no_fee_found:
+    narrative: "The app shows your parcel is already in the locker. No fee."
+  reported:
+    narrative: "Message reported. Your carrier blocks the sender."
+
+debrief:
+  red_flags:
+    - "Sender is a normal mobile number."
+    - "Link domain is not the courier's real domain."
+    - "Small fee + deadline: a classic pressure combination."
+  habit: "Check deliveries only in the app or site you open yourself."
+  already_clicked: "Block your card in your banking app, call your bank on the number on your card, and report it."
+  sources: [europol-scam-smishing, bsi-smishing]

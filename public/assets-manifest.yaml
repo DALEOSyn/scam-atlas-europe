@@ -1,0 +1,10 @@
+# Every raster image in public/ must be listed here (redline:lint warns otherwise).
+# Raster images can carry logos or text the linter cannot read, so each entry
+# records where it came from and that it passed the brand-resemblance review.
+# Vector files (SVG) are scanned as text and need no entry.
+#
+# - path: brands/paketpilot-logo.png     # relative to public/
+#   origin: "Drawn by ux-artist for this project"
+#   licence: CC BY-SA 4.0
+#   review: "sceptic-reviewer PASS, T-x.y"
+assets: []

@@ -1,0 +1,49 @@
+{
+  "name": "scam-atlas-europe",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Scam Atlas: Europe - a browser game that teaches players to recognise and respond to fraud. Code MIT, content CC BY-SA 4.0 (see LICENSE-CONTENT.md).",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 4173 --strictPort",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "content:validate": "tsx scripts/content-validate.ts",
+    "redline:lint": "tsx scripts/redline-lint.ts",
+    "e2e": "playwright test --trace off",
+    "check": "npm run typecheck && npm run lint && npm run content:validate && npm run redline:lint && npm run test && npm run build"
+  },
+  "dependencies": {
+    "preact": "^11.2.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "1.63.0",
+    "@preact/preset-vite": "^2.10.6",
+    "@testing-library/preact": "^3.2.6",
+    "@types/node": "^26.6.6",
+    "eslint": "^10.15.0",
+    "jsdom": "^31.0.1",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.73.0",
+    "unicode-confusables": "0.1.1",
+    "vite": "^8.3.8",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.1.1",
+    "yaml": "^2.9.1"
+  },
+  "overrides": {
+    "playwright-core": "1.63.0"
+  }
+}

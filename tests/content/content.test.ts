@@ -91,6 +91,24 @@ function copyContent(): string {
   return dir;
 }
 
+describe('YAML anchors, aliases and merge keys (T-2.2 rework 2)', () => {
+  it('content:validate rejects the alias probe in a scenario', () => {
+    const dir = copyContent();
+    const file = join(dir, 'scenarios', 'home', 'example.yaml');
+    const text = readFileSync(file, 'utf8')
+      .replace('  - target: sender.detail\n', '  - target: &t sender.detail\n')
+      .replace(/^  l10n_note: .*$/m, '  l10n_note: *t');
+    writeFileSync(file, text);
+    expect(validateContent(dir, { docsDir: resolve(ROOT, 'docs') }).errors.join('\n')).toMatch(/example\.yaml: YAML error: .*anchor &t.*alias \*t|example\.yaml: YAML error: .*alias \*t/);
+  });
+
+  it('content:validate rejects merge keys in registries', () => {
+    const dir = copyContent();
+    writeFileSync(join(dir, 'cast.yaml'), 'base: &b\n  role: x\ncast:\n  - id: a\n    name: A\n    <<: *b\n    arc_character: true\n');
+    expect(validateContent(dir, { docsDir: resolve(ROOT, 'docs') }).errors.join('\n')).toMatch(/cast\.yaml: YAML error: .*merge key <</);
+  });
+});
+
 describe('registry schemas (T-2.2)', () => {
   const balanceRaw = () => parse(readFileSync(resolve(CONTENT, 'balance.yaml'), 'utf8')) as Record<string, Record<string, unknown>>;
 

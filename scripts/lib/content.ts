@@ -4,7 +4,8 @@
  */
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { join, relative, sep, basename, dirname } from 'node:path';
-import { parse } from 'yaml';
+import { parseDocument } from 'yaml';
+import { yamlStructureIssues } from './yaml-safety.ts';
 import type { z } from 'zod';
 import { isAllowedSourceHost } from './source-hosts.ts';
 import { chapterRules, scenarioRules, type Registries } from './rules.ts';
@@ -48,8 +49,13 @@ function formatIssues(file: string, error: z.ZodError): string[] {
   return error.issues.map((i) => `${file}: ${i.path.join('.') || '(root)'}: ${i.message}`);
 }
 
-function readYaml(file: string): unknown {
-  return parse(readFileSync(file, 'utf8'));
+/** Parse a content YAML file; throws on syntax errors and on anchors, aliases or merge keys. */
+export function readYaml(file: string): unknown {
+  const doc = parseDocument(readFileSync(file, 'utf8'), { uniqueKeys: true, merge: false });
+  if (doc.errors.length > 0) throw new Error(doc.errors[0]?.message ?? 'invalid YAML');
+  const issues = yamlStructureIssues(doc);
+  if (issues.length > 0) throw new Error(issues.map((i) => i.message).join('; '));
+  return doc.toJS();
 }
 
 export function loadBrands(contentDir: string, report: ContentReport): Map<string, Brand> {
@@ -59,7 +65,14 @@ export function loadBrands(contentDir: string, report: ContentReport): Map<strin
     report.errors.push(`${file}: missing`);
     return out;
   }
-  const res = brandsFileSchema.safeParse(readYaml(file));
+  let raw: unknown;
+  try {
+    raw = readYaml(file);
+  } catch (e) {
+    report.errors.push(`${file}: YAML error: ${(e as Error).message}`);
+    return out;
+  }
+  const res = brandsFileSchema.safeParse(raw);
   if (!res.success) {
     report.errors.push(...formatIssues(file, res.error));
     return out;
@@ -114,7 +127,14 @@ export function loadSources(contentDir: string, report: ContentReport): Map<stri
     report.errors.push(`${file}: missing`);
     return out;
   }
-  const res = sourcesFileSchema.safeParse(readYaml(file));
+  let raw: unknown;
+  try {
+    raw = readYaml(file);
+  } catch (e) {
+    report.errors.push(`${file}: YAML error: ${(e as Error).message}`);
+    return out;
+  }
+  const res = sourcesFileSchema.safeParse(raw);
   if (!res.success) {
     report.errors.push(...formatIssues(file, res.error));
     return out;
@@ -210,7 +230,7 @@ function loadYamlFile<T>(file: string, schema: z.ZodType<T>, report: ContentRepo
   try {
     raw = readYaml(file);
   } catch (e) {
-    report.errors.push(`${file}: YAML parse error: ${(e as Error).message}`);
+    report.errors.push(`${file}: YAML error: ${(e as Error).message}`);
     return undefined;
   }
   const res = schema.safeParse(raw);
@@ -324,7 +344,7 @@ export function validateContent(contentDir: string, opts: ValidateOptions = {}):
     try {
       raw = readYaml(file);
     } catch (e) {
-      report.errors.push(`${file}: YAML parse error: ${(e as Error).message}`);
+      report.errors.push(`${file}: YAML error: ${(e as Error).message}`);
       continue;
     }
     const s = checkScenario(file, raw, brands, sources, report, {

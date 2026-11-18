@@ -30,6 +30,7 @@ import { readFileSync, existsSync } from 'node:fs';
 import { resolve, relative, basename, sep } from 'node:path';
 import { LineCounter, parse, parseDocument, isMap, isScalar, isSeq, type Node } from 'yaml';
 import { listFiles } from './lib/content.ts';
+import { yamlStructureIssues } from './lib/yaml-safety.ts';
 import { blankSvgGeometry, checkQrPayload, scanText, type Finding, type RuleConfig } from './redline/rules.ts';
 import { compileList } from './redline/lists.ts';
 import { CHECKABLE_TARGETS } from '../src/content/checkables.ts';
@@ -232,6 +233,10 @@ export function lintText(file: string, text: string, cfg: RuleConfig): FileFindi
   if (!isBrandsFile(file)) for (const f of scanText(raw, cfg)) add(f);
 
   if (doc) {
+    // Anchors/aliases/merge keys could copy an exempt value into player text unseen.
+    for (const issue of yamlStructureIssues(doc)) {
+      add({ category: 'markup', severity: 'error', match: issue.token, index: issue.offset, line: lc.linePos(issue.offset).line, message: `${issue.message} (Red Lines 1 and 3: every string must be linted where it is shown)` });
+    }
     if (doc.errors.length > 0) {
       add({ category: 'markup', severity: 'error', match: '(parse error)', index: 0, line: 0, message: `cannot parse: ${doc.errors[0]?.message ?? ''}` });
     }

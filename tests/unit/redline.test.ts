@@ -475,3 +475,28 @@ describe('checkable names are not a domain loophole (T-2.2)', () => {
     expect(domains(resolve(ROOT, 'content/other.yaml'), 'inspectables:\n  - { target: page.info, reveal: "x", red_flag: true }\n')).toEqual(['page.info']);
   });
 });
+
+describe('YAML anchors, aliases and merge keys are rejected (T-2.2 rework 2)', () => {
+  const SCENARIO = resolve(ROOT, 'content/scenarios/home/x.yaml');
+  const yamlErrors = (file: string, yaml: string) =>
+    lintText(file, yaml, cfg).filter((f) => f.severity === 'error' && /^YAML (alias|anchor|merge key)/.test(f.message));
+
+  it('the alias probe (exempt target copied into the body) fails', () => {
+    const probe = 'inspectables:\n  - target: &t page.info\n    reveal: x\nmessage:\n  body: *t\n';
+    const found = yamlErrors(SCENARIO, probe);
+    expect(found.map((f) => f.message).join('\n')).toMatch(/alias \*t/);
+    expect(found.map((f) => f.message).join('\n')).toMatch(/anchor &t/);
+    expect(found.some((f) => f.line === 5)).toBe(true);
+  });
+
+  it('merge keys fail, in any content file', () => {
+    const merge = 'base: &b\n  body: "hello"\nmessage:\n  <<: *b\n';
+    const msgs = yamlErrors(resolve(ROOT, 'content/other.yaml'), merge).map((f) => f.message).join('\n');
+    expect(msgs).toMatch(/merge key <</);
+    expect(msgs).toMatch(/alias \*b/);
+  });
+
+  it('plain YAML has no such findings', () => {
+    expect(yamlErrors(SCENARIO, 'message:\n  body: "a & b * c"\n')).toEqual([]);
+  });
+});

@@ -11,18 +11,22 @@
 #   published  publication / last-updated date as shown by the source ("n/d" if none shown)
 #   accessed   date the researcher opened it
 #   region     EU | country code (ISO 3166-1 alpha-2) | CH (non-EU, supporting only)
+#              | US (MITRE ATT&CK only: taxonomy reference, never evidence of European prevalence; T-R.1)
 #   tier       ranks the *publishing entity*, not the network it belongs to:
 #                1 = EU institution or agency
 #                2 = national CERT / cybersecurity agency
 #                3 = other national public authority (police, customs, telecom regulator, central bank),
 #                    national consumer body, or banking association
 #                4 = NGO, research or news (supporting only, never the sole source)
+#                    MITRE ATT&CK entries (id prefix int-mitre-) are also tier 4: a taxonomy/reference,
+#                    never a prevalence source (the schema allows tiers 1-4 only).
 #   used_for   docs that actually cite the id. Labels:
 #                email-phishing-credential | smishing-parcel-fee
 #                messenger-account-takeover-code | it-portal-credential-phishing
 #                card-phishing-payment-failed | multichannel-support-callback   (added T-2.5, 2026-11-18)
 #                MAP-ch0..MAP-ch10 | MAP-missing | MAP-crosscutting | WHERE_TO_REPORT
 #                help-where-to-report-en   (docs/patterns/where-to-report.draft.en.yaml for now; moves to content/help/ once the linter exemption exists; T-2.5)
+#                campaign-catalogue   (docs/patterns/THREAT_CATALOGUE.md, backlog research T-R.1, 2026-11-18)
 #              An empty list means provenance only: not cited directly, kept because another entry's
 #              date or content relies on it.
 #   notes      what the source actually supports; caveats
@@ -38,8 +42,8 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [email-phishing-credential, MAP-ch0]
-    notes: "Phishing (incl. vishing, malspam, malvertising) ~60% of observed intrusion cases, period 2024-07-01..2025-06-30. AI-supported phishing reported as >80% of observed social-engineering activity by early 2025 (third-party figure; not for on-screen use)."
+    used_for: [email-phishing-credential, MAP-ch0, campaign-catalogue]
+    notes: "Phishing (incl. vishing, malspam, malvertising) ~60% of observed intrusion cases, period 2024-07-01..2025-06-30. AI-supported phishing reported as >80% of observed social-engineering activity by early 2025 (third-party figure; not for on-screen use). T-R.1 re-read: hacktivism almost 80% of incidents; DDoS 77% of reported incidents; ransomware 'the most impactful threat in the EU'; intensified abuse of critical dependency points such as the digital supply chain; more attacks on mobile devices, focused on outdated devices. No mention of ClickFix or infostealers on this page."
 
   - id: eu-enisa-etl-2026
     publisher: ENISA
@@ -49,8 +53,8 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [email-phishing-credential, smishing-parcel-fee, it-portal-credential-phishing, multichannel-support-callback, MAP-ch0, MAP-ch1, MAP-ch9]
-    notes: "Period 2025-01-01..2025-12-31, 8,257 incidents. Phishing = 77.8% of social-engineering intrusion vectors. Voice phishing impersonating IT staff to obtain SSO credentials and MFA codes (cited in it-portal-credential-phishing; T-2.5). Rise in smishing; large-scale smishing impersonating logistics providers and public administration, mainly against Germany (also FR, IE, PL, LT). Quishing listed; no MFA-fatigue / push-bombing content (cited in MAP-ch9 for that absence). AI used to tailor phishing at scale. Country fraud-concentration shares and the EBA EUR 4.2bn figure appear in this report but are NOT used: they rank countries without a usable denominator, and the 4.2bn is total EEA payment fraud (see eu-eba-ecb-fraud-2025). Read to char 100000 of ~105000."
+    used_for: [email-phishing-credential, smishing-parcel-fee, it-portal-credential-phishing, multichannel-support-callback, MAP-ch0, MAP-ch1, MAP-ch9, campaign-catalogue]
+    notes: "Period 2025-01-01..2025-12-31, 8,257 incidents. Phishing = 77.8% of social-engineering intrusion vectors. Voice phishing impersonating IT staff to obtain SSO credentials and MFA codes (cited in it-portal-credential-phishing; T-2.5). Rise in smishing; large-scale smishing impersonating logistics providers and public administration, mainly against Germany (also FR, IE, PL, LT). Quishing listed; no MFA-fatigue / push-bombing content (cited in MAP-ch9 for that absence). AI used to tailor phishing at scale. Country fraud-concentration shares and the EBA EUR 4.2bn figure appear in this report but are NOT used: they rank countries without a usable denominator, and the 4.2bn is total EEA payment fraud (see eu-eba-ecb-fraud-2025). Read to char 100000 of ~105000. T-R.1 re-read (catalogue): phishing kits and Phishing-as-a-Service popularised; ClickFix 'increasing'; fake CAPTCHA pages deliver infostealers; malvertising listed; ransomware 47.3% of financially motivated claims with a shift to data exfiltration; data breaches 36% of financially motivated claims; DDoS 51.3% of incidents, ideology-driven 57.3%; compromised libraries/npm packages and browser extensions; an Android campaign abusing accessibility services; 'MFA abuse' and vishing for MFA codes (no push-bombing by name); device-code phishing incl. via trusted messengers; stolen OAuth tokens; LLM-made media for influence campaigns. NOT found: SIM swap, credential stuffing by name, AiTM by name, IoT/botnets, deepfakes by name, fake updates."
 
   - id: eu-europol-iocta-2026
     publisher: Europol
@@ -60,8 +64,8 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [email-phishing-credential, it-portal-credential-phishing, MAP-ch0, MAP-ch7, MAP-ch8, MAP-ch10, MAP-missing, MAP-crosscutting]
-    notes: "Fraud is 'the fastest-growing area of organised crime'. Investment fraud especially prevalent, increasingly via ads on very large online platforms. Romance and tech-support among most common typologies reported by Member States. AI-assisted impersonation of bank helpdesk and law-enforcement staff. Malvertising for fake accommodation/merchandise listings. Minors drawn into laundering via 'get-rich' social-media schemes. Victims 'relentlessly re-victimised'. Publication date from eu-eucrim-iocta-2026."
+    used_for: [email-phishing-credential, it-portal-credential-phishing, MAP-ch0, MAP-ch7, MAP-ch8, MAP-ch10, MAP-missing, MAP-crosscutting, campaign-catalogue]
+    notes: "Fraud is 'the fastest-growing area of organised crime'. Investment fraud especially prevalent, increasingly via ads on very large online platforms. Romance and tech-support among most common typologies reported by Member States. AI-assisted impersonation of bank helpdesk and law-enforcement staff. Malvertising for fake accommodation/merchandise listings. Minors drawn into laundering via 'get-rich' social-media schemes. Victims 'relentlessly re-victimised'. Publication date from eu-eucrim-iocta-2026. T-R.1 re-read (catalogue): 'financial sexual extortion continues to surge'; offenders target children on gaming platforms; violent online networks groom children (8-17) with love-bombing; voice chat bots pre-screen victims 'at industrial volume'; infostealers 'a key enabler'; SIM swapping mentioned only in passing (collectives); minors may launder by renting out wallets or receiving crypto 'gifts'. NOT found: ticket or charity scams, 'deepfake' by name."
 
   - id: eu-eucrim-iocta-2026
     publisher: eucrim (Max Planck Institute, EU criminal law journal)
@@ -93,7 +97,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [email-phishing-credential, multichannel-support-callback, MAP-ch4]
+    used_for: [email-phishing-credential, multichannel-support-callback, MAP-ch4, campaign-catalogue]
     notes: "Red flags: urgency; sender address differs from earlier genuine mail; requests to click, download or give credentials. Habit: type the bank's address yourself; take caller details and call back on a number you look up; don't verify using a number the caller gives. Older campaign material."
 
   - id: eu-ebf-cyberscams
@@ -104,7 +108,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 3
-    used_for: [email-phishing-credential, MAP-ch3]
+    used_for: [email-phishing-credential, MAP-ch3, campaign-catalogue]
     notes: "Lists CEO/BEC, invoice/supplier IBAN change, phishing/smishing/vishing, spoofed bank sites, romance, money-mule recruitment, fake jobs, relative-in-distress messages, investment scams. CAVEAT: still recommends 'padlock and https' as a safety sign. That is outdated as a trust signal (see pt-gnr-phishing, ch-ncsc-links-2025); cited in the email brief only as an example of that outdated advice."
 
   - id: eu-esas-ai-scams-2025
@@ -126,7 +130,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [email-phishing-credential, it-portal-credential-phishing, MAP-ch2, MAP-ch5, MAP-ch6, MAP-ch10, MAP-missing, MAP-crosscutting, WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [email-phishing-credential, it-portal-credential-phishing, MAP-ch2, MAP-ch5, MAP-ch6, MAP-ch10, MAP-missing, MAP-crosscutting, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "Covers impersonation incl. voice cloning/deepfakes of relatives and banks; celebrity investment ads; dating-to-investment; phishing inserted into existing email threads; marketplace deals moving the victim off-platform to a fake bank login. Advice: pause; verify via known numbers; family safe word; check regulator warning lists (IOSCO I-SCAN); never install remote-access software; contact the bank at once; beware 'recovery' offers. Notes AI removes grammar errors, so polish is not proof."
 
   - id: eu-epc-threats-2025
@@ -137,7 +141,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 3
-    used_for: [email-phishing-credential, messenger-account-takeover-code, it-portal-credential-phishing, multichannel-support-callback, MAP-ch2, MAP-ch4, MAP-ch6, MAP-ch7, MAP-ch9, MAP-ch10, MAP-missing]
+    used_for: [email-phishing-credential, messenger-account-takeover-code, it-portal-credential-phishing, multichannel-support-callback, MAP-ch2, MAP-ch4, MAP-ch6, MAP-ch7, MAP-ch9, MAP-ch10, MAP-missing, campaign-catalogue]
     notes: "Social engineering increasingly targets people rather than technology. Covers: spoofed sender names/numbers; messages that give a phone number instead of a link; 'safe account' scams; call-then-home-visit; fake remote support; task scams with small early payouts; recovery scams; cloned voices in family-emergency scams; QR swaps on letters, invoices and EV chargers; victims asked to approve login QR codes sent via messaging apps; money mules. Read to char 100000 of ~130000."
 
   - id: eu-ec-ipr-vop-2025
@@ -159,7 +163,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [MAP-ch2, MAP-ch3, MAP-crosscutting]
+    used_for: [MAP-ch2, MAP-ch3, MAP-crosscutting, campaign-catalogue]
     notes: "Verification of Payee results: match / close match / no match / other. Applies to standard and instant credit transfers, free of charge. Deadlines: euro area 2025-10-09; non-euro Member States 2027-07-09."
 
   - id: eu-eba-ecb-fraud-2025
@@ -192,7 +196,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [MAP-ch7]
+    used_for: [MAP-ch7, campaign-catalogue]
     notes: "Fake websites advertising heavily discounted electronics that never deliver. Advice: apply a too-good-to-be-true check, check the website's credibility, use secure payment methods."
 
   - id: eu-europol-mule-jobs
@@ -203,7 +207,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [MAP-ch10, MAP-missing]
+    used_for: [MAP-ch10, MAP-missing, campaign-catalogue]
     notes: "Unsolicited 'easy money' offers via DM, messaging apps, social media, pop-ups. Online-only 'agent' jobs that use your own bank account; no experience needed. Targets incl. students and under-35s incl. minors. If involved: stop, tell the bank, report to the police."
 
   - id: eu-europol-mule-flyer-ie
@@ -214,7 +218,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [MAP-ch10, MAP-missing, WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [MAP-ch10, MAP-missing, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "Targets incl. people under 35 and minors; recruitment via social media and messaging apps. Consequences: prison/fine/community service, bank account closed, difficulty getting loans or mortgages; threats if trying to stop. What to do: stop transferring; tell the bank and the police; if contact was on social media, REPORT THE ACCOUNT TO THE PLATFORM (supports WHERE_TO_REPORT step 5); warn anyone you know who may be involved. Rework: no longer cited for the generic 'warn people' step (finding 7)."
 
   - id: eu-fra-helplines
@@ -259,7 +263,7 @@ sources:
     accessed: 2026-11-18
     region: DE
     tier: 2
-    used_for: [email-phishing-credential, it-portal-credential-phishing, card-phishing-payment-failed, MAP-ch0]
+    used_for: [email-phishing-credential, it-portal-credential-phishing, card-phishing-payment-failed, MAP-ch0, campaign-catalogue]
     notes: "Providers won't ask for access data by email. Don't click links; go to the homepage yourself; verify by phone; bookmark login pages; check accounts. If data entered: contact the provider via trusted contact details and watch accounts. Also lists 'https + padlock' as a precondition (necessary, not proof)."
 
   - id: de-bsi-password-theft
@@ -281,7 +285,7 @@ sources:
     accessed: 2026-11-18
     region: DE
     tier: 2
-    used_for: [smishing-parcel-fee]
+    used_for: [smishing-parcel-fee, campaign-catalogue]
     notes: "Tier fixed in rework (was 1): a national government page carrying the national cyber agency's (BSI) warning. Historic baseline: parcel-themed SMS leading to a fake tracking app (Android) or phishing pages (iOS). If clicked: airplane mode, tell the mobile provider, check the bank, police report, factory reset only after the police are done."
 
   - id: de-vz-paketdienst-sms
@@ -292,7 +296,7 @@ sources:
     accessed: 2026-11-18
     region: DE
     tier: 3
-    used_for: [smishing-parcel-fee, it-portal-credential-phishing, multichannel-support-callback, MAP-ch1, WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [smishing-parcel-fee, it-portal-credential-phishing, multichannel-support-callback, MAP-ch1, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "Current variants: small 'customs' fee (~EUR 1-4); address fix with a 12/24h deadline; 'reply Y'; app install; personalised greetings from harvested contacts. The carrier normally collects customs at delivery; genuine pre-payment messages carry your tracking number and the sender's name. Habit: type the tracking number into the official site. Steps if clicked or paid: card block, chargeback, third-party billing block, police report."
 
   - id: de-vzn-smishing
@@ -336,7 +340,7 @@ sources:
     accessed: 2026-11-18
     region: DE
     tier: 3
-    used_for: [MAP-ch7, MAP-missing]
+    used_for: [MAP-ch7, MAP-missing, campaign-catalogue]
     notes: "Tier fixed in rework (was 1): national consumer centre publication, even though ECC-Net itself is EU-level. Fake landlords abroad, deposits before viewing, platform-phishing emails. Habit: never pay before viewing or signing; stay on the platform; avoid irreversible transfer methods."
 
   # ---------------------------------------------------------------- Switzerland (non-EU, supporting)
@@ -360,7 +364,7 @@ sources:
     accessed: 2026-11-18
     region: IE
     tier: 2
-    used_for: [email-phishing-credential, messenger-account-takeover-code, it-portal-credential-phishing, MAP-ch0, WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [email-phishing-credential, messenger-account-takeover-code, it-portal-credential-phishing, MAP-ch0, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "Signs incl. sender name not matching the address, unsolicited password-reset/authentication requests, shortened links. If clicked: change passwords, contact the bank, run a scan. Report to the local Garda station; report suspicious mail to your email provider ('report phishing'). No NCSC public phishing inbox is given."
 
   - id: ie-ncsc-qr-guide
@@ -371,7 +375,7 @@ sources:
     accessed: 2026-11-18
     region: IE
     tier: 2
-    used_for: [email-phishing-credential, MAP-ch7, WHERE_TO_REPORT]
+    used_for: [email-phishing-credential, MAP-ch7, WHERE_TO_REPORT, campaign-catalogue]
     notes: "Scam QR codes placed over legitimate ones at parking payment points; QR codes in emails. Red flags: a sticker or non-tamper-proof code; preview doesn't match the official site; pay-now-to-avoid-a-fine pressure. Reporting: local Garda station. phishing@ncsc.gov.ie appears ONLY here, scoped to 'if you suspect a QR code is fake' (or contact the impersonated organisation). Rework (finding 9): not presented as a general reporting address."
 
   - id: ie-ncsc-mobile-scam-2024
@@ -382,8 +386,8 @@ sources:
     accessed: 2026-11-18
     region: IE
     tier: 2
-    used_for: [WHERE_TO_REPORT]
-    notes: "Added in rework (finding 9, re-check). Public routes for suspicious calls: the mobile provider and the local Garda station. Contact block lists certreport@ncsc.gov.ie (not stated as a public scam-report address). No phishing@ address given."
+    used_for: [WHERE_TO_REPORT, campaign-catalogue]
+    notes: "Added in rework (finding 9, re-check). Public routes for suspicious calls: the mobile provider and the local Garda station. Contact block lists certreport@ncsc.gov.ie (not stated as a public scam-report address). No phishing@ address given. T-R.1: cited in the catalogue only as evidence that mobile-provider impersonation calls are reported in IE (SIM-swap pretext entry); the advisory was not re-read for SIM-swap detail."
 
   - id: ie-ncsc-seasonal-advisory
     publisher: National Cyber Security Centre Ireland
@@ -404,7 +408,7 @@ sources:
     accessed: 2026-11-18
     region: IE
     tier: 3
-    used_for: [MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "EUR 8.58m reported stolen to end July 2025; +21% reports in 3 months; fake bond and deposit products in professional ads. Verify firms on the Central Bank Registers. Report to the local Garda station or the Garda Confidential Line 1800 666 111."
 
   - id: ie-fraudsmart-investment-2025
@@ -415,7 +419,7 @@ sources:
     accessed: 2026-11-18
     region: IE
     tier: 3
-    used_for: [MAP-ch8, WHERE_TO_REPORT]
+    used_for: [MAP-ch8, WHERE_TO_REPORT, campaign-catalogue]
     notes: "~EUR 31m investment-fraud losses in 2024. AI-generated celebrity endorsement ads lead to a contact form, then an 'adviser' call. Check the Central Bank register; call the firm on an independently found number."
 
   - id: ie-bpfi-recovery-2024
@@ -426,7 +430,7 @@ sources:
     accessed: 2026-11-18
     region: IE
     tier: 3
-    used_for: [MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "Recovery scams: an upfront 'retainer' or 'processing' fee to get lost money back; losses of EUR 1,000-10,000 seen. Genuine recovery never needs a fee."
 
   # ---------------------------------------------------------------- France
@@ -449,7 +453,7 @@ sources:
     accessed: 2026-11-18
     region: FR
     tier: 3
-    used_for: [MAP-ch3, MAP-ch4]
+    used_for: [MAP-ch3, MAP-ch4, campaign-catalogue]
     notes: "Payment fraud just under EUR 1.2bn in 2024; manipulation fraud 32% of fraud amount (fake bank advisers, fake anti-fraud services). Advice: don't act on unsolicited contacts; hang up on 'bank' callers who ask for data or validation."
 
   - id: fr-gendarmerie-fovi
@@ -460,7 +464,7 @@ sources:
     accessed: 2026-11-18
     region: FR
     tier: 3
-    used_for: [MAP-ch3, WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [MAP-ch3, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "FOVI / 'arnaque au Président': urgent confidential transfer requested by a fake executive or lawyer; supplier bank-detail (RIB) change; targets SMEs, artisans and local authorities; timed for holidays and evenings. Prevention: a fixed internal validation procedure. If victim: ask the bank to recall the funds immediately (speed matters); file a complaint."
 
   # ---------------------------------------------------------------- Spain
@@ -472,7 +476,7 @@ sources:
     accessed: 2026-11-18
     region: ES
     tier: 2
-    used_for: [multichannel-support-callback, MAP-ch4, WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [multichannel-support-callback, MAP-ch4, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "Severity 'Alta'. An SMS about a big unrecognised transfer, with a number to call, can appear in the bank's genuine SMS thread. A fake 'security department' guides the victim in the real app to move money to a 'backup security account'. Report to INCIBE or call the free helpline 017; contact the bank via official channels; keep evidence; file a police report and keep a copy for the bank."
 
   # ---------------------------------------------------------------- Netherlands
@@ -484,7 +488,7 @@ sources:
     accessed: 2026-11-18
     region: NL
     tier: 3
-    used_for: [multichannel-support-callback, MAP-ch2, MAP-missing]
+    used_for: [multichannel-support-callback, MAP-ch2, MAP-missing, campaign-catalogue]
     notes: "101,734 reports (+60%), EUR 68.5m losses. Private-individual reports: helpdesk fraud #1 (17,264), buy/sell fraud #2, advance-fee #3. Losses: investment fraud #1 (EUR 34.1m). Online-to-offline trend (fake bank staff collecting cards at home, fake landlords). Neither friend-in-need nor task/job scams are itemised. Table labels partly garbled in extraction."
 
   - id: nl-politie-hulpvraagfraude-2025
@@ -495,7 +499,7 @@ sources:
     accessed: 2026-11-18
     region: NL
     tier: 3
-    used_for: [messenger-account-takeover-code, MAP-ch2, WHERE_TO_REPORT]
+    used_for: [messenger-account-takeover-code, MAP-ch2, WHERE_TO_REPORT, campaign-catalogue]
     notes: "The criminal poses as a friend or relative via a hacked or fake account or a 'new number', asks urgently for money, often with a second request; mostly WhatsApp, also SMS, email, Snapchat, Telegram. Habit: call or speak to the person; ask a question only they'd know; check account details against known ones. A police report-preparation form."
 
   - id: nl-betaalvereniging-friend-in-need-2020
@@ -517,7 +521,7 @@ sources:
     accessed: 2026-11-18
     region: NL
     tier: 4
-    used_for: [MAP-ch2, MAP-missing]
+    used_for: [MAP-ch2, MAP-missing, campaign-catalogue]
     notes: "News, supporting only. PART-YEAR figures (to Aug 2025): task/job scam reports already 10x all of 2024; 88% started with a call; average loss EUR 6,500; H1 2025 damage EUR 1.52m vs EUR 1.67m for all of 2024. Small early payouts, then deposits to 'unlock' tasks. Generic corroboration: eu-epc-threats-2025."
 
   - id: nl-fraudehelpdesk-police-pilot
@@ -540,7 +544,7 @@ sources:
     accessed: 2026-11-18
     region: PL
     tier: 2
-    used_for: [smishing-parcel-fee, card-phishing-payment-failed, multichannel-support-callback, MAP-ch5, WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [smishing-parcel-fee, card-phishing-payment-failed, multichannel-support-callback, MAP-ch5, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "2025: 260.8k incidents (+152%), ~98% fraud; 244.3k malicious domains added to the warning list; 295.2k suspicious SMS reports. Lures: fake marketplace 'buyer has paid, collect via link' pages, also imitating couriers; courier customs-fee emails and address/payment SMS, some appearing in genuine threads; investment is the largest group. Report SMS free to 8080; sites at incydent.cert.pl."
 
   - id: pl-nask-metoda-na-2020
@@ -551,7 +555,7 @@ sources:
     accessed: 2026-11-18
     region: PL
     tier: 2
-    used_for: [messenger-account-takeover-code, MAP-ch5, MAP-missing, WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [messenger-account-takeover-code, MAP-ch5, MAP-missing, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "'Na kod' / 'na znajomego': a hijacked friend's social account asks for the 6-digit code from your banking app. Habit: confirm via another channel (call); never share app codes. If your account is hijacked, WARN YOUR CONTACTS and change passwords (supports WHERE_TO_REPORT step 7). Report to incydent.cert.pl. Older (2020)."
 
   - id: pl-polskieradio-fake-shops-2025
@@ -562,7 +566,7 @@ sources:
     accessed: 2026-11-18
     region: PL
     tier: 4
-    used_for: [MAP-ch7]
+    used_for: [MAP-ch7, campaign-catalogue]
     notes: "News, supporting: ~1,600 fake-shop reports and ~14,000 misuses of marketplace imagery in 2024, per CERT Polska."
 
   # ---------------------------------------------------------------- Italy
@@ -574,7 +578,7 @@ sources:
     accessed: 2026-11-18
     region: IT
     tier: 3
-    used_for: [MAP-ch6, WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [MAP-ch6, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "Fake police, lawyer or doctor calls about a relative's accident or arrest, with a collector sent to the home; fake grandchild calls; fake utility technicians; spoofed bank numbers. Advice: call 112 or the relative on a known number; never hand over money or valuables; police never ask for money."
 
   - id: it-carabinieri-21-arresti-2025
@@ -585,8 +589,8 @@ sources:
     accessed: 2026-11-18
     region: IT
     tier: 3
-    used_for: [MAP-ch6]
-    notes: "33 frauds May 2024-Jan 2025 across 7 regions. Fake Carabinieri or lawyers claim a son or grandson caused a crash and demand 'bail' in cash or gold, collected at home. Callers keep the line open so victims can't check."
+    used_for: [MAP-ch6, campaign-catalogue]
+    notes: "33 frauds May 2024-Jan 2025 across 7 regions. Fake Carabinieri or lawyers claim a son or grandson caused a crash and demand 'bail' in cash or gold, collected at home. Callers keep the line open so victims can't check. T-R.1: cited in the catalogue's 'Excluded' table (home collection is offline)."
 
   # ---------------------------------------------------------------- Portugal
   - id: pt-gnr-phishing
@@ -608,7 +612,7 @@ sources:
     accessed: 2026-11-18
     region: PT
     tier: 4
-    used_for: [MAP-ch7, MAP-missing]
+    used_for: [MAP-ch7, MAP-missing, campaign-catalogue]
     notes: "News citing PSP: 4,553 fake-rental fraud cases 2023-2025 (~1,500 a year). The original PSP release was not fetched."
 
   - id: pt-dn-psp-airbnb-2026
@@ -619,7 +623,7 @@ sources:
     accessed: 2026-11-18
     region: PT
     tier: 4
-    used_for: [MAP-ch7, MAP-missing, WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [MAP-ch7, MAP-missing, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "News: PSP warns of rising holiday-accommodation scams. Red flags: paying or communicating off-platform; links sent by the 'host'; requests for direct bank transfers. Report to the PSP."
 
   - id: pt-portugalpost-gnr-quishing-2026
@@ -630,7 +634,7 @@ sources:
     accessed: 2026-11-18
     region: PT
     tier: 4
-    used_for: [MAP-ch7]
+    used_for: [MAP-ch7, campaign-catalogue]
     notes: "News: GNR (2026-03-24) warns of stickers over QR codes on menus, fake parking-fine notices and posters. Verify fines on the municipality's official portal."
 
   - id: pt-deco-mbway-2021
@@ -641,7 +645,7 @@ sources:
     accessed: 2026-11-18
     region: PT
     tier: 3
-    used_for: [MAP-missing]   # out of scope under Red Line 8 (offline ATM step)
+    used_for: [MAP-missing, campaign-catalogue]   # out of scope under Red Line 8 (offline ATM step); catalogue cites it only in the 'Excluded' table
     notes: "A seller on a classifieds site is talked through an ATM to 'receive' a phone payment and ends up linking the scammer to their account. Red flag: you never need an ATM to receive money. Older source; current prevalence unverified."
 
   # ---------------------------------------------------------------- Sweden
@@ -653,7 +657,7 @@ sources:
     accessed: 2026-11-18
     region: SE
     tier: 3
-    used_for: [MAP-ch3, MAP-ch9, MAP-ch10]
+    used_for: [MAP-ch3, MAP-ch9, MAP-ch10, campaign-catalogue]
     notes: "Total fraud proceeds fell -16% (2023->2024) and -10% (2024->2025): the 'second year running'. 2025 proceeds ~SEK 5.7bn: investment ~SEK 1.6bn, romance SEK 551m, vishing SEK 320m, CEO/BEC SEK 214m. Telephone-fraud (vishing) proceeds SEK 708m (2023) -> SEK 320m (2025), a drop of ~55%. Attempts (incl. mass SMS) are increasing."
 
   - id: se-polisen-vishing-2026
@@ -664,7 +668,7 @@ sources:
     accessed: 2026-11-18
     region: SE
     tier: 3
-    used_for: [MAP-ch9, MAP-missing, WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [MAP-ch9, MAP-missing, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "Telephone-fraud proceeds ~SEK 712m (2023) -> just under SEK 302m (2025), described as a drop of nearly 60%. This differs slightly from the April 2026 release (708m -> 320m), probably a later data revision; MAP therefore says 'more than halved'. Victims are manipulated into giving login details or using their e-ID to move money, sometimes followed by a home visit. Advice: never log in with e-ID because a caller asks; don't share card-reader codes; ask the bank about dual signing or delays. 112 if ongoing, 114 14 otherwise."
 
   - id: se-polisen-campaign-2026
@@ -675,7 +679,7 @@ sources:
     accessed: 2026-11-18
     region: SE
     tier: 3
-    used_for: [multichannel-support-callback, MAP-ch9, WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [multichannel-support-callback, MAP-ch9, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "Campaign 'Dare to be rude' (21 Sep-11 Oct 2026, aimed at 60+). Vishing often starts with an SMS that gives a number to call. Hang up; don't call numbers from texts; never log in with e-ID at a caller's request; police never collect cards or valuables at home. 112 / 114 14."
 
   # ---------------------------------------------------------------- Belgium
@@ -687,7 +691,7 @@ sources:
     accessed: 2026-11-18
     region: BE
     tier: 2
-    used_for: [email-phishing-credential, it-portal-credential-phishing, MAP-ch10, MAP-missing, MAP-crosscutting, WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [email-phishing-credential, it-portal-credential-phishing, MAP-ch10, MAP-missing, MAP-crosscutting, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "~10m messages forwarded to suspicious@safeonweb.be in 2025. Don't rely on spelling errors (AI). Verify via a typed address or the bank's known number. Deepfake audio/video in CEO fraud mentioned. The article also mentions verdacht@safeonweb.be: open item."
 
   - id: be-safeonweb-qr-chargers
@@ -698,7 +702,7 @@ sources:
     accessed: 2026-11-18
     region: BE
     tier: 2
-    used_for: [MAP-ch7, WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [MAP-ch7, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "Stickers over official QR codes on EV chargers. Check for an overlay sticker; inspect the URL. Report to the local police; Card Stop 078 170 170 if bank details were shared."
 
   - id: be-police-romance-2026
@@ -709,7 +713,7 @@ sources:
     accessed: 2026-11-18
     region: BE
     tier: 3
-    used_for: [MAP-ch10, WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [MAP-ch10, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "Romance-scam red flags: a too-good profile, far away, fast relationship, money requests, avoids meeting. Advice: reverse image search; live video check (beware AI); never send money. Complaint to the local police; REPORT THE PROFILE TO THE SITE OR APP; Card Stop; beware recovery-room scams. The EUR 9m+ figure (2021, FPS Economy) is old."
 
   - id: be-febelfin-phishing-2025
@@ -720,7 +724,7 @@ sources:
     accessed: 2026-11-18
     region: BE
     tier: 3
-    used_for: [MAP-ch10, MAP-missing]
+    used_for: [MAP-ch10, MAP-missing, campaign-catalogue]
     notes: "~EUR 49m stolen via phishing in BE in 2024. Young people: 23% don't know what phishing is; 14% would share bank card + PIN for money (money mule) vs 5% overall; 45% have never heard of money muling. Designer context only, not for on-screen use."
 
 
@@ -732,7 +736,7 @@ sources:
     accessed: 2026-11-18
     region: DE
     tier: 2
-    used_for: [MAP-ch6, MAP-missing]
+    used_for: [MAP-ch6, MAP-missing, campaign-catalogue]
     notes: "Explains voice cloning (text-to-speech and voice conversion; seconds-to-hours of audio needed). Fake voices used in fraud calls, e.g. CEO fraud triggering a transfer. Audible tells: metallic sound, mispronunciation, monotone or odd emphasis, reply delay. Countermeasure: awareness. Does NOT mention calls impersonating relatives; older (2022) and quality is improving, so tells are not to be taught as reliable."
 
   # ================================================ T-2.5 additions (chapters 0-1 briefs + help screen), all opened 2026-11-18
@@ -746,7 +750,7 @@ sources:
     accessed: 2026-11-18
     region: NL
     tier: 3
-    used_for: [messenger-account-takeover-code, help-where-to-report-en]
+    used_for: [messenger-account-takeover-code, help-where-to-report-en, campaign-catalogue]
     notes: "Police report-preparation form for a hijacked messenger account (English gloss: 'form for reporting a taken-over/hacked WhatsApp account'). Victim receives a verification code by SMS; someone says it was sent by mistake and asks for it; the account is then used for friend-in-need fraud. Advice: set a two-step verification PIN; never pass on codes; verify money requests another way; don't publish your number in listings; warn contacts; re-register with your own number to regain access (may need to wait hours). Names a real messenger: game uses Kettle only."
 
   # ---------------------------------------------------------------- Germany (T-2.5)
@@ -758,7 +762,7 @@ sources:
     accessed: 2026-11-18
     region: DE
     tier: 3
-    used_for: [messenger-account-takeover-code, help-where-to-report-en]
+    used_for: [messenger-account-takeover-code, help-where-to-report-en, campaign-catalogue]
     notes: "Title paraphrased in English gloss; check exact German title at G3. A message from a friend or from 'the messenger' asks for a vote, security check or ID confirmation; a link or QR leads to a fake page asking for the phone number, then a code or approval; passing it on links the attacker's device. Signs: unusual requests, unexpected code prompts, unknown linked devices. Advice: never share codes; check and remove linked devices; enable two-step verification; warn contacts."
   - id: de-ngk-116111-flyer-2026
     publisher: Nummer gegen Kummer e.V. (national operator of 116 111 in Germany; member of Kinderschutzbund)
@@ -790,7 +794,7 @@ sources:
     accessed: 2026-11-18
     region: PL
     tier: 2
-    used_for: [messenger-account-takeover-code, help-where-to-report-en]
+    used_for: [messenger-account-takeover-code, help-where-to-report-en, campaign-catalogue]
     notes: "English gloss: 'Beware of vote requests from friends'. Hijacked friends' messenger accounts ask you to vote; you scan a QR code on a fake page or read out a code, which pairs another device to your account. Advice: unlink unknown devices; report at incydent.cert.pl or via the mObywatel app ('Bezpiecznie w sieci'); suspicious SMS to 8080."
   - id: pl-cert-phishing-kb-2026
     publisher: CERT Polska (NASK)
@@ -800,7 +804,7 @@ sources:
     accessed: 2026-11-18
     region: PL
     tier: 2
-    used_for: [messenger-account-takeover-code, it-portal-credential-phishing, card-phishing-payment-failed, multichannel-support-callback, help-where-to-report-en]
+    used_for: [messenger-account-takeover-code, it-portal-credential-phishing, card-phishing-payment-failed, multichannel-support-callback, help-where-to-report-en, campaign-catalogue]
     notes: "Title shortened. Fake payment forms asking for card number, expiry and CVV, often for a small extra fee; time pressure (blocked account, returned parcel); fake login panels look identical, so check the domain; requests for SMS codes: read the operation description before approving; a password manager that won't autofill is a warning; passkeys/FIDO2 best. Victim steps: block with the bank; change reused passwords; log out sessions, enable 2FA, check linked devices; police report; warn contacts."
   - id: pl-cert-fake-consultants
     publisher: CERT Polska (NASK)
@@ -810,7 +814,7 @@ sources:
     accessed: 2026-11-18
     region: PL
     tier: 2
-    used_for: [it-portal-credential-phishing, multichannel-support-callback, help-where-to-report-en]
+    used_for: [it-portal-credential-phishing, multichannel-support-callback, help-where-to-report-en, campaign-catalogue]
     notes: "English gloss: 'Fake consultants'. Callers posing as bank or institution staff; caller ID and caller names can be spoofed; 'safe account' transfers; requests to install remote-access software. Advice: hang up and call back on the number from the official site or app; never let anyone remotely control your device."
 
   # ---------------------------------------------------------------- Spain (T-2.5)
@@ -822,7 +826,7 @@ sources:
     accessed: 2026-11-18
     region: ES
     tier: 2
-    used_for: [it-portal-credential-phishing, help-where-to-report-en]
+    used_for: [it-portal-credential-phishing, help-where-to-report-en, campaign-catalogue]
     notes: "OLDER (2022). 'Urgente' subject; mailbox full; link to 'update' leads to a fake mail-provider login. If credentials entered: change the password, enable 2FA, change it on every service where it was reused."
   - id: es-incibe-streaming-renewal-2024
     publisher: INCIBE
@@ -832,7 +836,7 @@ sources:
     accessed: 2026-11-18
     region: ES
     tier: 2
-    used_for: [card-phishing-payment-failed]
+    used_for: [card-phishing-payment-failed, campaign-catalogue]
     notes: "Real streaming brand in the source title/URL is a factual reference only; the game uses fictional brands (Red Line 1). Email: subscription couldn't be renewed because of a payment problem / account suspended; fake login page, then forms for personal data and card number, expiry and CVV. Red flags: sender not official, urgency, URL not the real domain. If card entered: contact the bank to cancel the card."
   - id: es-incibe-streaming-extension-2023
     publisher: INCIBE
@@ -852,7 +856,7 @@ sources:
     accessed: 2026-11-18
     region: ES
     tier: 2
-    used_for: [card-phishing-payment-failed, help-where-to-report-en]
+    used_for: [card-phishing-payment-failed, help-where-to-report-en, campaign-catalogue]
     notes: "OLDER (2021). Real brand in title/URL: reference only. Unsolicited prize email -> survey -> 'you won' -> asks for personal and card details and ~EUR 5.99 shipping (real charge may be higher). Advice: never enter bank data in promotions you didn't request; verify on the company's official site/app. If card entered: contact the bank at once; report to police; free helpline 017. Also lists spelling errors as a sign: NOT to be taught as reliable (AI)."
 
   # ---------------------------------------------------------------- Switzerland (non-EU, supporting only) (T-2.5)
@@ -864,7 +868,7 @@ sources:
     accessed: 2026-11-18
     region: CH
     tier: 2
-    used_for: [it-portal-credential-phishing]
+    used_for: [it-portal-credential-phishing, campaign-catalogue]
     notes: "Non-EU, supporting only. Fake IT/tech-support calls and pop-up 'locked screen' warnings with a number to call. Advice: never grant remote access; don't call the number shown. (Recovery steps after access was given are taken from other sources, not this page.)"
   - id: ch-ncsc-double-phishing-2026
     publisher: Swiss Federal Office for Cybersecurity (BACS / NCSC)
@@ -874,7 +878,7 @@ sources:
     accessed: 2026-11-18
     region: CH
     tier: 2
-    used_for: [card-phishing-payment-failed, multichannel-support-callback, help-where-to-report-en]
+    used_for: [card-phishing-payment-failed, multichannel-support-callback, help-where-to-report-en, campaign-catalogue]
     notes: "Non-EU, supporting only. Parcel-fee SMS/email -> card details on a fake page -> call from a fake bank/card fraud team (caller ID may show the real bank number) asking to read out an SMS code or approve in the banking app 'to stop' a transaction, which actually authorises the payment. Advice: never read out codes or approve on an unsolicited call; hang up and call the number on your card or official site; block the card; check parcels via the carrier directly; report losses to police."
   - id: ch-ncsc-parcel-calls-2022
     publisher: Swiss Federal Office for Cybersecurity (BACS / NCSC)
@@ -884,8 +888,381 @@ sources:
     accessed: 2026-11-18
     region: CH
     tier: 2
-    used_for: [it-portal-credential-phishing, multichannel-support-callback, help-where-to-report-en]
+    used_for: [it-portal-credential-phishing, multichannel-support-callback, help-where-to-report-en, campaign-catalogue]
     notes: "Non-EU, supporting only; OLDER; targeted companies. Calls from a fake delivery firm with a spoofed local number, followed by an email referring to the call; caller pressures the recipient to open the 'document' (malware). Advice: don't yield to caller pressure; if opened, stop using the computer and inform the bank."
+
+  # ================================================ T-R.1 additions (docs/patterns/THREAT_CATALOGUE.md), all opened 2026-11-18
+
+  # ---------------------------------------------------------------- EU level (T-R.1)
+  - id: eu-enisa-sim-swapping-2021
+    publisher: ENISA (EU Agency for Cybersecurity)
+    title: "Countering SIM-Swapping: Overview and good practices to reduce the impact of SIM-Swapping Attacks"
+    url: https://www.enisa.europa.eu/sites/default/files/publications/ENISA_REPORT-Countering_SIM_Swapping.pdf
+    published: 2021-12
+    accessed: 2026-11-18
+    region: EU
+    tier: 1
+    used_for: [campaign-catalogue]
+    notes: "OLDER (2021). Victim-side: first sign is an 'inexplicable and more than momentary loss of mobile network access'; can't call or text; loss of email/social access. Personal data for the swap is most likely gathered by phishing and social engineering posing as operator or provider staff. Consequences: interception of SMS OTPs, online-banking fraud (most affected service per survey), takeover of accounts tied to the number. User advice: contact the operator at once if network access disappears; check bank transactions; never share an OTP, even with someone claiming to be the operator; limit personal info on social media; prefer non-SMS authentication where available."
+
+  - id: eu-europol-ed-impersonation-2021
+    publisher: Europol
+    title: "Beware of scam using name of Europol's Executive Director"
+    url: https://www.europol.europa.eu/newsroom/news/beware-of-scam-using-name-of-europol%E2%80%99s-executive-director
+    published: 2021-04-08
+    accessed: 2026-11-18
+    region: EU
+    tier: 1
+    used_for: [campaign-catalogue]
+    notes: "OLDER (2021). Emails and social-media messages in several languages misuse the names of Europol's Executive Director and Deputy, asking recipients to act immediately and threatening a criminal investigation. 'Don't be misled - this correspondence is fake.' Report to local law enforcement, then optionally to Europol's contact form. Does not mention calls or letters. Real officials' names: reference only, never in game content."
+
+  - id: eu-frontex-etias-sites-2024
+    publisher: Frontex (European Border and Coast Guard Agency)
+    title: "Beware of risks posed by unofficial ETIAS websites"
+    url: https://www.frontex.europa.eu/media-centre/news/news-release/beware-of-risks-posed-by-unofficial-etias-websites-eNZniu
+    published: 2024-06-22
+    accessed: 2026-11-18
+    region: EU
+    tier: 1
+    used_for: [campaign-catalogue]
+    notes: "Over 100 unofficial websites about the EU travel authorisation; some claim to accept applications before the system exists; risks: identity theft, excessive fees, data protection, misinformation; some copy the official layout or use official-sounding domains. Apply only via the official site. CAUTION: the release's launch timing ('first half of 2025') has passed and the system's current status was NOT verified this session; do not put any launch date in content."
+
+  - id: eu-echo-fake-aid-site-2025
+    publisher: European Commission, DG for European Civil Protection and Humanitarian Aid Operations (DG ECHO)
+    title: "Scam Warning: fraudulent website misusing EU Humanitarian Aid logo"
+    url: https://civil-protection-humanitarian-aid.ec.europa.eu/news-stories/news/scam-warning-fraudulent-website-misusing-eu-humanitarian-aid-logo-2025-07-23_en
+    published: 2025-07-23
+    accessed: 2026-11-18
+    region: EU
+    tier: 1
+    used_for: [campaign-catalogue]
+    notes: "A website misuses the EU Humanitarian Aid name and logo, falsely claims EU funding and charges a fee for 'safe passage' from war zones. EU humanitarian aid is always free for beneficiaries; check the official list of certified NGOs; report misuse via DG ECHO. Does NOT mention donation requests: weak support for a 'fake charity' pattern."
+
+  - id: eu-ec-home-iocta-2025
+    publisher: European Commission, DG Migration and Home Affairs (reporting Europol IOCTA 2025)
+    title: "Europol published report on how cybercriminals trade and exploit data"
+    url: https://home-affairs.ec.europa.eu/news/europol-published-report-how-cybercriminals-trade-and-exploit-data-2025-06-16_en
+    published: 2025-06-16
+    accessed: 2026-11-18
+    region: EU
+    tier: 1
+    used_for: [campaign-catalogue]
+    notes: "Summary of IOCTA 2025 ('Steal, deal and repeat'): 'Data has become a commodity for crime'; GenAI makes scams more convincing and tailored; crime-as-a-service; 'access credentials to remote services, compromised corporate networks, and personal logins are sold in bulk'; stolen data used for extortion, identity theft and abuse incl. against children. No individual advice. The Europol report page itself (europol.europa.eu/publication-events/main-reports/steal-deal-and-repeat-...) rendered only metadata and is not cited."
+
+  - id: eu-eeas-fimi-2025
+    publisher: European External Action Service (EEAS)
+    title: "3rd EEAS Report on Foreign Information Manipulation and Interference Threats"
+    url: https://eeas.europa.eu/eeas/3rd-eeas-report-foreign-information-manipulation-and-interference-threats-0_en
+    published: 2025-03-19
+    accessed: 2026-11-18
+    region: EU
+    tier: 1
+    used_for: [campaign-catalogue]
+    notes: "Announcement page only: the report maps the digital infrastructure used by foreign actors (mainly Russia, secondarily China) to manipulate the EU information space. The page itself does not mention deepfakes, impersonated media or citizen advice; the full PDF was NOT opened. Supporting only for the low-fit disinformation entry."
+
+  - id: eu-nmr-leaflet
+    publisher: No More Ransom (public-private partnership with Europol EC3), leaflet hosted by the Belgian Federal Police
+    title: "Need help unlocking your digital life? (No More Ransom leaflet)"
+    url: https://www.police.be/5998/sites/5998/files/media/file/2025-05/NMR%20-Need_help.pdf
+    published: n/d (file path 2025-05)
+    accessed: 2026-11-18
+    region: EU
+    tier: 1
+    used_for: [campaign-catalogue]
+    notes: "Ransomware victim advice: don't pay; report to national police; check the No More Ransom portal for free decryptors (and re-check later); disconnect the device from internet and home Wi-Fi; reformat, reinstall, update, restore from backup. Tier 1 because the partnership is led by Europol EC3; the PDF is hosted by police.be."
+
+  # ---------------------------------------------------------------- Germany (T-R.1)
+  - id: de-vzn-jobscamming-2026
+    publisher: Verbraucherzentrale Niedersachsen
+    title: "Jobscamming: So erkennen Sie gefälschte Jobangebote und schützen Ihre Daten"
+    url: https://www.verbraucherzentrale-niedersachsen.de/wissen/digitale-welt/datenschutz/jobscamming-so-erkennen-sie-gefaelschte-jobangebote-und-schuetzen-ihre-daten-120421
+    published: 2026-08-24 (Stand)
+    accessed: 2026-11-18
+    region: DE
+    tier: 3
+    used_for: [campaign-catalogue]
+    notes: "Fake job ads on known portals or using real company names; contact mainly by email/messenger; fast 'acceptance' without interview; early tasks include a bank video-identification (Video-Ident) or opening a bank account; requests for ID copies, bank and tax data, logins or software installs. Also 'finance agents' and 'goods agents' (money laundering / stolen goods). If data shared: bank at once, document, police complaint, check ID misuse, consumer advice."
+
+  - id: de-vz-fakeshops-2025
+    publisher: Verbraucherzentrale (federation of German consumer centres)
+    title: "Abzocke online: Wie erkenne ich Fakeshops im Internet?"
+    url: https://www.verbraucherzentrale.de/wissen/digitale-welt/onlinehandel/abzocke-online-wie-erkenne-ich-fakeshops-im-internet-13166
+    published: 2025-06-11 (Stand)
+    accessed: 2026-11-18
+    region: DE
+    tier: 3
+    used_for: [campaign-catalogue]
+    notes: "Red flags: only prepayment offered at the last step; missing or incomplete imprint; unusual prices (not proof alone); odd domain endings (e.g. '.de.com'); URL not matching content; reviews only on the shop; fake or unverifiable seals. Tool: Fakeshop-Finder. If paid: contact bank immediately (transfer recall window varies; direct debit reversible up to 8 weeks), keep records, consumer advice, police complaint. Does not cover social-media ads."
+
+  - id: de-vznrw-fake-giveaways-2026
+    publisher: Verbraucherzentrale NRW
+    title: "Fake-Gewinnspiele per E-Mail, bei Facebook und Instagram erkennen"
+    url: https://www.verbraucherzentrale.nrw/wissen/digitale-welt/soziale-netzwerke/fakegewinnspiele-bei-facebook-und-instagram-erkennen-91061
+    published: 2026-05-12 (Stand)
+    accessed: 2026-11-18
+    region: DE
+    tier: 3
+    used_for: [campaign-catalogue]
+    notes: "Real brand names in the source: reference only. Fake brand pages and 'you won' emails act as data collectors; like/share/tag mechanics; red flags: new pages, few posts, no imprint or terms, no contact; blue badges have limited meaning and paid badge offers are 'often a trap'; how to check page age. Focus is data harvesting; does NOT describe card requests or subscription traps."
+
+  - id: de-bsi-public-wifi
+    publisher: BSI (Federal Office for Information Security)
+    title: "Security tips for using private and public WLAN"
+    url: https://www.bsi.bund.de/dok/6596788
+    published: 2023-09-05 (last updated, page metadata)
+    accessed: 2026-11-18
+    region: DE
+    tier: 2
+    used_for: [campaign-catalogue]
+    notes: "Many hotspots unencrypted; unknown operators; fake hotspots with familiar or generic names ('Free Wifi') that devices join automatically; even https can be imitated on a hostile network. Advice: WLAN on only when needed; avoid confidential data on third-party networks or use a VPN; disable sharing; turn off auto-connect."
+
+  - id: de-bsi-cyberstalking-safeguards
+    publisher: BSI (Federal Office for Information Security)
+    title: "Cyber Bullying and Cyber Stalking: Safeguards"
+    url: https://bsi.bund.de/dok/6700902
+    published: 2023-09-05 (last updated, page metadata)
+    accessed: 2026-11-18
+    region: DE
+    tier: 2
+    used_for: [campaign-catalogue]
+    notes: "Stalkerware can be installed quickly or come preinstalled on a phone you're given; set up phones yourself; SIM PIN and strong screen lock; don't share codes; be wary of being urged to root a device; protect email/social/cloud accounts, review security notifications and logins from unknown devices, enable 2FA; share only what is necessary; accept only people you know. Does not list signs of a monitored phone or cover doxxing by name."
+
+  - id: de-bsi-smart-home-infection-2025
+    publisher: BSI (Federal Office for Information Security)
+    title: "Infektionsbeseitigung bei smarten Haushaltsgeräten"
+    url: https://bsi.bund.de/dok/10651702
+    published: 2025-03-05 (updated, page metadata)
+    accessed: 2026-11-18
+    region: DE
+    tier: 2
+    used_for: [campaign-catalogue]
+    notes: "English gloss: 'Removing infections from smart household devices'. Connected appliances reach the internet via the home router, 'a main point of attack'; infected routers and devices can be combined into botnets. Points to BSI smart-home guidance (not opened). No detail on default passwords or cameras."
+
+  - id: de-bnetza-ping-calls
+    publisher: Bundesnetzagentur (Federal Network Agency)
+    title: "Ping/Lock-Anrufe"
+    url: https://www.bundesnetzagentur.de/DE/Vportal/TK/Aerger/Faelle/Ping/artikel.html
+    published: n/d (footer (c) 2026)
+    accessed: 2026-11-18
+    region: DE
+    tier: 3
+    used_for: [campaign-catalogue]
+    notes: "English gloss: 'Ping calls'. A very short call from an unknown number aims to provoke a costly callback; foreign prefixes can resemble German area codes; callbacks reach recordings that keep you on the line. Advice: don't call back unknown numbers; block numbers; ask the provider to block premium ranges (free). Report via the agency's online form with date, time and displayed number."
+
+  - id: de-polizei-onlinetipps-2024
+    publisher: Polizeiliche Kriminalprävention der Länder und des Bundes (ProPK, German police crime prevention)
+    title: "Online-Tipps für Groß und Klein: Sicherheit im Medienalltag"
+    url: https://polizei-beratung.de/fileadmin/Medien/266-BR-OnlineTipps-fuer-Gross-und-Klein.pdf
+    published: 2024-07 (Stand 07/2024)
+    accessed: 2026-11-18
+    region: DE
+    tier: 3
+    used_for: [campaign-catalogue]
+    notes: "Opened at the same path with a capitalised host ('Polizei-Beratung.de'); hostnames are case-insensitive. Gaming section warns of phishing emails from supposed game makers and forged/stolen unlock codes; general advice: 2FA, never share passwords or login codes even with best friends; disable in-app purchases and set third-party billing blocks; illegal downloads often contain malware; install from reputable stores. Not specific to skins or in-game currency lures."
+
+  # ---------------------------------------------------------------- Belgium (T-R.1)
+  - id: be-police-fake-police-messages-2026
+    publisher: Belgian Federal Police (police.be)
+    title: "Comment des messages de police crédibles peuvent induire en erreur ?"
+    url: https://www.police.be/5998/fr/actualites/comment-des-messages-de-police-credibles-peuvent-induire-en-erreur
+    published: 2026-06-30
+    accessed: 2026-11-18
+    region: BE
+    tier: 3
+    used_for: [campaign-catalogue]
+    notes: "English gloss: 'How credible-looking police messages can mislead'. Mostly emails (also calls), sometimes signed with real senior officials' names, alleging an offence (usually a sexual offence) or that a computer was hacked or bank account compromised, demanding payment to avoid prosecution (one victim paid ~EUR 7,600-8,000, then was asked for EUR 16,000). Red flags: urgency; spoofed or look-alike sender domains; links; attachments may carry malware; 'recovery room' follow-ups. Advice: verify by calling the local police or bank on a known number; don't click; forward to suspect@safeonweb.be. Victims: bank at once; FraudStop 078 170 170 (same as Card Stop; launched 22 June); complaint at the local police. Real names and addresses: reference only."
+
+  - id: be-fsma-dashboard-2026-h1
+    publisher: FSMA (Belgian Financial Services and Markets Authority)
+    title: "Offres illicites : statistiques premier semestre 2026 (dashboard fraudes à l'investissement)"
+    url: https://www.fsma.be/sites/default/files/media/files/2026-07/20260715_dashboard_fraudes_investissement_2026_s1.pdf
+    published: 2026-07
+    accessed: 2026-11-18
+    region: BE
+    tier: 3
+    used_for: [campaign-catalogue]
+    notes: "H1 2026: 1,277 reports; >EUR 12.7m losses; fraudulent trading platforms 66.5% of losses (mostly 'crypto'); fake stock advice via a messenger >EUR 2m (complaints dropping since February); fake credit ~20% of complaints, average loss ~EUR 3,000, upfront 'file/legalisation/insurance' fees; fake contracts impersonating notaries and banks; recovery rooms. Advice: never pay fees to get a loan; check FSMA warnings. Designer context only; do not show figures on screen. Does not mention social-media ads as a channel."
+
+  - id: be-eccbe-concert-tickets
+    publisher: European Consumer Centre Belgium (ECC Belgium)
+    title: "Concert tickets"
+    url: https://www.eccbe.eu/en/discover-your-rights/misleading-practices/a-few-examples-of-misleading-practices/concert-tickets/
+    published: n/d (footer (c) 2026)
+    accessed: 2026-11-18
+    region: BE
+    tier: 3
+    used_for: [campaign-catalogue]
+    notes: "Reached via a redirect from eccbelgium.be. Secondary resellers and foreign sites; 'a vendor ranked first [in search] is not necessarily the official seller'; risks: ticket never arrives, wrong category, someone else's name. Buy only from officially accredited vendors; card chargeback routes. Covers resale and misleading practices more than outright fraud."
+
+  # ---------------------------------------------------------------- France (T-R.1)
+  - id: fr-cnil-data-leak-2024
+    publisher: CNIL (French data protection authority)
+    title: "Fuite ou vol de données : comment savoir si cela vous concerne et que pouvez-vous faire ?"
+    url: https://cnil.fr/fr/conseils-fuite-vol-donnees
+    published: 2024-03-18
+    accessed: 2026-11-18
+    region: FR
+    tier: 3
+    used_for: [campaign-catalogue]
+    notes: "After a leak: expect realistic targeted phishing (social security, bank, parcel); don't click, type official addresses; change passwords starting with email, tax, bank, shopping; no reuse; password manager; enable MFA; if identity fraud, contact the bank and file a complaint; check official registers for accounts opened in your name. The organisation must inform you if at risk; CNIL advises AGAINST third-party 'check if you're affected' websites. Does not mention IBAN misuse or CNIL impersonation."
+
+  - id: fr-lot-prefecture-webcam-2018
+    publisher: Services de l'État dans le Lot (prefecture website; author not named in the document)
+    title: "Message d'attention : chantage dit à la « webcam »"
+    url: https://lot.gouv.fr/index.php/contenu/telechargement/9182/83952/file/message_alerte_chantage_webcam1.pdf
+    published: n/d (refers to a campaign active since mid-August 2018)
+    accessed: 2026-11-18
+    region: FR
+    tier: 3
+    used_for: [campaign-catalogue]
+    notes: "OLDER (~2018). Email claims the webcam was hacked and passwords intercepted, demands EUR 500. Advice: don't pay or reply; delete; check whether your addresses appear in breaches; change passwords, update software, cover the webcam; if paid, contact the bank and file a complaint; report via the national online reporting platform. Cybermalveillance.gouv.fr webcam-blackmail fiches were found but no text could be extracted this session."
+
+  # ---------------------------------------------------------------- Ireland (T-R.1)
+  - id: ie-garda-revenue-scam-2020
+    publisher: An Garda Síochána
+    title: "Revenue Scam Warning 9/1/20"
+    url: https://www.garda.ie/en/about-us/our-departments/office-of-corporate-communications/news-media/news-archive/revenue-scam-warning-9-1-20-.html
+    published: 2020-01-09
+    accessed: 2026-11-18
+    region: IE
+    tier: 3
+    used_for: [campaign-catalogue]
+    notes: "OLDER (2020). Callers claiming to be the tax authority offer a refund or demand immediate payment, may give a number to call back with card details; the authority also warned of fraudulent emails and texts seeking personal or card details for a 'refund' and says it never asks for personal information by email, text or pop-up. Advice: don't give card, account or national ID numbers; end the call; check refunds directly with the tax office; if details given, contact the bank."
+
+  - id: ie-garda-sayno-2017
+    publisher: An Garda Síochána (supporting a Europol campaign)
+    title: "Say No! Awareness Campaign on Online Child Sexual Coercion and Extortion"
+    url: https://www.garda.ie/en/about-us/our-departments/office-of-corporate-communications/press-releases/2017/june/say-no!-awareness-campaign-on-online-child-sexual-coercion-and-extortion-19-6-17-.html
+    published: 2017-06-19
+    accessed: 2026-11-18
+    region: IE
+    tier: 3
+    used_for: [campaign-catalogue]
+    notes: "OLDER (2017). Supports Europol's 'Say No!' campaign. Advice to victims: don't comply or pay; tell someone; keep evidence; stop contact and block; report to the Gardaí. Help-card material only (G1); the national helpline number on that page was not re-verified for current use."
+
+  # ---------------------------------------------------------------- Poland (T-R.1)
+  - id: pl-cert-ngate-2025
+    publisher: CERT Polska (NASK)
+    title: "Analysis of NGate malware campaign (NFC relay)"
+    url: https://cert.pl/en/posts/2025/11/analiza-ngate/
+    published: 2025-11-03
+    accessed: 2026-11-18
+    region: PL
+    tier: 2
+    used_for: [campaign-catalogue]
+    notes: "Read for the victim's perspective ONLY (the page also contains technical analysis, not used). Victims receive email/SMS about a security problem, then a call from fake bank staff (sometimes 'confirmed' by an SMS); told to install an Android app from a link (not an official store), hold the payment card to the phone 'to verify' and enter the PIN; criminals then withdraw cash at ATMs. Advice: install bank apps only from official stores; hang up and call the bank's official number."
+
+  # ---------------------------------------------------------------- Switzerland (non-EU, supporting only) (T-R.1)
+  - id: ch-ncsc-clickfix-2026
+    publisher: Swiss Federal Office for Cybersecurity (BACS / NCSC)
+    title: "Week 8: \"ClickFix\" - When a supposed fix or verification installs malware"
+    url: https://www.bacs.admin.ch/en/26w8-en
+    published: 2026-02-24
+    accessed: 2026-11-18
+    region: CH
+    tier: 2
+    used_for: [campaign-catalogue]
+    notes: "Non-EU, supporting only (EU prevalence: eu-enisa-etl-2026). Victim-side: a fake overlay on a compromised site or via an ad shows a fake problem (browser update failed, DNS error, CAPTCHA) and keyboard instructions that open a command line where something is already pasted. 'CrashFix' variant: a fake ad-blocker extension crashes the browser and asks you to 'repair' it. Advice: update browsers only via their settings; never paste commands from unknown sources; a legitimate site never asks for system commands. If affected: report; assume passwords, wallets and session cookies are stolen by an infostealer; change passwords and check accounts. No command text is recorded here or in the catalogue."
+
+  - id: ch-ncsc-tickets-2025
+    publisher: Swiss National Cyber Security Centre (NCSC)
+    title: "Week 12: Ticket scammers target buyers and sellers"
+    url: https://www.ncsc.admin.ch/ncsc/en/home/aktuell/im-fokus/2025/wochenrueckblick_12.html
+    published: 2025-03-25
+    accessed: 2026-11-18
+    region: CH
+    tier: 2
+    used_for: [campaign-catalogue]
+    notes: "Non-EU, supporting only. Buyers: fake social profiles offer tickets for sold-out events, send screenshots as proof, take mobile payments; a dating-app match links to a fake ticket shop that takes card details. Sellers: a 'buyer' asks for a photo incl. the ticket's QR code and vanishes. Red flags: too-cheap prices, pressure, off-platform deals, requests for ID or bank data. Advice: official/authorised channels only; traceable, protected payments; never share ID documents; report ads to the platform."
+
+  # ---------------------------------------------------------------- MITRE ATT&CK (US, taxonomy reference only; T-R.1)
+  - id: int-mitre-attack-enterprise
+    publisher: The MITRE Corporation (MITRE ATT&CK)
+    title: "Enterprise Techniques (ATT&CK Enterprise matrix, technique index)"
+    url: https://attack.mitre.org/techniques/enterprise/
+    published: ATT&CK content v20.1 (per page footers seen this session)
+    accessed: 2026-11-18
+    region: US
+    tier: 4
+    used_for: [campaign-catalogue]
+    notes: "TAXONOMY ONLY: never evidence of European prevalence; every catalogue entry pairs it with a European source where one was found. Technique pages opened individually this session to confirm id + name: T1566 (.001-.004), T1204 (.001 Malicious Link, .002 Malicious File, .004 Malicious Copy and Paste), T1176 (Software Extensions; .001 Browser Extensions), T1219 (Remote Access Tools; .002 Remote Desktop Software), T1608.006 SEO Poisoning, T1539, T1111, T1528, T1498, T1499, T1195 (.002), T1091, T1200, T1078, T1036, T1114 (.003 Email Forwarding Rule), T1496 (.003 SMS Pumping), T1593 (.001 Social Media), T1621, T1667, T1657, T1684. Confirmed from the index text: T1583.008 Malvertising, T1486, T1110.004, T1557 and T1557.004 Evil Twin, T1555, T1098, T1586, T1659, T1213, T1123, T1189, T1491. T1656 Impersonation now redirects to T1684.001. Group/campaign pages were not used."
+
+  - id: int-mitre-attack-mobile
+    publisher: The MITRE Corporation (MITRE ATT&CK)
+    title: "Mobile Techniques (ATT&CK Mobile matrix, technique index)"
+    url: https://attack.mitre.org/techniques/mobile/
+    published: ATT&CK content v20.1 (page footer)
+    accessed: 2026-11-18
+    region: US
+    tier: 4
+    used_for: [campaign-catalogue]
+    notes: "TAXONOMY ONLY. Ids confirmed from the index: T1660 Phishing, T1451 SIM Card Swap, T1430 Location Tracking, T1429 Audio Capture, T1512 Video Capture, T1636 Protected User Data, T1417 (.002 GUI Input Capture), T1516 Input Injection, T1655 (.001 Match Legitimate Name or Location), T1474 Supply Chain Compromise, T1663 Remote Access Software, T1456 Drive-By Compromise, T1626 (.001 Device Administrator Permissions), T1517 Access Notifications, T1643 Generate Traffic from Victim, T1582 SMS Control, T1471 Data Encrypted for Impact, T1640 Account Access Removal, T1662 Data Destruction. No mobile 'Financial Theft' technique."
+
+  - id: int-mitre-attack-t1684
+    publisher: The MITRE Corporation (MITRE ATT&CK)
+    title: "Social Engineering, Technique T1684 - Enterprise"
+    url: https://attack.mitre.org/techniques/T1684/
+    published: "created 2026-04-14, last modified 2026-05-12 (technique v1.0)"
+    accessed: 2026-11-18
+    region: US
+    tier: 4
+    used_for: [campaign-catalogue]
+    notes: "TAXONOMY ONLY. Adversaries manipulate users into granting access, approving changes, disclosing information or running instructions; build trust across help-desk, executive and vendor pretexts; create urgency. Sub-techniques: T1684.001 Impersonation (the old T1656 page redirects here), T1684.002 Email Spoofing."
+
+  - id: int-mitre-attack-t1621
+    publisher: The MITRE Corporation (MITRE ATT&CK)
+    title: "Multi-Factor Authentication Request Generation, Technique T1621 - Enterprise"
+    url: https://attack.mitre.org/techniques/T1621/
+    published: ATT&CK v20
+    accessed: 2026-11-18
+    region: US
+    tier: 4
+    used_for: [campaign-catalogue]
+    notes: "TAXONOMY ONLY. User view: unexpected MFA pushes, texts or calls for logins you didn't start, which you might approve just to make them stop. No European consumer source for push-bombing found (see MAP ch9 note)."
+
+  - id: int-mitre-attack-t1667
+    publisher: The MITRE Corporation (MITRE ATT&CK)
+    title: "Email Bombing, Technique T1667 - Enterprise"
+    url: https://attack.mitre.org/techniques/T1667/
+    published: "technique v1.0, last modified 2025-04-15"
+    accessed: 2026-11-18
+    region: US
+    tier: 4
+    used_for: [campaign-catalogue]
+    notes: "TAXONOMY ONLY (Impact tactic). The victim sees a sudden flood of hundreds or thousands of emails burying legitimate ones, often from newsletter sign-ups, which may be followed by a fake IT-support call."
+
+  - id: int-mitre-attack-t1657
+    publisher: The MITRE Corporation (MITRE ATT&CK)
+    title: "Financial Theft, Technique T1657 - Enterprise"
+    url: https://attack.mitre.org/techniques/T1657/
+    published: ATT&CK v20
+    accessed: 2026-11-18
+    region: US
+    tier: 4
+    used_for: [campaign-catalogue]
+    notes: "TAXONOMY ONLY (Impact tactic). Theft of money via extortion, social engineering or technical means; named end goal of ransomware extortion, BEC and fraud, 'pig butchering', bank hacking. Used as the umbrella id for Part A fraud entries."
+
+  - id: int-mitre-attack-t1528
+    publisher: The MITRE Corporation (MITRE ATT&CK)
+    title: "Steal Application Access Token, Technique T1528 - Enterprise"
+    url: https://attack.mitre.org/techniques/T1528/
+    published: ATT&CK v20
+    accessed: 2026-11-18
+    region: US
+    tier: 4
+    used_for: [campaign-catalogue]
+    notes: "TAXONOMY ONLY. Covers malicious OAuth applications that a phished user approves; mitigation for users: be cautious with requested permissions (offline access, reading email) and check the redirect URL."
+
+  - id: int-mitre-attack-t1204
+    publisher: The MITRE Corporation (MITRE ATT&CK)
+    title: "User Execution, Technique T1204 - Enterprise"
+    url: https://attack.mitre.org/techniques/T1204/
+    published: ATT&CK v20
+    accessed: 2026-11-18
+    region: US
+    tier: 4
+    used_for: [campaign-catalogue]
+    notes: "TAXONOMY ONLY. Sub-techniques: .001 Malicious Link, .002 Malicious File, .003 Malicious Image, .004 Malicious Copy and Paste (ClickFix-style), .005 Malicious Library."
 
   # ------------------------------------------------ placeholders (example scenario only)
   - id: europol-scam-smishing

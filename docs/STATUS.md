@@ -14,6 +14,7 @@ Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR 
 - [x] T-1.6 | ux-artist | UI spec v2, tokens, 8 fictional brands, 3 mock-ups | sceptic: FAIL → PASS · QA: FAIL → PASS
 - [x] T-2.5 | fraud-researcher | Pattern briefs for ch0–1 scenarios (messenger code takeover, IT-portal phishing, card phishing, multichannel callback), 14 sources, SOURCE_HOSTS, where-to-report help draft (parked in docs/patterns) | sceptic: FAIL → PASS · 1-9 caller switched to Larchwick Bank fraud team
 - [x] T-2.2 | frontend-engineer | Schema for CR-01…CR-12 + UI_SPEC §14 (pressure_target, already_clicked split, checkables from device template, palette sync test), per-chapter mix rules from balance.yaml, Red Line 8 letter check, strict brand hosts, stub chapter/cast/recovery/habit cards; CR-13 left open | branch phase2/schema | sceptic: FAIL → FAIL → PASS (producer exception for a third round)
+- [x] T-R.1 | fraud-researcher | Threat catalogue backlog (86 entries: Part A social engineering/fraud, Part B malware and technical campaigns as users see them; ATT&CK-mapped), 33 sources | sceptic: PASS with notes (applied)
 - [x] T-1.7 | fraud-researcher | Brand-name web collision check (renamed Nodkey, Corvelle, Hoardly) | docs/patterns/BRAND_CHECK.md
 - [x] T-2.6 | game-designer | GDD/UI_SPEC follow-ups (1-9 caller, high-stakes set, layer-1 budget, snake_case flags) | sceptic: FAIL → PASS
 

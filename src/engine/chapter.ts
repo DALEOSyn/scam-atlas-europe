@@ -8,7 +8,9 @@
  *   scenarios and boss beats. R = the chapter's red flags. Stamps use net;
  *   the summary shows gross correct (correctShown) and wrong marks apart (ruling L3).
  * - Stamps: bronze when finished; silver/gold by rating, genuine reported,
- *   spotted thresholds and (gold) no off-focus double checks.
+ *   spotted thresholds and (gold) no off-focus double checks and, ruling R24
+ *   (CR-48), at most `max_falls` falls, each recovered (LO-16) when
+ *   `falls_need_lo16_recovery`. The number of falls is never shown.
  * - Unlocking is never score-gated. Home (slot 0) → Berlin (slot 1) → free
  *   choice of every slot 2–9 chapter → the finale (slot 10) once all of those
  *   that exist are finished.
@@ -35,6 +37,20 @@ export interface ScenarioRecord {
   doubleCheckedHarmless: boolean;
   /** The scenario's pattern (genuine twins: the pattern they mirror). */
   pattern: string | null;
+  /**
+   * R24 (CR-48): falls in this scenario. A fallen standard scenario = 1; each fallen scheduled boss beat = 1
+   * (a sub-beat counts with its parent beat). Not falls: advise_comply, a code shared then declined (R18),
+   * comply on a genuine message, engage caps, timer expiry. 0 on drills and arc beats (never scored).
+   */
+  falls: number;
+  /** R24: every fall was recovered: the scenario's (a boss's one) damage control met LO-16. true when no fall. */
+  fallsRecovered: boolean;
+}
+
+/** R24 (CR-48): falls of a scored run, from its scored beat groups (one group per scheduled beat). */
+export function fallsOf(r: Pick<ScenarioResult, 'scored' | 'beats' | 'recovery'>): { falls: number; fallsRecovered: boolean } {
+  const falls = r.scored ? r.beats.filter((x) => x.scored && x.fell).length : 0;
+  return { falls, fallsRecovered: falls === 0 || r.recovery?.lo16 === true };
 }
 
 export function recordOf(r: ScenarioResult, pattern: string | undefined): ScenarioRecord {
@@ -50,6 +66,7 @@ export function recordOf(r: ScenarioResult, pattern: string | undefined): Scenar
     genuineReported: r.genuineReported,
     doubleCheckedHarmless: r.doubleCheckedHarmless,
     pattern: pattern ?? null,
+    ...fallsOf(r),
   };
 }
 
@@ -86,7 +103,20 @@ export interface ChapterSummary {
   offFocusDoubleChecks: number;
   stamp: Stamp | null;
   /** What the next tier still needs (plain words built by the UI from these). */
-  nextTier: { tier: 'silver' | 'gold'; needs: ('rating' | 'genuine_reported' | 'spotted' | 'offfocus')[]; spottedNeeded: number } | null;
+  nextTier: { tier: 'silver' | 'gold'; needs: TierNeed[]; spottedNeeded: number } | null;
+}
+
+/**
+ * What a tier still needs. `falls_recovery` (a fall whose damage control missed LO-16) and `falls` (more falls
+ * than gold allows, all recovered) are gold-only (R24) and never both present: the recovery one wins.
+ */
+export type TierNeed = 'rating' | 'genuine_reported' | 'spotted' | 'offfocus' | 'falls_recovery' | 'falls';
+
+/** R24: the gold fall need, if any. Only the recovery need is returned when both apply. */
+export function goldFallNeed(gold: Pick<Balance['stamps']['gold'], 'max_falls' | 'falls_need_lo16_recovery'>, scored: readonly Pick<ScenarioRecord, 'falls' | 'fallsRecovered'>[]): 'falls_recovery' | 'falls' | null {
+  if (gold.falls_need_lo16_recovery && scored.some((r) => r.falls > 0 && !r.fallsRecovered)) return 'falls_recovery';
+  const falls = scored.reduce((n, r) => n + r.falls, 0);
+  return falls > gold.max_falls ? 'falls' : null;
 }
 
 type StampTable = Pick<Balance, 'stamps' | 'rating_cap'>;
@@ -111,12 +141,14 @@ export function summarise(b: StampTable, chapter: Pick<Chapter, 'patterns'>, rec
   if (genuineReported > silver.max_genuine_reported) silverNeeds.push('genuine_reported');
   const silverSpotted = spottedThreshold(silver.min_spotted, redFlags);
   if (spotted < silverSpotted) silverNeeds.push('spotted');
-  const goldNeeds: ('rating' | 'genuine_reported' | 'spotted' | 'offfocus')[] = [];
+  const goldNeeds: TierNeed[] = [];
   if (rating < gold.min_rating) goldNeeds.push('rating');
   if (genuineReported > gold.max_genuine_reported) goldNeeds.push('genuine_reported');
   const goldSpotted = spottedThreshold(gold.min_spotted, redFlags);
   if (spotted < goldSpotted) goldNeeds.push('spotted');
   if (offFocus > gold.max_offfocus_doublechecks) goldNeeds.push('offfocus');
+  const fallNeed = goldFallNeed(gold, scored);
+  if (fallNeed) goldNeeds.push(fallNeed);
 
   let stamp: Stamp | null = null;
   if (finished) stamp = goldNeeds.length === 0 ? 'gold' : silverNeeds.length === 0 ? 'silver' : 'bronze';

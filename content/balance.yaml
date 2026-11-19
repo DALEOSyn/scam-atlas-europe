@@ -4,7 +4,9 @@
 # Rules these numbers feed: GDD (docs/GDD) §6–§9. Strategy check: GDD §7.2.
 # Player-facing: stars per scenario + stamp per chapter. Points and rating live behind "Details".
 
-version: 3.1   # v3.1: net spotting, 2 decoys, slot-bound timers/list, boss-fall rule, ceil thresholds, rating cap
+version: 3.3   # v3.1: net spotting, 2 decoys, slot-bound timers/list, boss-fall rule, ceil thresholds, rating cap
+               # v3.3 (T-3.13 balancing pass, docs/BALANCE_PASS.md): gold max_falls (R15 → proposed R24),
+               # boss call-beat lengths by slot, callback-cap exemption for the finale, arc points not shown (R22)
 
 # ---------------------------------------------------------------------------
 # Action kinds -> class. Scenario YAML uses `kind`.
@@ -73,6 +75,11 @@ points:
 # when the group has no dismiss option anywhere does genuine_high below apply (★, 5 points, every slot).
 # Low stakes score as the star table's timer_expiry class unless a dismiss option scores lower. Fraud is
 # unchanged. Never a tag bonus.
+# T-3.13 check (§6 of docs/BALANCE_PASS.md): all 20 timed genuine scenarios take their length from by_slot
+# (no non-boss scenario sets timer_seconds) and all have an honest_deadline. R21 gives 12 of the 13
+# high-stakes ones 0/0 (Home 0-3: ★/5 by grace) and the 7 low-stakes ones ★★/10; genuine_high below is now never reached in
+# shipped content (every timed genuine high has a dismiss option). Scores stay; only the copy changes where
+# the expiry scores 0 (no "Nothing is lost yet" next to no stars: CR-50, proposed R26).
 timer_expiry:
   genuine_high: { stars: 1, points: 5 }
 
@@ -141,11 +148,36 @@ stamps:
   # R = number of red flags in the chapter's scored scenarios (drills excluded). spotted = net (see tags).
   bronze: { requires: finished }
   silver: { min_rating: 75, max_genuine_reported: 1, min_spotted: "ceil(R/3)" }
-  gold:   { min_rating: 90, max_genuine_reported: 0, min_spotted: "ceil(2*R/3)", max_offfocus_doublechecks: 0 }
+  gold:
+    min_rating: 90
+    max_genuine_reported: 0
+    min_spotted: "ceil(2*R/3)"
+    max_offfocus_doublechecks: 0
+    # R15 decided at the balancing pass (T-3.13; proposed producer ruling R24, docs/BALANCE_PASS.md §1).
+    # Gold allows at most ONE fall in the chapter, and only a recovered one: that fall's damage control must
+    # meet recovery's lo16_demonstrated_if (points >= 6 AND first pick is `stop`). With exactly 3 picks
+    # (+3 helpful, -2 harmful, floor 0) damage control scores only 0, 4 or 9, so ">= 6" means no harmful pick.
+    # A second fall, or one fall without that recovery, caps the chapter at silver. Silver and bronze have no
+    # fall rule. Which steps count as `stop` is audited in T-3.13l (call_bank_known_number after card or
+    # account theft). tell_trusted_adult counts as `stop` (R23(3)).
+    # A "fall" = a scored decision of class comply/proceed on fraud (fall_on_fraud in points exceptions):
+    # each fallen standard scenario counts 1, each fallen scheduled boss beat counts 1 (a banking sub-beat is
+    # its parent beat). Not falls: advise_comply (CR-40), a code shared then declined (code_then_confirm, R18),
+    # comply on a genuine message (★), engage caps, timer expiry, drills, arc and finale beats, interrupts.
+    # For a boss, "recovered" uses the boss's one damage control (once per boss).
+    # Changes vs today (rows with perfect damage control): Dublin §28.7 row 12, Stockholm §29.7 row 12 and
+    # Brussels §30.8 row 14 (two falls) go gold → silver; every one-recovered-fall row stays gold.
+    # Needs CR-48 (schema: this object is .strict(); chapter.ts counts falls; tier hint "falls"). Until CR-48
+    # lands, content:validate rejects these two keys, so CR-48 merges first or with this file.
+    max_falls: 1
+    falls_need_lo16_recovery: true
   # offfocus double-check = verify on a legit_low scenario whose `pattern` is NOT in the chapter's patterns.
   # Checking a genuine delivery SMS in the delivery chapter never costs anything (QA L2).
 arc:
-  points_banked_for: finale_timeline
+  # Arc points are banked but, since R22, never shown (no "Arc points banked" line on the timeline) and never
+  # feed a rating, stamp or habit card (arc beats demonstrate no LO, src/engine/habits.ts). So ending C's extra
+  # scored rounds (arc damage control, recovery-agency test) give practice, not an advantage (T-3.13, §4c).
+  points_banked_for: finale_timeline   # stored for the timeline's per-slot choices; the number is not displayed
   feeds_rating: false
 interrupts:
   scored: false
@@ -161,6 +193,12 @@ timers:
   honest_timer_allowed_on_legit: true   # genuine deadlines ("link valid 15 min") use the same slot length
   boss_beat: 40                   # bosses are always fraud and announced as the boss, so no tell
   call_beat: 30                   # every call beat, genuine or fraud
+  # T-3.13 (proposed R26): a call beat INSIDE a boss runs 40 s up to slot 7 and 30 s from slot 8, so the
+  # curve only tightens. Today content sets this with the beat's `timer_seconds` (Berlin, Paris, Madrid,
+  # Rome b2, Dublin b2 = 30); Home b3 and Rome b1 (an opening beat, which can't carry timer_seconds yet) run
+  # 30 s against the rule: content ticket T-3.13a and CR-54. The validator may check content against this
+  # table once CR-54 lands; nothing reads it before then.
+  boss_call_beat_by_slot: { 0: 40, 1: 40, 2: 40, 3: 40, 4: 40, 5: 40, 6: 40, 7: 40, 8: 30, 9: 30, 10: 30 }
   inspect_cost_seconds: 2
   tag_cost_seconds: 0
   translation_cost_seconds: 0
@@ -219,6 +257,10 @@ difficulty:
     10: { band: [4, 5], scored: [7, 9], boss_difficulty: 5, target_minutes: [14, 20] }
   max_new_patterns_per_chapter: 2
   max_callbacks_per_chapter: 2
+  # R23(1), confirmed at the balancing pass (T-3.13): the finale reviews every earlier habit (GDD §30.5), so
+  # the callback cap does not apply to a chapter with `arc_finale`. Today the exemption is hard-coded in
+  # scripts/lib/rules.ts; CR-52 makes the validator read this list instead.
+  callback_cap_exempt: [arc_finale]
   half_day_split: true            # each chapter = morning + afternoon with a stop point; boss in the afternoon
 
 # ---------------------------------------------------------------------------
@@ -247,7 +289,9 @@ mix:
 
 session:
   scenario_minutes: [1, 2.5]
-  game_hours: [2.5, 3]                    # re-baseline after the vertical slice (QA F3)
+  game_hours: [2.5, 3]                    # re-baseline after the vertical slice (QA F3). T-3.13: the specs'
+                                          # estimates sum to about 180 min (top of the band), +2–3 min for
+                                          # arc ending C; QA re-baselines on a timed full play-through.
   save_points: after_each_scenario        # localStorage only
   max_message_words: 80
   debrief_layer1_max_words: 40

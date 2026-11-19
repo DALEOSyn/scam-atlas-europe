@@ -88,7 +88,7 @@ describe('QA E6: pause only while a message is live', () => {
 });
 
 describe('QA E7: spotted for display is floored at 0 and capped at R', () => {
-  const rec = (correct: number, wrong: number, redFlags: number): ScenarioRecord => ({ id: 'x', scored: true, points: 0, maxPoints: 15, stars: 0, correctTags: correct, wrongTags: wrong, redFlags, genuineReported: 0, doubleCheckedHarmless: false, pattern: null });
+  const rec = (correct: number, wrong: number, redFlags: number): ScenarioRecord => ({ id: 'x', scored: true, points: 0, maxPoints: 15, stars: 0, correctTags: correct, wrongTags: wrong, redFlags, genuineReported: 0, doubleCheckedHarmless: false, pattern: null, falls: 0, fallsRecovered: true });
   it('net stays for the stamp rules', () => {
     expect(summarise(B, { patterns: [] }, [rec(1, 4, 2)], true)).toMatchObject({ spotted: -3, spottedShown: 0 });
     expect(summarise(B, { patterns: [] }, [rec(3, 0, 2)], true)).toMatchObject({ spotted: 3, spottedShown: 2 });

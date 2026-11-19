@@ -27,7 +27,7 @@ interface Play {
 }
 
 function records(p: Play): ScenarioRecord[] {
-  const base = { scored: true, stars: 3, genuineReported: 0, doubleCheckedHarmless: false };
+  const base = { scored: true, stars: 3, genuineReported: 0, doubleCheckedHarmless: false, falls: 0, fallsRecovered: true };
   const genuinePatterns = [FOCUS, 'staff-briefing', 'shop-payment'];
   return [
     ...p.fraud.map((f, i) => ({ ...base, id: `f${i}`, points: f.points, maxPoints: 19, correctTags: f.correct, wrongTags: f.wrong, redFlags: 2, pattern: FOCUS })),
@@ -128,14 +128,14 @@ describe('chapter result: GDD §7.2 strategy table', () => {
   });
 
   it('rating is capped at 100% and never negative; unfinished chapters have no stamp', () => {
-    const over: ScenarioRecord = { id: 'x', scored: true, points: 30, maxPoints: 15, stars: 3, correctTags: 0, wrongTags: 0, redFlags: 0, genuineReported: 0, doubleCheckedHarmless: false, pattern: null };
+    const over: ScenarioRecord = { id: 'x', scored: true, points: 30, maxPoints: 15, stars: 3, correctTags: 0, wrongTags: 0, redFlags: 0, genuineReported: 0, doubleCheckedHarmless: false, pattern: null, falls: 0, fallsRecovered: true };
     expect(summarise(B, berlin, [over], true).rating).toBe(100);
     expect(summarise(B, berlin, [{ ...over, points: -5 }], true).rating).toBe(0);
     expect(summarise(B, berlin, [over], false).stamp).toBeNull();
   });
 
   it('drills and arc beats never count', () => {
-    const drill: ScenarioRecord = { id: 'd', scored: false, points: 99, maxPoints: 15, stars: null, correctTags: 5, wrongTags: 0, redFlags: 5, genuineReported: 1, doubleCheckedHarmless: true, pattern: null };
+    const drill: ScenarioRecord = { id: 'd', scored: false, points: 99, maxPoints: 15, stars: null, correctTags: 5, wrongTags: 0, redFlags: 5, genuineReported: 1, doubleCheckedHarmless: true, pattern: null, falls: 0, fallsRecovered: true };
     expect(summarise(B, berlin, [drill], true)).toMatchObject({ points: 0, max: 0, spotted: 0, redFlags: 0, genuineReported: 0 });
   });
 });

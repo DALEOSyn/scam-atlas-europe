@@ -139,6 +139,9 @@ function sanitiseRecord(v: unknown): ScenarioRecord | null {
     genuineReported: Math.max(0, num(v.genuineReported, 0)),
     doubleCheckedHarmless: bool(v.doubleCheckedHarmless, false),
     pattern: typeof v.pattern === 'string' && SLUG.test(v.pattern) ? v.pattern : null,
+    // R24 (CR-48): a record saved before falls were counted keeps the stamp it had: no falls, recovered.
+    falls: Math.max(0, Math.floor(num(v.falls, 0))),
+    fallsRecovered: bool(v.fallsRecovered, true),
   };
 }
 

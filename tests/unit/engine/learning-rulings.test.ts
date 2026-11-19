@@ -182,7 +182,7 @@ describe('L2 caller ID stays a decoy; the wrong mark says "Fair instinct"', () =
 });
 
 describe('L3 chapter summary: gross correct and wrong apart, stamps on net', () => {
-  const rec = (correct: number, wrong: number, redFlags: number): ScenarioRecord => ({ id: 'x', scored: true, points: 0, maxPoints: 15, stars: 0, correctTags: correct, wrongTags: wrong, redFlags, genuineReported: 0, doubleCheckedHarmless: false, pattern: null });
+  const rec = (correct: number, wrong: number, redFlags: number): ScenarioRecord => ({ id: 'x', scored: true, points: 0, maxPoints: 15, stars: 0, correctTags: correct, wrongTags: wrong, redFlags, genuineReported: 0, doubleCheckedHarmless: false, pattern: null, falls: 0, fallsRecovered: true });
   it('correctShown = min(R, correct); spotted stays net', () => {
     expect(summarise(B, { patterns: [] }, [rec(7, 3, 8)], true)).toMatchObject({ correctShown: 7, wrongTags: 3, spotted: 4, spottedShown: 4 });
     expect(summarise(B, { patterns: [] }, [rec(1, 4, 2)], true)).toMatchObject({ correctShown: 1, spotted: -3, spottedShown: 0 });

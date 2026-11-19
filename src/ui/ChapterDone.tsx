@@ -15,6 +15,9 @@ const NEED_KEYS: Record<NonNullable<ChapterSummary['nextTier']>['needs'][number]
   genuine_reported: 'tier_need_genuine',
   spotted: 'tier_need_spotted',
   offfocus: 'tier_need_offfocus',
+  // R24 (CR-48): never a count of falls; summarise() gives at most one of these two.
+  falls_recovery: 'tier_need_falls_recovery',
+  falls: 'tier_need_falls',
 };
 
 /** The boss's layer-1 lesson, repeated on the stamp screen [P] (Amsterdam QA h). */

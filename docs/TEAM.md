@@ -10,6 +10,7 @@
 | `frontend-engineer` | Engine, UI, schema, red-line linter, tests, CI | src/**, scripts/**, tests/** | — |
 | `qa-playtester` | Persona play-throughs, bugs, accessibility | qa/*.md | every playable change |
 | `sceptic-reviewer` | Adversarial review, Red Lines veto, code review | nothing (read-only) | everything |
+| `learning-psychologist` | Learning science, behaviour change, persuasion levers, emotional safety, no dark patterns (added 2026-11-19 at Roman's request) | PSYCHOLOGY.md; psychology sections of STORY.md and ART_DIRECTION.md | every story scene, chapter spec and UI change (review, no veto) |
 | `localizer` | Cultural adaptation per locale | i18n/**, *.locale.yaml, GLOSSARY.md | — |
 
 ## Hand-off chains
@@ -17,16 +18,24 @@
 **New fraud pattern → playable scenario**
 ```
 fraud-researcher (pattern brief)
-  → game-designer (decision design: actions, outcomes, scoring, LO ids)
+  → game-designer (decision design: actions, outcomes, scoring, LO ids, story beats)
+  → learning-psychologist (review of the chapter spec)
   → scenario-writer (YAML + debrief, passes validate + redline lint)
-  → [parallel] fraud-researcher fact-check · sceptic-reviewer · qa-playtester
+  → [parallel] fraud-researcher fact-check · sceptic-reviewer · qa-playtester · learning-psychologist (story scenes and debrief tone)
   → producer marks Done (all PASS) or returns once with findings
 ```
 
 **New mechanic / UI**
 ```
 game-designer (spec) → ux-artist (UI spec) → frontend-engineer (code + tests)
-  → [parallel] sceptic-reviewer · qa-playtester → producer
+  → [parallel] sceptic-reviewer · qa-playtester · learning-psychologist → producer
+```
+
+**Story scene (track S, see PLAN.md)**
+```
+game-designer + learning-psychologist (STORY.md beat) → scenario-writer (scene YAML)
+  → ux-artist (illustrations: portraits, backdrops, panels as original SVG)
+  → [parallel] sceptic-reviewer · learning-psychologist · qa-playtester → producer
 ```
 
 **Localization of a chapter**

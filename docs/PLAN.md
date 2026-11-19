@@ -59,7 +59,13 @@ Each phase lists its owner(s), deliverables and **exit criteria**. The producer 
 - For each chapter 2–10: research check → chapter spec → scenarios → parallel reviews → QA play-through → done. Producer runs up to 2 chapters in parallel.
 - Cross-chapter arc (romance/investment storyline), finale, end screen with habit-card summary and "Where to report" per locale.
 - Balancing pass by `game-designer` using QA timing data.
-- **Exit:** all chapters PASS; full-game e2e green; red-line lint clean; sources complete. → **G3**.
+- **Track S, story and scene layer (added 2026-11-19 at Roman's request: "having an actual story with a graphical element is having more impact on learning").** Runs in parallel with the chapters; the device scenarios stay the core loop, and the story wraps them.
+  - **S1 Story bible** (`game-designer` + `learning-psychologist`, `scenario-writer` for voice): `docs/STORY.md`. One through-line for the whole trip, built on the existing cast (Teo, Alex, the Waymarker team, locals). Per chapter: an arrival scene, the local character's problem that the chapter's scams grow out of, a mid-chapter turn, and a resolution that shows the habit working. Characters model good habits and recoverable mistakes.
+  - **S2 Art direction** (`ux-artist` + `learning-psychologist`): `docs/ART_DIRECTION.md`. Original SVG/CSS only: character sheets with a few expressions each, one illustrated backdrop per city, comic-style story panels, and the illustrated map. Warm, light, no fear imagery; works at 320 px, in dark mode and with reduced motion; every image has alt text.
+  - **S3 Scene engine** (`frontend-engineer`): a `scene` content type in YAML (panels, speaker, portrait plus expression, backdrop, short lines, optional choice that never scores), schema and validator rules, a scene player between scenarios, keyboard and screen-reader support, skip and replay, and a bundle budget for art.
+  - **S4 Retrofit** Home and Berlin with scenes, then every new chapter ships its scenes with its scenarios (the chapter spec names them).
+  - **S5 Review:** every scene passes `sceptic-reviewer`, `learning-psychologist` and `qa-playtester`. Before G4, a qualified human (learning or behavioural psychologist, or a CERT/consumer-body awareness lead) reviews tone and safety; Roman decides on it at G3.
+- **Exit:** all chapters PASS, each with its story scenes; full-game e2e green; red-line lint clean; sources complete. → **G3**.
 
 ### Phase 4 — Hardening and release prep (agent-run)
 - Accessibility audit (WCAG 2.2 AA), performance budget, privacy check (no third-party requests), content freeze.

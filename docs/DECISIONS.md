@@ -54,6 +54,10 @@ Play the tutorial + first city chapter yourself (link to preview build). Approve
 
 **Roman, 2026-11-19: "ok, game makes sense, we can continue."** Played the private G2 preview (tutorial + Berlin, build 2f58f36, delivered as a private claude.ai page and a local zip; nothing deployed publicly). Phase 3 (content production) may start. ✅
 
+**Roman, 2026-11-19 (Phase 3): add an actual story with graphical elements, because it has more impact on learning, and onboard a psychological advisor agent.** Recorded as PLAN.md Phase 3 track S and the new `learning-psychologist` agent (TEAM.md). Level of visual ambition: see the decision below.
+
+**Open decision D-S1 (Roman): how far to take the graphics.** Recommended: an illustrated story layer (comic-style scenes, character portraits, city backdrops, illustrated map) around the existing device scenarios. Alternatives: a walkable 2D city, or graphics after G3.
+
 ## G3 — Content complete (state: Open)
 All chapters in English pass review. Approve sources list and "Where to report" pages. Decide on external expert review (e.g. a contact at a CERT or consumer body), optional.
 

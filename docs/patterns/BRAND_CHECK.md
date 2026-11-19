@@ -131,3 +131,89 @@
 4. Keep Waymarker Network, Trundle, Thimble & Pine, Kettle, Wordswap. Give Thimble & Pine a non-craft product line.
 5. Add any new names to the red-line denylist logic only as *allowed* fictional names. Re-run this check on every new name.
 6. **Before G4:** a human runs a formal TMview / EUIPO search on all final names. This check is not trademark clearance.
+
+---
+
+# Paris names (chapter 3), checked 2026-11-19
+
+**Owner:** fraud-researcher · **Searched:** 2026-11-19 · **Status:** draft for sceptic review · roles from `docs/GDD.md` ch 3.
+
+## Method and limits (Paris)
+- Same method and limits as above: a web search (US-based index) that also surfaced French company-directory pages (Pappers, Societe.com, Rubypayeur, INSEE SIRENE extracts, Verif.com) and bar or lawyer directories. **No trademark register, no INPI search, no WHOIS.** A French company name with no web presence can still exist. Before G4 a human checks INPI and the annuaire-entreprises.data.gouv.fr company directory, as well as TMview.
+- **Domain stems:** checked only as words on the web. The game uses `.example` / `.test` domains (Red Line 3), so the risk is a name collision, not a reachable domain.
+- **People:** a fictional person may have a name real people also carry. The test is (a) no *notable* person (Wikipedia, press, public office) with that exact name, and (b) for anyone shown **in a role that is impersonated or accused** (the fake lawyer, the account holder of a fraud account), no real professional with that name in that role.
+
+## Summary (Paris)
+| Name (role) | Closest hits | Risk | Recommendation |
+|---|---|---|---|
+| Ruchelune (player's employer, Paris firm; stem `ruchelune`) | none; only "Ruchen" (Swiss mountains), "Du Ruchon" (company, unrelated) | Low | **Keep** |
+| Larchwick Pro (business banking of Larchwick Bank) | no "Larchwick Pro"; UK "Larchwell", "Larchbond", "Larchmount" Ltd | Low | **Keep** (re-checks T-1.7) |
+| Volet Bleu / Volet Bleu Gestion SAS (letting agency; stem `voletbleu`) | registered company "Les Volets Bleus" (SIREN 978118412, activity not confirmed; page failed to load); the phrase is common for holiday cottages and restaurants; no letting agency or "Volet Bleu Gestion" found | Low–Medium | **Keep, with a check** (see §P3) |
+| Clef d'Ocre Locations (alternative agency name) | no exact hit; **same-trade sound-alikes**: "Agence La Clef d'Or" (estate agency, Verdon), "Les Clefs d'Orléans" (estate agency) | Medium | **Don't use** |
+| Feuillemont (supplier, replaces Encrevive) | no exact hit; nearest are the communes Feuillères and La Feuillie; no paper, ink or print business | Low | **Keep** |
+| Encrevive (old supplier name) | "Encre Vive" collision reported by the coordinator; my query returned several SIRENE extracts and a supplier listing (not opened one by one) | (Medium, per coordinator) | **Replace** with Feuillemont (done in GDD per coordinator) |
+| Pressoria (press-maintenance supplier, misused real mailbox in 3-8) | **Pressoria**, a real visitor centre in Aÿ-Champagne about the champagne wine press (tourist offices, SNCF Connect, ANCV guide, Explore Grand Est, award in TourMaG) | **High** | **Rename** → Platinoir |
+| Cuivrelin (plumber) | none; only copper-supplement products ("cuivre") | Low | **Keep** |
+| Cabinet Ostrelle (law firm) | none; only communes Orelle and Ostel in lawyer directories | Low | **Keep** |
+| Maître Lenoir (fake lawyer in the boss) | **real Paris lawyers named Lenoir**: Maître Sarah Lenoir (Paris 1er, listed in Best Lawyers); **Noëlle Lenoir Avocats** (Paris firm ranked in Legal 500; Noëlle Lenoir is a public figure); Julie Lenoir (lawyer, avocat.fr) | **High** | **Rename** → Maître Vellacourt |
+| Solène Arbogast (cast: boss) | no exact person found; Solène Arbel, Arnoult etc. | Low | **Keep** |
+| Bastien Morel (cast: colleague) | no notable person; a "Bastien Morel" profile on the Lac d'Annecy tourism webzine (private individual); Sébastien Morel (journalist, Wikipedia) is a different name | Low | **Keep** (common name, not used as a fraudster) |
+| Inès Roussel (cast: apprentice, impersonated in 3-5) | no notable person; Anne, Hélène and Renaud Roussel on Wikipedia are different first names | Low | **Keep** |
+| "Ardoise Ateliers" / "Ardoise Ateliers SAS" (fraud account holder, 3-2 and boss) | no exact company found, but "Ardoise" is a live brand word in the same craft or workshop space: **Ardoise Design** (Maison&Objet brand), **ardoise.lu**, "L'Ardoise" (Rathscheck slate product line), Maison / Musée de l'Ardoise | Medium | **Replace** → Tessivane SAS (3-2) and Morvenac SAS (boss), or Orvasine SAS |
+| "N. Ferrand" (holder of the "match" account in 3-8) | Ferrand is a common surname carried by national public figures (e.g. a well-known politician; from general knowledge, **not searched this session**) | Medium (public surname on a fraud account) | **Replace** → N. Vardoulec (alt: N. Brumetier) |
+
+## P1. Pressoria: High, rename
+- **Searched:** `"Pressoria"`; `Pressoria Aÿ Champagne pressoir site de visite`.
+- **Hits:** Pressoria is a real visitor attraction ("voyage sensoriel au cœur du champagne") in Aÿ-Champagne, run with public partners (an EPL is cited). Examples: https://de.tourisme-en-champagne.com/sites/www.tourisme-en-champagne.com/files/atoms/files/dossier_de_presse_-_pressoria.pdf · https://www.sncf-connect.com/article/pressoria-pour-un-voyage-sensoriel-a-ay-champagne · https://leguide.ancv.com/ptl/arts_culture_decouverte/expos_et_musees/pressoria/832546001001 · https://www.tourmag.com/Champagne-Pressoria-decroche-un-prix-special-pour-son-parcours-sensoriel_a113733.html
+- **Assessment:**
+  - It's the exact name of a real French organisation, and its theme is the press, so it overlaps with a "press maintenance" supplier.
+  - In 3-8 the game shows this brand's *real* mailbox being misused, which would put a real organisation's name on a scam prop (Red Line 1).
+- **Alternative (checked 2026-11-19):**
+  - **Platinoir** (from *platine*, a press platen): `"Platinoir"`. No exact hit, only generic "platinoïdes" / platinum results. Low. Stem `platinoir`.
+  - *Rejected:* Rouvalière ("Rouvière" maintenance and renovation firms; surname).
+
+## P2. Maître Lenoir: High, rename
+- **Searched:** `"Maître Lenoir" avocat Paris`.
+- **Hits:** https://www.keskeces.fr/avocat/sarah-lenoir-75001-paris.html · https://www.bestlawyers.com/lawyers/sarah-lenoir/328555 · https://www.legal500.com/rankings/ranking/c-france/compliance/237294-noelle-lenoir-avocats · https://www.lemondedudroit.fr/vie-des-cabinets/71533-noelle-lenoir-cabinet-avocates.html
+- **Assessment:**
+  - The character is the **fake lawyer** in a fraude-au-président call.
+  - "Maître Lenoir" in Paris names real practising lawyers, one of them a public figure.
+  - Even though the scene says he is an impostor, it attaches a real lawyer's name to a scam script.
+- **Alternative (checked 2026-11-19):**
+  - **Maître Vellacourt**: `"Maître Ostrelle" OR "Maître Vellacourt" OR "Vellacourt" avocat`. No lawyer or person found. Low.
+  - Keep **Cabinet Ostrelle** as the firm name: no hits.
+
+## P3. Volet Bleu: Low–Medium, keep with a check
+- **Searched:** `"Volet Bleu" gestion OR location OR immobilier OR SAS`; `"Volet Bleu Gestion" OR "voletbleu" OR "volet-bleu.fr"`; `"Les Volets Bleus" agence immobilière OR gestion locative OR SCI`.
+- **Hits:**
+  - "Les Volets Bleus" company, SIREN 978118412 (https://rubypayeur.com/societe/les-volets-bleus-978118412; the page didn't load, so the activity is not confirmed).
+  - Many unrelated SIRENE extracts.
+  - Results for estate agencies returned only network agencies, no "Volet Bleu".
+- **Assessment:**
+  - It's a common descriptive phrase ("blue shutter"), and no letting or property-management business was found under it.
+  - It is impersonated in 3-7 through a look-alike address, so a human should confirm the SIREN's activity. If it is property management or letting, rename to a coined stem.
+  - **Clef d'Ocre** is *not* a safer fallback, because it sounds like "La Clef d'Or" estate agencies (https://www.verdontourisme.com/en/?p=105439).
+
+## P4. Account holders on fraud accounts
+- **Why it matters:** in a VoP **match** (boss) and in 3-8, the screen tells the player that this real-looking name holds a fraud or mule account. That name must not belong to a real company or a public person.
+- **"Ardoise Ateliers SAS" → replace.**
+  - **Searched:** `"Ardoise Ateliers" OR "Ateliers Ardoise" OR "L'Atelier Ardoise"`.
+  - **Hits:** https://mom.maison-objet.com/en/brand/13710/ardoise-design · https://www.ardoise.lu/about-3-2?lang=en · https://www.rathscheck.de/wp-content/uploads/2026/02/RS_Broschuere_L_Ardoise_12s_FR_Digital.pdf. No exact "Ardoise Ateliers", but the word is a live brand in craft and design.
+- **Coined alternatives (checked 2026-11-19):**
+  - **Tessivane SAS** (for 3-2): `"Tessivane"`; `"Tessivane" OR "Morvenac" SAS société pappers OR societe.com`. No exact hit. Nearest is "Tesseva Conseil" (Rubypayeur, SIREN 106052228, consulting), which is a different word. Low.
+  - **Morvenac SAS** (for the boss; different from 3-2's): `"Morvenac"`. No exact hit. Near the commune Moréac and the Morvan region, and "Morvan Consulting" exists, but the coined form is distinct. Low.
+  - **Orvasine SAS** (spare): `"Velquiane" OR "Orvasine"`. No hit (only "Orvana" game characters). Low.
+  - **Note:** the boss's lawyer line mentions "Project Ardoise". As a code name built on a common noun it's acceptable, but if the holder is renamed, a neutral code name (e.g. "Projet Lys") avoids an echo of the old holder.
+- **"N. Ferrand" → replace.**
+  - **Assessment:** Ferrand is a well-known public surname in France. Not searched in depth: the rule is "no public surname on a fraud account".
+  - **N. Vardoulec**: `"Vardoulec"`; `"Vardoulec" OR "Brumetier" nom de famille`. No person or genealogy hit; it reads as a plausible Breton surname. Low.
+  - **N. Brumetier** (alt): no hit beyond the generic word "brume". Low.
+  - *Rejected:* Quessaint (sounds like Ouessant / Quessoy, place names).
+
+## Actions for ux-artist / scenario-writer (Paris)
+1. **Rename Pressoria → Platinoir** (High), including the `pressoria.example` stem and the `pressoria_transfer` id if it shows anywhere.
+2. **Rename Maître Lenoir → Maître Vellacourt** (High). Keep Cabinet Ostrelle.
+3. **Replace the holders:** "Ardoise Ateliers" (3-2) → **Tessivane SAS**; "Ardoise Ateliers SAS" (boss) → **Morvenac SAS** (spare: Orvasine SAS); "N. Ferrand" (3-8) → **N. Vardoulec** (alt: N. Brumetier).
+4. **Keep:** Ruchelune, Larchwick Pro, Volet Bleu (human checks SIREN 978118412's activity before G4), Feuillemont, Cuivrelin, Cabinet Ostrelle, Solène Arbogast, Bastien Morel, Inès Roussel.
+5. **Don't use** Clef d'Ocre Locations as the fallback.
+6. **Before G4:** INPI + company-directory check (annuaire-entreprises.data.gouv.fr) + TMview for all Paris names. This check is not legal clearance.

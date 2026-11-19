@@ -124,15 +124,22 @@ www.polizei-beratung.de | Police crime prevention (ProPK), www host (the host wi
 
 T-2.4b also cites a new page on www.europol.europa.eu (already listed).
 
-## New hosts from phase 3, chapter 3 (Paris research, 2026-11-19): all marked **new**, not yet in `scripts/lib/source-hosts.ts`
+## New hosts from phase 3, chapter 3 (Paris research, 2026-11-19)
 
+**Already in `scripts/lib/source-hosts.ts`** (added by the engineer as base domains, checked 2026-11-19):
+www.justice.fr | Ministère de la Justice, justice.fr (Service-Public fiches on THESEE) | 3 | in allow-list as `justice.fr`
+www.inc-conso.fr | Institut national de la consommation (INC, public consumer body) | 3 | in allow-list as `inc-conso.fr`
+www.lesclesdelabanque.com | Fédération bancaire française, "Les clés de la banque" consumer site | 3 | in allow-list as `lesclesdelabanque.com`
+
+**Not yet in `scripts/lib/source-hosts.ts`** (new):
 eur-lex.europa.eu | EUR-Lex (Official Journal of the EU, legal texts) | 1 | **new**
-www.justice.fr | Ministère de la Justice, justice.fr (Service-Public fiches on THESEE) | 3 | **new**
 www.dgsi.interieur.gouv.fr | DGSI (Direction générale de la sécurité intérieure) | 3 | **new**
-www.inc-conso.fr | Institut national de la consommation (INC, public consumer body) | 3 | **new**
-www.lesclesdelabanque.com | Fédération bancaire française, "Les clés de la banque" consumer site | 3 | **new**
 
-The Paris research also cites new pages on hosts already listed: www.europol.europa.eu, www.europeanpaymentscouncil.eu, www.cybermalveillance.gouv.fr, www.banque-france.fr.
+**Candidates to confirm in `scripts/lib/source-hosts.ts`.** These hosts are listed above in this file, and the Paris research cites new pages on them, but I didn't find them in a search of the allow-list for these names:
+www.banque-france.fr | Banque de France | 3 | candidate
+www.europeanpaymentscouncil.eu | European Payments Council | 3 | candidate
+
+The Paris research also cites new pages on www.europol.europa.eu and www.cybermalveillance.gouv.fr (already listed above).
 
 ## Notes for the engineer
 - **New to `scripts/lib/source-hosts.ts`** (not in the allow-list yet, per sceptic review 2026-11-18): `politie.nl` (no www), `moje.cert.pl`, `wiedza.cert.pl`, `www.nummergegenkummer.de`, `www.bmbfsfj.bund.de`, `www.bacs.admin.ch`, `www.verbraucherzentrale-niedersachsen.de`, and `incydent.cert.pl` (help file only). The last two were already used in `content/sources.yaml` before T-2.5 but never added to the allow-list.

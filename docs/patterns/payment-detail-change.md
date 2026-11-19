@@ -31,7 +31,7 @@
 4. **The sender address is almost, but not exactly, the usual one.** *Caveat:* the real address can be used too, if the mailbox was hijacked [fr-fbf-cles-faux-rib-2025], [fr-cybermalveillance-fiche-faux-rib].
 5. **The bank-details document looks edited:** gaps, mixed fonts, or a bank code that doesn't fit the bank named on it [fr-bdf-fraude-moyens-paiement], [fr-inc-iban-rib-fraudes-2025]. *Bonus clue only;* a clean-looking RIB proves nothing.
 6. **Your bank's payee-name check says "no match" or "close match"** when you enter the name of the person you mean to pay (see §5) [fr-inc-vop-2025], [eu-eurlex-ipr-2024-886].
-7. **The sender explains away the bank's warning in advance** ("the name check always fails for our new account, just confirm"). Fraudsters coach victims to ignore alerts [eu-epc-threats-2025]. *(The exact line is a game example; the EPC describes the tactic for bank alerts in general.)*
+7. **The sender explains away the bank's warning in advance** ("the name check always fails for our new account, just confirm"). Fraudsters coach victims to ignore alerts [eu-epc-threats-2025]. INC's advice is not to confirm a transfer after a mismatch warning, "même si le bénéficiaire insiste" [fr-inc-vop-2025]. *(The exact line is a game example; the EPC describes the tactic for bank alerts in general.)*
 
 ## 4. The verification habit
 **"Before you pay new bank details, call the person on the number you already had (not one in the email) and ask them to confirm the change. If your bank says the name doesn't match, stop and check, even if they insist."**
@@ -92,8 +92,8 @@ Sources for the table: [eu-ecb-ipr], [eu-epc-vop-scheme], [fr-inc-vop-2025].
    [fr-cybermalveillance-fiche-faux-rib], [fr-inc-iban-rib-fraudes-2025]
 5. **Report** (France):
    - **Complaint** with police or gendarmerie, or in writing to the public prosecutor. You can start with an online pre-complaint [fr-cybermalveillance-fiche-faux-rib], [fr-bdf-fraude-moyens-paiement], [fr-inc-iban-rib-fraudes-2025].
-   - **THESEE** online complaint for a money request received from a contact's **hijacked** mailbox. Adults only, via FranceConnect [fr-justice-thesee-messagerie-2025]. The Banque de France also points to Thésée for transfer scams [fr-bdf-fraude-moyens-paiement].
-   - **17Cyber** (17cyber.gouv.fr): 24/7 diagnosis and, for serious cases, a chat with a police officer or gendarme [fr-cybermalveillance-17cyber-2024].
+   - **THESEE** online complaint for a money request received from a contact's **hijacked** mailbox. It is for **individuals (*particuliers*) only, filing in their own name**, adults only, via FranceConnect [fr-justice-thesee-messagerie-2025]. That fits the landlord and tradesperson cases (the person who paid files). It does not fit the business cases (supplier, salary change), where the firm complains to the police or gendarmerie. The Banque de France also points to Thésée for transfer scams [fr-bdf-fraude-moyens-paiement].
+   - **17Cyber** (17cyber.gouv.fr), the government's online help service run by the Police nationale, the Gendarmerie nationale and Cybermalveillance.gouv.fr. You answer a few questions to identify the problem and get advice, with links to report and to file a complaint. In an emergency, call 17 or 112 [fr-cybermalveillance-17cyber-2024].
    - **Info Escroqueries 0 805 805 817** (free) for advice [fr-cybermalveillance-fiche-faux-rib].
 6. **For a 14+ player:** minors can't file a THESEE complaint, only a report [fr-justice-thesee-messagerie-2025]. Debrief line: "Tell the adult who pays the bill straight away; the bank call is the urgent step."
 7. **Beware of "recovery" offers** that follow [eu-esas-ai-scams-factsheet-nl].
@@ -118,7 +118,8 @@ Sources for the table: [eu-ecb-ipr], [eu-epc-vop-scheme], [fr-inc-vop-2025].
 
 ## 8. Genuine-twin notes (what a real version looks like)
 - **Real bank-detail changes happen.** A genuine one is confirmed when you call the known number, and the payee-name check usually says **match** for the name you expect.
-- A **genuine "close match"** happens too, e.g. "J. Martin" vs "Jeanne Martin", or a firm's trading name vs its legal name. The bank then shows the real holder's name [eu-eurlex-ipr-2024-886], [fr-inc-vop-2025]. Include a genuine close-match twin, so the player learns to **read the shown name**, not to panic at any warning.
+- A **genuine "close match"** happens too, e.g. "J. Martin" vs "Jeanne Martin". The bank then shows the real holder's name [eu-eurlex-ipr-2024-886], [fr-inc-vop-2025].
+  - *Inference, not sourced:* a firm's **trading name vs its legal name** (e.g. "Volet Bleu" vs "Volet Bleu Gestion SAS") giving a close match. INC says only that firms are checked on their trade or company name and that a close match means "close but not identical" [fr-inc-vop-2025]. How each bank scores a trading-vs-legal name pair is not published in the sources read; it could also give "match" or "no match". Fine as a game example, but don't state it as how VoP always behaves. Include a genuine close-match twin, so the player learns to **read the shown name**, not to panic at any warning.
 - **Design rules:**
   - Don't make every fake show "no match". At least one fake (later in the chapter) should give **match**, because the account really is in the name the scammer supplied. The only tell is the unexpected change plus the callback.
   - Per CONTENT_GUIDE, a "match" result is a detail that looks the same on real and fake requests in that case, so its reveal uses the neutral wording.
@@ -151,4 +152,6 @@ fr-cybermalveillance-fiche-faux-rib · fr-cybermalveillance-fiche-fovi · fr-bdf
 - The French result labels come from INC; real banks word them differently [eu-epc-vop-faq].
 - No official French loss figure for faux-RIB fraud was found. Don't put a number on screen.
 - Instant-transfer recall: INC says an instant transfer can't be recalled but can be contested; the Banque de France just says "ask for a recall". Keep the debrief to "call your bank at once".
-- 17Cyber is described from its December 2024 launch press release; the live site was not opened. Opening hours for Info Escroqueries were not re-verified, so don't display them.
+- 17Cyber is described from the live site (opened 2026-11-19). The site states no opening hours and no chat. The December 2024 press release mentions 24/7 availability and a chat, but don't claim either on screen.
+- THESEE is for individuals filing in their own name (re-checked live 2026-11-19).
+- Opening hours for Info Escroqueries were not re-verified, so don't display them.

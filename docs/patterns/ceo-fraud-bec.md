@@ -62,8 +62,8 @@
 4. **If a mailbox may have been hijacked, change its password** (and turn on two-factor authentication) [fr-cybermalveillance-fiche-fovi].
 5. **Report** (France):
    - **File a complaint** quickly with the police or gendarmerie, in parallel with the bank. The bank may ask for it [fr-cybermalveillance-fiche-fovi], [fr-gendarmerie-fovi].
-   - **17Cyber** (17cyber.gouv.fr): online diagnosis 24/7 and, for serious cases, a chat with a police officer or gendarme [fr-cybermalveillance-17cyber-2024].
-   - **THESEE** online complaint covers a money request received from a contact's **hijacked** mailbox. Adults only, via FranceConnect; minors can only file a report (*signalement*) [fr-justice-thesee-messagerie-2025].
+   - **17Cyber** (17cyber.gouv.fr), the government's online help service run by the Police nationale, the Gendarmerie nationale and Cybermalveillance.gouv.fr. You answer a few questions to identify the problem and get advice, with links to report and to file a complaint. In an emergency, call 17 or 112 [fr-cybermalveillance-17cyber-2024].
+   - **THESEE** online complaint covers a money request received from a contact's **hijacked** mailbox. It is for **individuals (*particuliers*) only, filing in their own name**, adults only, via FranceConnect; minors can only file a report (*signalement*). So it does **not** fit a company filing about a fake-boss transfer. The firm complains to the police or gendarmerie instead [fr-justice-thesee-messagerie-2025].
    - The Gendarmerie's **brigade numérique** answers questions 24/7 [fr-gendarmerie-fovi].
    - **Info Escroqueries 0 805 805 817** (free) for advice [fr-cybermalveillance-fiche-faux-rib], [fr-cybermalveillance-fiche-hameconnage].
    - Europol advises reporting attempts to the police **even if no money was lost** [eu-europol-ceo-bec-leaflet].
@@ -90,7 +90,7 @@
 - Use only fictional firms, people and banks from `content/brands.yaml`. No real company, logo, domain, IBAN or real executive's likeness (Red Lines 1 and 3). Deepfake scenes are text transcripts or stylised video frames of a **fictional** person; never generate or imitate a real person's face or voice.
 - A good decision point: the transfer screen in the fictional banking device, with the "trust inspector" choosing *Pay / Call back on the directory number / Escalate to the second approver / Report*.
 - The deepfake variant fits as a **later** beat (boss level). Teach "end the call, alert through the usual channel" [fr-dgsi-flash-117-2025], not "spot the glitch".
-- Debrief safe action: "Call the person on the number in your directory and follow the two-person sign-off." If already paid: "Bank first, right now; then complain (police/gendarmerie, 17Cyber)."
+- Debrief safe action: "Call the person on the number in your directory and follow the two-person sign-off." If already paid: "Bank first, right now; then complain to the police or gendarmerie. 17Cyber can guide you."
 - Don't show how a mailbox is hijacked or how a voice is cloned (Red Lines 2 and 4).
 
 ## 9. Sources (accessed 2026-11-19 unless marked)
@@ -109,6 +109,6 @@ fr-gendarmerie-fovi (re-opened 2026-11-19) · fr-cybermalveillance-fiche-fovi ·
 - No French official figure for FOVI losses was found this session. Don't put a number on screen.
 - The Gendarmerie page dates from January 2023 and the FOVI fiche from 2023 (V230417). Advice is stable, but they are not new.
 - "Two-person sign-off" and "call back on the directory number" are the game's plain-language wording. The French sources say "procédure de vérification et de validation hiérarchique interne non dérogeable" and "règles d'authentification des émetteurs"; the callback on a known number is stated explicitly in the bank-detail sources [fr-cybermalveillance-fiche-faux-rib], [fr-fbf-cles-faux-rib-2025], [fr-bdf-fraude-moyens-paiement].
-- THESEE covers a money request from a **hijacked** contact mailbox. A look-alike address isn't covered there by name, so the game should point to police/gendarmerie or 17Cyber as the general route.
-- 17Cyber is described from its launch press release (Dec 2024). The live 17cyber.gouv.fr site was not opened this session.
+- THESEE covers a money request from a **hijacked** contact mailbox, filed by an individual in their own name (re-checked live 2026-11-19). A look-alike address isn't covered there by name, and a company can't use it, so for the workplace scenarios the game should point to police/gendarmerie or 17Cyber as the general route.
+- 17Cyber is described from the live site (opened 2026-11-19). The site states no opening hours and no chat. The December 2024 launch press release mentions 24/7 availability and a chat with police or gendarmes for serious cases, but the live home page doesn't show either, so the game must not claim them.
 - Info Escroqueries 0 805 805 817 was confirmed on Cybermalveillance fiche V240201 (opened today) and on the 2026 phishing fiche (opened 2026-11-18). Opening hours shown on a 2020 Service-Public page were not re-verified, so don't display hours.

@@ -32,7 +32,7 @@
 #                  report     = national cyber/fraud reporting route
 #                  advice     = advice line after a scam (not a report); shown in the "Report it" group after report/police
 #                  support    = emotional-support / listening line. NEVER a suicide or crisis line.
-#                  child      = line for young people (card heading "Under 18? Free lines for young people")
+#                  child      = line for young people (card heading "Under 18? Lines for young people")
 #                  crisis     = suicide/crisis line: its own calm final row, never rendered as support.
 #                               Row title for every country: "Thinking about ending your life, or worried about someone?"
 #                               Wording goes to the G3 human review. Verified for ES, SE, PT, FR only.

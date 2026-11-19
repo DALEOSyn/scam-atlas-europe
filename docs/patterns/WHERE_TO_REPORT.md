@@ -139,7 +139,7 @@ For each chapter country there is now a checked entry for the reporting route, p
   1. Bank.
   2. "Report it" (report, then advice, then police).
   3. Support.
-  4. Child, with the heading "Under 18? Free lines for young people".
+  4. Child, with the heading "Under 18? Lines for young people".
   5. Crisis, last.
 - **Sensitive-scene help** (scene content notes, "Need to talk?"):
   1. Support.

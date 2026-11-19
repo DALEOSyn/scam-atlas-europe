@@ -24,3 +24,8 @@ scenario_order:
 boss: berlin-09-boss-fraud-team
 arc_beat: berlin-arc-alex-01
 intro: "Berlin: a parcel locker on every other corner, and your inspector documents on their way from Brussels by Trundle."
+scenes:
+  arrival: berlin-arrival
+  turn: berlin-turn
+  resolution: berlin-resolution
+atlas_cards: [open-it-yourself, read-the-link, hang-up-call-back]

@@ -116,8 +116,8 @@
 }
 .panel {
   border-radius: var(--radius-md);
-  /* Room for the sticky footer when Next scrolls the new panel into view. */
-  scroll-margin-bottom: calc(var(--tap-min) + var(--space-6));
+  /* Room for the sticky footer when the browser scrolls a panel into view (CR-28: its measured height). */
+  scroll-margin-bottom: calc(var(--scene-footer-h, var(--tap-min)) + var(--space-2));
   animation: panel-in var(--dur-base) ease-out;
 }
 @keyframes panel-in {
@@ -138,7 +138,9 @@
   position: relative;
   aspect-ratio: 4 / 3;
   min-height: 160px;
-  max-height: max(160px, 50dvh);
+  /* CR-28 (T-S4b QA M1): on short screens the art leaves room for the caption above the sticky footer
+     (viewport − footer − about 13rem of text), never under 160 px; the scroll on Next does the rest. */
+  max-height: max(160px, min(50dvh, calc(100dvh - var(--scene-footer-h, 64px) - 13rem)));
   overflow: hidden;
   border-radius: var(--radius-md);
   border: var(--border-w-strong) solid var(--color-border);
@@ -206,6 +208,17 @@
   border-radius: var(--radius-md);
   background: var(--p-paper-300);
   overflow: hidden;
+}
+/* CR-28 (T-S4b QA S2): the caller fills the screen, head and shoulders, centred (the portrait is a bust,
+   240×300), on the plain wall colour; still no chrome, tiles, buttons or names (ART_DIRECTION §7.6). */
+.video .speaker {
+  height: 95%;
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+}
+.video .speaker.onRight {
+  transform: translateX(-50%) scaleX(-1);
 }
 .caption {
   padding: var(--space-3) var(--space-4);
@@ -352,5 +365,60 @@
   .caption {
     background: #fff;
     color: #000;
+  }
+}
+/* CR-28 (CI, psych S9): a compact header on narrow screens, so the heading row, the first panel and its
+   caption fit above the sticky footer on a 320×568 phone with wider fallback fonts. The title steps down
+   one size, Help and Skip share one row (Help may wrap inside its button, Skip keeps its width), the
+   gaps tighten. The 44 px targets stay. Last in the file, so it overrides the base rules. */
+@media (max-width: 599px) {
+  .head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-1);
+  }
+  .title {
+    font-size: var(--fs-lg);
+  }
+  .chrome {
+    flex-wrap: nowrap;
+    align-items: stretch;
+  }
+  .chrome .help {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-inline: var(--space-3);
+    font-size: var(--fs-sm);
+    text-align: start;
+    border-radius: var(--radius-md);
+  }
+  .chrome .skip {
+    flex: none;
+    padding-inline: var(--space-3);
+    font-size: var(--fs-sm);
+  }
+}
+/* Short landscape screens (720×450): one heading row. The title steps down and may wrap inside its own
+   column; Help and Skip keep one row beside it, in the smaller type. The 44 px targets stay. */
+@media (min-width: 600px) and (max-height: 520px) {
+  .head {
+    flex-wrap: nowrap;
+    align-items: flex-start;
+  }
+  .head > :first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .title {
+    font-size: var(--fs-lg);
+  }
+  .chrome {
+    flex: none;
+    flex-wrap: nowrap;
+  }
+  .chrome .help,
+  .chrome .skip {
+    padding-inline: var(--space-3);
+    font-size: var(--fs-sm);
   }
 }

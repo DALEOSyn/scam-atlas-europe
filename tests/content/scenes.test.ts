@@ -8,7 +8,7 @@ import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { ARC_CAST, artFile, artIssues, budgetIssues, castListIssues, expressionsIn, fileIssues, paletteFromDoc, RECURRING_CAST, rigIssues } from '../../scripts/lib/art.ts';
-import { listFiles, loadCast, readYaml, validateContent, validateScenes, type ContentReport } from '../../scripts/lib/content.ts';
+import { listFiles, loadCast, loadHabitCards, readYaml, validateContent, validateScenes, type ContentReport } from '../../scripts/lib/content.ts';
 import { arcTerms, castByChapter, clearSceneArtCache, loadScenes, sceneRules, sceneSetRules, sceneWarnings } from '../../scripts/lib/scenes.ts';
 import { yamlModuleData } from '../../scripts/lib/yaml-module.ts';
 import { lintText, loadConfig } from '../../scripts/redline-lint.ts';
@@ -163,7 +163,7 @@ describe('scene validator (cross-file rules)', () => {
   it('missing portraits and backdrops fail; unknown cast fails', () => {
     const s = fixtureScene('berlin', 'berlin-arrival');
     const p = first(s.panels);
-    expect(sceneRules({ ...s, panels: [{ ...p, speaker: 'sanne' }] }, reg).join('\n')).toMatch(/unknown cast id "sanne"/);
+    expect(sceneRules({ ...s, panels: [{ ...p, speaker: 'bruna' }] }, reg).join('\n')).toMatch(/unknown cast id "bruna"/);
     expect(sceneRules({ ...s, panels: [{ ...p, speaker: 'noor' }] }, reg).join('\n')).toMatch(/cast\/noor\.svg does not exist/);
     expect(sceneRules({ ...s, panels: [{ ...p, backdrop: 'berlin-station' }] }, reg).join('\n')).toMatch(/berlin-station\.svg does not exist/);
   });
@@ -242,15 +242,27 @@ describe('scene validator (cross-file rules)', () => {
     // Every scene file under content/scenes is read, whichever chapters have scenes so far.
     expect(real.scenes?.size).toBe(listFiles(join(CONTENT, 'scenes'), ['.yaml']).length);
     expect(real.scenes?.has('paris-arrival')).toBe(true);
+    expect(real.scenes?.has('home-arrival')).toBe(true);
     // A content dir with the fixture scenes and the real registries.
     const contentDir = mkdtempSync(join(tmpdir(), 'sae-content-'));
     mkdirSync(join(contentDir, 'scenes', 'berlin'), { recursive: true });
     for (const id of ['berlin-arrival', 'berlin-turn', 'berlin-resolution']) writeFileSync(join(contentDir, 'scenes', 'berlin', `${id}.yaml`), readFileSync(join(SCENE_FIXTURES, 'berlin', `${id}.yaml`)));
     const rep = emptyReport();
     const ch = berlinChapter({ arrival: 'berlin-arrival', turn: 'berlin-turn', resolution: 'berlin-resolution' });
-    validateScenes(contentDir, DOCS, rep, { cast, chapters: new Map([['berlin', { file: 'berlin.yaml', chapter: ch }]]), flagsSet: new Set(['berlin_test_variant']), habitCards: new Set() }, publicDir);
+    validateScenes(contentDir, DOCS, rep, { cast, chapters: new Map([['berlin', { file: 'berlin.yaml', chapter: ch }]]), flagsSet: new Set(['berlin_test_variant']), habitCards: new Set(loadHabitCards(CONTENT, emptyReport(), undefined).keys()) }, publicDir);
     expect(rep.errors).toEqual([]);
     expect(rep.scenes?.size).toBe(3);
+  });
+  it('a repo with zero scenes is valid: an empty content/scenes dir and a chapter without scenes', () => {
+    const contentDir = mkdtempSync(join(tmpdir(), 'sae-empty-scenes-'));
+    mkdirSync(join(contentDir, 'scenes', 'berlin'), { recursive: true });
+    const raw = readYaml(join(CONTENT, 'chapters', 'berlin.yaml')) as Raw;
+    const ch = chapterSchema.parse({ ...raw, scenes: undefined, atlas_cards: undefined });
+    const rep = emptyReport();
+    validateScenes(contentDir, DOCS, rep, { cast, chapters: new Map([['berlin', { file: 'berlin.yaml', chapter: ch }]]), flagsSet: new Set(), habitCards: new Set() }, publicDir);
+    expect(rep.errors).toEqual([]);
+    expect(rep.warnings).toEqual([]);
+    expect(rep.scenes?.size).toBe(0);
   });
   it('the build emits scenes with schema defaults and the cast as a projection without notes', () => {
     const file = join(ROOT, 'content', 'scenes', 'berlin', 'berlin-arrival.yaml');

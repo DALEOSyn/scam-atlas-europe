@@ -1,0 +1,32 @@
+# Interlude I1, Teo's café (STORY §3.12): on the map after the 2nd middle city, whatever the cities were.
+# Names no city. Flip the postcard (engine picks a line from at least two chapters earlier). Teo's neutral
+# check-in (STORY §2.2): same reply to both options, never scored, never counts as ask_someone, asks about
+# friends in general, never about anyone new in your life.
+id: i1-teo-cafe
+chapter: interludes
+slot: interlude
+after_middle: 2
+panels:
+  - backdrop: home-library-cafe
+    crop: left
+    speaker: teo
+    expression: laughing
+    line: "Your postcards are a hit, kiddo. Eight neighbours on Thursday, and someone brought cake."
+    alt: "Teo laughing in the library café corner, a cake and tea urn beside him."
+  - backdrop: home-library-cafe
+    crop: centre
+    speaker: teo
+    expression: thinking
+    flip_postcard: true
+    alt: "Teo, thinking, in the library café."
+  - backdrop: home-library-cafe
+    crop: right
+    speaker: teo
+    expression: warm
+    flip: true
+    line: "Now, my usual question for everyone at the café."
+    alt: "Teo, smiling, by the mismatched chairs."
+    choice:
+      prompt: "Made any friends on your travels?"
+      options: ["A few", "Mostly work so far"]
+      reply: "Good. Same rule for old friends and new: if anyone asks for money or secrets, tell me."

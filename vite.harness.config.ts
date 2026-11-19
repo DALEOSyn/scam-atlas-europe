@@ -5,7 +5,10 @@
  */
 import { defineConfig, type Plugin } from 'vite';
 import preact from '@preact/preset-vite';
-import { resolve } from 'node:path';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { parse } from 'yaml';
+import { sceneSchema } from './src/content/schema.ts';
 import { fixturePublicDir, fixtureScene } from './tests/content/scene-fixtures.ts';
 import type { Scene } from './src/content/schema.ts';
 import { yamlModuleSource } from './scripts/lib/yaml-module.ts';
@@ -34,11 +37,21 @@ const scenes: Scene[] = [
   { ...arrival, id: 'harness-pair', panels: [{ ...p2, flip: false }, { ...p2, flip: true }] },
 ];
 
+/**
+ * CR-28: every authored scene in content/scenes, as the game parses it, for the footer-overlap checks
+ * (`?view=real&id=<scene id>`). Art comes from the fixture public dir, so missing images are expected;
+ * layout does not depend on them (the art box is sized by CSS).
+ */
+const SCENES_DIR = resolve(import.meta.dirname, 'content', 'scenes');
+const realScenes: Scene[] = readdirSync(SCENES_DIR, { withFileTypes: true })
+  .filter((d) => d.isDirectory())
+  .flatMap((d) => readdirSync(join(SCENES_DIR, d.name)).filter((f) => f.endsWith('.yaml')).map((f) => sceneSchema.parse(parse(readFileSync(join(SCENES_DIR, d.name, f), 'utf8')))));
+
 export default defineConfig({
   root: resolve(import.meta.dirname, 'tests', 'e2e', 'harness'),
   base: '/',
   publicDir: fixturePublicDir(),
-  define: { __HARNESS_SCENES__: JSON.stringify(scenes) },
+  define: { __HARNESS_SCENES__: JSON.stringify(scenes), __HARNESS_REAL_SCENES__: JSON.stringify(realScenes) },
   plugins: [yamlPlugin(), preact()],
   build: { outDir: resolve(import.meta.dirname, 'dist-harness'), emptyOutDir: true, target: 'es2022' },
 });

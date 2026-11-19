@@ -14,7 +14,7 @@ import { chapterSchema, type Scene } from '../../src/content/schema.ts';
 import { createStore, freshSave, SAVE_KEY, type StorageLike } from '../../src/engine/save.ts';
 import { AtlasScreen } from '../../src/ui/Atlas.tsx';
 import { ChapterDone } from '../../src/ui/ChapterDone.tsx';
-import { HelpList, ScenePlayer, sceneHeading, scenePart } from '../../src/ui/ScenePlayer.tsx';
+import { HelpList, revealPanel, ScenePlayer, sceneHeading, scenePart } from '../../src/ui/ScenePlayer.tsx';
 import { fixtureScene } from '../content/scene-fixtures.ts';
 import { loadExample } from './helpers.ts';
 
@@ -140,14 +140,21 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     // [P] Item 8: shown = flipped, before any tap.
     expect(onFlip).toHaveBeenCalledWith('berlin');
-    expect(screen.getByText('Remember what they did? Flip it over.')).toBeTruthy();
+    // CR-28 (S6): STORY §3.12's caption, word for word.
+    expect(screen.getByText('Remember what they did? Tap to flip.')).toBeTruthy();
     const card = container.querySelector('[data-flip-card]') as HTMLElement;
     expect(card.textContent).toContain('If a parcel message wants money or a click…');
     expect(card.textContent).not.toContain('then I open');
-    fireEvent.click(within(card).getByRole('button', { name: 'Flip' }));
+    const flipBtn = within(card).getByRole('button', { name: 'Flip' });
+    expect(flipBtn.hasAttribute('aria-pressed')).toBe(false);
+    fireEvent.click(flipBtn);
     expect(card.textContent).toContain("then I open the courier's app myself.");
-    fireEvent.click(within(card).getByRole('button', { name: 'Flip' }));
+    // CR-28 (S6, round 2): the label carries the state; no aria-pressed (the live region announces the face).
+    const back = within(card).getByRole('button', { name: 'Flip back' });
+    expect(back.hasAttribute('aria-pressed')).toBe(false);
+    fireEvent.click(back);
     expect(card.textContent).not.toContain('then I open');
+    expect(within(card).getByRole('button', { name: 'Flip' })).toBeTruthy();
     expect(onFlip).toHaveBeenCalledTimes(1);
     cleanup();
     render(<ScenePlayer scene={scene} heading="Between cities" flip={null} onDone={() => undefined} />);
@@ -163,14 +170,64 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     fireEvent.click(screen.getByRole('button', { name: 'Need to talk? Where to get help' }));
     await axeClean(note.container as HTMLElement);
   });
-  it('reduced motion: panels and postcards still render their end state (durations are 0 via tokens)', () => {
-    document.documentElement.dataset.motion = 'reduced';
-    const scroll = vi.fn();
-    Element.prototype.scrollIntoView = scroll;
-    render(<ScenePlayer scene={arrival()} heading="Berlin · Arrival" chapterName="Berlin" onDone={() => undefined} />);
-    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
-    expect(scroll).toHaveBeenCalledWith({ behavior: 'auto', block: 'nearest' });
-    delete (Element.prototype as Partial<Element>).scrollIntoView;
+  for (const reduced of [false, true]) {
+    it(`Next scrolls the new caption above the footer: ${reduced ? "'auto' with reduced motion (durations are 0 via tokens)" : "'smooth' without reduced motion"}`, () => {
+      if (reduced) document.documentElement.dataset.motion = 'reduced';
+      const scroll = vi.spyOn(window, 'scrollBy').mockImplementation(() => undefined);
+      // Stubbed geometry: every figcaption ends at 560, the footer starts at 500, a panel spans 200..560.
+      const box = (top: number, bottom: number) => ({ top, bottom, left: 0, right: 0, width: 0, height: bottom - top, x: 0, y: top, toJSON: () => ({}) }) as DOMRect;
+      const rect = vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+        if (this.tagName === 'FIGCAPTION') return box(400, 560);
+        if (this.tagName === 'LI') return box(200, 560);
+        if (this.querySelector?.('[data-scene="next"]')) return box(500, 568);
+        return box(0, 0);
+      });
+      render(<ScenePlayer scene={arrival()} heading="Berlin · Arrival" chapterName="Berlin" onDone={() => undefined} />);
+      scroll.mockClear();
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      expect(scroll).toHaveBeenCalledWith({ top: 68, behavior: reduced ? 'auto' : 'smooth' });
+      rect.mockRestore();
+      scroll.mockRestore();
+      delete document.documentElement.dataset.motion;
+    });
+  }
+  it('CR-28 round 2: a time caption comes before the speaker and the line, on screen and in reading order', () => {
+    const sc = arrival();
+    const first = sc.panels[0];
+    if (!first?.line || !first.speaker) throw new Error('fixture changed: panel 1 needs a speaker line');
+    const scene = { ...sc, panels: [{ ...first, caption: 'Later that evening.' }, ...sc.panels.slice(1)] };
+    const { container } = render(<ScenePlayer scene={scene} heading="Berlin · Arrival" chapterName="Berlin" onDone={() => undefined} />);
+    const texts = [...(container.querySelector('li[data-panel="1"] figcaption')?.children ?? [])].map((x) => x.textContent ?? '');
+    expect(texts[0]).toBe('Later that evening.');
+    expect(texts.findIndex((x) => x.includes(first.line ?? ''))).toBeGreaterThan(0);
+  });
+  it('CR-28 revealPanel: the caption end goes above the footer; a panel that fits is shown whole; else the caption wins', () => {
+    const scroll = vi.spyOn(window, 'scrollBy').mockImplementation(() => undefined);
+    const box = (top: number, bottom: number) => ({ top, bottom, left: 0, right: 0, width: 0, height: bottom - top, x: 0, y: top, toJSON: () => ({}) }) as DOMRect;
+    const make = (liTop: number, capBottom: number) => {
+      const li = document.createElement('li');
+      const cap = document.createElement('figcaption');
+      li.append(cap);
+      li.getBoundingClientRect = () => box(liTop, capBottom);
+      cap.getBoundingClientRect = () => box(capBottom - 50, capBottom);
+      return li;
+    };
+    const footer = document.createElement('div');
+    footer.getBoundingClientRect = () => box(500, 568);
+    // Caption runs 60 px under the footer (edge 500 − 8): scroll down by 68.
+    revealPanel(make(200, 560), footer, 'smooth');
+    expect(scroll).toHaveBeenLastCalledWith({ top: 68, behavior: 'smooth' });
+    // Fits but its top is above the viewport: scroll up to show the top (8 px margin).
+    revealPanel(make(-100, 300), footer, 'auto');
+    expect(scroll).toHaveBeenLastCalledWith({ top: -108, behavior: 'auto' });
+    // Taller than the room: only as far up as keeps the caption end above the footer.
+    revealPanel(make(-400, 450), footer, 'auto');
+    expect(scroll).toHaveBeenLastCalledWith({ top: -42, behavior: 'auto' });
+    // Already clear: no scroll.
+    scroll.mockClear();
+    revealPanel(make(100, 400), footer, 'auto');
+    expect(scroll).not.toHaveBeenCalled();
+    scroll.mockRestore();
   });
 });
 
@@ -333,7 +390,7 @@ describe('App: scenes around scenarios (retrofit hooks)', () => {
     fireEvent.click(await screen.findByRole('button', { name: /^Back/ }));
     await waitFor(() => expect(document.activeElement?.getAttribute('data-title-button')).toBe('atlas'));
   });
-  it('[P] the content note gates only the first sensitive scene of a run, and every replay (item 13)', async () => {
+  it('[P] the content note gates only the first sensitive scene of a run, and of a replay session (item 13, CR-28)', async () => {
     const noted = chapterSchema.parse({ ...chapter, content_note: 'This chapter includes a family-emergency story. Everyone ends up safe.' });
     const sensitive: SceneRef[] = refs.map((r) => ({ ...r, load: async () => ({ ...(await r.load()), sensitive: true }) }));
     render(<App chapters={[noted]} load={async () => ex} sceneRefs={sensitive} store={createStore(memory())} />);
@@ -357,7 +414,20 @@ describe('App: scenes around scenarios (retrofit hooks)', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Back to the chapters' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Story scenes: Berlin' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Watch: Later' }));
-    // A replay always shows the note.
+    // CR-28: a replay session shows the note once, on its first sensitive scene…
+    await screen.findByRole('heading', { level: 1, name: 'Before this story scene' });
+    fireEvent.click(screen.getByRole('button', { name: 'Show the scene' }));
+    await screen.findByText(/Berlin · Later/);
+    fireEvent.click(screen.getByRole('button', { name: 'Skip story' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Watch: Before you go' }));
+    await screen.findByText(/Berlin · Before you go/);
+    expect(screen.queryByRole('heading', { name: 'Before this story scene' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Need to talk? Where to get help' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Skip story' }));
+    // …and leaving the replay list ends the session: the next one shows it again.
+    fireEvent.click(await screen.findByRole('button', { name: 'Back to the chapters' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Story scenes: Berlin' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Watch: Arrival' }));
     await screen.findByRole('heading', { level: 1, name: 'Before this story scene' });
   });
   it('a tampered run (restarted by beginChapter) still plays the arrival (item 18)', async () => {

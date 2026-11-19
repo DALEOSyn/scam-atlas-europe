@@ -39,7 +39,9 @@ import { B } from './helpers.ts';
 
 function berlin(scenes?: Record<string, unknown>): Chapter {
   const raw = parse(readFileSync(join(ROOT, 'content', 'chapters', 'berlin.yaml'), 'utf8')) as Record<string, unknown>;
-  return chapterSchema.parse(scenes ? { ...raw, scenes } : raw);
+  // Without an argument: Berlin as it was before S4 (no scenes), so the placement rules are tested on
+  // their own; the authored scenes are checked in tests/content/story-scenes.test.ts.
+  return chapterSchema.parse({ ...raw, scenes });
 }
 
 const story = (postcards: string[], flips: string[] = []): StoryState => ({ ...EMPTY_STORY, postcards, flips });

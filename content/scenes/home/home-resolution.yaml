@@ -1,0 +1,43 @@
+# Home resolution (STORY §3.0, §6.1): after the home-06-boss-new-portal debrief. Adaeze on video (first
+# time drawn), Noor's "normal number" line, Teo's slip (0-5) told only after its debrief and true in every
+# branch (he told you straight away; the card is blocked "now" in teo_waits only days later, so the
+# panel claims only that he told you), the Berlin caption, and Teo's If-then panel (Home exception, §4.4)
+# in the phone-look pose (opening the bank app yourself).
+id: home-resolution
+chapter: home
+slot: resolution
+panels:
+  - video: true
+    speaker: adaeze
+    expression: warm-wave
+    line: "Welcome aboard. Whatever happened today, you can always check with me. I never ask for money or secrecy."
+    alt: "Adaeze on a video call, smiling and waving."
+  - backdrop: home-kitchen
+    crop: right
+    speaker: noor
+    expression: laughing
+    flip: true
+    line: "Text me from every city. From your normal number, please."
+    alt: "Noor laughing in the kitchen."
+  - backdrop: home-kitchen
+    crop: left
+    speaker: teo
+    expression: sheepish
+    with: { id: noor, expression: calm }
+    line: "I typed my card into a prize page today. Good thing I told you straight away."
+    alt: "Teo with a sheepish smile; Noor listens, calm."
+  - backdrop: home-kitchen
+    crop: centre
+    speaker: teo
+    expression: laughing
+    caption: "Tomorrow: Berlin. Your inspector documents are on their way there."
+    line: "So the first postcard is mine. I've got the most to write."
+    alt: "Teo laughing beside your half-packed suitcase."
+  - backdrop: home-kitchen
+    crop: left
+    speaker: teo
+    expression: calm-phone-look
+    if_then:
+      cue: "If I've typed my card in somewhere odd,"
+      action: "then I block it in the bank app and tell someone."
+    alt: "Teo, calm, looks down at his own phone; the screen is turned away."

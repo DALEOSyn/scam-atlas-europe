@@ -1,0 +1,25 @@
+# Home turn (STORY §3.0, §6.1): stop point, between home-03-password-reset and home-04-kettle-locked.
+# Seeds 0-5 ("ask me, I'll do the same") without revealing it. Optional rehearsal choice: same reply to
+# every option, no score, no flag (STORY §4.1). No coach mark, no new control (§6.1 check).
+id: home-turn
+chapter: home
+slot: turn
+panels:
+  - backdrop: home-kitchen
+    crop: left
+    speaker: teo
+    expression: warm
+    caption: "Later that evening."
+    line: "If you ever get stuck out there, ask me. And I'll do the same. Deal?"
+    alt: "Teo, smiling, by the teapot in the kitchen."
+  - backdrop: home-kitchen
+    crop: right
+    speaker: teo
+    expression: thinking
+    flip: true
+    line: "Quick practice before you go, kiddo."
+    alt: "Teo, thinking, beside the half-packed suitcase."
+    choice:
+      prompt: "A message rushes you. First move?"
+      options: ["Pause", "Check who sent it", "Ask someone"]
+      reply: "All three work. Pausing first makes the other two easier."

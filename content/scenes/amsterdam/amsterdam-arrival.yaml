@@ -1,0 +1,32 @@
+# Amsterdam arrival, beat 1 (GDD §22.1, STORY §3.2; calm): before amsterdam-01-teo-new-number.
+# Sanne hands over your key; rent and job hunting (you both applied to Thimble & Pine, chapter intro).
+# Panel 3 is glue the scenarios need (STORY gap, decided here): Mateus at breakfast proposes the canal
+# boat, so 2-6's "the canal boat we talked about at breakfast" is something the player saw agreed face to
+# face, and says he flies on to the next city on the last evening (unnamed: free order), which sets up the
+# boss (2-9: he is in the air, phone off). No amount, no payment request, no verdict for 2-6 or 2-9.
+id: amsterdam-arrival
+chapter: amsterdam
+slot: arrival
+panels:
+  - backdrop: amsterdam-canal
+    crop: centre
+    speaker: sanne
+    expression: laughing
+    line: "Here's your key! Everyone here settles up by payment request, even for coffee."
+    local: { text: "Welkom!", lang: nl, translation: "Welcome!" }
+    alt: "Sanne laughing by a small canal bridge full of bikes."
+  - backdrop: amsterdam-guesthouse
+    crop: left
+    speaker: sanne
+    expression: warm
+    line: "My rent just went up, so I'm job hunting too. You applied to Thimble & Pine? Me too!"
+    alt: "Sanne behind the guesthouse desk, smiling, key hooks on the wall behind her."
+  - backdrop: amsterdam-guesthouse
+    crop: right
+    speaker: mateus
+    expression: laughing
+    flip: true
+    with: { id: sanne, expression: warm }
+    caption: "Next morning, at breakfast."
+    line: "Canal boat on Saturday, all of us? I'll book it. Then on our last evening I fly on to the next city."
+    alt: "Mateus laughing at breakfast in the guesthouse; Sanne smiles beside him."

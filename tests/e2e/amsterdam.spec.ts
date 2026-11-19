@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { skipScene } from './scene-helpers.ts';
 
 /**
  * Amsterdam (T-3.4): a cheap play-through to 2-3's banking beat. Home and Berlin are seeded as finished
@@ -36,6 +37,8 @@ test('Amsterdam 2-3: open the transfer, the name check says no match, cancel and
   await page.goto('/');
   await page.getByRole('button', { name: 'Chapters' }).click();
   await page.getByRole('button', { name: 'Play Amsterdam' }).click();
+  // Amsterdam arrival (S4) plays before the intro and 2-1; this test is about the bank device, so it skips the story.
+  await skipScene(page, 'amsterdam-arrival');
   // CR-27: the chapter intro first (its rules), axe clean, then Start.
   const intro = page.locator('[data-chapter-intro]');
   await expect(intro.getByRole('heading', { level: 1, name: 'Amsterdam' })).toBeFocused();

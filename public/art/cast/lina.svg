@@ -1,0 +1,28 @@
+<!-- Scam Atlas: Europe. Cast portrait: Lina Haddad, 12, two hair puffs under a mustard bobble hat, rose winter jacket; expression groups, calm by default. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300" role="img" aria-labelledby="li-t"><title id="li-t">Lina Haddad</title>
+<style>.x{display:none}.x-default{display:inline}.x:target{display:inline}.x:target~.x-default{display:none}</style>
+<defs><path id="li-sil" d="M58 300C60 254 86 214 120 208C154 214 180 254 182 300ZM54 140a16 16 0 1 0 32 0a16 16 0 1 0 -32 0ZM154 140a16 16 0 1 0 32 0a16 16 0 1 0 -32 0ZM70 125a50 56 0 1 0 100 0a50 56 0 1 0 -100 0ZM60 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM160 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM68 90C64 54 90 38 120 38C150 38 176 54 172 90ZM108 32a12 12 0 1 0 24 0a12 12 0 1 0 -24 0Z"/></defs>
+<use href="#li-sil" fill="#fffaf0" stroke="#fffaf0" stroke-width="10" stroke-linejoin="round"/>
+<g stroke="#2b2433" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M58 300C60 254 86 214 120 208C154 214 180 254 182 300Z" fill="#e3a6a0"/>
+<path d="M152 220C170 232 180 258 180 300H160Z" fill="#c98a84" stroke="none"/>
+<path d="M120 216V300" fill="none"/><path d="M96 212Q120 228 144 212L140 202Q120 214 100 202Z" fill="#c98a84"/>
+<path d="M54 140a16 16 0 1 0 32 0a16 16 0 1 0 -32 0ZM154 140a16 16 0 1 0 32 0a16 16 0 1 0 -32 0Z" fill="#2a2220"/>
+<rect x="106" y="166" width="28" height="36" rx="10" fill="#93603a"/>
+<path d="M60 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM160 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0Z" fill="#b07548"/>
+<path d="M70 125a50 56 0 1 0 100 0a50 56 0 1 0 -100 0Z" fill="#b07548"/>
+<path d="M88 168C100 180 140 180 152 168C146 178 134 184 120 184C106 184 94 178 88 168Z" fill="#93603a" stroke="none"/>
+<path d="M70 118C68 102 72 92 80 90H94C86 96 80 106 76 120ZM170 118C172 102 168 92 160 90H146C154 96 160 106 164 120Z" fill="#2a2220"/>
+<path d="M108 32a12 12 0 1 0 24 0a12 12 0 1 0 -24 0Z" fill="#d9a441"/>
+<path d="M68 90C64 54 90 38 120 38C150 38 176 54 172 90Z" fill="#d9a441"/>
+<path d="M66 90Q66 80 72 76H168Q174 80 174 90Z" fill="#bd8a2c"/>
+<path d="M84 78V88M100 78V88M116 78V88M132 78V88M148 78V88M162 78V88" fill="none" stroke="#c98f2e" stroke-width="2"/>
+<path d="M111 142a9 10 0 1 0 18 0a9 10 0 1 0 -18 0Z" fill="#93603a" stroke="none"/>
+</g>
+<g id="x-laughing" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M90 99Q101 92 112 97M128 97Q139 92 150 99" stroke-width="2.5"/><path d="M94 127Q101 119 108 127M132 127Q139 119 146 127" stroke-width="3"/><path d="M104 161Q120 165 136 161Q134 182 120 182Q106 182 104 161Z" fill="#2b2433" stroke-width="3"/><path d="M112 176Q120 170 128 176Q125 181 120 181Q115 181 112 176Z" fill="#e3a6a0" stroke="none"/><path d="M83 148a7 4 0 1 0 14 0a7 4 0 1 0 -14 0ZM143 148a7 4 0 1 0 14 0a7 4 0 1 0 -14 0Z" fill="#c98468" stroke="none" opacity=".6"/>
+</g>
+<g id="x-calm" class="x x-default" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M90 105Q101 100 112 104M128 104Q139 100 150 105" stroke-width="2.5"/><path d="M94 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0ZM132 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0Z" fill="#fffdf8" stroke-width="2"/><path d="M97.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0ZM135.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0Z" fill="#2b2433" stroke="none"/><path d="M111 164Q120 168 129 164" stroke-width="3"/>
+</g>
+</svg>

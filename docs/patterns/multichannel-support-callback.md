@@ -23,7 +23,7 @@
 
 ## 3. Red flags a normal person can spot
 1. **Caller ID can be faked.** The bank's name or real number on screen is not proof [pl-cert-fake-consultants], [ch-ncsc-double-phishing-2026], [eu-epc-threats-2025].
-2. **A caller asks you to read out a code or approve something in your banking app**, even "to stop" or "cancel" a charge. Read what the code or approval is actually for; your bank doesn't need your code to block a payment [ch-ncsc-double-phishing-2026], [pl-cert-phishing-kb-2026], [pl-cert-fake-consultants], [de-vzhh-fake-bank-calls-2025].
+2. **A caller asks you to read out a code or approve something in your banking app**, even "to stop" or "cancel" a charge. Read what the code or approval is actually for; a real bank won't ask you to read out a code or approve anything to stop a payment; being asked for a TAN or code on the phone is always a sign of fraud [ch-ncsc-double-phishing-2026], [pl-cert-phishing-kb-2026], [pl-cert-fake-consultants], [de-vzhh-fake-bank-calls-2025].
 3. **A message that asks you to call a number it gives you** [eu-epc-threats-2025], [se-polisen-campaign-2026], [es-incibe-smishing-bank-callback-2025].
 4. **A customs or delivery fee asked for by email or link.** In Germany genuine customs assessments come by post, or the carrier collects at the door [de-zoll-phishing].
 5. **Pressure to stay on the line or act right now,** so you can't check [ch-ncsc-double-phishing-2026], [pl-cert-fake-consultants].

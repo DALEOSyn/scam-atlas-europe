@@ -173,7 +173,7 @@ beats:
         red_flag: false
         type: caller_id
       - target: phone_number
-        reveal: "Shows the number the caller says is on your card, as a real bank call might. It may even be the bank's real number: a caller can make a call show any number, so it can't prove anything either way. Only a call you dial yourself tells you who answers."
+        reveal: "Shows the number the caller says is on your card, as a real bank call might. It may even be the bank's real number: a caller can make a call show a number that isn't theirs, so it can't prove anything either way. Only a call you dial yourself tells you who answers."
         red_flag: false
         type: phone_number
       - target: reference

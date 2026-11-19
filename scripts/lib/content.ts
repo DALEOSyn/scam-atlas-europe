@@ -463,7 +463,8 @@ export function validateContent(contentDir: string, opts: ValidateOptions = {}):
   for (const s of all) {
     if (!chapters.has(s.chapter)) report.errors.push(`${fileOf.get(s.id) ?? s.id}: chapter "${s.chapter}" has no content/chapters/${s.chapter}.yaml`);
   }
-  validateScenes(contentDir, docsDir, report, { cast, chapters, flagsSet: reg.flagsSet, habitCards: new Set(habitCards.keys()) });
+  // CR-43(d): finale scenes may also show a panel on an arc variable (if_flag: alex_invested, set by arc_effects).
+  validateScenes(contentDir, docsDir, report, { cast, chapters, flagsSet: new Set([...reg.flagsSet, ...reg.arcVars]), habitCards: new Set(habitCards.keys()) });
   return report;
 }
 

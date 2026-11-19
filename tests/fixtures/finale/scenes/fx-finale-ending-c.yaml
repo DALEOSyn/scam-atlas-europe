@@ -1,0 +1,11 @@
+# Test fixture (CR-43(d)): ending C, and ending R with money in (scene-level if_flag on the arc variable).
+id: fx-finale-ending-c
+chapter: fxfinale
+slot: resolution
+if_arc_ending: [C, R]
+if_flag: alex_invested
+panels:
+  - speaker: adaeze
+    expression: warm
+    line: "You were kind to someone who turned out not to exist. The lie was theirs, not yours."
+    alt: "Adaeze smiling gently, sitting beside you."

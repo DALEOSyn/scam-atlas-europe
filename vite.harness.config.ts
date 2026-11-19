@@ -8,9 +8,9 @@ import preact from '@preact/preset-vite';
 import { cpSync, readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { parse, stringify } from 'yaml';
-import { sceneSchema, scenarioSchema } from './src/content/schema.ts';
+import { chapterSchema, sceneSchema, scenarioSchema } from './src/content/schema.ts';
 import { fixturePublicDir, fixtureScene } from './tests/content/scene-fixtures.ts';
-import type { Scenario, Scene } from './src/content/schema.ts';
+import type { Chapter, Scenario, Scene } from './src/content/schema.ts';
 import { yamlModuleSource } from './scripts/lib/yaml-module.ts';
 
 /**
@@ -67,6 +67,24 @@ const fixtureScenarios: Scenario[] = readdirSync(FIXTURE_SCENARIOS_DIR)
   .filter((f) => f.endsWith('.yaml'))
   .map((f) => scenarioSchema.parse(parse(readFileSync(join(FIXTURE_SCENARIOS_DIR, f), 'utf8'))));
 
+/**
+ * CR-40 … CR-44: the finale fixture (tests/fixtures/finale): a slot-10 chapter with an arc finale block, its
+ * scenarios and resolution scenes, played in the real App (`?view=app&arc=<C|A|B|R>`). A finished stub chapter
+ * (`fxpast`, slot 1, the Berlin fixture resolution as its If-then) gives the Open Evening a postcard to pick, and
+ * the authored Berlin arc beat (slot 1) gives the red-flag timeline one row with a real tell.
+ */
+const FINALE_DIR = resolve(import.meta.dirname, 'tests', 'fixtures', 'finale');
+const yamlIn = (dir: string) => readdirSync(dir).filter((f) => f.endsWith('.yaml')).map((f) => parse(readFileSync(join(dir, f), 'utf8')) as unknown);
+const pastResolution = { ...fixtureScene('berlin', 'berlin-resolution'), id: 'fxpast-resolution', chapter: 'fxpast' };
+const finale = {
+  chapters: [
+    chapterSchema.parse(parse(readFileSync(join(FINALE_DIR, 'chapter.yaml'), 'utf8'))),
+    chapterSchema.parse({ slot: 1, city: 'fxpast', name: 'Berlin', status: 'draft', patterns: ['smishing-parcel-fee'], lo_focus: ['LO-03'], scenario_order: { am: ['berlin-arc-alex-01'], pm: [] }, intro: 'Stub.', arc_beat: 'berlin-arc-alex-01', scenes: { resolution: 'fxpast-resolution' } }),
+  ] as Chapter[],
+  scenarios: [...yamlIn(join(FINALE_DIR, 'scenarios')), parse(readFileSync(resolve(import.meta.dirname, 'content', 'scenarios', 'berlin', 'berlin-arc-alex-01.yaml'), 'utf8')) as unknown].map((x) => scenarioSchema.parse(x)),
+  scenes: [...yamlIn(join(FINALE_DIR, 'scenes')).map((x) => sceneSchema.parse(x)), pastResolution] as Scene[],
+};
+
 /** Fixture art plus the game's own brand marks (public/brands), so device headers load their logos. */
 function harnessPublicDir(): string {
   const dir = fixturePublicDir();
@@ -78,7 +96,7 @@ export default defineConfig({
   root: resolve(import.meta.dirname, 'tests', 'e2e', 'harness'),
   base: '/',
   publicDir: harnessPublicDir(),
-  define: { __HARNESS_SCENES__: JSON.stringify(scenes), __HARNESS_REAL_SCENES__: JSON.stringify(realScenes), __HARNESS_SCENARIOS__: JSON.stringify(fixtureScenarios) },
+  define: { __HARNESS_SCENES__: JSON.stringify(scenes), __HARNESS_REAL_SCENES__: JSON.stringify(realScenes), __HARNESS_SCENARIOS__: JSON.stringify(fixtureScenarios), __HARNESS_FINALE__: JSON.stringify(finale) },
   plugins: [yamlPlugin(), preact()],
   build: { outDir: resolve(import.meta.dirname, 'dist-harness'), emptyOutDir: true, target: 'es2022' },
 });

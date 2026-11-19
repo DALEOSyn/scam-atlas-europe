@@ -363,7 +363,7 @@ function resolveGroup(s: Scenario, ctx: RunnerContext, st: RunnerState, g: Group
   const done: GroupState = { ...g, resolved: true, pendingOutcome: undefined };
   // The beat is over: its follow-ups stop (QA M2); its after_beat interrupts become due (ruling QA M6).
   let next = withGroup({ ...st, timer: null, pushers: stopPushers(st.pushers), interrupts: markDue(st.interrupts, done.visited) }, done);
-  const fell = !done.timerExpired && done.decision !== undefined && isFall(done.decision.cls, st.truth);
+  const fell = !done.timerExpired && done.decision !== undefined && isFall(done.decision.cls, st.truth, done.decision.kind);
   if (fell) next = setStress(ctx, next, next.stress + ctx.balance.stress.on_fall);
   // CR-27: after a fall, after_beat interrupts not flagged `on_fall: show` are dropped (no "Have a good
   // long weekend!" right after damage control). Already answered ones stay.
@@ -410,14 +410,15 @@ function finish(ctx: RunnerContext, st: RunnerState): RunnerState {
 }
 
 function enterDamageControlOrDone(s: Scenario, ctx: RunnerContext, st: RunnerState): RunnerState {
-  if (s.role === 'arc') return finish(ctx, st);
+  // Arc beats never run damage control (it would unmask the arc, GDD §10.2); the finale's scenarios do (CR-43).
+  if (s.role === 'arc' && s.finale === undefined) return finish(ctx, st);
   // Boss: damage control once at the end, with the steps of every beat that fell, merged in beat order
   // (the first fallen beat's steps first), de-duplicated (QA L2) and capped at RECOVERY_OPTIONS_MAX
   // (follow-up f, GDD §9: 5–6 options). Others: the outcome reached.
   const truth = st.truth;
   const sources =
     s.role === 'boss'
-      ? st.groups.filter((g) => g.decision && !g.timerExpired && isFall(g.decision.cls, truth) && g.outcome)
+      ? st.groups.filter((g) => g.decision && !g.timerExpired && isFall(g.decision.cls, truth, g.decision.kind) && g.outcome)
       : st.groups.slice(-1);
   const options = mergeRecoveryOptions(sources.map((g) => recoveryOptionsOf(g.outcome ? s.outcomes[g.outcome] : undefined)));
   if (options.length === 0) return finish(ctx, st);
@@ -931,8 +932,14 @@ export interface RunnerView {
   consequenceCovered: boolean;
   /** CR-38: the Fairmeasure result card of the last outcome (check_official_list), if it names one. */
   consequenceRegister: RegisterCard | null;
-  /** CR-32: `forCast` is the cast id whose damage control it is (outcome `recovery_for`), else null. */
-  recovery: { options: RecoveryOption[]; pick: number; forCast: string | null } | null;
+  /** CR-43(b): the outcome on the consequence step opens the reveal card (one portrait, three names). */
+  consequenceReveal: boolean;
+  /**
+   * CR-32: `forCast` is the cast id whose damage control it is (outcome `recovery_for`), else null; its harmful-step
+   * feedback is voiced by them. CR-41: `forLabel` names someone off-cast ("Noor's friend") in the prompt, and
+   * `forCast` is then the cast member who voices the feedback (`voiced_by`).
+   */
+  recovery: { options: RecoveryOption[]; pick: number; forCast: string | null; forLabel?: string | null } | null;
   /**
    * CR-31: the on-call bar over a banking beat reached by start_transfer from a call: "On a call · {caller} ·
    * mm:ss". `seconds` since the call started (scenario clock); `hangUp` lists the banking beat's own
@@ -968,7 +975,7 @@ export function deadlineLine(isFraud: boolean, fell: boolean): Exclude<DeadlineL
 }
 
 function groupFell(g: GroupState, truth: Truth): boolean {
-  return !!g.decision && !g.timerExpired && isFall(g.decision.cls, truth);
+  return !!g.decision && !g.timerExpired && isFall(g.decision.cls, truth, g.decision.kind);
 }
 
 function actionViews(actions: readonly Action[], state: StressState): ActionView[] {
@@ -1058,19 +1065,24 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
     consequenceDeadline: !st.tail && !!last && last.timerExpired && !last.outcome ? deadlineLine(s.is_fraud, st.groups.some((x) => groupFell(x, st.truth))) : null,
     consequenceCovered: st.phase === 'consequence' && !st.tail && !!last && coveredDecision(s, st.groups, last).covered,
     consequenceRegister: st.phase === 'consequence' && !st.tail && last?.outcome ? (s.outcomes[last.outcome]?.register ?? null) : null,
+    consequenceReveal: st.phase === 'consequence' && !st.tail && !!last?.outcome && s.outcomes[last.outcome]?.reveal === true,
     consequenceAsides: st.phase !== 'consequence' ? [] : st.tail ? interruptNarratives(s, st, st.groups.length) : last ? interruptNarratives(s, st, st.groups.indexOf(last)) : [],
-    recovery: st.phase === 'damage_control' && st.recovery ? { options: st.recovery.options, pick: ctx.balance.recovery.pick, forCast: recoveryForOf(s, st) } : null,
+    recovery: st.phase === 'damage_control' && st.recovery ? { options: st.recovery.options, pick: ctx.balance.recovery.pick, ...recoveryForOf(s, st) } : null,
     onCall: onCallOf(s, ctx, st, live && st.phase === 'playing' ? g : undefined),
   };
 }
 
-/** CR-32: whose damage control it is: the `recovery_for` of the outcome that opened it (the last fallen group's). */
-function recoveryForOf(s: Scenario, st: RunnerState): string | null {
+/**
+ * CR-32: whose damage control it is: the `recovery_for` of the outcome that opened it (the last fallen group's).
+ * CR-41: `{ label, voiced_by }` names someone off-cast; the cast member `voiced_by` speaks the feedback.
+ */
+export function recoveryForOf(s: Scenario, st: Pick<RunnerState, 'groups'>): { forCast: string | null; forLabel: string | null } {
   for (const g of [...st.groups].reverse()) {
-    const id = g.outcome ? s.outcomes[g.outcome]?.recovery_for : undefined;
-    if (id !== undefined) return id;
+    const r = g.outcome ? s.outcomes[g.outcome]?.recovery_for : undefined;
+    if (r === undefined) continue;
+    return typeof r === 'string' ? { forCast: r, forLabel: null } : { forCast: r.voiced_by, forLabel: r.label };
   }
-  return null;
+  return { forCast: null, forLabel: null };
 }
 
 function onCallOf(s: Scenario, ctx: RunnerContext, st: RunnerState, g: GroupState | undefined): RunnerView['onCall'] {

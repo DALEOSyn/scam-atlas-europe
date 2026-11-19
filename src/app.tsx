@@ -4,7 +4,8 @@ import { listChapters } from './content/chapters.ts';
 import type { Chapter, Scenario, Scene } from './content/schema.ts';
 import { listScenarios } from './content/scenarios.ts';
 import { listScenes, type SceneRef } from './content/scenes.ts';
-import { tellMeNow } from './engine/arc.ts';
+import { advanceFinale, arcSlotAt, bankArcPoints, enterFinale, finaleDone, finaleStep, tellMeNow, timelineRows, type ArcEnding, type FinaleStep, type TimelineRow } from './engine/arc.ts';
+import { scoreRecovery, type RecoveryOption } from './engine/recovery.ts';
 import type { ChapterSummary } from './engine/chapter.ts';
 import { debriefOf, type DebriefData } from './engine/debrief.ts';
 import { beginChapter, carriedStress, chapterProgress, commitScenario, finishChapter, runFlags, runIndex } from './engine/game.ts';
@@ -18,6 +19,7 @@ import {
   atlasPages,
   chapterSceneIds,
   dueInterlude,
+  epigraphOf,
   ifThenOf,
   INTERLUDES,
   markSeen,
@@ -25,6 +27,8 @@ import {
   pickFlip,
   recordFlip,
   resolutionSceneId,
+  resolutionSceneIds,
+  scenePlaysFor,
   scenesAfter,
   storyVars,
   turnSceneId,
@@ -39,14 +43,17 @@ import { ChapterIntro } from './ui/ChapterIntro.tsx';
 import { ChapterList, type ChapterListFocus, type ChapterRow } from './ui/ChapterList.tsx';
 import { DebriefView } from './ui/DebriefView.tsx';
 import { ArcReveal } from './ui/ArcReveal.tsx';
+import { RevealScreen, TimelineScreen } from './ui/ArcFinale.tsx';
+import { EndScreen } from './ui/EndScreen.tsx';
 import { AtlasScreen, SceneReplayList } from './ui/Atlas.tsx';
 import { ScenePlayer, sceneHeading, scenePart, type FlipPick } from './ui/ScenePlayer.tsx';
-import { ScenarioView } from './ui/ScenarioView.tsx';
+import { DamageControl, ScenarioView } from './ui/ScenarioView.tsx';
 import { SettingsPanel } from './ui/Settings.tsx';
 import { StopScreen } from './ui/StopScreen.tsx';
 import styles from './app.module.css';
 
-type Progress = { index: number; total: number };
+/** `finale`: a scenario of the arc finale block (CR-43): its debrief leads back to the block, not the chapter. */
+type Progress = { index: number; total: number; finale?: FinaleStep | undefined };
 
 type Screen =
   /** `from`: the screen we came back from, so focus returns to its button (QA T-2.8 m1), never to <body>. */
@@ -62,10 +69,16 @@ type Screen =
   | { kind: 'stop'; done: number; total: number; left: number }
   /** CR-27: the chapter intro, on every chapter start from its first scenario (after the Arrival scene). */
   | { kind: 'intro'; chapter: Chapter; resume: boolean }
-  | { kind: 'reveal'; timeline: { slot: number; tell: string }[] }
-  | { kind: 'chapter_done'; summary: ChapterSummary; city: string; postcard: { ifThen: IfThen; backdrop?: string | undefined } | null; boss: BossLesson | null }
+  | { kind: 'reveal'; timeline: TimelineRow[]; names: readonly string[] | null }
+  /** CR-43: steps of the arc finale block that are screens of their own. */
+  | { kind: 'finale_reveal'; chapter: Chapter; names: readonly string[] }
+  | { kind: 'finale_damage'; chapter: Chapter; options: RecoveryOption[] }
+  | { kind: 'finale_timeline'; chapter: Chapter; rows: TimelineRow[]; points: number }
+  /** CR-44(b): the end screen "Your Atlas", after the finale's chapter end. */
+  | { kind: 'end'; epigraph: { speaker: string; line: string } | null; pages: AtlasPage[] }
+  | { kind: 'chapter_done'; summary: ChapterSummary; city: string; postcard: { ifThen: IfThen; backdrop?: string | undefined } | null; boss: BossLesson | null; end?: (() => void) | undefined }
   /** A story scene (S3). `then` runs after it ends (finished or skipped). */
-  | { kind: 'scene'; scene: Scene; heading: string; chapterName: string; flip: FlipPick | null; note: string | null; flags: string[]; then: () => void }
+  | { kind: 'scene'; scene: Scene; heading: string; chapterName: string; flip: FlipPick | null; flipChoices: FlipPick[] | null; note: string | null; flags: string[]; ending: ArcEnding | null; then: () => void }
   /** `back`: where the Atlas was opened from (the title screen or the chapter list). */
   | { kind: 'atlas'; pages: AtlasPage[]; loading: boolean; back: 'title' | 'chapters' }
   /** `scenes` null while loading; `focus`: the scene whose "Watch:" button gets focus (after a replay). */
@@ -258,13 +271,28 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
     const scene = await sceneById(id);
     if (!scene) return then();
     const current = currentSave();
+    // CR-43(d): a finale resolution scene keyed to other arc endings does not play (replays included).
+    const ending = current.arc.finale?.ending ?? null;
+    // CR-43(d): in the finale, arc variables that are set (alex_invested above 0) count as flags for `if_flag`.
+    const arcVars = current.arc.finale ? Object.entries(current.arc.vars).filter(([, v]) => v === true || (typeof v === 'number' && v > 0)).map(([k]) => k) : [];
+    const flags = [...(c ? [...runFlags(current, c.city)] : [...current.flags]), ...arcVars];
+    if (!scenePlaysFor(scene, ending, new Set(flags))) return then();
     let flip: FlipPick | null = null;
+    let flipChoices: FlipPick[] | null = null;
     if (scene.panels.some((p) => p.flip_postcard)) {
       const lines = await ifThenLines(current.story.postcards);
-      // The Open Evening (a resolution) lets you pick from every postcard; interludes use the spacing rule.
-      const city = pickFlip(current.story, (x) => lines.has(x), scene.slot === 'resolution');
-      const line = city ? lines.get(city) : undefined;
-      if (city && line) flip = { city, cityName: chapters.find((x) => x.city === city)?.name ?? city, ifThen: line };
+      const pickOf = (city: string): FlipPick | null => {
+        const line = lines.get(city);
+        return line ? { city, cityName: chapters.find((x) => x.city === city)?.name ?? city, ifThen: line } : null;
+      };
+      if (scene.slot === 'resolution') {
+        // CR-44(a): at the Open Evening (a resolution) the player picks any collected postcard.
+        flipChoices = current.story.postcards.flatMap((c) => pickOf(c) ?? []);
+      } else {
+        // Interludes: the engine picks by the spacing rule (STORY §3.12).
+        const city = pickFlip(current.story, (x) => lines.has(x));
+        flip = city ? pickOf(city) : null;
+      }
     }
     // Interludes all share one chapter key, so each sensitive interlude gates on its own id.
     const noteKey = scene.slot === 'interlude' ? scene.id : scene.chapter;
@@ -272,7 +300,6 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
     const note = scene.sensitive && gate ? (scene.content_note ?? chapterNote(c ?? undefined, current)) : null;
     if (note && opts.replay) replayNoted.current = true;
     else if (note) notedRuns.current.add(noteKey);
-    const flags = c ? [...runFlags(current, c.city)] : [...current.flags];
     const home = scene.chapter === INTERLUDES ? null : (c ?? chapters.find((x) => x.city === scene.chapter) ?? null);
     setScreen({
       kind: 'scene',
@@ -280,8 +307,10 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
       heading: sceneHeading(scene, home),
       chapterName: home?.name ?? '',
       flip,
+      flipChoices,
       note,
       flags,
+      ending,
       then: () => {
         update((sv) => ({ ...sv, story: markSeen(sv.story, scene.id) }));
         then();
@@ -308,11 +337,84 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
     // [P] Amsterdam QA h: the stamp screen carries the boss's layer-1 tell and what works.
     const bossScenario = c.boss ? await load(c.city, c.boss).catch(() => undefined) : undefined;
     const boss = bossScenario ? { tell: bossScenario.debrief.layer1.tell, whatWorks: bossScenario.debrief.layer1.what_works } : null;
-    setScreen({ kind: 'chapter_done', summary: r.summary, city: c.name, postcard: ifThen ? { ifThen, backdrop } : null, boss });
+    // CR-44(b): after the finale's chapter end, the end screen "Your Atlas" instead of the map.
+    const end = c.arc_finale ? () => void openEnd(c) : undefined;
+    setScreen({ kind: 'chapter_done', summary: r.summary, city: c.name, postcard: ifThen ? { ifThen, backdrop } : null, boss, end });
   };
 
-  /** Resolution scene (after the last debrief, before the summary), then the chapter end. */
-  const finishWithResolution = (c: Chapter) => playScene(resolutionSceneId(c), () => void endChapter(currentSave(), c), c);
+  /** CR-44(b): "Your Atlas": Adaeze's line as the epigraph, every If-then line in play order, cards, help. */
+  const openEnd = async (c: Chapter) => {
+    setScreen({ kind: 'loading' });
+    const current = currentSave();
+    const scenes = await Promise.all(resolutionSceneIds(c).map((id) => sceneById(id)));
+    const lines = await ifThenLines(current.story.postcards);
+    setScreen({ kind: 'end', epigraph: epigraphOf(scenes), pages: atlasPages(chapters, current.story, lines) });
+  };
+
+  /**
+   * Resolution scenes (after the last debrief, before the summary; CR-43(d): the finale's several scenes in order,
+   * each keyed to the arc ending or for everyone), then the chapter end.
+   */
+  const finishWithResolution = (c: Chapter) => playScenes(resolutionSceneIds(c), () => void endChapter(currentSave(), c), c);
+
+  // -------------------------------------------------------------------------
+  // CR-43: the arc finale block (GDD §30.6), after the last scenario's debrief, before the resolution.
+
+  /** Load the finale's three profile names (any chapter's arc_finale), for the reveal card. */
+  const revealNames = (): readonly string[] | null => chapters.find((x) => x.arc_finale)?.arc_finale?.reveal_names ?? null;
+
+  /** Slot tells for the red-flag timeline: each slot's arc beat is the arc_beat of the chapter with that map slot. */
+  const slotTells = async (): Promise<Map<number, string>> => {
+    const tells = new Map<number, string>();
+    for (const ch of chapters) {
+      if (!ch.arc_beat) continue;
+      const s = await load(ch.city, ch.arc_beat).catch(() => undefined);
+      if (s?.arc_slot !== undefined) tells.set(s.arc_slot, s.debrief.layer1.tell);
+    }
+    return tells;
+  };
+
+  /** Play the finale step the save is on; when the block is done, the resolution. A quit mid-block resumes here. */
+  const runFinale = async (c: Chapter) => {
+    const f = c.arc_finale;
+    if (!f) return finishWithResolution(c);
+    setScreen({ kind: 'loading' });
+    let current = currentSave();
+    if (!current.arc.finale) {
+      const entered = { ...current, arc: enterFinale(current.arc) };
+      update(() => entered);
+      current = entered;
+    }
+    if (finaleDone(current.arc)) return finishWithResolution(c);
+    const step = finaleStep(current.arc);
+    const total = Math.max(1, sequenceOf(c).length);
+    try {
+      if (step === 'close' || step === 'recovery_offer' || step === 'teo') {
+        const s = await load(c.city, f[step]);
+        if (!s) throw new Error(`finale scenario ${f[step]} is not bundled`);
+        return play(s, current, { index: total, total, finale: step });
+      }
+      if (step === 'reveal') return setScreen({ kind: 'finale_reveal', chapter: c, names: f.reveal_names });
+      if (step === 'damage_control') return setScreen({ kind: 'finale_damage', chapter: c, options: f.damage_control.map((x) => ({ step: x.step, category: x.category, ...(x.feedback ? { feedback: x.feedback } : {}) })) });
+      if (step === 'timeline') {
+        const tells = await slotTells();
+        return setScreen({ kind: 'finale_timeline', chapter: c, rows: timelineRows(current.arc, (slot) => tells.get(slot)), points: current.arc.points });
+      }
+    } catch (e) {
+      console.warn('finale load failed', e);
+      return setScreen({ kind: 'error' });
+    }
+    return finishWithResolution(c);
+  };
+
+  /** The finale step `from` is over: record it and play the next one. */
+  const finaleNext = (c: Chapter, from: FinaleStep, extra?: (sv: SaveState) => SaveState) => {
+    update((sv) => {
+      const base = extra ? extra(sv) : sv;
+      return { ...base, arc: advanceFinale(base.arc, from) };
+    });
+    void runFinale(c);
+  };
 
   const next = async (current: SaveState, c: Chapter = chapter) => {
     setScreen({ kind: 'loading' });
@@ -333,13 +435,24 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
       for (;;) {
         const i = nextIndex(c, from, () => [], flags);
         const id = i < 0 ? undefined : sequenceOf(c)[i]?.id;
-        if (!id) return void finishWithResolution(c);
-        const s = await load(c.city, id);
+        // CR-43(a): the finale's arc block plays after the last scenario's debrief, before the resolution.
+        if (!id) return void (c.arc_finale ? runFinale(c) : finishWithResolution(c));
+        let s = await load(c.city, id);
         if (!s) throw new Error(`scenario ${id} is not bundled`);
-        // A closed Alex arc ("Tell me now", a report, a second close) plays no more arc beats (GDD §10.3).
-        const arcClosed = s.role === 'arc' && started.arc.closed;
-        if (!arcClosed && s.requires_flags.every((f) => flags.has(f))) return play(s, started, { index: i + 1, total: all });
-        from = i + 1; // an echo whose flags are not set, or a closed arc: skip it
+        if (s.role === 'arc' && s.arc_slot !== undefined) {
+          // CR-43(f), STORY §1.4: the chapter's arc beat plays the slot of its play position (slot N in the Nth
+          // chapter played), found in the chapter with map slot N. A closed arc ("Tell me now", a report, a second
+          // close, GDD §10.3) or a slot already played plays nothing here.
+          const slot = arcSlotAt(started.arc, chapterProgress(started, c.city).position);
+          const home = slot === null ? undefined : chapters.find((x) => x.slot === slot && x.arc_beat);
+          s = home?.arc_beat ? ((home.city === c.city && home.arc_beat === s.id ? s : await load(home.city, home.arc_beat).catch(() => undefined)) ?? undefined) : undefined;
+          if (!s || s.role !== 'arc') {
+            from = i + 1;
+            continue;
+          }
+        }
+        if (s.requires_flags.every((f) => flags.has(f))) return play(s, started, { index: i + 1, total: all });
+        from = i + 1; // an echo whose flags are not set: skip it
       }
     } catch (e) {
       // Typically a stale chunk after an update while offline. Stay local: no error reporting service.
@@ -372,7 +485,8 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
   const onDone = useCallback(
     (scenario: Scenario, st: RunnerState, r: ScenarioResult, progress: Progress) => {
       const data = debriefOf(scenario, st, r, save.callouts);
-      update((sv) => commitScenario(sv, balance, chapter, scenario, st, r));
+      // CR-43(f): an arc slot from another chapter advances this chapter's run at the position it played.
+      update((sv) => commitScenario(sv, balance, chapter, scenario, st, r, progress.finale ? undefined : progress.index - 1));
       setStress(st.stress);
       if (loadFirst) setSoloDone(true);
       setScreen({ kind: 'debrief', scenario, data, progress });
@@ -384,6 +498,8 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
   const afterDebrief = (progress: Progress) => {
     const at = progress.index - 1;
     const c = chapter;
+    // CR-43: a finale scenario's debrief leads to the next step of the block.
+    if (progress.finale) return finaleNext(c, progress.finale);
     const go = () => {
       if (!loadFirst && isStopPointAfter(c, at)) {
         const left = messagesLeft(c, at + 1).today;
@@ -444,16 +560,11 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
 
   /** "Tell me now" (GDD §10.2): closes the arc and shows the reveal with the timeline so far. */
   const onTellMeNow = async (current: DebriefData) => {
-    const arc = save.arc;
+    const arc = currentSave().arc;
     update((sv) => ({ ...sv, arc: tellMeNow(sv.arc) }));
-    const tells = new Map<number, string>();
-    for (const c of chapters) {
-      if (!c.arc_beat) continue;
-      const s = await load(c.city, c.arc_beat).catch(() => undefined);
-      if (s?.arc_slot !== undefined) tells.set(s.arc_slot, s.debrief.layer1.tell);
-    }
-    const slots = [...new Set(arc.timeline)].sort((a, b) => a - b);
-    setScreen({ kind: 'reveal', timeline: slots.map((slot) => ({ slot, tell: tells.get(slot) ?? current.layer1.tell })) });
+    const tells = await slotTells();
+    // CR-43(b), (c): the same reveal card and timeline wording as the finale (no amounts, fixed choice lines).
+    setScreen({ kind: 'reveal', timeline: timelineRows(arc, (slot) => tells.get(slot) ?? current.layer1.tell), names: revealNames() });
   };
 
   const ctx: RunnerContext = useMemo(
@@ -564,6 +675,7 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
           coachMarks={save.coachMarks}
           onCoachMarkSeen={(id) => update((sv) => (sv.coachMarks.includes(id) ? sv : { ...sv, coachMarks: [...sv.coachMarks, id] }))}
           onQuit={toTitle}
+          revealNames={screen.progress.finale ? (revealNames() ?? undefined) : undefined}
           onDone={(st, r) => onDone(screen.scenario, st, r, screen.progress)}
         />
       ) : null}
@@ -571,7 +683,7 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
         <DebriefView
           data={screen.data}
           onContinue={() => afterDebrief(screen.progress)}
-          onAgain={() => setScreen({ kind: 'playing', scenario: screen.scenario, attempt: Date.now(), progress: screen.progress })}
+          onAgain={screen.progress.finale ? undefined : () => setScreen({ kind: 'playing', scenario: screen.scenario, attempt: Date.now(), progress: screen.progress })}
           onTellMeNow={screen.data.variant === 'arc' && !save.arc.closed ? () => void onTellMeNow(screen.data) : undefined}
         />
       ) : null}
@@ -593,8 +705,23 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
         />
       ) : null}
       {screen.kind === 'stop' ? <StopScreen done={screen.done} total={screen.total} left={screen.left} onKeepGoing={keepGoing} onBack={toChapters} /> : null}
-      {screen.kind === 'reveal' ? <ArcReveal timeline={screen.timeline} onContinue={() => void next(save)} /> : null}
-      {screen.kind === 'chapter_done' ? <ChapterDone summary={screen.summary} city={screen.city} postcard={screen.postcard} boss={screen.boss} onBack={() => void toMap()} /> : null}
+      {screen.kind === 'reveal' ? <ArcReveal timeline={screen.timeline} names={screen.names} onContinue={() => void next(currentSave())} /> : null}
+      {screen.kind === 'finale_reveal' ? <RevealScreen names={screen.names} onContinue={() => finaleNext(screen.chapter, 'reveal')} /> : null}
+      {screen.kind === 'finale_damage' ? (
+        <main class={styles.shell} data-finale-step="damage_control">
+          <DamageControl
+            view={{ options: screen.options, pick: balance.recovery.pick, forCast: null, forLabel: null }}
+            onDone={(picks) => {
+              // Ending C's arc damage control: banked as arc points, never a chapter score (GDD §10.2, §30.6).
+              const points = scoreRecovery(balance, screen.options, picks).points;
+              finaleNext(screen.chapter, 'damage_control', (sv) => ({ ...sv, arc: bankArcPoints(sv.arc, points) }));
+            }}
+          />
+        </main>
+      ) : null}
+      {screen.kind === 'finale_timeline' ? <TimelineScreen rows={screen.rows} points={screen.points} onContinue={() => finaleNext(screen.chapter, 'timeline')} /> : null}
+      {screen.kind === 'end' ? <EndScreen epigraph={screen.epigraph} pages={screen.pages} habits={save.habits} onBack={() => void toMap()} /> : null}
+      {screen.kind === 'chapter_done' ? <ChapterDone summary={screen.summary} city={screen.city} postcard={screen.postcard} boss={screen.boss} onBack={screen.end ?? (() => void toMap())} /> : null}
       {screen.kind === 'scene' ? (
         <ScenePlayer
           key={screen.scene.id}
@@ -604,6 +731,8 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
           flags={new Set(screen.flags)}
           vars={storyVars(save.story, chapters)}
           flip={screen.flip}
+          flipChoices={screen.flipChoices}
+          arcEnding={screen.ending}
           onFlip={(c) => update((sv) => ({ ...sv, story: recordFlip(sv.story, c) }))}
           contentNote={screen.note}
           onDone={() => screen.then()}

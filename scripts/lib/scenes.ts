@@ -5,7 +5,7 @@
  */
 import { existsSync, readFileSync } from 'node:fs';
 import { basename, dirname, join, relative, sep } from 'node:path';
-import { INTERLUDE_FOLDER, sceneSchema, type CastMember, type Chapter, type Scene } from '../../src/content/schema.ts';
+import { INTERLUDE_FOLDER, resolutionList, sceneSchema, type CastMember, type Chapter, type Scene } from '../../src/content/schema.ts';
 import { expressionsIn } from './art.ts';
 import { svgSafetyIssues } from './svg-safety.ts';
 
@@ -147,7 +147,7 @@ export function sceneRules(sc: Scene, reg: SceneRegistries): string[] {
       if (!art.exists) out.push(`${where}.backdrop: public/art/backdrops/${p.backdrop}.svg does not exist`);
       else for (const x of svgSafetyIssues(art.text)) out.push(`${where}.backdrop: ${x.message}`);
     }
-    for (const flag of [p.if_flag, p.unless_flag]) {
+    for (const flag of i === 0 ? [p.if_flag, p.unless_flag, sc.if_flag, sc.unless_flag] : [p.if_flag, p.unless_flag]) {
       if (flag && !reg.flagsSet.has(flag)) out.push(`${where}: flag "${flag}" is not set by any outcome (story-only variant flags come from a chapter spec, STORY §4.2 rule 5)`);
     }
     // STORY §2.2: no scene comments on the arc character: their name or the app they were met on.
@@ -178,7 +178,7 @@ export function sceneSetRules(scenes: ReadonlyMap<string, LoadedScene>, chapters
     const want: [string | undefined, string, readonly string[]][] = [
       [sc.arrival, 'arrival', ['arrival']],
       [sc.turn, 'turn', ['turn']],
-      [sc.resolution, 'resolution', ['resolution']],
+      ...resolutionList(sc.resolution).map((id, i, all): [string, string, readonly string[]] => [id, all.length > 1 ? `resolution.${i}` : 'resolution', ['resolution']]),
       ...sc.placed.map((p, i): [string, string, readonly string[]] => [p.scene, `placed.${i}`, ['beat', 'turn']]),
     ];
     for (const [id, where, slots] of want) {
@@ -192,10 +192,22 @@ export function sceneSetRules(scenes: ReadonlyMap<string, LoadedScene>, chapters
       if (hit.scene.chapter !== chapter.city) errors.push(`${file}: scenes.${where}: "${id}" belongs to "${hit.scene.chapter}"`);
       if (!slots.includes(hit.scene.slot)) errors.push(`${file}: scenes.${where}: "${id}" has slot ${hit.scene.slot} (expected ${slots.join(' or ')})`);
     }
-    if (sc.resolution) {
-      const r = scenes.get(sc.resolution)?.scene;
-      if (r && !r.panels.at(-1)?.if_then) errors.push(`${file}: scenes.resolution: "${sc.resolution}" must end on the If-then panel (STORY §4.4)`);
-    }
+    // CR-43(d): a resolution of several scenes ends on the last one's If-then panel; only the finale's are keyed to the arc ending.
+    const res = resolutionList(sc.resolution);
+    res.forEach((id, i) => {
+      const r = scenes.get(id)?.scene;
+      if (!r) return;
+      const where = res.length > 1 ? `resolution.${i}` : 'resolution';
+      const last = i === res.length - 1;
+      if (last && !r.panels.at(-1)?.if_then) errors.push(`${file}: scenes.${where}: "${id}" must end on the If-then panel (STORY §4.4)`);
+      if (!last && r.panels.some((p) => p.if_then)) errors.push(`${file}: scenes.${where}: "${id}" has an If-then panel, but only the last resolution scene ends on it (CR-43(d))`);
+      if (last && r.if_arc_ending) errors.push(`${file}: scenes.${where}: "${id}" ends the resolution, so everyone sees it: no if_arc_ending (CR-43(d))`);
+      const keyed = r.if_arc_ending || r.panels.some((p) => p.if_arc_ending);
+      if (keyed && !chapter.arc_finale) errors.push(`${file}: scenes.${where}: "${id}" is keyed to the arc ending, which only the finale (arc_finale) knows (CR-43(d))`);
+      if (r.panels.some((p) => p.epigraph) && !chapter.arc_finale) errors.push(`${file}: scenes.${where}: "${id}": the epigraph opens the end screen, which follows the finale only (CR-44(b))`);
+    });
+    const epigraphs = res.filter((id) => scenes.get(id)?.scene.panels.some((p) => p.epigraph)).length;
+    if (epigraphs > 1) errors.push(`${file}: scenes.resolution: ${epigraphs} scenes carry an epigraph; the end screen opens with one (CR-44(b))`);
   }
   const byPosition = new Map<number, string>();
   for (const [id, { file, scene }] of scenes) {

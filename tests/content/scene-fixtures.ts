@@ -33,6 +33,9 @@ export const FIXTURE_CAST: Record<string, string[]> = {
   teo: ['calm', 'warm', 'thinking', 'proud', 'sheepish', 'laughing'],
   jonas: ['calm', 'warm', 'worried', 'thinking', 'relieved', 'proud'],
   mateus: ['calm', 'laughing', 'focused', 'sheepish', 'worried', 'relieved', 'thinking'],
+  // CR-43, CR-44: the finale fixture's resolution scenes (tests/fixtures/finale/scenes).
+  adaeze: ['calm', 'warm'],
+  noor: ['calm', 'relieved', 'proud'],
 };
 
 /** A temporary public/ with art/cast and art/backdrops built from the samples. */

@@ -1,0 +1,16 @@
+# Test fixture (CR-43(d)): endings A and A-prime, and R without money in; one panel for R only.
+id: fx-finale-ending-a
+chapter: fxfinale
+slot: resolution
+if_arc_ending: [A, A_prime, R]
+unless_flag: alex_invested
+panels:
+  - speaker: teo
+    expression: proud
+    line: "Same picture, different name. Good thing I asked you."
+    alt: "Teo, proud, holding up his phone."
+  - speaker: teo
+    expression: warm
+    if_arc_ending: [R]
+    line: "Sometimes you just want to know. Asking is never wrong."
+    alt: "Teo smiling, putting his phone away."

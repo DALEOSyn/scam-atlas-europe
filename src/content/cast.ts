@@ -16,3 +16,8 @@ const cast = data as CastEntry[];
 export function castMember(id: string | undefined): CastEntry | undefined {
   return id === undefined ? undefined : cast.find((c) => c.id === id);
 }
+
+/** The arc character (Alex, `arc_character: true`): used by the finale's reveal card and timeline only (CR-43). */
+export function arcCharacter(): CastEntry | undefined {
+  return cast.find((c) => c.arc_character);
+}

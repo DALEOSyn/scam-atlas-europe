@@ -28,6 +28,7 @@ import { Icon } from './Icon.tsx';
 import { deadlineText, WHAT_NOW_KEYS } from './labels.ts';
 import { RichText } from './RichText.tsx';
 import { SettingsPanel } from './Settings.tsx';
+import { RevealCard } from './ArcFinale.tsx';
 import { COACH_FAIRMEASURE, FairmeasurePanel, RegisterResult, regulatorName } from './Fairmeasure.tsx';
 import { registerAvailable, registerEntries } from '../content/brands.ts';
 import { linePace, readingHoldSeconds, unrevealedTargets } from './text.ts';
@@ -49,6 +50,8 @@ export interface ScenarioViewProps {
   /** Coach marks already shown in this game (save.coachMarks), and where a newly shown one is recorded. */
   coachMarks?: readonly string[];
   onCoachMarkSeen?: (id: string) => void;
+  /** CR-43(b): the finale's three profile names, for an outcome that opens the reveal card. */
+  revealNames?: readonly string[] | undefined;
 }
 
 function useDesk(): boolean {
@@ -103,7 +106,7 @@ export function logAnnouncement(
   }
 }
 
-function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recovery']>; onDone: (picks: string[]) => void }) {
+export function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recovery']>; onDone: (picks: string[]) => void }) {
   const [picks, setPicks] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -125,7 +128,9 @@ function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recover
   // CR-32: damage control for a cast member (a drill): the prompt names them, and this scenario's own
   // harmful-step feedback is theirs to say ("Mateus: Another code? …"). Generic feedback stays unattributed.
   // The first name, as a friend says it ("Mateus", not "Mateus Ferreira").
-  const forName = view.forCast ? (castMember(view.forCast)?.name.split(/\s+/u)[0] ?? null) : null;
+  const voiceName = view.forCast ? (castMember(view.forCast)?.name.split(/\s+/u)[0] ?? null) : null;
+  // CR-41: someone off-cast ("Noor's friend") is named in the prompt; the feedback stays in the cast member's voice.
+  const forName = view.forLabel ?? voiceName;
   if (submitted) {
     return (
       <section class={styles.panel} aria-labelledby="damage-feedback-heading">
@@ -143,9 +148,9 @@ function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recover
                     <strong>{harmful ? t('damage_doesnt_help') : t('damage_helps')}</strong> {recoveryStepLabel(step)}
                   </span>
                 </span>
-                {harmful && forName && byStep.get(step)?.feedback ? (
+                {harmful && voiceName && byStep.get(step)?.feedback ? (
                   <p data-voice="">
-                    <strong>{t('damage_voice', { name: forName })}</strong> {byStep.get(step)?.feedback}
+                    <strong>{t('damage_voice', { name: voiceName })}</strong> {byStep.get(step)?.feedback}
                   </p>
                 ) : harmful && (byStep.get(step)?.feedback ?? recoveryStepFeedback(step)) ? (
                   <p>{byStep.get(step)?.feedback ?? recoveryStepFeedback(step)}</p>
@@ -199,7 +204,7 @@ function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recover
 }
 
 /** One scenario from arrival to the end of damage control. Give it a `key` to restart. */
-export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines = 'auto', onCallLines, alwaysTranslate = false, onQuit, settings, defaultTimer = 'standard', onSettings, coachMarks = [], onCoachMarkSeen }: ScenarioViewProps) {
+export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines = 'auto', onCallLines, alwaysTranslate = false, onQuit, settings, defaultTimer = 'standard', onSettings, coachMarks = [], onCoachMarkSeen, revealNames }: ScenarioViewProps) {
   const runner = useScenarioRunner(scenario, ctx);
   const { view, state } = runner;
   const announce = useContext(AnnounceContext);
@@ -853,6 +858,8 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                 </p>
                 {/* CR-38: what the register showed when you looked the firm up yourself. */}
                 {view.consequenceRegister ? <RegisterResult card={view.consequenceRegister} coach={registerCoach} onCoachSeen={registerCoachSeen} /> : null}
+                {/* CR-43(b): the photo check or report in the finale shows the same picture under three names. */}
+                {view.consequenceReveal && revealNames ? <RevealCard names={revealNames} headingLevel={4} /> : null}
                 {/* Boss "already checked" (ruling QA fun note a), after the beat's narrative. */}
                 {view.consequenceCovered ? (
                   <p class={styles.caption} data-covered="">

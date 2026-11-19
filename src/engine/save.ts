@@ -14,7 +14,7 @@
  * habit progress, which one-off callouts were shown, and the story layer (postcards, flips, scenes seen). No personal data
  * beyond the optional in-game nickname (GDD §2), which never leaves the device.
  */
-import { EMPTY_ARC, type ArcState } from './arc.ts';
+import { ARC_ENDING_IDS as ARC_ENDINGS, EMPTY_ARC, type ArcEnding, type ArcState, type FinaleStep } from './arc.ts';
 import type { ScenarioRecord, Stamp } from './chapter.ts';
 import type { HabitProgress } from './habits.ts';
 import { EMPTY_STORY, sanitiseStory, type StoryState } from './story.ts';
@@ -80,7 +80,7 @@ export function freshSave(): SaveState {
     settings: { ...DEFAULT_SETTINGS },
     chapters: {},
     flags: [],
-    arc: { ...EMPTY_ARC, vars: {}, timeline: [] },
+    arc: { ...EMPTY_ARC, vars: {}, timeline: [], choices: [] },
     habits: {},
     callouts: { pressureAny: false, pressureGenuine: false },
     coachMarks: [],
@@ -175,7 +175,27 @@ function sanitiseArc(v: unknown): ArcState {
     closed: bool(o.closed, false),
     points: num(o.points, 0),
     timeline: Array.isArray(o.timeline) ? o.timeline.filter((x): x is number => typeof x === 'number' && x >= 1 && x <= 9) : [],
+    // CR-43: additive (no version bump): per-slot choice kinds (snake_case kinds only) and the finale's ending.
+    choices: Array.isArray(o.choices)
+      ? o.choices
+          .filter((c): c is { slot: number; kind: string } => isObj(c) && typeof c.slot === 'number' && Number.isInteger(c.slot) && c.slot >= 1 && c.slot <= 9 && typeof c.kind === 'string' && SNAKE.test(c.kind))
+          .map((c) => ({ slot: c.slot, kind: c.kind }))
+          .slice(0, 20)
+      : [],
+    finale: sanitiseFinale(o.finale),
   };
+}
+
+const FINALE_STEPS: readonly FinaleStep[] = ['close', 'reveal', 'damage_control', 'recovery_offer', 'teo', 'timeline'];
+
+/** CR-43: the finale block's saved state (ending, steps, next step); anything malformed starts it again. */
+function sanitiseFinale(v: unknown): ArcState['finale'] {
+  if (!isObj(v) || typeof v.ending !== 'string' || !(ARC_ENDINGS as readonly string[]).includes(v.ending)) return null;
+  if (!Array.isArray(v.steps) || v.steps.length === 0 || v.steps.length > FINALE_STEPS.length) return null;
+  const steps = v.steps.filter((x): x is FinaleStep => typeof x === 'string' && (FINALE_STEPS as readonly string[]).includes(x));
+  if (steps.length !== v.steps.length || steps.at(-1) !== 'timeline') return null;
+  const step = typeof v.step === 'number' && Number.isInteger(v.step) ? Math.min(Math.max(0, v.step), steps.length) : 0;
+  return { ending: v.ending as ArcEnding, steps, step };
 }
 
 function sanitiseHabits(v: unknown): Record<string, HabitProgress> {

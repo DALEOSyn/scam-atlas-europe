@@ -164,7 +164,7 @@ describe('scene validator (cross-file rules)', () => {
     const s = fixtureScene('berlin', 'berlin-arrival');
     const p = first(s.panels);
     expect(sceneRules({ ...s, panels: [{ ...p, speaker: 'not-in-cast' }] }, reg).join('\n')).toMatch(/unknown cast id "not-in-cast"/);
-    expect(sceneRules({ ...s, panels: [{ ...p, speaker: 'noor' }] }, reg).join('\n')).toMatch(/cast\/noor\.svg does not exist/);
+    expect(sceneRules({ ...s, panels: [{ ...p, speaker: 'lucia' }] }, reg).join('\n')).toMatch(/cast\/lucia\.svg does not exist/);
     expect(sceneRules({ ...s, panels: [{ ...p, backdrop: 'berlin-station' }] }, reg).join('\n')).toMatch(/berlin-station\.svg does not exist/);
   });
   it('Alex never has scene lines, never appears as a listener, and is never mentioned', () => {

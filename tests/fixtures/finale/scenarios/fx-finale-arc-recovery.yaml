@@ -1,0 +1,76 @@
+# Test fixture (CR-43(e)): the recovery-agency test, for every ending with money in. No amount anywhere. Not game content.
+id: fx-finale-arc-recovery
+chapter: fxfinale
+role: arc
+finale: recovery_offer
+learning_objectives: [LO-13, LO-16]
+is_fraud: true
+device: email
+brands: [fairmeasure]
+setup: "Alex was never real. The lie was theirs, not yours. A few days later, an email arrives."
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Mendwell Recovery", detail: "cases@mendwell-recovery.example" }
+  subject: "We can get your money back"
+  body: "Hi Sam, our records show you lost money on a trading app. Our legal team works with the police and the regulator to trace it. A small release fee opens your file today: mendwell-recovery.example/file"
+  request: pay
+  ask: { text: "A small release fee opens your file today" }
+  claims:
+    - text: "Our legal team works with the police and the regulator"
+  references: ["you lost money on a trading app"]
+
+inspectables:
+  - target: sender.detail
+    reveal: "A recovery firm's own address. Anyone can set one up, so it can't prove anything either way."
+    red_flag: false
+  - target: link
+    reveal: "Their own page. That can't prove anything either way."
+    red_flag: false
+  - target: reference
+    reveal: "Knows where you lost money. Scammers share victims' details, so it can't prove anything either way."
+    red_flag: false
+  - target: claim
+    reveal: "Recovery firms may falsely claim to work with the police or the regulator. Regulators never contact people to recover money for a fee."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "A fee first, to get money back."
+    red_flag: true
+    type: request
+
+actions:
+  - { id: pay_fee, label: "Pay the fee to open your file", kind: pay, outcome: paid_fee, pressure_target: true }
+  - { id: look_up, label: "Look the firm up on the Fairmeasure register", kind: check_official_list, outcome: not_authorised }
+  - { id: report_email, label: "Report the email", kind: report, outcome: reported }
+  - { id: delete_email, label: "Delete it", kind: delete, outcome: deleted }
+
+outcomes:
+  paid_fee:
+    narrative: "The page says 'File opened'. Then a second fee appears."
+    recovery:
+      - { step: stop_paying, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: keep_evidence, category: secure }
+      - { step: report_to_police_online, category: report }
+      - { step: pay_recovery_service, category: harmful }
+      - { step: pay_last_fee, category: harmful }
+  not_authorised:
+    narrative: "Not authorised."
+    register: { firm: "Mendwell Recovery", result: not_listed }
+  reported:
+    narrative: "You report the email."
+  deleted:
+    narrative: "You delete it."
+
+debrief:
+  variant: arc
+  layer1:
+    tell: "A stranger offering your money back, fee first."
+    what_works: "Never pay to get money back."
+  layer2:
+    message_flags: []
+    notes: "People who've lost money are often targeted on purpose afterwards, because scammers share victims' details. That says nothing about you."
+  already_clicked:
+    paid: "Paid a fee already? Stop paying, call your bank on the number on your card, and keep the emails. It says nothing about you."
+  sources: [ie-bpfi-recovery-2024]

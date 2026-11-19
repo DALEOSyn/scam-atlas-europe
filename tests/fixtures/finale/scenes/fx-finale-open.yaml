@@ -1,0 +1,9 @@
+# Test fixture (CR-43(d)): the resolution's opening, for everyone. Not game content.
+id: fx-finale-open
+chapter: fxfinale
+slot: resolution
+panels:
+  - speaker: adaeze
+    expression: calm
+    line: "The hall is ready. Let's talk before the guests arrive."
+    alt: "Adaeze, calm, in an empty hall with chairs in rows."

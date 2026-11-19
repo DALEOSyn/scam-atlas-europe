@@ -184,3 +184,24 @@
     font-size: var(--fs-md);
   }
 }
+
+/* Layer 2 at narrow widths (QA F1): every box can shrink, so an owner part that does not fit
+   overflows its own box (which then scrolls and becomes focusable) instead of the page. */
+.layer2 section,
+.layer2 li,
+.layer2 dl,
+.layer2 dd,
+.layer2 p {
+  min-width: 0;
+}
+.flags li > span {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Under 360 px an identifier in the h1 steps down a size so the domain is less likely to be cut (QA F2). */
+@media (max-width: 359px) {
+  .h1 [data-host] {
+    font-size: 0.8em;
+  }
+}

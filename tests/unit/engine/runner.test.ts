@@ -105,14 +105,35 @@ describe('runner: timers, Calm mode and freezing', () => {
     // The consequence step ("The deadline was fake") comes first, then the debrief.
     expect(expired.phase).toBe('consequence');
     expect(viewOf(s, ctx(), expired).consequenceTimerExpired).toBe(true);
+    expect(viewOf(s, ctx(), expired).consequenceDeadline).toBe('fake');
     const after = step(s, ctx(), expired, { type: 'continue' });
     expect(after.phase).toBe('done');
     const r = resultOf(s, B, after);
     expect(r).toMatchObject({ stars: 2, points: 10, tagBonus: 0, timerExpired: true, correctTags: 1 });
     const d = debriefOf(s, after, r, seen);
-    expect(d.layer2.deadlineWasFake).toBe(true);
+    expect(d.layer2.deadline).toBe('fake');
     expect(d.layer1.youChose).toEqual([{ beatId: 'start', kind: 'timer' }]);
     expect(after.stress).toBe(10 + 2 * B.stress.on_timer_expiry);
+  });
+
+  it('on a genuine scenario the expired deadline was real: never "the deadline was fake" (sceptic, round 4)', () => {
+    const s = timed(rawGenuine());
+    // step(), not run(): run() presses Continue on the final consequence step.
+    const expired = step(s, ctx(), step(s, ctx(), startScenario(s, ctx()), tick(60)), tick(B.timers.escalation_extra_seconds));
+    expect(expired.phase).toBe('consequence');
+    const v = viewOf(s, ctx(), expired);
+    expect(v.consequenceTimerExpired).toBe(true);
+    expect(v.consequenceDeadline).toBe('real');
+    const after = step(s, ctx(), expired, { type: 'continue' });
+    expect(after.phase).toBe('done');
+    const d = debriefOf(s, after, resultOf(s, B, after), seen);
+    expect(d.layer2.deadline).toBe('real');
+  });
+
+  it('no timer expiry: no deadline caption', () => {
+    const s = timed(rawGenuine());
+    const v = viewOf(s, ctx(), run(s, ctx(), [act('go_pick_up')]));
+    expect(v.consequenceDeadline).toBeNull();
   });
 
   it('extended mode doubles the escalation too', () => {

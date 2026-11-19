@@ -17,6 +17,8 @@ const consequenceHeading = (page: Page) => page.getByRole('heading', { level: 3,
  */
 async function passConsequence(page: Page, axe = false) {
   await expect(consequenceHeading(page)).toBeFocused();
+  // No empty "Your options" heading during this step (QA F4).
+  await expect(page.getByRole('heading', { name: 'Your options' })).toHaveCount(0);
   if (axe) await axeClean(page);
   await page.getByRole('button', { name: 'Continue' }).click();
 }
@@ -304,6 +306,11 @@ for (const vp of [
     await noHScroll();
     await ownersOneLine(page);
     await tapTargetsOk(page);
+    // Layer 2 expanded: long owner parts scroll inside their own boxes, never the page (QA F1).
+    await page.getByRole('button', { name: 'More' }).click();
+    await axeClean(page);
+    await noHScroll();
+    await ownersOneLine(page);
   });
 }
 
@@ -375,6 +382,7 @@ test('call, step-through mode: after the last "Next line" focus stays in the cal
   }
   await expect(page.getByRole('log').locator('li')).toHaveCount(4);
   await expect(next).toHaveCount(0);
+  await expect(page.getByRole('log').locator('li').last()).toBeFocused();
   const inCall = await page.evaluate(() => {
     const a = document.activeElement;
     return !!a && a !== document.body && !!a.closest('[aria-label="Phone: Call"], section[aria-label^="Phone: Call"]') ? 'in call' : (a?.outerHTML.slice(0, 120) ?? 'none');

@@ -121,7 +121,7 @@ export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
       </section>
 
       <div id="debrief-more" class={styles.layer2} hidden={!more}>
-        {l2.narratives.length > 0 || l2.deadlineWasFake ? (
+        {l2.narratives.length > 0 || l2.deadline ? (
           <section aria-labelledby="what-happened-h">
             <h2 id="what-happened-h">{t('debrief_what_happened')}</h2>
             {l2.narratives.map((n, i) => (
@@ -129,7 +129,7 @@ export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
                 <RichText text={n} />
               </p>
             ))}
-            {l2.deadlineWasFake ? <p>{t('deadline_fake')}</p> : null}
+            {l2.deadline ? <p>{t(l2.deadline === 'fake' ? 'deadline_fake' : 'deadline_real')}</p> : null}
           </section>
         ) : null}
         {l2.youChoseOther.length > 0 ? (
@@ -210,13 +210,18 @@ export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
           <section class={styles.habitCard} aria-labelledby="habit-card-title" data-habit-card={card.id}>
             <p class={styles.label}>{t('debrief_habit')}</p>
             <h3 id="habit-card-title">{card.title}</h3>
-            <p>{card.habit}</p>
-            <p class={styles.example}>{card.example}</p>
+            <p>
+              <RichText text={card.habit} />
+            </p>
+            {/* Hosts in the example never wrap at a hyphen (QA F3). */}
+            <p class={styles.example}>
+              <RichText text={card.example} />
+            </p>
             {/* On a genuine message there was nothing to fall for: no "Already clicked?" line (QA). */}
             {!genuine ? (
               <p>
                 <strong>{t('habit_card_already_clicked')} </strong>
-                {card.already_clicked}
+                <RichText text={card.already_clicked} />
               </p>
             ) : null}
           </section>

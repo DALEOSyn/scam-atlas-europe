@@ -668,8 +668,14 @@ export interface RunnerView {
   whatNow: WhatNowView | null;
   /** Narrative of the last resolved beat (boss consequence step, damage control intro). */
   consequence: string | null;
-  /** The last beat ended by timer expiry with no outcome: show "The deadline was fake. Nothing happened." (QA E1). */
+  /** The last beat ended by timer expiry with no outcome (QA E1). */
   consequenceTimerExpired: boolean;
+  /**
+   * Which caption that expiry gets: `fake` on fraud ("The deadline was fake. Nothing happened."),
+   * `real` on a genuine scenario ("Time ran out. This one was genuine, and its deadline was real.").
+   * null when the timer did not end the beat.
+   */
+  consequenceDeadline: 'fake' | 'real' | null;
   recovery: { options: RecoveryOption[]; pick: number } | null;
 }
 
@@ -747,6 +753,7 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
         : null,
     consequence: last?.outcome ? (s.outcomes[last.outcome]?.narrative ?? null) : null,
     consequenceTimerExpired: !!last && last.timerExpired && !last.outcome,
+    consequenceDeadline: !!last && last.timerExpired && !last.outcome ? (s.is_fraud ? 'fake' : 'real') : null,
     recovery: st.phase === 'damage_control' && st.recovery ? { options: st.recovery.options, pick: ctx.balance.recovery.pick } : null,
   };
 }

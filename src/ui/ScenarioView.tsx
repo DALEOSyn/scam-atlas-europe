@@ -414,10 +414,13 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
               ))}
             </aside>
           ) : null}
-          <section id="options" class={styles.tray} aria-labelledby="actions-h" tabIndex={-1} ref={optionsRef}>
-            <h2 id="actions-h" class={styles.trayTitle}>
-              {t('your_options')}
-            </h2>
+          <section id="options" class={styles.tray} aria-labelledby={view.phase === 'consequence' ? 'consequence-h' : 'actions-h'} tabIndex={-1} ref={optionsRef}>
+            {/* No empty "Your options" during the consequence step: its own heading labels the panel (QA F4). */}
+            {view.phase !== 'consequence' ? (
+              <h2 id="actions-h" class={styles.trayTitle}>
+                {t('your_options')}
+              </h2>
+            ) : null}
             {/* Desk: the Check card and the Details list scroll inside the rail; the actions below stay pinned (QA B4). */}
             <div class={styles.trayScroll}>
             {desk && card ? card : null}
@@ -474,12 +477,12 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
             ) : null}
             {view.phase === 'consequence' ? (
               <div class={styles.panel}>
-                <h3 ref={consequenceRef} tabIndex={-1}>
+                <h3 id="consequence-h" ref={consequenceRef} tabIndex={-1}>
                   {t('consequence_title')}
                 </h3>
                 <p class={styles.caption}>
                   <Icon name="info" />
-                  <span>{view.consequenceTimerExpired ? t('deadline_fake') : <RichText text={view.consequence ?? ''} />}</span>
+                  <span>{view.consequenceDeadline ? t(view.consequenceDeadline === 'fake' ? 'deadline_fake' : 'deadline_real') : <RichText text={view.consequence ?? ''} />}</span>
                 </p>
                 <button type="button" class={styles.primary} onClick={runner.continueConsequence}>
                   {t('app_continue')}

@@ -76,6 +76,7 @@
   "you_chose": "You chose: {label}.",
   "you_chose_timer": "You let the timer run out.",
   "deadline_fake": "The deadline was fake. Nothing happened.",
+  "deadline_real": "Time ran out. This one was genuine, and its deadline was real.",
   "debrief_more": "More",
   "debrief_marked": "You marked this",
   "debrief_not_marked": "Not marked",

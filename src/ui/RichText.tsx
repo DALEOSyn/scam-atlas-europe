@@ -67,7 +67,7 @@ export function Host({ text, strong = false, boxed = false, oneLine = false }: {
   const Wbr = oneLine ? NoBreak : Break;
   const ownerClass = [styles.nowrap, strong ? styles.owner : '', boxed ? styles.boxed : ''].filter(Boolean).join(' ');
   return (
-    <span class={styles.host}>
+    <span class={styles.host} data-host="">
       {p.scheme ? (
         <>
           <span class={styles.nowrap}>{p.scheme}</span>

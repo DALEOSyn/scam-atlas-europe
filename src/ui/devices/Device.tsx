@@ -7,7 +7,7 @@
  * (Red Line 1). Every visible element of the beat on screen is a Checkable; elements of earlier beats
  * render as plain text. Device content is always rendered as text, never as HTML.
  */
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { brandById, brandForName } from '../../content/brands.ts';
 import type { Device, Message } from '../../content/schema.ts';
 import type { ActionView } from '../../engine/runner.ts';
@@ -306,11 +306,18 @@ function Call(p: DeviceProps) {
   // Step-through: the last "Next line" press unmounts the button, so focus moves to the line it
   // revealed instead of falling to <body> (QA R1).
   const lastLineRef = useRef<HTMLLIElement>(null);
+  const focusLast = useRef(false);
   const nextLine = () => {
-    const last = shown + 1 >= lines.length;
+    focusLast.current = shown + 1 >= lines.length;
     p.onNextLine();
-    if (last) setTimeout(() => lastLineRef.current?.focus(), 0);
   };
+  // Layout effect: focus lands in the same commit that removes the button, never via <body>.
+  useLayoutEffect(() => {
+    if (focusLast.current && shown >= lines.length) {
+      focusLast.current = false;
+      lastLineRef.current?.focus();
+    }
+  }, [shown, lines.length]);
   return (
     <PhoneFrame label={t('region_call')}>
       <div class={styles.call}>

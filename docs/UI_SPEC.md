@@ -364,7 +364,7 @@ Reduced motion is on when the OS asks **or** `data-motion="reduced"`; `data-moti
 ---
 
 ## 7. Consequence and damage control
-- **Consequence** plays in-device (≤ 15 s) with a game-layer caption: info icon, `outcomes.*.narrative`, "Continue". No red screens, no alarms. It follows **every** resolved scenario (and every boss beat) that has a narrative or an expired timer (then the caption is "The deadline was fake. Nothing happened."), including the last beat, before damage control or the debrief (layer-1 ruling 2026-11-19). Focus moves to its heading ("What happened", `h3`); the caption comes straight after it. Damage control does not repeat the caption.
+- **Consequence** plays in-device (≤ 15 s) with a game-layer caption: info icon, `outcomes.*.narrative`, "Continue". No red screens, no alarms. It follows **every** resolved scenario (and every boss beat) that has a narrative or an expired timer (then the caption is "The deadline was fake. Nothing happened." on fraud, and "Time ran out. This one was genuine, and its deadline was real." on a genuine scenario; layer 2 "What happened" uses the same line), including the last beat, before damage control or the debrief (layer-1 ruling 2026-11-19). Focus moves to its heading ("What happened", `h3`); the caption comes straight after it. Damage control does not repeat the caption.
 - **Damage control** (GDD §9): heading "Limit the damage", sub "This happens to careful people every day." Prompt: "Pick the step you'd do first, then 2 more." 5–6 options as toggle buttons (`aria-pressed`), 56 px; selected items show their order number ("1st", "2nd", "3rd") as text. "Move up / Move down" buttons on selected items (no drag). Counter "2 of 3 chosen". Sticky "Done" bar (scroll-padding §1.3; static under 500 px height). Feedback lists each pick with check-seal "Helps" or info "Doesn't help: …".
 
 ---
@@ -375,7 +375,7 @@ Reduced motion is on when the OS asks **or** `data-motion="reduced"`; `data-moti
 Focus lands on the `h1`. Reading and focus order (nothing of layer 1 comes before the `h1`):
 1. **`h1` = verdict + tell in one heading** [U4]. After a fall the heading starts with "This could happen to anyone." (Red Line 5, never on a good outcome) on its own line. The outcome narrative is **not** in layer 1: it was the consequence caption (§7) and is repeated in layer 2 under "What happened". Example: "**This was a scam:** the link went to trundle-zoll.example, not trundle.example." The verdict part is styled as a chip *inside* the heading (tag-crossed icon, `--color-flag-bg`/`--color-flag-text`); genuine: check-seal + "This was genuine:" with `--color-ok-*`. Genuine tells say why it was safe to act and never present a reassuring detail as proof ("It asked for nothing and matched your order. The sender fits, but senders can be faked.").
 2. **What works**: one line naming the verification step ("What works: open the Trundle app yourself."), from `debrief.layer1.what_works`. **"You chose" line**, only when the scenario (or a boss beat) scored fewer than 3 stars. **Layer 1 shows at most one "You chose" line (CR-15).** On a boss it is the line of the beat with the fewest stars (on a tie, the latest beat); the other beats' lines move to layer 2 ("Your other choices"). The line uses: "You chose: <action label>." using the `label` of the action that cost the stars:
-   - a fall: the decisive action's label (always, even after an engage);
+   - a fall: **no line in layer 1** (the kind line in the `h1` holds the slot); the decisive action's label (always, even after an engage) opens layer 2 "Your other choices";
    - **an engage cap** (GDD §6: engage on fraud caps at ★★): the label of the **first engage action** the player picked, **not** the later action, also when that later action was a dismiss or report (producer ruling, T-2.1: the engage is what cost the stars and teaches more). E.g. 1-9 beat 3: "You chose: Call back this number." even though the player then called the number on the card; "You chose: Open the link." when the player then closed the page;
    - otherwise a report or dismiss: the decisive action's label;
    - a verify followed by comply, proceed or report (GDD §6): the follow-up action's label;
@@ -403,7 +403,7 @@ Focus lands on the `h1`. Reading and focus order (nothing of layer 1 comes befor
 - Points are **not** in layer 1 [LI-4].
 
 ### 8.2 Layer 2 ("More", inline disclosure below layer 1)
-0. **What happened** (`h2`): the outcome narratives (boss: one paragraph per beat, each said once) and, on a fraud timer expiry, "The deadline was fake. Nothing happened." Then **Your other choices** (boss lines, and after a fall the lead line first).
+0. **What happened** (`h2`): the outcome narratives (boss: one paragraph per beat, each said once) and, on a timer expiry, the same line as the consequence caption (fraud: "The deadline was fake. Nothing happened."; genuine: "Time ran out. This one was genuine, and its deadline was real.") Then **Your other choices** (boss lines, and after a fall the lead line first).
 1. **What gave it away** (`h2`). Each flag: flag icon + text + status:
    - flags bound to a checkable: "You marked this" (filled flag) / "Not marked" (outline flag);
    - flags that live in the message text (pressure, request): **"In the message"**, with no status [LI-2];

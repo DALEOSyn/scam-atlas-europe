@@ -73,8 +73,11 @@ export interface DebriefData {
      * first shown in the consequence step, never in layer 1 (layer-1 ruling 2026-11-19).
      */
     narratives: string[];
-    /** On fraud timer expiry: "The deadline was fake. Nothing happened." (also the consequence caption). */
-    deadlineWasFake: boolean;
+    /**
+     * Timer expiry line under "What happened", gated like the consequence caption: `fake` on fraud
+     * ("The deadline was fake…"), `real` on genuine ("Time ran out. This one was genuine…"), else null.
+     */
+    deadline: 'fake' | 'real' | null;
     /**
      * "Your other choices": the other beats' lines below ★★★, in beat order (CR-15). After a fall the
      * lead line that layer 1 no longer shows comes first.
@@ -180,7 +183,7 @@ export function debriefOf(
     layer2: {
       // A boss can reach the same outcome on several beats: say it once (QA E4).
       narratives: [...new Set(r.outcomes.flatMap((o) => (s.outcomes[o] ? [s.outcomes[o].narrative] : [])))],
-      deadlineWasFake: s.is_fraud && r.timerExpired,
+      deadline: r.timerExpired ? (s.is_fraud ? 'fake' : 'real') : null,
       youChoseOther,
       flags,
       wrongTags,

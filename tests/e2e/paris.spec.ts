@@ -49,25 +49,28 @@ test('Paris 3-1 and 3-2: the payee check shows a close match, then "couldn\'t ch
   // 3-1: Volet Bleu's rent notice (genuine). Pay with the details from your lease.
   await page.getByRole('button', { name: /Pay it with the details from your lease/ }).click();
   const result = page.locator('[id^="name-check-result-"]');
-  await expect(result).toContainText("Close match. The account is held by 'Volet Bleu Gestion SAS'.", { timeout: 5_000 });
+  // The check shows "Checking…" for 0.8 s; under a parallel run the card can take longer to mount.
+  await expect(result, '3-1 payee check result').toContainText("Close match. The account is held by 'Volet Bleu Gestion SAS'.", { timeout: 20_000 });
   // The lease note to compare against (QA rework: not checkable, shown on the bank card).
   await expect(page.getByText('Your lease, page 4: Volet Bleu Gestion SAS · account ending 31')).toBeVisible();
+  // The coach mark mounts with the result; give it a moment instead of a one-shot isVisible().
   const gotIt = page.getByRole('button', { name: 'Got it' });
+  await gotIt.waitFor({ state: 'visible', timeout: 2_000 }).catch(() => undefined);
   if (await gotIt.isVisible()) {
     await axeClean(page); // coach mark open (first payee check in this save)
     await gotIt.click();
   }
   await axeClean(page);
   await page.getByRole('button', { name: /Use 'Volet Bleu Gestion SAS' and pay/ }).click();
-  await expect(consequenceHeading(page)).toBeFocused();
+  await expect(consequenceHeading(page), '3-1 consequence step').toBeFocused();
   await page.getByRole('button', { name: 'Continue' }).click();
-  await expect(debriefHeading(page)).toBeFocused();
-  await expect(page.getByRole('img', { name: '3 of 3 stars' })).toBeVisible();
+  await expect(debriefHeading(page), '3-1 debrief').toBeFocused();
+  await expect(page.getByRole('img', { name: '3 of 3 stars' }), '3-1 scores ★★★').toBeVisible();
   await page.getByRole('button', { name: 'Continue' }).click();
 
   // 3-2: "Solène" from a look-alike address. Set it up in Larchwick Pro: the check can't run.
   await page.getByRole('button', { name: /Set up the transfer in Larchwick Pro/ }).click();
-  await expect(result).toContainText("We couldn't check the name for this account.", { timeout: 5_000 });
+  await expect(result, '3-2 payee check result').toContainText("We couldn't check the name for this account.", { timeout: 20_000 });
   await expect(page.getByText('Ruchelune · current account')).toBeVisible();
   // CR-27: the business account shows the Larchwick Pro header.
   await expect(page.getByText('Larchwick Pro').first()).toBeVisible();

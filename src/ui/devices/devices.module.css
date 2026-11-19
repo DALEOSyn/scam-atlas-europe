@@ -219,6 +219,11 @@
 .keepPunct > * {
   white-space: normal;
 }
+/* Punctuation drawn inside a highlight's box: not underlined with it (decorations skip inline-blocks). */
+.trail {
+  display: inline-block;
+  text-decoration: none;
+}
 .chips {
   list-style: none;
   margin: 0;
@@ -1122,6 +1127,10 @@
 .confirmTitle {
   margin: 0;
   font-weight: var(--fw-bold);
+}
+.confirmCode {
+  margin: 0;
+  font-size: var(--fs-sm);
 }
 
 /* On-call bar (CR-31, GDD §24.5): slim, persistent, neutral call styling (no red, no warning). */

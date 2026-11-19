@@ -1,5 +1,5 @@
 # CR-34: code then confirm. Sending the payment code opens the bank app's confirmation (code_confirm);
-# Confirm is the fall, Decline or "Decline and call" keep the ★ cap.
+# Confirm is the fall, Decline or "Decline and call" score ★★ (ruling R18).
 id: fx-cr34-code-confirm
 chapter: fixtures
 role: standard

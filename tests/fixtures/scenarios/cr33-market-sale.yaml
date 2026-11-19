@@ -19,12 +19,12 @@ message:
   notice: true
   listing: { title: "Rucksack", price: "€35.00" }
   sender: { display: "Swaploft", detail: "Notice in the Swaploft app" }
-  body: "Sprzedane! Sold! Swaploft holds the payment until the buyer receives it. Print your label and drop it at a Trundle locker by Friday. swaploft.example/sales/4471"
+  body: "Sprzedane! Swaploft przechowuje płatność, dopóki kupujący nie odbierze paczki. Wydrukuj etykietę i nadaj paczkę w automacie Trundle do piątku. swaploft.example/sales/4471"
   lang: pl
-  translation: "Sold! Sold! Swaploft holds the payment until the buyer receives it. Print your label and drop it at a Trundle locker by Friday. swaploft.example/sales/4471"
+  translation: "Sold! Swaploft holds the payment until the buyer picks up the parcel. Print your label and drop the parcel at a Trundle locker by Friday. swaploft.example/sales/4471"
   request: none
-  ask: { text: "Print your label and drop it at a Trundle locker by Friday.", translation: "Print your label and drop it at a Trundle locker by Friday." }
-  claims: [{ text: "Swaploft holds the payment until the buyer receives it", translation: "Swaploft holds the payment until the buyer receives it" }]
+  ask: { text: "Wydrukuj etykietę i nadaj paczkę w automacie Trundle do piątku.", translation: "Print your label and drop the parcel at a Trundle locker by Friday." }
+  claims: [{ text: "Swaploft przechowuje płatność, dopóki kupujący nie odbierze paczki", translation: "Swaploft holds the payment until the buyer picks up the parcel" }]
   references: ["SW-•••• 4471"]
 
 inspectables:

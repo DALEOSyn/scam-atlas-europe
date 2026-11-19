@@ -234,6 +234,25 @@ podszywacze.pl | Payment-scheme campaign site *(industry, supporting only, tier 
 
 The chapter 4–5 research also cites new pages on cert.pl (still not in the allow-list, see below) and www.incibe.es.
 
+## New hosts from phase 3, chapters 8–9 (Dublin and Stockholm research, T-3.10r, 2026-11-19): all **new**, not yet checked against `scripts/lib/source-hosts.ts`
+
+### Ireland
+www.centralbank.ie | Central Bank of Ireland | 3 | **new** (suggest `centralbank.ie`, which also covers the two below)
+centralbank.ie | Central Bank of Ireland (host without www, as opened; also the help-screen link for reporting an unauthorised firm) | 3 | **new**
+edit.centralbank.ie | Central Bank of Ireland (press-release host as indexed; re-find on www.centralbank.ie before G3, dropped from help-entry sources) | 3 | **new**
+www.ccpc.ie | Competition and Consumer Protection Commission | 3 | **new**
+
+### Sweden
+www.konsumentverket.se | Konsumentverket (Swedish Consumer Agency) | 3 | **new**
+konsumenternasbankochfinansbyra.se | Konsumenternas Bank- och finansbyrå (consumer bureau; reached via redirect from konsumenternas.se) | 3 | **new**
+
+### EU level
+www.esma.europa.eu | European Securities and Markets Authority | 1 | covered by the `europa.eu` suffix entry if suffix matching applies
+
+T-3.10r also cites new pages on hosts already listed: www.garda.ie, bpfi.ie, www.fsma.be, www.evz.de, polisen.se, www.eba.europa.eu.
+
+**Not a source host:** the Central Bank's report form sits on a third-party survey host. It is NOT linked from the help screen or sources (link the centralbank.ie page instead).
+
 ## Notes for the engineer
 - **New to `scripts/lib/source-hosts.ts`** (not in the allow-list yet, per sceptic review 2026-11-18): `politie.nl` (no www), `moje.cert.pl`, `wiedza.cert.pl`, `www.nummergegenkummer.de`, `www.bmbfsfj.bund.de`, `www.bacs.admin.ch`, `www.verbraucherzentrale-niedersachsen.de`, and `incydent.cert.pl` (help file only). The last two were already used in `content/sources.yaml` before T-2.5 but never added to the allow-list.
 - `www.incibe.es` gained new sources in T-2.5 and is already in the allow-list.

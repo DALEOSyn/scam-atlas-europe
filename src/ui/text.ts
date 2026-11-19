@@ -196,6 +196,11 @@ export function words(text: string | undefined): number {
   return text ? text.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length : 0;
 }
 
+/** Reading pace for call lines (UI_SPEC §3.4): max(1.5 s, 0.3 s × words). */
+export function linePace(text: string): number {
+  return Math.max(1.5, 0.3 * words(text));
+}
+
 /**
  * Reading-time hold: how long text the player did not ask for freezes the timer, max(1.5 s, 0.3 s × words),
  * as for call lines (UI_SPEC §3.4). Used by auto-opened translations (ruling R2) and the scenario `setup`

@@ -338,3 +338,224 @@ Same method and limits as above (web, app-store and company-directory check via 
 2. **Spares, if a second name is needed:** Corvaldo Custodia SL (Low–Medium), Cheerpoll (Low), Tunepoll (Low–Medium).
 3. **Don't use:** Mirtelo Custodia SL (MIRTILO SL, Bilbao), Basovia (Basowiszcza festival). Smykowo was already dropped.
 4. **Before G4:** OEPM + Registro Mercantil (ES), UPRP + KRS (PL), and TMview for all kept names. This check is not trademark or legal clearance.
+
+---
+
+# Rome and Lisbon names (chapters 6 and 7), checked 2026-11-19
+
+**Owner:** fraud-researcher · **Searched:** 2026-11-19 · **Status:** draft for sceptic review · roles from `docs/GDD.md` §26.10 and §27.10 (branch in /home/user/sae-rlspec).
+
+## Method and limits (Rome / Lisbon)
+- Same method and limits as above: one web search index (US-based), which surfaced UK Companies House pages, app-store listings, Italian company directories and holiday-let listings. One result page was opened (a place page, RL1).
+- **No trademark register, no Italian Registro Imprese / UIBM search, no Portuguese RNPC / INPI-PT search, no WHOIS.** Before G4 a human checks these and TMview for every kept name.
+- **Domains:** `.example` hosts are reserved (RFC 2606), so the check is about the *names*.
+- **People:** same test as Paris (no notable person with the exact name; no real professional in an impersonated or accused role).
+
+## Summary (Rome / Lisbon)
+| # | Name (role) | Closest hits | Risk | Recommendation |
+|---|---|---|---|---|
+| RL1 | **Roostwell** (rental platform; genuine, and impersonated by look-alikes) | no exact hit; **Student Roost** (UK student-accommodation operator with a resident app); "Roost" startups; Rothwell (place) | Low–Medium | **Keep** (watch item) |
+| RL1 | Tilestay (alternative) | no exact hit; **Tiles Apartments** (guest flats, Porto) and "Tiles Apartment" holiday-let listings | Low–Medium | Spare |
+| RL1 | Hearthlane (alternative) | no exact hit; **Hemlane** (US rental-management software), a near sound-alike in the sector | Low–Medium | Spare |
+| RL2 | **Kerbello** (official parking app and operator; genuine, and impersonated by look-alikes) | no exact hit; **Kerb**, a parking app (launched in Dublin, the UK incl. Edinburgh, and Australia): same sector, and "Kerbello" starts with its whole name | **Medium** | **Rename** → **Zonelet** (spare: Lanefare) |
+| RL2 | Zonelet (alternative) | no product; only "Zonelets" (a static-blog template) and code identifiers | Low | **Use** |
+| RL2 | Lanefare (alternative) | no hit at all | Low | Spare |
+| RL3 | **Vellastri Tutela Srl** (holder of the boss's close-match fraud account) / caller's spelling "Velastri Tutela" | no hit for Vellastri or Velastri; "Tutelia Credit Srl" (Rome, credit company) is a different word | Low | **Keep** |
+| RL3 | Corvessa Tutela Srl (alternative) | no exact hit; "Corvino" (person), "Corv-" names | Low (faint CorVel echo, as Corvaldo) | Spare |
+| RL4 | **J. Ashdale** (holder of 6-4's match account) | "Ashdale" is used by many UK companies (Ashdale UK Ltd, Ashdale Investments, Edward Ashdale Ltd); no notable person "J. Ashdale" | Low | **Keep** |
+| RL4 | **casa.alfama** (scam host handle, 7-6) | **"Casa d'Alfama"**: a real Lisbon holiday-let listing and a holiday-flat listing "Casa d'Alfama by Lisbon Village Apartments"; many "Casa … Alfama" lets | **Medium** | **Replace** with a coined handle, e.g. **casa.velarim** |
+| RL4 | **Roostwell Deals** (scam ad page, 7-3) | derived from Roostwell (RL1); no separate hit | Low | **Keep** (follows RL1) |
+| RL4 | **Leonor Brito** (borrowed name on the boss's no-match transfer) | no notable person; the name appears on Portuguese university theses (private individuals); "Leonora Brito" (Welsh writer) is a different name | Low | **Keep** |
+
+## RL1. Roostwell: Low–Medium, keep (watch item)
+- **Searched:** `"Roostwell"`; `"Roost" rental OR "holiday lets" OR "student rooms" app platform`; `"Tilestay" OR "Hearthlane" app OR rental OR company`; `"Tilestay"`; `"Hearthlane"`; `"Tilestay" OR "Tile Stay" rental OR alojamento OR app`.
+- **Hits:**
+  - No "Roostwell" in any sector. Results were Rothwell (place names) and UK companies "Roost Hills", "Roost Inventories", "Rostella".
+  - **Student Roost**: UK student-accommodation operator with a resident app (App Store id6504027653; https://company.studentroost.co.uk/news/student-roost-launches-new-resident-app). Same sector as Beatriz's room hunt, but the name is "Student Roost", not "Roostwell", and "roost" is a common English word.
+  - **Tilestay:** no exact hit. A Wanderlog place page (https://wanderlog.com/place/details/4657969) turned out to be **Tiles Apartments**, Porto, and there is a "Tiles Apartment" holiday-let listing. Same sector and country, but a different name.
+  - **Hearthlane:** no hit (only "Hearthstone" game pages). The earlier combined query surfaced **Hemlane** (US rental-management software, https://linkedin.com/company/hemlane), which sounds close.
+- **Assessment:** all three are Low–Medium, so there is no reason to switch. Keep Roostwell. Roostwell is spoofed by `roostwell-*.example` look-alikes, so re-check it before G4. If the sceptic wants no "roost" overlap with student housing, Tilestay is the spare, but it brings its own Portuguese "Tiles" overlap.
+
+## RL2. Kerbello: Medium, rename → Zonelet
+- **Searched:** `"Kerbello"`; `"Kerb" parking app OR "Kerbi" parking`; `"Lanefare" OR "Zonelet" parking OR app OR company`; `"Zonelet"`; `"Lanefare"`.
+- **Hits:**
+  - No "Kerbello" (only Zerbolò, Cerbali, Bello and other unrelated words).
+  - **Kerb**: a parking app (App Store id1134472576) that launched in Dublin (https://www.completecar.ie/car-news/article/9187/Kerb-launches-parking-app-for-Dublin) and in the UK, incl. Edinburgh (https://www.transportxtra.com/publications/parking-review/news/59647/australian-kerb-parking-rental-app-launched-in-uk). Crunchbase lists it as "kerb-2".
+  - **Zonelet:** only "Zonelets", a static-blog template (https://zonelets.itch.io/), and code identifiers ("ZoneList").
+  - **Lanefare:** no hit at all.
+- **Assessment:**
+  - In 7-2 and 7-7 the game shows **look-alikes of this brand** (`kerbello-pay.example`, `kerbello-multas.example`) on fake parking stickers and slips.
+  - A name that begins with a real European parking app's entire name, in the same sector, risks teaching players to distrust that app's codes. This is the same reasoning as Nodkey and Corvelle. Rename.
+- **Recommendation:** **Zonelet** (fits "Zona 2 / Zona 3" on the meters). Hosts `zonelet.example`, look-alikes `zonelet-pay.example` (7-2) and `zonelet-multas.example` (7-7). Spare: **Lanefare**.
+
+## RL3. Vellastri Tutela Srl: Low, keep
+- **Designer cross-check (GDD §26.10, moved here because the docs brand test forbids real names outside docs/patterns/):** compared against Italian banks and trustee or custody firms Intesa Sanpaolo, UniCredit, Banco BPM, BPER, Monte dei Paschi, Mediobanca, Fineco, Credem, Banca Generali, Unione Fiduciaria, Sirefid and Cordusio Fiduciaria. No resemblance. This list is from general knowledge; I did not search each name.
+- **Searched:** `"Vellastri" OR "Velastri" OR "Vellastri Tutela"`; `"Corvessa" OR "Corvessa Tutela" Srl`; `"Tutela Srl" società fiduciaria OR custodia`; `"Tutela" fiduciaria Srl OR "Tutela Fiduciaria" OR "Tutela Patrimoniale Srl"`.
+- **Hits:**
+  - No company, brand or person called Vellastri or Velastri. Results were unrelated regional gazette PDFs that matched the word "tutela".
+  - "Tutela" queries: only articles on fiduciary companies, the Banca d'Italia's page on *società fiduciarie*, and **Tutelia Credit Srl** (Rome, https://registroaziende.it/azienda/tutelia-credit-srl-roma). That is a different word ("Tutelia"), and the game's name leads with the coined "Vellastri".
+  - Corvessa: no exact hit (a person named Corvino; law-firm pages).
+- **Assessment:** this name is shown on a close match as the holder of a fraud account, so it must not belong to a real company. No hit for the coined stem. Keep "Vellastri Tutela Srl" and the caller's spelling "Velastri Tutela". Don't shorten it to "Tutela Srl" anywhere, because "tutela" is generic and appears in real company names. Corvessa is a spare, with the same faint CorVel echo as Corvaldo (MW1).
+
+## RL4. Person and handle names
+- **J. Ashdale (6-4, match on a stranger's account): Low, keep.**
+  - Searched: `"J. Ashdale" OR "John Ashdale" OR "James Ashdale"`; `"Ashdale" company OR limited OR surname`.
+  - No person "J. Ashdale" was found (only Ashdown and Ash names). "Ashdale" appears in many UK company names (Ashdale UK Ltd, Ashdale Investments, Ashdale Homes, Edward Ashdale Ltd: https://pay.company-information.service.gov.uk/company/07644782), mostly as a place-style name.
+  - The game shows an initial plus a surname, not a company, so it doesn't collide with those firms. Keep. The alternatives "J. Brenmoor" and "J. Callery" were not searched. Callery is a real Irish surname; that alone is fine, but don't switch to it without a check.
+- **casa.alfama (7-6 scam host handle): Medium, replace.**
+  - Searched: `"casa.alfama" OR "casaalfama" OR "Casa Alfama" alojamento Lisboa`; `"Casa Alfama" Lisboa`.
+  - Hits:
+    - **"Casa d'Alfama"**, a real Lisbon holiday-let listing (https://airbnb.com/h/calf);
+    - "Casa d'Alfama by Lisbon Village Apartments" (https://www.gites.fr/gites_casa-d-alfama-by-lisbon-village-apartments_lisbonne_h534491_en.htm);
+    - many "Casa … Alfama" listings.
+  - The handle belongs to the **fraudulent host** in a rental scam set in Alfama, so it would put a real letting's name on a scam prop (Red Line 1). Replace it with a coined handle: **casa.velarim** (`"casa.velarim" OR "Velarim"`: no hit, only "Casa Velar" (architecture, Italy) and "Velaris" (wedding favours)). Update the look-alike path to `roostwell-securepay.example/casa-velarim`.
+- **Roostwell Deals (7-3 scam ad page): Low, keep.** It follows RL1. The scenario's page detail ("page created 3 weeks ago") already marks it as a fake page named after the platform.
+- **Leonor Brito (boss beat 2, borrowed name; VoP doesn't match): Low, keep.**
+  - Searched: `"Leonor Brito"`.
+  - The name appears only on Portuguese university repositories (theses by private individuals: https://run.unl.pt/handle/10362/177972). "Leonora Brito" is a Welsh writer (different first name). No notable person.
+  - Both parts are very common in Portugal. On screen, the check says the account is **not** held by this name, so no real person is labelled as a fraud-account holder.
+
+## Actions for ux-artist / scenario-writer (Rome / Lisbon)
+1. **Rename Kerbello → Zonelet** (Medium): `zonelet.example`, `zonelet-pay.example`, `zonelet-multas.example`. Spare: Lanefare.
+2. **Replace the host handle casa.alfama → casa.velarim** (Medium), including the `/casa-alfama` path.
+3. **Keep:** Roostwell (watch item; spares Tilestay, Hearthlane), Roostwell Deals, Vellastri Tutela Srl / "Velastri Tutela" (spare Corvessa Tutela Srl), J. Ashdale, Leonor Brito.
+4. **Before G4:** Registro Imprese and UIBM (IT), RNPC and INPI-PT (PT), and TMview for all kept names. This check is not trademark or legal clearance.
+
+---
+
+# Dublin and Stockholm names (chapters 8 and 9), checked 2026-11-19
+
+**Owner:** fraud-researcher · **Searched:** 2026-11-19 · **Status:** draft for sceptic review · roles from `docs/GDD.md` §28.10 and §29.10 (branch in /home/user/sae-dsspec).
+
+## Method and limits (Dublin / Stockholm)
+- Same method as above: one web search index (US-based), which surfaced app-store listings, company directories (UK Companies House, Swedish ratsit/krafman, CB Insights, Crunchbase), Wikipedia and Irish news. One page was opened (Trustpilot, DS10).
+- **No trademark register, no Irish CRO / CBI register search, no Swedish Bolagsverket / Finansinspektionen register search, no WHOIS.** Before G4 a human checks those and TMview.
+- **People:** the Paris test, made **strictest for the fictional celebrity**: no real person with the name, and no real public figure in the same role whose name is one letter or one sound away.
+- **Domains:** `.example` hosts are reserved (RFC 2606); the check is about the names.
+
+## Summary (Dublin / Stockholm)
+| # | Name (role) | Closest hits | Risk | Recommendation |
+|---|---|---|---|---|
+| DS1 | **Fairmeasure** (in-world financial regulator; genuine; look-alike `fairmeasure-claims.example`) | no hit; only "fairness measures" in machine-learning papers | Low | **Keep** |
+| DS2 | **Cormac Tierlan** (fictional TV presenter in a fake investment ad) | no "Tierlan" anywhere; but **Tommy Tiernan**, a famous Irish TV presenter (his own chat show), is one letter away in surname and in the same role; real Irish broadcasters named Cormac also exist | **Medium** (strictest test fails) | **Rename** → **Orla Fennick** |
+| DS2 | Orla Fennick (alternative) | no "Fennick" presenter; Orla is a common first name (several broadcasters with other surnames) | Low | **Use** |
+| DS2 | Dara Quillan (alternative) | **Dara Quilty**, a real Irish radio broadcaster, is close; Dara Ó Briain is a famous Irish presenter | Medium | **Don't use** |
+| DS3 | **Natterly** (fictional social network where scam ads appear) | **Natterly**: an exact-name social / AI-chat app on the Japanese App Store; a "Natterly" company on StackShare and SaaSworthy; **Natter**, a former UK social network (Wikipedia) and a current "natter." app | **High** | **Rename** → **Postwick** |
+| DS3 | Postwick (alternative) | a village near Norwich (UK); no app, company or brand found | Low | **Use** |
+| DS3 | Chatterbrook (alternative) | no exact hit; "Chatter Social" app is near | Low–Medium | Spare |
+| DS4 | **Quorvex** (scam-only trading platform) | no exact hit; "Qorvex" (a game character), Qoronex Ltd, "Quorionex" (a broker listing on a broker-review site), QuiverX | Low–Medium | **Keep** |
+| DS5 | **Glimmerfund** (scam-only, Alex arc platform) | no exact hit; "Glimmer" (an Austin investor profile on CB Insights), "Gimmelfund" | Low–Medium | **Keep** |
+| DS6 | **Tollmere Invest** (genuine authorised firm; impersonated by the clone `tollmere-invest.example`) | **Tollymore Investment Partners LLP**: a real UK investment manager (Companies House OC423323; investor letters in finance press), one sound away, same sector | **Medium–High** | **Rename** → **Ellisfen Invest** |
+| DS6 | Ellisfen Invest (alternative) | no hit (only Ellisfield, a place, and the name Ellisif) | Low | **Use** |
+| DS6 | Brackwater Invest (alternative) | **Breakwater Investment Management / Breakwater Investments** (real investment firms) | Medium | **Don't use** |
+| DS7 | **Backhaven Recovery** (scam-only "recovery agency") | no hit (only backup or recovery software pages) | Low | **Keep** |
+| DS8 | **Kindhand** / "Kindhand Support" (fictional helper app, scam prop) | no exact hit; "Kind Hands" (an NZ childcare centre; a hand-cream product); "KindConnect" app; no remote-access or support app named Kindhand | Low | **Keep** |
+| DS9 | Cast: **Declan Byrne**, **Róisín Byrne** (Dublin) | common Irish names; a Dublin university academic named Declan Byrne and a Maynooth researcher named Róisín Byrne (private individuals); no notable person | Low | **Keep** (genuine characters, never accused) |
+| DS9 | Cast: **Birgitta Lind** (Stockholm) | no person found under the exact name (only Birgitta Lindström / Lindqvist on Wikipedia; "Gitta Lind", a German singer, is a different name) | Low | **Keep** |
+| DS9 | Cast: **Jamal Haddad**, **Lina Haddad** (Stockholm) | a corporate "Jamal Haddad" on a stock-insider site and an NGO staff page (private individuals); no notable person; Haddad is a very common surname | Low | **Keep** |
+| DS10 (extra) | **Harbourline Bonds** (drill 8-4; named on the in-world **warning list**) | no exact hit; Harborline Ltd (UK), Harbour Asset Management bond funds (NZ), Harbour Investment Partners (corporate bonds press release) | Medium (an accused name close to real bond sellers) | **Replace** → **Brindlecove Bonds** |
+| DS11 | **Fairmeasure Claims Ltd** (boss beat 3 fraud payee, borrowing the regulator's name) | no exact hit; UK claims firms **Fair Claims Limited**, Fair Claims Accident Management Ltd, Fairclaim Assist Ltd, Claim Fair Ltd | Low–Medium | **Keep** (the coined "Fairmeasure" leads); spare **Fairmeasure Restitution Ltd** |
+| DS12 | **"Money Today with Cormac"** (8-2 scam ad page) | no exact show; "Money Today" is a generic phrase used by finance titles (not opened); Irish consumer and broadcaster money features have other names | Low (the name follows DS2) | **Rename with DS2** → "Money Today with Orla"; spare "The Savings Hour with Orla" |
+| DS10 (extra) | **Norrvik Trygg AB** (boss beat 2 payee) | no exact hit; **Norrvik** (a Dutch panel webshop, norrvik.nl); Norrviken Fastigheter AB; "Trygg" echoes the insurer Trygg-Hansa, but it is a common Swedish word ("safe") | Low–Medium | **Keep**, or **Skarvlund Trygg AB** for zero overlap |
+
+## DS1. Fairmeasure: Low, keep
+- **Searched:** `"Fairmeasure"`.
+- **Hits:** none as a name; results were "fairness measures" (machine-learning fairness papers, a GitHub page).
+- **Assessment:** the in-world regulator must never look like a real one; the name doesn't. Alternatives (Truebalance, Steadweight) were not searched, because they aren't needed.
+
+## DS2. Cormac Tierlan: Medium, rename → Orla Fennick
+- **Searched:** `"Cormac Tierlan" OR "Tierlan"`; `"Cormac" presenter RTÉ OR "TV presenter" "Tierlan" OR "Tiernan" Cormac`; `"Orla Fennick" OR "Fennick" presenter OR Ireland`; `"Dara Quillan" OR "Quillan" presenter Ireland`.
+- **Hits:**
+  - "Tierlan": no person, brand or place. Results drifted to Tiernan and Tierney.
+  - **The Tommy Tiernan Show** (Wikipedia): Tommy Tiernan is a well-known Irish TV presenter. "Tierlan" is one letter from "Tiernan".
+  - Real broadcasters named Cormac (e.g. Cormac Ó hEadhra on RTÉ radio; Cormac Battle, Wikipedia) have different surnames.
+  - **Dara Quilty** (Irish radio broadcaster: https://www.hotpress.com/music/dara-quilty-finishes-irish-radio-career-top-imro-22790856) is close to "Dara Quillan". Dara Ó Briain is a famous Irish presenter.
+  - "Fennick": no presenter or public figure. Irish broadcasters named Orla (Orla O'Donnell, Orla Chennaoui) have unrelated surnames.
+- **Assessment:**
+  - In 8-2 the character is a TV presenter whose face sells a fake investment. Real Irish public figures are impersonated in exactly such ads, so a near-homophone of a famous Irish TV host's surname, in the same role, fails the strictest test, even though the first name differs.
+  - **Orla Fennick** passes: no person found, and the surname is coined.
+  - The illustration must not resemble any real Irish presenter (ux-artist).
+- **Knock-on:** rename the ad page to "Money Today with Orla" (or another neutral title).
+
+## DS3. Natterly: High, rename → Postwick
+- **Searched:** `"Natterly" app OR social OR company`; `"Natterly" social network app`; `"Postwick" OR "Chatterbrook" app OR social network`; `"Postwick" company OR app OR brand`.
+- **Hits:**
+  - **Natterly**: a social / AI voice-conversation app on the Japanese App Store (https://apps.apple.com/jp/app/natterly-%E3%83%8A%E3%82%BF%E3%83%AA%E3%83%BC-ai%E3%81%A8%E3%81%AEsns-%E9%9F%B3%E5%A3%B0%E4%BC%9A%E8%A9%B1/id6737235306); company pages https://stackshare.io/companies/natterly and https://www.saasworthy.com/product/natterly.
+  - **Natter** (former UK social network, https://en.wikipedia.org/wiki/Natter_(social_network)); a current "natter." app; "Nattergram".
+  - Postwick: no company, app or brand. It is a village name, and searches returned only "Post…" products (Postworks, Postify).
+- **Assessment:** an exact-name social app exists. The game shows scam ads *on* this network, so players could link a real app with scam ads. Rename. **Postwick** (`postwick.example`) has no product collision. Chatterbrook is a spare (near "Chatter Social").
+
+## DS4. Quorvex: Low–Medium, keep
+- **Searched:** `"Quorvex"`.
+- **Hits:** no exact hit. Near forms: Qorvex (a game character), Qoronex Ltd (Crunchbase), "Quorionex" (a broker profile on a broker-review site: https://www.fastbull.com/brokersview/brokers/quorionex), QuiverX (crypto), Quantvex.
+- **Assessment:** the coined form is distinct. The closest finance hit is a different word. Keep; re-check before G4.
+
+## DS5. Glimmerfund: Low–Medium, keep
+- **Searched:** `"Glimmerfund" OR "Glimmer Fund"`.
+- **Hits:** no exact hit. Nearest: a "Glimmer" investor profile (https://www.cbinsights.com/investor/glimmer-austin), "Gimmelfund" (startup directory), unrelated funds.
+- **Assessment:** keep. It appears only in the arc, as a scam platform. Don't shorten it to "Glimmer".
+
+## DS6. Tollmere Invest: Medium–High, rename → Ellisfen Invest
+- **Searched:** `"Tollmere" OR "Tollmere Invest"`; `"Tollymore Investment Partners"`; `"Brackwater Invest" OR "Ellisfen" OR "Brackwater" investment`; `"Ellisfen"`.
+- **Hits:**
+  - **Tollymore Investment Partners LLP**: UK investment manager (https://pay.company-information.service.gov.uk/company/OC423323), with investor letters and returns coverage in the finance press (e.g. https://hedgefundalpha.com/strategies/tollymore-generates-20-per-annum-returns-since-inception/). Tollymore is also a well-known forest park in Northern Ireland.
+  - Breakwater Investment Management / Breakwater Investments (real) for "Brackwater".
+  - "Ellisfen": no hit (Ellisfield, a place; Ellisif, a name).
+- **Assessment:** "Tollmere Invest" is one sound from a real investment firm, in the same sector, and it is the firm the boss **clones**. That would show a real manager's near-name on a scam email and call. Rename to **Ellisfen Invest**: `ellisfen.example` (genuine) and `ellisfen-invest.example` (clone). Brackwater: don't use.
+
+## DS7. Backhaven Recovery: Low, keep
+- **Searched:** `"Backhaven" OR "Backhaven Recovery"`.
+- **Hits:** none; only backup and restore software pages and "Backstage Recovery" (a US trademark, different word).
+- **Assessment:** keep for 8-3 and the Brussels ending C.
+
+## DS8. Kindhand: Low, keep
+- **Searched:** `"Kindhand" app OR support OR remote`; `"Kindhand"`.
+- **Hits:** no remote-access, screen-sharing or support app named Kindhand. "Kind Hands" is an NZ childcare centre and a hand-cream product. The remote-support results were products with unrelated names (listed in search only, not used).
+- **Assessment:** keep. The icon rule in GDD §29.10 (nothing like a real remote-access icon) still applies.
+
+## DS9. Cast names: Low, keep
+- **Searched:** `"Declan Byrne" OR "Róisín Byrne" Dublin`; `"Birgitta Lind" OR "Jamal Haddad" Stockholm`; `"Jamal Haddad" OR "Lina Haddad"`; `"Birgitta Lind"`.
+- **Hits:**
+  - Declan Byrne: a Dublin university academic in medical gerontology (https://www.tcd.ie/medicine/medical-gerontology/staff/medical-gerontology/dgbyrne/).
+  - Róisín Byrne: a Maynooth research-archive author.
+  - Jamal Haddad: a corporate insider listing (https://ca.marketscreener.com/insider/JAMAL-HADDAD-A0TMNL/) and an NGO staff page.
+  - Birgitta Lind: only a Swedish phone-directory search page. "Gitta Lind" (German singer, Wikipedia) is a different name.
+  - None of these is a notable public figure.
+- **Assessment:** these are common names, and the characters are genuine and never accused or impersonated as scammers (Declan and Jamal are targeted, not fraudsters). Keep. The Byrne surname is shared by the two Dublin cast members, which is intended (father and daughter).
+
+## DS10. Extra names on accused or fraud-account roles
+- **Harbourline Bonds (drill 8-4, on the in-world warning list): Medium, replace.**
+  - Searched: `"Harbourline Bonds" OR "Harbourline" investment OR finance`; `"Skarvlund" OR "Brindlecove"`.
+  - Hits: Harborline Limited (UK, https://open.endole.co.uk/insight/company/13943058-harborline-limited); Harbour Asset Management's bond funds (NZ); a "Harbour Investment Partners" corporate-bond press release.
+  - The drill says this name is on a regulator's warning list. That is an accusation close to real bond sellers' names. Replace with **Brindlecove Bonds** (no hit).
+- **Norrvik Trygg AB (boss beat 2 payee in the signing banner): Low–Medium, keep or replace.**
+  - Searched: `"Norrvik Trygg" OR "Norrvik" AB`; opened https://www.trustpilot.com/review/norrvik.nl (a Dutch webshop selling panels).
+  - Also: Norrviken Fastigheter AB (Sweden). "Trygg" is a common word but also starts the name of a large Swedish insurer.
+  - No exact company. Acceptable. For zero overlap use **Skarvlund Trygg AB** (no hit).
+
+## DS11. Fairmeasure Claims Ltd: Low–Medium, keep (spare Fairmeasure Restitution Ltd)
+- **Searched:** `"Fairmeasure Claims" OR "Fair Measure Claims" Ltd`.
+- **Hits:**
+  - No exact company.
+  - UK claims-management firms with "Fair" + "Claim": **Fair Claims Limited** (https://pay.company-information.service.gov.uk/company/06528713), Fair Claims Accident Management Ltd, Fairclaim Assist Ltd, Claim Fair Ltd.
+- **Assessment:**
+  - On screen it is the holder of a fraud account (bank-details card). The coined "Fairmeasure" separates it from those firms, and borrowing the in-world regulator's name is the scam's point. Keep.
+  - If the sceptic wants no "Fair… Claims" echo, use **Fairmeasure Restitution Ltd** (spare; not searched separately beyond the stem, which has no hits, DS1).
+  - In Irish company format "Ltd" is right.
+
+## DS12. "Money Today with Cormac": rename with DS2
+- **Searched:** `"Money Today" TV show OR programme OR magazine Ireland OR UK`.
+- **Hits:** no Irish or UK show called "Money Today". The results were other money programmes and features (RTÉ, the CCPC, newspaper podcasts) with different names. "Money Today" is a generic phrase that finance publications abroad also use (from general knowledge, not opened).
+- **Assessment:** the page name carries the presenter's name, so it follows DS2 → **"Money Today with Orla"**. Spare: **"The Savings Hour with Orla"** (generic; no show found under that title in the same query family). The detail "Sponsored · page created 2 weeks ago" stays.
+
+## DS10 spares, restated for the sceptic
+- Harbourline Bonds → **Brindlecove Bonds** (primary replacement; no hit). A second spare is **Skarvlund Bonds**, which reuses the no-hit stem.
+- Norrvik Trygg AB → **Skarvlund Trygg AB** (no hit for "Skarvlund"). It keeps the real Swedish "AB" company format, as the sceptic asked. Keep "AB", never "Ltd", for the Swedish payee.
+
+## Actions for ux-artist / scenario-writer (Dublin / Stockholm)
+1. **Rename Natterly → Postwick** (High): `postwick.example`.
+2. **Rename Tollmere Invest → Ellisfen Invest** (Medium–High): `ellisfen.example`, clone `ellisfen-invest.example`, and the clone's display names.
+3. **Rename Cormac Tierlan → Orla Fennick** (Medium, strictest test), and the ad page title. Never use Dara Quillan.
+4. **Replace Harbourline Bonds → Brindlecove Bonds** (Medium). Optional: Norrvik Trygg AB → Skarvlund Trygg AB. Keep Fairmeasure Claims Ltd (spare Fairmeasure Restitution Ltd). The ad page becomes "Money Today with Orla" (spare "The Savings Hour with Orla").
+5. **Keep:** Fairmeasure, Quorvex, Glimmerfund, Backhaven Recovery, Kindhand, and the cast names Declan Byrne, Róisín Byrne, Birgitta Lind, Jamal Haddad, Lina Haddad.
+6. **Before G4:** CRO and the Central Bank register (IE), Bolagsverket and Finansinspektionen (SE), and TMview for all kept names. This check is not trademark or legal clearance.

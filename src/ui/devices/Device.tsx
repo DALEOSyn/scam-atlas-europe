@@ -435,7 +435,8 @@ function Market(p: DeviceProps) {
         {m.earlier?.length ? <Earlier items={m.earlier} onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} /> : null}
         <p class={styles.daySep}>{t('chat_today')}</p>
         {notice ? (
-          <article class={styles.notice} data-notice="" lang={m.lang}>
+          // The app's own header ("Swaploft · Notice") is UI text in English; only the notice body has the message's lang.
+          <article class={styles.notice} data-notice="">
             <p class={styles.noticeFrom}>
               {app?.mark ? <img class={styles.brandMark} src={assetUrl(app.mark)} alt="" width={24} height={24} /> : null}
               <Checkable target="sender.detail">
@@ -443,8 +444,10 @@ function Market(p: DeviceProps) {
               </Checkable>
               <span class={styles.muted}>{t('market_notice')}</span>
             </p>
-            <MessageBody message={m} />
-            <Chips items={segs.leftover} />
+            <div lang={m.lang}>
+              <MessageBody message={m} />
+              <Chips items={segs.leftover} />
+            </div>
           </article>
         ) : (
           <>
@@ -876,7 +879,13 @@ function NameCheckCard(p: DeviceProps & { bankName: string }) {
         <>
           <p class={styles.checkFooter}>{t('bank_check_footer', { bank: p.bankName })}</p>
           {seen ? null : <CoachMark id={COACH_PAYEE_CHECK} text={t('coach_payee_check')} onCoachMark={p.onCoachMark} returnTo={() => resultRef.current?.focus()} />}
-          <ul class={styles.cardActions} id={`bank-options-${p.beatId}`}>
+          {p.onCall ? (
+            // CR-31 (QA should-fix 4): under the on-call bar, these options are how the call ends.
+            <p class={styles.checkFooter} id={`oncall-choose-${p.beatId}`} data-oncall-hint="">
+              {t('oncall_choose')}
+            </p>
+          ) : null}
+          <ul class={styles.cardActions} id={`bank-options-${p.beatId}`} aria-labelledby={p.onCall ? `oncall-choose-${p.beatId}` : undefined}>
             {p.actions.map((a) => (
               <li key={a.id}>
                 <button
@@ -923,6 +932,10 @@ function Bank(p: DeviceProps) {
       {payee.amount ? <p class={styles.requestAmount}>{payee.amount}</p> : null}
       <p class={styles.requestFrom}>
         <Checkable target="payee.name">{t('bank_confirm_to', { name: payee.name })}</Checkable>
+      </p>
+      {/* QA nit 6: says what the code the player typed is doing here. */}
+      <p class={styles.confirmCode} data-code-used="">
+        {t('bank_confirm_code')}
       </p>
     </div>
   ) : payee ? (

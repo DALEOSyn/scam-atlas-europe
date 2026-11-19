@@ -100,7 +100,7 @@ export interface GroupState {
   transferBeat?: string | undefined;
   /**
    * CR-34: the payment code shared in this group (a share_code with next_beat into the bank app's
-   * confirmation). Non-terminal; caps the group at points.code_then_confirm.star_cap (★).
+   * confirmation). Non-terminal; caps the group at points.code_then_confirm.star_cap (★★, ruling R18).
    */
   codeShared?: { id: string; label: string } | undefined;
   /** CR-31: scenario-clock time the group's current call started (the on-call bar's mm:ss); undefined off a call. */
@@ -686,8 +686,10 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
         // your own bank app) counts as an engage for the cap and the "You chose" line; it still never decides.
         const engages = cls === 'engage' || (action.kind === 'start_transfer' && action.cap === 'engage');
         if (engages && !g2.firstEngage) g2 = { ...g2, firstEngage: { id: action.id, label: action.label } };
-        // CR-35: an engage with an outcome (no next_beat) ends the group: it decides, at the engage cap (★★).
-        const terminalEngage = ctx.balance.points.engage_on_fraud.terminal || (cls === 'engage' && action.outcome !== undefined);
+        // CR-35: on a scheduled boss beat, an engage with an outcome (no next_beat) ends the group: it decides,
+        // at the engage cap (★★). Elsewhere (arc beats, standard scenarios) an engage keeps its old behaviour.
+        const bossBeatEnd = s.role === 'boss' && cls === 'engage' && action.outcome !== undefined && st.schedule.some((x) => x.beatId === beat.id);
+        const terminalEngage = ctx.balance.points.engage_on_fraud.terminal || bossBeatEnd;
         g2 = {
           ...g2,
           decision: mergeDecision(g.decision, decisionOf(ctx.balance, action), st.truth, terminalEngage),

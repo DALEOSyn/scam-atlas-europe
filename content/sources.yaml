@@ -34,6 +34,8 @@
 #                rental-offplatform-payment | qr-sticker-parking   (chapter 7 Lisbon briefs; T-3.8r, 2026-11-19)
 #                bank-safe-account-call | marketplace-collect-payment-link | hijacked-friend-payment-code
 #                  (chapters 4 Madrid and 5 Warsaw briefs; added T-3.6r, 2026-11-19)
+#                investment-ad-fake-platform | recovery-scam   (chapter 8 Dublin briefs; T-3.10r, 2026-11-19)
+#                e-id-approval-on-call | remote-access-support-call   (chapter 9 Stockholm briefs; T-3.10r, 2026-11-19)
 #              An empty list means provenance only: not cited directly, kept because another entry's
 #              date or content relies on it.
 #   notes      what the source actually supports; caveats
@@ -71,7 +73,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [email-phishing-credential, it-portal-credential-phishing, task-job-scam, MAP-ch0, MAP-ch7, MAP-ch8, MAP-ch10, MAP-missing, MAP-crosscutting, campaign-catalogue, rental-offplatform-payment, marketplace-collect-payment-link]
+    used_for: [email-phishing-credential, it-portal-credential-phishing, task-job-scam, MAP-ch0, MAP-ch7, MAP-ch8, MAP-ch10, MAP-missing, MAP-crosscutting, campaign-catalogue, rental-offplatform-payment, marketplace-collect-payment-link, investment-ad-fake-platform, recovery-scam, remote-access-support-call, MAP-ch9]
     notes: "Fraud is 'the fastest-growing area of organised crime'. Investment fraud especially prevalent, increasingly via ads on very large online platforms. Romance and tech-support among most common typologies reported by Member States. AI-assisted impersonation of bank helpdesk and law-enforcement staff. Malvertising for fake accommodation/merchandise listings. Minors drawn into laundering via 'get-rich' social-media schemes. Victims 'relentlessly re-victimised'. Publication date from eu-eucrim-iocta-2026. T-R.1 re-read (catalogue): 'financial sexual extortion continues to surge'; offenders target children on gaming platforms; violent online networks groom children (8-17) with love-bombing; voice chat bots pre-screen victims 'at industrial volume'; infostealers 'a key enabler'; SIM swapping mentioned only in passing (collectives); minors may launder by renting out wallets or receiving crypto 'gifts'. NOT found: ticket or charity scams, 'deepfake' by name."
 
   - id: eu-eucrim-iocta-2026
@@ -148,7 +150,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 3
-    used_for: [email-phishing-credential, messenger-account-takeover-code, it-portal-credential-phishing, multichannel-support-callback, messenger-family-impersonation, task-job-scam, MAP-ch2, MAP-ch4, MAP-ch6, MAP-ch7, MAP-ch9, MAP-ch10, MAP-missing, campaign-catalogue, ceo-fraud-bec, payment-detail-change, spoofed-authority-call, cloned-voice-family-emergency, qr-sticker-parking, bank-safe-account-call, hijacked-friend-payment-code]
+    used_for: [email-phishing-credential, messenger-account-takeover-code, it-portal-credential-phishing, multichannel-support-callback, messenger-family-impersonation, task-job-scam, MAP-ch2, MAP-ch4, MAP-ch6, MAP-ch7, MAP-ch9, MAP-ch10, MAP-missing, campaign-catalogue, ceo-fraud-bec, payment-detail-change, spoofed-authority-call, cloned-voice-family-emergency, qr-sticker-parking, bank-safe-account-call, hijacked-friend-payment-code, e-id-approval-on-call, remote-access-support-call]
     notes: "Social engineering increasingly targets people rather than technology. Covers: spoofed sender names/numbers; messages that give a phone number instead of a link; 'safe account' scams; call-then-home-visit; fake remote support; task scams with small early payouts; recovery scams; cloned voices in family-emergency scams; QR swaps on letters, invoices and EV chargers; victims asked to approve login QR codes sent via messaging apps; money mules. Read to char 100000 of ~130000. Re-read 2026-11-19 (Paris briefs), full text incl. chars 100000-130011: targets shifting to 'company executives, employees (through CEO fraud)' (p.6); AI produces 'voice and video impersonating well-known persons (e.g. CEO fraud)' (p.6) and deepfakes 'impersonate executives' (p.22); 'a particular increase in business email compromise' (p.22); invoicing exposed to 'APP fraud or IBAN manipulation' incl. QR tampering on invoices (p.7, p.17); fraudsters instruct victims 'to ignore or dismiss alerts' (p.23, bank alerts in general, not VOP specifically). VOP mentioned only as a new scheme with no fraud cases yet (p.8). No passage on VOP limits or on matching-name accounts."
 
   - id: eu-ec-ipr-vop-2025
@@ -426,7 +428,7 @@ sources:
     accessed: 2026-11-18
     region: IE
     tier: 3
-    used_for: [MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    used_for: [MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue, investment-ad-fake-platform]
     notes: "EUR 8.58m reported stolen to end July 2025; +21% reports in 3 months; fake bond and deposit products in professional ads. Verify firms on the Central Bank Registers. Report to the local Garda station or the Garda Confidential Line 1800 666 111."
 
   - id: ie-fraudsmart-investment-2025
@@ -437,7 +439,7 @@ sources:
     accessed: 2026-11-18
     region: IE
     tier: 3
-    used_for: [MAP-ch8, WHERE_TO_REPORT, campaign-catalogue]
+    used_for: [MAP-ch8, WHERE_TO_REPORT, campaign-catalogue, investment-ad-fake-platform]
     notes: "~EUR 31m investment-fraud losses in 2024. AI-generated celebrity endorsement ads lead to a contact form, then an 'adviser' call. Check the Central Bank register; call the firm on an independently found number."
 
   - id: ie-bpfi-recovery-2024
@@ -448,7 +450,7 @@ sources:
     accessed: 2026-11-18
     region: IE
     tier: 3
-    used_for: [MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    used_for: [MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue, recovery-scam]
     notes: "Recovery scams: an upfront 'retainer' or 'processing' fee to get lost money back; losses of EUR 1,000-10,000 seen. Player wording: 'Anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam.'"
 
   # ---------------------------------------------------------------- France
@@ -675,7 +677,7 @@ sources:
     accessed: 2026-11-18
     region: SE
     tier: 3
-    used_for: [MAP-ch3, MAP-ch9, MAP-ch10, campaign-catalogue, ceo-fraud-bec]
+    used_for: [MAP-ch3, MAP-ch9, MAP-ch10, campaign-catalogue, ceo-fraud-bec, investment-ad-fake-platform, e-id-approval-on-call]
     notes: "Total fraud proceeds fell -16% (2023->2024) and -10% (2024->2025): the 'second year running'. 2025 proceeds ~SEK 5.7bn: investment ~SEK 1.6bn, romance SEK 551m, vishing SEK 320m, CEO/BEC SEK 214m. Telephone-fraud (vishing) proceeds SEK 708m (2023) -> SEK 320m (2025), a drop of ~55%. Attempts (incl. mass SMS) are increasing."
 
   - id: se-polisen-vishing-2026
@@ -686,7 +688,7 @@ sources:
     accessed: 2026-11-18
     region: SE
     tier: 3
-    used_for: [MAP-ch9, MAP-missing, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    used_for: [MAP-ch9, MAP-missing, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue, e-id-approval-on-call]
     notes: "Telephone-fraud proceeds ~SEK 712m (2023) -> just under SEK 302m (2025), described as a drop of nearly 60%. This differs slightly from the April 2026 release (708m -> 320m), probably a later data revision; MAP therefore says 'more than halved'. Victims are manipulated into giving login details or using their e-ID to move money, sometimes followed by a home visit. Advice: never log in with e-ID because a caller asks; don't share card-reader codes; ask the bank about dual signing or delays. 112 if ongoing, 114 14 otherwise."
 
   - id: se-polisen-campaign-2026
@@ -697,7 +699,7 @@ sources:
     accessed: 2026-11-18
     region: SE
     tier: 3
-    used_for: [multichannel-support-callback, MAP-ch9, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue, spoofed-authority-call]
+    used_for: [multichannel-support-callback, MAP-ch9, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue, spoofed-authority-call, e-id-approval-on-call]
     notes: "Campaign 'Dare to be rude' (21 Sep-11 Oct 2026, aimed at 60+). Vishing often starts with an SMS that gives a number to call. Hang up; don't call numbers from texts; never log in with e-ID at a caller's request; police never collect cards or valuables at home. 112 / 114 14."
 
   # ---------------------------------------------------------------- Belgium
@@ -832,7 +834,7 @@ sources:
     accessed: 2026-11-18
     region: PL
     tier: 2
-    used_for: [it-portal-credential-phishing, multichannel-support-callback, help-where-to-report-en, campaign-catalogue, spoofed-authority-call, WHERE_TO_REPORT, bank-safe-account-call]
+    used_for: [it-portal-credential-phishing, multichannel-support-callback, help-where-to-report-en, campaign-catalogue, spoofed-authority-call, WHERE_TO_REPORT, bank-safe-account-call, remote-access-support-call]
     notes: "English gloss: 'Fake consultants'. Callers posing as bank or institution staff; caller ID and caller names can be spoofed; 'safe account' transfers; requests to install remote-access software. Advice: hang up and call back on the number from the official site or app; never let anyone remotely control your device."
 
   # ---------------------------------------------------------------- Spain (T-2.5)
@@ -886,7 +888,7 @@ sources:
     accessed: 2026-11-18
     region: CH
     tier: 2
-    used_for: [it-portal-credential-phishing, campaign-catalogue]
+    used_for: [it-portal-credential-phishing, campaign-catalogue, remote-access-support-call]
     notes: "Non-EU, supporting only. Fake IT/tech-support calls and pop-up 'locked screen' warnings with a number to call. Advice: never grant remote access; don't call the number shown. (Recovery steps after access was given are taken from other sources, not this page.)"
   - id: ch-ncsc-double-phishing-2026
     publisher: Swiss Federal Office for Cybersecurity (BACS / NCSC)
@@ -1098,7 +1100,7 @@ sources:
     accessed: 2026-11-18
     region: BE
     tier: 3
-    used_for: [campaign-catalogue]
+    used_for: [campaign-catalogue, investment-ad-fake-platform, recovery-scam, MAP-ch8]
     notes: "H1 2026: 1,277 reports; >EUR 12.7m losses; fraudulent trading platforms 66.5% of losses (mostly 'crypto'); fake stock advice via a messenger >EUR 2m (complaints dropping since February); fake credit ~20% of complaints, average loss ~EUR 3,000, upfront 'file/legalisation/insurance' fees; fake contracts impersonating notaries and banks; recovery rooms. Advice: never pay fees to get a loan; check FSMA warnings. Designer context only; do not show figures on screen. Does not mention social-media ads as a channel."
 
   - id: be-eccbe-concert-tickets
@@ -1351,6 +1353,17 @@ sources:
     tier: 3
     used_for: [multichannel-support-callback, spoofed-authority-call]
     notes: "Fraudsters claim a push-TAN will stop suspicious debits, but it authorises transfers; being asked by phone for passwords or TANs is always a sign of fraud; banks generally don't call unprompted."
+
+  - id: de-polizei-berlin-falsche-polizei-2025
+    publisher: Polizei Berlin
+    title: "Falsche Polizeibeamte/Falsche Bankmitarbeiter"
+    url: https://www.berlin.de/polizei/aufgaben/praevention/betrug/artikel.1560623.php
+    published: "2025-06-25"
+    accessed: "2026-11-19"
+    region: DE
+    tier: 3
+    used_for: [spoofed-authority-call, bank-safe-account-call]
+    notes: "Police prevention page. Fake police or bank staff; money to be transferred 'zum Schein' to a 'Sicherheitskonto' (security account) or handed to a 'supposed police officer'; the perpetrators claim the culprit is a 'Maulwurf' (mole) in the bank. Advice: note the number on the display, hang up, dial 110 yourself. Supports the 'someone at your bank is involved' isolation line (Rome boss beat 1) as a known police-impersonation claim. Does NOT mention codes or approvals in a banking app. The cash or valuables hand-over parts are offline (Red Line 8) and not used."
 
   # ================================================ Phase 3, chapter 2 (Amsterdam) briefs: messenger-family-impersonation, task-job-scam
   # All opened 2026-11-19. Real brand names in titles/URLs/notes (messenger, payment-request app, job site, crypto platform)
@@ -2469,6 +2482,208 @@ sources:
     tier: 1
     used_for: [bank-safe-account-call]
     notes: "PROVISIONAL deal on the Payment Services Regulation: if a scammer poses as a payment provider's employee and tricks a customer into approving a payment, 'the PSP must refund the full amount as long as the customer reports the fraud to the police and informs their PSP'; platforms liable in some cases. 'Needs to be formally adopted ... before it can come into force.' Adoption, Official Journal publication and application date NOT verified this session (trade press expects application around 2028). DESIGN USE: never tell players a refund is guaranteed; at most 'EU rules on this are changing'."
+
+  # ================================================ T-3.10r additions (Dublin + Stockholm briefs), all opened 2026-11-19
+  # ---------------------------------------------------------------- Ireland (T-3.10r)
+  - id: ie-cbi-avoiding-scams
+    publisher: Central Bank of Ireland
+    title: "Avoiding Scams and Unauthorised Activity"
+    url: https://www.centralbank.ie/regulation/how-we-regulate/authorisation/unauthorised-firms/avoiding-scams-and-unauthorised-activity
+    published: n/d (footer (c) 2026)
+    accessed: "2026-11-19"
+    region: IE
+    tier: 3
+    used_for: [investment-ad-fake-platform, recovery-scam, MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    notes: "'Check the Central Bank Registers to verify the firm is authorised'; use the search for unauthorised firms and latest warnings. Clone firms 'borrow' all the legitimate information of an authorised firm (authorisation number, links, address): call the firm back on its advertised number, not one the caller gives. Signs: unsolicited contact, 'guaranteed or risk-free' returns, pressure, upfront fees. Recovery scams: offers to recover lost money for a fee (tax or administration fee), sometimes posing as fictitious government agencies; 'It is highly unlikely you will ever recover your money'. If scammed: stop sending money; report to your bank, the Central Bank and the Gardai; fraudsters share victims' details. Report an unauthorised firm via the 'Report an Unauthorised Firm' page; phone 0818 681 681 or +353 (0)1 224 5800. No mention of celebrity ads, dashboards or withdrawal fees."
+
+  - id: ie-cbi-unauthorised-firms
+    publisher: Central Bank of Ireland
+    title: "Unauthorised Firms"
+    url: https://centralbank.ie/fns/unauthorised-firms
+    published: n/d (footer (c) 2026)
+    accessed: "2026-11-19"
+    region: IE
+    tier: 3
+    used_for: [investment-ad-fake-platform, MAP-ch8, campaign-catalogue]
+    notes: "Lists firms named in warning notices under the Central Bank (Supervision and Enforcement) Act 2013 (providing financial services without authorisation or falsely claiming to be regulated); links to a search page and, separately, to the Registers of authorised firms; report via 'Report an Unauthorised Firm'; investment-scam approaches also to An Garda Siochana. The page has NO 'not exhaustive' caveat (the Swedish consumer agency gives that caveat: se-konsumentverket-investment-fraud). Design: the in-world regulator has two tools (register of authorised firms + warning list); being absent from the warning list proves nothing."
+
+  - id: ie-cbi-report-unauthorised
+    publisher: Central Bank of Ireland
+    title: "Report an Unauthorised Firm"
+    url: https://centralbank.ie/regulation/how-we-regulate/authorisation/unauthorised-firms/report-an-unauthorised-firm
+    published: n/d (footer (c) 2026)
+    accessed: "2026-11-19"
+    region: IE
+    tier: 3
+    used_for: [MAP-ch8, investment-ad-fake-platform, WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Single route: an online form ('Please enter your personnel and firm details here to report or query an Unauthorised Firm') hosted on a third-party survey platform (qualtrics.com). No email or phone on this page. Help screen links to THIS page (centralbank.ie), never to the form host."
+
+  - id: ie-cbi-fraud-landscape-2025
+    publisher: Central Bank of Ireland (press release)
+    title: "Central Bank of Ireland warns consumers about changing fraud landscape"
+    url: https://edit.centralbank.ie/news/article/press-release-central-bank-of-ireland-warns-consumers-about-changing-fraud-landscape-10-november-2025
+    published: "2025-11-10"
+    accessed: "2026-11-19"
+    region: IE
+    tier: 3
+    used_for: [investment-ad-fake-platform, recovery-scam, MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    notes: "Anti-scam campaign launch. 'a rise in AI being used to create realistic social media ads and profiles impersonating public or business figures' (deepfakes); scammers coach consumers through 'setting up accounts on fake investment platforms and transferring funds'; recovery scams for an upfront fee; 'Never pay fees for recovering lost funds'; ignore unsolicited recovery offers. Host is the 'edit.' subdomain as indexed; no dashboard or withdrawal-fee detail."
+
+  - id: ie-cbi-fraud-research-2026
+    publisher: Central Bank of Ireland (press release)
+    title: "New Central Bank research reveals one in three Irish adults have experienced fraud, yet 38% never report it"
+    url: https://www.centralbank.ie/news/article/new-central-bank-research-reveals-one-in-three-irish-adults-have-experienced-fraud--yet-38--never-report-it
+    published: "2026-04-28"
+    accessed: "2026-11-19"
+    region: IE
+    tier: 3
+    used_for: [investment-ad-fake-platform, MAP-ch8, campaign-catalogue]
+    notes: "35% of adults experienced fraud or scams; 38% of victims never reported; investment scams affected 7%, with larger losses; 57% of those who reported recovered money vs 13% who did not; reporting matters. Statutory refund right applies to UNAUTHORISED payments (limited exceptions): not to payments the victim made to an investment scam. Design: reporting line, not a refund promise."
+
+  - id: ie-ccpc-investment-scams
+    publisher: Competition and Consumer Protection Commission (CCPC)
+    title: "Investment scams: how to spot and avoid them"
+    url: https://www.ccpc.ie/manage-your-money/scams-and-frauds/common-scams/investment-scams
+    published: n/d (footer (c) 2026)
+    accessed: "2026-11-19"
+    region: IE
+    tier: 3
+    used_for: [investment-ad-fake-platform, recovery-scam, MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    notes: "Scams 'often appear through online ads, social media or fake celebrity promotions', incl. 'deepfake videos of celebrities'; trading platforms 'not regulated or licensed by any authority'; high returns, urgency, secrecy; small early 'trial' returns to build trust. 'Always check if a firm is regulated on the Central Bank of Ireland register'; confirm it's the real firm, not an impostor; check the Central Bank's unauthorised-firm warnings. If scammed: contact your bank or provider and the Gardai immediately. No recovery-scam or withdrawal-fee detail."
+
+  - id: ie-ccpc-spot-a-scam-2026
+    publisher: Competition and Consumer Protection Commission (CCPC)
+    title: "How to spot a scam"
+    url: https://www.ccpc.ie/news-and-media/news/article/2026/04/23/how-to-spot-a-scam
+    published: "2026-04-23"
+    accessed: "2026-11-19"
+    region: IE
+    tier: 3
+    used_for: [investment-ad-fake-platform, WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Report to your local Garda station ('responsible for pursuing scam operators'); scammed online: contact your bank or card issuer immediately. No investment detail."
+
+  - id: ie-garda-crimecall-investment-2024
+    publisher: An Garda Siochana (GNECB, Crimecall advice)
+    title: "Investment Fraud Advice (Crimecall, 29 April 2024)"
+    url: https://www.garda.ie/en/crime-prevention/crimecall-on-rte/crimecall-episodes/2024/29-april-2024/investment-fraud-advice.html
+    published: "2024-04-29"
+    accessed: "2026-11-19"
+    region: IE
+    tier: 3
+    used_for: [investment-ad-fake-platform, recovery-scam, remote-access-support-call, MAP-ch8, campaign-catalogue]
+    notes: "Offers via search, social-media ads, texts, WhatsApp or calls; links to cloned or fake sites; 'Fake charts and graphs' show apparent gains; products 'appear to be endorsed by celebrities or high-profile names'; victims asked to install remote-access software (a named real product: not to be shown); contact cut off when the victim tries to cash out; 'recovery experts' for a fee are 'usually just an extension of the fraud'. 'Calls can be masked or spoofed'. Advice: check the Central Bank register and unauthorised-firms list; don't invest from social-media ads; 'NEVER allow anyone to access your computer'; don't send more money to 'retrieve' an investment; if defrauded, stop sending money and contact your bank, the Gardai and the Central Bank. Figures 2024: older, keep off screen. Does NOT mention withdrawal fees."
+
+  - id: ie-fraudsmart-state-scheme-ads-2026
+    publisher: FraudSMART (Banking & Payments Federation Ireland)
+    title: "Surge in AI-generated adverts promoting bogus investment schemes"
+    url: https://bpfi.ie/surge-ai-generated-adverts-promoting-bogus-investment-schemes-fraudsmart/
+    published: "2026-05-28"
+    accessed: "2026-11-19"
+    region: IE
+    tier: 3
+    used_for: [investment-ad-fake-platform, MAP-ch8, campaign-catalogue]
+    notes: "AI-generated ads with 'fake images or videos of high-profile politicians and businesspeople' promote bogus 'state-backed' savings schemes; a short form, then a 'financial advisor' call pushing an immediate 'security deposit'. 'Legitimate investment opportunities will never pressure you to transfer money immediately.' Check the Central Bank registers; talk to family or friends. Garda figures quoted: reports of investment fraud up over 20% in 2025 vs 2024, over EUR 20m losses (keep off screen). No dashboard detail."
+
+  # ---------------------------------------------------------------- Belgium / Germany (dashboard + withdrawal fees, T-3.10r)
+  - id: be-fsma-trading-platforms-2025
+    publisher: FSMA (Belgian Financial Services and Markets Authority)
+    title: "New wave of fraudulent trading platforms"
+    url: https://www.fsma.be/en/warnings/new-wave-fraudulent-trading-platforms
+    published: "2025-07-24"
+    accessed: "2026-11-19"
+    region: BE
+    tier: 3
+    used_for: [investment-ad-fake-platform, recovery-scam, remote-access-support-call, MAP-ch8, campaign-catalogue]
+    notes: "Starts with 'A fake advertisement in which a celebrity is mentioned', fake profiles, unsolicited messages; after a deposit the platform 'manipulates the transactions to give the impression that significant profits have been achieved' and the money is never invested; larger withdrawals are met with excuses (high costs, taxes) and never paid; some offer to take over the device to make transfers; recovery offers for a fee are often another fraud. Victims: stop transactions, cut contact, tell your bank at once, keep records, report to the FSMA and the police. Main source for the dashboard and withdrawal-fee beats."
+
+  - id: de-evz-online-trading-scam-2026
+    publisher: European Consumer Centre Germany (EVZ, national centre of ECC-Net)
+    title: "Online trading scam"
+    url: https://www.evz.de/en/topics/banking-finance/online-trading-scam/
+    published: "2026-01-19 (last updated)"
+    accessed: "2026-11-19"
+    region: DE
+    tier: 3
+    used_for: [investment-ad-fake-platform, recovery-scam, remote-access-support-call, MAP-ch8, campaign-catalogue]
+    notes: "'the first profits are displayed in the customer account after a short time'; platforms 'simulate fake account movements and profits'; victims asked to 'pay taxes or processing fees that are supposedly incurred for the payout of the profits' (a delaying tactic); 'Do not give anyone access to your devices via remote maintenance software'; 'Reputable providers do not operate via social media or messenger services'; recovery fraudsters pose as regulators, mediators or solicitors. DE regulator named for checks and reports (not used on the IE/SE help screens)."
+
+  - id: eu-esas-crypto-factsheet-2025
+    publisher: EBA, EIOPA, ESMA
+    title: "Factsheet on crypto fraud and scams (EN text; file named CY_EN)"
+    url: https://www.esma.europa.eu/sites/default/files/2026-01/Factsheet_on_crypto_fraud_and_scams_CY_EN.pdf
+    published: 2025 (EU Publications Office; ISBN 978-92-9407-283-2)
+    accessed: "2026-11-19"
+    region: EU
+    tier: 1
+    used_for: [investment-ad-fake-platform, recovery-scam, MAP-ch8, campaign-catalogue]
+    notes: "Lookalike websites; 'Unknown exchange platform'; giveaway scams with celebrity or brand imagery 'usually fake or obtained without authorisation'; recovery rooms offer 'to recover your lost money for a fee', may pose as a public authority; 'being scammed once does not prevent you from being scammed again'; check the ESMA register and your national authority's warnings. If scammed: stop transactions, change passwords, contact your provider through official channels, report to police or the national supervisor. No dashboard or withdrawal-fee passage."
+
+  # ---------------------------------------------------------------- Sweden (T-3.10r)
+  - id: se-polisen-telefonbedrageri
+    publisher: Polisen (Swedish Police Authority)
+    title: "Telefonbedrägeri, vishing"
+    url: https://polisen.se/telefonbedragerier
+    published: "2026-08-19 (reviewed; created 2018-11-22)"
+    accessed: "2026-11-19"
+    region: SE
+    tier: 3
+    used_for: [e-id-approval-on-call, remote-access-support-call, MAP-ch9, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    notes: "'När du identifierar dig med e-legitimation riskerar du att släppa in bedragaren på din internetbank'; 'Identifiera dig aldrig med bank-id' (at a caller's request); 'Seriösa företag, organisationer och myndigheter tar aldrig kontakt och ber dig logga in'; spoofing explained; 'Lita inte på personen som ringer även om den verkar trovärdig'; hang up if unsure. Bank step: 'Kontakta din bank direkt för att stoppa eventuella betalningar eller spärra ditt bankkort'; 'Alla banker har ett särskilt telefonnummer som du kan ringa dygnet runt'. If defrauded: bank first, then a police report (114 14; 112 if ongoing). No QR or remote-access passage. The page names the e-ID product: research label only (Red Line 1)."
+
+  - id: se-polisen-anmal-telefonbedrageri
+    publisher: Polisen (Swedish Police Authority)
+    title: "Telefonbedrägeri (polisanmälan: bedrägerier)"
+    url: https://polisen.se/utsatt-for-brott/polisanmalan/bedrageri/bedragerier/telefonbedrageri/
+    published: "2024-01-09 (last modified; created 2023-11-16)"
+    accessed: "2026-11-19"
+    region: SE
+    tier: 3
+    used_for: [e-id-approval-on-call, remote-access-support-call]
+    notes: "Report page. Calls that try to get you to 'logga in på din bank'; 'Våga vara otrevlig'; fraudsters seem trustworthy and helpful; 'Ofta är det bråttom'. Report other fraud by calling 114 14 or at a police station; card fraud online with a Swedish personal or coordination number; 112 if ongoing. No e-ID, QR or remote-access passage."
+
+  - id: se-polisen-nord-fake-police-2025
+    publisher: Polisen (Region Nord)
+    title: "Varning för bedragare som utger sig att vara från polisen"
+    url: https://polisen.se/aktuellt/nyheter/nord/2025/december/varning-for-bedragare-som-utger-sig-att-vara-fran-polisen/
+    published: "2025-12-30"
+    accessed: "2026-11-19"
+    region: SE
+    tier: 3
+    used_for: [e-id-approval-on-call, MAP-ch9, campaign-catalogue]
+    notes: "'Polisen ringer ALDRIG upp och begär legitimering med BankId'; callers claim 'det behövs verifiering med BankId'; hang up at once; save the number and name given; report via 114 14 or polisen.se."
+
+  - id: se-konsumentverket-investment-fraud
+    publisher: Konsumentverket (Swedish Consumer Agency)
+    title: "Investment fraud"
+    url: https://www.konsumentverket.se/en/articles/investment-fraud
+    published: "2025-10-30 (proofread)"
+    accessed: "2026-11-19"
+    region: SE
+    tier: 3
+    used_for: [investment-ad-fake-platform, recovery-scam, e-id-approval-on-call, remote-access-support-call, MAP-ch8, MAP-ch9, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    notes: "Ads with a fake interview with a famous person ('the celebrity has not been asked for permission'); small deposit first, then pressure; fake login portals show rising values, 'manipulated to create a sense of security'. Never let someone you don't know access your computer remotely; don't use the e-ID or log in to your bank at someone else's request; never share login details. Recovery: 'Never pay money to someone who says they want to help you'; they pose as a company, bank or authority. Check the supervisor's register AND warning list, but scammers change names, so a clean result doesn't guarantee legitimacy. If scammed: bank at once; police report (114 14) even for attempts; notify the supervisor (it cannot help you personally); victim-support authority."
+
+  - id: se-konsumenternas-raddningshjalp
+    publisher: Konsumenternas Bank- och finansbyrå (consumer bureau backed by FI, Konsumentverket and the industry; backing not re-checked)
+    title: "Räddningshjälp - ofta nytt bedrägeri"
+    url: https://konsumenternasbankochfinansbyra.se/konsumentstod/guider--checklistor/guider---sparande--pension/undvik-investeringsbedragerier/raddningshjalp---ofta-nytt-bedrageri
+    published: "2026-11-13 (last modified)"
+    accessed: "2026-11-19"
+    region: SE
+    tier: 3
+    used_for: [recovery-scam, e-id-approval-on-call, MAP-ch8, MAP-ch9, campaign-catalogue]
+    notes: "Recovery offers to earlier victims are 'ett fortsatt bedrägeri'. Callers claiming to be an authority (e.g. the supervisor) with spoofed numbers try to get you to log in to your internet bank or hand over information; 'agents' for several victims demand 'en avgift' or 'en skatt' first. Advice: police; bank (only the bank can start a card chargeback; not for instant-payment app or transfers; chances 'mycket liten'). Opened via redirect from konsumenternas.se. Publisher backing stated from general knowledge, not re-checked on the page."
+
+  - id: eu-esas-ai-scams-factsheet-sv
+    publisher: EBA, EIOPA, ESMA
+    title: "Online financial frauds and scams in an AI world (SV edition)"
+    url: https://www.eba.europa.eu/sites/default/files/2026-01/fa63af9a-bafd-4821-baee-48c7c8fb6490/Online%20financial%20frauds%20and%20scams%20in%20an%20AI%20world_SV.pdf
+    published: 2025 (EU Publications Office; ISBN 978-92-9407-243-6)
+    accessed: "2026-11-19"
+    region: EU
+    tier: 1
+    used_for: [investment-ad-fake-platform, recovery-scam, e-id-approval-on-call, remote-access-support-call, MAP-ch8, MAP-ch9, campaign-catalogue]
+    notes: "Celebrity ads 'innehåller ett kändisfoto och rekommendationer som ofta är falska'; AI fakes of celebrities' faces; redirected to a platform or messaging channel, small then larger sums. Warning signs include requests to 'skanna en QR-kod' or take control of your device; 'skanna inte okända QR-koder'; 'Installera aldrig fjärråtkomstprogram eller dela din skärm' (banks never ask). Legit firms never ask for PINs, passwords, online-banking details or security codes. Recovery scams for a fee, posing as an authority. If scammed: stop transactions, cut contact, bank via official channels, change all passwords, police and supervisor, warn others. Does NOT mention e-ID or signing by name."
 
   # ------------------------------------------------ placeholders (example scenario only)
   - id: europol-scam-smishing

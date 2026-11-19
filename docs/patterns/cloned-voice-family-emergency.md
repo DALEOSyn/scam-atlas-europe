@@ -47,8 +47,9 @@ Builds on `messenger-family-impersonation.md` (Amsterdam): variant A, the "new n
 *Not to teach as reliable tells:* a metallic sound, odd stresses or delays. BSI listed these in 2022, but voice quality improves [de-bsi-deepfakes]. Spelling and tone aren't reliable either, because AI removes errors [eu-esas-ai-scams-factsheet-nl].
 
 ## 4. The verification habit
-**"Before you pay, call them on the number you already have saved. A voice can be copied; your saved number can't be. Agree a family code word for money requests."** [nl-fraudehelpdesk-hulpvraag-campaign], [nl-veiliginternetten-voice-cloning], [eu-esas-ai-scams-factsheet-it]
+**"Before you pay, call them on the number you already have saved. A voice can be copied; calling the number you saved reaches the real person. Agree a family code word for money requests."** [nl-fraudehelpdesk-hulpvraag-campaign], [nl-veiliginternetten-voice-cloning], [eu-esas-ai-scams-factsheet-it]
 
+- Wording note (2026-11-19): never say a saved number "can't be copied". A saved contact's name or number can be faked on an incoming call (`spoofed-authority-call.md` §3.1); what can't be faked is the call **you** dial to it.
 - If you can't reach them, call another family member [nl-fraudehelpdesk-hulpvraag-campaign], [nl-veiligbankieren-hulpvraag].
 - **The code word is an extra, not the main check.** It can be forgotten under stress, and scammers can say "I forgot". The call-back to the saved number is the core habit [nl-veiligbankieren-voice-cloning-2023].
 - **Prevention for debriefs:**

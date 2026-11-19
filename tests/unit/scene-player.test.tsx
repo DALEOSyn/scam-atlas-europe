@@ -146,15 +146,15 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     expect(card.textContent).toContain('If a parcel message wants money or a click…');
     expect(card.textContent).not.toContain('then I open');
     const flipBtn = within(card).getByRole('button', { name: 'Flip' });
-    expect(flipBtn.getAttribute('aria-pressed')).toBe('false');
+    expect(flipBtn.hasAttribute('aria-pressed')).toBe(false);
     fireEvent.click(flipBtn);
     expect(card.textContent).toContain("then I open the courier's app myself.");
-    // CR-28 (S6): the button carries its state.
+    // CR-28 (S6, round 2): the label carries the state; no aria-pressed (the live region announces the face).
     const back = within(card).getByRole('button', { name: 'Flip back' });
-    expect(back.getAttribute('aria-pressed')).toBe('true');
+    expect(back.hasAttribute('aria-pressed')).toBe(false);
     fireEvent.click(back);
     expect(card.textContent).not.toContain('then I open');
-    expect(within(card).getByRole('button', { name: 'Flip' }).getAttribute('aria-pressed')).toBe('false');
+    expect(within(card).getByRole('button', { name: 'Flip' })).toBeTruthy();
     expect(onFlip).toHaveBeenCalledTimes(1);
     cleanup();
     render(<ScenePlayer scene={scene} heading="Between cities" flip={null} onDone={() => undefined} />);
@@ -170,15 +170,36 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     fireEvent.click(screen.getByRole('button', { name: 'Need to talk? Where to get help' }));
     await axeClean(note.container as HTMLElement);
   });
-  it('reduced motion: panels and postcards still render their end state (durations are 0 via tokens)', () => {
-    document.documentElement.dataset.motion = 'reduced';
-    const scroll = vi.spyOn(window, 'scrollBy').mockImplementation(() => undefined);
-    render(<ScenePlayer scene={arrival()} heading="Berlin · Arrival" chapterName="Berlin" onDone={() => undefined} />);
-    scroll.mockClear();
-    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
-    // CR-28: the reveal scroll is instant with reduced motion.
-    expect(scroll).toHaveBeenCalledWith(expect.objectContaining({ behavior: 'auto' }));
-    scroll.mockRestore();
+  for (const reduced of [false, true]) {
+    it(`Next scrolls the new caption above the footer: ${reduced ? "'auto' with reduced motion (durations are 0 via tokens)" : "'smooth' without reduced motion"}`, () => {
+      if (reduced) document.documentElement.dataset.motion = 'reduced';
+      const scroll = vi.spyOn(window, 'scrollBy').mockImplementation(() => undefined);
+      // Stubbed geometry: every figcaption ends at 560, the footer starts at 500, a panel spans 200..560.
+      const box = (top: number, bottom: number) => ({ top, bottom, left: 0, right: 0, width: 0, height: bottom - top, x: 0, y: top, toJSON: () => ({}) }) as DOMRect;
+      const rect = vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+        if (this.tagName === 'FIGCAPTION') return box(400, 560);
+        if (this.tagName === 'LI') return box(200, 560);
+        if (this.querySelector?.('[data-scene="next"]')) return box(500, 568);
+        return box(0, 0);
+      });
+      render(<ScenePlayer scene={arrival()} heading="Berlin · Arrival" chapterName="Berlin" onDone={() => undefined} />);
+      scroll.mockClear();
+      fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+      expect(scroll).toHaveBeenCalledWith({ top: 68, behavior: reduced ? 'auto' : 'smooth' });
+      rect.mockRestore();
+      scroll.mockRestore();
+      delete document.documentElement.dataset.motion;
+    });
+  }
+  it('CR-28 round 2: a time caption comes before the speaker and the line, on screen and in reading order', () => {
+    const sc = arrival();
+    const first = sc.panels[0];
+    if (!first?.line || !first.speaker) throw new Error('fixture changed: panel 1 needs a speaker line');
+    const scene = { ...sc, panels: [{ ...first, caption: 'Later that evening.' }, ...sc.panels.slice(1)] };
+    const { container } = render(<ScenePlayer scene={scene} heading="Berlin · Arrival" chapterName="Berlin" onDone={() => undefined} />);
+    const texts = [...(container.querySelector('li[data-panel="1"] figcaption')?.children ?? [])].map((x) => x.textContent ?? '');
+    expect(texts[0]).toBe('Later that evening.');
+    expect(texts.findIndex((x) => x.includes(first.line ?? ''))).toBeGreaterThan(0);
   });
   it('CR-28 revealPanel: the caption end goes above the footer; a panel that fits is shown whole; else the caption wins', () => {
     const scroll = vi.spyOn(window, 'scrollBy').mockImplementation(() => undefined);

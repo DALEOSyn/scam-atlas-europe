@@ -86,10 +86,10 @@ export function FlipCard({ ifThen, cityName }: { ifThen: IfThen; cityName: strin
         type="button"
         class={styles.small}
         data-flip=""
-        aria-pressed={flipped}
         onClick={() => setFlipped((f) => !f)}
       >
-        {/* CR-28 (T-S4b QA S6): the button carries its state, pressed and "Flip back" once turned. */}
+        {/* CR-28 (T-S4b QA S6, round 2): the label carries the state ("Flip back" once turned); no aria-pressed,
+            as the live region above announces the new face. */}
         {t(flipped ? 'scene_flip_back' : 'scene_flip_button')}
       </button>
     </div>

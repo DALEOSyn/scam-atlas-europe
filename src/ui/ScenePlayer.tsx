@@ -102,6 +102,8 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
   const [helpFrom, setHelpFrom] = useState<'note' | 'panels'>('panels');
   const [picked, setPicked] = useState<Record<number, number>>({});
   const heading = useRef<HTMLHeadingElement>(null);
+  /** The heading row (h1, Help, Skip): kept in view when a scene opens (CR-28 round 2). */
+  const headRef = useRef<HTMLElement>(null);
   const flipRecorded = useRef(false);
   const items = useRef<(HTMLLIElement | null)[]>([]);
   const replies = useRef<(HTMLParagraphElement | null)[]>([]);
@@ -120,23 +122,6 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
       onFlip?.(flip.city);
     }
   }, [view, shown]);
-
-  useLayoutEffect(() => {
-    const f = focusNext.current;
-    focusNext.current = { kind: 'heading' };
-    if (f.kind === 'panel') {
-      const el = items.current[f.i];
-      if (!el) return;
-      el.focus({ preventScroll: true });
-      revealPanel(el, footerRef.current, prefersReducedMotion() ? 'auto' : 'smooth');
-    } else if (f.kind === 'reply') replies.current[f.i]?.focus();
-    else {
-      heading.current?.focus();
-      // CR-27 / CR-28 (T-S4b QA M1): on open the sticky footer must not cover the first panel's text.
-      const first = items.current[0];
-      if (view === 'panels' && shown === 1 && first) revealPanel(first, footerRef.current, 'auto');
-    }
-  }, [view, shown, picked]);
 
   // CR-27: bottom room = the footer's measured height (scroll padding and the panel list), so a scrolled-to
   // or focused panel is never under the sticky footer.
@@ -159,6 +144,25 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
       root.style.scrollPaddingBottom = '';
     };
   }, [view]);
+
+  // Runs after the footer is measured (declared after it), so the open layout uses the real footer height.
+  useLayoutEffect(() => {
+    const f = focusNext.current;
+    focusNext.current = { kind: 'heading' };
+    if (f.kind === 'panel') {
+      const el = items.current[f.i];
+      if (!el) return;
+      el.focus({ preventScroll: true });
+      revealPanel(el, footerRef.current, prefersReducedMotion() ? 'auto' : 'smooth');
+    } else if (f.kind === 'reply') replies.current[f.i]?.focus();
+    else {
+      heading.current?.focus({ preventScroll: true });
+      // CR-27 / CR-28 round 2: on open the heading row (focused h1, Help, Skip) stays fully in view, and the
+      // first panel's caption should end above the footer; the heading row wins when both cannot fit.
+      const first = items.current[0];
+      if (view === 'panels' && shown === 1 && first) revealOnOpen(headRef.current, first, footerRef.current);
+    }
+  }, [view, shown, picked]);
 
   // A scene with no visible panel (all variants off, or only a flip without a postcard) ends at once.
   useEffect(() => {
@@ -243,7 +247,7 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
   return (
     <main class={styles.shell} data-scene-id={scene.id}>
       <section class={styles.scene} aria-labelledby="scene-h">
-        <header class={styles.head}>
+        <header class={styles.head} ref={headRef}>
           <div>
             <p class={styles.kicker} aria-hidden="true">
               {t('scene_story_label')}
@@ -327,6 +331,10 @@ export function revealPanel(li: HTMLElement, footer: HTMLElement | null, behavio
   if (typeof window === 'undefined' || typeof window.scrollBy !== 'function') return;
   const cap = li.querySelector('figcaption') ?? li;
   const bottomEdge = (footer ? footer.getBoundingClientRect().top : window.innerHeight) - REVEAL_MARGIN;
+  // CR-28 round 2: a panel taller than the room between the viewport top and the footer gets a tighter
+  // art cap (down to 88 px), so the focused panel is fully on screen with its caption.
+  const li0 = li.getBoundingClientRect();
+  shrinkArt(li, li0.bottom - li0.top - (bottomEdge - REVEAL_MARGIN));
   const top = li.getBoundingClientRect().top;
   const capEnd = cap.getBoundingClientRect().bottom;
   // Down by what the caption runs under the footer; else up to show the panel's top, as long as the
@@ -334,6 +342,47 @@ export function revealPanel(li: HTMLElement, footer: HTMLElement | null, behavio
   let dy = capEnd > bottomEdge ? capEnd - bottomEdge : 0;
   if (dy === 0 && top < REVEAL_MARGIN) dy = Math.max(top - REVEAL_MARGIN, capEnd - bottomEdge);
   if (Math.abs(dy) >= 1) window.scrollBy({ top: dy, behavior });
+}
+
+/** The smallest a panel's art may get on a short screen (px). */
+const OPEN_ART_MIN = 88;
+
+/** Lower a panel's art cap by `excess` px (plus 2 px for rounding), never under 88 px. */
+function shrinkArt(li: HTMLElement, excess: number): void {
+  if (excess <= 0) return;
+  const art = li.querySelector<HTMLElement>('[role="img"]');
+  if (!art) return;
+  const h = art.getBoundingClientRect().height;
+  const target = Math.max(OPEN_ART_MIN, Math.floor(h - excess - 2));
+  if (target >= h) return;
+  art.style.minHeight = `${OPEN_ART_MIN}px`;
+  art.style.maxHeight = `${target}px`;
+}
+
+/**
+ * CR-28 round 2 (sceptic + psych): when a scene opens, the heading row (the focused h1, Help or "Need to
+ * talk?", Skip) stays fully in view (WCAG 2.4.11; on later sensitive scenes the Help label is the only
+ * safety cue). The page scrolls at most as far as keeps that row on screen, to lift the first panel's
+ * caption above the footer; if that is not enough, the first panel's art gets a tighter cap (down to
+ * 88 px) so heading, panel and caption fit. If they still cannot all fit, the heading row wins.
+ */
+export function revealOnOpen(head: HTMLElement | null, li: HTMLElement, footer: HTMLElement | null): void {
+  if (typeof window === 'undefined' || typeof window.scrollBy !== 'function') return;
+  const bottomEdge = () => (footer ? footer.getBoundingClientRect().top : window.innerHeight) - REVEAL_MARGIN;
+  const cap = li.querySelector('figcaption') ?? li;
+  const headTop = () => (head ? head.getBoundingClientRect().top : 0);
+  // The heading row first: never above the viewport.
+  if (headTop() < 0) window.scrollBy({ top: headTop(), behavior: 'auto' });
+  let overlap = cap.getBoundingClientRect().bottom - bottomEdge();
+  if (overlap <= 0) return;
+  // Not enough room above the heading row to scroll it away: shrink the first panel's art.
+  const room = Math.max(0, headTop());
+  if (overlap > room) {
+    shrinkArt(li, overlap - room);
+    overlap = cap.getBoundingClientRect().bottom - bottomEdge();
+  }
+  const dy = Math.min(overlap, Math.max(0, headTop()));
+  if (dy >= 1) window.scrollBy({ top: dy, behavior: 'auto' });
 }
 
 function captionClass(p: ScenePanel): string {
@@ -386,6 +435,9 @@ function PanelText({
   const label = p.speaker === 'you' ? t('scene_you') : member?.name ?? null;
   return (
     <>
+      {/* CR-28 round 2: a time or place caption ("Later that evening.") sets the scene, so it comes before
+          the speaker and their line, on screen and in reading order. */}
+      {p.caption ? <p class={styles.narrationText}>{fill(p.caption)}</p> : null}
       {label ? (
         <p class={styles.speakerLabel}>
           <strong>{label}</strong>
@@ -404,7 +456,6 @@ function PanelText({
           ) : null}
         </p>
       ) : null}
-      {p.caption ? <p class={styles.narrationText}>{fill(p.caption)}</p> : null}
       {/* The postcard's own heading reads "Postcard to Teo:"; no extra caption (review T-S3). */}
       {p.if_then ? <Postcard ifThen={p.if_then} city={chapterName} /> : null}
       {p.flip_postcard && flip ? (

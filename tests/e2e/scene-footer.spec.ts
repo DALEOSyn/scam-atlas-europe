@@ -4,8 +4,9 @@ import { expect, test, type Page } from '@playwright/test';
 import { HARNESS_URL } from '../../playwright.config.ts';
 
 /**
- * CR-28 (T-S4b QA M1): on short screens the sticky footer hid the end of the newest panel's text. For every
- * authored scene in content/scenes, at 320×568 and 720×450: when the scene opens and after every Next, the
+ * CR-28 (T-S4b QA M1, round 2): on short screens the sticky footer hid the end of the newest panel's text,
+ * and the first fix scrolled the focused h1 and Help off on open. For every authored scene, at 320×568,
+ * 375×667 and 720×450: on open the heading row and the focused h1 are in view; when the scene opens and after every Next, the
  * newest panel's figcaption (its text, the postcard on If-then panels, the flip card) ends above the footer's
  * top edge. Runs on the harness (`?view=real`), which renders the authored scenes with the game's CSS.
  */
@@ -15,23 +16,44 @@ const IDS = readdirSync(SCENES, { withFileTypes: true })
   .flatMap((d) => readdirSync(join(SCENES, d.name)).filter((f) => f.endsWith('.yaml')).map((f) => basename(f, '.yaml')))
   .sort();
 
-/** How far (px) the newest panel's figcaption runs under the footer; ≤ 0 is clear. Also: is the panel focused? */
+const SENSITIVE = new Set(['amsterdam-sanne-story', 'amsterdam-turn', 'amsterdam-resolution']);
+
+/**
+ * The newest panel's figcaption against the footer (`under` ≤ 0 is clear; `capTop` ≥ 0 its start is on
+ * screen), the focused element's box, and the heading row (h1, Help, Skip).
+ */
 async function measure(page: Page) {
   return page.evaluate(() => {
     const lis = [...document.querySelectorAll<HTMLElement>('li[data-panel]')];
     const li = lis.at(-1);
     const cap = li?.querySelector('figcaption')?.getBoundingClientRect();
     const foot = document.querySelector('[data-scene="next"]')?.parentElement?.getBoundingClientRect();
-    if (!li || !cap || !foot) return null;
-    return { panel: lis.length, under: Math.ceil(cap.bottom - foot.top), capTop: cap.top, focused: document.activeElement === li };
+    const head = document.querySelector('header')?.getBoundingClientRect();
+    const f = (document.activeElement as HTMLElement | null)?.getBoundingClientRect();
+    if (!li || !cap || !foot || !head || !f) return null;
+    return {
+      panel: lis.length,
+      under: Math.ceil(cap.bottom - foot.top),
+      capTop: Math.floor(cap.top),
+      focusTag: document.activeElement?.tagName ?? '',
+      onLi: document.activeElement === li,
+      focusTop: Math.floor(f.top),
+      focusBottom: Math.ceil(f.bottom),
+      footTop: foot.top,
+      headTop: Math.floor(head.top),
+      headBottom: Math.ceil(head.bottom),
+      art: Math.round(li.querySelector('[role="img"]')?.getBoundingClientRect().height ?? 0),
+      liH: Math.round(li.getBoundingClientRect().height),
+    };
   });
 }
 
 for (const size of [
   { width: 320, height: 568 },
+  { width: 375, height: 667 },
   { width: 720, height: 450 },
 ]) {
-  test(`every authored scene at ${size.width}×${size.height}: the newest panel's text ends above the footer (${IDS.length} scenes)`, async ({ page }) => {
+  test(`every authored scene at ${size.width}×${size.height}: heading row in view on open, focus on screen, the newest caption above the footer (${IDS.length} scenes)`, async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize(size);
     await page.emulateMedia({ reducedMotion: 'reduce' });
@@ -40,15 +62,26 @@ for (const size of [
     for (const id of IDS) {
       await page.goto(`${HARNESS_URL}/?view=real&id=${id}`);
       await expect(page.locator('li[data-panel="1"]')).toBeVisible();
+      // Sensitive scenes: "Need to talk? Where to get help" is on screen on open (the only cue on later ones).
+      if (SENSITIVE.has(id)) await expect(page.getByRole('button', { name: 'Need to talk? Where to get help' }), `${id}: help link on open`).toBeInViewport({ ratio: 1 });
       const next = page.locator('[data-scene="next"]');
       for (;;) {
         // Instant scroll with reduced motion; one frame for layout to settle.
         await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
         const m = await measure(page);
-        if (!m) throw new Error(`${id}: no panel or footer`);
+        if (!m) throw new Error(`${id}: no panel, footer or heading`);
         panels++;
-        if (m.under > 0) bad.push(`${id} panel ${m.panel}: ${m.under} px under the footer`);
-        if (m.panel > 1 && !m.focused) bad.push(`${id} panel ${m.panel}: focus is not on the new panel`);
+        const at = `${size.width}×${size.height} ${id} panel ${m.panel} [art ${m.art}, head ${m.headTop}, li ${m.liH}, room ${Math.floor(m.footTop)}]`;
+        if (m.panel === 1) {
+          // On open: the focused h1 and the whole heading row are on screen (WCAG 2.4.11), above the footer.
+          if (m.focusTag !== 'H1') bad.push(`${at}: focus is on ${m.focusTag}, not the h1`);
+          if (m.headTop < 0 || m.headBottom > m.footTop) bad.push(`${at}: heading row ${m.headTop}..${m.headBottom} not fully in view`);
+        } else if (!m.onLi) bad.push(`${at}: focus is not on the new panel`);
+        // The focused element is on screen: its top in view, and not hidden under the footer.
+        if (m.focusTop < 0 || m.focusTop >= m.footTop) bad.push(`${at}: focused element top ${m.focusTop} off screen`);
+        if (m.focusBottom > m.footTop && m.focusTag === 'H1') bad.push(`${at}: h1 runs under the footer`);
+        if (m.capTop < 0) bad.push(`${at}: caption starts ${-m.capTop} px above the viewport`);
+        if (m.under > 0) bad.push(`${at}: caption ${m.under} px under the footer`);
         if ((await next.textContent())?.trim() !== 'Next') break;
         await next.click();
       }

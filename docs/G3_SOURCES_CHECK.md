@@ -4,11 +4,11 @@
 
 **Scope.**
 - Every real body, phone number, email and URL in the help-screen data, `docs/patterns/where-to-report.draft.en.yaml`. It covers 10 countries plus the EU block, and the per-chapter help-card wording in `docs/patterns/ch*-sources.md` uses the same rows.
-- Each one was re-opened today on the body's own site or on an official page.
+- Each one was re-checked today, on the body's own site or an official page where reachable. Some could not be re-confirmed from an official source today (see open items 1, 3, 5, 6 and 7 in §4: unreachable site, non-official source, or partial match).
 - The player-facing screen in the build (`src/ui/EndScreen.tsx` → `HelpList`, `content/i18n/en/ui.json` `help_*`) still shows only the generic list, with no real numbers. The verified per-country cards are not wired in yet.
 
 **Result.**
-- No number, email or URL on the help screen was wrong or outdated.
+- No number, email or URL was found wrong or outdated. Not every claim could be re-confirmed today: the open items in §4 list those still resting on a secondary, non-official or unreachable source.
 - No help-screen text had to change.
 - Edits were limited to `checked` / `accessed` dates for re-verified rows, one added source, and review notes.
 

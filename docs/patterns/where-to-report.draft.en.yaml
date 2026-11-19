@@ -499,6 +499,7 @@ countries:
           label: "Emergency"
       checked: 2026-11-19
       sources: [it-carabinieri-contro-truffe]
+      review_note: "G3 (2026-11-19): only partly verified. The number is right, but the fake-police / relative-in-trouble wording is not directly backed by the cited source. Open item 7 in docs/G3_SOURCES_CHECK.md."
     - id: it-polizia-postale
       role: report
       name: "Polizia Postale e delle comunicazioni"
@@ -563,7 +564,7 @@ countries:
       url: https://politie.nl/binaries/content/assets/politie/onderwerpen/whatsapp-account-overgenomen-gehackt/%E2%80%8B%E2%80%8Binvulformulier-bij-aangifte-doen-als-uw-whatsapp-account-is-overgenomen-gehackt.pdf
       checked: 2026-11-19
       sources: [nl-politie-whatsapp-takeover-2024]
-      review_note: "URL contains two percent-encoded zero-width spaces (%E2%80%8B) in the file name, exactly as published by politie.nl. Fragile: re-check at G3 and prefer a stable landing page on politie.nl if one exists."
+      review_note: "URL contains two percent-encoded zero-width spaces (%E2%80%8B) in the file name, exactly as published by politie.nl. Re-checked at G3 (2026-11-19): PDF live, September 2024 version. Still fragile; prefer a stable landing page on politie.nl if one appears."
     - id: nl-bank
       role: bank
       name: "Your bank"

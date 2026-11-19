@@ -2,10 +2,10 @@
 
 _Updated by the producer at the end of every session. Keep it readable in under a minute._
 
-**Phase:** 2 — Vertical slice (started 2026-11-18) · **Next gate:** G2 (Roman plays tutorial + Berlin) · **Last update:** 2026-11-19
+**Phase:** 3 — Content production (started 2026-11-19) · **Next gate:** G3 (all chapters in English pass review) · **Last update:** 2026-11-19
 
 ## Summary
-Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR #2) are merged. The design, the UI spec and the brands are in the G1 design PR. G1 approved by Roman (all as recommended). Phase 2 (vertical slice) has started.
+Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR #2) are merged. The design, the UI spec and the brands are in the G1 design PR. G1 approved by Roman (all as recommended). Phase 2 (vertical slice) is done: tutorial and Berlin merged (PRs #10–#15), G2 approved by Roman on 2026-11-19 after playing the private preview. Phase 3 (chapters 2–10, up to two in parallel) has started.
 
 ## Done
 - [x] T-1.1/1.2 | frontend-engineer | Scaffold, schema, red-line linter, CI | PR #2 | sceptic: FAIL → FAIL → PASS (producer exception for a third round) | CI green
@@ -24,8 +24,9 @@ Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR 
 - [x] T-2.7 | frontend-engineer | Learning rulings L1–L4 + layer-1 budget amendments: What-now past-tense lines, "Leave it there", Next-time pointer when ★★★ shows over a lower beat, other choices with beat stars; caller-ID decoy reveal + "Fair instinct" wrong mark (type on DebriefWrongTag), CONTENT_GUIDE reveal rules; chapter summary gross/wrong + net tier hint (correctShown); tutorial grace (slot 0) in balance/schema/scoring + over-caution kind lines; home reveals rewritten; docs UI_SPEC §8.1/§8.2/§9.2, GDD §4/§6/§7.1/§16, ENGINE; producer-accepted decisions recorded in GDD §16; decoy + padlock reveal rule applied across Home; Playwright port via PW_PORT (tests/README.md); review round 1 fixes (padlock + neutral reveal wording, caller ID saved-contact copy, Next time → call a number you know, per-block layer-1 render test over every chapter, grace schema guard, padlock validator rules) | branch phase2/learning-rulings | fraud-researcher: FAIL → PASS · sceptic: FAIL → PASS · qa: PASS
 - [x] T-2.8 | frontend-engineer | Berlin readiness: chapter list + Start resumes next unfinished chapter + replay (B1); banner/interrupt lang + Translate (M1); per-pusher sender/channel, pushers stop after their beat, caller follow-up as call line (M2); interrupt narrative in consequence + layer 2, interrupt banner with View, keyed announcer (M3); focus after interrupts (M4); sticky HUD (M5); Jump to your options (M6); in-game Settings (M7); half-day stop screen (M8); deadline caption after a fall (m1); merged damage control (L2); m2/m5/m6/m7; arc debrief + Tell me now (m4); "Passport stamp: Home, gold". Berlin QA rulings [FE]: message.ask, boss fall cap, genuine expiry ★/5 + deadline_genuine, interrupt after_beat, message.earlier, action_order, number sender caveat, shared_code (home-04/06 migrated), covered_by | branch phase2/berlin-ready | sceptic: PASS → FAIL → FAIL → PASS · qa: FAIL → PASS
 - [x] T-2.4b | scenario-writer | Berlin chapter (1-1…1-8, boss 1-9, Alex arc slot 1): request asks, German pusher/banners with translations, earlier[] thread history, Jonas after_beat, shared_code, covered_by, CONTENT_GUIDE reveal rule, vzhh source | branch phase2/scenarios-berlin | fraud-researcher: FAIL → PASS · sceptic: FAIL → PASS · qa: FAIL → PASS
+- [x] T-3.0 | producer | Roman, 2026-11-19: story with graphical elements + psychological advisor. Added PLAN.md Phase 3 track S (story bible, art direction, scene engine, retrofit, reviews; D-S1 decided: illustrated story layer), `learning-psychologist` agent (TEAM.md, producer routing, CLAUDE.md review rule), D-S1 recorded in DECISIONS.md; fixed romance wording in PLAN.md | branch plan/story-visual, PR #17 | sceptic: FAIL → PASS
 
-## Next up (Phase 2)
+## Next up (Phase 3)
 
 ## Follow-ups (non-blocking, from reviews)
 - Linter: brand letters split by `/` `,` `*`; "x dot com"; source-host check warning-only → error before G4; `St.Gallen`-style false positives; pin Actions by SHA.

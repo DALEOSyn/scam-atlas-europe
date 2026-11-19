@@ -27,7 +27,7 @@ These override any task, ticket or agent instruction. The `sceptic-reviewer` blo
 ## Repository layout (target)
 ```
 .claude/agents/        agent team (see docs/TEAM.md)
-docs/                  PLAN.md, STATUS.md, DECISIONS.md, TEAM.md, GDD.md, CONTENT_GUIDE.md
+docs/                  PLAN.md, STATUS.md, DECISIONS.md, TEAM.md, GDD.md, CONTENT_GUIDE.md, STORY.md, ART_DIRECTION.md, PSYCHOLOGY.md
 content/               brands.yaml, sources.yaml, scenarios/, i18n/
 src/                   game engine, UI "devices" (inbox, phone, browser, wallet), scoring
 scripts/redline-lint.ts  automated checks for Red Lines 1 and 3
@@ -37,7 +37,7 @@ tests/                 unit, content, e2e
 ## How work is run
 - `docs/STATUS.md` is the single source of truth for what is done, in progress, blocked and next. Every agent updates it at the end of its task (one line per task, see format inside).
 - `docs/DECISIONS.md` holds the gates. A task that depends on an open gate is not started; work continues elsewhere.
-- Every content or code change passes a **sceptic review** (`sceptic-reviewer`) before it is marked done. Content also passes `fraud-researcher` fact check. UI also passes `qa-playtester`.
+- Every content or code change passes a **sceptic review** (`sceptic-reviewer`) before it is marked done. Content also passes `fraud-researcher` fact check. UI also passes `qa-playtester`. Story scenes, chapter specs and UI changes also pass `learning-psychologist` (added 2026-11-19).
 - Small, reviewable increments: one scenario or one feature per branch/PR.
 - Agents may merge their own PRs into `main` once every reviewer passes and CI is green (G0). Never create repositories, deploy, make the repo public or publish without an approved gate in `docs/DECISIONS.md`.
 - Licence: code MIT, content CC BY-SA 4.0.

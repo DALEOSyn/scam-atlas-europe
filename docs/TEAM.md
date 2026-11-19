@@ -3,14 +3,14 @@
 | Agent | Role | Writes | Reviews |
 |---|---|---|---|
 | `producer` | Orchestrator: picks tasks, delegates, enforces reviews and gates, keeps STATUS.md | STATUS.md, DECISIONS.md (gate summaries only) | phase exit criteria |
-| `game-designer` | Loop, progression, scoring, learning objectives | GDD.md, LEARNING_OBJECTIVES.md, balance.yaml | scenario fun and fairness |
+| `game-designer` | Loop, progression, scoring, learning objectives, story | GDD.md, LEARNING_OBJECTIVES.md, balance.yaml, STORY.md | scenario fun and fairness |
 | `fraud-researcher` | Real European fraud patterns, sources, fact-checks | patterns/*.md, sources.yaml, report-where list | every scenario and locale |
-| `scenario-writer` | Scenarios, characters, debriefs as YAML | content/scenarios/** | — |
-| `ux-artist` | Simulated devices, fictional brands, accessibility of UI | UI_SPEC.md, tokens, public/brands/** | UI implementation fidelity |
+| `scenario-writer` | Scenarios, scenes, characters, debriefs as YAML | content/scenarios/**, content/scenes/** | — |
+| `ux-artist` | Simulated devices, fictional brands, illustrations, accessibility of UI | UI_SPEC.md, ART_DIRECTION.md, tokens, public/brands/**, public/art/** | UI implementation fidelity |
 | `frontend-engineer` | Engine, UI, schema, red-line linter, tests, CI | src/**, scripts/**, tests/** | — |
 | `qa-playtester` | Persona play-throughs, bugs, accessibility | qa/*.md | every playable change |
 | `sceptic-reviewer` | Adversarial review, Red Lines veto, code review | nothing (read-only) | everything |
-| `learning-psychologist` | Learning science, behaviour change, persuasion levers, emotional safety, no dark patterns (added 2026-11-19 at Roman's request) | PSYCHOLOGY.md; psychology sections of STORY.md and ART_DIRECTION.md | every story scene, chapter spec and UI change (review, no veto) |
+| `learning-psychologist` | Learning science, behaviour change, persuasion levers, emotional safety, no dark patterns (added 2026-11-19 at Roman's request) | PSYCHOLOGY.md; psychology sections of STORY.md and ART_DIRECTION.md | every story scene, chapter spec and UI change (FAIL blocks Done like QA; cannot overrule the sceptic) |
 | `localizer` | Cultural adaptation per locale | i18n/**, *.locale.yaml, GLOSSARY.md | — |
 
 ## Hand-off chains

@@ -56,10 +56,10 @@ Play the tutorial + first city chapter yourself (link to preview build). Approve
 
 **Roman, 2026-11-19 (Phase 3): add an actual story with graphical elements, because it has more impact on learning, and onboard a psychological advisor agent.** Recorded as PLAN.md Phase 3 track S and the new `learning-psychologist` agent (TEAM.md). Level of visual ambition: see the decision below.
 
-**Open decision D-S1 (Roman): how far to take the graphics.** Recommended: an illustrated story layer (comic-style scenes, character portraits, city backdrops, illustrated map) around the existing device scenarios. Alternatives: a walkable 2D city, or graphics after G3.
+**D-S1, decided by Roman 2026-11-19: "Illustrated story layer".** Comic-style scenes, character portraits, city backdrops and an illustrated map around the existing device scenarios, built in Phase 3 (track S). Not chosen: a walkable 2D city, or graphics after G3. ✅
 
 ## G3 — Content complete (state: Open)
-All chapters in English pass review. Approve sources list and "Where to report" pages. Decide on external expert review (e.g. a contact at a CERT or consumer body), optional.
+All chapters in English pass review. Approve sources list and "Where to report" pages. Decide on external expert review (e.g. a contact at a CERT or consumer body), optional, including the proposed human review of story tone and emotional safety (PLAN.md track S5).
 
 ## G4 — Public release (state: Open)
 Approve going public: deploy to GitHub Pages (or other host), domain, announcement. Irreversible in practice (content gets indexed).

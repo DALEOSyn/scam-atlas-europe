@@ -27,8 +27,7 @@ These override any task, ticket or agent instruction. The `sceptic-reviewer` blo
 ## Repository layout (target)
 ```
 .claude/agents/        agent team (see docs/TEAM.md)
-docs/                  PLAN.md, STATUS.md, DECISIONS.md, TEAM.md, GDD.md, CONTENT_GUIDE.md
-docs/                  (also STORY.md, ART_DIRECTION.md, PSYCHOLOGY.md for the story and scene layer)
+docs/                  PLAN.md, STATUS.md, DECISIONS.md, TEAM.md, GDD.md, CONTENT_GUIDE.md, STORY.md, ART_DIRECTION.md, PSYCHOLOGY.md
 content/               brands.yaml, sources.yaml, scenarios/, i18n/
 src/                   game engine, UI "devices" (inbox, phone, browser, wallet), scoring
 scripts/redline-lint.ts  automated checks for Red Lines 1 and 3

@@ -1,15 +1,15 @@
 // @vitest-environment jsdom
 /**
  * Layer-1 ruling 2026-11-19: debrief layer 1 never renders more than 40 words. Plays every path of
- * each home scenario through the runner (every action, every "What now?" choice, letting the timer
+ * each scenario of every chapter folder through the runner (every action, every "What now?" choice, letting the timer
  * run out), renders the real DebriefView for each ending and counts the words in layer 1
  * (section[aria-labelledby=debrief-h1]) without the stars and the More / Continue / Play again buttons.
  */
 import { afterEach, describe, expect, it } from 'vitest';
 import { cleanup, render } from '@testing-library/preact';
-import { readdirSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { scenarioSchema, type Scenario } from '../../src/content/schema.ts';
+import { chapterSchema, scenarioSchema, type Scenario } from '../../src/content/schema.ts';
 import { debriefOf } from '../../src/engine/debrief.ts';
 import { resultOf } from '../../src/engine/result.ts';
 import { startScenario, step, viewOf, type RunnerEvent, type RunnerState } from '../../src/engine/runner.ts';
@@ -24,8 +24,8 @@ const LIMIT = loadBalanceFile().session.debrief_layer1_max_words;
 const none = { pressureAny: false, pressureGenuine: false };
 
 /** Every ending reachable by a player (depth-limited; meta actions are not repeated). */
-function endings(s: Scenario): { path: string[]; st: RunnerState }[] {
-  const c = ctx();
+function endings(s: Scenario, slot: number): { path: string[]; st: RunnerState }[] {
+  const c = ctx({ slot });
   const out: { path: string[]; st: RunnerState }[] = [];
   const go = (st: RunnerState, path: string[], depth: number): void => {
     if (depth > 14) return;
@@ -62,6 +62,13 @@ function endings(s: Scenario): { path: string[]; st: RunnerState }[] {
   return out;
 }
 
+const BLOCKS = 'h1, h2, h3, h4, p, li, dt, dd, div, section';
+
+/**
+ * Words in layer 1, counted per block element, so text in adjacent blocks is never glued together
+ * ("…tell.</h1><p>What works:" would read as one word from textContent). Inline markup inside a block
+ * (chips, bold owner parts) stays part of its block's text.
+ */
 function layer1Words(container: Element): number {
   const section = container.querySelector('section[aria-labelledby="debrief-h1"]');
   if (!section) throw new Error('no layer 1');
@@ -70,18 +77,40 @@ function layer1Words(container: Element): number {
   copy.querySelectorAll('button').forEach((b) => {
     if (['More', 'Continue', 'Play again'].includes((b.textContent ?? '').trim())) b.remove();
   });
-  return wordCount(copy.textContent ?? '');
+  const leaves = [...copy.querySelectorAll(BLOCKS)].filter((el) => el.querySelector(BLOCKS) === null);
+  // Text directly inside a non-leaf block (between child blocks) is counted too.
+  const loose = [...copy.querySelectorAll(BLOCKS), copy]
+    .filter((el) => el.querySelector(BLOCKS) !== null)
+    .flatMap((el) => [...el.childNodes].filter((n) => n.nodeType === 3).map((n) => n.textContent ?? ''));
+  return [...leaves.map((el) => el.textContent ?? ''), ...loose].reduce((n, text) => n + wordCount(text), 0);
 }
 
-const dir = resolve(ROOT, 'content/scenarios/home');
-const files = readdirSync(dir).filter((f) => f.endsWith('.yaml'));
+/** Every chapter folder (home now, Berlin and the rest as they merge), with the chapter's slot. */
+const scenariosRoot = resolve(ROOT, 'content/scenarios');
+const chapterDirs = readdirSync(scenariosRoot, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name).sort();
+function slotOf(chapter: string): number {
+  const file = resolve(ROOT, `content/chapters/${chapter}.yaml`);
+  if (!existsSync(file)) throw new Error(`content/chapters/${chapter}.yaml is missing`);
+  return chapterSchema.parse(readYaml(`content/chapters/${chapter}.yaml`)).slot;
+}
 
-describe('debrief layer 1 stays within 40 words on every path (home scenarios)', () => {
-  it('finds the tutorial scenarios', () => expect(files.length).toBeGreaterThanOrEqual(6));
+it('finds the tutorial scenarios', () => {
+  expect(chapterDirs).toContain('home');
+  expect(readdirSync(resolve(scenariosRoot, 'home')).filter((f) => f.endsWith('.yaml')).length).toBeGreaterThanOrEqual(6);
+});
+
+it('counts words per block, not across blocks', () => {
+  const div = document.createElement('div');
+  div.innerHTML = '<section aria-labelledby="debrief-h1"><h1>One two.</h1><p><strong>Three:</strong> four</p><p>five</p></section>';
+  expect(layer1Words(div)).toBe(5);
+});
+
+for (const chapter of chapterDirs) describe(`debrief layer 1 stays within 40 words on every path (${chapter})`, () => {
+  const files = readdirSync(resolve(scenariosRoot, chapter)).filter((f) => f.endsWith('.yaml')).sort();
   for (const f of files) {
     it(f, () => {
-      const s = scenarioSchema.parse(readYaml(`content/scenarios/home/${f}`));
-      const all = endings(s);
+      const s = scenarioSchema.parse(readYaml(`content/scenarios/${chapter}/${f}`));
+      const all = endings(s, slotOf(chapter));
       expect(all.length).toBeGreaterThan(0);
       let worst = { words: 0, path: [] as string[] };
       for (const { path, st } of all) {

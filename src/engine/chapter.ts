@@ -5,7 +5,8 @@
  * - Chapter max = sum of scored scenarios' max points (drills, arc beats,
  *   interrupts and pause excluded). Inspector rating = points ÷ max, capped.
  * - Spotted (net, chapter-wide) = correct tags − wrong tags over scored
- *   scenarios and boss beats. R = the chapter's red flags.
+ *   scenarios and boss beats. R = the chapter's red flags. Stamps use net;
+ *   the summary shows gross correct (correctShown) and wrong marks apart (ruling L3).
  * - Stamps: bronze when finished; silver/gold by rating, genuine reported,
  *   spotted thresholds and (gold) no off-focus double checks.
  * - Unlocking is never score-gated. Home (slot 0) → Berlin (slot 1) → free
@@ -68,8 +69,13 @@ export interface ChapterSummary {
   rating: number;
   /** Net spotting (correct − wrong): the stamp rules use this. */
   spotted: number;
-  /** For "Red flags you spotted: x of R": net spotting floored at 0 and capped at R (QA E7). */
+  /** Net spotting floored at 0 and capped at R (QA E7): "Your count" in the tier hint uses max(0, spotted). */
   spottedShown: number;
+  /**
+   * For "Red flags you spotted: x of R" (ruling L3): gross correct marks, capped at R, so effort is
+   * never shown as zero. Wrong marks are shown next to it ("Marks on safe details"); stamps use `spotted`.
+   */
+  correctShown: number;
   correctTags: number;
   wrongTags: number;
   redFlags: number;
@@ -127,6 +133,7 @@ export function summarise(b: StampTable, chapter: Pick<Chapter, 'patterns'>, rec
     rating,
     spotted,
     spottedShown: Math.max(0, Math.min(redFlags, spotted)),
+    correctShown: Math.min(redFlags, correctTags),
     correctTags,
     wrongTags,
     redFlags,

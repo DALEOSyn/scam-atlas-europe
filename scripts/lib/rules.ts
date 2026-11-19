@@ -11,7 +11,7 @@
  */
 import { deriveCheckables } from '../../src/content/checkables.ts';
 import { classOf, isFall, starsFor, truthOf } from '../../src/engine/scoring.ts';
-import { choiceLineText } from '../../src/engine/choiceText.ts';
+import { choiceLineText, nextTimeText, overCautionOf } from '../../src/engine/choiceText.ts';
 import type { ChoiceLine } from '../../src/engine/debrief.ts';
 import { lookup } from '../../src/i18n/index.ts';
 import {
@@ -116,6 +116,29 @@ export function beatsOf(s: Scenario): BeatView[] {
 
 const SENDER_OR_LINK = /^(?:sender\.detail|caller_id|link(?:#\d)?)$/;
 
+/** The padlock / "Page info" detail (UI_SPEC §3.5). */
+export function isPadlock(i: Inspectable): boolean {
+  return i.type === 'padlock' || i.target === 'page.info';
+}
+
+/**
+ * Padlock reveals read the same on every page, genuine or fraud, in every scenario (producer ruling,
+ * T-2.7 review): otherwise the wording itself tells real pages from fake ones. Returns one error per
+ * reveal that differs from the most common wording.
+ */
+export function padlockRevealIssues(scenarios: readonly Scenario[]): { id: string; message: string }[] {
+  const seen: { id: string; where: string; reveal: string }[] = [];
+  for (const s of scenarios) {
+    for (const b of beatsOf(s)) for (const i of b.inspectables) if (isPadlock(i)) seen.push({ id: s.id, where: `${b.where}: ${i.target}`, reveal: i.reveal.trim() });
+  }
+  const counts = new Map<string, number>();
+  for (const x of seen) counts.set(x.reveal, (counts.get(x.reveal) ?? 0) + 1);
+  const canonical = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0]?.[0];
+  return seen
+    .filter((x) => x.reveal !== canonical)
+    .map((x) => ({ id: x.id, message: `${x.where}: padlock reveals must be identical in every scenario; use "${canonical ?? ''}"` }));
+}
+
 export function isDecoy(i: Inspectable): boolean {
   return !i.red_flag && i.context !== 'quoted';
 }
@@ -145,9 +168,11 @@ export function anyFall(s: Scenario, balance: Registries['balance']): boolean {
  * choiceLineText() renders (src/engine/choiceText.ts, shared with DebriefView). Counted: every action,
  * "What now?" extra and built-in that can leave it (or a boss beat) below 3 stars and is NOT a fall
  * (after a fall the kind line takes the slot), engage actions included; the timer line when timed.
- * Optional catalogue lines are included as soon as their keys exist (L1–L4 follow-ups):
- * you_chose_whatnow_* (via choiceLineText), you_chose_report_genuine / _dismiss_genuine /
- * _dismiss_started on genuine scenarios, and next_time_after_hang_up on a boss with a dismiss on fraud.
+ * Each line is built as the same ChoiceLine the engine's choiceLine() builds, so the count is exact:
+ * built-ins render you_chose_whatnow_* (ruling L1); over-caution on genuine (report; dismiss on high
+ * stakes) renders you_chose_report_genuine / _dismiss_genuine / _dismiss_started (ruling L4, picked by
+ * overCautionOf()). Plus the "Next time" pointer on a boss with a dismiss-class ending on fraud (a
+ * dismiss action, the "Leave it there" built-in, or a timer).
  */
 export function choiceLines(s: Scenario, balance: Registries['balance']): string[] {
   const truth = truthOf(s);
@@ -159,35 +184,39 @@ export function choiceLines(s: Scenario, balance: Registries['balance']): string
   };
   const lines: ChoiceLine[] = [];
   const classes = new Set<string>();
-  if (s.pressure.timer) lines.push({ beatId: 'start', kind: 'timer' });
+  const started = s.player_started === true;
+  const lineFor = (beatId: string, cls: ActionClass, plain: ChoiceLine): ChoiceLine => {
+    const which = overCautionOf(cls, truth, started);
+    return which ? { beatId, kind: 'over_caution', which } : plain;
+  };
+  if (s.pressure.timer) {
+    lines.push({ beatId: 'start', kind: 'timer' });
+    classes.add(balance.stars.timer_expiry);
+  }
   for (const b of beatsOf(s).filter((x) => !x.interrupt)) {
     for (const a of b.actions) {
       const cls = classOf(balance, a.kind);
       if (below3(cls)) {
-        lines.push({ beatId: b.where, kind: 'action', label: a.label });
+        lines.push(lineFor(b.where, cls, { beatId: b.where, kind: 'action', label: a.label }));
         classes.add(cls);
       }
     }
   }
   for (const [, wn] of whatNowsOf(s)) {
-    for (const x of wn.extra) if (below3(classOf(balance, x.kind))) lines.push({ beatId: 'what_now', kind: 'action', label: x.label });
+    for (const x of wn.extra) {
+      const cls = classOf(balance, x.kind);
+      if (below3(cls)) lines.push(lineFor('what_now', cls, { beatId: 'what_now', kind: 'action', label: x.label }));
+    }
     for (const [choice, cls] of Object.entries(WHAT_NOW_BUILTIN_CLASS) as [keyof typeof WHAT_NOW_BUILTIN_CLASS, ActionClass][]) {
       if (below3(cls)) {
-        lines.push({ beatId: 'what_now', kind: 'what_now', choice });
+        lines.push(lineFor('what_now', cls, { beatId: 'what_now', kind: 'what_now', choice }));
         classes.add(cls);
       }
     }
   }
   const texts = lines.map((c) => choiceLineText(c, lookup));
-  const optional = (key: string, when: boolean) => {
-    const text = when ? lookup(key) : undefined;
-    if (text) texts.push(text);
-  };
-  optional('you_chose_report_genuine', truth !== 'fraud' && classes.has('report'));
-  optional('you_chose_dismiss_genuine', truth !== 'fraud' && classes.has('dismiss'));
-  optional('you_chose_dismiss_started', truth !== 'fraud' && classes.has('dismiss'));
-  optional('next_time_after_hang_up', s.role === 'boss' && truth === 'fraud' && classes.has('dismiss'));
-  return texts;
+  if (s.role === 'boss' && truth === 'fraud' && classes.has('dismiss')) texts.push(nextTimeText('after_hang_up', lookup));
+  return [...new Set(texts)].filter((x) => x.length > 0);
 }
 
 /** The longest "You chose" line (words), see choiceLines(). */
@@ -261,6 +290,11 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
       }
       if (t === 'padlock' && mix.padlock_never_reassurance_as_proof && (ins.reassures || ins.red_flag)) {
         errors.push(`${b.where}: ${ins.target}: the padlock is necessary but never proof; it is neither a red flag nor a reassurance`);
+      }
+      // Reveal wording (docs/CONTENT_GUIDE.md): a padlock looks the same on real and fake pages, so its
+      // reveal never opens like a genuine detail's would; that would leak the verdict.
+      if (isPadlock(ins) && /^\s*It fits\b/i.test(ins.reveal)) {
+        errors.push(`${b.where}: ${ins.target}: a padlock reveal must not start with "It fits" (it looks the same on real and fake pages; use the shared padlock wording)`);
       }
     }
   }

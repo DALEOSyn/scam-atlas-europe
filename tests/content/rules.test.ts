@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { anyFall, BEST_LINE_WORDS, chapterRules, choiceLines, choiceWorst, layer1Slot, scenarioRules, LAYER1_OVERHEAD, wordCount } from '../../scripts/lib/rules.ts';
+import { anyFall, BEST_LINE_WORDS, chapterRules, choiceLines, choiceWorst, layer1Slot, padlockRevealIssues, scenarioRules, LAYER1_OVERHEAD, wordCount } from '../../scripts/lib/rules.ts';
+import { parse as parseYaml } from 'yaml';
 import { deriveCheckables, linksIn } from '../../src/content/checkables.ts';
 import { scenarioSchema, type Scenario } from '../../src/content/schema.ts';
+import { lookup } from '../../src/i18n/index.ts';
 import { rawFraud, rawGenuine, realRegistries, ROOT, scenario, validChapter } from './fixtures.ts';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -174,7 +176,9 @@ describe('per-scenario rules (scenarioRules)', () => {
     it('slot without any fall: no kind line; the exact rendered "You chose" text is counted', () => {
       const g = rawGenuine();
       expect(anyFall(scenario(g), reg.balance)).toBe(false);
-      for (const line of choiceLines(scenario(g), reg.balance)) expect(line).toMatch(/^You chose: .+\.$|^You let the timer run out\.$/);
+      // Over-caution on genuine renders its kind line (ruling L4), never "You chose: <label>.".
+      for (const line of choiceLines(scenario(g), reg.balance)) expect(line).toMatch(/^You chose: .+\.$|^You let the timer run out\.$|^You reported it\. Careful is good; this one was safe\.$/);
+      expect(choiceLines(scenario(g), reg.balance)).toContain(lookup('you_chose_report_genuine'));
       expect(layer1Slot(scenario(g), reg.balance).words).toBeGreaterThanOrEqual(BEST_LINE_WORDS);
     });
     it('choice_worst counts the timer line, engage labels and "What now?" extras', () => {
@@ -621,5 +625,28 @@ describe('chapter mix rules (chapterRules)', () => {
     expect(r.errors.join('\n')).toMatch(/city "testcity" does not match the file name "othercity.yaml"/);
     const missing = run((fx) => (fx.chapter.scenario_order.am = fx.chapter.scenario_order.am.filter((id) => id !== 'f1')));
     expect(missing.errors.join('\n')).toMatch(/scenario "f1" is missing from scenario_order/);
+  });
+});
+
+describe('padlock reveals (producer ruling, T-2.7 review)', () => {
+  const load = (id: string): Scenario => scenarioSchema.parse(parseYaml(readFileSync(resolve(ROOT, `content/scenarios/home/${id}.yaml`), 'utf8')));
+  const withPadlock = (s: Scenario, reveal: string): Scenario => ({
+    ...s,
+    inspectables: s.inspectables.map((i) => (i.type === 'padlock' ? { ...i, reveal } : i)),
+    beats: s.beats.map((b) => ({ ...b, inspectables: b.inspectables.map((i) => (i.type === 'padlock' ? { ...i, reveal } : i)) })),
+  });
+  it('a padlock reveal must not start with "It fits"', () => {
+    const s = withPadlock(load('home-03-password-reset'), 'It fits: the connection is encrypted.');
+    expect(scenarioRules(s, reg).errors.join('\n')).toMatch(/page\.info: a padlock reveal must not start with "It fits"/);
+    expect(scenarioRules(load('home-03-password-reset'), reg).errors).toEqual([]);
+  });
+  it('padlock reveals must be identical across scenarios', () => {
+    const same = ['home-02-mailbox-full', 'home-03-password-reset', 'home-04-kettle-locked'].map(load);
+    expect(padlockRevealIssues(same)).toEqual([]);
+    const odd = [same[0], withPadlock(same[1] as Scenario, 'Encrypted. Fine.'), same[2]] as Scenario[];
+    const issues = padlockRevealIssues(odd);
+    expect(issues).toHaveLength(1);
+    expect(issues[0]).toMatchObject({ id: 'home-03-password-reset' });
+    expect(issues[0]?.message).toMatch(/padlock reveals must be identical in every scenario; use "The connection is encrypted, the same lock/);
   });
 });

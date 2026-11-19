@@ -57,6 +57,15 @@ points:
     fall_on_fraud: recovery    # comply/proceed on fraud: points = recovery points (floor 0); stars 1 if recovery >= 6, else 0
   engage_on_fraud: { terminal: false, star_cap: 2 }   # every fraud engage must have next_beat (validator)
 
+# Tutorial grace (design ruling L4, 2026-11-18): chapter slot 0 only. The player has not yet met a scam or
+# learned that over-reporting has a cost, so over-caution on a genuine message earns ★ and 0 points instead of
+# 0 stars (and −5 for a report). Stamps are unchanged: a report still counts as "genuine message reported".
+# ★ at 0 points stays below ★★ (10). Not applied to timer expiry (scored as dismiss, not a choice).
+tutorial_grace:
+  slots: [0]
+  report_on_legit: { stars: 1, points: 0 }       # report on genuine, high or low stakes
+  dismiss_on_legit_high: { stars: 1, points: 0 } # dismiss on genuine high stakes
+
 tags:
   # Player may mark a checked detail "suspicious". Only fraud scenarios (and quoted examples) pay.
   per_tagged_red_flag: 2

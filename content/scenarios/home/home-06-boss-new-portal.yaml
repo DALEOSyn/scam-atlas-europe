@@ -45,7 +45,7 @@ inspectables:
     red_flag: true
     type: link
   - target: reference
-    reveal: "CN-2611 looks like a change number. Anyone can make one up; it proves nothing either way."
+    reveal: "CN-2611 looks like a change number, just as a real IT email would show. Anyone can make one up, so it can't prove anything either way."
     red_flag: false
     type: reference
 
@@ -86,7 +86,7 @@ beats:
       image: { alt: "Profile picture: the Waymarker Network logo" }
     inspectables:
       - target: sender.detail
-        reveal: "A new contact with a private mobile number. The IT desk isn't in your Kettle contacts, and its real contact is in the staff directory."
+        reveal: "A new contact with a private mobile number, not the IT desk's saved number. Its real contact is in the staff directory."
         red_flag: true
         type: sender
       - target: link
@@ -94,7 +94,7 @@ beats:
         red_flag: true
         type: link
       - target: image
-        reveal: "The Waymarker logo as a profile picture. Anyone can upload a logo. It proves nothing."
+        reveal: "The Waymarker logo as a profile picture, the same logo a real Waymarker account would show. Anyone can upload a logo, so it can't prove anything either way."
         red_flag: false
         type: logo
     actions:
@@ -120,7 +120,7 @@ beats:
     device: call
     arrives_after: 45
     message:
-      sender: { display: "Waymarker IT", detail: "Caller ID: Waymarker IT" }
+      sender: { display: "Waymarker IT", detail: "Caller ID: Waymarker IT (saved contact)" }
       transcript:
         - { speaker: caller, text: "Hello, IT desk here. Your account is about to be paused because the move didn't finish." }
         - { speaker: caller, text: "No worries, I'll finish it for you. I've just sent a 6-digit code to your phone. Can you read it out?" }
@@ -131,7 +131,7 @@ beats:
       phone_numbers: ["0800 ••• 3310"]
     inspectables:
       - target: caller_id
-        reveal: "\"Waymarker IT\" looks familiar, but caller ID can be faked. This shows what the network was told, not who is calling."
+        reveal: "Shows \"Waymarker IT\": the number matches a saved contact, as a real call would. Faked numbers can match too, so it can't prove anything either way. Judge the request."
         red_flag: false
         type: caller_id
       - target: phone_number
@@ -139,7 +139,7 @@ beats:
         red_flag: true
         type: phone_number
       - target: reference
-        reveal: "The same change number as the email. Repeating it makes the story hang together; it doesn't make it true."
+        reveal: "The same change number as the email, as a real follow-up call would repeat. It makes the story hang together, but it can't prove anything either way."
         red_flag: false
         type: reference
     actions:

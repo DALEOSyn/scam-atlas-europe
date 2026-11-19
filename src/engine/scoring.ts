@@ -8,7 +8,7 @@ import type { Action, ActionClass, ActionKind, Balance, Inspectable, Scenario } 
 export type Truth = 'fraud' | 'legit_high' | 'legit_low';
 
 /** The parts of balance.yaml the star table needs. */
-export type ScoringTable = Pick<Balance, 'action_kinds' | 'stars' | 'points'>;
+export type ScoringTable = Pick<Balance, 'action_kinds' | 'stars' | 'points' | 'tutorial_grace'>;
 
 /** Every part of balance.yaml the engine reads (validated at build time by balanceSchema). */
 export type EngineBalance = Pick<
@@ -25,6 +25,7 @@ export type EngineBalance = Pick<
   | 'timers'
   | 'pushers'
   | 'stress'
+  | 'tutorial_grace'
 >;
 
 export function truthOf(s: Pick<Scenario, 'is_fraud' | 'stakes'>): Truth {
@@ -98,11 +99,28 @@ export interface GroupScore {
   capped: boolean;
 }
 
+/**
+ * Tutorial grace (balance `tutorial_grace`, design ruling L4): in a grace slot, report on genuine and
+ * dismiss on genuine high stakes score the grace cell instead of the star table. undefined otherwise.
+ */
+export function graceFor(
+  b: Pick<Balance, 'tutorial_grace'>,
+  slot: number | undefined,
+  cls: ActionClass,
+  truth: Truth,
+): { stars: number; points: number } | undefined {
+  const g = b.tutorial_grace;
+  if (slot === undefined || !g.slots.includes(slot) || truth === 'fraud') return undefined;
+  if (cls === 'report') return g.report_on_legit;
+  if (cls === 'dismiss' && truth === 'legit_high') return g.dismiss_on_legit_high;
+  return undefined;
+}
+
 export function scoreGroup(
-  b: Pick<Balance, 'stars' | 'points'>,
+  b: Pick<Balance, 'stars' | 'points' | 'tutorial_grace'>,
   truth: Truth,
   decision: Decision | undefined,
-  opts: { engagedOnFraud: boolean; timerExpired: boolean },
+  opts: { engagedOnFraud: boolean; timerExpired: boolean; /** Chapter slot, for tutorial grace. */ slot?: number },
 ): GroupScore {
   // Expiry scores as dismiss only when nothing was decided yet: a verify (or any decision) before the
   // deadline keeps its own score (sceptic T-2.1 #2).
@@ -116,6 +134,16 @@ export function scoreGroup(
   if (fell) return { cls, stars: 0, points: 0, fell, timerExpired: expired, capped };
   let points = stars * b.points.per_star;
   if (cls === 'report' && truth !== 'fraud') points = b.points.exceptions.report_on_legit;
+  // Grace applies to a choice the player made, never to a timer running out. Order: star table, then
+  // grace, then an authored `score` override (CR-01) on the deciding action, which sets the points
+  // only. The override is the author's explicit, per-action decision, reviewed with the scenario, so
+  // it wins over every table rule, grace included; it never changes the stars.
+  const grace = expired ? undefined : graceFor(b, opts.slot, cls, truth);
+  if (grace) {
+    stars = grace.stars;
+    points = grace.points;
+  }
+  // (an authored override, if any, comes last: see above)
   if (!expired && decision?.override !== undefined) points = decision.override;
   return { cls, stars, points, fell, timerExpired: expired, capped };
 }

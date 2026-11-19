@@ -655,6 +655,8 @@ export type HabitCard = z.infer<typeof habitCardSchema>;
 const starValue = z.union([z.number().int().min(0).max(3), z.enum(['non_terminal', 'not_allowed'])]);
 const starRow = z.object({ fraud: starValue, legit_high: starValue, legit_low: starValue }).strict();
 const range = z.tuple([z.number(), z.number()]);
+/** A tutorial-grace cell: a softened ★ at most; the cross-check against per_star is in balanceSchema. */
+const graceCell = z.object({ stars: z.number().int().min(0).max(1), points: z.number().int().min(0) }).strict();
 const ceilShare = z.string().regex(/^ceil\(F\/\d+\)$/, 'expected ceil(F/<n>)');
 const spottedExpr = z.string().regex(SPOTTED_EXPR_RE, 'expected ceil(R/<n>) or ceil(<k>*R/<n>)');
 const nonNeg = z.number().min(0);
@@ -685,6 +687,18 @@ export const balanceSchema = z
         engage_on_fraud: z.object({ terminal: z.boolean(), star_cap: z.number().int().min(0).max(3) }).strict(),
       })
       .passthrough(),
+    /**
+     * Tutorial grace (design ruling L4): in the listed chapter slots, over-caution on a genuine message
+     * (report on genuine; dismiss on genuine high stakes) scores these stars and points instead of the
+     * star table. Grace stays below ★★★ and never pays more than ★★ would.
+     */
+    tutorial_grace: z
+      .object({
+        slots: z.array(z.number().int().min(0)),
+        report_on_legit: graceCell,
+        dismiss_on_legit_high: graceCell,
+      })
+      .strict(),
     // Read by the engine (src/engine/*): validated here so the runtime can trust the shape.
     tags: z
       .object({
@@ -793,7 +807,19 @@ export const balanceSchema = z
       })
       .passthrough(),
   })
-  .passthrough();
+  .passthrough()
+  .superRefine((b, ctx) => {
+    // Grace must never invert stars and points (ruling L4): a grace cell of n stars pays less than the
+    // next star up (n + 1) × per_star, e.g. ★ at 0 points stays below ★★ at 10.
+    const cells = [['report_on_legit', b.tutorial_grace.report_on_legit], ['dismiss_on_legit_high', b.tutorial_grace.dismiss_on_legit_high]] as const;
+    for (const [key, cell] of cells) {
+      const nextUp = (cell.stars + 1) * b.points.per_star;
+      if (cell.points >= nextUp) {
+        ctx.addIssue({ code: 'custom', path: ['tutorial_grace', key, 'points'], message: `grace ${cell.stars}★ must pay less than ${cell.stars + 1}★ (${nextUp} points), so stars and points never invert` });
+      }
+    }
+  });
+
 export type Balance = z.infer<typeof balanceSchema>;
 
 const hexColour = z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'colours are #RRGGBB');

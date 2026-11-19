@@ -7,9 +7,10 @@
  */
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { habitCard } from '../content/habitCards.ts';
-import type { ChoiceLine, DebriefData } from '../engine/debrief.ts';
-import { choiceLineText } from '../engine/choiceText.ts';
+import type { ChoiceLine, DebriefData, DebriefWrongTag, OtherChoice } from '../engine/debrief.ts';
+import { choiceLineText, nextTimeText } from '../engine/choiceText.ts';
 import { lookup, t, type MessageKey } from '../i18n/index.ts';
+import { deviceHeading } from './devices/Device.tsx';
 import { Icon } from './Icon.tsx';
 import { elementLabel } from './labels.ts';
 import { RichText } from './RichText.tsx';
@@ -30,6 +31,20 @@ const STATUS_KEYS: Record<DebriefData['layer2']['flags'][number]['status'], Mess
 /** The exact line the validator counts (src/engine/choiceText.ts). */
 function choiceText(c: ChoiceLine): string {
   return choiceLineText(c, lookup);
+}
+
+/** "Your other choices" (ruling L1 item 3): on a boss, "{beat} ({stars} of 3 stars): {line}". */
+function otherChoiceText(o: OtherChoice): string {
+  const line = choiceText(o.line);
+  return o.beat ? t('debrief_other_choice', { beat: deviceHeading(o.beat.device, o.beat.message), stars: o.stars, line }) : line;
+}
+
+/** Wrong mark: "Fair instinct…" for caller ID, sender and logo decoys on fraud (ruling L2). */
+function wrongTagText(w: DebriefWrongTag): string {
+  if (!w.fairInstinct) return t('debrief_wrong_tag');
+  if (w.type === 'caller_id') return t('debrief_wrong_tag_caller_id');
+  if (w.type === 'logo') return t('debrief_wrong_tag_logo');
+  return t('debrief_wrong_tag_sender');
 }
 
 function Stars({ n }: { n: number }) {
@@ -60,8 +75,9 @@ export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
   const ac = l2.alreadyClicked;
   const card = habitCard(l2.habitCard ?? undefined);
   const genuine = l1.verdict === 'genuine';
-  // The ★★★ line shares the slot; after a fall the kind line holds it (layer-1 ruling 2026-11-19).
-  const best = l1.stars === 3 && !data.fell && l1.youChose.length === 0;
+  // The slot holds ONE of: the ★★★ line, the kind line (after a fall, in the h1), a "You chose" line,
+  // or the "Next time" pointer (layer-1 ruling 2026-11-19, ruling L1).
+  const best = l1.stars === 3 && !data.fell && l1.youChose.length === 0 && !l1.nextTime && l1.allBest;
   const flagged = l2.flags.length > 0;
   const bonusPossible = l2.points !== null && l2.spotted.could > 0;
 
@@ -89,6 +105,7 @@ export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
         {l1.youChose.map((c, i) => (
           <p key={i}>{choiceText(c)}</p>
         ))}
+        {l1.nextTime ? <p>{nextTimeText(l1.nextTime, lookup)}</p> : null}
         {arc && l2.safeguardingLine ? <p>{l2.safeguardingLine}</p> : null}
         {l1.stars !== null ? <Stars n={l1.stars} /> : null}
         {best ? <p class={styles.best}>{t('outcome_best')}</p> : null}
@@ -137,7 +154,7 @@ export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
             <h2 id="other-choices-h">{t('debrief_you_chose_more')}</h2>
             <ul>
               {l2.youChoseOther.map((c, i) => (
-                <li key={i}>{choiceText(c)}</li>
+                <li key={i}>{otherChoiceText(c)}</li>
               ))}
             </ul>
           </section>
@@ -164,7 +181,7 @@ export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
                   <li key={`${w.beatId}|${w.target}`}>
                     <Icon name="info" />
                     <span>
-                      {elementLabel(w.target)}: {t('debrief_wrong_tag')}
+                      {elementLabel(w.target)}: {wrongTagText(w)}
                       {bonusPossible ? ` ${t('debrief_wrong_tag_bonus')}` : ''}
                     </span>
                   </li>

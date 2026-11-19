@@ -4,11 +4,16 @@
  * what is shown (layer-1 ruling 2026-11-19).
  *
  * `msg(key)` returns the catalogue template for a key, or undefined when the key does not exist.
- * Optional keys are used as soon as they exist in the catalogue, with no code change:
- * - `you_chose_whatnow_<choice>` replaces "You chose: <built-in label>." for a "What now?" built-in.
+ * - `you_chose_whatnow_<choice>`: descriptive past-tense line for a "What now?" built-in (ruling L1),
+ *   never the button label. Falls back to "You chose: <built-in label>." if the key is missing.
+ * - `you_chose_report_genuine` / `_dismiss_genuine` / `_dismiss_started`: over-caution on a genuine
+ *   message never gets a bare label next to low stars (ruling L4, game-wide copy).
+ * - `next_time_after_hang_up`: the "Next time" pointer (ruling L1, budget ruling 2026-11-19).
  */
 import { format } from '../i18n/format.ts';
-import type { ChoiceLine } from './debrief.ts';
+import type { ActionClass } from '../content/schema.ts';
+import type { ChoiceLine, OverCaution } from './debrief.ts';
+import type { Truth } from './scoring.ts';
 
 export type CatalogueLookup = (key: string) => string | undefined;
 
@@ -18,12 +23,42 @@ export const WHAT_NOW_LABEL_KEYS = {
   done: 'what_now_done',
 } as const;
 
+export const OVER_CAUTION_KEYS: Record<OverCaution, string> = {
+  report_genuine: 'you_chose_report_genuine',
+  dismiss_genuine: 'you_chose_dismiss_genuine',
+  dismiss_started: 'you_chose_dismiss_started',
+};
+
+export const NEXT_TIME_KEYS = { after_hang_up: 'next_time_after_hang_up' } as const;
+
+/**
+ * Over-caution on a genuine message (ruling L4), by decisive class × truth:
+ * report on genuine (high or low stakes); dismiss on genuine high stakes (`dismiss_started` when the
+ * player started it, e.g. their own password reset). Anything else is not over-caution: undefined.
+ */
+export function overCautionOf(cls: ActionClass, truth: Truth, playerStarted: boolean): OverCaution | undefined {
+  if (truth === 'fraud') return undefined;
+  if (cls === 'report') return 'report_genuine';
+  if (cls === 'dismiss' && truth === 'legit_high') return playerStarted ? 'dismiss_started' : 'dismiss_genuine';
+  return undefined;
+}
+
 export function choiceLineText(c: ChoiceLine, msg: CatalogueLookup): string {
   if (c.kind === 'timer') return format(msg('you_chose_timer') ?? '');
+  if (c.kind === 'over_caution') {
+    const own = msg(OVER_CAUTION_KEYS[c.which]);
+    if (own) return format(own);
+    return c.label ? format(msg('you_chose') ?? '', { label: c.label }) : '';
+  }
   if (c.kind === 'what_now') {
     const own = msg(`you_chose_whatnow_${c.choice}`);
     if (own) return format(own);
     return format(msg('you_chose') ?? '', { label: msg(WHAT_NOW_LABEL_KEYS[c.choice]) ?? c.choice });
   }
   return format(msg('you_chose') ?? '', { label: c.label });
+}
+
+/** The "Next time" pointer shown in the layer-1 slot instead of a "You chose" line (ruling L1). */
+export function nextTimeText(which: keyof typeof NEXT_TIME_KEYS, msg: CatalogueLookup): string {
+  return format(msg(NEXT_TIME_KEYS[which]) ?? '');
 }

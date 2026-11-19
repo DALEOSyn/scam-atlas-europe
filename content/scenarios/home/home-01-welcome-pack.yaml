@@ -33,17 +33,17 @@ message:
 
 inspectables:
   - target: sender.detail
-    reveal: "adaeze.okafor-lind@waymarker-network.example: Waymarker's own domain, and the name in your staff directory. It fits, but a sender address alone proves nothing."
+    reveal: "It fits: the owner part is Waymarker's own domain. That isn't proof on its own, so weigh it with what the email asks for."
     red_flag: false
     type: sender
     reassures: true
   - target: link
-    reveal: "desk.waymarker-network.example: the owner part is waymarker-network.example, Waymarker's own site. Waymarker Desk is where you'd find the pack anyway."
+    reveal: "It fits: the owner part is waymarker-network.example, Waymarker's own site, where you'd find the pack anyway. That isn't proof on its own, so weigh it with what the email asks for."
     red_flag: false
     type: link
     reassures: true
   - target: reference
-    reveal: "WN-1187 is the staff number from your contract. Nothing secret: it isn't a password."
+    reveal: "WN-1187 is the staff number from your contract, the same one a real email would show. Nothing secret: it isn't a password, and anyone who knows it can quote it, so it can't prove anything either way."
     red_flag: false
     type: reference
 
@@ -72,7 +72,7 @@ outcomes:
   pack_found_in_desk:
     narrative: "Same pack, same place. Good habit, though this time the link was fine too."
   welcome_reported:
-    narrative: "IT replies: \"Thanks for being careful! This one is really from Adaeze.\" Your travel pack is still waiting."
+    narrative: "IT replies: \"Thanks for checking! This one really is from Adaeze, so go ahead and open your pack.\""
   left_for_later:
     narrative: "The pack waits in your inbox. Nothing is lost, but you start the trip without your route."
 
@@ -83,7 +83,7 @@ debrief:
     what_works: "Open it, or use Waymarker Desk."
   layer2:
     message_flags: []
-    notes: "Why it was safe to act: you had just joined, the email asked only that you read something, and the link stayed on Waymarker's own site. None of those alone is proof (senders can be faked); together they fit. Adaeze also told you how to check her: the staff directory."
+    notes: "Why it was safe to act: you had just joined, the email asked only that you read something, and the link stayed on Waymarker's own site. None of those alone is proof; together they fit. Adaeze also told you how to check her: the staff directory."
   device_tip: "On a real phone, tap the sender's name to see the full email address behind it."
   habit_card: who-really-sent
   sources: [ie-ncsc-phishing-guide, de-bsi-protect-phishing, eu-europol-phishing-leaflet]

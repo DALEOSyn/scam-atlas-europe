@@ -134,6 +134,20 @@ describe('registry schemas (T-2.2)', () => {
     expect(balanceSchema.safeParse(extra).success).toBe(false);
   });
 
+  it('tutorial grace cannot invert stars and points (ruling L4)', () => {
+    const grace = (cell: Record<string, unknown>) => {
+      const b = balanceRaw();
+      (b.tutorial_grace as Record<string, unknown>).report_on_legit = cell;
+      return balanceSchema.safeParse(b).success;
+    };
+    expect(grace({ stars: 1, points: 0 })).toBe(true);
+    expect(grace({ stars: 1, points: 9 })).toBe(true);
+    expect(grace({ stars: 1, points: 10 })).toBe(false); // = ★★ (2 × per_star)
+    expect(grace({ stars: 0, points: 5 })).toBe(false); // = ★
+    expect(grace({ stars: 2, points: 0 })).toBe(false); // grace is at most a softened ★
+    expect(grace({ stars: 1, points: -1 })).toBe(false);
+  });
+
   it('a new mix rule fails validation until the validator implements it', () => {
     const b = balanceRaw();
     (b.mix as Record<string, unknown>).brand_new_rule = true;

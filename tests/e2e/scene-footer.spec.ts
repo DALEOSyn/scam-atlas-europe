@@ -50,14 +50,27 @@ async function measure(page: Page) {
       headBottom: Math.ceil(head.bottom),
       art: Math.round(li.querySelector('[role="img"]')?.getBoundingClientRect().height ?? 0),
       liH: Math.round(li.getBoundingClientRect().height),
+      // CR-29: revealed panels before the newest one, with their art box, column width and inline cap.
+      earlier: lis.slice(0, -1).map((x) => {
+        const a = x.querySelector('[role="img"]')?.getBoundingClientRect();
+        return { n: Number(x.dataset['panel']), artW: Math.round(a?.width ?? 0), colW: Math.round(x.getBoundingClientRect().width), capped: 'artCapped' in x.dataset || x.style.getPropertyValue('--art-max-h') !== '' };
+      }),
+      newestArtTop: Math.floor(li.querySelector('[role="img"]')?.getBoundingClientRect().top ?? 0),
     };
   });
 }
 
+/** Portrait phones where the art spans the column (CR-29 item 4 checks earlier panels there). */
+const FULL_WIDTH = new Set(['320×568', '360×640']);
+
 for (const size of [
   { width: 320, height: 568 },
+  { width: 360, height: 640 },
   { width: 375, height: 667 },
   { width: 720, height: 450 },
+  // CR-29: landscape phones (picture and caption side by side).
+  { width: 568, height: 320 },
+  { width: 640, height: 360 },
 ]) {
   test(`every authored scene at ${size.width}×${size.height}: heading row in view on open, focus on screen, the newest caption above the footer (${IDS.length} scenes)`, async ({ page }) => {
     test.setTimeout(120_000);
@@ -103,6 +116,13 @@ for (const size of [
         if (m.focusBottom > m.footTop && m.focusTag === 'H1') bad.push(`${at}: h1 runs under the footer`);
         if (m.capTop < 0) bad.push(`${at}: caption starts ${-m.capTop} px above the viewport`);
         if (m.under > 0) bad.push(`${at}: caption ${m.under} px under the footer`);
+        // CR-29: the newest panel's whole picture is on screen after Next (no head cut off at the top).
+        if (m.panel > 1 && m.newestArtTop < 0) bad.push(`${at}: picture top ${m.newestArtTop} above the viewport`);
+        // CR-29: a tighter art cap is for the newest panel only; earlier panels are back to the column width.
+        for (const e of m.earlier) {
+          if (e.capped) bad.push(`${at}: earlier panel ${e.n} keeps an inline art cap`);
+          if (FULL_WIDTH.has(`${size.width}×${size.height}`) && Math.abs(e.artW - e.colW) > 2) bad.push(`${at}: earlier panel ${e.n} art ${e.artW} px wide in a ${e.colW} px column`);
+        }
         if ((await next.textContent())?.trim() !== 'Next') break;
         await next.click();
       }

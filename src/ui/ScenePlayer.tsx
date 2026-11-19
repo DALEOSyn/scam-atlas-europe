@@ -152,6 +152,8 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
     if (f.kind === 'panel') {
       const el = items.current[f.i];
       if (!el) return;
+      // CR-29: a tighter art cap is for the newest panel only; earlier panels go back to the CSS cap.
+      items.current.slice(0, f.i).forEach((li) => li && liftArtCap(li));
       el.focus({ preventScroll: true });
       revealPanel(el, footerRef.current, prefersReducedMotion() ? 'auto' : 'smooth');
     } else if (f.kind === 'reply') replies.current[f.i]?.focus();
@@ -163,6 +165,19 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
       if (view === 'panels' && shown === 1 && first) revealOnOpen(headRef.current, first, footerRef.current);
     }
   }, [view, shown, picked]);
+
+  // CR-29: a rotation or resize lifts every inline art cap (it was measured for the old viewport); the CSS
+  // cap for the new viewport applies at once, and the next reveal measures again.
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    const reset = () => items.current.forEach((li) => li && liftArtCap(li));
+    window.addEventListener('resize', reset);
+    window.addEventListener('orientationchange', reset);
+    return () => {
+      window.removeEventListener('resize', reset);
+      window.removeEventListener('orientationchange', reset);
+    };
+  }, []);
 
   // A scene with no visible panel (all variants off, or only a flip without a postcard) ends at once.
   useEffect(() => {
@@ -347,16 +362,32 @@ export function revealPanel(li: HTMLElement, footer: HTMLElement | null, behavio
 /** The smallest a panel's art may get on a short screen (px). */
 const OPEN_ART_MIN = 88;
 
-/** Lower a panel's art cap by `excess` px (plus 2 px for rounding), never under 88 px. */
-function shrinkArt(li: HTMLElement, excess: number): void {
+/** The inline art cap, a custom property on the panel's li (read by `.art` and, side by side, `.figure`). */
+const ART_CAP = '--art-max-h';
+
+/**
+ * Lower a panel's art cap by `excess` px (plus 2 px for rounding), never under 88 px. The art keeps its
+ * 4:3 shape and is centred (CSS), so the whole picture scales down; nothing is cropped (CR-29). When the
+ * art sits beside a taller caption (short landscape screens), a smaller picture would not make the panel
+ * shorter, so the cap is not applied.
+ */
+export function shrinkArt(li: HTMLElement, excess: number): void {
   if (excess <= 0) return;
   const art = li.querySelector<HTMLElement>('[role="img"]');
   if (!art) return;
   const h = art.getBoundingClientRect().height;
   const target = Math.max(OPEN_ART_MIN, Math.floor(h - excess - 2));
   if (target >= h) return;
-  art.style.minHeight = `${OPEN_ART_MIN}px`;
-  art.style.maxHeight = `${target}px`;
+  const before = li.getBoundingClientRect().height;
+  li.style.setProperty(ART_CAP, `${target}px`);
+  li.dataset['artCapped'] = '';
+  if (li.getBoundingClientRect().height >= before - 0.5) liftArtCap(li);
+}
+
+/** Back to the CSS cap (CR-29): once a panel is no longer the newest, or after a resize or rotation. */
+export function liftArtCap(li: HTMLElement): void {
+  li.style.removeProperty(ART_CAP);
+  delete li.dataset['artCapped'];
 }
 
 /**

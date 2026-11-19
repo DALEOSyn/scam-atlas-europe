@@ -14,13 +14,15 @@ import { chapterSchema, type Scene } from '../../src/content/schema.ts';
 import { createStore, freshSave, SAVE_KEY, type StorageLike } from '../../src/engine/save.ts';
 import { AtlasScreen } from '../../src/ui/Atlas.tsx';
 import { ChapterDone } from '../../src/ui/ChapterDone.tsx';
-import { HelpList, revealPanel, ScenePlayer, sceneHeading, scenePart } from '../../src/ui/ScenePlayer.tsx';
+import { HelpList, liftArtCap, revealOnOpen, revealPanel, ScenePlayer, sceneHeading, scenePart, shrinkArt } from '../../src/ui/ScenePlayer.tsx';
 import { fixtureScene } from '../content/scene-fixtures.ts';
 import { loadExample } from './helpers.ts';
 
 afterEach(() => {
   cleanup();
+  // CR-28 follow-up: motion and geometry stubs are reset here, so a failing test cannot leak them.
   delete document.documentElement.dataset.motion;
+  vi.restoreAllMocks();
 });
 
 async function axeClean(container: HTMLElement) {
@@ -186,9 +188,7 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
       scroll.mockClear();
       fireEvent.click(screen.getByRole('button', { name: 'Next' }));
       expect(scroll).toHaveBeenCalledWith({ top: 68, behavior: reduced ? 'auto' : 'smooth' });
-      rect.mockRestore();
-      scroll.mockRestore();
-      delete document.documentElement.dataset.motion;
+      expect(rect).toHaveBeenCalled();
     });
   }
   it('CR-28 round 2: a time caption comes before the speaker and the line, on screen and in reading order', () => {
@@ -228,6 +228,106 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     revealPanel(make(100, 400), footer, 'auto');
     expect(scroll).not.toHaveBeenCalled();
     scroll.mockRestore();
+  });
+});
+
+describe('CR-29: art caps and the open path (geometry stubbed)', () => {
+  const box = (top: number, bottom: number) => ({ top, bottom, left: 0, right: 0, width: 0, height: bottom - top, x: 0, y: top, toJSON: () => ({}) }) as DOMRect;
+  /** A panel whose art height follows the inline cap (CSS is not applied in jsdom). */
+  function panel(top: number, artH: number, capH: number) {
+    const li = document.createElement('li');
+    const art = document.createElement('div');
+    art.setAttribute('role', 'img');
+    const cap = document.createElement('figcaption');
+    li.append(art, cap);
+    const h = () => parseInt(li.style.getPropertyValue('--art-max-h'), 10) || artH;
+    art.getBoundingClientRect = () => box(top, top + h());
+    cap.getBoundingClientRect = () => box(top + h() + 8, top + h() + 8 + capH);
+    li.getBoundingClientRect = () => box(top, top + h() + 8 + capH);
+    return li;
+  }
+  const footerAt = (y: number) => {
+    const f = document.createElement('div');
+    f.getBoundingClientRect = () => box(y, y + 60);
+    return f;
+  };
+  const headAt = (top: number, bottom: number) => {
+    const h = document.createElement('header');
+    h.getBoundingClientRect = () => box(top, bottom);
+    return h;
+  };
+
+  it('revealOnOpen: fits without scrolling; else scrolls no further than keeps the heading row; then caps the art; the heading row wins', () => {
+    const scroll = vi.spyOn(window, 'scrollBy').mockImplementation(() => undefined);
+    // Everything fits above the footer edge (500 − 8): no scroll, no cap.
+    let li = panel(130, 200, 100);
+    revealOnOpen(headAt(16, 120), li, footerAt(500));
+    expect(scroll).not.toHaveBeenCalled();
+    expect(li.style.getPropertyValue('--art-max-h')).toBe('');
+    // Caption 10 px under; the heading row is 16 px from the top: scroll 10, no cap.
+    li = panel(130, 200, 164);
+    revealOnOpen(headAt(16, 120), li, footerAt(500));
+    expect(scroll).toHaveBeenLastCalledWith({ top: 10, behavior: 'auto' });
+    expect(li.style.getPropertyValue('--art-max-h')).toBe('');
+    // 68 px under, 16 px of room: the art is capped by 52 (+ 2 for rounding), then the page scrolls the
+    // 14 px still needed (within the 16 px of room).
+    li = panel(130, 200, 222);
+    revealOnOpen(headAt(16, 120), li, footerAt(500));
+    expect(li.style.getPropertyValue('--art-max-h')).toBe('146px');
+    expect(scroll).toHaveBeenLastCalledWith({ top: 14, behavior: 'auto' });
+    // Too tall even at the 88 px floor: the art stops at 88, the scroll stops at the heading row's top.
+    li = panel(130, 200, 400);
+    revealOnOpen(headAt(16, 120), li, footerAt(500));
+    expect(li.style.getPropertyValue('--art-max-h')).toBe('88px');
+    expect(scroll).toHaveBeenLastCalledWith({ top: 16, behavior: 'auto' });
+    // A heading row above the viewport is brought back first.
+    scroll.mockClear();
+    revealOnOpen(headAt(-30, 70), panel(80, 200, 100), footerAt(500));
+    expect(scroll).toHaveBeenNthCalledWith(1, { top: -30, behavior: 'auto' });
+  });
+
+  it('shrinkArt never goes under 88 px and does nothing when it would not make the panel shorter; liftArtCap undoes it', () => {
+    const li = panel(0, 200, 100);
+    shrinkArt(li, 50);
+    expect(li.style.getPropertyValue('--art-max-h')).toBe('148px');
+    expect('artCapped' in li.dataset).toBe(true);
+    liftArtCap(li);
+    expect(li.style.getPropertyValue('--art-max-h')).toBe('');
+    expect('artCapped' in li.dataset).toBe(false);
+    shrinkArt(li, 500);
+    expect(li.style.getPropertyValue('--art-max-h')).toBe('88px');
+    // Side by side (a caption taller than the picture): a smaller picture leaves the panel as tall, so no cap.
+    const side = panel(0, 200, 300);
+    side.getBoundingClientRect = () => box(0, 300);
+    shrinkArt(side, 50);
+    expect(side.style.getPropertyValue('--art-max-h')).toBe('');
+  });
+
+  it('the player lifts the cap from a panel once the next one is revealed, and from every panel on resize or rotation', () => {
+    vi.spyOn(window, 'scrollBy').mockImplementation(() => undefined);
+    // Every panel is taller than the room (footer at 300): each newest panel gets a cap.
+    vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
+      if (this.querySelector?.('[data-scene="next"]')) return box(300, 360);
+      if (this.tagName === 'LI') {
+        const capped = parseInt((this as HTMLElement).style.getPropertyValue('--art-max-h'), 10);
+        return box(0, (capped || 200) + 200);
+      }
+      if (this.getAttribute?.('role') === 'img') {
+        const li = this.closest('li') as HTMLElement | null;
+        return box(0, parseInt(li?.style.getPropertyValue('--art-max-h') ?? '', 10) || 200);
+      }
+      return box(0, 0);
+    });
+    const { container } = render(<ScenePlayer scene={arrival()} heading="Berlin · Arrival" chapterName="Berlin" onDone={() => undefined} />);
+    const capped = () => [...container.querySelectorAll<HTMLElement>('li[data-panel]')].map((li) => li.style.getPropertyValue('--art-max-h') !== '');
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    expect(capped()).toEqual([false, true]);
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    expect(capped()).toEqual([false, false, true]);
+    act(() => {
+      window.dispatchEvent(new Event('resize'));
+    });
+    expect(capped()).toEqual([false, false, false]);
   });
 });
 

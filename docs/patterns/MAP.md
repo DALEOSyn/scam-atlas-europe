@@ -163,6 +163,11 @@ Source ids refer to `content/sources.research.yaml` (to be merged into `content/
   - EU-wide: investment fraud especially prevalent via ads on large platforms [eu-europol-iocta-2026].
   - *Correction (rework):* an earlier draft said "€4.2bn EEA online investment fraud in 2024". That was wrong. The joint EBA-ECB report puts **total EEA payment fraud** (all types) at €4.2bn in 2024 [eu-eba-ecb-fraud-2025]. It gives no investment-fraud figure. Don't use €4.2bn as an investment figure anywhere.
 - **Habit:** find the firm yourself on the regulator's register and call it on an independently found number; never pay a fee to recover money [ie-fraudsmart-investment-2025], [ie-bpfi-recovery-2024].
+- **T-3.10r update (2026-11-19):** briefs `investment-ad-fake-platform.md` and `recovery-scam.md`; per-beat table `ch8-dublin-sources.md`.
+  - New Irish sources: the Central Bank's scam guidance, unauthorised-firms page and report page [ie-cbi-avoiding-scams], [ie-cbi-unauthorised-firms], [ie-cbi-report-unauthorised]; its Nov 2025 campaign (AI ads "impersonating public or business figures", fake platforms, "Never pay fees for recovering lost funds") [ie-cbi-fraud-landscape-2025]; its Apr 2026 research (38% of victims never report) [ie-cbi-fraud-research-2026]; the CCPC on "fake celebrity promotions" and deepfakes [ie-ccpc-investment-scams]; Garda advice on "fake charts and graphs" and recovery "experts" [ie-garda-crimecall-investment-2024]; FraudSMART May 2026 on AI ads for bogus "state-backed" schemes [ie-fraudsmart-state-scheme-ads-2026].
+  - **Dashboard and withdrawal-fee beats (Alex slots 6–7):** fake gains shown by the platform and taxes or fees to withdraw are sourced from the Belgian regulator, the German ECC and the Swedish consumer agency [be-fsma-trading-platforms-2025], [de-evz-online-trading-scam-2026], [se-konsumentverket-investment-fraud]. The Irish pages opened don't mention withdrawal fees.
+  - **In-world regulator list:** model a register of authorised firms plus a warning list, and teach "not on the register = don't pay", never "not on the warning list = safe" [se-konsumentverket-investment-fraud], [ie-cbi-unauthorised-firms]. Include a clone-firm case [ie-cbi-avoiding-scams].
+  - Confidence stays **High**.
 
 ### Ch 9 — Stockholm → **Adjust: reframe (High once reframed)**
 - **Why reframe:** "MFA approval fatigue / push bombing" did not appear in any consumer-facing source checked; ENISA 2026 does not mention it [eu-enisa-etl-2026]. The Swedish evidence is about victims being talked into **logging in or signing with their e-ID** during a call.
@@ -172,6 +177,12 @@ Source ids refer to `content/sources.research.yaml` (to be merged into `content/
   - EPC: victims asked to approve **login QR codes** sent via messaging apps [eu-epc-threats-2025].
 - **Note:** Swedish police say proceeds from phone fraud have **more than halved since 2023 and keep falling**, but attempts (incl. mass SMS) are rising [se-polisen-vishing-2026], [se-polisen-proceeds-2026]. The figures are in the source notes; the two police releases give slightly different 2025 values. Investment (SEK 1.6bn) and romance (SEK 551m) are bigger by value [se-polisen-proceeds-2026].
 - **Habit:** never approve a sign-in, signature or QR login you didn't start yourself; hang up and call the bank [se-polisen-campaign-2026].
+- **T-3.10r update (2026-11-19):** briefs `e-id-approval-on-call.md` and `remote-access-support-call.md`; per-beat table `ch9-stockholm-sources.md`.
+  - The police vishing page (reviewed Aug 2026): identifying yourself with your e-ID can let the fraudster into your internet bank; never identify yourself for a caller; real organisations never call and ask you to log in; call your bank (24/7 numbers) [se-polisen-telefonbedrageri]. A regional police warning: police never call to ask for e-ID identification [se-polisen-nord-fake-police-2025].
+  - The consumer agency: don't use the e-ID or log in at someone else's request; never let a stranger access your computer remotely [se-konsumentverket-investment-fraud]. The consumer bureau: fake "supervisor" callers try to get recovery victims to log in [se-konsumenternas-raddningshjalp].
+  - ESAs (SV edition): never install remote-access programs or share your screen; "scan a QR code" listed as a warning sign [eu-esas-ai-scams-factsheet-sv].
+  - **QR login by message stays Medium:** EU-level only [eu-epc-threats-2025], [eu-esas-ai-scams-factsheet-sv]. No Swedish official page found that describes it.
+  - Not found: the e-ID provider's own guidance, Swedish Bankers' Association consumer pages, CERT-SE consumer advice.
 
 ### Ch 10 — Brussels finale → **Confirm + add money mules (Medium-High)**
 - **Romance (arc payoff):**

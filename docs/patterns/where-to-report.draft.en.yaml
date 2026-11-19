@@ -3,6 +3,7 @@
 # T-3.8r (2026-11-19) added the per-country verified help list (reporting route, police, bank step,
 # emotional-support line, child/youth line) for DE, NL, FR, ES, PL, IT, PT, IE, SE, BE + the generic EU entry.
 # ES and PL entries from T-3.6r (Madrid/Warsaw research) and T-3.8r merged 2026-11-19; one entry per id.
+# T-3.10r (2026-11-19, Dublin/Stockholm): IE adds ie-garda-confidential and ie-cbi-report; SE adds se-bank.
 #
 # LOCATION: parked under docs/ because it trips redline:lint under content/. The engineer adds a path-specific
 # exemption plus a dedicated checker, then moves it back to content/help/where-to-report.en.yaml.
@@ -139,7 +140,7 @@ fallbacks:
     body: "Call your bank now on the number on your card or in its app. Ask it to block the card or app and to try to stop the payment."
     checked: 2026-11-19
     sources: [eu-esas-ai-scams-factsheet-nl, eu-esas-ai-scams-factsheet-it]
-    review_note: "T-3.8r. The ESAs factsheet (all EU languages) says to inform the bank at once through official channels. Used for any country without a country-specific bank source (today: SE)."
+    review_note: "T-3.8r. The ESAs factsheet (all EU languages) says to inform the bank at once through official channels. Used for any country without a country-specific bank source (T-3.10r: none of the ten chapter countries now; SE got se-bank) and for the generic EU/home entry."
   support:
     body: "Feeling shaken, ashamed or alone after a scam? That's a normal reaction. Talk to someone you trust, or ask them to help you find a listening line in your country."
     checked: 2026-11-19
@@ -412,14 +413,38 @@ countries:
       name: "Local Garda station"
       body: "Report phishing, smishing, scam calls and fraud."
       checked: 2026-11-18
-      sources: [ie-ncsc-phishing-guide, ie-garda-investment-2025]
-      review_note: "T-3.8r: also IE's national reporting route for the public (NCSC sends the public to the local Garda station; no general public phishing inbox)."
+      sources: [ie-ncsc-phishing-guide, ie-garda-investment-2025, ie-ccpc-spot-a-scam-2026]
+      review_note: "T-3.8r: also IE's national reporting route for the public (NCSC sends the public to the local Garda station; no general public phishing inbox). T-3.10r: CCPC (2026-04-23) also sends people to the local Garda station."
+    - id: ie-garda-confidential
+      role: police
+      name: "Garda Confidential Line"
+      body: "Report suspected investment fraud, or ask for information about it."
+      phones:
+        - number: "1800 666 111"
+          label: "Suspected investment fraud"
+      scope: "For suspected investment fraud. Other scams: your local Garda station."
+      checked: 2026-11-19
+      sources: [ie-garda-investment-2025]
+      review_note: "T-3.10r: re-opened 2026-11-19 on the Garda press release (2 Oct 2025): '1800 666 111' for 'further information or to report suspected investment fraud'. Cost and hours not stated: no 'free' claim (the 1800 prefix alone isn't treated as proof). Show on the Dublin / investment help card; keep the scope line."
+    - id: ie-cbi-report
+      role: report
+      name: "Central Bank of Ireland: report an unauthorised firm"
+      body: "Tell the Central Bank about a firm offering investments or other financial services without authorisation. It is not the police: report the crime to the Gardaí too."
+      phones:
+        - number: "0818 681 681"
+          label: "Central Bank. Call costs may apply."
+        - number: "+353 1 224 5800"
+          label: "Central Bank, from abroad. Call costs may apply."
+      url: https://centralbank.ie/regulation/how-we-regulate/authorisation/unauthorised-firms/report-an-unauthorised-firm
+      checked: 2026-11-19
+      sources: [ie-cbi-report-unauthorised, ie-cbi-avoiding-scams]
+      review_note: "T-3.10r. URL = the centralbank.ie page that holds the report form (the form itself is on a third-party survey host: don't link it). Phone numbers from the 'Avoiding Scams' page ('contact the Central Bank directly on 0818 681 681 or +353 (0)1 224 5800'), shown there as '+353 (0)1 224 5800'; written here without the (0). Opening hours not stated. Not a crisis or recovery service: the central bank says to report to your bank, the Central Bank and the Gardaí."
     - id: ie-bank
       role: bank
       name: "Your bank"
-      body: "Clicked a link or gave details? Contact your bank now on the number on your card or in its app."
+      body: "Clicked a link, gave details or paid someone? Contact your bank now on the number on your card or in its app."
       checked: 2026-11-19
-      sources: [ie-ncsc-phishing-guide]
+      sources: [ie-ncsc-phishing-guide, ie-ccpc-investment-scams, ie-ccpc-spot-a-scam-2026]
     - id: ie-samaritans
       role: support
       name: "Samaritans"
@@ -648,8 +673,15 @@ countries:
         - number: "114 14"
           label: "Other police matters"
       checked: 2026-11-19
-      sources: [se-polisen-vishing-2026, se-polisen-campaign-2026, se-polisen-bedragerier-anmalan]
-      review_note: "T-3.8r: also SE's national reporting route. Bank step: no SE-specific source found (the police fraud pages give none); the UI uses fallbacks.bank."
+      sources: [se-polisen-vishing-2026, se-polisen-campaign-2026, se-polisen-bedragerier-anmalan, se-polisen-telefonbedrageri]
+      review_note: "T-3.8r: also SE's national reporting route. T-3.10r: bank step now has an SE source (se-bank)."
+    - id: se-bank
+      role: bank
+      name: "Your bank"
+      body: "Call your bank straight away to stop payments or block your card. Banks have a number you can call day and night: use the one on your card or in your bank's app."
+      checked: 2026-11-19
+      sources: [se-polisen-telefonbedrageri, se-konsumentverket-investment-fraud]
+      review_note: "T-3.10r, replaces fallbacks.bank for SE. Police page (reviewed 2026-08-19): 'Kontakta din bank direkt för att stoppa eventuella betalningar eller spärra ditt bankkort'; 'Alla banker har ett särskilt telefonnummer som du kan ringa dygnet runt'; bank first, then a police report. Konsumentverket: contact your bank immediately to try to stop a payment. 'On your card or in your app' is the game's standard wording, not from these pages."
     - id: se-jourhavande
       role: support
       name: "Jourhavande medmänniska"
@@ -694,8 +726,8 @@ countries:
 #   PL  report: pl-8080, pl-cert-incident   police: pl-police   bank: pl-bank   support: pl-116123   child: pl-116111   crisis: none
 #   IT  report: it-polizia-postale (no URL)   police: it-112   bank: it-bank   support: it-telefono-amico (NGO site only, normal call cost)   child: it-114   crisis: none
 #   PT  report: pt-police (no online channel verified)   police: pt-police   bank: pt-bank   support: pt-sns24-psych (cost unknown)   child: pt-116111   crisis: pt-1411 (free/24h from consumer body)
-#   IE  report: ie-garda   police: ie-garda   bank: ie-bank   support: ie-samaritans   child: ie-childline   crisis: none
-#   SE  report: se-police   police: se-police   bank: FALLBACK   support: se-jourhavande (21:00-06:00, cost unknown)   child: se-bris (cost unknown)   crisis: se-mind
+#   IE  report: ie-garda, ie-cbi-report (unauthorised firms)   police: ie-garda, ie-garda-confidential (investment fraud only)   bank: ie-bank   support: ie-samaritans   child: ie-childline   crisis: none
+#   SE  report: se-police   police: se-police   bank: se-bank (T-3.10r)   support: se-jourhavande (21:00-06:00, cost unknown)   child: se-bris (cost unknown)   crisis: se-mind
 #   BE  report: be-safeonweb-forward   police: be-police   bank: be-card-stop (cost unknown)   support: be-listening-line (106 cost unknown)   child: be-youth-line   crisis: none
 #   EU / home (generic): eu.europol-report-signpost, eu.ecc-net + fallbacks.police / bank / support / child_helpline; no crisis row
 
@@ -709,8 +741,10 @@ countries:
 #   rows only. French 119 (children in danger) not listed. "Free" is not claimed for BRIS 116 111, BE 106, BE 078 170 170,
 #   SNS 24 808 24 24 24, Jourhavande medmänniska or Mind 90101 (no page states a cost; the 2007 EU 116 decision does not
 #   oblige free calls).
-# - Garda Confidential Line 1800 666 111: verified, but the Garda source gives it for suspected investment fraud only.
-#   Add under IE with scope "suspected investment fraud" when chapter content needs it.
+# - T-3.10r (2026-11-19): Garda Confidential Line 1800 666 111 now listed (ie-garda-confidential) with scope
+#   "suspected investment fraud". Not shown: the Central Bank's third-party report-form URL (link the centralbank.ie page);
+#   the Swedish financial supervisor's warning list and report route (named by the consumer agency, own pages not opened);
+#   the Swedish crime-victim authority (named by the consumer agency, not opened); the Swedish e-ID provider's own pages (not found).
 # - phishing@ncsc.gov.ie: scoped to suspected fake QR codes only (NCSC Ireland QR guide).
 # - Fraudehelpdesk phone number / report URL, German Länder police portals, Portuguese online complaint portal,
 #   INCIBE incident-report email, Safeonweb language variants (verdacht@): not verified.

@@ -140,8 +140,8 @@ outcomes:
     recovery:
       - { step: block_card_in_bank_app, category: stop }
       - { step: call_bank_known_number, category: stop }
-      - { step: keep_evidence, category: secure }
       - { step: report_listing_or_host, category: report }
+      - { step: report_to_police, category: report }
       - { step: wait_and_see, category: harmful }
       - { step: pay_second_deposit, category: harmful }
   no_such_studio:
@@ -168,4 +168,4 @@ debrief:
   already_clicked:
     clicked: "Opened the page but typed nothing? Close it, and search in the app yourself."
     entered_details: "Typed your card? Block it in your banking app now and call your bank on the number on your card; ask about a chargeback. Report the ad."
-  sources: [pt-rtp-gnr-rentals-2026, de-evz-rental-fraud, eu-europol-iocta-2026, pt-dn-psp-cncs-campaign-2025]
+  sources: [pt-rtp-gnr-rentals-2026, de-evz-rental-fraud, eu-europol-iocta-2026, pt-dn-psp-cncs-campaign-2025, pt-bdp-ficaadica-2023]

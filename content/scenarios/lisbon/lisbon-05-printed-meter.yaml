@@ -110,6 +110,6 @@ debrief:
   layer2:
     message_flags: []
     notes: "Same street furniture as yesterday. The difference: no sticker, and the address is zonelet.example. A QR code is a link: read the address it shows before you open it."
-  device_tip: "On a real phone, your camera shows the address before it opens anything. Read the end of it before you tap."
+  device_tip: "On a real phone, your camera usually shows the address first: read the end of it before you tap."
   habit_card: calm-not-paranoid
   sources: [lu-vdl-parking-qr, ie-ncsc-qr-guide, pt-deco-qrishing-2024]

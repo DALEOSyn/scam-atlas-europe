@@ -171,14 +171,15 @@ describe('Lisbon strategy rows (GDD §27.7)', () => {
 });
 
 describe('Lisbon boss: three ways out of the app', () => {
-  it('beat 2: starting the transfer opens the unscored banking step; confirming falls with six options', () => {
+  it('beat 2: starting the transfer opens the unscored banking step; confirming falls with five options, led by asking the bank to stop it', () => {
     const s = get(BOSS);
     let st = run(s, T(), [act('open_roostwell_b1'), cont, act('pay_in_larchwick_b2'), act('confirm_send_b2'), cont, act('open_roostwell_b3')]);
     for (let i = 0; i < 6 && st.phase !== 'damage_control' && st.phase !== 'done'; i++) {
       st = st.phase === 'interrupt' ? step(s, T(), st, { type: 'interrupt_act', interruptId: 'leonor_see_you', actionId: 'reply_leonor_obrigado' }) : step(s, T(), st, cont);
     }
     expect(st.phase).toBe('damage_control');
-    expect(st.recovery?.options).toHaveLength(6);
+    expect(st.recovery?.options).toHaveLength(5);
+    expect(st.recovery?.options.map((o) => o.step)).toContain('call_bank_stop_payment');
   });
 
   it('every boss fall outcome sets lisbon_acted_fast (story variant L-M1)', () => {

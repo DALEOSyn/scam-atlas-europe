@@ -418,6 +418,7 @@ Same method and limits as above (web, app-store and company-directory check via 
 ## Actions for ux-artist / scenario-writer (Rome / Lisbon)
 1. **Rename Kerbello → Zonelet** (Medium): `zonelet.example`, `zonelet-pay.example`, `zonelet-multas.example`. Spare: Lanefare.
 2. **Replace the host handle casa.alfama → casa.velarim** (Medium), including the `/casa-alfama` path.
+   - *Note (T-3.9, producer-accepted 2026-11-19):* in game content the handle is written **casa_velarim** (underscore), because the red-line linter reads "casa.velarim" as a domain. Same coined name, same search result; the page path stays `/casa-velarim`.
 3. **Keep:** Roostwell (watch item; spares Tilestay, Hearthlane), Roostwell Deals, Vellastri Tutela Srl / "Velastri Tutela" (spare Corvessa Tutela Srl), J. Ashdale, Leonor Brito.
 4. **Before G4:** Registro Imprese and UIBM (IT), RNPC and INPI-PT (PT), and TMview for all kept names. This check is not trademark or legal clearance.
 

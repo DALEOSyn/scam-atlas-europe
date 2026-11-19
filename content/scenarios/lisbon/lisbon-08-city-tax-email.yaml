@@ -25,7 +25,7 @@ message:
   sender: { display: "Roostwell", detail: "trips@roostwell.example" }
   subject: "Your stay Thu–Sun: before check-in"
   body: |
-    Hi, your stay at the Graça studio starts Thursday. A city tax of €6.00 is due before check-in. Pay it in the Roostwell app under Trips.
+    Hi, your stay at the Graça studio starts Thursday. A city tax is due before check-in. Pay it in the Roostwell app under Trips.
 
     Your booking: roostwell.example/trips/4471
 
@@ -52,7 +52,7 @@ inspectables:
     type: reference
     reassures: true
   - target: request
-    reveal: "Pay €6 inside the Roostwell app. No payment link, no login link, no transfer, no card form in the email."
+    reveal: "Pay it inside the Roostwell app. No payment link, no login link, no transfer, no card form in the email."
     red_flag: false
     type: request
 
@@ -104,9 +104,9 @@ interrupts:
 
 outcomes:
   tax_paid:
-    narrative: "You open the Roostwell app yourself. Trips: €6.00 city tax due. Paid."
+    narrative: "You open the Roostwell app yourself. Trips: city tax due. Paid."
   trips_shows_tax:
-    narrative: "Trips: €6 city tax due. You pay it there."
+    narrative: "Trips: city tax due. You pay it there."
   tax_email_reported:
     narrative: "You report the email. Roostwell replies: \"That one was ours. You'll find the tax under Trips.\""
   tax_reminder:
@@ -119,11 +119,11 @@ outcomes:
 debrief:
   variant: standard
   layer1:
-    tell: "Roostwell's own address, about a booking you made."
+    tell: "A booking you made, paid in the app you open."
     what_works: "Paying in the app was right."
   layer2:
     message_flags: []
-    notes: "Why it was safe to act: it came from Roostwell's own address, about a booking you made, and it sent you to pay in the app, not by a link. Fakes will look like this. The difference is the address after the @ and in the link."
+    notes: "Why it was safe to act: it's about a booking you made, and it sent you to pay in the app you open yourself, not through a link. Fakes can look just like this, sometimes even the sender's address. Often the address after the @ or in the link gives them away, but what keeps you safe is paying only in the app."
   device_tip: "On a real phone, press and hold the sender's name to see the full address, and read the part after the @."
   habit_card: calm-not-paranoid
   sources: [de-evz-rental-fraud, nl-nltimes-booking-phishing-2026, pt-bdp-ficaadica-2023]

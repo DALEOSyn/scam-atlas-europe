@@ -108,8 +108,8 @@ outcomes:
     recovery:
       - { step: block_card_in_bank_app, category: stop }
       - { step: call_bank_known_number, category: stop }
-      - { step: keep_evidence, category: secure }
       - { step: report_sticker, category: report }
+      - { step: report_to_police, category: report }
       - { step: wait_and_see, category: harmful }
       - { step: rescan_to_cancel, category: harmful }
   no_notice_in_app:
@@ -127,9 +127,9 @@ debrief:
   layer2:
     message_flags: []
     notes: "Real details on a slip prove nothing: anyone walking past can read a plate. Where the code goes is the tell. A QR code is a link: read the address it shows before you open it."
-  device_tip: "On a real phone, open the parking app from your home screen to see whether you owe anything. Never pay a notice through its own code."
+  device_tip: "Check whether you owe anything in the parking app yourself, not through the notice's code."
   habit_card: read-the-link
   already_clicked:
     clicked: "Opened the page but typed nothing? Close it, and check the parking app yourself."
     entered_details: "Typed your card? Block it in your banking app now and call your bank on the number on your card."
-  sources: [pt-portugalpost-gnr-quishing-2026, lu-vdl-parking-qr, ie-ncsc-qr-guide, pt-deco-qrishing-2024]
+  sources: [pt-portugalpost-gnr-quishing-2026, lu-vdl-parking-qr, ie-ncsc-qr-guide, pt-deco-qrishing-2024, pt-bdp-ficaadica-2023]

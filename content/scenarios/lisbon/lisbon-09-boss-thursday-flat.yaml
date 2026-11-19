@@ -14,7 +14,8 @@
 #   number (LS5). Reads true whatever happened at beats 1–2. Design combination (fraud-researcher): not a
 #   separately sourced sequence, and no debrief presents it as one.
 # Interrupt after beat 3: the real host Leonor in the Roostwell app chat (genuine, on_fall: skip).
-# Every fall sets lisbon_acted_fast (story only) and offers the same six steps (first fall's list kept).
+# Every fall sets lisbon_acted_fast (story only). Each fall has its own six steps (b1 login: password and
+# two-step; b2 transfer: ask the bank to stop it; b3 card: block it); after several falls the first list wins.
 id: lisbon-09-boss-thursday-flat
 chapter: lisbon
 role: boss
@@ -253,19 +254,18 @@ outcomes:
     sets_flags: [lisbon_acted_fast]
     recovery:
       - { step: change_password, category: stop }
-      - { step: block_card_in_bank_app, category: stop }
+      - { step: turn_on_two_step, category: secure }
       - { step: call_bank_known_number, category: stop }
-      - { step: report_listing_or_host, category: report }
+      - { step: report_to_police, category: report }
       - { step: keep_chatting_host, category: harmful }
       - { step: pay_second_deposit, category: harmful }
   transfer_sent_b2:
     narrative: "Sent: €246.00 to \"Leonor Brito\". \"Obrigada! All sorted.\" The Kettle number stops answering."
     sets_flags: [lisbon_acted_fast]
     recovery:
-      - { step: call_bank_known_number, category: stop }
-      - { step: block_card_in_bank_app, category: stop }
-      - { step: change_password, category: stop }
+      - { step: call_bank_stop_payment, category: stop }
       - { step: report_listing_or_host, category: report }
+      - { step: report_to_police, category: report }
       - { step: keep_chatting_host, category: harmful }
       - { step: pay_second_deposit, category: harmful }
   card_typed_b3:
@@ -274,8 +274,8 @@ outcomes:
     recovery:
       - { step: block_card_in_bank_app, category: stop }
       - { step: call_bank_known_number, category: stop }
-      - { step: change_password, category: stop }
       - { step: report_listing_or_host, category: report }
+      - { step: report_to_police, category: report }
       - { step: keep_chatting_host, category: harmful }
       - { step: pay_second_deposit, category: harmful }
   booking_fine_b1:
@@ -321,4 +321,4 @@ debrief:
   already_clicked:
     entered_details: "Typed your login? Change the password in the real Roostwell app and turn on two-step. Typed your card? Block it in your banking app now."
     paid: "Sent a transfer? Call your bank now on the number on your card and ask it to try to stop or recall it."
-  sources: [de-evz-rental-fraud, nl-nltimes-booking-phishing-2026, pt-bdp-ficaadica-2023, pt-rtp-gnr-rentals-2026, pt-dn-psp-airbnb-2026, eu-ec-ipr-vop-2025, eu-esas-ai-scams-factsheet-nl]
+  sources: [de-evz-rental-fraud, nl-nltimes-booking-phishing-2026, pt-bdp-ficaadica-2023, pt-rtp-gnr-rentals-2026, pt-dn-psp-airbnb-2026, eu-ec-ipr-vop-2025, eu-esas-ai-scams-factsheet-nl, pt-dn-psp-cncs-campaign-2025]

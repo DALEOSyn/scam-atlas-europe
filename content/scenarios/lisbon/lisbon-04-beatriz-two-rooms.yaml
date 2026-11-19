@@ -83,5 +83,5 @@ debrief:
   device_tip: "On a real phone, keep the whole conversation and the payment inside the platform's app, and pay only after a viewing."
   habit_card: check-before-you-pay
   already_clicked:
-    paid: "Sent a deposit already? Call your bank now on the number on your card, and report the listing on the platform."
+    paid: "Sent a deposit already? Call your bank now on the number on your card, and report the listing where you found it."
   sources: [pt-rtp-gnr-rentals-2026, de-evz-rental-fraud, eu-esas-ai-scams-factsheet-nl, pt-dn-psp-cncs-campaign-2025]

@@ -25,11 +25,34 @@ export interface ChapterRow {
 
 const STAMP_WORD: Record<Stamp, MessageKey> = { bronze: 'stamp_word_bronze', silver: 'stamp_word_silver', gold: 'stamp_word_gold' };
 
-export function ChapterList({ rows, onPlay, onReplay, onBack }: { rows: ChapterRow[]; onPlay: (city: string) => void; onReplay?: (city: string) => void; onBack: () => void }) {
+/** Where focus lands when coming back (review T-S3 item 16): the button that opened the page we left. */
+export type ChapterListFocus = { kind: 'atlas' } | { kind: 'replay'; city: string };
+
+export function ChapterList({
+  rows,
+  focus,
+  onPlay,
+  onReplay,
+  onAtlas,
+  onBack,
+}: {
+  rows: ChapterRow[];
+  focus?: ChapterListFocus | undefined;
+  onPlay: (city: string) => void;
+  onReplay?: (city: string) => void;
+  /** "Waymarker Atlas" (item 23): shown once a postcard is collected. */
+  onAtlas?: (() => void) | undefined;
+  onBack: () => void;
+}) {
   const heading = useRef<HTMLHeadingElement>(null);
-  useEffect(() => heading.current?.focus(), []);
+  const main = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const sel = focus?.kind === 'atlas' ? '[data-chapters-atlas]' : focus?.kind === 'replay' ? `[data-replay-chapter="${focus.city}"]` : null;
+    const btn = sel ? main.current?.querySelector<HTMLElement>(sel) : null;
+    (btn ?? heading.current)?.focus();
+  }, []);
   return (
-    <main class={styles.shell}>
+    <main class={styles.shell} ref={main}>
       <h1 id="chapters-h" ref={heading} tabIndex={-1} class={styles.title}>
         {t('chapters_title')}
       </h1>
@@ -66,6 +89,11 @@ export function ChapterList({ rows, onPlay, onReplay, onBack }: { rows: ChapterR
           );
         })}
       </ol>
+      {onAtlas ? (
+        <button type="button" class={styles.secondary} data-chapters-atlas="" onClick={onAtlas}>
+          {t('atlas_open')}
+        </button>
+      ) : null}
       <button type="button" class={styles.secondary} onClick={onBack}>
         {t('app_back_to_title')}
       </button>

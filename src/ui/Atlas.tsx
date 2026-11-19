@@ -40,7 +40,7 @@ export function AtlasPages({ pages, headingLevel = 2 }: { pages: readonly AtlasP
   );
 }
 
-export function AtlasScreen({ pages, loading = false, onBack }: { pages: readonly AtlasPage[]; loading?: boolean; onBack: () => void }) {
+export function AtlasScreen({ pages, loading = false, backTo = 'title', onBack }: { pages: readonly AtlasPage[]; loading?: boolean; backTo?: 'title' | 'chapters'; onBack: () => void }) {
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => heading.current?.focus(), []);
   return (
@@ -53,7 +53,7 @@ export function AtlasScreen({ pages, loading = false, onBack }: { pages: readonl
         {loading ? <p role="status">{t('app_loading')}</p> : pages.length === 0 ? <p>{t('atlas_empty')}</p> : <AtlasPages pages={pages} />}
         <div class={styles.buttons}>
           <button type="button" class={styles.secondary} onClick={onBack}>
-            {t('atlas_back')}
+            {t(backTo === 'chapters' ? 'app_back_to_chapters' : 'atlas_back')}
           </button>
         </div>
       </section>
@@ -61,10 +61,31 @@ export function AtlasScreen({ pages, loading = false, onBack }: { pages: readonl
   );
 }
 
-/** "Story scenes: Berlin": scenes of one chapter the player has already seen, to watch again. */
-export function SceneReplayList({ city, scenes, onPlay, onBack }: { city: string; scenes: readonly { id: string; label: string }[]; onPlay: (id: string) => void; onBack: () => void }) {
+/**
+ * "Story scenes: Berlin": scenes of one chapter the player has already seen, to watch again ("Watch: Arrival").
+ * `scenes` is null while their titles load. `focus`: after a replayed scene, its "Watch:" button gets focus
+ * back (review T-S3 item 16); otherwise the heading.
+ */
+export function SceneReplayList({
+  city,
+  scenes,
+  focus,
+  onPlay,
+  onBack,
+}: {
+  city: string;
+  scenes: readonly { id: string; label: string }[] | null;
+  focus?: string | undefined;
+  onPlay: (id: string) => void;
+  onBack: () => void;
+}) {
   const heading = useRef<HTMLHeadingElement>(null);
-  useEffect(() => heading.current?.focus(), []);
+  const list = useRef<HTMLUListElement>(null);
+  const loaded = scenes !== null;
+  useEffect(() => {
+    const btn = focus && loaded ? [...(list.current?.querySelectorAll<HTMLElement>('[data-replay]') ?? [])].find((b) => b.dataset.replay === focus) : undefined;
+    (btn ?? heading.current)?.focus();
+  }, [loaded]);
   return (
     <main class={styles.shell}>
       <section class={styles.scene} aria-labelledby="replay-h">
@@ -72,15 +93,19 @@ export function SceneReplayList({ city, scenes, onPlay, onBack }: { city: string
           {t('replay_title', { city })}
         </h1>
         <p>{t('replay_intro')}</p>
-        <ul class={styles.options}>
-          {scenes.map((s) => (
-            <li key={s.id}>
-              <button type="button" class={styles.option} data-replay={s.id} onClick={() => onPlay(s.id)}>
-                {t('replay_play', { scene: s.label })}
-              </button>
-            </li>
-          ))}
-        </ul>
+        {scenes === null ? (
+          <p role="status">{t('app_loading')}</p>
+        ) : (
+          <ul class={styles.options} ref={list}>
+            {scenes.map((s) => (
+              <li key={s.id}>
+                <button type="button" class={styles.option} data-replay={s.id} onClick={() => onPlay(s.id)}>
+                  {t('replay_play', { scene: s.label })}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
         <div class={styles.buttons}>
           <button type="button" class={styles.secondary} onClick={onBack}>
             {t('replay_back')}

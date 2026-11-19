@@ -13,8 +13,10 @@ const executablePath = process.env.PW_CHROMIUM_PATH;
  * worktree its own port (e.g. PW_PORT=4199 npm run e2e), so parallel runs never share or kill a server.
  */
 const port = Number(process.env['PW_PORT'] ?? 4173);
-if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error(`PW_PORT must be a port number 1024–65535, got "${process.env['PW_PORT']}"`);
+if (!Number.isInteger(port) || port < 1024 || port > 65534) throw new Error(`PW_PORT must be a port number 1024–65534 (the harness uses PW_PORT + 1), got "${process.env['PW_PORT']}"`);
 const baseURL = `http://127.0.0.1:${port}`;
+/** The scene-engine harness (tests/e2e/harness, test-only build) runs on the next port. */
+export const HARNESS_URL = `http://127.0.0.1:${port + 1}`;
 
 export default defineConfig({
   testDir: 'tests/e2e',
@@ -31,10 +33,18 @@ export default defineConfig({
     { name: 'desktop-chromium', use: { ...devices['Desktop Chrome'] } },
     { name: 'mobile-chromium', use: { ...devices['Pixel 7'] } },
   ],
-  webServer: {
-    command: `npm run build && npx vite preview --port ${port} --strictPort --host 127.0.0.1`,
-    url: baseURL,
-    reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
-  },
+  webServer: [
+    {
+      command: `npm run build && npx vite preview --port ${port} --strictPort --host 127.0.0.1`,
+      url: baseURL,
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+    },
+    {
+      command: `npx vite build -c vite.harness.config.ts && npx vite preview -c vite.harness.config.ts --port ${port + 1} --strictPort --host 127.0.0.1`,
+      url: HARNESS_URL,
+      reuseExistingServer: !process.env.CI,
+      timeout: 120_000,
+    },
+  ],
 });

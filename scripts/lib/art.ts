@@ -40,6 +40,21 @@ export const RECURRING_CAST: readonly string[] = ['teo', 'noor', 'adaeze', 'mate
 /** The arc character (STORY §2.2): one image, no expression groups, its own budget. */
 export const ARC_CAST: readonly string[] = ['alex'];
 
+/**
+ * The two lists above are the art budget's view of content/cast.yaml; validation fails when they disagree
+ * with the `recurring` and `arc_character` flags there (review T-S3 item 21).
+ */
+export function castListIssues(cast: Iterable<{ id: string; recurring?: boolean; arc_character?: boolean }>): string[] {
+  const members = [...cast];
+  const same = (a: readonly string[], b: readonly string[]) => a.length === b.length && a.every((x) => b.includes(x));
+  const out: string[] = [];
+  const recurring = members.filter((c) => c.recurring).map((c) => c.id);
+  const arc = members.filter((c) => c.arc_character).map((c) => c.id);
+  if (!same(recurring, RECURRING_CAST)) out.push(`content/cast.yaml: recurring cast [${recurring.join(', ')}] differs from RECURRING_CAST in scripts/lib/art.ts [${RECURRING_CAST.join(', ')}]`);
+  if (!same(arc, ARC_CAST)) out.push(`content/cast.yaml: arc characters [${arc.join(', ')}] differ from ARC_CAST in scripts/lib/art.ts [${ARC_CAST.join(', ')}]`);
+  return out;
+}
+
 /** Folders that are not loaded by the game (ART_DIRECTION §12.1): no budget, no precache. */
 export const NOT_SHIPPED_ART = ['samples', 'rig'] as const;
 

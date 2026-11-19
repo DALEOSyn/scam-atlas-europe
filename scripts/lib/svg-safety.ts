@@ -19,6 +19,9 @@ const RULES: { re: RegExp; message: string }[] = [
   // Engine review follow-up b: no DTD (entities can smuggle text or references past the other rules), no CSS imports.
   { re: /<!DOCTYPE\b/gi, message: 'SVG contains a <!DOCTYPE> (no DTDs in art files)' },
   { re: /<!ENTITY\b/gi, message: 'SVG declares an <!ENTITY> (entities can hide text and references from the linter)' },
+  // Review T-S3: escapes can spell url(, @import or href past the rules above, so none are allowed.
+  { re: /&#/g, message: 'SVG contains an XML character reference (&#…;); write the character itself' },
+  { re: /\\[0-9a-f]/gi, message: 'SVG contains a CSS escape (\\hex); write the character itself' },
   { re: /@import\b/gi, message: 'SVG uses @import in CSS (it would load a stylesheet from outside the file)' },
   { re: /url\(\s*(?!["']?#)[^)]*\)/gi, message: 'SVG uses url() outside the file (only url(#local-id) is allowed)' },
 ];

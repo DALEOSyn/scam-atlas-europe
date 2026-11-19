@@ -9,8 +9,8 @@ import { yamlStructureIssues } from './yaml-safety.ts';
 import type { z } from 'zod';
 import { isAllowedSourceHost } from './source-hosts.ts';
 import { svgSafetyIssues } from './svg-safety.ts';
-import { artIssues } from './art.ts';
-import { castByChapter, loadScenes, sceneRules, sceneSetRules } from './scenes.ts';
+import { artIssues, castListIssues } from './art.ts';
+import { castByChapter, loadScenes, sceneRules, sceneSetRules, sceneWarnings } from './scenes.ts';
 import { chapterRules, padlockRevealIssues, scenarioRules, unregisteredHostIssues, type Registries } from './rules.ts';
 import {
   balanceSchema,
@@ -427,14 +427,18 @@ export function validateScenes(
   const scenesDir = join(contentDir, 'scenes');
   const scenes = loadScenes(scenesDir, listFiles(scenesDir, ['.yaml', '.yml']), readYaml, report);
   const byCity = new Map([...reg.chapters.values()].map(({ chapter }) => [chapter.city, chapter]));
+  // "Home" is an ordinary word in a line; the travel cities are what an interlude must not name.
+  const cityNames = [...byCity.values()].filter((c) => c.city !== 'home').map((c) => c.name);
   for (const { file, scene } of scenes.values()) {
     report.scenes?.set(scene.id, scene);
     for (const e of sceneRules(scene, { cast: reg.cast, chapters: byCity, flagsSet: reg.flagsSet, publicDir })) report.errors.push(`${file}: ${e}`);
+    for (const w of sceneWarnings(scene, cityNames)) report.warnings.push(`${file}: ${w}`);
   }
   const set = sceneSetRules(scenes, reg.chapters, reg.habitCards);
   report.errors.push(...set.errors);
   report.warnings.push(...set.warnings);
   const art = artIssues(join(publicDir, 'art'), { docsDir, chapterLocals: castByChapter(scenes.values()) });
+  report.errors.push(...castListIssues(reg.cast.values()));
   report.errors.push(...art.errors);
   report.warnings.push(...art.warnings);
 }

@@ -239,7 +239,7 @@ describe('ScenarioView on a payee-check beat', () => {
     const shortLabel = [...timerEl.querySelectorAll('span[aria-hidden="true"]')].find((el) => el.textContent === 'Paused: tip open');
     expect(shortLabel).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Got it' }));
-    expect(seen).toHaveBeenCalledWith('payee_check');
+    expect(seen.mock.calls).toEqual([['payee_check_once'], ['payee_check']]);
     expect(container.querySelector('[data-coach]')).toBeNull();
     expect(container.textContent).not.toContain('Paused while the tip is open');
   });
@@ -253,12 +253,12 @@ describe('ScenarioView on a payee-check beat', () => {
       else fireEvent.click(container.querySelector('[data-action="cancel_call"]') as HTMLElement);
       await waitFor(() => expect(container.querySelector('[data-coach]')).toBeNull());
       expect(container.textContent).not.toContain('Paused while the tip is open');
-      // Engine review follow-up a: only "Got it" records the mark; a tip closed this way comes back.
-      expect(seen).not.toHaveBeenCalled();
+      // A first showing closed this way leaves only the `_once` marker: the tip comes back once more.
+      expect(seen.mock.calls).toEqual([['payee_check_once']]);
       cleanup();
     }
   });
-  it('a tip closed by a Check comes back on the next payee check (not recorded as seen)', async () => {
+  it('a tip closed by a Check comes back once; closing its second showing records it [P] (T-S3 item 15)', async () => {
     const seen = vi.fn();
     const first = render(<ScenarioView scenario={scenario({ ...rawTransfer(), pressure: { timer: true, levers: [] } })} ctx={ctx({ pushers: false })} onDone={() => undefined} coachMarks={[]} onCoachMarkSeen={seen} />);
     fireEvent.click(first.container.querySelector('[data-action="start_transfer"]') as HTMLElement);
@@ -266,10 +266,16 @@ describe('ScenarioView on a payee-check beat', () => {
     fireEvent.click(first.container.querySelector('[data-check="payee.iban"]') as HTMLElement);
     await waitFor(() => expect(first.container.querySelector('[data-coach]')).toBeNull());
     cleanup();
-    // The save is unchanged (seen not called), so the next payee check shows the tip again.
-    const next = render(<ScenarioView scenario={scenario({ ...rawTransfer(), pressure: { timer: true, levers: [] } })} ctx={ctx({ pushers: false })} onDone={() => undefined} coachMarks={[]} onCoachMarkSeen={seen} />);
+    expect(seen.mock.calls).toEqual([['payee_check_once']]);
+    // The save holds only the marker, so the next payee check shows the tip again.
+    const next = render(<ScenarioView scenario={scenario({ ...rawTransfer(), pressure: { timer: true, levers: [] } })} ctx={ctx({ pushers: false })} onDone={() => undefined} coachMarks={['payee_check_once']} onCoachMarkSeen={seen} />);
     fireEvent.click(next.container.querySelector('[data-action="start_transfer"]') as HTMLElement);
     await waitFor(() => expect(next.container.querySelector('[data-coach]')).toBeTruthy());
-    expect(seen).not.toHaveBeenCalled();
+    expect(seen.mock.calls).toEqual([['payee_check_once']]);
+    // Closed again by a Check: now it is recorded as seen and does not come back.
+    fireEvent.click(next.container.querySelector('[data-check="payee.iban"]') as HTMLElement);
+    await waitFor(() => expect(next.container.querySelector('[data-coach]')).toBeNull());
+    expect(seen.mock.calls).toEqual([['payee_check_once'], ['payee_check']]);
   });
+
 });

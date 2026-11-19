@@ -866,6 +866,10 @@ export const chapterSchema = z
   .strict()
   .superRefine((c, ctx) => {
     if (c.content_note_arc_closed && !c.content_note) ctx.addIssue({ code: 'custom', path: ['content_note_arc_closed'], message: 'needs content_note too' });
+    for (const key of ['content_note', 'content_note_arc_closed'] as const) {
+      const text = c[key];
+      if (text) for (const what of sceneArtefacts(text)) ctx.addIssue({ code: 'custom', path: [key], message: `no scam artefacts in content notes: this looks like ${what}` });
+    }
     if (c.scenes) {
       const all = [...c.scenario_order.am, ...c.scenario_order.pm];
       c.scenes.placed.forEach((p, i) => {
@@ -945,22 +949,37 @@ export function sceneWordCount(text: string | undefined): number {
  * domains and masked numbers in device content): a scene line has no address of any kind, no number that
  * could be a phone, code, IBAN or amount, and no masked digits.
  */
+const TLDS = 'com|net|org|info|biz|example|test|invalid|eu|de|nl|fr|es|it|pl|pt|ie|se|be|at|ch|uk|co|io|app|online|shop|site';
 const SCENE_ARTEFACTS: { re: RegExp; what: string }[] = [
-  { re: /\b(?:https?|ftp|mailto|javascript):|\bwww\./i, what: 'a link' },
-  { re: /[\p{L}\p{N}-]+(?:\.[\p{L}\p{N}-]+)*\.\p{L}{2,}(?:\/|\b)/u, what: 'a web address or domain' },
+  { re: /(?<![\p{L}\p{N}])(?:h[tx]{2}ps?|ftp|mailto|javascript):|(?<![\p{L}\p{N}])www\s*\./iu, what: 'a link' },
+  // A dot with no space on either side, or with spaces on both sides ("www . parcel . example"); a sentence end has neither.
+  { re: /[\p{L}\p{N}-]+(?:(?:\.|\s+\.\s+)[\p{L}\p{N}-]+)*(?:\.|\s+\.\s+)\p{L}{2,}(?![\p{L}])/u, what: 'a web address or domain' },
+  { re: new RegExp(`(?<![\\p{L}])(?:dot|punkt|point|punto)\\s+(?:${TLDS})(?![\\p{L}])`, 'iu'), what: 'a spelled-out web address' },
+  { re: /(?<![\p{L}])slash(?![\p{L}])/iu, what: 'a spelled-out web address' },
   { re: /\S@\S/u, what: 'an e-mail address or handle' },
   { re: /\/qr\//i, what: 'a QR route' },
-  { re: /\b[A-Z]{2}\d{2}(?:[ ]?[A-Z0-9]{2,4}){2,}/u, what: 'an IBAN' },
-  { re: /\+\s?\d|\d(?:[ ().-]?\d){5,}/u, what: 'a phone number' },
-  { re: /\d{4,}/u, what: 'a code or long number (write numbers in words)' },
-  { re: /[•*]{2,}|\d[•*]|[•*]\d/u, what: 'a masked number' },
-  { re: /[€£$¥₺]|\d\s?(?:eur|euro|euros|usd|gbp|chf|pln|sek|kr|zł)(?!\p{L})|(?<!\p{L})(?:eur|euro|euros)\s?\d/iu, what: 'an amount of money' },
+  { re: /(?<![\p{L}\p{N}])[A-Z]{2}\p{Nd}{2}(?:[ ]?[A-Z0-9]{2,4}){2,}/u, what: 'an IBAN' },
+  { re: /\+\s?\p{Nd}|\p{Nd}(?:[ ().-]?\p{Nd}){5,}/u, what: 'a phone number' },
+  { re: /\p{Nd}{4,}|\p{Nd}(?:\s\p{Nd}){3,}/u, what: 'a code or long number (write numbers in words)' },
+  { re: /[•*]{2,}|\p{Nd}[•*]|[•*]\p{Nd}/u, what: 'a masked number' },
+  { re: /[€£$¥₺]|\p{Nd}\s?(?:eur|euro|euros|usd|gbp|chf|pln|sek|kr|zł)(?!\p{L})|(?<!\p{L})(?:eur|euro|euros)\s?\p{Nd}/iu, what: 'an amount of money' },
 ];
+
+/**
+ * Fold look-alike characters before matching: NFKC (full-width ０-９ ＋ ＠ ．, mathematical digits),
+ * ideographic full stops, and defanged dots ("[.]", "(.)", "{dot}").
+ */
+export function normaliseSceneText(text: string): string {
+  return text
+    .normalize('NFKC')
+    .replace(/[。．｡]/g, '.')
+    .replace(/\s*[[({]\s*(?:\.|dot)\s*[\])}]\s*/giu, '.');
+}
 
 export function sceneArtefacts(text: string): string[] {
   // Placeholders ({count}) and the ellipsis "…" are fine; dotted abbreviations ("a.m.") have 1-letter parts.
-  const clean = text.replace(/\{(?:count|lastCity)\}/g, ' ');
-  return SCENE_ARTEFACTS.filter((a) => a.re.test(clean)).map((a) => a.what);
+  const clean = normaliseSceneText(text).replace(/\{(?:count|lastCity)\}/g, ' ');
+  return [...new Set(SCENE_ARTEFACTS.filter((a) => a.re.test(clean)).map((a) => a.what))];
 }
 
 const sceneText = z.string().min(1);
@@ -1075,6 +1094,11 @@ export const sceneSchema = z
     /** The city (chapter id), or `interludes` for travel interludes. */
     chapter: slug,
     slot: z.enum(SCENE_SLOTS),
+    /**
+     * Overrides the slot title ("Arrival", "Later", "Story", "Before you go"; interludes "Between cities")
+     * in the heading and on the replay button ("Watch: {title}") [P] (review T-S3 item 6).
+     */
+    title: sceneText.max(40).optional(),
     /** true → content note before the scene and a prominent "Need to talk?" help link (STORY §5). */
     sensitive: z.boolean().default(false),
     /** The note shown before a sensitive scene; defaults to the chapter's content_note. */
@@ -1087,6 +1111,8 @@ export const sceneSchema = z
   .strict()
   .superRefine((sc, ctx) => {
     const interlude = sc.slot === 'interlude';
+    if (sc.title) for (const what of sceneArtefacts(sc.title)) ctx.addIssue({ code: 'custom', path: ['title'], message: `no scam artefacts in scenes: this looks like ${what} (STORY §4.2 rule 1)` });
+    if (sc.content_note) for (const what of sceneArtefacts(sc.content_note)) ctx.addIssue({ code: 'custom', path: ['content_note'], message: `no scam artefacts in scenes: this looks like ${what} (STORY §4.2 rule 1)` });
     if (interlude !== (sc.chapter === INTERLUDE_FOLDER)) ctx.addIssue({ code: 'custom', path: ['chapter'], message: `interludes (and only they) use chapter: ${INTERLUDE_FOLDER}` });
     if (interlude !== (sc.after_middle !== undefined)) ctx.addIssue({ code: 'custom', path: ['after_middle'], message: 'after_middle is required on interludes and only there' });
     if (interlude && sc.panels.length > INTERLUDE_MAX_PANELS) ctx.addIssue({ code: 'custom', path: ['panels'], message: `an interlude has at most ${INTERLUDE_MAX_PANELS} panels` });
@@ -1130,6 +1156,8 @@ export const castMemberSchema = z
     known_channel: z.object({ label: z.string().min(1), detail: z.string().min(1).optional() }).strict().optional(),
     /** Arc characters' lines are limited to balance session.arc_line_max_words. */
     arc_character: z.boolean().default(false),
+    /** Recurring story cast (STORY §2): drawn in every chapter's scenes; art checks derive their list from this. */
+    recurring: z.boolean().default(false),
     notes: z.string().optional(),
   })
   .strict()

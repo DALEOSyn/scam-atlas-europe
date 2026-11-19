@@ -6,7 +6,7 @@
  * app plays arrival, placed beats and the resolution around scenarios, then shows the postcard.
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/preact';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/preact';
 import axe from 'axe-core';
 import { App } from '../../src/app.tsx';
 import type { SceneRef } from '../../src/content/scenes.ts';
@@ -14,7 +14,7 @@ import { chapterSchema, type Scene } from '../../src/content/schema.ts';
 import { createStore, freshSave, SAVE_KEY, type StorageLike } from '../../src/engine/save.ts';
 import { AtlasScreen } from '../../src/ui/Atlas.tsx';
 import { ChapterDone } from '../../src/ui/ChapterDone.tsx';
-import { ScenePlayer } from '../../src/ui/ScenePlayer.tsx';
+import { HelpList, ScenePlayer, sceneHeading, scenePart } from '../../src/ui/ScenePlayer.tsx';
 import { fixtureScene } from '../content/scene-fixtures.ts';
 import { loadExample } from './helpers.ts';
 
@@ -35,12 +35,14 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
   it('reveals one panel per press, never by itself; focus moves to the new panel', async () => {
     vi.useFakeTimers();
     const onDone = vi.fn();
-    const { container } = render(<ScenePlayer scene={arrival()} place="Berlin" onDone={onDone} />);
+    const { container } = render(<ScenePlayer scene={arrival()} heading="Berlin · Arrival" chapterName="Berlin" onDone={onDone} />);
     act(() => void vi.advanceTimersByTime(60_000));
     expect(container.querySelectorAll('li[data-panel]').length).toBe(1);
     vi.useRealTimers();
     expect(document.activeElement?.id).toBe('scene-h');
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toContain('Berlin · Arrival');
+    // Item 14: the "Story scene" kicker sits outside the h1.
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Berlin · Arrival');
+    expect(container.querySelector('p[class*="kicker"]')?.textContent).toBe('Story scene');
     const section = container.querySelector('section[aria-labelledby="scene-h"]') as HTMLElement;
     expect(section.querySelector('ol > li[tabindex="-1"] > figure > figcaption')).toBeTruthy();
     expect(within(section).getByText('Panel 1 of 3')).toBeTruthy();
@@ -56,7 +58,7 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     expect(onDone).toHaveBeenCalledWith('finished');
   });
   it('one description per picture; art is <img> with fragment ids; speaker label and role; the player is never drawn', () => {
-    const { container } = render(<ScenePlayer scene={arrival()} place="Berlin" onDone={() => undefined} />);
+    const { container } = render(<ScenePlayer scene={arrival()} heading="Berlin · Arrival" chapterName="Berlin" onDone={() => undefined} />);
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     const panel = (n: number) => container.querySelector(`li[data-panel="${n}"]`) as HTMLElement;
@@ -73,7 +75,7 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
   });
   it('Skip ends the scene; Help opens the help list and returns to the same panel', () => {
     const onDone = vi.fn();
-    const { container } = render(<ScenePlayer scene={arrival()} place="Berlin" onDone={onDone} />);
+    const { container } = render(<ScenePlayer scene={arrival()} heading="Berlin · Arrival" chapterName="Berlin" onDone={onDone} />);
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     fireEvent.click(screen.getByRole('button', { name: 'Where to get help' }));
     expect(document.activeElement?.textContent).toBe('Where to report and get help');
@@ -85,7 +87,7 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
   it('a sensitive scene opens on its content note with a way out; the help link says "Need to talk?"', () => {
     const scene: Scene = { ...arrival(), sensitive: true };
     const onDone = vi.fn();
-    render(<ScenePlayer scene={scene} place="Berlin" contentNote="This chapter includes a family-emergency story. Everyone ends up safe." onDone={onDone} />);
+    render(<ScenePlayer scene={scene} heading="Berlin · Arrival" chapterName="Berlin" contentNote="This chapter includes a family-emergency story. Everyone ends up safe." onDone={onDone} />);
     expect(screen.getByRole('heading', { level: 1, name: 'Before this story scene' })).toBeTruthy();
     expect(document.activeElement?.id).toBe('scene-note-h');
     expect(screen.getByRole('button', { name: 'Need to talk? Where to get help' })).toBeTruthy();
@@ -95,13 +97,13 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     fireEvent.click(screen.getByRole('button', { name: 'Show the scene' }));
     expect(screen.getByText('Panel 1 of 3')).toBeTruthy();
     cleanup();
-    render(<ScenePlayer scene={scene} place="Berlin" contentNote="A note." onDone={onDone} />);
+    render(<ScenePlayer scene={scene} heading="Berlin · Arrival" chapterName="Berlin" contentNote="A note." onDone={onDone} />);
     fireEvent.click(screen.getByRole('button', { name: 'Skip this scene' }));
     expect(onDone).toHaveBeenLastCalledWith('skipped');
   });
   it('the rehearsal choice gives the same reply to every option and moves focus to it; local phrase has lang', () => {
     for (const option of ['Pause', 'Ask someone']) {
-      const { container } = render(<ScenePlayer scene={fixtureScene('berlin', 'berlin-turn')} place="Berlin" onDone={() => undefined} />);
+      const { container } = render(<ScenePlayer scene={fixtureScene('berlin', 'berlin-turn')} heading="Berlin · Later" chapterName="Berlin" onDone={() => undefined} />);
       expect(container.querySelector('span[lang="de"]')?.textContent).toBe('Gute Nacht.');
       fireEvent.click(screen.getByRole('button', { name: 'Next' }));
       fireEvent.click(screen.getByRole('button', { name: option }));
@@ -112,44 +114,49 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
       cleanup();
     }
   });
-  it('the If-then panel shows "Postcard to Teo" and the line word for word; variant panels follow run flags', () => {
-    const { container } = render(<ScenePlayer scene={fixtureScene('berlin', 'berlin-resolution')} place="Berlin" onDone={() => undefined} />);
+  it('the If-then panel shows the postcard (its own "Postcard to Teo:" heading, no extra narration) word for word; variant panels follow run flags', () => {
+    const { container } = render(<ScenePlayer scene={fixtureScene('berlin', 'berlin-resolution')} heading="Berlin · Before you go" chapterName="Berlin" onDone={() => undefined} />);
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(container.querySelectorAll('li[data-panel]').length).toBe(2);
-    expect(screen.getByText('Postcard to Teo')).toBeTruthy();
+    const last = container.querySelector('li[data-panel="2"]') as HTMLElement;
+    expect(within(last).getByText('Postcard to Teo:')).toBeTruthy();
+    expect(within(last).queryByText('Postcard to Teo')).toBeNull();
+    expect(last.querySelector('[data-postcard]')?.getAttribute('data-postcard')).toBe('Berlin');
     expect(container.querySelector('[data-if-then]')?.textContent).toBe("If a parcel message wants money or a click, then I open the courier's app myself.");
     cleanup();
-    render(<ScenePlayer scene={fixtureScene('berlin', 'berlin-resolution')} place="Berlin" flags={new Set(['berlin_test_variant'])} onDone={() => undefined} />);
+    render(<ScenePlayer scene={fixtureScene('berlin', 'berlin-resolution')} heading="Berlin · Before you go" chapterName="Berlin" flags={new Set(['berlin_test_variant'])} onDone={() => undefined} />);
     expect(screen.getByText('Panel 1 of 3')).toBeTruthy();
   });
-  it('interlude: placeholders, flip the postcard (one tap, recorded), skipped when no postcard is eligible', () => {
+  it('interlude: placeholders, flip the postcard (recorded when shown, the tap optional), skipped when no postcard is eligible', () => {
     const onFlip = vi.fn();
     const scene = fixtureScene('interludes', 'interlude-cafe');
     const flip = { city: 'berlin', cityName: 'Berlin', ifThen: { cue: 'If a parcel message wants money or a click,', action: "then I open the courier's app myself." } };
-    const { container } = render(<ScenePlayer scene={scene} place={null} vars={{ count: 4, lastCity: 'Rome' }} flip={flip} onFlip={onFlip} onDone={() => undefined} />);
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toContain('Between cities · On the road');
+    const { container } = render(<ScenePlayer scene={scene} heading="Between cities" vars={{ count: 4, lastCity: 'Rome' }} flip={flip} onFlip={onFlip} onDone={() => undefined} />);
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Between cities');
     expect(container.textContent).toContain('4 cities so far, the last one Rome.');
+    expect(onFlip).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
-    expect(screen.getByText('Remember what they did? Tap to flip.')).toBeTruthy();
+    // [P] Item 8: shown = flipped, before any tap.
+    expect(onFlip).toHaveBeenCalledWith('berlin');
+    expect(screen.getByText('Remember what they did? Flip it over.')).toBeTruthy();
     const card = container.querySelector('[data-flip-card]') as HTMLElement;
     expect(card.textContent).toContain('If a parcel message wants money or a click…');
     expect(card.textContent).not.toContain('then I open');
-    fireEvent.click(within(card).getByRole('button', { name: 'Turn over' }));
-    expect(onFlip).toHaveBeenCalledWith('berlin');
+    fireEvent.click(within(card).getByRole('button', { name: 'Flip' }));
     expect(card.textContent).toContain("then I open the courier's app myself.");
-    fireEvent.click(within(card).getByRole('button', { name: 'Turn over' }));
+    fireEvent.click(within(card).getByRole('button', { name: 'Flip' }));
     expect(card.textContent).not.toContain('then I open');
     expect(onFlip).toHaveBeenCalledTimes(1);
     cleanup();
-    render(<ScenePlayer scene={scene} place={null} flip={null} onDone={() => undefined} />);
+    render(<ScenePlayer scene={scene} heading="Between cities" flip={null} onDone={() => undefined} />);
     expect(screen.getByText('Panel 1 of 2')).toBeTruthy();
   });
   it('axe: no violations on panels, choice, content note and help', async () => {
-    const { container } = render(<ScenePlayer scene={fixtureScene('berlin', 'berlin-turn')} place="Berlin" onDone={() => undefined} />);
+    const { container } = render(<ScenePlayer scene={fixtureScene('berlin', 'berlin-turn')} heading="Berlin · Later" chapterName="Berlin" onDone={() => undefined} />);
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     await axeClean(container as HTMLElement);
     cleanup();
-    const note = render(<ScenePlayer scene={{ ...arrival(), sensitive: true }} place="Berlin" contentNote="A note." onDone={() => undefined} />);
+    const note = render(<ScenePlayer scene={{ ...arrival(), sensitive: true }} heading="Berlin · Arrival" chapterName="Berlin" contentNote="A note." onDone={() => undefined} />);
     await axeClean(note.container as HTMLElement);
     fireEvent.click(screen.getByRole('button', { name: 'Need to talk? Where to get help' }));
     await axeClean(note.container as HTMLElement);
@@ -158,10 +165,58 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     document.documentElement.dataset.motion = 'reduced';
     const scroll = vi.fn();
     Element.prototype.scrollIntoView = scroll;
-    render(<ScenePlayer scene={arrival()} place="Berlin" onDone={() => undefined} />);
+    render(<ScenePlayer scene={arrival()} heading="Berlin · Arrival" chapterName="Berlin" onDone={() => undefined} />);
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(scroll).toHaveBeenCalledWith({ behavior: 'auto', block: 'nearest' });
     delete (Element.prototype as Partial<Element>).scrollIntoView;
+  });
+});
+
+describe('scene titles [P] and the help list (review T-S3 items 6, 7)', () => {
+  const ch = chapterSchema.parse({
+    slot: 1,
+    city: 'berlin',
+    name: 'Berlin',
+    status: 'draft',
+    patterns: ['smishing-parcel-fee'],
+    lo_focus: ['LO-03'],
+    scenario_order: { am: ['berlin-01', 'berlin-02'], pm: ['berlin-03'] },
+    intro: 'Test chapter.',
+    scenes: {
+      arrival: 'berlin-arrival',
+      turn: 'berlin-turn',
+      resolution: 'berlin-resolution',
+      placed: [
+        { scene: 'berlin-beat-b', after: 'berlin-03' },
+        { scene: 'berlin-beat-a', after: 'berlin-01' },
+      ],
+    },
+  });
+  const sc = (id: string, slot: Scene['slot'], title?: string) => ({ id, slot, ...(title ? { title } : {}) });
+  it('Arrival, Later, Before you go; placed beats "Story" or "Story 1/2" in play order; interludes "Between cities"; a title overrides', () => {
+    expect(sceneHeading(sc('berlin-arrival', 'arrival'), ch)).toBe('Berlin · Arrival');
+    expect(sceneHeading(sc('berlin-turn', 'turn'), ch)).toBe('Berlin · Later');
+    expect(sceneHeading(sc('berlin-resolution', 'resolution'), ch)).toBe('Berlin · Before you go');
+    expect(scenePart(sc('berlin-beat-a', 'beat'), ch)).toBe('Story 1');
+    expect(scenePart(sc('berlin-beat-b', 'beat'), ch)).toBe('Story 2');
+    const one = chapterSchema.parse({ ...ch, scenes: { ...ch.scenes, placed: [{ scene: 'berlin-beat-a', after: 'berlin-01' }] } });
+    expect(sceneHeading(sc('berlin-beat-a', 'beat'), one)).toBe('Berlin · Story');
+    expect(sceneHeading(sc('interlude-cafe', 'interlude'), null)).toBe('Between cities');
+    expect(scenePart(sc('interlude-cafe', 'interlude'), null)).toBeNull();
+    expect(sceneHeading(sc('berlin-resolution', 'resolution', 'Open Evening'), ch)).toBe('Berlin · Open Evening');
+    expect(sceneHeading(sc('interlude-cafe', 'interlude', 'Teo\'s café'), null)).toBe("Teo's café");
+  });
+  it('a sensitive help list puts "talk to someone" first [P]', () => {
+    const items = (sensitive: boolean) => {
+      const { container } = render(<HelpList sensitive={sensitive} />);
+      const out = [...container.querySelectorAll('li')].map((li) => li.textContent ?? '');
+      cleanup();
+      return out;
+    };
+    const plain = items(false);
+    const sensitive = items(true);
+    expect(sensitive[0]).toBe(plain.at(-1));
+    expect([...sensitive].sort()).toEqual([...plain].sort());
   });
 });
 
@@ -173,7 +228,10 @@ describe('postcards on the chapter end and the Atlas', () => {
     const card = container.querySelector('[data-chapter-postcard]') as HTMLElement;
     expect(card.textContent).toContain("Postcard to Teo:If a parcel message wants money or a click, then I open the courier's app myself.A real job pays you.");
     fireEvent.click(within(card).getByRole('button', { name: 'Turn over' }));
-    expect(within(card).getByRole('img', { name: 'Postcard front: Berlin.' })).toBeTruthy();
+    expect(within(card).getByRole('img', { name: 'Postcard front: the Berlin courtyard.' })).toBeTruthy();
+    // [P] Item 12: the postcard sits right under the h1, before the stamp and the score.
+    const order = [...container.querySelectorAll('h1, [data-chapter-postcard], [data-stamp]')].map((el) => el.tagName === 'H1' ? 'h1' : el.hasAttribute('data-stamp') ? 'stamp' : 'postcard');
+    expect(order).toEqual(['h1', 'postcard', 'stamp']);
   });
   it('the Atlas lists pages with habit-card links; empty state', () => {
     const { container } = render(<AtlasScreen pages={[{ city: 'berlin', name: 'Berlin', ifThen, cards: ['open-it-yourself'] }]} onBack={() => undefined} />);
@@ -229,7 +287,7 @@ describe('App: scenes around scenarios (retrofit hooks)', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
     await screen.findByRole('heading', { level: 1, name: /This was a scam/ });
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
-    await screen.findByText(/Berlin · Midday/);
+    await screen.findByText(/Berlin · Later/);
     fireEvent.click(screen.getByRole('button', { name: 'Skip story' }));
     await screen.findByText(/Berlin · Before you go/);
     await finishScene();
@@ -241,11 +299,61 @@ describe('App: scenes around scenarios (retrofit hooks)', () => {
     // Chapter list: replay the story scenes; the title screen offers the Atlas.
     fireEvent.click(screen.getByRole('button', { name: 'Back to the chapters' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Story scenes: Berlin' }));
-    expect(screen.getByRole('button', { name: 'Watch Arrival' })).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Watch Before you go' }));
+    expect(await screen.findByRole('button', { name: 'Watch: Arrival' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Watch: Before you go' }));
     await screen.findByText(/Berlin · Before you go/);
     fireEvent.click(screen.getByRole('button', { name: 'Skip story' }));
     await screen.findByRole('heading', { name: 'Story scenes: Berlin' });
+    // Item 16: focus returns to the "Watch:" button of the scene just replayed, then to "Story scenes: Berlin".
+    await waitFor(() => expect(document.activeElement?.textContent).toBe('Watch: Before you go'));
+    fireEvent.click(screen.getByRole('button', { name: 'Back to the chapters' }));
+    await waitFor(() => expect(document.activeElement?.textContent).toBe('Story scenes: Berlin'));
+    // Item 23: the Atlas is on the chapter list too; its Back returns focus to that button.
+    fireEvent.click(screen.getByRole('button', { name: 'Waymarker Atlas' }));
+    await screen.findByRole('heading', { level: 1, name: 'Waymarker Atlas' });
+    fireEvent.click(await screen.findByRole('button', { name: /^Back/ }));
+    await waitFor(() => expect(document.activeElement?.textContent).toBe('Waymarker Atlas'));
+    fireEvent.click(screen.getByRole('button', { name: 'Back to the start' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Waymarker Atlas' }));
+    await screen.findByRole('heading', { level: 1, name: 'Waymarker Atlas' });
+    fireEvent.click(await screen.findByRole('button', { name: /^Back/ }));
+    await waitFor(() => expect(document.activeElement?.getAttribute('data-title-button')).toBe('atlas'));
+  });
+  it('[P] the content note gates only the first sensitive scene of a run, and every replay (item 13)', async () => {
+    const noted = chapterSchema.parse({ ...chapter, content_note: 'This chapter includes a family-emergency story. Everyone ends up safe.' });
+    const sensitive: SceneRef[] = refs.map((r) => ({ ...r, load: async () => ({ ...(await r.load()), sensitive: true }) }));
+    render(<App chapters={[noted]} load={async () => ex} sceneRefs={sensitive} store={createStore(memory())} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+    await screen.findByRole('heading', { level: 1, name: 'Before this story scene' });
+    fireEvent.click(screen.getByRole('button', { name: 'Show the scene' }));
+    await finishScene();
+    fireEvent.click(await screen.findByRole('button', { name: /Calm preset/ }));
+    fireEvent.click(await screen.findByRole('button', { name: /Open the Trundle app yourself/ }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
+    await screen.findByRole('heading', { level: 1, name: /This was a scam/ });
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    // The placed beat: no second gate, but the help link still reads "Need to talk?".
+    await screen.findByText(/Berlin · Later/);
+    expect(screen.queryByRole('heading', { name: 'Before this story scene' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Need to talk? Where to get help' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Skip story' }));
+    await screen.findByText(/Berlin · Before you go/);
+    fireEvent.click(screen.getByRole('button', { name: 'Skip story' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Back to the chapters' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Story scenes: Berlin' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Watch: Later' }));
+    // A replay always shows the note.
+    await screen.findByRole('heading', { level: 1, name: 'Before this story scene' });
+  });
+  it('a tampered run (restarted by beginChapter) still plays the arrival (item 18)', async () => {
+    const s = freshSave();
+    s.chapters.berlin = { finished: false, bestStamp: null, bestRating: 0, position: 0, run: { index: 1, records: [], flags: [] } };
+    const mem = memory();
+    mem.data.set(SAVE_KEY, JSON.stringify(s));
+    render(<App chapters={[chapter]} load={async () => ex} sceneRefs={refs} store={createStore(mem)} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Chapters' }));
+    fireEvent.click(await screen.findByRole('button', { name: /Berlin/ }));
+    await screen.findByText(/Berlin · Arrival/);
   });
   it('with zero scenes the chapter plays unchanged: no scene screens, no Atlas button', async () => {
     const plain = chapterSchema.parse({ ...chapter, scenes: undefined });
@@ -277,7 +385,7 @@ describe('App: scenes around scenarios (retrofit hooks)', () => {
     await screen.findByRole('heading', { level: 1, name: /This was a scam/ });
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Back to the chapters' }));
-    await screen.findByText(/Between cities · On the road/);
+    await screen.findByRole('heading', { level: 1, name: 'Between cities' });
     // No postcard is two chapters old yet, so the flip panel is left out.
     expect(screen.getByText('Panel 1 of 2')).toBeTruthy();
     expect(screen.getByText(/2 cities so far, the last one Madrid\./)).toBeTruthy();

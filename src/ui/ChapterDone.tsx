@@ -1,5 +1,5 @@
 /**
- * Chapter end (UI_SPEC §9.2, GDD §7): the stamp with the city ("Passport stamp: Berlin, gold"), the
+ * Chapter end (UI_SPEC §9.2, GDD §7): the postcard to Teo first (S3), then the stamp with the city ("Passport stamp: Berlin, gold"), the
  * plain-words summary "x of R", and what the next tier needs. Stamp art comes later.
  */
 import { useEffect, useRef } from 'preact/hooks';
@@ -25,6 +25,7 @@ export function ChapterDone({
   onBack,
 }: {
   summary: ChapterSummary;
+  /** The chapter's name ("Berlin"), also the postcard front's place. */
   city?: string;
   /** The chapter's postcard to Teo (S3): given for finishing, whatever the score. */
   postcard?: { ifThen: IfThen; backdrop?: string | undefined } | null;
@@ -40,6 +41,13 @@ export function ChapterDone({
         <h1 id="chapter-done-heading" ref={heading} tabIndex={-1} class={styles.h1}>
           {t('chapter_done_title')}
         </h1>
+        {/* [P] The postcard comes first, right under the heading; the score follows (review T-S3 item 12). */}
+        {postcard ? (
+          <section aria-labelledby="chapter-postcard-h" data-chapter-postcard="">
+            <h2 id="chapter-postcard-h">{t('chapter_done_postcard')}</h2>
+            <Postcard ifThen={postcard.ifThen} city={city ?? ''} backdrop={postcard.backdrop} />
+          </section>
+        ) : null}
         {summary.stamp ? (
           <p>
             <strong data-stamp={summary.stamp}>{city ? t('stamp_city', { city, tier: t(TIER_WORD[summary.stamp]) }) : t(stampKey)}</strong>
@@ -65,12 +73,6 @@ export function ChapterDone({
             doubles: summary.doubleChecks,
           })}
         </p>
-        {postcard ? (
-          <section aria-labelledby="chapter-postcard-h" data-chapter-postcard="">
-            <h2 id="chapter-postcard-h">{t('chapter_done_postcard')}</h2>
-            <Postcard ifThen={postcard.ifThen} city={city ?? ''} backdrop={postcard.backdrop} />
-          </section>
-        ) : null}
         <details class={styles.points}>
           <summary>{t('debrief_points')}</summary>
           <p>{t('chapter_rating', { rating: Math.round(summary.rating) })}</p>

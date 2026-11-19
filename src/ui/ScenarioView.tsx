@@ -195,23 +195,37 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
     if (open) announce.polite(2, t('translation_shown'));
   };
 
-  // ---- coach marks (CR-23): the timer is frozen while one is open. Only "Got it" records it as seen for the
-  // game; a mark closed by an action or a Check use is hidden for that beat only and comes back on the next
-  // payee check (engine review follow-up a).
+  // ---- coach marks (CR-23): the timer is frozen while one is open. A mark is recorded as seen for the game
+  // on "Got it", or when its second showing closes, whatever closes it [P] (review T-S3 item 15). The first
+  // showing leaves an `<id>_once` marker in the save; a mark closed by an action or a Check use is hidden for
+  // that beat only and comes back on the next payee check (engine review follow-up a).
   const [coachSeen, setCoachSeen] = useState<readonly string[]>(coachMarks);
   const coachSeenRef = useRef<readonly string[]>(coachMarks);
   /** `<id>@<beat id>`: marks closed without "Got it", hidden on that beat only. */
   const [coachHidden, setCoachHidden] = useState<readonly string[]>([]);
   /** The coach mark on screen, if any: any action or Check use closes it and lifts the freeze (sceptic T-3.3). */
   const coachOpen = useRef<string | null>(null);
+  /** The mark on screen is on its second (or later) showing: closing it records it as seen. */
+  const coachRepeat = useRef<string | null>(null);
   const onCoachMark = useCallback(
     (id: string, open: boolean, gotIt = false) => {
       runner.freeze('coach_mark', open);
       coachOpen.current = open ? id : coachOpen.current === id ? null : coachOpen.current;
-      if (!gotIt || coachSeenRef.current.includes(id)) return;
-      coachSeenRef.current = [...coachSeenRef.current, id];
-      setCoachSeen(coachSeenRef.current);
-      onCoachMarkSeen?.(id);
+      const record = (key: string) => {
+        if (coachSeenRef.current.includes(key)) return;
+        coachSeenRef.current = [...coachSeenRef.current, key];
+        setCoachSeen(coachSeenRef.current);
+        onCoachMarkSeen?.(key);
+      };
+      if (open) {
+        if (coachSeenRef.current.includes(`${id}_once`)) coachRepeat.current = id;
+        else record(`${id}_once`);
+        return;
+      }
+      if (gotIt || coachRepeat.current === id) {
+        coachRepeat.current = null;
+        record(id);
+      }
     },
     [runner.freeze, onCoachMarkSeen],
   );

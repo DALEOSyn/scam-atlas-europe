@@ -574,6 +574,9 @@ describe('review fixes: schema (#5, #17) and SVG safety (#4)', () => {
     expect(msgs).toMatch(/ENTITY/);
     expect(msgs).toMatch(/@import/);
     expect(svgSafetyIssues('<svg><style>.x{display:none}</style></svg>')).toEqual([]);
+    for (const sneaky of ['<rect fill="&#117;rl(https://x.test/a)"/>', '<style>@\\69mport "https://x.test/a.css";</style>', '<style>.a{fill:u\\72l(https://x.test)}</style>']) {
+      expect(svgSafetyIssues(`<svg>${sneaky}</svg>`).map((i) => i.message).join('\n'), sneaky).toMatch(/character reference|CSS escape/);
+    }
   });
   it('#4 redline:lint fails on an embedded raster in any SVG under public/, and the shipped SVGs are clean', () => {
     const cfg = loadConfig();

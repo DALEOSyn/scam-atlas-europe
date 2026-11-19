@@ -4,9 +4,9 @@
  * the front is a crop of the city backdrop. "Turn over" swaps faces: a flat 2D squash in full motion,
  * an instant swap with reduced motion (the duration token is 0 there). Score-neutral: no tier, seal or count.
  *
- * FlipCard is "flip the postcard" (STORY §3.12): the cue on one side, the then-half on the other. One tap,
- * no right or wrong; the parent records the flip. The face sits in a live region that stays mounted, so
- * the new side is announced; only the inner face is re-keyed to replay the squash.
+ * FlipCard is "flip the postcard" (STORY §3.12): the cue on one side, the then-half on the other. "Flip",
+ * no right or wrong; the flip is recorded when the card is shown, the tap is optional [P]. The face sits in
+ * a live region that stays mounted, so the new side is announced; only the inner face is re-keyed.
  */
 import { useState } from 'preact/hooks';
 import type { IfThen } from '../engine/story.ts';
@@ -31,6 +31,19 @@ function Back({ ifThen }: { ifThen: IfThen }) {
   );
 }
 
+/**
+ * The place on a postcard front, from the backdrop id (ART_DIRECTION §9.9 "Postcard front: the Berlin
+ * courtyard."): `berlin-courtyard` in Berlin → "the Berlin courtyard"; `home-kitchen` → "the home kitchen".
+ */
+export function backdropPlace(backdrop: string, cityName: string): string {
+  const [head = '', ...rest] = backdrop.split('-');
+  const place = rest.join(' ');
+  if (!place) return `the ${cityName || head}`;
+  const city = cityName && head.toLowerCase() === cityName.toLowerCase().replace(/\s+/g, '') ? cityName : head;
+  return `the ${city} ${place}`;
+}
+
+/** `city`: the chapter's name ("Berlin"), never a speaker. */
 export function Postcard({ ifThen, city, backdrop, start = 'back' }: { ifThen: IfThen; city: string; backdrop?: string | undefined; start?: 'front' | 'back' }) {
   const [side, setSide] = useState<'front' | 'back'>(backdrop ? start : 'back');
   const [turns, setTurns] = useState(0);
@@ -38,7 +51,7 @@ export function Postcard({ ifThen, city, backdrop, start = 'back' }: { ifThen: I
     <div class={styles.postcard} data-postcard={city} data-side={side}>
       <div aria-live="polite">
         <div class={styles.postcardFace} key={turns} data-turned={turns > 0 ? '' : undefined}>
-          {side === 'front' && backdrop ? <img class={styles.postcardFront} src={artUrl(`backdrops/${backdrop}.svg`)} alt={t('postcard_front_alt', { city })} /> : <Back ifThen={ifThen} />}
+          {side === 'front' && backdrop ? <img class={styles.postcardFront} src={artUrl(`backdrops/${backdrop}.svg`)} alt={t('postcard_front_alt', { place: backdropPlace(backdrop, city) })} /> : <Back ifThen={ifThen} />}
         </div>
       </div>
       {backdrop ? (
@@ -57,7 +70,8 @@ export function Postcard({ ifThen, city, backdrop, start = 'back' }: { ifThen: I
   );
 }
 
-export function FlipCard({ ifThen, cityName, onFlip }: { ifThen: IfThen; cityName: string; onFlip: () => void }) {
+/** The flip is recorded by the scene player when this card is shown [P]; the tap only turns it. */
+export function FlipCard({ ifThen, cityName }: { ifThen: IfThen; cityName: string }) {
   const [flipped, setFlipped] = useState(false);
   return (
     <div class={styles.postcard} data-flip-card="" data-side={flipped ? 'back' : 'front'}>
@@ -71,12 +85,10 @@ export function FlipCard({ ifThen, cityName, onFlip }: { ifThen: IfThen; cityNam
       <button
         type="button"
         class={styles.small}
-        onClick={() => {
-          if (!flipped) onFlip();
-          setFlipped((f) => !f);
-        }}
+        data-flip=""
+        onClick={() => setFlipped((f) => !f)}
       >
-        {t('postcard_turn_over')}
+        {t('scene_flip_button')}
       </button>
     </div>
   );

@@ -27,6 +27,7 @@
 }
 .kicker {
   display: block;
+  margin: 0;
   font-size: var(--fs-sm);
   font-weight: var(--fw-regular);
   color: var(--color-text-muted);
@@ -82,6 +83,15 @@
   flex-wrap: wrap;
   gap: var(--space-2);
 }
+/* Next / Continue never scrolls off a phone screen (review T-S3 item 4). */
+.footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  padding: var(--space-2) 0 calc(var(--space-2) + env(safe-area-inset-bottom, 0px));
+  background: var(--color-bg);
+  border-top: var(--border-w) solid var(--color-border-subtle);
+}
 .note {
   margin: 0;
   max-width: 40rem;
@@ -104,6 +114,8 @@
 }
 .panel {
   border-radius: var(--radius-md);
+  /* Room for the sticky footer when Next scrolls the new panel into view. */
+  scroll-margin-bottom: calc(var(--tap-min) + var(--space-6));
   animation: panel-in var(--dur-base) ease-out;
 }
 @keyframes panel-in {
@@ -175,12 +187,13 @@
   right: 8%;
   transform: scaleX(-1);
 }
-.listener.onRight {
+/* The listener stands on the side the speaker does not (review T-S3 item 3): right by default, left when
+   the speaker is flipped to the right. Facing: towards the speaker. */
+.listener.onLeft {
   right: auto;
   left: 10%;
-  transform: none;
 }
-.listener:not(.onRight) {
+.listener:not(.onLeft) {
   transform: scaleX(-1);
 }
 /* Video-call panel (ART_DIRECTION §7.6): a rounded screen, no app chrome. */

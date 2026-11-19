@@ -11,12 +11,13 @@
  * - Art is plain <img> with a fragment id (`cast/<id>.svg#x-<expression>`); each image mounts with its final
  *   src (keyed by src), so engines that ignore fragment-only src changes still show the right face.
  * - Reduced motion: no fade, instant scroll, instant postcard flip (duration tokens are 0).
- * - Nothing here scores or sets a flag. A choice shows the one shared reply; a flip is recorded by the parent.
+ * - Nothing here scores or sets a flag. A choice shows the one shared reply; a flip is reported to the
+ *   parent (onFlip) as soon as its panel is shown, whether or not the player taps "Flip" [P].
  */
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { castMember } from '../content/cast.ts';
-import type { Scene, ScenePanel } from '../content/schema.ts';
-import { fillStory, visiblePanels, type IfThen, type StoryVars } from '../engine/story.ts';
+import type { Chapter, Scene, ScenePanel } from '../content/schema.ts';
+import { fillStory, scenesAfter, visiblePanels, type IfThen, type StoryVars } from '../engine/story.ts';
 import { t, type MessageKey } from '../i18n/index.ts';
 import { artUrl, FlipCard, Postcard } from './Postcard.tsx';
 import styles from './Scene.module.css';
@@ -29,59 +30,96 @@ export interface FlipPick {
 
 export interface ScenePlayerProps {
   scene: Scene;
-  /** Chapter name for the heading ("Berlin · Arrival"); null for interludes. */
-  place: string | null;
+  /** The heading ("Berlin · Arrival", "Between cities"): see sceneHeading(). */
+  heading: string;
+  /** The chapter's name ("Berlin") for postcards; empty for interludes. */
+  chapterName?: string;
   /** The chapter run's flags (story-only variant flags pick panels). */
   flags?: ReadonlySet<string>;
   vars?: StoryVars;
   /** The postcard Teo reads on a flip_postcard panel; null hides that panel. */
   flip?: FlipPick | null;
   onFlip?: (city: string) => void;
-  /** Text of the content note shown before a sensitive scene (null: none). Not shown on replay. */
+  /**
+   * Text of the content note to show before this sensitive scene (null: none). The app passes it for the
+   * first sensitive scene of a chapter run and on every replay; the Help label changes on every sensitive scene.
+   */
   contentNote?: string | null;
   onDone: (how: 'finished' | 'skipped') => void;
 }
 
-const SLOT_KEY: Record<Scene['slot'], MessageKey> = {
+const SLOT_KEY: Record<Exclude<Scene['slot'], 'interlude' | 'beat'>, MessageKey> = {
   arrival: 'scene_slot_arrival',
   turn: 'scene_slot_turn',
-  beat: 'scene_slot_beat',
   resolution: 'scene_slot_resolution',
-  interlude: 'scene_slot_interlude',
 };
+
+type TitleChapter = Pick<Chapter, 'name' | 'scenes' | 'scenario_order'>;
+
+/**
+ * The part of a scene's title [P]: the scene's own `title`, else Arrival / Later / Before you go, and
+ * "Story" for spec-placed beats ("Story 1", "Story 2" when a chapter has several). Null for interludes.
+ */
+export function scenePart(scene: Pick<Scene, 'id' | 'slot' | 'title'>, chapter: TitleChapter | null): string | null {
+  if (scene.title) return scene.title;
+  if (scene.slot === 'interlude') return null;
+  if (scene.slot !== 'beat') return t(SLOT_KEY[scene.slot]);
+  const placed = chapter ? [...chapter.scenario_order.am, ...chapter.scenario_order.pm].flatMap((id) => scenesAfter(chapter, id)) : [];
+  const n = placed.indexOf(scene.id);
+  return placed.length > 1 && n >= 0 ? t('scene_slot_beat_n', { n: n + 1 }) : t('scene_slot_beat');
+}
+
+/** "Berlin · Arrival"; interludes: their title or "Between cities". */
+export function sceneHeading(scene: Pick<Scene, 'id' | 'slot' | 'title'>, chapter: TitleChapter | null): string {
+  if (scene.slot === 'interlude') return scene.title ?? t('scene_interlude_place');
+  return t('scene_title', { place: chapter?.name ?? '', part: scenePart(scene, chapter) ?? '' });
+}
 
 function prefersReducedMotion(): boolean {
   if (typeof document !== 'undefined' && document.documentElement.dataset.motion === 'reduced') return true;
   return typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-export function HelpList() {
+/** Generic help list (placeholder until the verified per-country list). Sensitive scenes put "talk to someone" first [P]. */
+export function HelpList({ sensitive = false }: { sensitive?: boolean }) {
+  const talk = <li key="talk">{t('help_talk')}</li>;
   return (
     <ul class={styles.helpList}>
-      <li>{t('help_bank')}</li>
-      <li>{t('help_police')}</li>
-      <li>{t('help_consumer')}</li>
-      <li>{t('help_platform')}</li>
-      <li>{t('help_talk')}</li>
+      {sensitive ? talk : null}
+      <li key="bank">{t('help_bank')}</li>
+      <li key="police">{t('help_police')}</li>
+      <li key="consumer">{t('help_consumer')}</li>
+      <li key="platform">{t('help_platform')}</li>
+      {sensitive ? null : talk}
     </ul>
   );
 }
 
-export function ScenePlayer({ scene, place, flags = new Set(), vars = { count: 0, lastCity: '' }, flip = null, onFlip, contentNote = null, onDone }: ScenePlayerProps) {
+export function ScenePlayer({ scene, heading: title, chapterName = '', flags = new Set(), vars = { count: 0, lastCity: '' }, flip = null, onFlip, contentNote = null, onDone }: ScenePlayerProps) {
   const panels = visiblePanels(scene, flags).filter((p) => !p.flip_postcard || flip);
   const [view, setView] = useState<'note' | 'panels' | 'help'>(scene.sensitive && contentNote ? 'note' : 'panels');
   const [shown, setShown] = useState(1);
   const [helpFrom, setHelpFrom] = useState<'note' | 'panels'>('panels');
   const [picked, setPicked] = useState<Record<number, number>>({});
   const heading = useRef<HTMLHeadingElement>(null);
+  const flipRecorded = useRef(false);
   const items = useRef<(HTMLLIElement | null)[]>([]);
   const replies = useRef<(HTMLParagraphElement | null)[]>([]);
   /** What gets focus after the next render: the heading, a panel, or a choice reply. */
   const focusNext = useRef<{ kind: 'heading' } | { kind: 'panel'; i: number } | { kind: 'reply'; i: number }>({ kind: 'heading' });
 
   const fill = (text: string) => fillStory(text, vars);
-  const title = t('scene_title', { place: place ?? t('scene_interlude_place'), part: t(SLOT_KEY[scene.slot]) });
   const sensitive = scene.sensitive;
+
+  // [P] A flip counts as soon as its panel is shown (the tap stays optional), so the rotation also works
+  // for players who never tap.
+  useEffect(() => {
+    if (view !== 'panels' || flipRecorded.current || !flip) return;
+    if (panels.slice(0, shown).some((p) => p.flip_postcard)) {
+      flipRecorded.current = true;
+      onFlip?.(flip.city);
+    }
+  }, [view, shown]);
 
   useLayoutEffect(() => {
     const f = focusNext.current;
@@ -154,7 +192,7 @@ export function ScenePlayer({ scene, place, flags = new Set(), vars = { count: 0
             {t('help_title')}
           </h1>
           <p>{t('help_intro')}</p>
-          <HelpList />
+          <HelpList sensitive={sensitive} />
           <div class={styles.buttons}>
             <button
               type="button"
@@ -179,9 +217,12 @@ export function ScenePlayer({ scene, place, flags = new Set(), vars = { count: 0
     <main class={styles.shell} data-scene-id={scene.id}>
       <section class={styles.scene} aria-labelledby="scene-h">
         <header class={styles.head}>
-          <h1 id="scene-h" ref={heading} tabIndex={-1} class={styles.title}>
-            <span class={styles.kicker}>{t('scene_story_label')}</span> {title}
-          </h1>
+          <div>
+            <p class={styles.kicker}>{t('scene_story_label')}</p>
+            <h1 id="scene-h" ref={heading} tabIndex={-1} class={styles.title}>
+              {title}
+            </h1>
+          </div>
           {chrome}
         </header>
         <ol class={styles.panels}>
@@ -207,7 +248,7 @@ export function ScenePlayer({ scene, place, flags = new Set(), vars = { count: 0
                       fill={fill}
                       withRole={!!firstOfSpeaker}
                       flip={flip}
-                      onFlip={onFlip}
+                      chapterName={chapterName}
                       picked={picked[i]}
                       replyRef={(el) => {
                         replies.current[i] = el;
@@ -255,7 +296,8 @@ function PanelArt({ p }: { p: ScenePanel }) {
   const listenerSrc = p.with ? artUrl(`cast/${p.with.id}.svg#x-${p.with.expression}`) : null;
   const figures = (
     <>
-      {listenerSrc ? <img key={listenerSrc} class={`${styles.listener} ${p.flip ? '' : styles.onRight}`} src={listenerSrc} alt="" data-art="listener" /> : null}
+      {/* The listener stands on the other side from the speaker (ART_DIRECTION §7.1). */}
+      {listenerSrc ? <img key={listenerSrc} class={`${styles.listener} ${p.flip ? styles.onLeft : ''}`} src={listenerSrc} alt="" data-art="listener" /> : null}
       {speakerSrc ? <img key={speakerSrc} class={`${styles.speaker} ${p.flip ? styles.onRight : ''}`} src={speakerSrc} alt="" data-art="speaker" /> : null}
     </>
   );
@@ -273,7 +315,7 @@ function PanelText({
   fill,
   withRole,
   flip,
-  onFlip,
+  chapterName,
   picked,
   onPick,
   replyRef,
@@ -282,7 +324,7 @@ function PanelText({
   fill: (s: string) => string;
   withRole: boolean;
   flip: FlipPick | null;
-  onFlip: ((city: string) => void) | undefined;
+  chapterName: string;
   picked: number | undefined;
   onPick: (option: number) => void;
   replyRef: (el: HTMLParagraphElement | null) => void;
@@ -310,16 +352,12 @@ function PanelText({
         </p>
       ) : null}
       {p.caption ? <p class={styles.narrationText}>{fill(p.caption)}</p> : null}
-      {p.if_then ? (
-        <>
-          <p class={styles.narrationText}>{t('scene_postcard_caption')}</p>
-          <Postcard ifThen={p.if_then} city={member?.name ?? ''} />
-        </>
-      ) : null}
+      {/* The postcard's own heading reads "Postcard to Teo:"; no extra caption (review T-S3). */}
+      {p.if_then ? <Postcard ifThen={p.if_then} city={chapterName} /> : null}
       {p.flip_postcard && flip ? (
         <>
           <p class={styles.narrationText}>{t('scene_flip_caption')}</p>
-          <FlipCard ifThen={flip.ifThen} cityName={flip.cityName} onFlip={() => onFlip?.(flip.city)} />
+          <FlipCard ifThen={flip.ifThen} cityName={flip.cityName} />
         </>
       ) : null}
       {p.choice ? (

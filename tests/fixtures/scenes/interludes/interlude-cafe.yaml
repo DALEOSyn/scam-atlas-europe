@@ -17,7 +17,7 @@ panels:
   - backdrop: home-kitchen
     speaker: teo
     expression: warm
-    line: "Made any friends on your travels?"
+    line: "Tea? Tell me about the trip."
     alt: "Teo, smiling, pours tea."
     choice:
       prompt: "Made any friends on your travels?"

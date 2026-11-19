@@ -76,6 +76,44 @@ function arcCast(cast: ReadonlyMap<string, CastMember>): CastMember[] {
   return [...cast.values()].filter((c) => c.arc_character);
 }
 
+/**
+ * Words that point at an arc character (review T-S3 item 20): the first name, and the capitalised names in
+ * their role ("Friend met on Wordswap" → Wordswap; the role's first word is ordinary).
+ */
+export function arcTerms(c: Pick<CastMember, 'name' | 'role'>): string[] {
+  const first = c.name.split(/\s+/)[0] ?? c.name;
+  const named = c.role.split(/\s+/).slice(1).filter((w) => /^\p{Lu}/u.test(w)).map((w) => w.replace(/[^\p{L}\p{N}-]/gu, ''));
+  return [...new Set([first, ...named].filter(Boolean))];
+}
+
+function mentions(text: string, term: string): boolean {
+  return new RegExp(`(?<![\\p{L}\\p{N}])${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\p{L}\\p{N}])`, 'iu').test(text);
+}
+
+/**
+ * Soft checks for authors (review T-S3 item 22), reported as warnings: a choice prompt that repeats the
+ * panel's line, a plain-wall panel (no backdrop, nobody drawn) with an alt that describes more than that,
+ * and an interlude that names a chapter city (interludes are keyed to play position, not to a city).
+ */
+export function sceneWarnings(sc: Scene, chapterNames: readonly string[]): string[] {
+  const out: string[] = [];
+  const norm = (x: string) => x.trim().replace(/\s+/g, ' ').toLowerCase();
+  sc.panels.forEach((p, i) => {
+    const where = `panels.${i}`;
+    if (p.choice && p.line && norm(p.choice.prompt) === norm(p.line)) out.push(`${where}: choice.prompt repeats the line; the line is shown once, so drop one`);
+    const drawn = (p.speaker && p.speaker !== 'you') || p.with;
+    if (!p.backdrop && !drawn && p.alt.trim().length > PLAIN_PANEL_ALT) out.push(`${where}: nothing is drawn here (no backdrop or character), but the alt describes a picture; keep it short (ART_DIRECTION §9)`);
+    if (sc.slot === 'interlude') {
+      const text = [p.line, p.caption, p.alt, p.choice?.prompt, p.choice?.reply, ...(p.choice?.options ?? [])].filter(Boolean).join(' ');
+      for (const name of chapterNames) if (mentions(text, name)) out.push(`${where}: interludes do not name a chapter city ("${name}"); use {lastCity} or none (STORY §3.12)`);
+    }
+  });
+  return out;
+}
+
+/** A plain-wall panel's alt: "Plain background." and the like. */
+const PLAIN_PANEL_ALT = 40;
+
 /** Rules for one scene that need the registries and the art. */
 export function sceneRules(sc: Scene, reg: SceneRegistries): string[] {
   const out: string[] = [];
@@ -112,13 +150,12 @@ export function sceneRules(sc: Scene, reg: SceneRegistries): string[] {
     for (const flag of [p.if_flag, p.unless_flag]) {
       if (flag && !reg.flagsSet.has(flag)) out.push(`${where}: flag "${flag}" is not set by any outcome (story-only variant flags come from a chapter spec, STORY §4.2 rule 5)`);
     }
-    // STORY §2.2: no scene comments on the arc character.
-    const text = [p.line, p.caption, p.alt, p.choice?.prompt, p.choice?.reply, ...(p.choice?.options ?? []), p.if_then?.extra].filter(Boolean).join(' ');
-    for (const c of arc) {
-      const first = c.name.split(/\s+/)[0] ?? c.name;
-      if (new RegExp(`\\b${first.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(text)) out.push(`${where}: scenes never mention ${first} (STORY §2.2)`);
-    }
+    // STORY §2.2: no scene comments on the arc character: their name or the app they were met on.
+    const text = [p.line, p.caption, p.alt, p.choice?.prompt, p.choice?.reply, ...(p.choice?.options ?? []), p.if_then?.cue, p.if_then?.action, p.if_then?.extra, p.local?.text, p.local?.translation].filter(Boolean).join(' ');
+    for (const c of arc) for (const term of arcTerms(c)) if (mentions(text, term)) out.push(`${where}: scenes never mention ${term} (STORY §2.2)`);
   });
+  const sceneWide = [sc.title, sc.content_note].filter(Boolean).join(' ');
+  for (const c of arc) for (const term of arcTerms(c)) if (mentions(sceneWide, term)) out.push(`title/content_note: scenes never mention ${term} (STORY §2.2)`);
   if (sc.slot !== 'interlude') {
     const ch = reg.chapters.get(sc.chapter);
     if (!ch) out.push(`chapter "${sc.chapter}" has no content/chapters/${sc.chapter}.yaml`);

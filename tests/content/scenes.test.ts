@@ -7,9 +7,9 @@ import { describe, expect, it } from 'vitest';
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { artFile, artIssues, budgetIssues, expressionsIn, fileIssues, paletteFromDoc, rigIssues } from '../../scripts/lib/art.ts';
+import { ARC_CAST, artFile, artIssues, budgetIssues, castListIssues, expressionsIn, fileIssues, paletteFromDoc, RECURRING_CAST, rigIssues } from '../../scripts/lib/art.ts';
 import { listFiles, loadCast, readYaml, validateContent, validateScenes, type ContentReport } from '../../scripts/lib/content.ts';
-import { castByChapter, clearSceneArtCache, loadScenes, sceneRules, sceneSetRules } from '../../scripts/lib/scenes.ts';
+import { arcTerms, castByChapter, clearSceneArtCache, loadScenes, sceneRules, sceneSetRules, sceneWarnings } from '../../scripts/lib/scenes.ts';
 import { yamlModuleData } from '../../scripts/lib/yaml-module.ts';
 import { lintText, loadConfig } from '../../scripts/redline-lint.ts';
 import { chapterSchema, sceneArtefacts, type Chapter } from '../../src/content/schema.ts';
@@ -64,13 +64,35 @@ describe('scene schema (STORY §4.5)', () => {
       'It ends in ••17, see?',
       'Only €2 to pay.',
       'Only 2 euros to pay.',
+      // Evasions (sceptic T-S3 review).
+      'Go to parcel-help dot example now.',
+      'Type parcel help dot example slash pay.',
+      'Write to user at parcel dot example.',
+      'Open www . parcel . example today.',
+      'See parcel-help[.]example for it.',
+      'See parcel-help。example for it.',
+      'Call ０１５１２３４５６７８ today.',
+      'Call ٠١٥١٢٣٤٥٦٧ today.',
+      'Call 𝟎𝟏𝟓𝟏𝟐𝟑𝟒𝟓 today.',
+      'Ring ＋31 6 now.',
+      'Mail user＠parcel please.',
+      'Open hxxps://parcel quickly.',
+      'Code is 1 2 3 4.',
     ]) {
       expect(sceneArtefacts(bad), bad).not.toEqual([]);
       expect(sceneIssues(withPanels(panel({ line: bad }))).join('\n'), bad).toMatch(/no scam artefacts/);
     }
-    for (const ok of ['Coffee at 8 a.m., then the market.', 'Twenty-two years. Now I have no plan…', 'Mia turns eight on Saturday.', 'The Atlas has {count} pages now.']) {
+    for (const ok of ['Coffee at 8 a.m., then the market.', 'Twenty-two years. Now I have no plan…', 'Mia turns eight on Saturday.', 'The Atlas has {count} pages now.', 'Good point. Then we call.', 'Wait…what? Fine.', 'A polka dot dress, on the 3rd.']) {
       expect(sceneArtefacts(ok), ok).toEqual([]);
     }
+  });
+  it('content notes and titles are checked too (scene and chapter)', () => {
+    expect(sceneIssues(rawScene({ sensitive: true, content_note: 'See parcel dot example.' })).join('\n')).toMatch(/content_note: no scam artefacts/);
+    expect(sceneIssues(rawScene({ title: 'Code 1 2 3 4' })).join('\n')).toMatch(/title: no scam artefacts/);
+    expect(sceneIssues(rawScene({ title: 'Open Evening' }))).toEqual([]);
+    const raw = readYaml(join(CONTENT, 'chapters', 'berlin.yaml')) as Raw;
+    const r = chapterSchema.safeParse({ ...raw, content_note: 'A story.', content_note_arc_closed: 'Call ０１５１２３４５６７８.' });
+    expect(r.success ? '' : r.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('\n')).toMatch(/content_note_arc_closed: no scam artefacts/);
   });
   it('alt text contains the fixed expression word and stays short (ART_DIRECTION §9)', () => {
     expect(sceneIssues(withPanels(panel({ expression: 'worried', alt: 'Jonas in the courtyard, worried.' }))).join('\n')).toMatch(/must contain "looking worried"/);
@@ -149,6 +171,41 @@ describe('scene validator (cross-file rules)', () => {
     expect(sceneRules({ ...s, panels: [{ ...p, speaker: 'alex' }] }, reg).join('\n')).toMatch(/never appears in a scene and has no scene lines/);
     expect(sceneRules({ ...s, panels: [{ ...p, with: { id: 'alex', expression: 'calm' } }] }, reg).join('\n')).toMatch(/never appears in a scene/);
     expect(sceneRules({ ...s, panels: [{ ...p, line: 'Did Alex write back?' }] }, reg).join('\n')).toMatch(/never mention Alex/);
+    // Item 20: every text field of a panel, the scene title and content note, and the app Alex was met on.
+    expect(arcTerms({ name: 'Alex', role: 'Friend met on Wordswap' })).toEqual(['Alex', 'Wordswap']);
+    const r = (panel: Partial<typeof p>, scene: Partial<typeof s> = {}) => sceneRules({ ...s, ...scene, panels: [{ ...p, ...panel }] }, reg).join('\n');
+    const ifThen = { cue: 'If Alex asks for money,', action: 'then I talk to someone first.' };
+    expect(r({ if_then: ifThen })).toMatch(/never mention Alex/);
+    expect(r({ if_then: { cue: 'If a message asks for money,', action: 'then I ask on Wordswap.' } })).toMatch(/never mention Wordswap/);
+    expect(r({ local: { lang: 'de', text: 'Alex?', translation: 'Alex?' } })).toMatch(/never mention Alex/);
+    expect(r({ local: { lang: 'de', text: 'Hallo.', translation: 'Wordswap hello.' } })).toMatch(/never mention Wordswap/);
+    expect(r({ line: 'Still on wordswap?' })).toMatch(/never mention Wordswap/);
+    expect(r({}, { content_note: 'A story about Alex.' })).toMatch(/never mention Alex/);
+    expect(r({}, { title: 'Wordswap' })).toMatch(/never mention Wordswap/);
+    expect(r({ line: 'Alexandra waved.' })).not.toMatch(/never mention/);
+  });
+  it('soft warnings: prompt repeats the line, a plain-wall panel with a long alt, an interlude naming a city (item 22)', () => {
+    const s = fixtureScene('berlin', 'berlin-turn');
+    const p = first(s.panels);
+    expect(sceneWarnings(s, ['Berlin'])).toEqual([]);
+    const choice = { prompt: 'What now?', options: ['Pause', 'Ask someone'], reply: 'Both work.' };
+    expect(sceneWarnings({ ...s, panels: [{ ...p, line: 'What now?', choice }] }, []).join('\n')).toMatch(/choice\.prompt repeats the line/);
+    const plain = { ...p, backdrop: undefined, speaker: undefined, expression: undefined, with: undefined, alt: 'A busy street market with stalls, bikes and a fountain in the sun.' };
+    expect(sceneWarnings({ ...s, panels: [plain] }, []).join('\n')).toMatch(/nothing is drawn here/);
+    expect(sceneWarnings({ ...s, panels: [{ ...plain, alt: 'Plain background.' }] }, [])).toEqual([]);
+    const inter = fixtureScene('interludes', 'interlude-cafe');
+    const ip = first(inter.panels);
+    expect(sceneWarnings(inter, ['Berlin', 'Rome'])).toEqual([]);
+    expect(sceneWarnings({ ...inter, panels: [{ ...ip, caption: 'Back from Rome.' }] }, ['Berlin', 'Rome']).join('\n')).toMatch(/do not name a chapter city \("Rome"\)/);
+    // Chapter scenes may name their city.
+    expect(sceneWarnings({ ...s, panels: [{ ...p, line: 'Welcome to Berlin.' }] }, ['Berlin'])).toEqual([]);
+  });
+  it('the art budget cast lists agree with content/cast.yaml (item 21)', () => {
+    expect(castListIssues(cast.values())).toEqual([]);
+    expect(RECURRING_CAST.every((id) => cast.get(id)?.recurring)).toBe(true);
+    expect(ARC_CAST.every((id) => cast.get(id)?.arc_character)).toBe(true);
+    const drifted = [...cast.values()].map((c) => (c.id === 'noor' ? { ...c, recurring: false } : c.id === 'jonas' ? { ...c, recurring: true } : c));
+    expect(castListIssues(drifted).join('\n')).toMatch(/recurring cast \[.*jonas.*\] differs from RECURRING_CAST/);
   });
   it('variant flags must be set by an outcome; sensitive scenes need a content note', () => {
     const s = fixtureScene('berlin', 'berlin-resolution');

@@ -485,6 +485,37 @@ brands:
   # descriptor "MERCADO PUESTO 14" ("market stall 14") is generic, not a brand (sceptic to confirm).
   # Larchwick's look-alike larchwick-secure.example (4-8, boss thread history) is already registered.
 
+  - id: votelark
+    name: "Votelark"
+    sector: online "school contest" voting page (scam-only)
+    role_in_game: >
+      Warsaw callback 5-2: a "vote for my class" page that asks for your phone number and then the code you
+      get, which takes over your chat-app account. Training pages only; never a real service.
+    domain: votelark-vote.example
+    rationale:
+      name: "Coined: 'vote' + 'lark' (a songbird, light and playful). Kept by BRAND_CHECK MW1-MW4; alternatives Cheerpoll, Tunepoll."
+      colour_shape: "No mark drawn: the page shows the name as plain text in the device's neutral page style, so no palette or shape can echo a real voting or contest site."
+    checked_against: ["Real school-contest and poll apps (BRAND_CHECK MW1-MW4)"]
+    web_check: "Low. Keep (BRAND_CHECK MW1-MW4)."
+    lookalike_examples: []
+    trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"
+    status: draft
+
+  - id: tremolik
+    name: "TREMOLIK"
+    sector: online music shop (merchant name only)
+    role_in_game: >
+      The merchant name on the Larchwick payment-code confirmation in 5-6 and drill 5-7. A fictional online
+      music shop; no domain, no address, never drawn.
+    rationale:
+      name: "Coined from 'tremolo'. Kept by BRAND_CHECK MW1-MW4; no alternatives kept (both earlier ones were too close to a real retailer and a real festival)."
+      colour_shape: "No mark: shown only as a payee name in Larchwick's own confirmation style."
+    checked_against: ["Polish music retailers and festivals (BRAND_CHECK MW1-MW4)"]
+    web_check: "Low. Keep (BRAND_CHECK MW1-MW4)."
+    lookalike_examples: []
+    trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"
+    status: draft
+
 # Not yet registered (request ux-artist before writing these scenarios): streaming service (0-4 now
 # uses Kettle, so possibly not needed), utility company (Rome), parking app (Lisbon), in-world regulator
 # warning list (Dublin), remote-support tool (finale), holiday-rental site (Lisbon).

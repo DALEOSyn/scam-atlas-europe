@@ -216,7 +216,8 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Red flags:** a request for money; secrecy; not being allowed to hang up.
 - **Habit:** hang up, then call the relative or 112 on a number you know.
 - **Reported in:** IT, EU. **Status:** used (planned: Rome ch6; scenarios end at the call). **Fit:** high. **Conf.:** High.
-- **Sources:** it-carabinieri-contro-truffe, eu-epc-threats-2025.
+- **Sources:** it-carabinieri-contro-truffe, eu-epc-threats-2025, it-mur-smishing-vishing, it-agcom-antispoofing-2025, it-bdi-truffe-cyber, eu-esas-ai-scams-factsheet-it.
+- **T-3.8r note (2026-11-19):** brief `spoofed-authority-call.md`. Since 2025, phone companies must block calls from abroad that show an Italian number (fixed from 2025-08-19, mobile from 2025-11-19); state the rule, never its effect. Spoofing from inside Italy remains possible, so the caller ID is still a neutral decoy. Italian police sites refused automated access; no IT police URL is shown on screen.
 
 **A4.4 `e-id-sign-on-call`**: a caller talks you into logging in or signing with your e-ID
 - **Sees:** a "bank" or "authority" caller asks you to open your e-ID app and confirm "to stop fraud".
@@ -224,7 +225,8 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Red flags:** any e-ID request you didn't start.
 - **Habit:** never approve a sign-in or signature you didn't start.
 - **Reported in:** SE. **Status:** used (planned: Stockholm ch9). **Fit:** high. **Conf.:** High.
-- **Sources:** se-polisen-vishing-2026, se-polisen-campaign-2026.
+- **Sources:** se-polisen-vishing-2026, se-polisen-campaign-2026, se-polisen-telefonbedrageri, se-polisen-nord-fake-police-2025, se-konsumentverket-investment-fraud.
+- **T-3.10r note (2026-11-19):** brief `e-id-approval-on-call.md` (variant A). The police state outright: never identify yourself with your e-ID for a caller; the police never call to ask for it.
 
 **A4.5 `qr-login-approval-by-message`**: "scan this QR to verify" sent by message
 - **Sees:** a message asks you to scan a login QR with your banking or e-ID app.
@@ -232,7 +234,8 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Red flags:** a login QR you didn't generate yourself.
 - **Habit:** only scan login QRs on a screen you opened yourself.
 - **Reported in:** EU (EPC). **Status:** used (planned: Stockholm ch9). **Fit:** high. **Conf.:** Medium.
-- **Sources:** eu-epc-threats-2025.
+- **Sources:** eu-epc-threats-2025, eu-esas-ai-scams-factsheet-sv.
+- **T-3.10r note (2026-11-19):** brief `e-id-approval-on-call.md` (variant B). Still Medium: no Swedish official page opened describes the QR variant; the ESAs list "scan a QR code" as a warning sign.
 
 **A4.6 `ping-call-callback`**: one-ring "missed call" from a costly number
 - **Sees:** a very short call from an unknown number, sometimes with a foreign prefix that looks like a local area code. Calling back reaches a recording that keeps you on the line at high cost.
@@ -258,15 +261,17 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Red flags:** a celebrity endorsement; guaranteed returns; an adviser who calls you.
 - **Habit:** check the firm on the regulator's register yourself.
 - **Reported in:** IE, EU. **Status:** used (planned: Dublin ch8). **Fit:** high. **Conf.:** High.
-- **Sources:** ie-fraudsmart-investment-2025, ie-garda-investment-2025, eu-europol-iocta-2026.
+- **Sources:** ie-fraudsmart-investment-2025, ie-garda-investment-2025, eu-europol-iocta-2026, ie-fraudsmart-state-scheme-ads-2026, ie-cbi-fraud-landscape-2025, ie-ccpc-investment-scams, ie-cbi-avoiding-scams, se-konsumentverket-investment-fraud, eu-esas-ai-scams-factsheet-sv.
+- **T-3.10r note (2026-11-19):** brief `investment-ad-fake-platform.md` (stage A). Habit: check the register of authorised firms (not just the warning list); beware clone firms.
 
 **A5.2 `recovery-scam`**: "we can get your money back for a fee"
 - **Sees:** after a loss, someone offers recovery for an upfront fee, sometimes posing as a lawyer or authority.
 - **Channel:** call, email, social media. **Audience:** prior victims. **ATT&CK:** T1684.001, T1657.
 - **Red flags:** a fee before recovery; they contact you.
-- **Habit:** genuine recovery never needs a fee; go to your bank and the police.
-- **Reported in:** IE, BE. **Status:** used (planned: Dublin ch8; cross-cutting in debriefs). **Fit:** high. **Conf.:** High.
-- **Sources:** ie-bpfi-recovery-2024, be-police-fake-police-messages-2026.
+- **Habit:** anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam; go to your bank and the police.
+- **Reported in:** IE, BE, SE, DE, EU. **Status:** used (planned: Dublin ch8; cross-cutting in debriefs). **Fit:** high. **Conf.:** High.
+- **Sources:** ie-bpfi-recovery-2024, be-police-fake-police-messages-2026, ie-cbi-avoiding-scams, ie-cbi-fraud-landscape-2025, ie-garda-crimecall-investment-2024, se-konsumenternas-raddningshjalp, be-fsma-trading-platforms-2025, eu-esas-crypto-factsheet-2025.
+- **T-3.10r note (2026-11-19):** brief `recovery-scam.md`. SE variant: fake "supervisor" callers ask recovery victims to log in to their bank.
 
 **A5.3 `fake-trading-platform-dashboard`**: an online trading or crypto platform shows fake gains
 - **Sees:** a slick platform or app shows your balance growing; withdrawals need "taxes" or "fees".
@@ -274,7 +279,8 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Red flags:** you can't withdraw without paying more; the firm isn't on the register.
 - **Habit:** check the regulator's warnings and register before paying; stop if a withdrawal needs a fee.
 - **Reported in:** BE (FSMA: 66.5% of H1 2026 reported losses), SE, NL, EU. **Status:** used (planned: Dublin ch8 Alex dashboard beat). **Fit:** high. **Conf.:** High.
-- **Sources:** be-fsma-dashboard-2026-h1, se-polisen-proceeds-2026, nl-fraudehelpdesk-2025.
+- **Sources:** be-fsma-dashboard-2026-h1, se-polisen-proceeds-2026, nl-fraudehelpdesk-2025, be-fsma-trading-platforms-2025, de-evz-online-trading-scam-2026, se-konsumentverket-investment-fraud, ie-garda-crimecall-investment-2024.
+- **T-3.10r note (2026-11-19):** brief `investment-ad-fake-platform.md` (stages B and C). Fake gains: BE regulator, DE ECC, SE consumer agency, Garda "fake charts". Withdrawal fees/taxes: BE and DE only; the Irish pages opened don't mention them.
 
 **A5.4 `messenger-stock-tips-group`**: fake stock-advice groups in a messenger
 - **Sees:** you're added to a group where an "expert" and enthusiastic members share winning tips, then move you to a platform.
@@ -316,7 +322,8 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Red flags:** urgency plus a new number; a voice alone is not proof.
 - **Habit:** call back on the known number; use a family code word.
 - **Reported in:** EU (no prevalence figure). **Status:** used (planned: Rome ch6). **Fit:** high. **Conf.:** Medium.
-- **Sources:** eu-esas-ai-scams-factsheet-nl, eu-epc-threats-2025, de-bsi-deepfakes.
+- **Sources:** eu-esas-ai-scams-factsheet-nl, eu-esas-ai-scams-factsheet-it, eu-epc-threats-2025, de-bsi-deepfakes, it-mur-smishing-vishing, nl-veiliginternetten-voice-cloning.
+- **T-3.8r note (2026-11-19):** brief `cloned-voice-family-emergency.md`. Official sources speak of fake audio imitating a voice; none found describes a cloned voice note in a messenger chat specifically, so that variant is Low–Medium confidence and its tell is "new number + money + no call". No prevalence figures on screen.
 
 ## A7 Marketplaces and fake shops
 
@@ -394,7 +401,8 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Red flags:** any request to install remote-access software.
 - **Habit:** never let anyone control your device; hang up and call back on an official number.
 - **Reported in:** EU (among the most common typologies), PL. **Status:** used (planned: Brussels ch10 boss; Stockholm preview). **Fit:** high. **Conf.:** Medium–High.
-- **Sources:** eu-europol-iocta-2026, pl-cert-fake-consultants, eu-esas-ai-scams-factsheet-nl.
+- **Sources:** eu-europol-iocta-2026, pl-cert-fake-consultants, eu-esas-ai-scams-factsheet-nl, eu-esas-ai-scams-factsheet-sv, se-konsumentverket-investment-fraud, ie-garda-crimecall-investment-2024, be-fsma-trading-platforms-2025.
+- **T-3.10r note (2026-11-19):** brief `remote-access-support-call.md` (Stockholm preview scope). Still no Belgium- or Sweden-specific tech-support source; remote access in IE/BE/SE sources comes via investment "advisers".
 
 **A9.2 `browser-popup-scareware`**: a "your computer is locked, call this number" pop-up
 - **Sees:** a full-screen browser warning with alarms and a support number.
@@ -506,7 +514,8 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Red flags:** leaving the platform; paying before viewing.
 - **Habit:** book, chat and pay only inside the platform.
 - **Reported in:** PT (via news), DE, EU. **Status:** used (planned: Lisbon ch7). **Fit:** high. **Conf.:** Medium.
-- **Sources:** de-evz-rental-fraud, pt-dn-psp-airbnb-2026, pt-rr-psp-rentals-2026.
+- **Sources:** de-evz-rental-fraud, pt-dn-psp-airbnb-2026, pt-rr-psp-rentals-2026, pt-rtp-gnr-rentals-2026, pt-dn-psp-cncs-campaign-2025, pt-bdp-ficaadica-2023.
+- **T-3.8r note (2026-11-19):** brief `rental-offplatform-payment.md` (variants A and B). Portuguese facts come via news reports quoting the national police forces; keep Portuguese figures off screen.
 
 **A13.2 `booking-platform-login-phishing`**: "your booking needs confirmation, log in here"
 - **Sees:** a message styled like the rental platform asks you to log in or re-enter card details via a link.
@@ -514,7 +523,8 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Red flags:** a login link in a message.
 - **Habit:** open the platform's app yourself.
 - **Reported in:** DE, PT. **Status:** used (planned: Lisbon ch7). **Fit:** high. **Conf.:** Medium.
-- **Sources:** de-evz-rental-fraud, pt-dn-psp-airbnb-2026.
+- **Sources:** de-evz-rental-fraud, pt-dn-psp-airbnb-2026, nl-nltimes-booking-phishing-2026, pt-bdp-ficaadica-2023.
+- **T-3.8r note (2026-11-19):** brief `rental-offplatform-payment.md` (variant C). The "message from your accommodation asking to pay again" variant is NL news-only evidence (optional beat).
 
 **A13.3 `ticket-resale-scam`**: tickets for a sold-out concert or match
 - **Sees:**
@@ -533,8 +543,9 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Channel:** QR. **Audience:** adult. **ATT&CK:** T1566.002 (closest), T1036.
 - **Red flags:** a sticker on top; the preview domain isn't the operator's.
 - **Habit:** type the official address or use the official app.
-- **Reported in:** IE, BE, PT. **Status:** used (planned: Lisbon ch7). **Fit:** high. **Conf.:** Medium–High.
-- **Sources:** ie-ncsc-qr-guide, be-safeonweb-qr-chargers, pt-portugalpost-gnr-quishing-2026.
+- **Reported in:** IE, BE, LU, PT. **Status:** used (planned: Lisbon ch7). **Fit:** high. **Conf.:** Medium–High.
+- **Sources:** ie-ncsc-qr-guide, be-safeonweb-qr-chargers, lu-vdl-parking-qr, eu-epc-threats-2025, pt-portugalpost-gnr-quishing-2026, pt-deco-qrishing-2024.
+- **T-3.8r note (2026-11-19):** brief `qr-sticker-parking.md`. The lesson is the destination address; the sticker is a supporting clue. The Portuguese evidence is news plus a consumer body (Medium).
 
 **A14.2 `qr-code-in-email`**: a QR code in an email ("scan to keep your account active")
 - **Sees:** an email with a QR code instead of a link, often for a login or payment; scanning moves you to your phone, outside work filters.

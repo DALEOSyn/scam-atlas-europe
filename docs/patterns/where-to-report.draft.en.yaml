@@ -1,6 +1,9 @@
 # docs/patterns/where-to-report.draft.en.yaml: "Where to report / get help" screen data, English launch (EU-wide).
-# Owner: fraud-researcher. Status: DRAFT, rework 1 after sceptic FAIL (T-2.5). All entries checked 2026-11-18;
-# ES and PL entries re-checked or added 2026-11-19 (T-3.6r), each with its own `checked` date.
+# Owner: fraud-researcher. Status: DRAFT, rework 1 after sceptic FAIL (T-2.5). Entries checked 2026-11-18;
+# T-3.8r (2026-11-19) added the per-country verified help list (reporting route, police, bank step,
+# emotional-support line, child/youth line) for DE, NL, FR, ES, PL, IT, PT, IE, SE, BE + the generic EU entry.
+# ES and PL entries from T-3.6r (Madrid/Warsaw research) and T-3.8r merged 2026-11-19; one entry per id.
+# T-3.10r (2026-11-19, Dublin/Stockholm): IE adds ie-garda-confidential and ie-cbi-report; SE adds se-bank.
 #
 # LOCATION: parked under docs/ because it trips redline:lint under content/. The engineer adds a path-specific
 # exemption plus a dedicated checker, then moves it back to content/help/where-to-report.en.yaml.
@@ -11,8 +14,9 @@
 #     query parameters added by the game. URLs below are stored exactly as verified.
 #   - Every entry carries `checked` (the date the researcher read it on the body's own site / document).
 #     The UI shows it as "Checked on <date>".
-#   - 116 111 / 116 006 appear only for countries verified one by one. Today: 116 111 for DE only.
-#     All other countries get the fallback line (fallbacks.child_helpline).
+#   - 116 111 / 116 006 appear only for countries verified one by one. T-3.8r: 116 111 verified for DE, ES, PL,
+#     PT, SE; national child/youth lines with other numbers for NL, FR, IT, IE, BE. 116 123 verified for DE, PL, IE.
+#     116 006 verified for FR only. Countries without a verified entry get the fallback lines.
 #   - Real bodies appear ONLY on this screen, never as scam props (Red Line 1).
 #
 # Fields:
@@ -24,6 +28,18 @@
 #   email        optional; exactly as published                                       [shown]
 #   url          optional; the official page that was read (https only)               [shown as link]
 #   scope        optional; PLAYER TEXT ONLY: what the contact is for, when narrower   [shown]
+#   role         T-3.8r: report | advice | police | bank | support | child | crisis | harassment
+#                (lets the UI group a country's entries)                                   [not shown]
+#                  report     = national cyber/fraud reporting route
+#                  advice     = advice line after a scam (not a report); shown in the "Report it" group after report/police
+#                  support    = emotional-support / listening line. NEVER a suicide or crisis line.
+#                  child      = line for young people (card heading "Under 18? Lines for young people")
+#                  crisis     = suicide/crisis line: its own calm final row, never rendered as support.
+#                               Row title for every country: "Thinking about ending your life, or worried about someone?"
+#                               Wording goes to the G3 human review. Verified for ES, SE, PT, FR only.
+#                  harassment = online harassment / sextortion line: shown ONLY on that help card, not on the scam help screen
+#   Cost wording (T-3.8r round 2): write "free" only where an official or operator page says so; known normal rate:
+#                "Normal call rate." (IT: "Normal call cost."); unknown: "Call costs may apply."
 #   checked      date verified (YYYY-MM-DD)                                           [shown]
 #   sources      ids in content/sources.yaml that back the entry ([] = safeguarding wording, no claim)  [not shown]
 #   review_note  internal note for reviewers/engineer; NEVER rendered                 [not shown]
@@ -36,7 +52,7 @@ meta:
   link_rel: "noopener noreferrer"
   link_target: "_blank"
   intro: "Something went wrong? You're not alone, and acting fast helps. Start at the top."
-  disclaimer: "This list covers only contacts we have checked on official sites. If your country isn't listed, your local police can always help."
+  disclaimer: "This list covers only contacts we have checked on official sites. If your country isn't listed, you can report to your local police, online or in person."
   external_links_note: "These links open official websites outside the game. They have their own privacy policies; the game sends them nothing about you."
   review_note: "Linked official sites may run their own first-party analytics (e.g. incydent.cert.pl loads analytics.cert.pl). The game adds no tracking; external_links_note tells the player this."
 
@@ -105,7 +121,7 @@ first_steps:
 
   - id: recovery-warning
     title: "Beware of 'we'll get your money back' offers"
-    body: "Genuine recovery never needs a fee. Anyone who asks for one to get your money back is almost certainly running a second scam."
+    body: "Anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam."
     checked: 2026-11-18
     sources: [ie-bpfi-recovery-2024, eu-esas-ai-scams-factsheet-nl]
 
@@ -115,11 +131,21 @@ fallbacks:
     body: "Want to talk to someone? Ask an adult you trust to help you find your country's free child and youth helpline. In many EU countries it is a free 116 number."
     checked: 2026-11-18
     sources: [eu-youreurope-116]
-    review_note: "Deliberately gives no number: 116 111 is verified for DE only today (G1 Q6). Your Europe says the 116 numbers work 'in most EU countries (though coverage is not yet EU-wide)'."
+    review_note: "Deliberately gives no number. Shown only for countries with no verified child entry (T-3.8r: all ten chapter countries now have one). Your Europe says the 116 numbers work 'in most EU countries (though coverage is not yet EU-wide)'."
   police:
     body: "Your country isn't listed yet. Contact your local police, online or in person."
     checked: 2026-11-18
     sources: [eu-europol-report-cybercrime]
+  bank:
+    body: "Call your bank now on the number on your card or in its app. Ask it to block the card or app and to try to stop the payment."
+    checked: 2026-11-19
+    sources: [eu-esas-ai-scams-factsheet-nl, eu-esas-ai-scams-factsheet-it]
+    review_note: "T-3.8r. The ESAs factsheet (all EU languages) says to inform the bank at once through official channels. Used for any country without a country-specific bank source (T-3.10r: none of the ten chapter countries now; SE got se-bank) and for the generic EU/home entry."
+  support:
+    body: "Feeling shaken, ashamed or alone after a scam? That's a normal reaction. Talk to someone you trust, or ask them to help you find a listening line in your country."
+    checked: 2026-11-19
+    sources: []
+    review_note: "T-3.8r safeguarding wording, no claim and no number (116 123 is not EU-wide: verified here for DE, PL, IE only; Your Europe does not list it). Round 2: 'free' removed (not verifiable EU-wide). Used today for ES (no general listening line verified; 024 is crisis only). There is no crisis fallback: crisis rows exist only where verified (ES, SE, PT, FR)."
 
 # ---------------------------------------------------------------- 3. EU-wide
 eu:
@@ -142,27 +168,56 @@ eu:
 countries:
   BE:
     - id: be-safeonweb-forward
+      role: report
       name: "Safeonweb"
       body: "Forward suspicious messages so the links can be checked."
       email: suspicious@safeonweb.be
       checked: 2026-11-18
       sources: [be-ccb-safeonweb-2025]
     - id: be-card-stop
-      name: "Card Stop"
-      body: "Block your bank cards if you shared card details or money is leaving your account."
+      role: bank
+      name: "Card Stop / Fraudstop"
+      body: "Shared card or banking details, or money leaving your account? Call this number at any time. It can block your cards and, via your bank, your banking apps."
       phones:
         - number: "078 170 170"
-          label: "Block your cards"
-      checked: 2026-11-18
-      sources: [be-safeonweb-qr-chargers, be-police-romance-2026]
+          label: "24/7: block cards and banking apps. Call costs may apply."
+      checked: 2026-11-19
+      sources: [be-febelfin-fraudstop-2026, be-brussels-hulpdiensten, be-safeonweb-qr-chargers, be-police-romance-2026]
+      review_note: "T-3.8r: since 2026-06-22 the same number is also 'Fraudstop' (Febelfin). Cost not stated. One local police page (zone 5329) still lists the OLD Card Stop number 070 344 344: never show it."
     - id: be-police
+      role: police
       name: "Local police"
       body: "File a complaint after a fraud."
       checked: 2026-11-18
       sources: [be-police-romance-2026]
+    - id: be-listening-line
+      role: support
+      name: "Tele-Onthaal (Dutch) / Télé-Accueil (French)"
+      body: "Someone to talk to, anonymously."
+      phones:
+        - number: "106"
+          label: "Tele-Onthaal (Dutch). Call costs may apply."
+        - number: "107"
+          label: "Télé-Accueil (French): free, 24/7"
+      checked: 2026-11-19
+      sources: [be-police-autres-numeros, be-brussels-hulpdiensten]
+      review_note: "107 free, anonymous, 24/7 per police.be (zone 5329). 106 from the Brussels Region portal, which gives no cost or hours; not verified on the operator's site, hence 'Call costs may apply.'"
+    - id: be-youth-line
+      role: child
+      name: "Awel (Dutch) / Écoute-Enfants (French)"
+      body: "Listening lines for children and young people."
+      phones:
+        - number: "102"
+          label: "Awel (Dutch): free, 16:00-22:00, not on Sundays or public holidays"
+        - number: "103"
+          label: "Écoute-Enfants (French): free, 10:00-24:00"
+      checked: 2026-11-19
+      sources: [be-police-ecoute-enfants, be-brussels-hulpdiensten, be-vlaanderen-awel]
+      review_note: "103 free, anonymous, daily 10:00-24:00 per police.be (zone 5300). Round 2: 102 free, anonymous, phone daily 16:00-22:00 except Sundays and public holidays per the Flemish government page (vlaanderen.be, undated, opened 2026-11-19). No 116 111 in BE found."
 
   DE:
     - id: de-116111
+      role: child
       name: "Nummer gegen Kummer: Kinder- und Jugendtelefon"
       body: "Free, anonymous and confidential helpline for children and young people. Doesn't show on the phone bill."
       phones:
@@ -173,11 +228,33 @@ countries:
       sources: [de-ngk-116111-flyer-2026, de-bmbfsfj-ngk-poster]
       review_note: "Opening hours from the operator's flyer published July 2026; re-check at G3."
     - id: de-police
+      role: police
       name: "Police"
-      body: "Report online or at any police station. If an app was installed, bring the phone."
-      checked: 2026-11-18
-      sources: [de-vz-paketdienst-sms, de-vzn-smishing]
+      body: "In most German states you can report online (Onlinewache); otherwise go to any police station. If an app was installed, bring the phone."
+      checked: 2026-11-19
+      sources: [de-hilfeinfo-onlinewache, de-vz-paketdienst-sms, de-vzn-smishing]
+      review_note: "T-3.8r: federal justice ministry page: online reporting in 13 Länder; Bavaria, Saarland and Thuringia offer a police contact form instead. The Länder portal URLs were not opened one by one, so no URL is shown. This is DE's national reporting route for online fraud."
+    - id: de-card-block
+      role: bank
+      name: "Block cards: 116 116, then call your bank"
+      body: "Block a payment card any time, then call your bank on the number on your card or in its app."
+      phones:
+        - number: "116 116"
+          label: "Block payment cards (from abroad +49 116 116)"
+      checked: 2026-11-19
+      sources: [de-hilfeinfo-onlinewache]
+      review_note: "Number as given on hilfe-info.de (+49 116 116) for blocking stolen payment cards. The operator's own site was not opened; re-check at G3."
+    - id: de-telefonseelsorge
+      role: support
+      name: "TelefonSeelsorge"
+      body: "Free, round-the-clock listening line."
+      phones:
+        - number: "116 123"
+          label: "Free, 24/7"
+      checked: 2026-11-19
+      sources: [de-gesundbund-krisen-2026]
     - id: de-bnetza
+      role: report
       name: "Bundesnetzagentur (telecom regulator)"
       body: "Report unwanted or fake SMS. This page links to its complaint form."
       url: https://www.bundesnetzagentur.de/DE/Vportal/TK/Aerger/Aktuelles/Hinweise/AktHinw2023/Zollgebuehren.html
@@ -187,6 +264,7 @@ countries:
 
   ES:
     - id: es-017
+      role: advice
       name: "INCIBE: Tu Ayuda en Ciberseguridad"
       body: "Free and confidential helpline for advice after a scam or online problem, for adults and young people. It tells you what to do and where to report; it is not a police report."
       phones:
@@ -198,14 +276,16 @@ countries:
       scope: "Every day, 8:00 to 23:00."
       checked: 2026-11-19
       sources: [es-incibe-017-faq, es-incibe-smishing-bank-callback-2025]
-      review_note: "Re-verified 2026-11-19 on INCIBE's own 017 FAQ (English page): 017, WhatsApp 900 116 117, Telegram @INCIBE017 (not shown), 8:00-23:00 every day, calls not recorded, minors helped, 'not a line for reports'. The INCIBE 'Reporte de fraude' page could not be opened, so no report URL or email is listed."
+      review_note: "Re-verified 2026-11-19 on INCIBE's own 017 FAQ (English page): 017, WhatsApp 900 116 117, Telegram @INCIBE017 (not shown), 8:00-23:00 every day, calls not recorded, minors helped, 'not a line for reports'. Round 2: role advice (shown in the 'Report it' group after police), not report. The INCIBE 'Reporte de fraude' page could not be opened, so no report URL or email is listed."
     - id: es-police
+      role: police
       name: "Police report (denuncia)"
       body: "File a report with the Policía Nacional or the Guardia Civil and keep a copy for your bank."
       checked: 2026-11-19
       sources: [es-incibe-smishing-bank-callback-2025, es-bde-vishing-2020]
       review_note: "No URL: the online police-report route (scope, in-person confirmation) was not verified. Regional police forces not checked."
     - id: es-bde-complaint
+      role: bank
       name: "Banco de España (complaints about your bank)"
       body: "If your bank won't help, first complain to it in writing. If it says no or doesn't answer in time, you can complain to the Banco de España."
       url: https://clientebancario.bde.es/pcb/es/menu-horizontal/podemosayudarte/consultasreclama/comorealizarrecl/
@@ -213,9 +293,45 @@ countries:
       checked: 2026-11-19
       sources: [es-bde-reclamacion]
       review_note: "Page in Spanish only. A complaint, not an emergency step: list it after the bank and police entries."
+    - id: es-bank
+      role: bank
+      name: "Your bank"
+      body: "Call your bank now on the number on your card or in its app. Ask it to try to stop or recall the transfer."
+      checked: 2026-11-19
+      sources: [es-incibe-smishing-bank-callback-2025]
+      review_note: "T-3.8r. Generic bank step with an ES source. T-3.6r (madrid-warsaw branch) adds es-bde-complaint for refusals; keep both."
+    - id: es-116111
+      role: child
+      name: "116 111: help line for children and teenagers (Fundación ANAR)"
+      body: "Free and confidential help for under-18s, day and night."
+      phones:
+        - number: "116 111"
+          label: "Under 18: free, 24/7"
+      checked: 2026-11-19
+      sources: [es-caib-116111, es-anar-116111-carta]
+      review_note: "Verified on a REGIONAL government page (Balearic Islands, managed with ANAR: 24/7, confidential) and on the operator's service charter (free, 24/7). No national authority page was opened; national coverage is inferred from the operator."
+    - id: es-024
+      role: crisis
+      name: "Thinking about ending your life, or worried about someone?"
+      body: "024 is free and confidential, day and night. In danger now? Call 112."
+      phones:
+        - number: "024"
+          label: "Free, day and night"
+      checked: 2026-11-19
+      sources: [es-sanidad-024]
+      review_note: "Round 2: role crisis (own calm final row, never support). ES support = fallbacks.support: no general listening line verified on an official ES page (Teléfono de la Esperanza appears only on third-party pages). Crisis wording goes to the G3 human review."
 
   FR:
+    - id: fr-17cyber
+      role: report
+      name: "17Cyber"
+      body: "Government online assistance for victims of online scams and attacks: answer a few questions and get advice on what to do and where to report."
+      url: https://17cyber.gouv.fr/
+      checked: 2026-11-19
+      sources: [fr-cybermalveillance-17cyber-2024]
+      review_note: "Live site opened 2026-11-19 (title '17Cyber - Mon assistance en ligne'). Describe it as the live site does; don't claim 24/7 or chat with police (press-release claims not on the live site)."
     - id: fr-info-escroqueries
+      role: advice
       name: "Info Escroqueries"
       body: "Free advice line after a scam."
       phones:
@@ -224,26 +340,134 @@ countries:
       checked: 2026-11-18
       sources: [fr-cybermalveillance-fiche-hameconnage]
     - id: fr-cybermalveillance
+      role: report
       name: "Cybermalveillance.gouv.fr"
       body: "Official guidance sheet on what to do after phishing, including where to report phishing messages and sites."
       url: https://www.cybermalveillance.gouv.fr/medias/2026/02/260129_FicheReflexe_Hameconnage.pdf
       checked: 2026-11-18
       sources: [fr-cybermalveillance-fiche-hameconnage]
     - id: fr-police
+      role: police
       name: "Police, gendarmerie or public prosecutor"
       body: "File a complaint."
       checked: 2026-11-18
       sources: [fr-cybermalveillance-fiche-hameconnage]
+    - id: fr-bank
+      role: bank
+      name: "Your bank"
+      body: "Contact your bank at once and ask for a fraud recall of the transfer."
+      checked: 2026-11-19
+      sources: [fr-bdf-fraude-moyens-paiement]
+    - id: fr-116006
+      role: support
+      name: "116 006: help for victims"
+      body: "Free help line for victims of crime and their families, every day."
+      phones:
+        - number: "116 006"
+          label: "Free, every day 9:00-19:00 (from outside mainland France: +33 1 80 52 33 76)"
+      checked: 2026-11-19
+      sources: [fr-santefr-lignes-ecoute]
+    - id: fr-sos-amitie
+      role: support
+      name: "SOS Amitié"
+      body: "Someone to talk to, anonymously and for free, day and night."
+      phones:
+        - number: "09 72 39 40 50"
+          label: "Free, 24/7"
+      checked: 2026-11-19
+      sources: [fr-santefr-lignes-ecoute]
+    - id: fr-3114
+      role: crisis
+      name: "Thinking about ending your life, or worried about someone?"
+      body: "3114 is free, day and night. In danger now? Call 112."
+      phones:
+        - number: "3114"
+          label: "Free, day and night"
+      checked: 2026-11-19
+      sources: [fr-santefr-lignes-ecoute]
+      review_note: "Round 2, added for consistency with ES/SE/PT: sante.fr lists 3114 suicide prevention, 24/7, free. Drop it if the producer wants crisis rows only where requested. Crisis wording goes to the G3 human review."
+    - id: fr-fil-sante-jeunes
+      role: child
+      name: "Fil Santé Jeunes"
+      body: "Free and anonymous, for young people aged 12 to 25 who want to talk about how they feel."
+      phones:
+        - number: "0 800 235 236"
+          label: "Free, every day 9:00-23:00"
+      checked: 2026-11-19
+      sources: [fr-santefr-lignes-ecoute]
+      review_note: "Round 2, re-opened 2026-11-19 on sante.fr: ages 12-25, '0 800 235 236 (7j/7 9h-23h)', 'service anonyme et gratuit'; listening on health, sexuality, love life and emotional distress; chat 7/7 9:00-22:00 (not shown). No 116 111 found for FR."
+    - id: fr-3018
+      role: harassment
+      name: "3018"
+      body: "Free, anonymous line for young people facing online harassment or violence, and their parents."
+      phones:
+        - number: "3018"
+          label: "Free, every day 9:00-23:00"
+      checked: 2026-11-19
+      sources: [fr-solidarites-numeros-2025, fr-santefr-lignes-ecoute]
+      review_note: "Round 2: shown only on the sextortion / online-harassment help card, not on the scam help screen. 119 (children in danger, fr-solidarites-numeros-2025) is not listed."
 
   IE:
     - id: ie-garda
+      role: police
       name: "Local Garda station"
       body: "Report phishing, smishing, scam calls and fraud."
       checked: 2026-11-18
-      sources: [ie-ncsc-phishing-guide, ie-garda-investment-2025]
+      sources: [ie-ncsc-phishing-guide, ie-garda-investment-2025, ie-ccpc-spot-a-scam-2026]
+      review_note: "T-3.8r: also IE's national reporting route for the public (NCSC sends the public to the local Garda station; no general public phishing inbox). T-3.10r: CCPC (2026-04-23) also sends people to the local Garda station."
+    - id: ie-garda-confidential
+      role: police
+      name: "Garda Confidential Line"
+      body: "Report suspected investment fraud, or ask for information about it."
+      phones:
+        - number: "1800 666 111"
+          label: "Suspected investment fraud"
+      scope: "For suspected investment fraud. Other scams: your local Garda station."
+      checked: 2026-11-19
+      sources: [ie-garda-investment-2025]
+      review_note: "T-3.10r: re-opened 2026-11-19 on the Garda press release (2 Oct 2025): '1800 666 111' for 'further information or to report suspected investment fraud'. Cost and hours not stated: no 'free' claim (the 1800 prefix alone isn't treated as proof). Show on the Dublin / investment help card; keep the scope line."
+    - id: ie-cbi-report
+      role: report
+      name: "Central Bank of Ireland: report an unauthorised firm"
+      body: "Tell the Central Bank about a firm offering investments or other financial services without authorisation. It is not the police: report the crime to the Gardaí too."
+      phones:
+        - number: "0818 681 681"
+          label: "Central Bank. Call costs may apply."
+        - number: "+353 1 224 5800"
+          label: "Central Bank, from abroad. Call costs may apply."
+      url: https://centralbank.ie/regulation/how-we-regulate/authorisation/unauthorised-firms/report-an-unauthorised-firm
+      checked: 2026-11-19
+      sources: [ie-cbi-report-unauthorised, ie-cbi-avoiding-scams]
+      review_note: "T-3.10r. URL = the centralbank.ie page that holds the report form (the form itself is on a third-party survey host: don't link it). Phone numbers from the 'Avoiding Scams' page ('contact the Central Bank directly on 0818 681 681 or +353 (0)1 224 5800'), shown there as '+353 (0)1 224 5800'; written here without the (0). Opening hours not stated. Not a crisis or recovery service: the central bank says to report to your bank, the Central Bank and the Gardaí."
+    - id: ie-bank
+      role: bank
+      name: "Your bank"
+      body: "Clicked a link, gave details or paid someone? Contact your bank now on the number on your card or in its app."
+      checked: 2026-11-19
+      sources: [ie-ncsc-phishing-guide, ie-ccpc-investment-scams, ie-ccpc-spot-a-scam-2026]
+    - id: ie-samaritans
+      role: support
+      name: "Samaritans"
+      body: "Free, confidential, non-judgmental support, day and night."
+      phones:
+        - number: "116 123"
+          label: "Freephone, 24/7"
+      checked: 2026-11-19
+      sources: [ie-hse-urgent-help]
+    - id: ie-childline
+      role: child
+      name: "Childline"
+      body: "Free support for children and young people by phone or online chat."
+      phones:
+        - number: "1800 66 66 66"
+          label: "Freephone"
+      checked: 2026-11-19
+      sources: [ie-hse-urgent-help]
+      review_note: "HSE gives no hours for Childline. Text About It (text HELLO to 50808, free, 24/7) is also on the HSE page if a text option is wanted. No 116 111 found for IE."
 
   IT:
     - id: it-112
+      role: police
       name: "112"
       body: "Call if someone claiming to be police or a relative 'in trouble' is pressuring you right now."
       phones:
@@ -251,9 +475,43 @@ countries:
           label: "Emergency"
       checked: 2026-11-18
       sources: [it-carabinieri-contro-truffe]
+    - id: it-polizia-postale
+      role: report
+      name: "Polizia Postale e delle comunicazioni"
+      body: "Report online fraud to the police unit for cybercrime, at its offices or through its online channels."
+      checked: 2026-11-19
+      sources: [it-bdi-truffe-cyber]
+      review_note: "Per the Banca d'Italia victims page (details at commissariatodips.it). The police site returned an 'access denied' page to automated access, so its reporting form and URL were NOT opened: no URL shown until a human checks it in a browser."
+    - id: it-bank
+      role: bank
+      name: "Your bank"
+      body: "Tell your bank at once through its official channels so it can act. If its answer doesn't satisfy you, make a written complaint (reclamo); after that you can go to the Arbitro Bancario Finanziario."
+      checked: 2026-11-19
+      sources: [it-bdi-truffe-cyber]
+    - id: it-telefono-amico
+      role: support
+      name: "Telefono Amico Italia"
+      body: "Someone to talk to when you're feeling low or shaken."
+      phones:
+        - number: "02 2327 2327"
+          label: "Every day, 24 hours. Normal call cost."
+      checked: 2026-11-19
+      sources: [it-telefonoamico-home]
+      review_note: "Verified on the operator's (NGO) own site only; no government page listing it was found. The site says the service is free but the number is a Milan landline, so the call itself is at normal cost: don't say 'free'. WhatsApp 324 011 72 52 (18:00-21:00) also on the site, not shown."
+    - id: it-114
+      role: child
+      name: "114 Emergenza Infanzia"
+      body: "Free line, 24 hours, for children and teenagers in distress or danger, and for adults who look after them."
+      phones:
+        - number: "114"
+          label: "Free, 24/7"
+      checked: 2026-11-19
+      sources: [it-minori-114-2024]
+      review_note: "Government-owned child-emergency line (phone, chat, app, WhatsApp). No official Italian page for 116 111 was found."
 
   NL:
     - id: nl-fraudehelpdesk
+      role: report
       name: "Fraudehelpdesk"
       body: "National reporting point for fraud. Gives advice and can refer you to the police."
       phones:
@@ -263,25 +521,55 @@ countries:
       sources: [nl-fraudehelpdesk-police-pilot, nl-fraudehelpdesk-contact-en, nl-rijksoverheid-fraudehelpdesk-contact]
       review_note: "Phone number re-opened 2026-11-19 on Fraudehelpdesk's own English page (088 - 7867372; from abroad +31 88 7867372) and matches the government contact guide. Opening hours differ between the two pages, so none are shown."
     - id: nl-cmi-id-copy
+      role: report
       name: "Centraal Meldpunt Identiteitsfraude (RvIG)"
       body: "Gave a copy of your ID to someone you don't trust? Report it here. You get an email reply within one day."
       checked: 2026-11-19
       sources: [nl-rvig-cmi-id-copy]
     - id: nl-police-hulpvraagfraude
+      role: police
       name: "Police: online report for help-request fraud"
       body: "In many cases you can report online. Save the chat and screenshots first, and report the chat in the app last."
       checked: 2026-11-19
       sources: [nl-politie-aangifte-hulpvraagfraude]
     - id: nl-police-account-takeover
+      role: police
       name: "Police (aangifte)"
       body: "Report to the police. They publish a form to help you prepare a report if your messenger account was taken over."
       url: https://politie.nl/binaries/content/assets/politie/onderwerpen/whatsapp-account-overgenomen-gehackt/%E2%80%8B%E2%80%8Binvulformulier-bij-aangifte-doen-als-uw-whatsapp-account-is-overgenomen-gehackt.pdf
       checked: 2026-11-18
       sources: [nl-politie-whatsapp-takeover-2024]
       review_note: "URL contains two percent-encoded zero-width spaces (%E2%80%8B) in the file name, exactly as published by politie.nl. Fragile: re-check at G3 and prefer a stable landing page on politie.nl if one exists."
+    - id: nl-bank
+      role: bank
+      name: "Your bank"
+      body: "Report it to your own bank straight away and forward any message with a payment link or account number. Banks' card-blocking lines answer day and night."
+      checked: 2026-11-19
+      sources: [nl-veiligbankieren-meld-fraude]
+    - id: nl-luisterlijn
+      role: support
+      name: "De Luisterlijn"
+      body: "Someone to talk to, day and night."
+      phones:
+        - number: "088 0767 000"
+          label: "Day and night. Normal call rate."
+      checked: 2026-11-19
+      sources: [nl-kerkrade-luisterlijn, nl-nji-bellen-chatten]
+      review_note: "Number and 'normal calling rate' from a municipal notice (undated); 'day and night' confirmed by NJI (supporting). Not free: say so. Re-check on the operator's site before G3."
+    - id: nl-kindertelefoon
+      role: child
+      name: "De Kindertelefoon"
+      body: "Free line for children and young people who want to talk about something."
+      phones:
+        - number: "0800 0432"
+          label: "Free, ages 8-18, every day 11:00-21:00"
+      checked: 2026-11-19
+      sources: [nl-rijksoverheid-kindertelefoon, nl-nji-bellen-chatten]
+      review_note: "Number and 'gratis' from the government page; ages and hours from NJI (supporting). 116 111 not stated on either page, so not shown."
 
   PL:
     - id: pl-8080
+      role: report
       name: "Forward suspicious SMS to 8080"
       body: "Free. Forward a suspicious text so CERT Polska can block the link."
       phones:
@@ -291,6 +579,7 @@ countries:
       sources: [pl-cert-monthly-2025-12, pl-cert-monthly-2026-07, pl-nask-okazja-czy-pulapka-2025, pl-cert-vote-takeover-2026]
       review_note: "Re-confirmed 2026-11-19 in CERT Polska's own July 2026 summary (p.8, 'bezpłatny skrócony numer 8080') and Dec 2025 summary (p.6)."
     - id: pl-cert-incident
+      role: report
       name: "CERT Polska incident report"
       body: "Report fake websites, such as a fake page to 'collect a payment', and other online incidents."
       url: https://incydent.cert.pl
@@ -298,35 +587,164 @@ countries:
       sources: [pl-cert-monthly-2025-12, pl-cert-monthly-2026-07, pl-nask-okazja-czy-pulapka-2025, pl-cert-vote-takeover-2026]
       review_note: "Portal loaded 2026-11-18 (title 'Zgłoś incydent | CERT.PL', JavaScript app). On 2026-11-19 the URL was re-confirmed in CERT Polska's July 2026 summary (p.4, fn 1) and NASK's 2025 guide (p.23), not reloaded. The destination runs its own first-party analytics (analytics.cert.pl); the game adds no tracking. See meta.external_links_note."
     - id: pl-police
+      role: police
       name: "Police (zawiadomienie)"
       body: "Report the fraud at a police station. Keep the chats, links and payment confirmations."
       checked: 2026-11-19
-      sources: [pl-nask-okazja-czy-pulapka-2025, pl-uknf-seniors-payments-2025]
+      sources: [pl-nask-okazja-czy-pulapka-2025, pl-uknf-seniors-payments-2025, pl-policja-oszukany]
       review_note: "No URL or phone: no official Polish online fraud-report route was verified. NASK's guide also mentions the prosecutor's office for large losses (not shown)."
+    - id: pl-bank
+      role: bank
+      name: "Your bank"
+      body: "Gave your account or card details to someone? Contact your bank straight away, on the number from its official site or app."
+      checked: 2026-11-19
+      sources: [pl-policja-oszukany, pl-cert-fake-consultants]
+    - id: pl-116123
+      role: support
+      name: "116 123: help line for adults in emotional crisis"
+      body: "Free and anonymous, day and night, by phone, chat or online form."
+      phones:
+        - number: "116 123"
+          label: "Adults: free, 24/7"
+      checked: 2026-11-19
+      sources: [pl-gov-cyfryzacja-116-2025]
+    - id: pl-116111
+      role: child
+      name: "116 111: help line for children and young people"
+      body: "Free and anonymous, day and night, by phone, chat or online form."
+      phones:
+        - number: "116 111"
+          label: "Children and young people: free, 24/7"
+      checked: 2026-11-19
+      sources: [pl-gov-cyfryzacja-116-2025]
 
   PT:
     - id: pt-police
-      name: "Police (PSP or GNR)"
-      body: "File a complaint."
-      checked: 2026-11-18
-      sources: [pt-gnr-phishing, pt-dn-psp-airbnb-2026]
+      role: police
+      name: "Police (PSP, GNR or PJ)"
+      body: "Report it to the nearest police: PSP, GNR or the Polícia Judiciária. Keep all messages, receipts and screenshots."
+      checked: 2026-11-19
+      sources: [pt-bdp-ficaadica-2023, pt-gnr-phishing, pt-dn-psp-airbnb-2026]
+      review_note: "T-3.8r: also PT's national reporting route here. The CNCS incident form and the online complaint portal (Queixa Eletrónica) were NOT verified for fraud reports (portal refused automated access; DECO's description lists other crimes): not shown."
+    - id: pt-bank
+      role: bank
+      name: "Your bank"
+      body: "Contact your bank immediately if you see payments you didn't authorise, and ask it to cancel your access details if you typed them somewhere."
+      checked: 2026-11-19
+      sources: [pt-bdp-ficaadica-2023, pt-gnr-phishing]
+    - id: pt-sns24-psych
+      role: support
+      name: "SNS 24: psychological counselling"
+      body: "Talk to a counsellor through the national health line, in Portuguese or English."
+      phones:
+        - number: "808 24 24 24"
+          label: "Portuguese or English. Call costs may apply."
+      checked: 2026-11-19
+      sources: [pt-gov-sns24-psych-2022]
+      review_note: "Official page (2022) gives no cost, hours or menu option: show none and say 'Call costs may apply.' The 1411 line is a separate crisis row (pt-1411)."
+    - id: pt-1411
+      role: crisis
+      name: "Thinking about ending your life, or worried about someone?"
+      body: "1411 is free, day and night. In danger now? Call 112."
+      phones:
+        - number: "1411"
+          label: "Free, day and night"
+      checked: 2026-11-19
+      sources: [pt-gov-1411-2025, pt-deco-1411-2025]
+      review_note: "Round 2. Number, start (2025-09-10) and staffing (psychologists and mental-health nurses; part of SNS 24 but autonomous) from the government page, which states no cost or hours. 'Free' and '24 hours a day, every day of the year' from DECO PROteste (consumer body, 2025-09-09), not from a government page: confirm on an SNS 24 page at G3. Crisis wording goes to the G3 human review."
+    - id: pt-116111
+      role: child
+      name: "116 111: Linha de Apoio à Criança"
+      body: "Free line for children to talk about their problems, 24 hours a day."
+      phones:
+        - number: "116 111"
+          label: "Free, 24/7"
+      checked: 2026-11-19
+      sources: [pt-gov-emergency-contacts-2026]
 
   SE:
     - id: se-police
+      role: police
       name: "Polisen"
-      body: "Call 112 if the crime is happening now; otherwise call 114 14."
+      body: "Call 112 if the crime is happening now; otherwise call 114 14. Some crimes can be reported online with a Swedish personal number."
       phones:
         - number: "112"
           label: "Crime happening now"
         - number: "114 14"
           label: "Other police matters"
-      checked: 2026-11-18
-      sources: [se-polisen-vishing-2026, se-polisen-campaign-2026]
+      checked: 2026-11-19
+      sources: [se-polisen-vishing-2026, se-polisen-campaign-2026, se-polisen-bedragerier-anmalan, se-polisen-telefonbedrageri]
+      review_note: "T-3.8r: also SE's national reporting route. T-3.10r: bank step now has an SE source (se-bank)."
+    - id: se-bank
+      role: bank
+      name: "Your bank"
+      body: "Call your bank straight away to stop payments or block your card. Banks have a number you can call day and night: use the one on your card or in your bank's app."
+      checked: 2026-11-19
+      sources: [se-polisen-telefonbedrageri, se-konsumentverket-investment-fraud]
+      review_note: "T-3.10r, replaces fallbacks.bank for SE. Police page (reviewed 2026-08-19): 'Kontakta din bank direkt för att stoppa eventuella betalningar eller spärra ditt bankkort'; 'Alla banker har ett särskilt telefonnummer som du kan ringa dygnet runt'; bank first, then a police report. Konsumentverket: contact your bank immediately to try to stop a payment. 'On your card or in your app' is the game's standard wording, not from these pages."
+    - id: se-jourhavande
+      role: support
+      name: "Jourhavande medmänniska"
+      body: "Someone to talk to at night."
+      phones:
+        - number: "08-702 16 80"
+          label: "Every night, 21:00–06:00. Call costs may apply."
+      checked: 2026-11-19
+      sources: [se-ki-nasp-hjalplinjer, se-krisinformation-phone-numbers]
+      review_note: "Round 2: number and hours on both pages (NASP 'alla dagar kl 21-06'; Krisinformation 'every night between 9 pm and 6 am'). Neither states a cost."
+    - id: se-mind
+      role: crisis
+      name: "Thinking about ending your life, or worried about someone?"
+      body: "Mind Självmordslinjen 90101 is open day and night. In danger now? Call 112."
+      phones:
+        - number: "90101"
+          label: "Day and night. Call costs may apply."
+      checked: 2026-11-19
+      sources: [se-ki-nasp-hjalplinjer, se-krisinformation-phone-numbers]
+      review_note: "Round 2: role crisis (own calm final row, never support). Both pages: open around the clock, for people thinking about suicide or worried about someone close; no cost stated. Crisis wording goes to the G3 human review."
+    - id: se-bris
+      role: child
+      name: "BRIS: Barnens telefon"
+      body: "Line for children and young people, open day and night."
+      phones:
+        - number: "116 111"
+          label: "Day and night. Call costs may apply."
+      checked: 2026-11-19
+      sources: [se-ki-nasp-hjalplinjer, se-krisinformation-phone-numbers]
+      review_note: "Cost not stated on either page. The EU decision on 116 numbers (2007/116/EC, recital 3) says they 'should be freephone numbers' but without obliging operators to carry calls at their own expense, so it does not prove a call is free: don't say 'free' for SE. The BRIS site itself was not opened."
+
+# ---------------------------------------------------------------- 4b. Coverage per chapter country (T-3.8r, 2026-11-19)
+# report = national cyber/fraud reporting route · advice = advice line (not a report) · police · bank
+# support = emotional-support line (never a crisis line) · child = young people's line · crisis = suicide/crisis line (own final row)
+# "fallback" = no country-specific entry verified; the UI shows fallbacks.<role>. No crisis fallback: "none" = no crisis row.
+# Card order (WHERE_TO_REPORT.md §3c): scam help = bank, Report it (report + advice + police), support, child, crisis last;
+# sensitive-scene help = support, child, crisis, then bank and Report it. `harassment` entries appear only on that help card.
+#   DE  report: de-police (online, Onlinewache), de-bnetza   police: de-police   bank: de-card-block   support: de-telefonseelsorge   child: de-116111   crisis: none
+#   NL  report: nl-fraudehelpdesk, nl-cmi-id-copy   police: nl-police-hulpvraagfraude, nl-police-account-takeover   bank: nl-bank   support: nl-luisterlijn (normal rate)   child: nl-kindertelefoon   crisis: none
+#   FR  report: fr-17cyber, fr-cybermalveillance   advice: fr-info-escroqueries   police: fr-police   bank: fr-bank   support: fr-116006, fr-sos-amitie   child: fr-fil-sante-jeunes   crisis: fr-3114   harassment card: fr-3018
+#   ES  report: es-police (INCIBE's own report page not opened)   advice: es-017   police: es-police   bank: es-bank, es-bde-complaint   support: FALLBACK   child: es-116111 (regional source)   crisis: es-024
+#   PL  report: pl-8080, pl-cert-incident   police: pl-police   bank: pl-bank   support: pl-116123   child: pl-116111   crisis: none
+#   IT  report: it-polizia-postale (no URL)   police: it-112   bank: it-bank   support: it-telefono-amico (NGO site only, normal call cost)   child: it-114   crisis: none
+#   PT  report: pt-police (no online channel verified)   police: pt-police   bank: pt-bank   support: pt-sns24-psych (cost unknown)   child: pt-116111   crisis: pt-1411 (free/24h from consumer body)
+#   IE  report: ie-garda, ie-cbi-report (unauthorised firms)   police: ie-garda, ie-garda-confidential (investment fraud only)   bank: ie-bank   support: ie-samaritans   child: ie-childline   crisis: none
+#   SE  report: se-police   police: se-police   bank: se-bank (T-3.10r)   support: se-jourhavande (21:00-06:00, cost unknown)   child: se-bris (cost unknown)   crisis: se-mind
+#   BE  report: be-safeonweb-forward   police: be-police   bank: be-card-stop (cost unknown)   support: be-listening-line (106 cost unknown)   child: be-youth-line   crisis: none
+#   EU / home (generic): eu.europol-report-signpost, eu.ecc-net + fallbacks.police / bank / support / child_helpline; no crisis row
 
 # ---------------------------------------------------------------- 5. Not included on purpose (keep out until verified)
-# - 116 111 for any country other than DE; 116 006 anywhere (FRA table is from 2014).
-# - Garda Confidential Line 1800 666 111: verified, but the Garda source gives it for suspected investment fraud only.
-#   Add under IE with scope "suspected investment fraud" when chapter content needs it.
+# - 116 111 for NL, FR, IT, IE, BE (not found on official pages; national lines with other numbers are listed instead);
+#   116 006 anywhere except FR (FRA table is from 2014); 116 123 anywhere except DE, PL, IE.
+# - T-3.8r not shown (unverified or out of scope): Italian police online form URL (site blocked automated access);
+#   Portuguese Queixa Eletrónica and CNCS incident form; Spanish Teléfono de la Esperanza (third-party pages only);
+#   Belgian Card Stop's old number 070 344 344 (outdated); German Länder online-police URLs (not opened one by one).
+# - Round 2 (2026-11-19): crisis lines (ES 024, SE 90101, PT 1411, FR 3114) are NEVER shown as support; they are role `crisis`
+#   rows only. French 119 (children in danger) not listed. "Free" is not claimed for BRIS 116 111, BE 106, BE 078 170 170,
+#   SNS 24 808 24 24 24, Jourhavande medmänniska or Mind 90101 (no page states a cost; the 2007 EU 116 decision does not
+#   oblige free calls).
+# - T-3.10r (2026-11-19): Garda Confidential Line 1800 666 111 now listed (ie-garda-confidential) with scope
+#   "suspected investment fraud". Not shown: the Central Bank's third-party report-form URL (link the centralbank.ie page);
+#   the Swedish financial supervisor's warning list and report route (named by the consumer agency, own pages not opened);
+#   the Swedish crime-victim authority (named by the consumer agency, not opened); the Swedish e-ID provider's own pages (not found).
 # - phishing@ncsc.gov.ie: scoped to suspected fake QR codes only (NCSC Ireland QR guide).
 # - Fraudehelpdesk phone number / report URL, German Länder police portals, Portuguese online complaint portal,
 #   INCIBE incident-report email, Safeonweb language variants (verdacht@): not verified.

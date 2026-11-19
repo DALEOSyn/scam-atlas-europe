@@ -54,14 +54,25 @@ cast:
     role: "Apprentice designer, Ruchelune (17)"
     known_channel: { label: "Saved contact", detail: "Inès (Ruchelune)" }
     notes: "Capable: spots the plumber fake herself (drill 3-3); her name is used in 3-5. Never the one who falls."
-  # Madrid (GDD §24.10, story bible §3.4). Neither is ever impersonated, and their money is never in a scored scenario.
+  # Madrid (GDD §24.10, story bible §3.4). Neither is ever impersonated; their money is never in a scored scenario.
   - id: lucia
     name: "Lucía Herrera"
     role: "Night-shift nurse, your host (Madrid)"
     known_channel: { label: "Saved contact", detail: "Lucía (Madrid)" }
-    notes: "Her rule: no big decisions until she's slept. Shows it working in drill 4-4 (a fake text in her own Larchwick thread). Never falls, never impersonated."
+    notes: "Capable; tiredness is the risk, not ability. Her rule: no big decisions until she's slept. Her own near-miss is drill 4-4 (a fake text in her real Larchwick thread; she slept on it, then checked on the number on her card). Speaks the Madrid If-then line (phone at the ear). Never falls, never impersonated."
   - id: andres
     name: "Andrés"
     role: "Teacher, your host (Madrid)"
     known_channel: { label: "Saved contact", detail: "Andrés (Madrid)" }
-    notes: "Saving every euro for a first flat with Lucía; cooks lentils. Small-talk interrupts only in scored scenarios; never impersonated."
+    notes: "Lucía's partner; saving for the deposit on their first flat; cooks lentils. Small-talk interrupts only in scored scenarios. Never impersonated."
+  # Warsaw (GDD §25.9, story bible §3.5).
+  - id: kasia
+    name: "Kasia Wójcik"
+    role: "Music student, Waymarker volunteer (Warsaw)"
+    known_channel: { label: "Saved contact", detail: "Kasia (Warsaw)" }
+    notes: "Her real Kettle account is taken over in 5-6 while she is at rehearsal (never her fault, never shown how). She is never the one who falls."
+  - id: ola
+    name: "Ola"
+    role: "Fellow Waymarker volunteer (Warsaw)"
+    known_channel: { label: "Saved contact", detail: "Ola (volunteers)" }
+    notes: "Contact only (GDD §25.9): never drawn, never in a scene, no lines outside 5-2. Her real account is taken over in 5-2."

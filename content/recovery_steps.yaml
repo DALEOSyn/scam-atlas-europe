@@ -112,8 +112,8 @@ steps:
     label: "Scan the code again to cancel the payment"
     feedback: "It feels like undoing it, but the code leads to the same page. Block the card in your banking app first."
   - id: pay_second_deposit
-    label: "Pay the 'refundable' second deposit they ask for"
+    label: "Pay a 'refundable' deposit if they ask for one"
     feedback: "Wanting your money back is natural, but a second payment only adds to the loss. Call your bank instead."
   - id: keep_chatting_host
     label: "Keep chatting to the 'host' on Kettle to sort it out"
-    feedback: "They're the ones who'll never sort it out. Report them in the app and call your bank."
+    feedback: "Wanting to sort it out with them feels reasonable, but the 'host' is the scammer and won't fix anything. Report them in the Roostwell app and call your bank."

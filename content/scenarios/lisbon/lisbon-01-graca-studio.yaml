@@ -89,9 +89,9 @@ outcomes:
   leonor_keeps_it_in_app:
     narrative: "Leonor replies in the app: \"Please pay in the app, it protects us both.\" You do."
   studio_reported:
-    narrative: "You report the listing. Roostwell replies: \"This listing and host are verified.\" The 20 minutes run out, and the studio goes back on the market."
+    narrative: "You report the listing. Roostwell replies: \"This listing and host are verified.\" The 20 minutes run out. That afternoon you search again: it's still free, and you book it in the app."
   studio_released:
-    narrative: "The 20 minutes run out and the studio goes back on the market. Thursday is still open."
+    narrative: "The 20 minutes run out and the studio goes back on the market. That afternoon you search again: it's still free, and you book it in the app."
 
 debrief:
   variant: standard

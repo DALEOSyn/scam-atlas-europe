@@ -51,7 +51,7 @@ inspectables:
 
 actions:
   - id: scan_sticker
-    label: "Scan and pay"
+    label: "Scan and open zonelet-pay.example"
     kind: scan_qr_and_open
     next_beat: meter_page
     pressure_target: true

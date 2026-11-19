@@ -138,7 +138,7 @@ interrupts:
 
 outcomes:
   securepay_taken:
-    narrative: "\"Payment received! Roostwell will confirm shortly.\" Nothing appears in your Roostwell trips, and casa_velarim's chat goes quiet."
+    narrative: "\"Payment received! Roostwell will confirm shortly.\" Then: \"A refundable €100 security deposit is needed.\" Nothing appears in your Roostwell trips."
     recovery:
       - { step: block_card_in_bank_app, category: stop }
       - { step: call_bank_known_number, category: stop }

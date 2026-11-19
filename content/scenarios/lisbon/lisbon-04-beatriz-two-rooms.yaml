@@ -75,7 +75,7 @@ outcomes:
 debrief:
   variant: standard
   layer1:
-    tell: "Too cheap, can't be seen, deposit and ID today."
+    tell: "Off the platform, unseen, deposit and ID today."
     what_works: "See it first, and pay inside the platform."
   layer2:
     message_flags: []
@@ -83,5 +83,5 @@ debrief:
   device_tip: "On a real phone, keep the whole conversation and the payment inside the platform's app, and pay only after a viewing."
   habit_card: check-before-you-pay
   already_clicked:
-    paid: "Sent a deposit already? Call your bank now on the number on your card, and report the listing where you found it."
+    paid: "Sent a deposit already? Call your bank now on the number on your card, and report the listing where you found it. Sent a copy of your ID? Report it (see Where to report)."
   sources: [pt-rtp-gnr-rentals-2026, de-evz-rental-fraud, eu-esas-ai-scams-factsheet-nl, pt-dn-psp-cncs-campaign-2025]

@@ -136,7 +136,7 @@ interrupts:
 
 outcomes:
   deposit_taken:
-    narrative: "\"Deposit received! Your host will send the address.\" Nothing comes. That evening your Larchwick app shows €90.00, then €240.00 at a shop you've never heard of."
+    narrative: "\"Deposit received! Your host will send the address.\" Then: \"A refundable €100 security deposit is needed.\" No address comes. That evening your Larchwick app shows €90.00, then €240.00 at a shop you've never heard of."
     recovery:
       - { step: block_card_in_bank_app, category: stop }
       - { step: call_bank_known_number, category: stop }
@@ -158,7 +158,7 @@ outcomes:
 debrief:
   variant: standard
   layer1:
-    tell: "Too cheap, in a rush, on a look-alike address."
+    tell: "Not in the Roostwell app, on a look-alike address."
     what_works: "Find it in the Roostwell app yourself."
   layer2:
     message_flags: []

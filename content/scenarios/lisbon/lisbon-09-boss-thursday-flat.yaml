@@ -13,7 +13,7 @@
 #   booking is cancelled at 20:00. R: link, request. D: sender (the sender-or-link decoy), the booking
 #   number (LS5). Reads true whatever happened at beats 1–2. Design combination (fraud-researcher): not a
 #   separately sourced sequence, and no debrief presents it as one.
-# Interrupt after beat 3: the real host Leonor in the Roostwell app chat (genuine, on_fall: skip).
+# Interrupt after beat 3: the real host Leonor in the Roostwell app chat (genuine, on_fall: show per producer ruling R20).
 # Every fall sets lisbon_acted_fast (story only). Each fall has its own six steps (b1 login: password and
 # two-step; b2 transfer: ask the bank to stop it; b3 card: block it); after several falls the first list wins.
 id: lisbon-09-boss-thursday-flat
@@ -222,14 +222,14 @@ beats:
 interrupts:
   - id: leonor_see_you
     after_beat: final_sms
-    on_fall: skip   # the default, set explicitly: no cheerful "See you Thursday" right after a loss (CR-27)
+    on_fall: show   # producer ruling R20: after a fall too, the real host is seen safe and the booking intact
     is_fraud: false
     device: marketplace
     message:
       app: { brand: roostwell }
       sender: { display: "Leonor (host)", detail: "Your host, in the Roostwell chat" }
       from_cast: leonor
-      body: "Olá! See you Thursday 🙂 The key-box code comes here in the app on the day."
+      body: "Olá! Your booking is all set. See you Thursday 🙂 The key-box code comes here in the app on the day."
       request: reply
     inspectables:
       - target: sender.detail
@@ -260,7 +260,7 @@ outcomes:
       - { step: keep_chatting_host, category: harmful }
       - { step: pay_second_deposit, category: harmful }
   transfer_sent_b2:
-    narrative: "Sent: €246.00 to \"Leonor Brito\". \"Obrigada! All sorted.\" The Kettle number stops answering."
+    narrative: "Sent: €246.00 to \"Leonor Brito\". \"Obrigada! All sorted.\" Then: \"A refundable €100 security deposit is needed.\" Your Roostwell trips still show the stay as paid."
     sets_flags: [lisbon_acted_fast]
     recovery:
       - { step: call_bank_stop_payment, category: stop }
@@ -313,7 +313,7 @@ debrief:
   layer2:
     message_flags:
       - "The email: a login link with your real booking in it. The address after the @ gave it away."
-      - "The Kettle message: a new number, and a transfer for a stay already paid. The name didn't match."
+      - "The Kettle message: a new number, and a transfer for a stay already paid. The name didn't match. Your real host never sent it; her name was borrowed."
       - "The text: your card, to \"keep\" a booking. Paid is paid, in the app."
     notes: "If you typed your login, change the password in the real Roostwell app, then turn on two-step sign-in there."
   device_tip: "On a real phone, open the booking app from your home screen. Your booking, your host's messages and anything you owe are all there."

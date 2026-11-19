@@ -477,10 +477,6 @@ brands:
     trademark_search: "web-checked 2026-11-19; INPI, company directory and TMview pending before G4"
     status: draft
 
-# Not yet registered (request ux-artist before writing these scenarios): streaming service (0-4 now
-# uses Kettle, so possibly not needed), utility company (Rome), parking app (Lisbon), in-world regulator
-# warning list (Dublin), remote-support tool (finale), holiday-rental site (Lisbon).
-
   - id: votelark
     name: "Votelark"
     sector: online "school contest" voting page (scam-only)
@@ -511,3 +507,7 @@ brands:
     lookalike_examples: []
     trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"
     status: draft
+
+# Not yet registered (request ux-artist before writing these scenarios): streaming service (0-4 now
+# uses Kettle, so possibly not needed), utility company (Rome), parking app (Lisbon), in-world regulator
+# warning list (Dublin), remote-support tool (finale), holiday-rental site (Lisbon).

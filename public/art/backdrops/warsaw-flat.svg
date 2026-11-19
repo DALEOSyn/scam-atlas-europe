@@ -12,7 +12,8 @@
 <rect x="80" y="214" width="46" height="58" rx="3" fill="#f1e4c8"/>
 <path d="M92 228h26v3h-26ZM92 241h22v3h-22ZM92 254h26v3h-26ZM85 229.5a2 2 0 1 0 4 0a2 2 0 1 0 -4 0ZM85 242.5a2 2 0 1 0 4 0a2 2 0 1 0 -4 0ZM85 255.5a2 2 0 1 0 4 0a2 2 0 1 0 -4 0Z" fill="#5d6672"/><path d="M99 216a4 4 0 1 0 8 0a4 4 0 1 0 -8 0Z" fill="#c8714f"/>
 <use href="#wf-box" x="196" y="414"/><use href="#wf-box" x="280" y="414"/><use href="#wf-box" x="206" y="358"/>
-<rect x="232" y="344" width="10" height="14" fill="#5d6672"/><path d="M214 344Q214 312 237 312Q260 312 260 344Z" fill="#e3a6a0"/>
+<path d="M87 356a150 96 0 1 0 300 0a150 96 0 1 0 -300 0Z" fill="#f3d08a" opacity=".3"/><path d="M141 352a96 60 0 1 0 192 0a96 60 0 1 0 -192 0Z" fill="#f3d08a" opacity=".35"/>
+<rect x="232" y="344" width="10" height="14" fill="#5d6672"/><path d="M214 344Q214 312 237 312Q260 312 260 344Z" fill="#f3d08a"/><path d="M214 344H260" stroke="#d9a441" stroke-width="3"/>
 <use href="#wf-box" x="380" y="414"/>
 <rect y="470" width="960" height="70" fill="#c9b28f"/>
 <path d="M0 500H960M0 524H960M160 470V500M420 470V500M700 470V500M60 500V524M300 500V524M580 500V524M840 500V524" stroke="#b49c7a" stroke-width="3"/>

@@ -3016,7 +3016,7 @@ Plays after the boss's debrief and damage control, before the resolution. Unscor
 | 4 | Careful reporter: correct tags, reports fraud, proceeds on genuine | 4 × 14 + 45 + (30 + 6) | 137 | 79.7% | 14 | Silver |
 | 5 | Ideal but reports Ruchelune's real invoice (10-1) | 172 − 15 − 5 | 152 | 88.4% | 14 | Silver |
 | 6 | Tag everything + always verify | bonuses void: 60 + 45 + 45 | 150 | 87.2% | 14 − (17 + 13) = −16 | Bronze |
-| 6a | Random single tag per beat + always verify (expected) | 150 + 2 × (⅖ + ⅖ + ½ + ½) + boss 0.1 × 6 | ≈154 | ≈89.7% | 3.2 − 3.8 − 3 ≈ −3.6 | Bronze (silver unreachable: 7 hits at best − 3 genuine tags = 4) |
+| 6a | Random single tag per beat + always verify (expected) | 150 + 2 × (⅖ + ⅖ + ½ + ½) + boss ≈0.6 (six beats at a tenth each) | ≈154 | ≈89.7% | 3.2 − 3.8 − 3 ≈ −3.6 | Bronze (silver unreachable: 7 hits at best − 3 genuine tags = 4) |
 | 6b | Always tag the sender / caller ID / page address + always verify | 150 + 2 (10-8); 10-2, 10-3, 10-4 and boss void | 152 | 88.4% | 1 − (6 + 2) = −7 | Bronze |
 | 6c | **Always tag the request** + always verify | 150 + 2 (10-3) + 2 (10-4) + 2 (10-8) + 4 (boss: b1, b3; b2 has none); 10-2 void | 160 | 93.0% | 5 − (1 + 3) = 1 | Bronze |
 | 6d | Request + every claim + always verify | 150 + 4 (10-3) + 4 (10-4); 10-2, 10-8, boss void | 158 | 91.9% | 12 − 9 = 3 | Bronze |

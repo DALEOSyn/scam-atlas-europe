@@ -1,0 +1,32 @@
+# Stockholm arrival (GDD §29.2 beat 1, STORY §3.9; calm; 3 panels): before the chapter intro and Birgitta's rule
+# card (CR-27), then 9-1. The snowy courtyard with warm windows (the only Stockholm backdrop, ART_DIRECTION §6).
+# Jamal states the human problem (new flat, new bank, new e-ID app; STORY §4.2 rule 3). The jokes about his
+# move are affectionate and never tie his being new to scams (learning-psychologist). Lina is 12 and never
+# handles money or e-ID: she translates and is paid in buns.
+# No scam content: no prompt, caller, number, QR code or screen (GDD §29.2).
+# Not sensitive: no content note proposed for Stockholm (GDD §29, STORY §5.6).
+id: stockholm-arrival
+chapter: stockholm
+slot: arrival
+panels:
+  - backdrop: stockholm-courtyard
+    crop: left
+    speaker: birgitta
+    expression: laughing
+    caption: "Stockholm. A snowy courtyard, warm windows."
+    line: "Adaeze's inspector! Fika first, questions after."
+    alt: "Birgitta laughing in a snowy courtyard by a bare tree, lit windows in the red house behind her."
+  - backdrop: stockholm-courtyard
+    crop: centre
+    speaker: jamal
+    expression: thinking
+    line: "New flat, new bank, new e-ID app. My head is full."
+    alt: "Jamal, thinking, in the snowy courtyard in front of warmly lit windows."
+  - backdrop: stockholm-courtyard
+    crop: right
+    speaker: lina
+    expression: laughing
+    flip: true
+    with: { id: jamal, expression: calm }
+    line: "I translate. Dad pays me in cinnamon buns."
+    alt: "Lina laughing in her bobble hat by the bikes under snow; Jamal listens, calm."

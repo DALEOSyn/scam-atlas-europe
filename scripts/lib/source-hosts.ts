@@ -39,6 +39,8 @@ export const SOURCE_HOST_ALLOWLIST: readonly string[] = [
   // Ireland
   'garda.ie',
   'ncsc.gov.ie',
+  'statesavings.ie',
+  'ntma.ie',
   // Spain, Italy, Portugal
   'incibe.es',
   'policianacional.es',

@@ -1,0 +1,9 @@
+<!-- Scam Atlas: Europe. Postcard stamp and postmark: an invented stamp with a sun over a hill on pale blue and a wavy-line postmark; no country, value, service or lettering. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 84 72" role="img" aria-labelledby="pst-t"><title id="pst-t">Postcard stamp</title>
+<rect x="34" y="4" width="46" height="56" fill="#fffaf0" stroke="#fffaf0" stroke-width="6"/>
+<rect x="34" y="4" width="46" height="56" fill="#fffaf0" stroke="#d6bf98" stroke-width="4" stroke-dasharray="0 6" stroke-linecap="round"/>
+<rect x="39" y="9" width="36" height="46" rx="2" fill="#d9e6f6"/>
+<circle cx="64" cy="22" r="6" fill="#e9a23b"/>
+<path d="M39 44Q50 32 59 40Q67 34 75 42V55H39Z" fill="#8fae8b"/>
+<g fill="none" stroke="#7a8c9c" stroke-width="1.5" stroke-linecap="round" opacity=".8"><circle cx="28" cy="46" r="17"/><path d="M2 34Q9 30 16 34T30 34T44 34T58 34M2 42Q9 38 16 42T30 42T44 42T58 42M2 50Q9 46 16 50T30 50T44 50T58 50"/></g>
+</svg>

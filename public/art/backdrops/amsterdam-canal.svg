@@ -1,0 +1,35 @@
+<!-- Scam Atlas: Europe. City backdrop: a generic Amsterdam canal with narrow gabled houses, a small arched bridge with parked bikes, trees and water, warm lit windows; no lettering, no named boats, no tram; local colours #b8705a brick, #cdb9a2 warm stone, #93b4bf water, #82a5b1 water shade. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="ac-t"><title id="ac-t">A canal with narrow gabled houses, a small arched bridge and bikes</title>
+<defs><linearGradient id="ac-air" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfdde6"/><stop offset="1" stop-color="#d9e6f6"/></linearGradient>
+<g id="ac-w"><rect width="26" height="40" rx="3" fill="#f6efe2"/><rect x="4" y="4" width="18" height="32" rx="2" fill="#a9bccb"/><path d="M13 4V36M4 20H22" stroke="#f6efe2" stroke-width="2"/></g>
+<g id="ac-wl"><rect width="26" height="40" rx="3" fill="#f6efe2"/><rect x="4" y="4" width="18" height="32" rx="2" fill="#f3d08a"/><path d="M13 4V36M4 20H22" stroke="#f6efe2" stroke-width="2"/></g>
+<g id="ac-bike" fill="none" stroke="#5d6672" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><circle cx="0" cy="0" r="22"/><circle cx="74" cy="0" r="22"/><path d="M0 0L26 -34H58L74 0M26 -34L38 0L58 -34M38 0H0M22 -44H34M58 -34L54 -48H66"/></g>
+</defs>
+<rect width="960" height="540" fill="url(#ac-air)"/>
+<path d="M250 360V140H262V124H276V108H290V92H300V108H314V124H328V140H340V360Z" fill="#e7d3b0"/><use href="#ac-w" x="264" y="150"/><use href="#ac-w" x="264" y="204"/><use href="#ac-w" x="300" y="150"/><use href="#ac-w" x="300" y="204"/>
+<path d="M340 360V150H356Q356 128 372 126V96H398V126Q414 128 414 150H430V360Z" fill="#9fb39b"/><use href="#ac-w" x="354" y="156"/><use href="#ac-w" x="354" y="210"/><use href="#ac-w" x="390" y="156"/><use href="#ac-w" x="390" y="210"/>
+<path d="M430 360V146Q446 146 452 128Q456 100 480 86Q504 100 508 128Q514 146 530 146V360Z" fill="#8fa3b5"/><use href="#ac-w" x="444" y="150"/><use href="#ac-w" x="444" y="204"/><use href="#ac-w" x="490" y="150"/><use href="#ac-w" x="490" y="204"/>
+<path d="M530 360V140H542V124H556V108H570V92H580V108H594V124H608V140H620V360Z" fill="#c8714f"/><use href="#ac-w" x="544" y="150"/><use href="#ac-w" x="544" y="204"/><use href="#ac-w" x="580" y="150"/><use href="#ac-w" x="580" y="204"/>
+<path d="M620 360V150H636Q636 128 652 126V96H678V126Q694 128 694 150H710V360Z" fill="#cdb9a2"/><use href="#ac-w" x="634" y="156"/><use href="#ac-w" x="634" y="210"/><use href="#ac-w" x="670" y="156"/><use href="#ac-w" x="670" y="210"/>
+<use href="#ac-wl" x="282" y="104"/><use href="#ac-w" x="372" y="104"/><use href="#ac-w" x="467" y="104"/><use href="#ac-wl" x="562" y="104"/><use href="#ac-w" x="652" y="104"/>
+<path d="M292 84h6v12h-6ZM382 88h6v12h-6ZM477 80h6v12h-6ZM572 84h6v12h-6ZM662 88h6v12h-6Z" fill="#8a6a4f"/>
+<path d="M0 36Q24 8 52 26L80 40Q108 18 136 44L170 58L250 84V360L0 444Z" fill="#b8705a"/>
+<path d="M960 36Q936 8 908 26L880 40Q852 18 824 44L790 58L710 84V360L960 444Z" fill="#d9a441"/>
+<path d="M30 96L76 108V168L30 160ZM30 210L76 214V272L30 272ZM150 128L196 140V196L150 188ZM900 210L856 214V272L900 272ZM930 96L884 108V168L930 160ZM810 128L764 140V196L810 188Z" fill="#a9bccb"/>
+<path d="M150 228L196 232V286L150 286ZM810 228L764 232V286L810 286Z" fill="#f3d08a"/>
+<path d="M0 444L250 360H300L150 540H0Z" fill="#c9cfbf"/><path d="M960 444L710 360H660L810 540H960Z" fill="#c4cab9"/>
+<path d="M300 360H660L810 540H150Z" fill="#93b4bf"/>
+<path d="M300 360L150 540M660 360L810 540" stroke="#b8b4a6" stroke-width="6"/>
+<path d="M330 410Q360 404 390 410M560 414Q590 408 620 414M260 476Q320 468 380 476M580 484Q640 476 700 484M420 446Q460 440 500 446M220 520Q300 512 380 520M560 522Q640 514 720 522" fill="none" stroke="#82a5b1" stroke-width="4" stroke-linecap="round"/>
+<path d="M240 330Q480 288 720 330V362H636Q614 322 480 322Q346 322 324 362H240Z" fill="#b8705a"/>
+<path d="M240 330Q480 288 720 330" fill="none" stroke="#cdb9a2" stroke-width="8"/>
+<path d="M330 362Q352 330 480 330Q608 330 630 362" fill="none" stroke="#cdb9a2" stroke-width="6"/>
+<use href="#ac-bike" transform="translate(372 304) scale(.5)"/><use href="#ac-bike" transform="translate(520 300) scale(.5)"/>
+<rect x="196" y="190" width="16" height="190" rx="6" fill="#8a6a4f"/>
+<path d="M144 170a60 60 0 1 0 120 0a60 60 0 1 0 -120 0ZM120 214a40 40 0 1 0 80 0a40 40 0 1 0 -80 0ZM208 210a42 42 0 1 0 84 0a42 42 0 1 0 -84 0Z" fill="#9db58a"/><path d="M202 228a26 26 0 1 0 52 0a26 26 0 1 0 -52 0ZM156 236a20 20 0 1 0 40 0a20 20 0 1 0 -40 0Z" fill="#86a175"/>
+<rect x="748" y="190" width="16" height="190" rx="6" fill="#8a6a4f"/>
+<path d="M696 170a60 60 0 1 0 120 0a60 60 0 1 0 -120 0ZM760 214a40 40 0 1 0 80 0a40 40 0 1 0 -80 0ZM668 210a42 42 0 1 0 84 0a42 42 0 1 0 -84 0Z" fill="#9db58a"/><path d="M706 228a26 26 0 1 0 52 0a26 26 0 1 0 -52 0ZM764 236a20 20 0 1 0 40 0a20 20 0 1 0 -40 0Z" fill="#86a175"/>
+<path d="M60 452H130V470H60ZM826 452H896V470H826Z" fill="#c8714f"/><path d="M66 446a10 10 0 1 0 20 0a10 10 0 1 0 -20 0ZM85 442a11 11 0 1 0 22 0a11 11 0 1 0 -22 0ZM106 446a10 10 0 1 0 20 0a10 10 0 1 0 -20 0ZM832 446a10 10 0 1 0 20 0a10 10 0 1 0 -20 0ZM851 442a11 11 0 1 0 22 0a11 11 0 1 0 -22 0ZM872 446a10 10 0 1 0 20 0a10 10 0 1 0 -20 0Z" fill="#86a175"/>
+<path d="M92 436a4 4 0 1 0 8 0a4 4 0 1 0 -8 0ZM858 436a4 4 0 1 0 8 0a4 4 0 1 0 -8 0Z" fill="#e3a6a0"/>
+<use href="#ac-bike" transform="translate(830 510) scale(.9)"/>
+</svg>

@@ -70,7 +70,7 @@ Prevention for debriefs: turn on two-step verification for social and messenger 
 pl-policja-psp-na-znajomego · pl-cert-monthly-2026-07 · pl-uknf-seniors-payments-2025 · pl-nask-okazja-czy-pulapka-2025 · pl-blik-podszywacze-2026 (supporting only) · es-bde-msr2025-fraude · accessed 2026-11-18: pl-nask-metoda-na-2020 · pl-cert-vote-takeover-2026 · nl-politie-whatsapp-takeover-2024 · nl-politie-hulpvraagfraude-2025 · de-vzn-ghost-pairing-2026 · eu-epc-threats-2025
 
 ## 10. Confidence
-**Medium-high** (was Medium in MAP): the warning hosted by the Polish police (undated) describes the code-and-confirm flow; NASK (2020) confirms it; CERT Polska's 2026 material confirms friend-account takeovers used for money requests; UKNF (2025) lists payment codes as a target.
+**Medium-high for the takeover-plus-money-request part; Medium for the payment-code detail** (was Medium in MAP): the warning hosted by the Polish police (undated) describes the code-and-confirm flow; NASK (2020) confirms it; CERT Polska's 2026 material confirms friend-account takeovers used for money requests; UKNF (2025) lists payment codes as a target.
 
 **Unverified / caveats:**
 - The police-hosted warning names no issuer or date; its file name suggests the payment-scheme operator. Treat it as official-hosted, not as a police statement.

@@ -181,7 +181,7 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Channel:** social messenger. **Audience:** teen, adult. **ATT&CK:** T1586, T1657.
 - **Red flags:** a code request from anyone; urgency; an unusual way of writing.
 - **Habit:** call the friend; never share payment or login codes.
-- **Reported in:** PL. **Status:** used (planned: Warsaw ch5; brief `hijacked-friend-payment-code.md`, T-3.6r). **Fit:** high. **Conf.:** Medium-high (police-hosted warning, undated; NASK 2020; CERT Polska 2026 on friend-account takeovers).
+- **Reported in:** PL. **Status:** used (planned: Warsaw ch5; brief `hijacked-friend-payment-code.md`, T-3.6r). **Fit:** high. **Conf.:** Medium-high for takeover plus money request, Medium for the payment-code detail (police-hosted warning, undated; NASK 2020; CERT Polska 2026 on friend-account takeovers).
 - **Sources:** pl-policja-psp-na-znajomego, pl-nask-metoda-na-2020, pl-cert-monthly-2026-07.
 
 **A3.4 `sim-swap-number-hijack`**: your phone number is moved to a criminal's SIM

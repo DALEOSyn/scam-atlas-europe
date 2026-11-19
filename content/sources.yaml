@@ -861,7 +861,7 @@ sources:
     accessed: 2026-11-18
     region: ES
     tier: 2
-    used_for: [card-phishing-payment-failed, help-where-to-report-en, campaign-catalogue]
+    used_for: [card-phishing-payment-failed, campaign-catalogue]
     notes: "OLDER (2021). Real brand in title/URL: reference only. Unsolicited prize email -> survey -> 'you won' -> asks for personal and card details and ~EUR 5.99 shipping (real charge may be higher). Advice: never enter bank data in promotions you didn't request; verify on the company's official site/app. If card entered: contact the bank at once; report to police; free helpline 017. Also lists spelling errors as a sign: NOT to be taught as reliable (AI)."
 
   # ---------------------------------------------------------------- Switzerland (non-EU, supporting only) (T-2.5)
@@ -1966,9 +1966,9 @@ sources:
     published: n/d
     accessed: "2026-11-19"
     region: PL
-    tier: 3
+    tier: 4
     used_for: [hijacked-friend-payment-code, MAP-ch5, campaign-catalogue]
-    notes: "Criminals take over social-media accounts and message the owner's contacts: a 'friend' urgently needs money and asks for the mobile-payment code. 'Ofiara musi podać specjalny kod, a następnie potwierdzić transakcję w swojej aplikacji bankowości mobilnej'; many approve with their PIN without checking. Advice: two-step verification on social accounts; verify the friend, ideally by phone; 'ZAWSZE TRZEBA SPRAWDZAĆ DANE TRANSAKCJI PRZED JEJ ZATWIERDZENIEM'. No steps for after the code was given. Undated; issuer inferred from the file name only."
+    notes: "Tier 4: undated, issuer not named (file name points to the payment-scheme operator), hosted on the police site. Criminals take over social-media accounts and message the owner's contacts: a 'friend' urgently needs money and asks for the mobile-payment code. 'Ofiara musi podać specjalny kod, a następnie potwierdzić transakcję w swojej aplikacji bankowości mobilnej'; many approve with their PIN without checking. Advice: two-step verification on social accounts; verify the friend, ideally by phone; 'ZAWSZE TRZEBA SPRAWDZAĆ DANE TRANSAKCJI PRZED JEJ ZATWIERDZENIEM'. No steps for after the code was given. Undated; issuer inferred from the file name only."
 
   - id: pl-blik-podszywacze-2026
     publisher: Campaign site of the Polish mobile-payment scheme (organiser logo; UOKiK honorary partner)

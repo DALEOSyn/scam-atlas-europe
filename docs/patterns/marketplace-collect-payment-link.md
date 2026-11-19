@@ -10,7 +10,7 @@
   - 2025 context: about 260,800 incidents handled, around 98% of them fraud, and 244,300 malicious domains added to the warning list [pl-cert-monthly-2025-12]. *Figures for designers only (MAP rule: never compare countries).*
   - NASK's 2025 shopping guide gives sellers a checklist against exactly these buyers [pl-nask-okazja-czy-pulapka-2025].
   - EU level: the ESAs' factsheet describes marketplace deals that move the victim off-platform to a fake bank login [eu-esas-ai-scams-factsheet-nl].
-- **Why it works:** you are the one *receiving* money, so a payment page feels harmless; the page looks like the marketplace or a courier you know; the "buyer" is friendly and quick; and young sellers may not know that receiving money never needs your card details.
+- **Why it works:** you are the one *receiving* money, so a payment page feels harmless; the page looks like the marketplace or a courier you know; the "buyer" is friendly and quick; and many sellers don't expect that receiving money never needs your card details.
 
 ## 2. Channel and psychological levers
 **Channel:** marketplace listing → the "buyer" moves to a messenger → a link → a fake page in the browser. What the seller sees [pl-cert-monthly-2025-12], [pl-cert-monthly-2026-01], [pl-cert-monthly-2026-03], [pl-nask-okazja-czy-pulapka-2025]:
@@ -46,7 +46,7 @@ In the game: open Swaploft yourself → no payment is shown → decline the link
 6. **No shame:** the UKNF's advice is to call the bank straight away "without feeling ashamed" [pl-uknf-seniors-payments-2025]. Mateus's damage control should model this tone.
 
 ## 6. Variations by country and local hooks
-- **PL:** pages styled as the marketplace and as couriers, including a parcel-locker brand; buyer contact via a messenger app [pl-cert-monthly-2025-12], [pl-cert-monthly-2026-01], [pl-cert-monthly-2026-03]. Related: fake marketplace **login** pages [pl-cert-monthly-2026-07] (not this pattern, but the same habit).
+- **PL:** pages styled as the marketplace and as couriers, including a parcel-locker brand; buyer contact via a messenger app [pl-cert-monthly-2025-12], [pl-cert-monthly-2026-01], [pl-cert-monthly-2026-03].
 - **EU:** off-platform deal → fake bank login [eu-esas-ai-scams-factsheet-nl]; marketplace fraud generally [eu-europol-iocta-2026].
 - **NL (context):** buy/sell fraud is the #2 private-individual category for Fraudehelpdesk in 2025 [nl-fraudehelpdesk-2025] (not split by buyer/seller).
 - **The "safe delivery" wording:** GDD §18 uses "safe delivery". The Polish sources describe "pay-out" pages styled as courier or delivery services; none uses the words "safe delivery" as such. The game may keep "Swaploft Safe Delivery" as a fictional label for the fake page, but the debrief should talk about "a link to collect your payment".

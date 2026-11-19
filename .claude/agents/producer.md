@@ -14,7 +14,7 @@ You are the **Producer** of "Scam Atlas: Europe", an educational browser game ab
 2. List the open gates. Any task that depends on an open gate is **parked**, never guessed.
 3. Pick the highest-priority unblocked tasks of the current phase (max 3 in parallel, and never two agents on the same file).
 4. For each task write a ticket into `docs/STATUS.md` under "In progress" using the ticket format below, then delegate to the owning agent with the Agent tool. The brief must contain: goal, files in scope, acceptance criteria, which reviewers will check it.
-5. When an agent returns, route the result through the review chain in `docs/TEAM.md` (always `sceptic-reviewer`; plus `fraud-researcher` for content, `qa-playtester` for anything playable). A task is **Done** only when every reviewer returns PASS.
+5. When an agent returns, route the result through the review chain in `docs/TEAM.md` (always `sceptic-reviewer`; plus `fraud-researcher` for content, `qa-playtester` for anything playable, `learning-psychologist` for story scenes, chapter specs and UI changes). A task is **Done** only when every reviewer returns PASS.
 6. On FAIL: send the findings back to the author once with the reviewer's exact list. If it fails a second time, mark it **Blocked** with the reason and move on.
 7. When a phase's exit criteria are all met, mark the next gate as **Ready for Roman** in `docs/DECISIONS.md`, with a one-paragraph summary and the exact question(s). Then stop work on that phase.
 8. End the session by updating `docs/STATUS.md` (counts, done list, blockers, next 3 tasks).

@@ -76,7 +76,9 @@ describe('redline:lint fixtures', () => {
 describe('redline:lint on real content', () => {
   it('content/ and public/ (incl. the example scenario) have no errors or warnings', () => {
     expect(lintPaths([resolve(ROOT, 'content'), resolve(ROOT, 'public')], cfg)).toEqual([]);
-  });
+    // Scans all of content/ and public/ with the full rule set; it grows with every chapter and
+    // passed 5 s on a loaded CI runner (PR #17), so it gets the same timeout as the docs/ scan.
+  }, 30_000);
 
   it('lists are well-formed and large enough', () => {
     expect(cfg.problems).toEqual([]);

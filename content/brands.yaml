@@ -205,7 +205,10 @@ brands:
     sector: second-hand marketplace (peer to peer)
     role_in_game: >
       Where the player sells and buys used items (Warsaw, Lisbon). Teaches "stay on the platform":
-      genuine in-app messages vs. off-platform "safe delivery" links.
+      genuine in-app messages vs. off-platform "safe delivery" links. Warsaw (GDD §25.9): the fake page on
+      swaploft-safe-delivery.example labels itself "Swaploft Safe Delivery" (/collect/<id>, /release/<id>);
+      debriefs only ever say "a link to collect your payment". Real-domain paths: /sales/<id>, /item/<id>,
+      /help/payouts.
     domain: swaploft.example
     app_name: "Swaploft app"
     palette:
@@ -223,7 +226,7 @@ brands:
         cluster on teal/turquoise, orange, green and multi-colour. Palette fixed in rework 1: the Hoardly
         draft borrowed Gatewren's peach and Wordswap's apricot; Swaploft uses only its own colours.
       typography: "Heavy lowercase sans, tight tracking."
-    checked_against: ["Vinted", "Wallapop", "Leboncoin", "Kleinanzeigen", "Marktplaats", "OLX", "Allegro Lokalnie", "Blocket", "Tori", "Subito", "Depop", "eBay", "Facebook Marketplace", "GoHoardly", "SW Lofts (UK loft conversions)"]
+    checked_against: ["Vinted", "Wallapop", "Leboncoin", "Kleinanzeigen", "Marktplaats", "OLX", "Allegro Lokalnie", "Blocket", "Tori", "Subito", "Depop", "eBay", "Facebook Marketplace", "GoHoardly", "SW Lofts (UK loft conversions)", "Swappie", "Swapfiets"]
     web_check: "Low. Only an unrelated UK loft-conversion firm and crypto 'SWFT' results (BRAND_CHECK §5, alternatives)."
     lookalike_examples:
       - "swaploft-safe-delivery.example"
@@ -475,6 +478,39 @@ brands:
     web_check: "Low. No firm or lawyer found for Ostrelle or Vellacourt (BRAND_CHECK P2)."
     lookalike_examples: []
     trademark_search: "web-checked 2026-11-19; INPI, company directory and TMview pending before G4"
+    status: draft
+
+  # Warsaw (GDD §25.9, T-3.7). Both kept by BRAND_CHECK MW3 and MW4 (docs/patterns/BRAND_CHECK.md).
+  - id: votelark
+    name: "Votelark"
+    sector: online voting page the scammer invents (scam-only)
+    role_in_game: >
+      A "school contest" voting page in Warsaw 5-2 that asks for your phone number and then the code you
+      get: the code really registers your Kettle account on a new device. Training pages only. Real
+      institutions do run online votes, so the tell is the code banner, never "votes are fake".
+    domain: votelark-vote.example
+    rationale:
+      name: "Coined: 'vote' + 'lark' (a songbird; a bit of fun). No hits (BRAND_CHECK MW3)."
+      colour_shape: "Not drawn; generic training page with text only."
+    checked_against: ["Vote Owl", "VOTEism", "Votemar", "ActiVote", "Lark (office suite)"]
+    web_check: "Low. No exact hit (BRAND_CHECK MW3)."
+    lookalike_examples: []
+    trademark_search: "web-checked 2026-11-19; formal TMview/EUIPO pending before G4"
+    status: draft
+
+  - id: tremolik
+    name: "TREMOLIK"
+    sector: online music shop (merchant name only)
+    role_in_game: >
+      The merchant name on the Larchwick code confirmation in Warsaw 5-6 and drill 5-7 ("Confirm payment ·
+      €249.00 · to TREMOLIK"). Never a real shop; no domain, no address, no logo.
+    rationale:
+      name: "Coined from 'tremolo' (a music term). No company or shop found (BRAND_CHECK MW4)."
+      colour_shape: "Not drawn; text only on the bank confirmation."
+    checked_against: ["Tremach Sp. z o.o.", "tremolo (guitar-effect listings)"]
+    web_check: "Low. No exact hit (BRAND_CHECK MW4)."
+    lookalike_examples: []
+    trademark_search: "web-checked 2026-11-19; formal TMview/EUIPO pending before G4"
     status: draft
 
 # Not yet registered (request ux-artist before writing these scenarios): streaming service (0-4 now

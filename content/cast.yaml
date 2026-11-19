@@ -54,3 +54,9 @@ cast:
     role: "Apprentice designer, Ruchelune (17)"
     known_channel: { label: "Saved contact", detail: "Inès (Ruchelune)" }
     notes: "Capable: spots the plumber fake herself (drill 3-3); her name is used in 3-5. Never the one who falls."
+  # Warsaw (GDD §25.9, STORY §3.5). Ola (5-2) is a saved contact only, never cast (no from_cast, never drawn).
+  - id: kasia
+    name: "Kasia Wójcik"
+    role: "Music student, Waymarker volunteer (Warsaw)"
+    known_channel: { label: "Saved contact", detail: "Kasia (Warsaw)" }
+    notes: "Selling half her flat before she moves. Her real Kettle account is taken over in 5-6 while she is at rehearsal (never her fault, never shown how); she is never the one who falls."

@@ -1,0 +1,112 @@
+# 5-1 Swaploft: "Sold! Your rucksack, €35" (GDD §25.4 5-1; marketplace-collect-payment-link, genuine twin).
+# Genuine, low stakes, difficulty 3, honest timer (slot length) with honest_deadline. A system notice inside
+# the Swaploft app the player opened (CR-33 marketplace device). The player started it (their own listing).
+# Polish in-world text with inline translation (buyers' and the app's messages are Polish, real and fake
+# alike, so language is never a tell).
+# Checkables (5, parity with its twin 5-3): sender (W1: a notice in the app you opened may say "It fits"),
+# link (W3: swaploft.example in a system notice), reference = the listing card with the order number folded
+# in (review constraint: listing card + order number would make 6), claim (neutral), request (CR-30 ask on
+# request: none; "Print the label" is the target).
+# The money is never "collected": Swaploft holds it until delivery, then pays the saved account. This is an
+# in-world rule of a fictional platform (chapter 5 sources file, 5-1: design inference, consistent with
+# "keep the payment on the platform").
+id: warsaw-01-rucksack-sold
+chapter: warsaw
+role: standard
+pattern: marketplace-collect-payment-link
+theme: marketplace
+twin_of: warsaw-03-collect-your-payment
+player_started: true
+learning_objectives: [LO-10, LO-17]
+difficulty: 3
+is_fraud: false
+stakes: low
+device: marketplace
+brands: [swaploft, trundle]
+cast: []
+pressure:
+  timer: true
+  levers: []
+  honest_deadline: "Drop it off by Friday"
+
+message:
+  app: { brand: swaploft }
+  notice: true
+  listing: { title: "Rucksack · order SW-•••• 4471", price: "€35.00" }
+  sender: { display: "Swaploft", detail: "Notice in the Swaploft app" }
+  body: "Sprzedane! Twój plecak, 35,00 €. Swaploft trzyma płatność, dopóki kupujący jej nie odbierze, a potem wypłaca ją na Twoje zapisane konto. Wydrukuj etykietę i nadaj paczkę w automacie Trundle do piątku. swaploft.example/sales/4471"
+  lang: pl
+  translation: "Sold! Your rucksack, €35.00. Swaploft holds the payment until the buyer receives it, then pays it to your saved account. Print your label and drop it at a Trundle locker by Friday. swaploft.example/sales/4471"
+  request: none
+  ask:
+    text: "Wydrukuj etykietę i nadaj paczkę w automacie Trundle do piątku."
+    translation: "Print your label and drop it at a Trundle locker by Friday."
+  claims:
+    - text: "Swaploft trzyma płatność, dopóki kupujący jej nie odbierze"
+      translation: "Swaploft holds the payment until the buyer receives it"
+  l10n_note: "Polish in-world text (Warsaw); the English translation is shown inline. 'Sprzedane!' means 'Sold!'. Amounts are in euros because the game uses one wallet everywhere; real Polish sales are in złoty."
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: a notice inside the Swaploft app you opened yourself, about your own listing. That isn't proof on its own, so weigh it with what it asks: to post the parcel."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: link
+    reveal: "It fits: swaploft.example, Swaploft's own address, and the sale is in your own account. That isn't proof on its own, so weigh it with what it asks: to post the parcel."
+    red_flag: false
+    type: link
+    reassures: true
+  - target: reference
+    reveal: "Your own listing and its order number, as they show in your sales list."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "Says the money is held until delivery, then paid to your saved account. That's how a real sale shows, inside the app."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "Asks you to post the parcel. No card, no login, nothing to collect."
+    red_flag: false
+    type: request
+
+actions:
+  - id: print_rucksack_label
+    label: "Print the label"
+    kind: proceed
+    outcome: rucksack_posted
+    pressure_target: true
+  - id: check_rucksack_sale
+    label: "Check the sale in your Swaploft sales list"
+    kind: check_with_platform
+    outcome: sale_listed
+  - id: report_sale_notice
+    label: "Report the notice"
+    kind: report
+    outcome: sale_notice_reported
+  - id: ignore_sale_notice
+    label: "Ignore it for now"
+    kind: ignore
+    outcome: sale_lapses
+
+outcomes:
+  rucksack_posted:
+    narrative: "The Trundle locker clicks shut on your rucksack. In the app the sale now reads \"On its way\". Kasia, from behind a tower of boxes: \"One down!\""
+  sale_listed:
+    narrative: "Your sales list shows it: rucksack, €35.00, \"Payment held until delivery\", paid out to your saved account. You print the label and post it."
+  sale_notice_reported:
+    narrative: "You reported it. Careful is good; this one was Swaploft's real notice, about your own sale. The label is still waiting for Friday."
+  sale_lapses:
+    narrative: "Friday comes; the app reminds you once, then the sale is cancelled."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "In the app you opened: sold, money held, post it."
+    what_works: "Posting it was right."
+  layer2:
+    message_flags: []
+    notes: "That's what being paid looks like. A real sale shows inside Swaploft, and the money goes to the account you saved there. Remember this screen: it's the one a fake buyer can't show you."
+  device_tip: "On a real phone, open the marketplace app yourself and look at your sales list: a real sale and its payment show there, not only in a message."
+  habit_card: calm-not-paranoid
+  sources: [pl-nask-okazja-czy-pulapka-2025]

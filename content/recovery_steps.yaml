@@ -89,3 +89,17 @@ steps:
   - id: wait_until_after_long_weekend
     label: "Wait until the office reopens after the long weekend"
     feedback: "Waiting for the office to reopen feels sensible, but the sooner you call, the better the chance of getting a transfer back. Call the bank now."
+  # Warsaw (GDD §25.9, T-3.7). Labels stay generic: real bodies are named only on the Poland help card.
+  - id: report_buyer_in_app
+    label: "Report the buyer with the app's own report button"
+  - id: report_account_in_app
+    label: "Report the taken-over account in the app"
+  - id: ask_buyer_to_cancel
+    label: "Message the buyer and ask them to cancel it"
+    feedback: "It feels like the quickest fix, but the 'buyer' is the scammer and won't undo anything. Block the card in your banking app first."
+  - id: wait_for_money
+    label: "Wait until the money arrives"
+    feedback: "Hoping the payment is on its way is natural, but no money is coming, and every minute counts. Block the card now."
+  - id: send_code_to_cancel
+    label: "Send another code to cancel the payment"
+    feedback: "A code only ever makes a payment; it can't cancel one. Call your bank on the number on your card instead."

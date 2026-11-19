@@ -1,0 +1,157 @@
+# 5-3 A new Kettle number: "I'm the buyer for your rucksack… collect your payment here" (GDD §25.4 5-3;
+# marketplace-collect-payment-link). Fraud twin of 5-1.
+# Fraud, difficulty 3, timer (slot length) + pusher at 25 s from the same number. Levers helpfulness,
+# urgency, greed. Polish in-world text with translation (as 5-1 and 5-5, so language is never a tell).
+# Checkables (5; R 3): sender R (W5: a new number about your listing, outside Swaploft), link R
+# (swaploft-safe-delivery.example: owner part), request R (a link to collect money); claim D, reference D.
+# collect_page: training page labelled "Swaploft Safe Delivery" (W4: that label only on the fake page;
+# debriefs say "a link to collect your payment"), card panel with read-only demo values, no network. Never
+# a Swaploft sign-in page. €349.00 is an invented amount, never presented as typical. Refunds: "may".
+id: warsaw-03-collect-your-payment
+chapter: warsaw
+role: standard
+pattern: marketplace-collect-payment-link
+theme: marketplace
+twin_of: warsaw-01-rucksack-sold
+learning_objectives: [LO-10, LO-02, LO-01, LO-16]
+difficulty: 3
+is_fraud: true
+device: messenger
+brands: [kettle, swaploft, larchwick]
+cast: []
+pressure:
+  timer: true
+  levers: [helpfulness, urgency, greed]
+  pusher:
+    messages:
+      - at_seconds: 25
+        text: "Kurier będzie o 17! Odbierz ją teraz, proszę 🙏"
+        lang: pl
+        translation: "Courier comes at 5! Please collect it now 🙏"
+
+message:
+  sender: { display: "+48 5•• ••• •12", detail: "+48 5•• ••• •12", new_contact: true }
+  body: "Cześć! Kupuję Twój plecak ze Swaploft 🙂 Płatność już wysłana, dostawa kurierem w cenie. Odbierz swoją płatność tutaj: swaploft-safe-delivery.example/collect/4471"
+  lang: pl
+  translation: "Hi! I'm buying your rucksack from Swaploft 🙂 Payment already sent, courier delivery included. Collect your payment here: swaploft-safe-delivery.example/collect/4471"
+  request: open_link
+  ask:
+    text: "Odbierz swoją płatność tutaj"
+    translation: "Collect your payment here"
+  claims:
+    - text: "Płatność już wysłana, dostawa kurierem w cenie."
+      translation: "Payment already sent, courier delivery included."
+  references: ["Twój plecak ze Swaploft"]
+  l10n_note: "Polish in-world text (Warsaw); the translation is shown inline. Real and fake buyers both write Polish, so language is never the tell."
+
+inspectables:
+  - target: sender.detail
+    reveal: "Not in your contacts: a number writing about your Swaploft listing, outside Swaploft. A real buyer talks to you in the Swaploft chat."
+    red_flag: true
+    type: sender
+  - target: link
+    reveal: "swaploft-safe-delivery.example. Read the end: the owner part is swaploft-safe-delivery.example, not swaploft.example."
+    red_flag: true
+    type: link
+  - target: reference
+    reveal: "Names your real listing. It's public, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "Says they've paid. A real buyer might say so too; if it's true, it shows in your Swaploft sales, so the message can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "A link to collect money. When you're paid, it shows inside Swaploft; nobody sends you a link to receive it."
+    red_flag: true
+    type: request
+
+actions:
+  - id: open_collect_link
+    label: "Open the link and collect it"
+    kind: open_link
+    next_beat: collect_page
+    pressure_target: true
+  - id: open_sales_yourself
+    label: "Open your Swaploft sales yourself"
+    kind: check_with_platform
+    outcome: no_sale_shown
+  - id: block_report_number
+    label: "Block and report the number"
+    kind: block
+    outcome: number_blocked
+  - id: ignore_collect_chat
+    label: "Ignore it"
+    kind: ignore
+    outcome: collect_chat_ignored
+
+beats:
+  - id: collect_page
+    device: browser
+    message:
+      page: { address: "swaploft-safe-delivery.example/collect/4471", title: "Swaploft Safe Delivery · Collect your payment" }
+      body: "Collect €35.00. Enter your card to receive the payment: card number, expiry date and security code."
+      request: enter_details
+      ask: { text: "Enter your card to receive the payment" }
+    inspectables:
+      - target: page.address
+        reveal: "The address bar still ends in swaploft-safe-delivery.example, not swaploft.example."
+        red_flag: true
+        type: page_address
+      - target: page.info
+        reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
+        red_flag: false
+        type: padlock
+      - target: request
+        reveal: "Asks for your card's security code to pay you. Nobody needs that to send you money."
+        red_flag: true
+        type: request
+    actions:
+      - id: enter_card_collect
+        label: "Enter your card to collect"
+        kind: enter_details
+        outcome: card_drained
+        pressure_target: true
+      - id: close_open_sales
+        label: "Close it and open Swaploft yourself"
+        kind: check_with_platform
+        outcome: no_sale_shown
+      - id: close_collect_page
+        label: "Close the page"
+        kind: ignore
+        outcome: collect_page_closed
+
+outcomes:
+  card_drained:
+    narrative: "\"Processing your payout…\" Ten minutes later your Larchwick app shows €349.00 paid to an online shop. Nothing came in."
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: keep_evidence, category: secure }
+      - { step: report_buyer_in_app, category: report }
+      - { step: ask_buyer_to_cancel, category: harmful }
+      - { step: wait_for_money, category: harmful }
+  no_sale_shown:
+    narrative: "You open Swaploft yourself. No sale, no payment on the rucksack. Real payments show here."
+  number_blocked:
+    narrative: "Blocked and reported. The number can't write to you again, and your rucksack is still listed."
+  collect_chat_ignored:
+    narrative: "You leave it. Five o'clock comes and goes; no courier, no buyer. The deadline was invented."
+  collect_page_closed:
+    narrative: "You close the page without typing anything. Nothing happens."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A buyer off Swaploft, with a link to collect your money."
+    what_works: "Open Swaploft yourself: real payments show there."
+  layer2:
+    message_flags:
+      - "A courier deadline to hurry you before you check. Real buyers can wait while you open the app."
+    notes: "Compare this morning's real sale: a notice inside the app you opened, money held by Swaploft, nothing to collect. Receiving money never needs your card number or its security code, and a page that copies a brand's look proves nothing: read the owner part of the address."
+  device_tip: "On a real phone, open the marketplace app yourself from your home screen, not from a link: if you've been paid, it shows in your sales."
+  habit_card: stay-on-the-platform
+  already_clicked:
+    clicked: "Opened the page but typed nothing? Close it and block the number. Report the buyer in the marketplace if you can find them there."
+    entered_details: "Typed card details? Block the card in your banking app now. Then call your bank on the number on your card; some payments can still be stopped. Keep the chat and the address, and report the buyer in the app."
+  sources: [pl-cert-monthly-2025-12, pl-cert-monthly-2026-01, pl-cert-monthly-2026-03, pl-nask-okazja-czy-pulapka-2025, eu-esas-ai-scams-factsheet-nl, pl-uknf-seniors-payments-2025]

@@ -1,0 +1,140 @@
+# 5-5 Inside Swaploft's own chat, a buyer for your stove asks for a photo of your card (GDD §25.4 5-5;
+# marketplace-collect-payment-link). Fraud, difficulty 4 (on the real platform, with a real help link),
+# timer (slot length), interrupt at 20 s (Mateus, small talk). Levers helpfulness, authority.
+# Checkables (5; R 1): sender D (W1: a buyer's account in the app is neutral), link D (W3: Swaploft's real
+# domain in a buyer's message is neutral), reference D (the listing card), claim D, request R.
+# Sources: the card-photo request is sourced (NASK p.16, p.26); the in-app channel is a design choice, so
+# no reveal calls it a reported channel. "Swaploft never asks for card photos" is an in-world rule.
+id: warsaw-05-card-photo-in-app
+chapter: warsaw
+role: standard
+pattern: marketplace-collect-payment-link
+theme: marketplace
+learning_objectives: [LO-10, LO-05, LO-16]
+difficulty: 4
+is_fraud: true
+device: marketplace
+brands: [swaploft, larchwick]
+cast: [mateus]
+pressure:
+  timer: true
+  levers: [helpfulness, authority]
+
+message:
+  app: { brand: swaploft }
+  listing: { title: "Camping stove", price: "€40.00" }
+  sender: { display: "user 2208", detail: "Swaploft buyer · user 2208" }
+  body: "Cześć! Biorę kuchenkę za 40 €. Swaploft weryfikuje sprzedających przed wypłatą: wyślij mi zdjęcie swojej karty, z obu stron, żeby pieniądze mogły do Ciebie dotrzeć. Ich zasady: swaploft.example/help/payouts"
+  lang: pl
+  translation: "Hi! I'll take the stove for €40. Swaploft verifies sellers before payout: send me a photo of your card, both sides, so the money can reach you. Their rules: swaploft.example/help/payouts"
+  request: enter_details
+  ask:
+    text: "wyślij mi zdjęcie swojej karty, z obu stron, żeby pieniądze mogły do Ciebie dotrzeć"
+    translation: "send me a photo of your card, both sides, so the money can reach you"
+  claims:
+    - text: "Swaploft weryfikuje sprzedających przed wypłatą"
+      translation: "Swaploft verifies sellers before payout"
+  l10n_note: "Polish in-world text (Warsaw), translation inline. The buyer's handle is neutral on purpose (never a name pointing to an ethnicity, GDD §2)."
+
+inspectables:
+  - target: sender.detail
+    reveal: "A buyer's account inside Swaploft's own chat, as a real buyer's would be. Anyone can open an account, so it can't prove anything either way."
+    red_flag: false
+    type: sender
+  - target: link
+    reveal: "swaploft.example: Swaploft's own address. Anyone can paste a real link, so it can't prove anything either way."
+    red_flag: false
+    type: link
+  - target: reference
+    reveal: "Your own stove listing. It's public, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "Says Swaploft checks sellers. Platforms do run checks, inside their own settings; a buyer saying so can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "A photo of your card, sent to a buyer. Being paid never needs your card details, and the platform never asks for them through a buyer."
+    red_flag: true
+    type: request
+
+actions:
+  - id: send_card_photo
+    label: "Send a photo of your card"
+    kind: enter_details
+    outcome: card_photo_used
+    pressure_target: true
+  - id: check_swaploft_settings
+    label: "Check your Swaploft settings yourself"
+    kind: check_with_platform
+    outcome: settings_say_no
+  - id: report_buyer_2208
+    label: "Report the buyer in Swaploft"
+    kind: report
+    outcome: buyer_2208_reported
+  - id: ignore_buyer_2208
+    label: "Ignore it"
+    kind: ignore
+    outcome: buyer_2208_ignored
+
+interrupts:
+  - id: mateus_lamp_light
+    at_seconds: 20
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Mateus (work phone)", detail: "Saved contact: Mateus (work phone)" }
+      from_cast: mateus
+      body: "Does this lamp photo need more light? Be honest."
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Mateus's saved contact, in your usual chat with him. That isn't proof on its own, so weigh it with what he asks for: an opinion on a photo."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_mateus_light
+        label: "Reply: a bit more light"
+        kind: proceed
+        outcome: mateus_light_thanks
+        pressure_target: true
+      - id: report_mateus_light
+        label: "Report the message"
+        kind: report
+        outcome: mateus_light_reported
+
+outcomes:
+  card_photo_used:
+    narrative: "\"Thanks, verifying now!\" An hour later your Larchwick app shows two online payments you didn't make. The buyer's account has vanished."
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: keep_evidence, category: secure }
+      - { step: report_buyer_in_app, category: report }
+      - { step: ask_buyer_to_cancel, category: harmful }
+      - { step: wait_for_money, category: harmful }
+  settings_say_no:
+    narrative: "Settings › Payouts: \"Payouts go to the bank account saved here. Swaploft never asks for card photos, and never through chat.\" Your saved account is already there."
+  buyer_2208_reported:
+    narrative: "Reported with Swaploft's own button. The chat closes, and your stove is still listed."
+  buyer_2208_ignored:
+    narrative: "You leave it. The buyer sends a \"?\" and then goes quiet."
+  mateus_light_thanks:
+    narrative: "Mateus: \"Ha. Fine. More light.\""
+  mateus_light_reported:
+    narrative: "You reported it. Careful is good; this one really was Mateus, asking about a lamp."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Even inside Swaploft: being paid never needs your card."
+    what_works: "Check your settings yourself; report the buyer."
+  layer2:
+    message_flags: []
+    notes: "Staying on the platform helps, but it isn't proof. What the buyer asks for is. A photo of both sides of a card shows everything someone needs to pay with it online."
+  device_tip: "On a real phone, open the marketplace app yourself and look under its payout settings: that's where your bank account for payouts is saved."
+  habit_card: stay-on-the-platform
+  already_clicked:
+    entered_details: "Sent a photo of your card? Block the card in your banking app now, then call your bank on the number on your card. Keep the chat and report the buyer in the app."
+  sources: [pl-nask-okazja-czy-pulapka-2025]

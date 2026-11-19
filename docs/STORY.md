@@ -1,6 +1,6 @@
 # Story bible — Scam Atlas: Europe
 
-Owners: `game-designer` + `learning-psychologist` (psychology sections), `scenario-writer` (voice) · Status: **v1.2 draft for review (T-S1; rework 1 after sceptic and learning-psychologist review; aligned to the reviewed Amsterdam §22.1 and Paris §23.13 story beats and the producer answers)** · Last update: 2026-11-19
+Owners: `game-designer` + `learning-psychologist` (psychology sections), `scenario-writer` (voice) · Status: **v1.3 (T-S1; sceptic and learning-psychologist PASS on v1.2, plus final polish; aligned to the reviewed Amsterdam §22.1 and Paris §23.13 story beats and the producer answers)** · Last update: 2026-11-19
 Related: `docs/PLAN.md` Phase 3 track S, `docs/DECISIONS.md` D-S1, `docs/GDD.md` §2, §10, §15–§18, §22, §23, `content/cast.yaml`, `content/habit_cards.yaml`, `docs/patterns/MAP.md`, `docs/ART_DIRECTION.md` (S2, to come), `docs/PSYCHOLOGY.md` (sources for the principles named here).
 
 > This file states no fraud facts. Patterns per city come from `docs/patterns/MAP.md` and the chapter specs. Every chapter's scams live **only in device scenarios**, which carry the debrief (Red Line 4). Scenes carry people, places and habits. Sample lines are drafts: the `scenario-writer` owns the final wording, within the rules in §4. The If-then lines in §3 are the exception: they are reviewed wording and are reused word for word (§4.4).
@@ -131,6 +131,7 @@ Each block lists the patterns from MAP.md or the chapter spec (the scene never s
 
 ### 3.3 Paris (map no. 3) — scene content per GDD §23.13
 - **Habit cards / LOs on the Atlas page:** `check-who-gets-the-money` (LO-06), `ask-someone` (LO-18), `hang-up-call-back` (LO-08).
+- **Producer ruling (habit cards):** LO-06 has one card, `check-who-gets-the-money` (shared with Amsterdam). Paris's `verify-the-change` merges into it, and the Paris spec's three if-then lines become its body (spec owner updates `content/habit_cards.yaml`).
 - **Patterns (GDD §23):** CEO fraud / BEC and payment-detail change, all four payee-check results; deepfake video call in the boss (illustration plus transcript, no audio).
 - **Cast in scenes:** Inès, Solène, Bastien (resolution). The real Solène and the boss's video-call "Solène" are drawn the same: a familiar face proves nothing.
 - **Human problem:** Ruchelune, a small cooperative, faces the last working day before a long weekend: the school-festival order is late, Bastien is on leave, and a payment to the wrong place would hurt. Inès (17) is an apprentice whose name is later used to try to move her pay.
@@ -176,14 +177,15 @@ Each block lists the patterns from MAP.md or the chapter spec (the scene never s
 - **Locals:** Bruna, Davide, Giulia (video); Teo (video).
 - **Human problem:** Giulia is in her first year abroad; Bruna misses her, Davide covers the B&B between exams, and the whole family worries about her being far away.
 - **Arrival:** a small B&B with a lemon tree. Bruna: "Teo's grandchild! Forty years of postcards and finally a visitor." Davide: "Nonna has told every guest about you. Sorry in advance."
-- **Turn (no scam content):** Teo and Bruna on a video call, like old friends. Bruna: "Giulia calls every Sunday. I still worry every Monday." Teo: "That's the job, Bruna. Ours never stops."
+- **Turn (no scam content):** Teo and Bruna on a video call, like old friends. Bruna: "Giulia calls every Sunday. I still worry every Monday." Teo (optional closing line): "That's the job, Bruna. So we keep in touch, on the numbers we know."
 - **Resolution (after every Rome debrief):**
   - Bruna (calm), past-tense story told only now, after the police-call debrief: "A caller once said he was police. I said I'd ring the station myself. He hung up first."
   - Davide (sheepish): "It sounded exactly like Giulia. I didn't even think."
-  - Bruna (calm): "Of course not. They made it sound like her. That's the trick, not you." Then: "We called the bank straight away. It's on it."
+  - Bruna (calm), one panel: "Of course not. They made it sound like her. That's the trick, not you. We called the bank straight away." (20 words)
   - Giulia on video, laughing with relief: "I was in a lecture the whole time!"
-  - Teo on video proposes the code word: "Let's have a family code word for calls and voice messages. Both families." Caption: "The word stays in the family. Yours does too."
-- **If-then panel (Davide):** "If someone I love asks for money by call, voice note or new number, then I call their known number and ask for our word." (24 words; the suggested longer version was 33, over the 25-word cap. Hanging up is shown in the scenario, not repeated here.)
+  - Teo on video proposes the code word: "Let's have a family code word for calls and voice messages. Both families. And it stays in the family."
+  - The If-then panel makes six panels in total (the cap).
+- **If-then panel (Davide):** "If someone I love asks for money by call, voice note or new number, then I call their known number and ask for our word." (25 words, at the cap; the suggested longer version was 33. Hanging up is shown in the scenario, not repeated here.)
 - **Invitation:** Bruna: "Teo says you'd like Rome. My B&B has a room, and the lemon tree has opinions."
 - **Content note:** "This chapter includes a family-emergency story and a lost payment. Everyone ends up safe. You can pause or skip any story scene."
 - **Safety:** no amount shown in scenes; the bank "is on it", with no refund promise (§5). Older characters lead, the 19-year-old falls (GDD §15).
@@ -231,30 +233,31 @@ Each block lists the patterns from MAP.md or the chapter spec (the scene never s
 - **Constraint for the Brussels spec (S4):** **Noor never shares her details, whatever the player advises.** Every branch of her DM scenario ends with Noor not sharing and asking someone (you, and her mum); a poor piece of advice from the player gets a gentle Noor reply ("I'll check with Mum too") and the debrief, never Noor's fall. This keeps her resolution line true for everyone.
 - **Arrival:** Waymarker's office, boxes of freshly printed Atlas covers (no printer's name visible; order-free). Adaeze: "Two days to the Open Evening. The laptop and I are not friends." Teo and Noor arrive with one suitcase too many.
 - **Turn:** Noor (thinking), scrolling: "Can I ask you something later? It's probably nothing." You: "Any time. I'm here." (A human cue; the DM is only in the device scenario.)
-- **Resolution, part 1 (after the Alex ending, GDD §10.3; each ≤ 5 panels):**
+- **Scene split:** each ending variant below is its own scene, the feelings panels are a separate scene after it, and part 2 is a third scene; each stays within the 6-panel cap.
+- **Resolution, part 1 (after the Alex ending, GDD §10.3; one scene per variant, ≤ 5 panels):**
   - **When `alex_invested > 0` (ending C, and ending R with an investment, which plays C's damage control and recovery-agency test per GDD §10.3 rule 1):**
     - Adaeze (warm): "You were kind to someone who turned out not to exist. The lie was theirs, not yours."
     - Adaeze (calm), recovery panel, true in every branch, no refund promise: "Stop paying, call the bank on the number on your card, and keep the chats. The list below shows who else can help."
     - Teo (warm): "I typed my card into a prize page, remember? It happens. What counts is what you do next, and you're doing it."
   - **A / A′, and R without an investment** (R plays the Teo scene from A, GDD §10.3 rule 1): after Teo's guided scenario, Teo (sheepish, then proud): "Same picture, different name. Good thing I asked you." R only adds Teo (warm): "Sometimes you just want to know. Asking is never wrong."
   - **B:** Adaeze (calm): "You told someone, and the timeline did the rest. That's the whole trick."
-  - **Every variant** then has the feelings panels with the Help link (§5): "The chats felt real because you were real." / "It's fine to feel sad, embarrassed, or both. Talking to someone helps."
+  - **Every variant** is followed by the feelings scene (2 panels, Help link, §5): "The chats felt real because you were real." / "It's fine to feel sad, embarrassed, or both. Talking to someone helps."
 - **Resolution, part 2 (all players):** Noor (relieved): "I nearly said yes. Then I asked you, and I told Mum too. Asking was the smart bit." The Open Evening: the video wall of locals (reused portraits); you pick a postcard and Teo reads its cue (§3.12, flip the postcard); Adaeze's last line (§1.5). Then the end screen (Atlas pages, habit cards, help list).
 - **If-then panel (Noor; Brussels exception, §4.4):** "If an easy-money offer wants my bank login or card, then I say no and ask someone first."
 - **Content note:** "This chapter ends the trip, including the Alex storyline. It touches on friendship, feeling let down and money. You can pause or skip any story scene, and help is one tap away." If the arc already closed with "Tell me now" before Brussels: "This chapter ends the trip and touches on money. You can pause or skip any story scene, and help is one tap away."
 - **Art:** the Brussels office and Open Evening hall are never EU-styled: no blue-and-gold stars, no flags, no institutional buildings (Waymarker is not an EU body, GDD §2).
 
 ### 3.11 What a chapter block must give its spec
-Each chapter spec (`docs/chapters/<city>.md` or GDD §18 successor) names its scenes and confirms: (1) the local's problem is the soil, not the scam; (2) no scene shows a message, link, number, QR or amount from a scam; (3) the resolution is true whatever the player did in the boss (or names its story-only variant flags, §4.2 rule 5); (4) the If-then line matches the chapter's habit cards, which its Atlas page links to; (5) any new local is in `cast.yaml` and the name register; (6) any past-tense story meets §4.2 rule 7.
+Each chapter spec (`docs/chapters/<city>.md` or GDD §18 successor) names its scenes and confirms: (1) the local's problem is the soil, not the scam; (2) no scene shows a message, link, number, QR or amount from a scam; (3) the resolution is true whatever the player did in the boss (or names its story-only variant flags, §4.2 rule 5); (4) the If-then line matches the chapter's habit cards, which its Atlas page links to; (5) any new local is in `cast.yaml` and the name register; (6) any past-tense story meets §4.2 rule 7; (7) NPC recovery lines (e.g. Bruna's "We called the bank straight away", Kasia's "you fixed it fast") are true in every branch of that chapter's spec, whatever the player chose in damage control.
 
 ### 3.12 Travel interludes (play position, not city)
 Shown on the map after the 2nd, 4th, 6th and 8th middle city, whatever the cities were. ≤ 4 panels, ≤ 25 s. They may use `{count}` (cities done) and `{lastCity}`; they never name another specific city.
 
-**Flip the postcard (every interlude, and the Open Evening).** One optional, unscored panel. Teo reads the cue half of an If-then line ("If a parcel message wants money or a click…") from a city the player finished at least two chapters earlier; the engine picks it by play position. The player taps to flip the card and see the then half. There is no right or wrong, no input beyond the tap, and Skip works as on any panel. At the Open Evening, you pick a postcard and Teo reads its cue.
+**Flip the postcard (every interlude, and the Open Evening).** One optional, unscored panel. Teo reads the cue half of an If-then line ("If a parcel message wants money or a click…") from a city the player finished at least two chapters earlier; the engine picks it by play position and, among the eligible lines, prefers the one flipped least recently. Caption: "Remember what they did? Tap to flip." The player taps to flip the card and see the then half. There is no right or wrong, no input beyond the tap, and Skip works as on any panel. At the Open Evening, you pick a postcard and Teo reads its cue.
 
 - **I1 — Teo's café:** Teo: "Your postcards are a hit. Eight neighbours on Thursday, and someone brought cake." Flip the postcard. Neutral check-in: "Made any friends on your travels?" (A few / Mostly work so far). Same reply to both: "Good. Same rule for old friends and new: if anyone asks for money or secrets, tell me."
 - **I2 — Noor and Adaeze:** Noor: "I showed my class your postcards. Now everyone checks links. You're welcome." Adaeze: "The Atlas has {count} pages now. Halfway." Adaeze, her fallible moment as a past-tense story that names no tell (§4.2 rule 7): "Early on, I nearly paid an invoice to the wrong account. A colleague asked one question. Now I always ask." Flip the postcard.
-- **I3 — Open Evening set:** Adaeze names the date (no countdown). Flip the postcard. Teo's second neutral check-in: "How's the trip treating you? Seeing enough people, not just phones?" (Plenty of people / Mostly phones, honestly). Same reply to both: "Whoever you meet, the rule stands: money or secrets, tell me first."
+- **I3 — Open Evening set:** Adaeze names the date (no countdown). Flip the postcard. Teo's second neutral check-in: "How's the trip treating you? Seeing enough people, not just phones?" (Plenty of people / Mostly phones, honestly). Same reply to both: "Either way, I'm only a call away. And the rule stands: money or secrets, tell me first."
 - **I4 — Packing, mirrored:** Teo packs your old suitcase: "Your suitcase, my adventure. Noor's checking the train times. In the official app." Flip the postcard. Then: "Brussels is open."
 
 ---
@@ -272,7 +275,7 @@ Shown on the map after the 2nd, 4th, 6th and 8th middle city, whatever the citie
 
 ### 4.2 Content rules (track S scene rules, PLAN.md)
 1. **No scam artefacts.** No scam message text, sender, link, number, QR code, IBAN, amount, logo of a spoofed brand, or screenshot. Phone screens in panels are turned away or show a home screen, map or photo.
-2. **No verdict spoilers.** A scene before a scenario never reveals that scenario's verdict or its tell. A general habit stated as a rule ("the deal and the money stay inside Swaploft") is allowed: it never says which message is fake. After a scenario's debrief, a scene may refer to it in plain words ("a friend's account asked for my code"), with no message text.
+2. **No verdict spoilers.** A scene before a scenario never reveals that scenario's verdict or its tell. A general habit stated as a rule ("the deal and the money stay inside Swaploft") is allowed: it never says which message is fake, and following the habit is never wrong on a genuine twin later in that chapter. After a scenario's debrief, a scene may refer to it in plain words ("a friend's account asked for my code"), with no message text.
 3. **Soil, not scam.** The local's problem is human (a job, a flat, a birthday, a family member far away). The scam only grows out of it in device scenarios.
 4. **Red Line 8:** no offline fraud as a lesson: no doorstep visits, couriers collecting cash, ATM scenes, street tricks. No police, bank or courier staff in uniform; no real signage, liveries or landmarks with logos (PLAN S2 art guard).
 5. **Outcome-neutral by default.** Scenes don't branch on score. Every line is true whether the player fell or not. Never "thanks to you, nothing was lost"; never "because you clicked, Mia had no present". **Allowed exceptions:** the finale's ending variants (GDD §10.3), and **story-only variant flags** that a chapter spec names and a fall outcome sets (Paris: `paris_pay_redirected`, `paris_boss_sent`). A variant only keeps the scene truthful: it names the recovery step already taken, never blames, never promises money back, and changes no score, stamp or arc flag.
@@ -287,7 +290,7 @@ Shown on the map after the 2nd, 4th, 6th and 8th middle city, whatever the citie
 - One panel can show a recurring character doing a habit from an earlier chapter only if that chapter is fixed (Home, Berlin); otherwise use an interlude.
 
 ### 4.4 The If-then line (one wording per habit)
-- Every resolution ends with one **If-then panel**: "If [cue], then I [action]", ≤ 25 words, with the caption "Postcard to Teo" on the same panel.
+- Every resolution ends with one **If-then panel**: "If [cue], then I [action]", ≤ 25 words, with the caption "Postcard to Teo" on the same panel. A speaker who talks for a group may use "then we" (Paris: Solène for Ruchelune).
 - **Speaker:** the local. **Exceptions:** Home (Teo, his slip), Warsaw (Mateus, his fall), Brussels (Noor, her offer).
 - **One wording everywhere.** The postcard, the Atlas page and the interludes' flip the postcard use the If-then line **word for word**. Extra lines (e.g. "A real job pays you.") sit underneath on the postcard and Atlas page, never inside the line. Dialogue elsewhere in the scene may say the habit in a character's own voice (Sanne's "I walk").
 - The line names the cue and the action, so the flip panel can split it at "then".

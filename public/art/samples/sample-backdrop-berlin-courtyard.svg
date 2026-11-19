@@ -1,4 +1,4 @@
-<!-- Scam Atlas: Europe. Style sample for docs/ART_DIRECTION.md (city backdrop, 16:9 panorama; panels crop it to 4:3). A generic inner courtyard of an older city block: no real building, sign, livery or brand. No lettering. Original artwork written as SVG code for this project; no image generator, tracing, stock or reference photo. CC BY-SA 4.0. -->
+<!-- Scam Atlas: Europe. Style sample for docs/ART_DIRECTION.md (city backdrop: a generic inner courtyard, 16:9 panorama cropped to 4:3 in panels; no lettering, no brand mark). Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="bbc-t"><title id="bbc-t">A quiet inner courtyard with bikes, a tree and a parcel locker (sample backdrop)</title>
 <defs>
 <g id="bbc-w"><rect width="52" height="76" rx="4" fill="#f6efe2"/><rect x="6" y="6" width="40" height="64" rx="2" fill="#a9bccb"/><path d="M26 6V70M6 34H46" stroke="#f6efe2" stroke-width="3"/></g>
@@ -13,7 +13,7 @@
 <use href="#bbc-w" x="214" y="180"/><use href="#bbc-w" x="326" y="180"/><use href="#bbc-w" x="438" y="180"/><use href="#bbc-w" x="550" y="180"/><use href="#bbc-w" x="662" y="180"/>
 <use href="#bbc-w" x="214" y="290"/><use href="#bbc-w" x="662" y="290"/></g>
 <rect x="320" y="146" width="64" height="14" rx="3" fill="#c8714f"/><circle cx="332" cy="144" r="7" fill="#e9a23b"/><circle cx="350" cy="142" r="7" fill="#f3d08a"/><circle cx="370" cy="144" r="7" fill="#e9a23b"/>
-<rect x="656" y="256" width="64" height="14" rx="3" fill="#c8714f"/><circle cx="670" cy="253" r="7" fill="#f3d08a"/><circle cx="690" cy="252" r="7" fill="#e9a23b"/><circle cx="708" cy="254" r="7" fill="#f3d08a"/>
+<rect x="656" y="146" width="64" height="14" rx="3" fill="#c8714f"/><circle cx="670" cy="143" r="7" fill="#f3d08a"/><circle cx="690" cy="142" r="7" fill="#e9a23b"/><circle cx="708" cy="144" r="7" fill="#f3d08a"/>
 <path d="M418 470V350Q480 296 542 350V470Z" fill="#9c8c76"/><path d="M432 470V356Q480 316 528 356V470Z" fill="#b9a88f"/>
 <path d="M0 540L180 470H780L960 540Z" fill="#c9b28f"/>
 <path d="M150 490Q300 482 420 492M120 512Q330 500 520 514M560 494Q700 486 820 496M600 518Q760 508 900 520" fill="none" stroke="#b49c7a" stroke-width="3" stroke-linecap="round"/>

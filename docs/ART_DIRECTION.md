@@ -1,9 +1,10 @@
 # Art direction — Scam Atlas: Europe
 
-Owners: `ux-artist` (style, rig, files, budget) + `learning-psychologist` (§1.2, §5.3, §9, §14 F) · Status: **v1.0 draft for review (T-S2)** · Last update: 2026-11-19
+Owners: `ux-artist` (style, rig, files, budget) + `learning-psychologist` (§1.2, §5.3, §9, §14 F) · Status: **v1.1 draft for re-review (T-S2)** · Last update: 2026-11-19
 Reviewers: `sceptic-reviewer` (brand and likeness resemblance, every illustration, checklist §14), `learning-psychologist` (fear, shame, load), `qa-playtester` (accessibility, 320 px, dark mode, reduced motion).
 Related: `docs/PLAN.md` Phase 3 track S (S2 and the Red Line 1 art guard), `docs/STORY.md` (cast, expressions, scenes), `docs/UI_SPEC.md` (§0 layers, §1 breakpoints, §6.5 motion, §9 map and stamps, §13 contrast), `src/styles/tokens.css`, `content/brands.yaml`, `content/cast.yaml`.
 Samples: `public/art/samples/` (§15).
+Changelog: v1.1 (2026-11-19) reworks v1.0 after the sceptic and learning-psychologist FAIL reviews: no brand mark or lettering in any art (§16.6), map borders from one named public-domain dataset, `url()` local-only, AI-authorship wording and header, last-panel rule for sensitive scenes, shared phone poses, score-neutral postcards, cast and sample fixes.
 
 > Scope: the illustrated story layer decided in D-S1: character portraits with expressions, one or two backdrops per city, comic-style panels, postcards and the illustrated map. It wraps the device scenarios and never replaces them. Scenes never contain a scam message or artefact (STORY §4.2); this document does not change any device, scoring or debrief rule.
 
@@ -15,14 +16,14 @@ Samples: `public/art/samples/` (§15).
 1. **Warm paper picture book, not a thriller.** Flat colour, soft rounded shapes, daylight. The art belongs to the game layer (UI_SPEC §0): warm paper, ink, the sea accent.
 2. **People first, places second.** Characters carry an ink outline and a paper "cut-out" halo; backdrops have no outlines and sit lighter and calmer behind them.
 3. **Original and generic.** Places are recognisable by everyday architecture, light and weather, never by a brand, sign, livery, uniform, flag or famous landmark. People are invented from a shared rig, never from a real face.
-4. **Text is never inside art.** Lines, names, captions and alt text are live HTML (translatable, resizable, read by screen readers, linted). The only exception is a registered fictional brand name in a `<text>` element (§12.3).
-5. **Cheap to ship.** Hand-written SVG, shared parts, no rasters, no fonts. The whole story layer fits in about a quarter of a megabyte gzipped (§11).
+4. **Text is never inside art.** Lines, names, captions and alt text are live HTML (translatable, resizable, read by screen readers, linted). No lettering and no brand mark appear anywhere in `public/art/**` (§16.6). Fictional brand marks are device-layer UI assets in `public/brands/`, governed by UI_SPEC, not by this document.
+5. **Cheap to ship.** SVG written as code, shared parts, no rasters, no fonts. The whole story layer fits in about a quarter of a megabyte gzipped (§11).
 
 ### 1.2 Learning and emotional safety (co-owned with `learning-psychologist`)
 1. **The picture supports the line.** One idea per panel: the art shows who is speaking, how they feel and the one object the line is about. No background gags or details that compete with the line (cognitive load).
-2. **Modelling you can see.** The panel that carries a habit shows the character *doing* it (opening the app themselves, holding the phone to call back, writing the postcard), so the action is easy to remember and copy.
-3. **No fear imagery.** No storms, night alleys, shadows behind people, hooded or faceless figures, masks, "hacker" tropes, code rain, skulls, broken padlocks, red alarms, warning triangles, shattered screens, tears, sweat drops, shaking lines, injured or endangered people, piles of cash or visible amounts.
-4. **Worried is mild and brief.** `worried` = raised inner brows and a flat mouth, nothing more. A sensitive scene (STORY §5.3) never ends on `worried`; its last panel shows `relieved`, `warm` or `proud`.
+2. **Modelling you can see.** The panel that carries a habit shows the character *doing* it (opening the app themselves, holding the phone to call back, writing the postcard), so the action is easy to remember and copy. The shared poses `g-phone-ear` and `g-phone-look` (§4.4) exist for this.
+3. **No fear imagery.** No storms, night alleys, shadows behind people, hooded or faceless figures, masks, "hacker" tropes, code rain, skulls, broken padlocks, red alarms, warning triangles, shattered screens, tears, sweat drops, shaking lines, injured or endangered people, piles of cash or visible amounts, exclamation or question marks over heads, impact or speed lines, sirens or flashing lights, ambulance or hospital imagery, clocks, hourglasses or calendars in scene art.
+4. **Worried is mild and brief.** `worried` = raised inner brows, slightly raised upper lids and a flat mouth, nothing more (§4.4). A sensitive scene (STORY §5.3) never ends on `worried` or `sheepish`; its last panel shows the speaker able to act (any other expression).
 5. **Dignity.** People who fell are drawn exactly as capable as everyone else, in the same light, size and framing. No clichés about places, ages or nationalities (no national costume, no food-pushing grandmothers, no "confused old person" poses). Mobility and hearing aids appear as ordinary details, never as a joke or a clue.
 6. **No meta-tells.** Nothing in the art hints at a coming scenario's verdict: no ominous framing before a scam, no "safe" glow after a genuine message.
 
@@ -50,7 +51,7 @@ Not photo-real, not 3D, not anime, not a corporate "flat people with tiny heads"
 ### 3.1 How colour works in art files
 - Art files use **literal hex values from the palette below**, so they render the same in `<img>` and inline, with no CSS needed.
 - The palette is mirrored as `--art-*` tokens (proposed tokens.css §8, §13 below) for the CSS-drawn parts (panel frame, caption boxes, postcards, video-call frame) and as the list an automated palette check compares files against (§12.5).
-- **Never in art:** the iris family (`--p-iris-*`, reserved for the SIMULATION marker), any `--brand-*` colour outside an unmodified mark from `public/brands/`, the semantic flag/ok colours used *as meaning* (no red crosses, green ticks, red alarm lights), saturated pure reds, black skies.
+- **Never in art:** the iris family (`--p-iris-*`, reserved for the SIMULATION marker), any `--brand-*` colour (no brand mark appears in art, §16.6), the semantic flag/ok colours used *as meaning* (no red crosses, green ticks, red alarm lights), saturated pure reds, black skies.
 
 ### 3.2 Core
 | Token | Hex | Use |
@@ -85,11 +86,11 @@ No clothing combination may echo a real uniform, team kit or brand livery (§14 
 - **Character zone** (bottom 70 % of the frame, middle 80 %): every backdrop colour there has relative luminance 0.20–0.80. That keeps ink outlines ≥ 4.5:1 against the backdrop in light mode (measured 5.76–12.14 on the shared neutrals) and the paper halo ≥ 3:1 after the dark-mode dusk (3.34–5.75). Darker accents (bikes, door arches, tree trunks) cover ≤ 10 % of the zone.
 
 ### 3.6 Dark mode, forced colours, print, greyscale
-- **Dark mode = dusk, not a recolour.** In dark theme the scene player lays `--art-dusk: rgb(20 22 46 / 0.45)` over the **backdrop layer only**. Characters, props and postcards stay unchanged (the same precedent as letters, which stay paper-coloured in dark mode). Measured: paper halo on dusked backdrops 3.34–5.75. One rule, zero extra bytes, and skin tones are never shifted.
+- **Dark mode = dusk, not a recolour.** In dark theme the scene player lays `--art-dusk: rgb(20 22 46 / 0.45)` over the **backdrop layer only**. Characters, props and postcards stay unchanged (the same precedent as letters, which stay paper-coloured in dark mode). Measured: paper halo on dusked backdrops 3.34–5.75. One rule, zero extra bytes, and skin tones are never shifted. Backdrops for chapters with sensitive scenes (STORY §5.3) keep a few warm lit windows (sun-light `#f3d08a`) so the dusk reads as evening, not gloom; `qa-playtester` and `learning-psychologist` check every dark-mode scene for gloom in playtest.
 - The panel border uses `--color-border` (3.80 light on surface, 4.09 dark), so panels separate from the page in both themes.
 - **Forced colours** (Windows contrast themes): `forced-color-adjust: none` on panel art so pictures stay legible; frame and captions use system colours (`CanvasText`, `Canvas`).
 - **Print** (Atlas pages, postcards): art prints as is; captions print black on white.
-- **Greyscale test:** every expression of every character must be tellable apart in greyscale at a head height of 48 px, and every figure must separate from its backdrop in greyscale. Nothing in the art relies on hue (characters are told apart by silhouette, §4.6).
+- **Greyscale test:** every expression of every character must be tellable apart in greyscale at a head height of 48 px (test `calm` against `worried` specifically, as they differ least), and every figure must separate from its backdrop in greyscale. Nothing in the art relies on hue (characters are told apart by silhouette, §4.6).
 
 ---
 
@@ -108,7 +109,7 @@ No clothing combination may echo a real uniform, team kit or brand livery (§14 
 5. The **default group is `x-calm` and is always last** in the file.
 
 ### 4.3 How an expression is chosen (no script, works in `<img>`)
-Each file carries the same five-rule style block:
+Each file carries the same four-rule style block:
 ```css
 .x{display:none}.x-default{display:inline}.x:target{display:inline}.x:target~.x-default{display:none}
 ```
@@ -125,13 +126,18 @@ Each file carries the same five-rule style block:
 | `warm` | relaxed, slightly raised | smiling arcs (∩) | closed smile | cheeks |
 | `laughing` | raised | closed arcs | open D-shape, ink interior, light tongue; head group may tilt ±4° | cheeks |
 | `thinking` | one raised, one level | open, pupils up and to one side | small flat line, off-centre | `g-chin` (hand at chin) |
-| `worried` | inner ends raised | open, pupils centred | flat line | — (never tears, sweat, pallor, shaking lines or an open scream) |
+| `worried` | inner ends raised | open, pupils centred, upper lids raised 1–2 units | a slightly shorter flat line, no upturn | — (never tears, sweat, pallor, shaking lines or an open scream) |
 | `relieved` | raised and soft | gently closed (∪ lids) | soft smile | `g-chest` (hand on chest) |
-| `sheepish` | slightly tilted | glancing sideways | lopsided small smile | `g-neck` (hand behind neck) |
+| `sheepish` | slightly tilted | glancing sideways | lopsided small smile | `g-neck` (hand behind neck), the only gesture. Never head down, slumped shoulders, hands over face or smaller scale |
 | `proud` | raised, confident | smiling arcs | wide closed smile, head group up 2 units | `g-chest` |
 | `focused` | lowered towards the centre, never a V | upper lids lowered, pupils forward or down | firm straight line | — (never gritted teeth or anger) |
 
 - A gesture lives **inside** its expression group, so the fragment API stays one id per expression. A character may add one story-specific pose (`g-parcels` for Jonas holding two parcels, `g-wave` for video calls) as an extra expression group named `x-<expression>-<pose>`, e.g. `x-relieved-parcels`. Each extra pose needs a STORY.md line that asks for it.
+- **Shared habit poses (standing exception, no STORY line needed).** Two poses model the verification habits (§1.2.2) and may be added to any character who speaks an If-then or habit line:
+  - `g-phone-ear`: phone held flat against the ear, calling back on a known number. Group `x-<expression>-phone-ear`.
+  - `g-phone-look`: phone held at chest height, screen turned away from the viewer, opening the app themselves. Group `x-<expression>-phone-look`.
+  `<expression>` is any expression already in that character's §5 list. The phone is a generic rounded slab (§2.1), screen never visible (STORY §4.2). Both poses count towards the character's element cap and file budget (§11).
+- **Calm vs worried:** they differ least (lids and mouth length), so the §3.6 greyscale test at 48 px is run on this pair for every character.
 - **Expressions must read from eyes and mouth alone** (brows reinforce); this is what keeps them legible on deep skin tones and at avatar size.
 
 ### 4.5 Diversity and likeness
@@ -149,7 +155,7 @@ Each file carries the same five-rule style block:
 | Alex | 2 | medium | short tousled brown hair | plain slate jumper | a mustard scarf (§4.7) |
 | Jonas (mid-30s) | 1 | broad | auburn short hair and beard | cream apron (no print) over slate T-shirt | flour dust on the apron |
 | Mia (8, background) | 1 | small | two pigtails | rose jumper | — |
-| Sanne (19) | 2 | slim | long blonde braid over the shoulder | rose cardigan | key on a plain ring |
+| Sanne (19) | 2 | slim | long dark-brown braid over the shoulder | rose cardigan | key on a plain ring |
 | Solène | 3 | medium | dark bob with fringe | forest shirt | pencil, ink smudge on one hand |
 | Inès (17) | 6 | slim | braids in a high bun | denim overalls | pencils in the bib pocket |
 | Bastien | 5 | round | bald, short beard | mustard knit | mug |
@@ -160,11 +166,13 @@ Each file carries the same five-rule style block:
 | Davide (19) | 3 | lanky | dark curls | denim jacket | headphones round the neck |
 | Giulia (22, video) | 3 | slim | long wavy dark hair | sage top | — |
 | Beatriz (20) | 5 | medium | long curly hair | mustard top | backpack straps |
-| Declan (52) | 1 | heavy | grey buzz cut, stubble | slate fleece | — |
+| Declan (52) | 1 | medium | short grey hair, laughter lines | slate fleece | a tea flask in a knitted cosy |
 | Róisín (18) | 2 | slim | dark straight hair, fringe, rectangular glasses | forest hoodie | — |
 | Jamal (38) | 4 | medium | short black hair, neat beard | slate cardigan over shirt | — |
 | Lina (12) | 4 | small | two puffs | mustard bobble hat | — |
 | Birgitta (70) | 1 | tall | white bob | chunky cream knit | walking stick |
+
+**Teo look-alike guard:** Teo is always drawn in his cardigan and shirt with the moustache, side tufts and pen. No variant (video call, postcard, flashback, interlude) gives him a white shawl, wrap or drape, bare shoulders or a staff, and none drops the moustache or cardigan; with his bald crown and round glasses those would edge towards a real public figure.
 
 Work clothes stay generic: no hospital, warehouse, bakery or school badges, lanyards, logos or name tags. No character is drawn in a uniform.
 
@@ -181,7 +189,7 @@ Device-layer pictures (profile pictures of non-cast personas, the "fictional cel
 
 ## 5. Expression set per cast member
 
-`calm` is the rig's base face, so every character has it at no cost (used for avatars, listeners and the Brussels video wall). Lists come from STORY §2.1 and §2.3; additions are marked **+** and need `game-designer` confirmation (§16).
+`calm` is the rig's base face, so every character has it at no cost (used for avatars, listeners and the Brussels video wall). Lists come from STORY §2.1 and §2.3; additions are marked **+** and need `game-designer` confirmation (§16). Any character who speaks an If-then or habit line may also carry the shared poses `x-<expression>-phone-ear` and `x-<expression>-phone-look` (§4.4) without a STORY line; they are not listed per row.
 
 | Character | Expressions to draw | Extra poses |
 |---|---|---|
@@ -203,7 +211,7 @@ Device-layer pictures (profile pictures of non-cast personas, the "fictional cel
 | Davide | calm, sheepish, worried, relieved | — |
 | Giulia | calm, laughing, relieved | `x-laughing-wave` (video) |
 | Beatriz | calm, laughing, worried, thinking, relieved | — |
-| Declan | calm, worried, thinking, sheepish, laughing | — |
+| Declan | calm, worried, thinking, sheepish, laughing, **+ proud** (+, `game-designer` to confirm) | — |
 | Róisín | calm, worried, warm, proud | — |
 | Jamal | calm, thinking, worried, proud | — |
 | Lina | calm, laughing | — |
@@ -225,25 +233,25 @@ A scene YAML that names an expression not in this table fails validation (propos
 - Daylight only (morning, midday or warm afternoon; Stockholm may be a bright winter afternoon). Night is produced only by the dark-mode dusk overlay, never drawn as a dark or threatening scene.
 
 ### 6.3 What makes a city recognisable (and what never does)
-Allowed cues: building typology, roof shapes, window rhythm, materials, plants, weather, light, street furniture drawn generically. Never: real shop signs, brand colours, transit vehicles or stops in operator liveries, route numbers, licence plates, uniforms, flags, coats of arms, sports-club colours or crests, political or religious posters, currency, famous single landmarks (towers, cathedrals, monuments, named bridges) whose image may be claimed or which would date or pin the scene to a real address. Any visible "sign" is a blank plate, a pictogram (cup, loaf, key) or a registered fictional brand.
+Allowed cues: building typology, roof shapes, window rhythm, materials, plants, weather, light, street furniture drawn generically. Never: real shop signs, brand colours, transit vehicles or stops in operator liveries, route numbers, licence plates, uniforms, flags, coats of arms, sports-club colours or crests, political or religious posters, currency, famous single landmarks (towers, cathedrals, monuments, named bridges) whose image may be claimed or which would date or pin the scene to a real address. Any visible "sign" is a blank plate or a pictogram (cup, loaf, key). No brand mark of any kind, fictional ones included, appears in a scene (§16.6).
 
 | File | Scene use (STORY) | Cues | Avoid |
 |---|---|---|---|
 | `home-kitchen` | Home arrival, turn, resolution; I4 packing | small warm kitchen, half-packed suitcase, postcards on the table, teapot, window plants; country left unspecific | any national flag, product packaging |
 | `home-library-cafe` **(new, §16)** | I1 Teo's café | library corner, mismatched chairs, cake, tea urn, shelves as colour blocks | library or council logos, book titles |
-| `berlin-courtyard` (sample) | Berlin all scenes | inner courtyard of an older block, tall windows, bikes, bins, chestnut tree, parcel locker | locker branding unless the unmodified Trundle mark (§16), street signs, house numbers |
+| `berlin-courtyard` (sample) | Berlin all scenes | inner courtyard of an older block, tall windows, bikes, bins, chestnut tree, parcel locker | any locker branding or mark (§16.6), street signs, house numbers |
 | `amsterdam-canal` | Amsterdam arrival | narrow gabled houses, a small arched bridge, bikes, water | named boats, houseboat numbers, tram |
 | `amsterdam-guesthouse` | local problem, turn, resolution | small reception desk, key hooks, plants, steep stair | hotel or booking-site look |
 | `paris-studio` | Paris arrival (your studio flat) | small top-floor room, zinc-grey roofs through the window, chimney pots | famous skyline silhouettes |
-| `paris-workshop` | Ruchelune scenes | print-and-design cooperative: big table, paper stacks, a generic printing press, procedure card on the wall as a blank card | machine maker names; "Ruchelune" lettering until registered in `brands.yaml` |
+| `paris-workshop` | Ruchelune scenes | print-and-design cooperative: big table, paper stacks, a generic printing press, procedure card on the wall as a blank card | machine maker names; no lettering |
 | `madrid-kitchen` | Madrid all scenes | sunny 8 a.m. kitchen, balcony with geraniums, rooftops, tiled floor | football colours, bank leaflets |
 | `warsaw-flat` | Warsaw all scenes | flat with moving boxes (plain), cello case, lamp, big windows | courier logos on boxes, marketplace UI |
 | `rome-bnb` | Rome all scenes | small B&B courtyard, lemon tree, shutters, terracotta | ancient monuments, religious symbols |
 | `lisbon-street` | Lisbon arrival | steep tiled street with **original** geometric tile patterns, laundry, steps | trams or funiculars in livery, copies of historic tile designs |
 | `lisbon-kitchen` | Lisbon turn, resolution | family kitchen, pots, tiled wall in original pattern | product packaging |
 | `dublin-hall` | Dublin all scenes | community hall, folding chairs, tea table, blank noticeboard | parish, club or council emblems, flags |
-| `stockholm-courtyard` | Stockholm all scenes | snowy courtyard, warm-red and ochre facades, lit windows with plain candle arches, bikes under snow | e-ID or bank pictograms, flags |
-| `brussels-office` | Brussels arrival, turn | small office, boxes of Atlas covers (Waymarker mark only, unmodified), projector, plants | **never EU-styled: no blue-and-gold stars**, no institution buildings |
+| `stockholm-courtyard` | Stockholm all scenes | snowy courtyard, warm-red and ochre facades, lit windows with unadorned candle arches (a plain stepped row of lights, no religious symbol, star or figure), bikes under snow | e-ID or bank pictograms, flags |
+| `brussels-office` | Brussels arrival, turn | small office, plain boxes, no mark, projector, plants | **never EU-styled: no blue-and-gold stars**, no institution buildings |
 | `brussels-hall` | I3, Open Evening, resolution part 2 | hall with chairs, a plain video wall (portrait tiles), bunting in game colours | EU or national styling, sponsor boards |
 
 Interlude I2 (Noor and Adaeze) uses the video-call panel (§7.6) on a plain wall, no new backdrop.
@@ -267,7 +275,7 @@ Interlude I2 (Noor and Adaeze) uses the video-call panel (§7.6) on a plain wall
 └─────────────────────────────────────┘
 ```
 - The panel frame is CSS, not an SVG file (0 bytes, scales without distortion).
-- **Figures:** at most two per panel. The speaker stands in the left or right third, facing the centre (flip with `transform: scaleX(-1)`), height 80 % of the panel. A listener is optional, 85 % scale, behind and to the other side, `calm` or `warm` only, never more expressive than the speaker.
+- **Figures:** at most two per panel. The speaker stands in the left or right third, facing the centre (flip with `transform: scaleX(-1)`), height 80 % of the panel. A listener is optional, 85 % scale, behind and to the other side, `calm` or `warm` only, never more expressive than the speaker. When the speaker is `sheepish` or `worried`, the listener is `calm`, or `warm` only when the line is supportive.
 - **Props** (parcels, keys, suitcase, phone) are part of the backdrop or the character's pose; a held phone is drawn screen-away or showing a plain home grid, map or photo (STORY §4.2).
 - Panels without a speaker (captions, establishing shots) show the backdrop alone or with figures at `calm`.
 
@@ -299,6 +307,7 @@ Interlude I2 (Noor and Adaeze) uses the video-call panel (§7.6) on a plain wall
 - The postcard is a **CSS card** (`--letter-paper`, `--letter-ink`, `--font-letter`, 1 px ink border, `--shadow-1`) so its text can grow; the stamp and postmark come from `frames/postcard-stamp.svg` placed top-right and the text wraps around it. `sample-postcard-frame.svg` (§15) shows the look at the fixed 3:2 size used on the map and on `lg`.
 - **Front:** a 4:3 crop of the city backdrop with rounded corners and the stamp. **Back:** "Postcard to Teo:" and the If-then line, word for word (STORY §4.4).
 - **Flip state:** a "Turn over" button swaps faces. Full motion: a flat 2D squash (scaleX 1 → 0 → 1) over `--dur-slow`; reduced motion: instant swap. No 3D perspective spin.
+- **Score-neutral:** postcards, their stamps and invitation cards look the same whatever the score: no tier colour, seal, gold, count or "perfect" mark (STORY §1.3, §5.9).
 - Stamps are invented: a small city glyph (§8.2) on sky blue, no country name, no value, no postal service, no copy of a real stamp; postmark = circle plus wavy lines, no text.
 
 ### 7.6 Video-call panel
@@ -313,8 +322,8 @@ Scene header: "Berlin · Arrival" (h2), Help link (labelled "Need to talk? Where
 
 ### 8.1 Map
 - Inline SVG in the game layer (UI_SPEC §9.3), coloured by tokens so it follows the theme: land `--color-bg` paper tones, sea `--p-sea-100` (dark: `--p-sea-900d` sea, `--p-ink-850` land), coast line `--color-border-subtle`.
-- **Coastline drawn by hand, heavily simplified** (≤ 400 points for the whole map), from public-domain geographic data as a factual guide only (§16 asks the sceptic to confirm this is not "tracing" in the PLAN sense).
-- **Proposal: no internal borders at all** (one continuous land): cheaper, calmer, and it avoids border disputes; UI_SPEC §9.3 currently says dotted borders (§16).
+- **Coastline and borders drawn as code, heavily simplified** (≤ 400 points for the whole map), following a single neutral public-domain dataset: Natural Earth, Admin 0 countries at 1:110m scale, used as a factual guide only (accepted as not "tracing", §16.2). The dataset is named here and in the review, never as a URL in the SVG (§12.2).
+- **Dotted internal borders per UI_SPEC §9.3**, all in one style. No disputed-territory styling (no dashed claim lines, hatching or separate colours for any area), no capitals or capital markers.
 - No country names, no flags, no EU styling. City names and statuses are HTML labels; the accessible "Chapters" list stays the primary keyboard and screen-reader path.
 - Pins: stamps-in-waiting (UI_SPEC §9.3); locked = outline plus the word "Locked". Route: dotted path (800 ms; reduced motion instant).
 - Invitation postcards (STORY §1.4): HTML cards using the postcard style, one line from the local; **no badges, counts, "new" dots or countdowns.**
@@ -327,12 +336,12 @@ One 48 × 48 glyph per city in `map/glyphs/<city>.svg`, also used on stamps and 
 ## 9. Alt text (co-owned with `learning-psychologist` and `qa-playtester`)
 
 1. Every panel image has alt text from the scene YAML (`alt:`), stored in i18n like every line. Decorative layers (frame, halo, tail, dusk overlay, listener when the alt already names them) are `alt=""` or `aria-hidden`.
-2. **Shape:** who → how they look (the expression in plain words) → what they are doing or holding → where (first panel of a scene or when the place changes). One sentence, ≤ 150 characters. Example: "Jonas in the courtyard, grinning, holding two parcels."
+2. **Shape:** who → how they look (the expression in plain words) → what they are doing or holding → where (first panel of a scene or when the place changes). One sentence, ≤ 150 characters. Example: "Jonas in the courtyard, relieved, holding two parcels."
 3. **Do not repeat the line**, which is read next from the caption. Do not start with "Image of".
 4. **Never describe skin colour, body, ethnicity or age** unless a line depends on it (none do). Describe props and actions instead.
 5. Name video calls ("Giulia, on a video call, laughing with relief.").
 6. Describe screens truthfully and boringly ("Noor looks at her phone; the screen is turned away."). Alt text never contains a message, link, number, code, amount or brand that the art doesn't show.
-7. Expression words come from a fixed list per expression, so screen-reader users get the same emotional cue as sighted players: calm "calm", warm "smiling", laughing "laughing", thinking "thinking", worried "looking worried", relieved "relieved", sheepish "with a sheepish smile", proud "proud", focused "concentrating".
+7. Expression words come from a fixed list per expression, so screen-reader users get the same emotional cue as sighted players: calm "calm", warm "smiling", laughing "laughing", thinking "thinking", worried "looking worried", relieved "relieved", sheepish "with a sheepish smile", proud "proud", focused "concentrating". The fixed word must appear; a short qualifier may follow ("laughing with relief").
 8. Backdrop-only panels: place and mood, ≤ 80 characters ("A sunny kitchen at eight in the morning.").
 9. Postcard back: the text is real text; the stamp is decorative. Postcard front alt: "Postcard front: the Berlin courtyard."
 10. Map image: "Illustrated map of Europe with your route." Pins are not the only path (Chapters list).
@@ -353,6 +362,7 @@ Screen-reader structure (for S3): `<section aria-labelledby>` → `<ol>` of pane
 | Map travel path | dotted path, 800 ms (UI_SPEC §6.5) | instant |
 
 - No slide, zoom, pan, parallax, shake, idle loop, blink or breathing animation in art. No SMIL (`<animate>`) or CSS animation inside SVG files.
+- No flashes (WCAG 2.3.1); theme changes (light, dark dusk) swap instantly, never fade or flicker.
 - Panels never auto-advance; nothing in a scene is timed.
 - Nothing is understood through motion alone: every state the motion shows is also the static end state.
 
@@ -364,17 +374,18 @@ Measured on the file as shipped (no minifier dependency is added; files are writ
 
 | Asset | Max raw | Max gzip | Sample for scale |
 |---|---|---|---|
-| Recurring character (base + all expressions + poses) | 16 KB | 5 KB | Teo, 2 expressions: 4.6 KB / 1.5 KB |
-| Local character | 12 KB | 4 KB | — |
+| Recurring character (base + all expressions + poses, including both shared phone poses) | 16 KB | 5 KB | Teo, 2 expressions: 4.4 KB / 1.5 KB |
+| Local character (including both shared phone poses) | 12 KB | 4 KB | — |
 | Alex | 8 KB | 3 KB | — |
 | Backdrop | 24 KB | 8 KB | Berlin courtyard: 3.6 KB / 1.4 KB |
-| Postcard stamp, frames, props | 4 KB each | 1.5 KB each | postcard frame: 1.7 KB / 0.9 KB |
+| Postcard stamp, frames, props | 4 KB each | 1.5 KB each | postcard frame: 1.6 KB / 0.8 KB |
 | City glyph | 2 KB each | 1 KB each | — |
 | Map (base) | 48 KB | 16 KB | — |
 | **Per chapter** (its backdrops + its locals) | **72 KB** | **24 KB** | — |
 | **Shared** (recurring cast, Alex, frames, map, glyphs) | **160 KB** | **52 KB** | — |
 | **Whole story layer** | **800 KB** | **260 KB** | — |
 
+- Phone poses (§4.4): a hand plus a plain phone slab, about 10 elements and an estimated 0.8 KB raw / 0.3 KB gzip each, so both fit inside the 16 KB / 12 KB budgets and the 150-element cap with room for a full expression set. If a file would exceed its cap, drop a non-habit extra pose first, never a phone pose a STORY scene uses.
 - Art is never imported into JS bundles; it is fetched as static files, so the shell bundle guard (300 KB gzip) is unaffected.
 - The service worker precaches all art at install (offline play; the whole layer is ≤ 260 KB transferred). `rig/` and `samples/` are excluded from precache.
 - Rendering: ≤ 150 elements per character, ≤ 300 per backdrop; no filters, masks or blend modes in files; ≤ 2 `clipPath` per file; coordinates as integers or one decimal place.
@@ -399,25 +410,26 @@ public/art/
 
 ### 12.2 Header comment (every file, first line)
 ```
-<!-- Scam Atlas: Europe. <what it is>. Original artwork written primitive by primitive as SVG code for this project; no image generator, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<!-- Scam Atlas: Europe. <what it is>. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
 ```
-`redline:lint` scans comments, so comments never name a real organisation, not even to say "not modelled on X" (that note belongs in a review, not the file). No URLs except the SVG namespace.
+Everything except `<what it is>` is fixed text, word for word. `redline:lint` scans comments, so comments never name a real organisation, not even to say "not modelled on X" (that note belongs in a review, not the file). No URLs except the SVG namespace.
 
 ### 12.3 SVG rules
 - Root: `xmlns` plus `viewBox`; no fixed `width`/`height` (the layout sizes it). `role="img"` and a `<title>` for standalone viewing; in game the `<img alt>` wins.
-- Allowed elements: `svg g defs use path rect circle ellipse line polyline polygon style title linearGradient stop clipPath`. Forbidden: `script`, `foreignObject`, `image`, `animate*`, `set`, `filter`, `mask`, `a`, `iframe`, event attributes, external `href`, `data:` URIs, `@import`, web fonts.
-- **Lettering only as `<text>`, only registered fictional brand names, never converted to paths.** The linter blanks path geometry, so outlined text would escape it. No numbers that look like phone numbers, codes, prices, dates of real events, plates or IBANs; no QR codes or QR-like patterns, not even decorative ones.
-- Brand marks: only an unmodified copy of a `public/brands/<id>-mark.svg` drawing, scaled, never recoloured or redrawn.
+- Allowed elements: `svg g defs use path rect circle ellipse line polyline polygon style title linearGradient stop clipPath`. Forbidden: `script`, `foreignObject`, `image`, `text`, `animate*`, `set`, `filter`, `mask`, `a`, `iframe`, event attributes, external `href`, `data:` URIs, `@import`, web fonts, and any CSS or attribute `url()` other than `url(#local-id)` (in `<style>` blocks and in `fill`, `stroke`, `clip-path` and similar attributes; this matters when the SVG is inlined into the page).
+- **No lettering of any kind**, neither as `<text>` nor as paths (the linter blanks path geometry, so outlined text would escape it). No numbers that look like phone numbers, codes, prices, dates of real events, plates or IBANs; no QR codes or QR-like patterns, not even decorative ones.
+- **No brand marks** in `public/art/**`, fictional ones included (§16.6). Brand marks live in `public/brands/` as device-layer UI assets.
+- **Scope:** these rules govern `public/art/**` only. UI assets outside it, such as the passport stamp (UI_SPEC §9.2, with its static `feTurbulence` roughness) and the brand marks, follow UI_SPEC; they may reuse a city glyph from `map/glyphs/` but are not governed by §12.3.
 - Colours: only palette hex values (§3). Licence: CC BY-SA 4.0 (LICENSE-CONTENT.md); attribution "Scam Atlas: Europe contributors".
 
 ### 12.4 Provenance
-Every file is drawn as SVG code by `ux-artist` (or a human contributor) from the specs here. "No AI-generated images" (PLAN S2) is read as: no output of image-generation models (text-to-image, image-to-image, style transfer) and no auto-vectorised rasters. Hand-written vector code, element by element, is how the brand marks were made and is assumed allowed (§16 asks for confirmation). No rasters in `public/art/**`; if one is ever needed it goes in `public/assets-manifest.yaml` first.
+Every file is written as SVG code by `ux-artist` (or a human contributor) from the specs here. "No AI-generated images" (PLAN S2) means: no image-generation models (text-to-image, image-to-image, style transfer) or auto-vectorised rasters; SVG written element by element as code by the project's AI-assisted agent team is allowed (§16.1). The header comment discloses this (§12.2). No rasters in `public/art/**`; if one is ever needed it goes in `public/assets-manifest.yaml` first.
 
 ### 12.5 Proposed automated checks (for `frontend-engineer`, S3)
 1. **Art palette:** every colour in `public/art/**/*.svg` is in the `--art-*` list (same parser as `tests/unit/palette.test.ts`).
 2. **Art budget:** per-file, per-chapter and total caps in §11 (raw and gzip).
-3. **SVG safety:** forbidden elements and attributes in §12.3; `<text>` content must be a registered brand name.
-4. **Rig contract:** every `cast/<id>.svg` has `x-calm` last, and its `x-*` groups equal the expression table in §5 (or a registry field in `cast.yaml`); every scene `expression` exists in the speaker's file.
+3. **SVG safety:** forbidden elements and attributes in §12.3, including no `<text>`; every `url(` in a `<style>` block or attribute must be `url(#<local-id>)` pointing at an id in the same file.
+4. **Rig contract:** every `cast/<id>.svg` has `x-calm` last, and its `x-*` groups equal the expression table in §5 (or a registry field in `cast.yaml`), plus any `x-<listed expression>-phone-ear` / `-phone-look` groups (§4.4); every scene `expression` exists in the speaker's file.
 5. **Fragment rendering:** Playwright screenshot of one cast file with two fragments in Chromium, Firefox and WebKit.
 
 ---
@@ -439,7 +451,7 @@ Every file is drawn as SVG code by `ux-artist` (or a human contributor) from the
 - [ ] No flag, coat of arms, EU stars, sports-club colours or crest, political or religious symbol or poster, currency.
 - [ ] No famous single landmark; the city reads from generic architecture only.
 - [ ] Palette plus shape does not evoke a real bank, courier, telecom, marketplace or app (e.g. a vehicle or box in one company's colour pair).
-- [ ] Any brand is a registered fictional one, shown as the unmodified mark file; any lettering is a `<text>` of a registered name.
+- [ ] No brand mark (fictional ones included) and no lettering anywhere in the art (§16.6, §12.3).
 
 **B. Likeness**
 - [ ] Built from the rig and §4.6; no reference photo of a real person; no resemblance to a public figure (reviewer looks at it at full size and at 48 px).
@@ -447,7 +459,7 @@ Every file is drawn as SVG code by `ux-artist` (or a human contributor) from the
 - [ ] Alex: one image, rules in §4.7 (not romance- or wealth-coded, not more polished than others).
 
 **C. Provenance and licence**
-- [ ] Header comment present and clean (§12.2); no image generator, tracing, stock or external asset; no raster, font or external reference; CC BY-SA 4.0.
+- [ ] Header comment present, word for word per §12.2 including the AI-assisted authorship line; no image-generation model, auto-vectorised raster, tracing, stock or external asset; no raster, font or external reference; CC BY-SA 4.0.
 
 **D. Red Line 3, identifiers**
 - [ ] No phone-like numbers, codes, IBANs, amounts, plates, URLs, e-mail addresses or QR-like patterns anywhere in the art.
@@ -457,7 +469,7 @@ Every file is drawn as SVG code by `ux-artist` (or a human contributor) from the
 - [ ] No scammer drawn; no offline fraud scene (cash handover, ATM, doorstep stranger, courier collecting, street trick).
 
 **F. Emotional safety and learning (`learning-psychologist`)**
-- [ ] None of the fear imagery in §1.2.3; `worried` within §4.4; sensitive scenes end on relieved, warm or proud.
+- [ ] None of the fear imagery in §1.2.3; `worried` within §4.4. A sensitive scene never ends on `worried` or `sheepish`; its last panel shows the speaker able to act (any other expression).
 - [ ] The person who fell is drawn with the same dignity, size and light as everyone else; humour is on quirks, not on them.
 - [ ] The panel shows the habit or object the line is about; nothing competes with it; no meta-tells.
 
@@ -467,7 +479,7 @@ Every file is drawn as SVG code by `ux-artist` (or a human contributor) from the
 - [ ] Works at 320 px (head ≥ 56 px), in dark mode (dusk), forced colours and 200 % zoom; reduced motion shows the same end state.
 
 **H. Technical**
-- [ ] Size and element caps (§11); allowed elements only (§12.3); palette only; ids prefixed; `x-calm` last; `npm run redline:lint` clean.
+- [ ] Size and element caps (§11); allowed elements only, `url()` local only (§12.3); palette only; ids prefixed; `x-calm` last; `npm run redline:lint` clean.
 
 ---
 
@@ -475,18 +487,18 @@ Every file is drawn as SVG code by `ux-artist` (or a human contributor) from the
 
 | File | Shows | Size raw / gzip |
 |---|---|---|
-| `public/art/samples/sample-portrait-teo.svg` | The rig: halo, base, two expression groups (`x-thinking` with the `g-chin` gesture, `x-warm` as default). Open as is for `warm`, or with `#x-thinking`. In production the last group is `x-calm`. | 4.6 KB / 1.5 KB |
-| `public/art/samples/sample-backdrop-berlin-courtyard.svg` | A 16:9 backdrop: flat shapes, no outlines, quiet character zone, `<use>` for windows and bikes, an unbranded parcel locker, no lettering. | 3.6 KB / 1.4 KB |
-| `public/art/samples/sample-postcard-frame.svg` | Postcard back at the fixed 3:2 size: invented stamp, text-free postmark, message area left for HTML text. | 1.7 KB / 0.9 KB |
+| `public/art/samples/sample-portrait-teo.svg` | The rig: halo, base, two expression groups (`x-thinking` with the `g-chin` gesture, `x-warm` as default). Open as is for `warm`, or with `#x-thinking`. In production the last group is `x-calm`. | 4.4 KB / 1.5 KB |
+| `public/art/samples/sample-backdrop-berlin-courtyard.svg` | A 16:9 backdrop: flat shapes, no outlines, quiet character zone, `<use>` for windows and bikes, an unbranded parcel locker, no lettering; the only sun-orange accents (window boxes) sit under the top window row, outside the character zone. | 3.6 KB / 1.4 KB |
+| `public/art/samples/sample-postcard-frame.svg` | Postcard back at the fixed 3:2 size: invented stamp, text-free postmark, message area left for HTML text. | 1.6 KB / 0.8 KB |
 
-Checked in headless Chromium: the fragment switch works in `<img>`, the halo separates Teo from the courtyard in light mode and under the dusk overlay at 288 × 216 px, and the postcard holds the 15-word Berlin If-then line at 14 px. Longer lines and larger text sizes use the CSS card in §7.5, which grows with its text.
+Checked in headless Chromium: the fragment switch works in `<img>`, the halo separates Teo from the courtyard in light mode and under the dusk overlay at 288 × 216 px, and the postcard holds the 15-word Berlin If-then line at 14 px. Longer lines and larger text sizes use the CSS card in §7.5, which grows with its text. All three sample headers match §12.2 word for word (only `<what it is>` differs).
 
 ---
 
 ## 16. Open questions: producer answers (2026-11-19)
 
-1. **AI-generated images:** SVG written element by element as code by the agent team is allowed. The ban covers image-generation models and auto-vectorised rasters (§12.4).
-2. **Map coastline:** hand-simplifying from public-domain geographic data is acceptable. Keep the dotted internal borders from UI_SPEC §9.3; no UI_SPEC change.
+1. **AI-generated images:** No image-generation models or auto-vectorised rasters; SVG written element by element as code by the project's AI-assisted agent team is allowed (§12.4), and the §12.2 header discloses it.
+2. **Map coastline:** simplifying from public-domain geographic data is acceptable. Keep the dotted internal borders from UI_SPEC §9.3; no UI_SPEC change. Applied in §8.1 (one named dataset, no disputed-territory styling, no capitals).
 3. **Mateus `thinking`:** accepted.
 4. **`calm` as everyone's base face:** accepted.
 5. **Backdrop `home-library-cafe` for I1:** accepted; I2 uses the video-call panel.

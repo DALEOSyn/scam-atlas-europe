@@ -1,4 +1,4 @@
-<!-- Scam Atlas: Europe. Style sample for docs/ART_DIRECTION.md (character rig). Original artwork written primitive by primitive as SVG code for this project; no image generator, tracing, stock or reference photo. Fictional character, not a likeness of any real person. CC BY-SA 4.0. Expressions: open this file as-is for "warm", or with the fragment #x-thinking. -->
+<!-- Scam Atlas: Europe. Style sample for docs/ART_DIRECTION.md (character rig: Grandpa Teo; open as is for warm, or with the fragment #x-thinking). Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300" role="img" aria-labelledby="teo-t"><title id="teo-t">Grandpa Teo (sample portrait)</title>
 <style>.x{display:none}.x-default{display:inline}.x:target{display:inline}.x:target~.x-default{display:none}</style>
 <defs>
@@ -29,7 +29,6 @@
 <ellipse cx="101" cy="125" rx="7" ry="5.5" fill="#fffdf8" stroke-width="2"/><ellipse cx="139" cy="125" rx="7" ry="5.5" fill="#fffdf8" stroke-width="2"/>
 <circle cx="104" cy="122" r="3.2" fill="#2b2433" stroke="none"/><circle cx="142" cy="122" r="3.2" fill="#2b2433" stroke="none"/>
 <path d="M112 167L130 164" fill="none" stroke-width="3"/>
-<path d="M146 300L196 300C188 260 172 224 156 204C150 198 140 196 132 198Z" fill="#fffaf0" stroke="#fffaf0" stroke-width="8"/>
 <path d="M146 300L196 300C188 260 172 224 156 204C150 198 140 196 132 198Z" fill="#76966f" stroke-width="3"/>
 <path d="M108 192C108 180 118 176 128 178L142 184C148 190 146 200 138 202L118 202C112 202 108 198 108 192Z" fill="#b07548" stroke-width="3"/>
 <path d="M118 186L132 188M118 194L132 195" fill="none" stroke="#93603a" stroke-width="2"/>

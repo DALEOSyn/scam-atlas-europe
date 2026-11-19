@@ -202,7 +202,8 @@ outcomes:
     recovery:
       - { step: stop_paying, category: stop }
       - { step: tell_trusted_adult, category: stop }
-      - { step: call_bank_known_number, category: secure }
+      # T-3.13l: money already paid, so calling the bank at once on a known number is a first action (nl-veiligbankieren-meld-fraude).
+      - { step: call_bank_known_number, category: stop }
       - { step: report_to_police, category: report }
       - { step: pay_last_fee, category: harmful }
       - step: keep_quiet

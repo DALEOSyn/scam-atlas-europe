@@ -1,6 +1,8 @@
 # 6-8 "Davide", new number: lend me €60 for the gas bill (GDD §26.4 6-8; the family "new number" chat
-# callback). Fraud, difficulty 4, timer 45 s, pusher at 20 s (same chat), interrupt from Teo at 12 s
-# (genuine small talk). Levers helpfulness, urgency, affection. Davide is impersonated; never his fault.
+# callback). Fraud, difficulty 4, no timer and no pusher (T-3.13m: Rome's calm fraud scenario, so a missing
+# timer is never a tell; the pattern's tell is new number + money + no normal call, not a countdown), interrupt
+# from Teo at 12 s (genuine small talk). Levers helpfulness, urgency, affection: the message itself still says
+# the bill is due today. Davide is impersonated; never his fault.
 # Kettle new contact (CR-19), his copied profile photo, a bank-details card (CR-22: IBAN only, no name check
 # outside the bank app).
 # R 2: the sender (RM3: a number you don't have saved, claiming to be Davide, asking for money) and the
@@ -21,11 +23,8 @@ device: messenger
 brands: [kettle, larchwick]
 cast: [davide, teo]
 pressure:
-  timer: true
+  timer: false
   levers: [helpfulness, urgency, affection]
-  pusher:
-    messages:
-      - { at_seconds: 20, text: "Per favore, scade alle sei 😬", lang: it, translation: "Please, it's due at six 😬" }
 
 message:
   sender: { display: "Davide", detail: "Mobile number +39 3•• ••• ••08", new_contact: true }
@@ -180,7 +179,7 @@ debrief:
     what_works: "Call his saved number first."
   layer2:
     message_flags:
-      - "\"Please, it's due at six\": a deadline leaves no time for a call."
+      - "\"The gas bill is due today\": a deadline leaves no time for a call."
     notes: "A \"doesn't match\" warning means the account isn't in his name. Stop there and call his saved number."
   device_tip: "On a real phone, open your contacts and call the number you already have for the person, not the new one in the chat."
   habit_card: call-the-number-you-know

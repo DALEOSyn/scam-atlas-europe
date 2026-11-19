@@ -54,7 +54,8 @@ outcomes:
     narrative: "Teo puts you on speaker. \"Right, I've got a pen. What first?\""
     recovery:
       - { step: block_card_in_bank_app, category: stop }
-      - { step: call_bank_known_number, category: secure }
+      # T-3.13l: card typed on a prize page, so contacting the bank at once on a known number is a first action (es-incibe-prize-2021). Drill: consistency only.
+      - { step: call_bank_known_number, category: stop }
       - { step: refuse_codes_to_callers, category: secure }
       - { step: report_to_police_online, category: report }
       - { step: reply_ask_money_back, category: harmful }

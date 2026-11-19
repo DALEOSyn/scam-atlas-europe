@@ -112,8 +112,8 @@ describe('CR-50: genuine-expiry copy follows the stars (R26(2))', () => {
         checked.push(s.id);
       }
     }
-    // BALANCE_PASS §6: all 20 timed genuine scenarios.
-    expect(checked).toHaveLength(20);
+    // BALANCE_PASS §6: all 19 timed genuine scenarios (Rome 6-5 is calm since T-3.13m).
+    expect(checked).toHaveLength(19);
     expect(checked).toContain('madrid-06-real-code-for-you');
   });
 });

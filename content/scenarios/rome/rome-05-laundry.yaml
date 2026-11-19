@@ -1,5 +1,6 @@
 # 6-5 Bruna: "€8 for your laundry, as on the price list" (GDD §26.4 6-5). Genuine, high stakes (pay),
-# difficulty 4, timer 45 s with an honest deadline, interrupt from Davide at 15 s (genuine small talk).
+# difficulty 4, no timer and no pusher (T-3.13m: Rome's calm genuine scenario; the real deadline, "any time
+# before you leave", is days away and stays in the message), interrupt from Davide at 15 s (genuine small talk).
 # Pattern: the family "new number" chat callback (in focus, the callback's genuine neighbour). Checkables (G, 3):
 # sender (neutral on a money request, §22.8 ruling 1), the price list (reference, "It fits"), the request.
 # twin_of is NOT set: the spec pairs it with 6-8, but 6-8 exposes 6 opening checkables and this message 3,
@@ -18,9 +19,8 @@ device: messenger
 brands: [kettle, larchwick]
 cast: [bruna, davide]
 pressure:
-  timer: true
+  timer: false
   levers: []
-  honest_deadline: "Any time before you leave"
 
 message:
   sender: { display: "Bruna (B&B)", detail: "Saved contact: Bruna (B&B)" }

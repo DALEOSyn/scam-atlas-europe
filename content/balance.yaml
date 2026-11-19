@@ -75,9 +75,9 @@ points:
 # when the group has no dismiss option anywhere does genuine_high below apply (★, 5 points, every slot).
 # Low stakes score as the star table's timer_expiry class unless a dismiss option scores lower. Fraud is
 # unchanged. Never a tag bonus.
-# T-3.13 check (§6 of docs/BALANCE_PASS.md): all 20 timed genuine scenarios take their length from by_slot
-# (no non-boss scenario sets timer_seconds) and all have an honest_deadline. R21 gives 12 of the 13
-# high-stakes ones 0/0 (Home 0-3: ★/5 by grace) and the 7 low-stakes ones ★★/10; genuine_high below is now never reached in
+# T-3.13 check (§6 of docs/BALANCE_PASS.md): all 19 timed genuine scenarios (20 before T-3.13m made Rome
+# 6-5 calm) take their length from by_slot (no non-boss scenario sets timer_seconds) and all have an
+# honest_deadline. R21 gives 11 of the 12 high-stakes ones 0/0 (Home 0-3: ★/5 by grace) and the 7 low-stakes ones ★★/10; genuine_high below is now never reached in
 # shipped content (every timed genuine high has a dismiss option). Scores stay; only the copy changes where
 # the expiry scores 0 (no "Nothing is lost yet" next to no stars: CR-50, proposed R26).
 timer_expiry:

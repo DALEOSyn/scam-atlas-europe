@@ -9,6 +9,8 @@ import { yamlStructureIssues } from './yaml-safety.ts';
 import type { z } from 'zod';
 import { isAllowedSourceHost } from './source-hosts.ts';
 import { svgSafetyIssues } from './svg-safety.ts';
+import { artIssues, castListIssues } from './art.ts';
+import { castByChapter, loadScenes, sceneRules, sceneSetRules, sceneWarnings } from './scenes.ts';
 import { chapterRules, padlockRevealIssues, scenarioRules, unregisteredHostIssues, type Registries } from './rules.ts';
 import {
   balanceSchema,
@@ -27,6 +29,7 @@ import {
   type Chapter,
   type HabitCard,
   type Scenario,
+  type Scene,
   type Source,
 } from '../../src/content/schema.ts';
 
@@ -35,6 +38,8 @@ export interface ContentReport {
   warnings: string[];
   scenarios: Map<string, Scenario>;
   chapters?: Map<string, Chapter>;
+  /** Story scenes (S3), by id. */
+  scenes?: Map<string, Scene>;
 }
 
 export function listFiles(dir: string, exts: readonly string[]): string[] {
@@ -329,7 +334,7 @@ export interface ValidateOptions {
 }
 
 export function validateContent(contentDir: string, opts: ValidateOptions = {}): ContentReport {
-  const report: ContentReport = { errors: [], warnings: [], scenarios: new Map(), chapters: new Map() };
+  const report: ContentReport = { errors: [], warnings: [], scenarios: new Map(), chapters: new Map(), scenes: new Map() };
   validateI18n(contentDir, report);
   const brands = loadBrands(contentDir, report);
   const sources = loadSources(contentDir, report);
@@ -404,7 +409,38 @@ export function validateContent(contentDir: string, opts: ValidateOptions = {}):
   for (const s of all) {
     if (!chapters.has(s.chapter)) report.errors.push(`${fileOf.get(s.id) ?? s.id}: chapter "${s.chapter}" has no content/chapters/${s.chapter}.yaml`);
   }
+  validateScenes(contentDir, docsDir, report, { cast, chapters, flagsSet: reg.flagsSet, habitCards: new Set(habitCards.keys()) });
   return report;
+}
+
+/**
+ * Story scenes (S3) and the story-layer art. The engine runs with zero scenes; with none, only the art
+ * under public/art is checked (budget, file rules, rig contract).
+ */
+export function validateScenes(
+  contentDir: string,
+  docsDir: string,
+  report: ContentReport,
+  reg: { cast: Map<string, CastMember>; chapters: Map<string, { file: string; chapter: Chapter }>; flagsSet: ReadonlySet<string>; habitCards: ReadonlySet<string> },
+  publicDir = join(contentDir, '..', 'public'),
+): void {
+  const scenesDir = join(contentDir, 'scenes');
+  const scenes = loadScenes(scenesDir, listFiles(scenesDir, ['.yaml', '.yml']), readYaml, report);
+  const byCity = new Map([...reg.chapters.values()].map(({ chapter }) => [chapter.city, chapter]));
+  // "Home" is an ordinary word in a line; the travel cities are what an interlude must not name.
+  const cityNames = [...byCity.values()].filter((c) => c.city !== 'home').map((c) => c.name);
+  for (const { file, scene } of scenes.values()) {
+    report.scenes?.set(scene.id, scene);
+    for (const e of sceneRules(scene, { cast: reg.cast, chapters: byCity, flagsSet: reg.flagsSet, publicDir })) report.errors.push(`${file}: ${e}`);
+    for (const w of sceneWarnings(scene, cityNames)) report.warnings.push(`${file}: ${w}`);
+  }
+  const set = sceneSetRules(scenes, reg.chapters, reg.habitCards);
+  report.errors.push(...set.errors);
+  report.warnings.push(...set.warnings);
+  const art = artIssues(join(publicDir, 'art'), { docsDir, chapterLocals: castByChapter(scenes.values()) });
+  report.errors.push(...castListIssues(reg.cast.values()));
+  report.errors.push(...art.errors);
+  report.warnings.push(...art.warnings);
 }
 
 /**

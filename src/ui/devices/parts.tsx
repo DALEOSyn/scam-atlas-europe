@@ -3,7 +3,7 @@
  * the Translate toggle and the "Show more" rule. Generic chrome only (UI_SPEC §0.1): no real OS,
  * client or app shapes, no notch, no message tails.
  */
-import type { ComponentChildren } from 'preact';
+import type { ComponentChildren, JSX } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 import { assetUrl, brandForName, type BrandMark } from '../../content/brands.ts';
 import type { Message } from '../../content/schema.ts';
@@ -92,12 +92,41 @@ function InlineCheck({ seg }: { seg: Extract<Segment, { kind: 'check' }> }) {
   );
 }
 
+/** Punctuation that belongs to the text before it ("…highlighted sentence." / "…sentence, then"). */
+const TRAILING_PUNCT = /^[.,;:!?…)\]»”’"']+/u;
+
+/**
+ * Message text with its inline checkables. A checkable is a button (an atomic inline box), so the browser
+ * may break the line right after it and leave "." alone at the start of the next line (Amsterdam QA m:
+ * 2-1 ". Save it…", 2-2 ". Vacature"). Trailing punctuation is kept with the checkable in a no-wrap span;
+ * the checkable's own text still wraps.
+ */
 export function Segments({ segs }: { segs: Segment[] }) {
-  return (
-    <>
-      {segs.map((s, i) => (s.kind === 'check' ? <InlineCheck key={i} seg={s} /> : <RichText key={i} text={s.text} />))}
-    </>
-  );
+  const out: JSX.Element[] = [];
+  for (let i = 0; i < segs.length; i++) {
+    const s = segs[i];
+    if (!s) continue;
+    if (s.kind !== 'check') {
+      out.push(<RichText key={i} text={s.text} />);
+      continue;
+    }
+    const next = segs[i + 1];
+    const punct = next && next.kind !== 'check' ? TRAILING_PUNCT.exec(next.text)?.[0] : undefined;
+    if (!next || !punct) {
+      out.push(<InlineCheck key={i} seg={s} />);
+      continue;
+    }
+    out.push(
+      <span key={i} class={styles.keepPunct} data-keep-punct="">
+        <InlineCheck seg={s} />
+        {punct}
+      </span>,
+    );
+    const rest = next.text.slice(punct.length);
+    if (rest) out.push(<RichText key={`${i}r`} text={rest} />);
+    i++;
+  }
+  return <>{out}</>;
 }
 
 /** Leftover references / numbers that are not in the text: chips under it, still checkable. */

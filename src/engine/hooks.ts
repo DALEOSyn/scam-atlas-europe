@@ -84,7 +84,7 @@ export function useScenarioRunner(scenario: Scenario, ctx: RunnerContext, now: (
 }
 
 /** Persistent progress in localStorage (Red Line 7). Works without storage. */
-export function useSave(store?: SaveStore): [SaveState, (update: (s: SaveState) => SaveState) => void] {
+export function useSave(store?: SaveStore): [SaveState, (update: (s: SaveState) => SaveState) => void, () => SaveState] {
   const storeRef = useRef<SaveStore | null>(null);
   storeRef.current ??= store ?? createStore(browserStorage());
   const [save, setSave] = useState<SaveState>(() => (storeRef.current as SaveStore).load());
@@ -97,5 +97,7 @@ export function useSave(store?: SaveStore): [SaveState, (update: (s: SaveState) 
     storeRef.current?.save(next);
     setSave(next);
   }, []);
-  return [save, update];
+  // The latest save for handlers that run after an await or a story scene (never a stale render's copy).
+  const current = useCallback(() => latest.current, []);
+  return [save, update, current];
 }

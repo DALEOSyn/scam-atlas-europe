@@ -134,7 +134,7 @@ export function DebriefView({ data, onContinue, onAgain, onTellMeNow }: DebriefV
         {l1.nextTime ? <p>{nextTimeText(l1.nextTime, lookup)}</p> : null}
         {arc && l2.safeguardingLine ? <p>{l2.safeguardingLine}</p> : null}
         {l1.stars !== null ? <Stars n={l1.stars} /> : null}
-        {best ? <p class={styles.best}>{t('outcome_best')}</p> : null}
+        {best ? <p class={styles.best}>{t(l1.bestLine === 'acted' ? 'outcome_best_acted' : 'outcome_best')}</p> : null}
         {ac ? (
           <p>
             <button

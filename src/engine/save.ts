@@ -11,12 +11,13 @@
  *   the game keeps running in memory.
  *
  * Stored: settings, per-chapter progress and records, flags, arc state,
- * habit progress and which one-off callouts were shown. No personal data
+ * habit progress, which one-off callouts were shown, and the story layer (postcards, flips, scenes seen). No personal data
  * beyond the optional in-game nickname (GDD §2), which never leaves the device.
  */
 import { EMPTY_ARC, type ArcState } from './arc.ts';
 import type { ScenarioRecord, Stamp } from './chapter.ts';
 import type { HabitProgress } from './habits.ts';
+import { EMPTY_STORY, sanitiseStory, type StoryState } from './story.ts';
 import type { TimerMode } from './timer.ts';
 
 export const SAVE_KEY = 'scam-atlas-europe:save';
@@ -60,6 +61,8 @@ export interface SaveState {
   callouts: { pressureAny: boolean; pressureGenuine: boolean };
   /** Coach marks already shown in this game, e.g. `payee_check` (CR-23: first payee-name check). */
   coachMarks: string[];
+  /** Story layer (S3): postcards collected, flips, scenes seen. Content ids only; additive, no version bump. */
+  story: StoryState;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -81,6 +84,7 @@ export function freshSave(): SaveState {
     habits: {},
     callouts: { pressureAny: false, pressureGenuine: false },
     coachMarks: [],
+    story: { ...EMPTY_STORY, postcards: [], flips: [], seen: [] },
   };
 }
 
@@ -226,6 +230,7 @@ export function parseSave(raw: string | null): ParseResult {
     habits: sanitiseHabits(o.habits),
     callouts: { pressureAny: bool(callouts.pressureAny, false), pressureGenuine: bool(callouts.pressureGenuine, false) },
     coachMarks: strings(o.coachMarks, SNAKE),
+    story: sanitiseStory(o.story),
   };
   return { save, status: migrated ? 'migrated' : 'ok' };
 }

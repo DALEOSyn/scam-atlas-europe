@@ -1,0 +1,17 @@
+# Test fixture (S3), not game content.
+id: berlin-turn
+chapter: berlin
+slot: turn
+panels:
+  - backdrop: berlin-courtyard
+    speaker: jonas
+    expression: thinking
+    line: "Still no present. After my nap I will look in the app."
+    local: { text: "Gute Nacht.", lang: de, translation: "Good night." }
+    alt: "Jonas at his door, thinking, phone screen turned away."
+  - caption: "Later that afternoon."
+    alt: "The courtyard in warm afternoon light."
+    choice:
+      prompt: "A message rushes you. First move?"
+      options: ["Pause", "Check who sent it", "Ask someone"]
+      reply: "All three work. Pausing first makes the other two easier."

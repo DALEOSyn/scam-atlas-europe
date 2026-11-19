@@ -45,11 +45,15 @@ export type TimerEvent = 'escalated' | 'expired' | 'half' | 'ten_left';
  * Advance by dt seconds (callers skip this while frozen). Returns the events
  * crossed in this step; at most one expiry is processed per call.
  */
+/** Remaining time below this is zero: float steps (clock + remaining − clock) can leave ~1e-15 behind (Amsterdam QA g). */
+export const TIMER_EPSILON = 1e-6;
+
 export function tickTimer(b: TimerTable, t: TimerState, dt: number, mode: TimerMode): { timer: TimerState; events: TimerEvent[] } {
   if (t.expiries === 2 || dt <= 0) return { timer: t, events: [] };
   const events: TimerEvent[] = [];
   const before = t.remaining;
-  const after = Math.max(0, before - dt);
+  const raw = before - dt;
+  const after = raw < TIMER_EPSILON ? 0 : raw;
   if (before > t.length / 2 && after <= t.length / 2 && after > 0) events.push('half');
   if (before > 10 && after <= 10 && after > 0) {
     // One announcement when half time and "10 s left" fall in the same step (QA E5).

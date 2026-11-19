@@ -43,4 +43,9 @@ describe('runtime bundle has no Zod', () => {
     const total = entries.reduce((n, f) => n + gzipSync(readFileSync(resolve(ROOT, 'dist', f))).length, 0);
     expect(total).toBeLessThan(300 * 1024);
   });
+
+  it.runIf(built)('the service worker precaches no art review material (ART_DIRECTION §11: samples and rig)', () => {
+    const sw = readFileSync(resolve(ROOT, 'dist/sw.js'), 'utf8');
+    expect(sw).not.toMatch(/art\/(?:samples|rig)\//);
+  });
 });

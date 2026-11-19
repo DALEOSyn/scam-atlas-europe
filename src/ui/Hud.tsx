@@ -62,7 +62,15 @@ export function Hud({ view, progress, chip, timersOff, onPause, menu }: { view: 
         <span class={low ? `${styles.timer} ${styles.low}` : styles.timer} role="timer" aria-live="off" aria-label={t('timer_label')}>
           <Icon name={timer.frozen ? 'breath' : 'hourglass'} size={16} />
           <span>{low ? t('timer_value_low', { time: formatTime(timer.remaining) }) : formatTime(timer.remaining)}</span>
-          {timer.coachMark ? <span class={styles.frozenNote}>{t('coach_frozen')}</span> : timer.frozen ? <span class={styles.vh}> {t('timer_paused')}</span> : null}
+          {timer.coachMark ? (
+            // One HUD row at 320–375 px (review T-S3 item 5): "Paused" below 400 px, "Paused: tip open" above;
+            // the full sentence for screen readers.
+            <>
+              <span class={`${styles.frozenNote} ${styles.frozenWide}`} aria-hidden="true" data-frozen="wide">{t('coach_frozen_short')}</span>
+              <span class={`${styles.frozenNote} ${styles.frozenNarrow}`} aria-hidden="true" data-frozen="narrow">{t('coach_frozen_tiny')}</span>
+              <span class={styles.vh}> {t('coach_frozen')}</span>
+            </>
+          ) : timer.frozen ? <span class={styles.vh}> {t('timer_paused')}</span> : null}
           <span class={styles.bar} aria-hidden="true">
             <span style={{ width: `${Math.max(0, Math.min(100, (timer.remaining / Math.max(1, timer.length)) * 100))}%` }} />
           </span>

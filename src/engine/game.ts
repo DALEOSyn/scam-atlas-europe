@@ -13,6 +13,7 @@ import type { RunnerState } from './runner.ts';
 import type { ChapterProgress, SaveState } from './save.ts';
 import type { EngineBalance } from './scoring.ts';
 import { afterScenario } from './stress.ts';
+import { recordPostcard } from './story.ts';
 
 export function chapterProgress(save: SaveState, city: string): ChapterProgress {
   return save.chapters[city] ?? { finished: false, bestStamp: null, bestRating: 0, position: null, run: null };
@@ -108,5 +109,6 @@ export function finishChapter(save: SaveState, b: EngineBalance, chapter: Pick<C
     bestRating: Math.max(p.bestRating, summary.rating),
     run: null,
   };
-  return { save: { ...save, chapters: { ...save.chapters, [chapter.city]: next } }, summary };
+  // A postcard to Teo comes with finishing, never with a score (STORY §1.3).
+  return { save: { ...save, chapters: { ...save.chapters, [chapter.city]: next }, story: recordPostcard(save.story, chapter.city) }, summary };
 }

@@ -1,7 +1,7 @@
 /**
  * What the Vite content plugin (and the Vitest YAML plugin) emits for a
  * *.yaml import. Scenario files (content/scenarios/<chapter>/<file>.yaml) and
- * chapter files (content/chapters/<city>.yaml) are emitted as the schema's
+ * chapter files (content/chapters/<city>.yaml) and scene files (content/scenes/<folder>/<id>.yaml) are emitted as the schema's
  * parse output, so Zod defaults (beats: [], interrupts: [], callbacks: [], ...)
  * exist at runtime exactly as the types promise, without shipping Zod.
  *
@@ -10,7 +10,7 @@
  */
 import { isAbsolute, relative, resolve, sep } from 'node:path';
 import { parse } from 'yaml';
-import { brandsFileSchema, chapterSchema, scenarioSchema } from '../../src/content/schema.ts';
+import { brandsFileSchema, castFileSchema, chapterSchema, scenarioSchema, sceneSchema } from '../../src/content/schema.ts';
 
 /** True when `file` lies inside `dir` (any platform's separators). */
 export function isInside(dir: string, file: string): boolean {
@@ -26,7 +26,9 @@ export function yamlModuleData(file: string, code: string, scenariosDir: string,
   const raw: unknown = parse(code);
   if (isInside(scenariosDir, file)) return scenarioSchema.parse(raw);
   if (isInside(chaptersDir, file)) return chapterSchema.parse(raw);
+  if (isInside(resolve(scenariosDir, '..', 'scenes'), file)) return sceneSchema.parse(raw);
   if (resolve(file) === resolve(scenariosDir, '..', 'brands.yaml')) return brandProjection(raw);
+  if (resolve(file) === resolve(scenariosDir, '..', 'cast.yaml')) return castProjection(raw);
   return raw;
 }
 
@@ -41,6 +43,11 @@ export function brandProjection(raw: unknown): { id: string; name: string; short
     ...(b.short_name ? { short_name: b.short_name } : {}),
     ...(b.logo?.mark ? { mark: b.logo.mark.replace(/^public\//, '') } : {}),
   }));
+}
+
+/** Scenes need only who someone is (speaker label "Jonas · neighbour"); review notes stay out of the bundle. */
+export function castProjection(raw: unknown): { id: string; name: string; role: string; arc_character: boolean }[] {
+  return castFileSchema.parse(raw).cast.map((c) => ({ id: c.id, name: c.name, role: c.role, arc_character: c.arc_character }));
 }
 
 /** ES module source for a YAML import. */

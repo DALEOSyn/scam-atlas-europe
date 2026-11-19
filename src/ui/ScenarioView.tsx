@@ -195,26 +195,49 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
     if (open) announce.polite(2, t('translation_shown'));
   };
 
-  // ---- coach marks (CR-23): the timer is frozen while one is open; once shown it is recorded for the game.
+  // ---- coach marks (CR-23): the timer is frozen while one is open. A mark is recorded as seen for the game
+  // on "Got it", or when its second showing closes, whatever closes it [P] (review T-S3 item 15). The first
+  // showing leaves an `<id>_once` marker in the save; a mark closed by an action or a Check use is hidden for
+  // that beat only and comes back on the next payee check (engine review follow-up a).
   const [coachSeen, setCoachSeen] = useState<readonly string[]>(coachMarks);
   const coachSeenRef = useRef<readonly string[]>(coachMarks);
+  /** `<id>@<beat id>`: marks closed without "Got it", hidden on that beat only. */
+  const [coachHidden, setCoachHidden] = useState<readonly string[]>([]);
   /** The coach mark on screen, if any: any action or Check use closes it and lifts the freeze (sceptic T-3.3). */
   const coachOpen = useRef<string | null>(null);
+  /** The mark on screen is on its second (or later) showing: closing it records it as seen. */
+  const coachRepeat = useRef<string | null>(null);
   const onCoachMark = useCallback(
-    (id: string, open: boolean) => {
+    (id: string, open: boolean, gotIt = false) => {
       runner.freeze('coach_mark', open);
       coachOpen.current = open ? id : coachOpen.current === id ? null : coachOpen.current;
-      if (open || coachSeenRef.current.includes(id)) return;
-      coachSeenRef.current = [...coachSeenRef.current, id];
-      setCoachSeen(coachSeenRef.current);
-      onCoachMarkSeen?.(id);
+      const record = (key: string) => {
+        if (coachSeenRef.current.includes(key)) return;
+        coachSeenRef.current = [...coachSeenRef.current, key];
+        setCoachSeen(coachSeenRef.current);
+        onCoachMarkSeen?.(key);
+      };
+      if (open) {
+        if (coachSeenRef.current.includes(`${id}_once`)) coachRepeat.current = id;
+        else record(`${id}_once`);
+        return;
+      }
+      if (gotIt || coachRepeat.current === id) {
+        coachRepeat.current = null;
+        record(id);
+      }
     },
     [runner.freeze, onCoachMarkSeen],
   );
 
   const closeCoach = () => {
-    if (coachOpen.current) onCoachMark(coachOpen.current, false);
+    const id = coachOpen.current;
+    if (!id) return;
+    if (beat) setCoachHidden((x) => [...x, `${id}@${beat.id}`]);
+    onCoachMark(id, false);
   };
+  /** What the device treats as already shown: seen for the game, plus marks closed on this beat. */
+  const deviceCoachMarks = beat ? [...coachSeen, ...coachHidden.filter((k) => k.endsWith(`@${beat.id}`)).map((k) => k.slice(0, k.lastIndexOf('@')))] : coachSeen;
   const doAct = (id: string) => {
     closeCoach();
     runner.act(id);
@@ -354,13 +377,16 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
   // tray is out of view; it moves focus to the tray. Hidden on the desk (the rail is always in view).
   const [trayInView, setTrayInView] = useState(true);
   const showJumpRef = useRef(false);
+  // On a payee-check beat the options sit in the device, under the result (Amsterdam QA o): the bar
+  // watches the result paragraph there, so it hides once the player's options are in view.
+  const inDeviceOptions = !!beat && actionsInDevice(beat.device, beat.message);
   useEffect(() => {
-    const el = optionsRef.current;
+    const el = (inDeviceOptions && beat ? document.getElementById(nameCheckResultId(beat.id)) : null) ?? optionsRef.current;
     if (!el || typeof IntersectionObserver !== 'function') return undefined;
     const io = new IntersectionObserver((entries) => setTrayInView(entries.some((x) => x.isIntersecting)), { threshold: 0 });
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [inDeviceOptions, beat?.id, beat ? nameCheckReady[beat.id] : false]);
   // Scroll padding for the sticky HUD and the jump bar (UI_SPEC §1.3), measured: a focused element is
   // never hidden under them (WCAG 2.4.11).
   const hudRef = useRef<HTMLDivElement>(null);
@@ -382,12 +408,19 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
       root.style.scrollPaddingTop = '';
     };
   }, [view.phase === 'playing' || view.phase === 'what_now']);
+  // Scroll padding at the bottom = the jump bar's measured height + its gap (Amsterdam QA o: it covered
+  // the bank IBAN at 320 px and 720×450), so a focused or scrolled-to element is never under it.
+  const jumpRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     const root = typeof document !== 'undefined' ? document.documentElement : null;
     if (!root) return undefined;
-    root.style.scrollPaddingBottom = showJumpRef.current ? '72px' : '';
+    const bar = jumpRef.current;
+    const h = showJumpRef.current && bar ? Math.ceil(bar.getBoundingClientRect().height) + 16 : 0;
+    root.style.scrollPaddingBottom = h ? `${h}px` : '';
+    root.style.setProperty('--jump-h-live', `${h}px`);
     return () => {
       root.style.scrollPaddingBottom = '';
+      root.style.removeProperty('--jump-h-live');
     };
   });
   /**
@@ -538,7 +571,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                 onNameCheck={onNameCheck}
                 onTranslation={onTranslation}
                 alwaysTranslate={alwaysTranslate}
-                coachMarks={coachSeen}
+                coachMarks={deviceCoachMarks}
                 onCoachMark={onCoachMark}
                 call={call}
                 onAnswer={answer}
@@ -598,7 +631,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
             </aside>
           ) : null}
           {showJump ? (
-            <button type="button" class={styles.jump} onClick={jumpToOptions} data-jump="">
+            <button type="button" class={styles.jump} onClick={jumpToOptions} data-jump="" ref={jumpRef}>
               {t('jump_to_options')}
             </button>
           ) : null}

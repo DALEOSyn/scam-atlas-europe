@@ -106,6 +106,8 @@ export interface InterruptState {
   at: number;
   /** Arrives when this beat's call or message ends (ruling QA M6). */
   afterBeat?: string | undefined;
+  /** …and only after that beat's "What now?" choice (Amsterdam QA q). */
+  afterWhatNow?: boolean | undefined;
   /** The beat ended without "What now?": arrives at the next beat, or before the debrief. */
   due?: boolean | undefined;
   arrived: boolean;
@@ -274,7 +276,7 @@ export function startScenario(s: Scenario, ctx: RunnerContext): RunnerState {
     arrived: ['start'],
     groups: [newGroup(s, 'start')],
     pushers: startPushers(ctx.balance, pusherPlanOf(s), ctx.settings.pushers, stressState(ctx.balance, stress)),
-    interrupts: s.interrupts.map((i) => ({ id: i.id, at: i.at_seconds ?? Infinity, afterBeat: i.after_beat, arrived: false, actionId: undefined, outcome: undefined })),
+    interrupts: s.interrupts.map((i) => ({ id: i.id, at: i.at_seconds ?? Infinity, afterBeat: i.after_beat, afterWhatNow: i.after_what_now, arrived: false, actionId: undefined, outcome: undefined })),
     checks: [],
     tags: [],
     pause: { open: false, closesAt: 0, cooldownUntil: 0, uses: 0 },
@@ -388,7 +390,8 @@ function finish(ctx: RunnerContext, st: RunnerState): RunnerState {
 function enterDamageControlOrDone(s: Scenario, ctx: RunnerContext, st: RunnerState): RunnerState {
   if (s.role === 'arc') return finish(ctx, st);
   // Boss: damage control once at the end, with the steps of every beat that fell, merged in beat order
-  // and de-duplicated (QA L2). Others: the outcome reached.
+  // (the first fallen beat's steps first), de-duplicated (QA L2) and capped at RECOVERY_OPTIONS_MAX
+  // (follow-up f, GDD §9: 5–6 options). Others: the outcome reached.
   const truth = st.truth;
   const sources =
     s.role === 'boss'
@@ -417,10 +420,16 @@ export function coveredDecision(s: Scenario, groups: readonly GroupState[], g: G
   return { decision: { ...d, cls: 'verify' }, covered: true };
 }
 
-/** Merge damage-control steps: first appearance wins (order and category), no step twice. */
-export function mergeRecoveryOptions(lists: readonly (readonly RecoveryOption[])[]): RecoveryOption[] {
+/** Damage control offers at most this many steps (GDD §9: 5–6 options), also after a multi-fall boss. */
+export const RECOVERY_OPTIONS_MAX = 6;
+
+/**
+ * Merge damage-control steps: first appearance wins (order and category), no step twice, at most `max`
+ * (the first fallen beat's steps come first, so they are always kept).
+ */
+export function mergeRecoveryOptions(lists: readonly (readonly RecoveryOption[])[], max = RECOVERY_OPTIONS_MAX): RecoveryOption[] {
   const out: RecoveryOption[] = [];
-  for (const list of lists) for (const o of list) if (!out.some((x) => x.step === o.step)) out.push(o);
+  for (const list of lists) for (const o of list) if (out.length < max && !out.some((x) => x.step === o.step)) out.push(o);
   return out;
 }
 
@@ -443,9 +452,13 @@ function moveToBeat(s: Scenario, ctx: RunnerContext, st: RunnerState, g: GroupSt
   const firstVisit = !g.visited.includes(beatId);
   const g2: GroupState = { ...g, current: beatId, visited: firstVisit ? [...g.visited, beatId] : g.visited };
   const prev = storyBeat(s, g.current);
-  // A call beat runs on its own call length; other follow-ups keep the running timer.
+  // A call beat runs on its own call length. [P] Amsterdam QA p (2-7): when a call leads into a non-call
+  // beat, that beat starts a fresh slot-length timer (the call kept its own 30 s); further follow-ups keep
+  // the running timer.
   const verified = g.decision?.cls === 'verify';
-  let timer = !verified && beat.device === 'call' && prev?.device !== 'call' ? newTimer(s, ctx, 'call', false) : st.timer;
+  const intoCall = beat.device === 'call' && prev?.device !== 'call';
+  const outOfCall = beat.device !== 'call' && prev?.device === 'call';
+  let timer = !verified && (intoCall || (outOfCall && st.timer)) ? newTimer(s, ctx, beat.device, false) : st.timer;
   // CR-18(e): in a boss, the beat timer carries over to the banking card, with a floor of the boss-beat
   // length (40 s, scaled by the timer mode), so the card always gets time to read the name check.
   if (via === 'start_transfer' && s.role === 'boss' && timer && timer.expiries < 2) timer = transferFloor(ctx, timer);
@@ -543,7 +556,9 @@ function advanceClock(s: Scenario, ctx: RunnerContext, st: RunnerState, dt: numb
     if (next.phase === 'done' || next.phase === 'damage_control') return next;
     const timerAt = next.timer && next.phase === 'playing' && next.timer.expiries < 2 ? next.clock + next.timer.remaining : Infinity;
     const at = Math.min(nextEventAt(next), timerAt, end);
-    const step = Math.max(0, at - next.clock);
+    // When the timer is what we step to, step by its exact remaining time: (clock + remaining) − clock can
+    // round to a hair less and leave the timer stuck a few 1e-15 s short of expiry (Amsterdam QA g).
+    const step = at === timerAt && next.timer ? next.timer.remaining : Math.max(0, at - next.clock);
     if (next.timer && next.phase === 'playing') {
       const r = tickTimer(ctx.balance, next.timer, step, ctx.settings.timerMode);
       next = { ...next, clock: at, timer: r.timer };
@@ -629,7 +644,8 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
         // GDD §6: hanging up is not terminal; "What now?" with the dialler open.
         // The call is over: its follow-ups stop with it (QA M2); its after_beat interrupts arrive now (ruling QA M6).
         let ended: RunnerState = { ...withGroup(next, { ...g2, pendingOutcome: action.outcome }), phase: 'what_now', timer: null, pushers: stopPushers(next.pushers) };
-        for (const i of ended.interrupts) if (i.afterBeat !== undefined && !i.arrived && g2.visited.includes(i.afterBeat)) ended = arriveInterrupt(ctx, ended, i.id);
+        // An interrupt marked after_what_now waits for the choice (Amsterdam QA q); resolveGroup marks it due.
+        for (const i of ended.interrupts) if (i.afterBeat !== undefined && !i.afterWhatNow && !i.arrived && g2.visited.includes(i.afterBeat)) ended = arriveInterrupt(ctx, ended, i.id);
         return ended;
       } else if (isSetupStep(beat, action, cls, st.truth)) {
         // GDD §6 / §16 ruling 2: proceeding from a setup beat (an opener that asks nothing) is not the
@@ -799,6 +815,25 @@ export interface CheckableView {
   tagged: boolean;
 }
 
+/** A beat that speaks with a sender of its own (not a page and not the banking app). */
+function hasSender(b: { device: Device; message: Message }): boolean {
+  return b.device !== 'banking' && !!b.message.sender;
+}
+
+/**
+ * Follow-up c: the beat a page-bound follow-up speaks for. Walks the group's visited beats backwards from
+ * `beatId` (the bound page) and returns the latest one with a sender; undefined when there is none.
+ */
+export function senderBeatBefore(s: Scenario, g: Pick<GroupState, 'visited'>, beatId: string): ReturnType<typeof storyBeat> {
+  const at = g.visited.lastIndexOf(beatId);
+  const before = at < 0 ? g.visited : g.visited.slice(0, at);
+  for (let i = before.length - 1; i >= 0; i--) {
+    const b = storyBeat(s, before[i] ?? '');
+    if (b && hasSender(b)) return b;
+  }
+  return undefined;
+}
+
 export interface PusherMessageView {
   /** Index in the authored list (stable key). */
   index: number;
@@ -922,8 +957,9 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
           const owner = plan[f.index]?.beat;
           const bound = ownsPusher(g, owner) && owner !== undefined ? storyBeat(s, owner) : undefined;
           // A follow-up bound to a banking beat or a page (CR-21) still comes from the person who sent the
-          // message: channel and sender of the group's scheduled beat (sceptic T-3.3).
-          const ob = bound && (bound.device === 'banking' || !bound.message.sender) ? storyBeat(s, g.beatId) : bound;
+          // message: channel and sender of the most recently visited beat of the group that has a sender
+          // (engine review follow-up c), else the group's scheduled beat (sceptic T-3.3).
+          const ob = bound && !hasSender(bound) ? (senderBeatBefore(s, g, bound.id) ?? storyBeat(s, g.beatId)) : bound;
           return m && ob ? [{ index: f.index, text: m.text, at: f.at, lang: m.lang, translation: m.translation, beatId: ob.id, device: ob.device, sender: ob.message.sender?.display ?? '' }] : [];
         })
       : [],

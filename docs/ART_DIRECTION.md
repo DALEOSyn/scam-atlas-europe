@@ -488,7 +488,7 @@ Every file is written as SVG code by `ux-artist` (or a human contributor) from t
 | File | Shows | Size raw / gzip |
 |---|---|---|
 | `public/art/samples/sample-portrait-teo.svg` | The rig: halo, base, two expression groups (`x-thinking` with the `g-chin` gesture, `x-warm` as default). Open as is for `warm`, or with `#x-thinking`. In production the last group is `x-calm`. | 4.4 KB / 1.5 KB |
-| `public/art/samples/sample-backdrop-berlin-courtyard.svg` | A 16:9 backdrop: flat shapes, no outlines, quiet character zone, `<use>` for windows and bikes, an unbranded parcel locker, no lettering; the only sun-orange accents (window boxes) sit under the top window row, outside the character zone. | 3.6 KB / 1.4 KB |
+| `public/art/samples/sample-backdrop-berlin-courtyard.svg` | A 16:9 backdrop: flat shapes, no outlines, quiet character zone, `<use>` for windows and bikes, an unbranded parcel locker, no lettering; the only sun-orange accent (window box) sit under the top window row, outside the character zone. | 3.6 KB / 1.4 KB |
 | `public/art/samples/sample-postcard-frame.svg` | Postcard back at the fixed 3:2 size: invented stamp, text-free postmark, message area left for HTML text. | 1.6 KB / 0.8 KB |
 
 Checked in headless Chromium: the fragment switch works in `<img>`, the halo separates Teo from the courtyard in light mode and under the dusk overlay at 288 × 216 px, and the postcard holds the 15-word Berlin If-then line at 14 px. Longer lines and larger text sizes use the CSS card in §7.5, which grows with its text. All three sample headers match §12.2 word for word (only `<what it is>` differs).

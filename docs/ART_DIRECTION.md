@@ -210,7 +210,7 @@ Device-layer pictures (profile pictures of non-cast personas, the "fictional cel
 | Bruna | calm, warm, thinking, proud, **+ worried** (Rome turn: "Giulia calls every Sunday. I still worry every Monday.", GDD §26.2) | — |
 | Davide | calm, sheepish, worried, relieved, **+ laughing** (Rome arrival, GDD §26.2) | `x-calm-phone-ear` (shared pose: Rome If-then, calling the known number) |
 | Giulia | calm, laughing, relieved | `x-laughing-wave` (video) |
-| Beatriz | calm, laughing, worried, thinking, relieved | — |
+| Beatriz | calm, laughing, worried, thinking, relieved | `x-calm-phone-look` (shared pose: Lisbon If-then, staying in the app she opened herself) |
 | Declan | calm, worried, thinking, sheepish, laughing, **+ proud** (+, `game-designer` to confirm) | `x-calm-phone-look` (shared pose: Dublin If-then, looking the firm up on the register himself) |
 | Róisín | calm, worried, warm, proud | — |
 | Jamal | calm, thinking, worried, proud | `x-calm-phone-ear` (shared pose: Stockholm If-then, calling the bank on its own number) |

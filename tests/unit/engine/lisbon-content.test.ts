@@ -1,6 +1,6 @@
 /**
- * Lisbon (T-3.9): the authored chapter played through the runner, so the GDD §27.7 strategy check (CR-37
- * fallback: R 13, max 168), the genuine twins, the boss and the QR routes hold for the real YAML.
+ * Lisbon (T-3.9, T-3.9f): the authored chapter played through the runner, so the GDD §27.7 strategy check
+ * (with CR-37: R 14, max 170), the genuine twins, the boss and the QR routes hold for the real YAML.
  */
 import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -58,7 +58,7 @@ function rec(id: string, events: RunnerEvent[]): ScenarioRecord {
 /** Row 1 (ideal) per scored scenario; other rows swap single entries. */
 const ideal: Record<string, RunnerEvent[]> = {
   'lisbon-01-graca-studio': [act('pay_in_roostwell')],
-  'lisbon-02-meter-sticker': [...tagAll('start', 'qr.destination'), act('open_zonelet_sticker')],
+  'lisbon-02-meter-sticker': [...tagAll('start', 'qr.destination', 'qr.mount'), act('open_zonelet_sticker')],
   'lisbon-03-alfama-ad': [...tagAll('start', 'link', 'claim'), act('search_roostwell_ad')],
   'lisbon-05-printed-meter': [act('scan_printed')],
   'lisbon-06-host-partner-page': [...tagAll('start', 'link', 'request'), act('check_listing_app')],
@@ -80,21 +80,21 @@ const summary = (over: Record<string, RunnerEvent[]>) => {
   return summarise(B, chapter, rs, true);
 };
 
-describe('Lisbon: chapter totals (GDD §27.7, CR-37 fallback)', () => {
+describe('Lisbon: chapter totals (GDD §27.7, with CR-37)', () => {
   const scored = () => [...all.values()].filter((s) => s.role === 'standard' || s.role === 'boss');
 
-  it('8 scored (3 genuine), R = 13, max 168, boss 51', () => {
+  it('8 scored (3 genuine), R = 14, max 170, boss 51', () => {
     expect(scored()).toHaveLength(8);
     expect(scored().filter((s) => !s.is_fraud)).toHaveLength(3);
-    expect(scored().reduce((n, s) => n + redFlagCount(s), 0)).toBe(13);
-    expect(scored().reduce((n, s) => n + maxPointsOfScenario(B, s), 0)).toBe(168);
+    expect(scored().reduce((n, s) => n + redFlagCount(s), 0)).toBe(14);
+    expect(scored().reduce((n, s) => n + maxPointsOfScenario(B, s), 0)).toBe(170);
     expect(maxPointsOfScenario(B, get(BOSS))).toBe(51);
   });
 
   it('per-scenario R and max points match the strategy table', () => {
     const expected: Record<string, [number, number]> = {
       'lisbon-01-graca-studio': [0, 15],
-      'lisbon-02-meter-sticker': [1, 17],
+      'lisbon-02-meter-sticker': [2, 19],
       'lisbon-03-alfama-ad': [2, 19],
       'lisbon-05-printed-meter': [0, 15],
       'lisbon-06-host-partner-page': [2, 19],
@@ -122,11 +122,11 @@ describe('Lisbon: chapter totals (GDD §27.7, CR-37 fallback)', () => {
 });
 
 describe('Lisbon strategy rows (GDD §27.7)', () => {
-  it('row 1 ideal: 168 points, 13 spotted, gold', () => {
+  it('row 1 ideal: 170 points, 14 spotted, gold', () => {
     const r = summary({});
-    expect(r.points).toBe(168);
-    expect(r.spotted).toBe(13);
-    expect(r.redFlags).toBe(13);
+    expect(r.points).toBe(170);
+    expect(r.spotted).toBe(14);
+    expect(r.redFlags).toBe(14);
     expect(r.stamp).toBe('gold');
   });
 
@@ -134,7 +134,7 @@ describe('Lisbon strategy rows (GDD §27.7)', () => {
     const r = play(get('lisbon-01-graca-studio'), T(), [act('ask_host_transfer')]).r;
     expect(r.stars).toBe(1);
     expect(r.points).toBe(5);
-    expect(summary({ 'lisbon-01-graca-studio': [act('ask_host_transfer')] }).points).toBe(158);
+    expect(summary({ 'lisbon-01-graca-studio': [act('ask_host_transfer')] }).points).toBe(160);
     expect(summary({ 'lisbon-01-graca-studio': [act('ask_host_transfer')] }).stamp).toBe('gold');
   });
 
@@ -143,18 +143,21 @@ describe('Lisbon strategy rows (GDD §27.7)', () => {
     const fell = play(s, c(), [act('open_partner_page'), act('pay_securepay')]);
     expect(fell.st.phase).toBe('damage_control');
     expect(fell.st.recovery?.options).toHaveLength(6);
-    expect(summary({ 'lisbon-06-host-partner-page': [act('open_partner_page'), act('pay_securepay')] }).stamp).toBe('gold');
+    const r11 = summary({ 'lisbon-06-host-partner-page': [act('open_partner_page'), act('pay_securepay')] });
+    expect(r11.points).toBe(160);
+    expect(r11.spotted).toBe(12);
+    expect(r11.stamp).toBe('gold');
   });
 
-  it('row 12: falling for both QR codes (7-2, 7-7): 152 of 168 (90.5%) with the CR-37 fallback', () => {
+  it('row 12: falling for both QR codes (7-2, 7-7): 152 of 170 (89.4%), 11 spotted, silver', () => {
     const r = summary({
       'lisbon-02-meter-sticker': [act('scan_sticker'), act('pay_meter_page')],
       'lisbon-07-parking-slip': [act('scan_slip'), act('pay_slip')],
     });
     expect(r.points).toBe(152);
-    // GDD §27.7 has silver at 152 of 170 (89.4%); without qr.mount the maximum is 168, so the row
-    // rounds up to gold. Recorded for the balancing pass (R15); flip back to 'silver' when CR-37 lands.
-    expect(r.stamp).toBe('gold');
+    expect(r.redFlags).toBe(14);
+    expect(r.spotted).toBe(11);
+    expect(r.stamp).toBe('silver');
   });
 
   it('row 6b: always tag the link or QR destination + always verify nets 4, one short of silver (bronze)', () => {

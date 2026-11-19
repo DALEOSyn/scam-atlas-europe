@@ -1,8 +1,8 @@
 # 7-5 A meter's own printed code (GDD §27.4; genuine twin of 7-2 and 7-7, pattern qr-sticker-parking).
 # Genuine, low stakes, difficulty 4, honest timer 40 s with the honest deadline "Maximum stay 2 hours";
 # interrupt (Mateus) at 15 s. Its destination is zonelet.example (LS2 "It fits").
-# CR-37 (the QR mount field) is not built: "printed" is in the camera caption only (never a checkable, never proof).
-# Checkables (G, 2): QR destination (It fits), reference (zone and price, neutral).
+# CR-37: the code is printed on the panel (mount: printed); its mount checkable is neutral, never "It fits" (LS2).
+# Checkables (G, 3): QR destination (It fits), QR mount (neutral), reference (zone and price, neutral).
 id: lisbon-05-printed-meter
 chapter: lisbon
 role: standard
@@ -37,6 +37,10 @@ inspectables:
     red_flag: false
     type: qr
     reassures: true
+  - target: qr.mount
+    reveal: "Printed on the meter's panel. A sticker can be printed to look the same, so it can't prove anything either way. Check where it goes."
+    red_flag: false
+    type: qr_mount
   - target: reference
     reveal: "The zone and price on the meter. A sticker could copy them, so they can't prove anything either way. Check where the code goes."
     red_flag: false

@@ -2,8 +2,8 @@
 # Fraud, difficulty 5, no timer (calm on purpose). Levers fear (surcharge), authority. The slip is only the
 # carrier of the QR code (Red Line 8); the lesson is the destination. Look-alike zonelet-multas.example.
 # Real details mixed in (LS5): the car's plate (masked), the zone and a time.
-# CR-37 (the QR mount field) is not built: "printed" is in the caption only.
-# Checkables (4; R 1): letterhead D, reference D (LS5), QR destination R, claim D.
+# CR-37: the code is printed on the slip (mount: printed); its mount checkable uses the engine's neutral text (GDD gives none).
+# Checkables (5; R 1): letterhead D, reference D (LS5), QR destination R, QR mount D (neutral), claim D.
 # slip_page: a read-only training page (Red Line 2). Not in R.
 id: lisbon-07-parking-slip
 chapter: lisbon

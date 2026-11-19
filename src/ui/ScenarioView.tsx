@@ -28,7 +28,7 @@ import { Icon } from './Icon.tsx';
 import { deadlineText, WHAT_NOW_KEYS } from './labels.ts';
 import { RichText } from './RichText.tsx';
 import { SettingsPanel } from './Settings.tsx';
-import { readingHoldSeconds, unrevealedTargets, words } from './text.ts';
+import { linePace, readingHoldSeconds, unrevealedTargets } from './text.ts';
 import styles from './ScenarioView.module.css';
 
 export interface ScenarioViewProps {
@@ -63,10 +63,8 @@ function useDesk(): boolean {
   return desk;
 }
 
-/** Reading pace for call lines (UI_SPEC §3.4): max(1.5 s, 0.3 s × words). */
-export function linePace(text: string): number {
-  return Math.max(1.5, 0.3 * words(text));
-}
+/** Reading pace for call lines (UI_SPEC §3.4); lives in text.ts so the announcer queue can use it too. */
+export { linePace };
 
 /**
  * What a log entry says in the polite live region (UI_SPEC §10.5). `onCallBeat`: the banking beat under the

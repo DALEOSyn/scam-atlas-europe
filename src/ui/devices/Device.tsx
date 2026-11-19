@@ -435,7 +435,8 @@ function Market(p: DeviceProps) {
         {m.earlier?.length ? <Earlier items={m.earlier} onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} /> : null}
         <p class={styles.daySep}>{t('chat_today')}</p>
         {notice ? (
-          <article class={styles.notice} data-notice="" lang={m.lang}>
+          // The app's own header ("Swaploft · Notice") is UI text in English; only the notice body has the message's lang.
+          <article class={styles.notice} data-notice="">
             <p class={styles.noticeFrom}>
               {app?.mark ? <img class={styles.brandMark} src={assetUrl(app.mark)} alt="" width={24} height={24} /> : null}
               <Checkable target="sender.detail">
@@ -443,8 +444,10 @@ function Market(p: DeviceProps) {
               </Checkable>
               <span class={styles.muted}>{t('market_notice')}</span>
             </p>
-            <MessageBody message={m} />
-            <Chips items={segs.leftover} />
+            <div lang={m.lang}>
+              <MessageBody message={m} />
+              <Chips items={segs.leftover} />
+            </div>
           </article>
         ) : (
           <>

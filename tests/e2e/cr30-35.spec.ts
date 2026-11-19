@@ -181,6 +181,9 @@ for (const width of [320, 1280]) {
     await expect(listing).toContainText('Rucksack');
     await expect(listing).toContainText('€35.00');
     await expect(page.locator('[data-notice]')).toContainText('Swaploft');
+    // The app's header stays English UI text; only the notice body carries lang="pl" (QA r2 nit).
+    await expect(page.locator('[data-notice] > [lang="pl"]')).toContainText('Sprzedane!');
+    expect(await page.locator('[data-notice] [lang] [data-check="sender.detail"]').count()).toBe(0);
     await minTarget(page, '[data-listing] [data-check="reference"]');
     await minTarget(page, '[data-action]');
     await punctuationStays(page, '[data-notice]');

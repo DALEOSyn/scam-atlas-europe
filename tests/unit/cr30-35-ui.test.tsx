@@ -1,10 +1,14 @@
 // @vitest-environment jsdom
 /** CR-30 … CR-35 on screen: the on-call bar's caller lines in the live region (QA-2, WCAG 4.1.3). */
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { act as flush, cleanup, render } from '@testing-library/preact';
+import { useContext } from 'preact/hooks';
 import { join, resolve } from 'node:path';
 import { readYaml } from '../../scripts/lib/content.ts';
 import { scenarioSchema, type Scenario } from '../../src/content/schema.ts';
+import { AnnounceContext, AnnouncerProvider, type AnnounceApi } from '../../src/ui/Announcer.tsx';
 import { EMPTY_QUEUE, enqueue, nextAnnouncement } from '../../src/ui/announcer.ts';
+import { linePace } from '../../src/ui/text.ts';
 import { logAnnouncement } from '../../src/ui/ScenarioView.tsx';
 import { ROOT } from '../content/fixtures.ts';
 
@@ -35,5 +39,55 @@ describe('QA-2: caller lines under the on-call bar are call transcript lines', (
       q = next.queue;
     }
     expect(said).toEqual(['Caller: Type the name exactly: Larchwick Reserva.', "Caller: It'll say the name doesn't match. That's normal for our reserve. Just confirm."]);
+  });
+});
+
+describe('QA r2: a caller line holds the polite region for its reading pace', () => {
+  afterEach(() => {
+    cleanup();
+    vi.useRealTimers();
+  });
+  const CALLER = 'Caller: Type the name exactly: Larchwick Reserva.';
+  it('queue: a category 3–5 item waits until linePace after a category 1–2 text', () => {
+    let q = enqueue(enqueue(EMPTY_QUEUE, 1, CALLER), 4, 'Stress: Tense');
+    const first = nextAnnouncement(q, 100, 15);
+    expect(first.say).toBe(CALLER);
+    q = first.queue;
+    expect(nextAnnouncement(q, 100 + linePace(CALLER) - 0.1, 15).say).toBeNull();
+    expect(nextAnnouncement(q, 100 + linePace(CALLER), 15).say).toBe('Stress: Tense');
+  });
+  it('provider: a category-1 line and a category-4 item in the same tick are both said, in order, the second ≥ linePace later', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'performance'] });
+    let api: AnnounceApi | null = null;
+    const Grab = () => {
+      api = useContext(AnnounceContext);
+      return null;
+    };
+    render(
+      <AnnouncerProvider minInterval={0}>
+        <Grab />
+      </AnnouncerProvider>,
+    );
+    const said: { text: string; at: number }[] = [];
+    const region = document.getElementById('announcer-polite');
+    const sample = () => {
+      const text = (region?.textContent ?? '').trim();
+      if (text && said[said.length - 1]?.text !== text) said.push({ text, at: performance.now() });
+    };
+    await flush(() => {
+      const a = api as unknown as AnnounceApi;
+      a.polite(1, CALLER, undefined, 'call-line-0');
+      a.polite(4, 'Stress: Tense');
+    });
+    for (let ms = 0; ms < 6000; ms += 10) {
+      await flush(() => {
+        vi.advanceTimersByTime(10);
+      });
+      sample();
+    }
+    expect(said.map((x) => x.text)).toEqual([CALLER, 'Stress: Tense']);
+    const [one, two] = said;
+    if (!one || !two) throw new Error('not said');
+    expect(two.at - one.at).toBeGreaterThanOrEqual(linePace(CALLER) * 1000);
   });
 });

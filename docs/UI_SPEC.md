@@ -506,7 +506,7 @@ Skip link → HUD (Pause, menu; timer and meter are not focusable but are read i
   3. timer thresholds (half time, 10 s),
   4. stress state change,
   5. new-message / pusher summary.
-- **Minimum 15 s between announcements of categories 3–5** (balance `sr_announce_min_interval_seconds`). Categories 1–2 are immediate (they are caused by or needed for the player's current action).
+- **Minimum 15 s between announcements of categories 3–5** (balance `sr_announce_min_interval_seconds`). Categories 1–2 are immediate (they are caused by or needed for the player's current action). A category 1–2 text then holds the single polite region for its reading pace (`linePace`, max(1.5 s, 0.3 s × words)): a category 3–5 item waits in the queue until then and never replaces it before it is spoken (QA CR-30…35 round 2).
 - **Coalescing**: messages arriving inside the interval merge into one: "2 more messages from unknown sender". The latest text is always readable in the thread.
 - With Pushy follow-ups **off**, no pusher messages are generated at all.
 

@@ -167,3 +167,45 @@ test('CR-28 (Paris QA r3): Shift+Tab to a bank checkable at 720×450 leaves it f
   }
   expect(found).toBe(true);
 });
+
+/** CR-48b: "How stamps work" on the chapter intro, before play: keyboard, axe, no sideways scroll (320 px, 200% zoom). */
+for (const size of [
+  { width: 320, height: 568, label: '320×568' },
+  { width: 640, height: 400, label: '200% zoom (1280×800 at 2×)' },
+]) {
+  test(`CR-48b: How stamps work on the Berlin intro at ${size.label} opens by keyboard (axe clean)`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'reduce' });
+    await page.setViewportSize({ width: size.width, height: size.height });
+    await page.addInitScript((s) => {
+      if (!localStorage.getItem('scam-atlas-europe:save')) localStorage.setItem('scam-atlas-europe:save', JSON.stringify(s));
+    }, seed({ home: { ...done, position: 0 } }));
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Chapters' }).click();
+    await page.getByRole('button', { name: 'Play Berlin' }).click();
+    await skipScene(page, 'berlin-arrival');
+    const intro = page.locator('[data-chapter-intro]');
+    await expect(intro.getByRole('heading', { level: 1, name: 'Berlin' })).toBeFocused();
+    const toggle = intro.getByRole('button', { name: 'How stamps work' });
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.locator('#stamps-help-panel')).toBeHidden();
+    // Keyboard: Tab reaches Start first, then the way back, then the disclosure.
+    await page.keyboard.press('Tab');
+    await expect(intro.getByRole('button', { name: 'Start' })).toBeFocused();
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await expect(toggle).toBeFocused();
+    await page.keyboard.press('Enter');
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(toggle).toBeFocused();
+    const items = page.locator('#stamps-help-panel li');
+    await expect(items).toHaveCount(5);
+    await expect(items.nth(3)).toHaveText('Gold still allows one slip (doing what a scam asks). After it, every step you pick to limit the damage must help, and your first step must stop the damage.');
+    await items.nth(4).scrollIntoViewIfNeeded();
+    await expect(items.nth(4)).toBeInViewport();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await axeClean(page);
+    await page.keyboard.press('Space');
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.locator('#stamps-help-panel')).toBeHidden();
+  });
+}

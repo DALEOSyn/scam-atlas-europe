@@ -41,7 +41,7 @@ describe('CR-48: gold fall hints', () => {
 
   it('with another need, both lines show; the hint never carries a number of falls', () => {
     const { container } = render(<ChapterDone summary={summary(['offfocus', 'falls_recovery'])} city="Berlin" onBack={() => undefined} />);
-    expect(hints(container)).toEqual(["skip extra checks on harmless messages outside this chapter's scams", RECOVERY]);
+    expect(hints(container)).toEqual(["keep checking when it matters, and notice when a harmless message isn't like this chapter's scams: that one needs no extra check", RECOVERY]);
     expect(container.textContent).not.toMatch(/\bfalls?\b|\d+\s+slips?/i);
   });
 });

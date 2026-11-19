@@ -4,11 +4,38 @@
  * text, then its optional `rules` as a framed "pinned card" (h2 + numbered list; psych M1), one primary
  * button and a quiet way back to the map. A resumed run of a chapter with `rules` shows it again with
  * "Continue" (psych M2), so the rules the player is scored on are never lost.
+ *
+ * CR-48b: below the buttons, an optional, collapsed "How stamps work" disclosure (h2 > button with
+ * aria-expanded, WAI disclosure pattern; no animation): bronze, silver and gold in player words, the
+ * R24 rule line, and that stamps are about habits. Never a count of the player's own slips.
  */
-import { useEffect, useRef } from 'preact/hooks';
+import { useEffect, useRef, useState } from 'preact/hooks';
 import type { Chapter } from '../content/schema.ts';
-import { t } from '../i18n/index.ts';
+import { t, type MessageKey } from '../i18n/index.ts';
+import { Icon } from './Icon.tsx';
 import styles from './ChapterList.module.css';
+
+/** CR-48b: the "How stamps work" bullets, in order (≤ 5). */
+export const STAMPS_HELP_KEYS: readonly MessageKey[] = ['stamps_help_bronze', 'stamps_help_silver', 'stamps_help_gold', 'stamps_help_slip', 'stamps_help_habits'];
+
+export function StampsHelp() {
+  const [open, setOpen] = useState(false);
+  return (
+    <section class={styles.stampsHelp} data-stamps-help="">
+      <h2 class={styles.stampsHelpHeading}>
+        <button type="button" class={styles.stampsHelpToggle} aria-expanded={open} aria-controls="stamps-help-panel" onClick={() => setOpen(!open)}>
+          <Icon name="seal" />
+          <span>{t('stamps_help_title')}</span>
+        </button>
+      </h2>
+      <ul id="stamps-help-panel" class={styles.stampsHelpList} hidden={!open}>
+        {STAMPS_HELP_KEYS.map((k) => (
+          <li key={k}>{t(k)}</li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
 export function ChapterIntro({
   name,
@@ -61,6 +88,7 @@ export function ChapterIntro({
             </button>
           ) : null}
         </div>
+        <StampsHelp />
       </section>
     </main>
   );

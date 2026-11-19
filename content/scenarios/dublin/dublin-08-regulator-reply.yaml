@@ -122,7 +122,7 @@ debrief:
     what_works: "Reading it was right."
   layer2:
     message_flags: []
-    notes: "A real regulator never charges you to get money back. Remember that for the next \"recovery\" offer."
+    notes: "A real regulator never charges you to get money back. Remember that if a \"recovery\" offer ever comes."
   device_tip: "On a real phone, open the regulator's website yourself to see its warnings, rather than following a link in an email."
   habit_card: calm-not-paranoid
   sources: [ie-cbi-avoiding-scams, ie-cbi-fraud-landscape-2025, ie-bpfi-recovery-2024, ie-cbi-unauthorised-firms]

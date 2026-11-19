@@ -2732,6 +2732,17 @@ sources:
     notes: "AI-generated ads with 'fake images or videos of high-profile politicians and businesspeople' promote bogus 'state-backed' savings schemes; a short form, then a 'financial advisor' call pushing an immediate 'security deposit'. 'Legitimate investment opportunities will never pressure you to transfer money immediately.' Check the Central Bank registers; talk to family or friends. Garda figures quoted: reports of investment fraud up over 20% in 2025 vs 2024, over EUR 20m losses (keep off screen). No dashboard detail."
 
   # ---------------------------------------------------------------- Belgium / Germany (dashboard + withdrawal fees, T-3.10r)
+  - id: ie-statesavings-ntma-relationship
+    publisher: State Savings (NTMA)
+    title: "What is the relationship between the NTMA, State Savings and An Post"
+    url: https://www.statesavings.ie/help-support/help-articles/what-is-the-relationship-between-the-national-trea
+    published: n/d
+    accessed: "2026-11-19"
+    region: IE
+    tier: 3
+    used_for: [investment-ad-fake-platform, MAP-ch8]
+    notes: "Added for T-3.10 round 1 (fraud-researcher M1, drill 8-4): Irish State Savings products are offered on behalf of the State's debt agency and sold through the postal network, not by a firm on the financial regulator's register of authorised firms, so a register check cannot tell a real state savings product from a fake 'state-backed' bond. Design consequence: the game teaches 'check the government's own savings site, opened yourself, never through an ad', with a fictional, unnamed site in content."
+
   - id: be-fsma-trading-platforms-2025
     publisher: FSMA (Belgian Financial Services and Markets Authority)
     title: "New wave of fraudulent trading platforms"

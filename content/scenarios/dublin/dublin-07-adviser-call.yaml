@@ -59,7 +59,7 @@ inspectables:
     red_flag: true
     type: claim
   - target: request
-    reveal: "Money today, on a call you didn't ask for."
+    reveal: "Money today, on a call that came to you."
     red_flag: true
     type: request
 

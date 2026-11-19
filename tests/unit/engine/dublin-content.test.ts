@@ -6,6 +6,7 @@
 import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { deriveCheckables } from '../../../src/content/checkables.ts';
 import { chapterSchema, scenarioSchema, type Scenario } from '../../../src/content/schema.ts';
 import { recordOf, summarise, type ScenarioRecord } from '../../../src/engine/chapter.ts';
 import { maxPointsOfScenario, redFlagCount, resultOf } from '../../../src/engine/result.ts';
@@ -210,6 +211,73 @@ describe('Dublin strategy rows (GDD §28.7)', () => {
     expect(r.stamp).toBe('bronze');
   });
 
+  /** Always-verify events, tagging the given checkables (or every one, `all`) on each scored scheduled beat. */
+  const verifyAll = (pick: (targets: string[]) => string[]): Record<string, RunnerEvent[]> => {
+    const verify: Record<string, string> = {
+      'dublin-01-tea-money': 'ask_roisin_hall',
+      'dublin-02-presenter-ad': 'check_quorvex_register',
+      'dublin-03-recovery-offer': 'check_backhaven_register',
+      'dublin-05-ellisfen-sheet': 'check_ellisfen_again',
+      'dublin-06-rating-tasks': 'ask_coordinator',
+      'dublin-07-adviser-call': 'hang_up_check_quorvex',
+      'dublin-08-regulator-reply': 'open_fairmeasure_site',
+    };
+    const tagsOn = (s: Scenario, beat: string) => {
+      const b = beat === 'start' ? s : s.beats.find((x) => x.id === beat);
+      return b ? tagAll(beat, ...pick(deriveCheckables(b.device, b.message))) : [];
+    };
+    const out: Record<string, RunnerEvent[]> = {};
+    for (const [id, a] of Object.entries(verify)) out[id] = [...tagsOn(get(id), 'start'), act(a)];
+    const boss = get(BOSS);
+    out[BOSS] = [
+      ...tagsOn(boss, 'start'),
+      act('check_register_ring_b1'),
+      cont,
+      ...tagsOn(boss, 'bond_call'),
+      act('ring_register_number_b2'),
+      cont,
+      ...tagsOn(boss, 'protection_email'),
+      act('open_fairmeasure_b3'),
+    ];
+    return out;
+  };
+
+  it('row 6 tag everything + always verify: 150, spotted 15 − 30 = −15, bronze', () => {
+    const r = summary(verifyAll((t) => t));
+    expect(r.points).toBe(150);
+    expect(r.spotted).toBe(-15);
+    expect(r.stamp).toBe('bronze');
+  });
+
+  it('row 6b always tag the link + always verify: 152, spotted 1 − 4 = −3, bronze', () => {
+    const r = summary(verifyAll((t) => t.filter((x) => x === 'link')));
+    expect(r.points).toBe(152);
+    expect(r.spotted).toBe(-3);
+    expect(r.stamp).toBe('bronze');
+  });
+
+  it('row 6d request + every claim + always verify: 154, spotted 0, bronze', () => {
+    const r = summary(verifyAll((t) => t.filter((x) => x === 'request' || /^claim/.test(x))));
+    expect(r.points).toBe(154);
+    expect(r.spotted).toBe(0);
+    expect(r.stamp).toBe('bronze');
+  });
+
+  it('row 10 always trust, perfect damage control: 90, bronze', () => {
+    const r = summary({
+      'dublin-01-tea-money': [act('pay_roisin_app'), act('send_roisin_ten')],
+      'dublin-02-presenter-ad': [act('open_signup_page'), act('send_details_quorvex')],
+      'dublin-03-recovery-offer': [act('open_case_page'), act('pay_retainer')],
+      'dublin-05-ellisfen-sheet': [act('reply_thanks_read')],
+      'dublin-06-rating-tasks': [act('reply_yes_tallyfern'), act('top_up_forty')],
+      'dublin-07-adviser-call': [act('read_card_ciaran')],
+      'dublin-08-regulator-reply': [act('read_and_file')],
+      [BOSS]: [act('apply_through_link'), cont, act('transfer_in_larchwick'), act('send_two_thousand'), cont, act('pay_ninety_five')],
+    });
+    expect(r.points).toBe(90);
+    expect(r.stamp).toBe('bronze');
+  });
+
   it('row 7 blind always-verify: 150, bronze', () => {
     const r = summary({
       'dublin-01-tea-money': [act('ask_roisin_hall')],
@@ -352,6 +420,14 @@ describe('Dublin: damage control (GDD §9; tell_trusted_adult in every personal-
         `${BOSS}:verification_fee_paid`,
       ].sort(),
     );
+  });
+
+  it('harmful steps fit each fall (round 1): a first deposit on 8-2, a last fee on the boss fee, more money on the boss card and transfer', () => {
+    const harmful = (id: string, o: string) => (get(id).outcomes[o]?.recovery ?? []).filter((r) => r.category === 'harmful').map((r) => r.step);
+    expect(harmful('dublin-02-presenter-ad', 'adviser_keeps_calling')).toEqual(['pay_first_deposit', 'wait_and_see']);
+    expect(harmful(BOSS, 'card_typed_application')).toEqual(['pay_recovery_service', 'add_more_to_test']);
+    expect(harmful(BOSS, 'bond_transfer_sent')).toEqual(['pay_recovery_service', 'add_more_to_test']);
+    expect(harmful(BOSS, 'verification_fee_paid')).toEqual(['pay_recovery_service', 'pay_last_fee']);
   });
 
   it('each offers at most six steps with exactly two harmful; every money fall has tell_trusted_adult as a stop step', () => {

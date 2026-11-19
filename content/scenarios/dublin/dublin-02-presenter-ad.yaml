@@ -119,13 +119,13 @@ outcomes:
       - { step: report_ad_on_platform, category: report }
       - { step: report_firm_to_regulator, category: report }
       - { step: keep_evidence, category: secure }
-      - { step: add_more_to_test, category: harmful, feedback: "Wanting to see if it's real is natural, but a first deposit is exactly what the calls are for, and it only adds to the loss. Don't pay anything; block the number." }
+      - { step: pay_first_deposit, category: harmful }
       - { step: wait_and_see, category: harmful }
   quorvex_not_listed:
     narrative: "You open the Fairmeasure register from your home screen. No firm called Quorvex is authorised. The warning list has nothing either, and that proves nothing: scammers change names. Not on the register means don't pay."
     register: { firm: "Quorvex", result: not_listed }
   orla_ad_reported:
-    narrative: "You report the ad on Postwick. An hour later it's still there, under a new page name."
+    narrative: "You report the ad on Postwick. Reports help the platform take it down for the next person."
   scrolled_past_orla:
     narrative: "You scroll past. Orla is still smiling three posts down, now \"recommending\" something else."
 

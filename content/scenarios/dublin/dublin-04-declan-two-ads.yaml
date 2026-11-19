@@ -7,6 +7,10 @@
 # Spec deviations, flagged: (1) the schema allows two claims and a claim is never a deadline (T-2.4b ruling 2),
 # so "Limited window" is the quoted ad's ask (the request checkable) instead of claim#2; (2) the quoted ad says
 # "Fully guaranteed by the government" (a claim needs 3 words) for "government guaranteed".
+# Round 1 (fraud-researcher M1): the register can't tell real state savings from fake ones (real state savings
+# are sold for a state agency, not by a registered firm). The register check stays for Brindlecove; the 'state'
+# bond's verdict rests on the rate, the deadline, the ad route and the government's own savings site, opened
+# yourself (fictional, unnamed in content; source ie-statesavings-ntma-relationship).
 # The story caption "You and Declan report the 'state-backed' bond through Fairmeasure's website" (sets up 8-8,
 # true in every branch) closes every outcome until the scene files exist.
 id: dublin-04-declan-two-ads
@@ -42,12 +46,12 @@ inspectables:
     type: sender
     reassures: true
   - target: claim
-    reveal: "In Declan's quote: a high rate offered as a sure thing. High returns always come with risk, whoever's name is on them."
+    reveal: "In Declan's quote: a rate far above what real savings pay, sold as a sure thing."
     red_flag: true
     type: claim
     context: quoted
   - target: claim#2
-    reveal: "In Declan's quote: real state-backed savings exist, so the label can't prove anything either way. Check who is behind it yourself."
+    reveal: "In Declan's quote: real state-backed savings exist, so the label can't prove anything either way. Look for it yourself on the government's own savings site."
     red_flag: false
     type: claim
     context: quoted
@@ -78,24 +82,24 @@ actions:
 
 outcomes:
   declan_register_both:
-    narrative: "Declan: \"Brindlecove's on the warning list! And the 'state' one isn't on the register at all, or on the warning list. So: not on the register, no money. Got it.\" You and Declan report the 'state-backed' bond through Fairmeasure's website."
+    narrative: "Declan: \"Brindlecove's on the warning list! And the 'state' one isn't on the register, and the government's own savings site, which I opened myself, has no 7% bond. So: no money. Got it.\" You and Declan report the 'state-backed' bond through Fairmeasure's website."
   declan_warning_list_trap:
-    narrative: "Declan: \"Brindlecove's on it. The other one isn't, so it's fine? … Róisín says not on the register means no. Right so.\" You and Declan report the 'state-backed' bond through Fairmeasure's website."
+    narrative: "Declan: \"Brindlecove's on it. The other one isn't, so it's fine? … Róisín says a clean warning list proves nothing, and the government's own savings site has no 7% bond. Right so.\" You and Declan report the 'state-backed' bond through Fairmeasure's website."
   declan_adviser_says:
-    narrative: "Declan: \"She says the same: register first, and nothing 'guaranteed'.\" You and Declan report the 'state-backed' bond through Fairmeasure's website."
+    narrative: "Declan: \"She says the same: nothing 'guaranteed' at that rate, and find it yourself, not through an ad.\" You and Declan report the 'state-backed' bond through Fairmeasure's website."
   declan_roisin_look:
-    narrative: "Declan: \"Hmm. Róisín's giving me a look. Register first, she says.\" You and Declan report the 'state-backed' bond through Fairmeasure's website."
+    narrative: "Declan: \"Hmm. Róisín's giving me a look. Find it yourself first, she says.\" You and Declan report the 'state-backed' bond through Fairmeasure's website."
 
 debrief:
   variant: standard
   layer1:
     tell: "A high rate, a deadline, and a firm you can't find."
-    what_works: "Not on the register? Don't pay."
+    what_works: "Find it yourself, never through an ad."
   layer2:
     message_flags: []
-    notes: "A firm missing from the warning list isn't safe: the list only names firms already warned about. Declan checked the register himself, and reporting the ad helps the next person."
-  device_tip: "On a real phone, open the financial regulator's website yourself, from your own bookmark, and check both its register of authorised firms and its warning list."
+    notes: "A firm missing from the warning list isn't safe: the list only names firms already warned about. A real government savings product is listed on the government's own savings website. Find it yourself, never through an ad. Declan checked the register in the end, and reporting the ad helps the next person."
+  device_tip: "On a real phone, open the financial regulator's website yourself and check its register and warning list. For a \"state\" product, open the government's own savings website yourself, never through an ad."
   habit_card: if-its-guaranteed-and-high-its-not
   already_clicked:
     paid: "Paid one of them already? Stop paying, call your bank now on the number on your card, keep the ads and receipts, and report the firm to the regulator."
-  sources: [ie-garda-investment-2025, ie-fraudsmart-state-scheme-ads-2026, ie-cbi-avoiding-scams, ie-cbi-unauthorised-firms, se-konsumentverket-investment-fraud]
+  sources: [ie-garda-investment-2025, ie-fraudsmart-state-scheme-ads-2026, ie-statesavings-ntma-relationship, ie-cbi-avoiding-scams, ie-cbi-unauthorised-firms, se-konsumentverket-investment-fraud]

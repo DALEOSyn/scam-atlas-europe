@@ -17,7 +17,8 @@
 # Interrupt after beat 3: Róisín, genuine, on_fall: skip (no "chips to celebrate" right after a loss).
 # Every fall sets dublin_bank_called (story only, R17 approach). Damage control (§28.6 merged list, cap 6) plus
 # tell_trusted_adult as a stop step in every personal-money fall: each fall has its own six (b1 card: block the
-# card, no stop_paying; b2 transfer and b3 fee: stop paying, no card block). keep_evidence is in layer 2.
+# card, no stop_paying; b2 transfer and b3 fee: stop paying, no card block). Harmful (round 1): pay_recovery_service
+# everywhere, plus add_more_to_test (feedback override) on b1/b2 and pay_last_fee on the b3 fee fall. keep_evidence is in layer 2.
 # R 7, decoys 6, max 51. Refunds are always "may" (ruling 5 of §28.8); no figures on screen.
 id: dublin-09-boss-clone-bond
 chapter: dublin
@@ -55,7 +56,7 @@ message:
 
 inspectables:
   - target: sender.detail
-    reveal: "bonds@ellisfen-invest.example. The register lists ellisfen.example. A real firm's name on a different address is a clone."
+    reveal: "bonds@ellisfen-invest.example. The register lists ellisfen.example. A real firm's name on an address the register doesn't list is how clones look. Contact it only on the register's details."
     red_flag: true
     type: sender
   - target: link
@@ -286,7 +287,7 @@ outcomes:
       - { step: tell_trusted_adult, category: stop }
       - { step: report_firm_to_regulator, category: report }
       - { step: pay_recovery_service, category: harmful }
-      - { step: add_more_to_test, category: harmful }
+      - { step: add_more_to_test, category: harmful, feedback: "More money only adds to the loss. Call your bank instead." }
   bond_transfer_sent:
     narrative: "Sent: €2,000.00. Gráinne: \"Perfect, your rate is locked. Your bond certificate follows on Monday.\" No certificate comes."
     sets_flags: [dublin_bank_called]
@@ -296,7 +297,7 @@ outcomes:
       - { step: tell_trusted_adult, category: stop }
       - { step: report_firm_to_regulator, category: report }
       - { step: pay_recovery_service, category: harmful }
-      - { step: add_more_to_test, category: harmful }
+      - { step: add_more_to_test, category: harmful, feedback: "More money only adds to the loss. Call your bank instead." }
   verification_fee_paid:
     narrative: "Sent: €95.00 to \"Fairmeasure Claims Ltd\". Next day: \"Funds located. A €300 release charge is now due.\""
     sets_flags: [dublin_bank_called]
@@ -306,7 +307,7 @@ outcomes:
       - { step: tell_trusted_adult, category: stop }
       - { step: report_firm_to_regulator, category: report }
       - { step: pay_recovery_service, category: harmful }
-      - { step: add_more_to_test, category: harmful }
+      - { step: pay_last_fee, category: harmful }
   register_not_us_b1:
     narrative: "Register: Ellisfen Invest, authorised, at ellisfen.example. On the register's number: \"That's not us. We don't sell that bond, and we never email from that address. Thank you for telling us.\""
     register: { firm: "Ellisfen Invest", result: authorised, address: "ellisfen.example", phone: "+353 1 ••• ••60" }
@@ -345,7 +346,7 @@ debrief:
       - "The email: the firm was real; the address wasn't. Contact a firm only on the register's details."
       - "The call: same story by phone, with the firm's name on screen. The name check didn't match."
       - "The last email: a \"regulator\" asking for a fee. Real regulators never charge to return money."
-    notes: "Anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam. If anything went, call your bank straight away; it may be able to help. Keep the emails, the call log and any receipts."
+    notes: "Anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam. People who've lost money are often targeted on purpose afterwards, because scammers share victims' details. That says nothing about you. If anything went, call your bank straight away; it may be able to help. Keep the emails, the call log and any receipts."
   device_tip: "On a real phone, open the regulator's website yourself, find the firm on its register, and use only the address and phone number listed there."
   habit_card: if-its-guaranteed-and-high-its-not
   already_clicked:

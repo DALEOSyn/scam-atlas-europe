@@ -1,7 +1,8 @@
 # Arc beat, slot 8 (GDD §28.5 slot-8 row, word for word; §10.1, §10.2; STORY §1.4: arc slot N plays by
 # play position, so the line is city-agnostic). Warning sign: a deadline plus "do it with me".
 # Options (§28.5): Transfer → pay (alex_invested += 200) · Ask someone → ask_someone · Report → report
-# (D-S2; a report at slots 7–9 closes the arc as ending B, §10.3; the engine handles it).
+# (D-S2; a report at slots 7–9 closes the arc as ending B, §10.3; the engine handles it). Listed in the canonical
+# action order (the message's own action first, ruling QA L6; the validator enforces it), not §28.5's order.
 # No damage control at the beat (it would unmask the arc, §10.2); already_clicked.paid is §10.2's line.
 # Glimmerfund is the arc-only brand (§28.5); it is never named in a scored scenario or debrief.
 # Placement (GDD §28.3, §28.11 Q1, producer): the first beat after the intro, before 8-1. Every other gap
@@ -47,7 +48,7 @@ actions:
 
 outcomes:
   put_in_two_hundred:
-    narrative: "You send €200. Alex: \"Yesss! Together now 🙌\" The VIP window, it turns out, is open again tomorrow."
+    narrative: "You send €200. Alex: \"Yesss! Together now 🙌\""
     arc_effects: { alex_invested: 200 }
   teo_on_vip_window:
     narrative: "Teo: \"A window that closes tonight, and a friend who wants you in it? Real chances wait a day, kiddo. So do real friends.\""

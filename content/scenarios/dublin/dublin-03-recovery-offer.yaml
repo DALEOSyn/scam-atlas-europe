@@ -49,7 +49,7 @@ inspectables:
     red_flag: false
     type: reference
   - target: claim
-    reveal: "Claims to work with the regulator and promises success. Regulators don't team up with fee-charging recovery firms, and nobody can promise your money back."
+    reveal: "Claims a link to the regulator and promises success. Anyone can borrow a regulator's name, and nobody can promise to get your money back."
     red_flag: true
     type: claim
   - target: request
@@ -150,7 +150,7 @@ outcomes:
       - { step: pay_recovery_service, category: harmful }
       - { step: wait_and_see, category: harmful }
   backhaven_not_listed:
-    narrative: "You open the Fairmeasure register from your home screen. Backhaven isn't authorised. Fairmeasure's own page says: \"We never work with recovery firms and never charge fees.\""
+    narrative: "You open the Fairmeasure register from your home screen. No Backhaven there, but a listing wouldn't make a fee-first offer safe either: clones copy real names. Fairmeasure's own page says: \"We never work with recovery firms and never charge fees to get money back.\""
     register: { firm: "Backhaven Recovery", result: not_listed }
   backhaven_reported:
     narrative: "Reported. Your mail app moves it to junk."
@@ -168,7 +168,7 @@ debrief:
     what_works: "Never pay to get money back."
   layer2:
     message_flags: []
-    notes: "Anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam. If you did lose money, go to your bank and the police yourself. People who've already lost money are often targeted again on purpose, because scammers share victims' details. That says nothing about you. Keep the emails and any receipts."
+    notes: "Anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam. If you did lose money, go to your bank and the police yourself. People who've lost money are often targeted on purpose afterwards, because scammers share victims' details. That says nothing about you. Keep the emails and any receipts."
   device_tip: "On a real phone, don't reply to a recovery offer. If you lost money, call your bank on the number on your card and report it to the police yourself."
   habit_card: stop-the-damage-first
   already_clicked:

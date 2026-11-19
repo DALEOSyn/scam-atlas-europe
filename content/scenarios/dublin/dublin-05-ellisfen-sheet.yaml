@@ -134,7 +134,7 @@ outcomes:
 debrief:
   variant: standard
   layer1:
-    tell: "Found on the register, its own address, no rush."
+    tell: "Found on the register, at the address it lists, no rush."
     what_works: "Reading it calmly was right."
   layer2:
     message_flags: []

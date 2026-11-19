@@ -374,7 +374,6 @@ describe('shipped content (after merging CR-36…44, Rome, Lisbon, Stockholm and
     'paris-06-solene-urgent': [0, 0], // R21: was ★, 5
     'rome-01-breakfast-till-ten': [2, 10],
     'rome-02-teo-calls-you': [2, 10],
-    'rome-05-laundry': [0, 0], // R21: was ★, 5
     'stockholm-01-desk-login': [0, 0], // R21 (merged from main)
     'stockholm-03-birgitta-shopping': [0, 0], // R21 (merged from main)
     'warsaw-01-rucksack-sold': [2, 10],

@@ -98,7 +98,8 @@ outcomes:
     narrative: "The page says \"Thank you! Delivery tomorrow.\" No parcel comes. Two days later, three payments you don't recognise appear on your card."
     recovery:
       - { step: block_card_in_bank_app, category: stop }
-      - { step: call_bank_known_number, category: secure }
+      # T-3.13l: card details stolen, so calling the bank on a known number to block is a first action (de-vz-paketdienst-sms, de-bsi-protect-phishing).
+      - { step: call_bank_known_number, category: stop }
       - { step: report_to_police_online, category: report }
       - { step: reply_ask_money_back, category: harmful }
       - { step: wait_and_see, category: harmful }

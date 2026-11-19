@@ -106,7 +106,8 @@ outcomes:
     narrative: "\"Thank you, your order is on its way!\" Next morning: a €212 card payment to a shop you've never heard of, and an email saying your Thimble & Pine password was changed."
     recovery:
       - { step: block_card_in_bank_app, category: stop }
-      - { step: call_bank_known_number, category: secure }
+      # T-3.13l: card and account details stolen, so calling the bank on a known number to block is a first action (de-bsi-protect-phishing, de-vz-paketdienst-sms).
+      - { step: call_bank_known_number, category: stop }
       - { step: change_password, category: secure }
       - { step: report_to_police_online, category: report }
       - { step: reply_ask_money_back, category: harmful }
@@ -136,4 +137,4 @@ debrief:
   already_clicked:
     clicked: "Close the page and type nothing. Delete the email or report it as phishing."
     entered_details: "Block your card in your banking app, call your bank on the number on your card, and change your Thimble & Pine password from the real site, plus anywhere you reused it."
-  sources: [es-incibe-streaming-renewal-2024, es-incibe-streaming-extension-2023, pl-cert-phishing-kb-2026, ch-ncsc-links-2025, pt-gnr-phishing]
+  sources: [es-incibe-streaming-renewal-2024, es-incibe-streaming-extension-2023, pl-cert-phishing-kb-2026, ch-ncsc-links-2025, pt-gnr-phishing, de-vz-paketdienst-sms]

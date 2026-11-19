@@ -152,7 +152,7 @@ Each file carries the same four-rule style block:
 | Noor (15) | 3 | slim | high curly puff ponytail | denim hoodie | phone held screen-away, abstract stickers on the case |
 | Adaeze (50s) | 6 | tall, broad | short natural hair with a grey streak, reading glasses on a cord | mustard jacket | the Atlas notebook |
 | Mateus (late 20s) | 5 | medium | black curls, short beard | terracotta overshirt | coiled cables on his bag strap |
-| Alex | 2 | medium | short tousled brown hair | plain slate jumper | a mustard scarf (§4.7) |
+| Alex | 2 | medium | short tousled dark-brown hair (`#4a3326`) | plain denim jumper (`#4e6a8f` / `#3f5675`) | a mustard scarf (§4.7). Hair and jumper changed in the T-S6d review (psych): with brown `#7a5232` hair and a slate top Alex read as Kasia in a round 48 px profile crop |
 | Jonas (mid-30s) | 1 | broad | auburn short hair and beard | cream apron (no print) over slate T-shirt | flour dust on the apron |
 | Mia (8, background) | 1 | small | two pigtails | rose jumper | — |
 | Sanne (19) | 2 | slim | long dark-brown braid over the shoulder | rose cardigan | key on a plain ring |
@@ -193,7 +193,7 @@ Device-layer pictures (profile pictures of non-cast personas, the "fictional cel
 
 | Character | Expressions to draw | Extra poses |
 |---|---|---|
-| Teo | calm, warm, laughing, thinking, sheepish, proud | `x-calm-wave` (video call), **+ `x-warm-postcard`** (Open Evening: he holds up the picked postcard and reads its cue, STORY §1.5, §3.12; blank card, abstract stamp and bars, no lettering; `game-designer` to confirm) |
+| Teo | calm, warm, laughing, thinking, sheepish, proud | `x-calm-wave` (video call), **+ `x-warm-postcard`** (Open Evening: he holds up the picked postcard and reads its cue, STORY §1.5, §3.12; eyes open and lowered onto the card, warm mouth; blank card, abstract stamp and bars, no lettering; `game-designer` to confirm) |
 | Noor | calm, laughing, focused, thinking, worried, relieved | `x-laughing-wave` (video call, Amsterdam turn) |
 | Adaeze | calm, warm, thinking, laughing, proud | `x-warm-wave` (video call, Home) |
 | Mateus | calm, laughing, focused, sheepish, worried, relieved, **+ thinking** (used in STORY Warsaw turn and Lisbon turn) | — |

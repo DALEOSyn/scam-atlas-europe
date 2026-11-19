@@ -288,6 +288,8 @@ Same method and limits as above (web, app-store and company-directory check via 
 | same slot, alternative | Basovia | no shop or company; **Basowiszcza / Basovišča**, a real Belarusian-minority rock festival held in Poland (Wikipedia) | Medium (music sector, Polish context) | **Don't use** |
 
 ## MW1. Olvarde Custodia SL: Low, keep
+
+- **Designer cross-check (GDD §24.10, moved here because the docs brand test forbids real names outside docs/patterns/):** compared against Spanish banks and custody firms Santander, BBVA, CaixaBank, Sabadell, Bankinter, Unicaja, Kutxabank, Abanca, Ibercaja, Cajamar, Openbank, EVO, Cecabank, Inversis, Allfunds and Renta 4: no resemblance.
 - **Searched:** `"Olvarde" company OR empresa`; `"Olvarde Custodia" OR "Custodia SL" sociedad`; `"Olvarde" OR "Olvarde SL" OR "Olvarde Custodia"`.
 - **Hits:**
   - No company, brand or person called "Olvarde".

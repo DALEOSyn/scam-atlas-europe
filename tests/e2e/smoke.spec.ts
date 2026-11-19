@@ -557,3 +557,37 @@ test('in a scenario: sticky HUD, Settings dialog from the menu, Jump to your opt
   await expect(dialog).toHaveCount(0);
   await expect(menu).toBeFocused();
 });
+
+test('0-3: "Go to your inbox", then the reset email\'s timer runs out twice → ★, not ★★★ (QA T-2.8 M1)', async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.clock.install();
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: /Find the pack in Waymarker Desk yourself/ }).click();
+  await continueToNext(page);
+  await page.getByRole('button', { name: /Open Waymarker mail yourself/ }).click();
+  await continueToNext(page);
+  await chooseStandard(page);
+  await page.getByRole('button', { name: 'Go to your inbox' }).click();
+  await expect(page.getByRole('heading', { name: 'Email from Waymarker Desk' })).toBeFocused();
+  // First expiry: +20 s; second expiry ends the scenario. Run the game clock well past both.
+  await page.clock.runFor(150_000);
+  await expect(consequenceHeading(page)).toBeFocused();
+  await expect(page.getByText(/Time's up in the game, not in real life\./)).toBeVisible();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(debriefHeading(page)).toBeFocused();
+  await expect(page.getByRole('img', { name: '1 of 3 stars' })).toBeVisible();
+  await expect(page.getByText('That is the habit that works.', { exact: false })).toHaveCount(0);
+  await expect(page.getByText(/15 of 15/)).toHaveCount(0);
+});
+
+test('start screen: Done on Settings and Back from Chapters return focus to their buttons (QA T-2.8 m1, m2)', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Settings' })).toBeFocused();
+  await page.getByRole('button', { name: 'Done' }).click();
+  await expect(page.getByRole('button', { name: 'Settings' })).toBeFocused();
+  await page.getByRole('button', { name: 'Chapters' }).click();
+  await page.getByRole('button', { name: 'Back to the start' }).click();
+  await expect(page.getByRole('button', { name: 'Chapters' })).toBeFocused();
+});

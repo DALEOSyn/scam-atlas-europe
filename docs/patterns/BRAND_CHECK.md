@@ -143,7 +143,7 @@ Same method and limits as above (web, app-store and company-directory check via 
   - **Vlietwerk** ("Vliet" canal + "work"). Queries: `"Vlietwerk"`; `"Vlietwerk" OR "Vliet Werk" uitzendbureau OR staffing OR recruitment OR B.V.`. No exact hits, only the Vliet canal and place names. However, **Veldwerk Uitzendbureau** (a real Dutch staffing agency, Creditsafe NL05125245) has the same "V…-werk" shape in the same sector. **Low–Medium.** Sender ID `VLIETWERK` (9).
   - **Polderstaf** ("polder" + "staff"). Queries: `"Polderstaf"`; `"Polderstaf" OR "Polder Staf" uitzendbureau OR werving`. No exact hits. The nearest is **Poldervast B.V.** (Opmeer, company register listing; sector not shown). **Low–Medium.** Sender ID `POLDERSTAF` (10).
   - *Not proposed:* Kadewerk. The query `"Kadewerk" uitzendbureau OR werk OR bedrijf` found no exact hit, but "kade" is a common street and quay word, and the search showed only generic agencies. It was not researched further.
-- **Recommendation:** **Klaverwerk**, presented as "Klaverwerk Staffing" if the English context needs it. Host `klaverwerk.example`, or `klaverwerk-staffing.example` to match the GDD's pattern. Sender ID `KLAVERWERK`.
+- **Recommendation:** **Klaverwerk**, presented as "Klaverwerk Staffing" if the English context needs it. Host `klaverwerk-staffing.example`, or `klaverwerk-staffing.example` to match the GDD's pattern. Sender ID `KLAVERWERK`.
 
 ### 9b. Tasklyn: High, reject
 - **Searched:** `"Tasklyn"`; `"Tasklyn" app OR platform OR software`.
@@ -162,7 +162,7 @@ Same method and limits as above (web, app-store and company-directory check via 
 ### 9c. Notes
 - Neither recommendation is a trademark clearance. Add both to the pre-G4 TMview / EUIPO list (classes 35 and 42; also 9 for Tallyfern).
 - `.example` hosts are reserved (RFC 2606), so the recommended hosts need no collision check. The check above is about the *name*.
-- GDD §603–604 and scenarios 2-2, 2-7 and 2-9 still say Tidewell / Tasklyn. ux-artist / game-designer should rename them in `content/brands.yaml` and the GDD; this file makes no edits to either.
+- GDD §603–604 and scenarios 2-2, 2-7 and 2-9 said Tidewell / Tasklyn until the producer's rename (2026-11-19: now Klaverwerk / Tallyfern everywhere). ux-artist / game-designer should rename them in `content/brands.yaml` and the GDD; this file makes no edits to either.
 
 ---
 
@@ -173,4 +173,4 @@ Same method and limits as above (web, app-store and company-directory check via 
 4. Keep Waymarker Network, Trundle, Thimble & Pine, Kettle, Wordswap. Give Thimble & Pine a non-craft product line.
 5. Add any new names to the red-line denylist logic only as *allowed* fictional names. Re-run this check on every new name.
 6. **Before G4:** a human runs a formal TMview / EUIPO search on all final names. This check is not trademark clearance.
-7. **Amsterdam (2026-11-19):** replace **Tidewell Staffing → Klaverwerk** (sender ID `KLAVERWERK`, `klaverwerk.example`) and **Tasklyn → Tallyfern** (`tallyfern-earn.example`, `tallyfern-start.example`). See §9.
+7. **Amsterdam (2026-11-19):** replace **Tidewell Staffing → Klaverwerk** (sender ID `KLAVERWERK`, `klaverwerk-staffing.example`) and **Tasklyn → Tallyfern** (`tallyfern-earn.example`, `tallyfern-start.example`). See §9.

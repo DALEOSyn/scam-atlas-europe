@@ -92,9 +92,11 @@ Scammers are faceless: "unknown sender", a spoofed fictional brand, or a transcr
 | engage | `reply`, `open_link`, `call_number_in_message`, `scan_qr_and_open` |
 | comply | `pay`, `pay_unprotected`, `enter_details`, `share_code`, `approve_prompt` (fraud only), `install_or_remote` |
 | proceed | `proceed`, `pay_protected` |
+| step | `start_transfer` (opens the banking device; never scored; CR-18, producer ruling 2026-11-19) |
 | meta | `pause` (unscored) |
 
 **Decisive-action rules.** The *decisive* action decides the stars. It is not always the action that ends the scenario.
+- **Step is never decisive.** `start_transfer` leads to a `banking` beat, and the action taken there decides the stars. It applies no cap, on genuine or fraud, and is allowed on boss beats as the one exception to the boss engage ban below (CR-18(e)).
 - **Verify is not terminal.** It shows the truth, then the player picks a follow-up. Verify's 3 stars stand, unless the follow-up is comply or proceed on fraud, or report on a genuine message. In those cases the follow-up's score replaces it.
 - **On `call`, `hang_up` is not terminal.** It opens a "What now?" step with the dialler open: `call_back_known` counts as **verify**, `report` counts as report, and **"Leave it there"** (built-in `done`, renamed from "Done" by ruling L1: it describes the behaviour without hinting at the verdict) counts as dismiss. The debrief describes built-ins in the past tense ("You hung up and left it there."), never with the button label (UI_SPEC §8.1).
 - **Engage** ends the scenario on genuine messages. On fraud it does not: it always leads to a next beat (validator), and the scenario's stars are capped at 2. **Boss beats** (interim, until the engine supports in-beat follow-ups) offer no engage kinds on fraud; use the comply kind the link leads to, labelled "<do X> through the link" (§16 ruling 4).
@@ -119,7 +121,7 @@ Scammers are faceless: "unknown sender", a spoofed fictional brand, or a transcr
 ### 7.1 Rules
 The player sees **stars per scenario** and a **stamp per chapter**. Points and the **Inspector rating** (renamed from "Trust rating") live under "Details".
 
-**Stars by class and truth.** Points = stars × 5, except for the cells marked.
+**Stars by class and truth.** Points = stars × 5, except for the cells marked. The `step` class has no row: it is never scored, and the next beat's action decides (§6, CR-18).
 
 | Class | Fraud | Genuine, high stakes | Genuine, low stakes |
 |---|---|---|---|
@@ -796,6 +798,7 @@ Row 6d: the wrong claims are 2-3 and 2-8 claim#2 ("pay you back") and the boss b
   - **(b) Chaining.** `start_transfer` requires `next_beat` to a `banking` beat whose message has `payee`. The validator requires that beat to offer ≥ 1 verify-class action and ≥ 1 dismiss-class action. Tests: the validator rejects a missing `payee`, a missing verify, a missing dismiss. The banking beat's action decides: `ignore` on genuine 2-6's banking beat = dismiss on genuine high stakes (0).
   - **(c) Request page.** The banking device renders a payment-request variant ("Request from <name> · €x · <note>"). **No payee check runs there**, and the payee name is a plain `payee.name` checkable (today's target `payee.name_check` with no `name_check` value, or a new alias). Test: no match/close-match banner on a request page.
   - **(d) No-match banner.** It shows a warning, never a holder name. This UI fix is owned by **Paris CR-23**; CR-18 only depends on it.
+  - **(e) Boss chaining (producer ruling 2026-11-19, from the sceptic re-review).** A scheduled boss beat may chain through `start_transfer` to exactly one unscheduled `banking` sub-beat. The sub-beat's action is the scheduled beat's decisive action, and `covered_by` treats it as that beat. The beat timer carries over, with a floor: the banking card always gets at least 40 s (Paris `boss_transfer`). The next scheduled beat is held until the banking card closes, then arrives as normal (its own timer starts on arrival). Tests: sub-beat action scored as the parent beat; `covered_by` on the parent covers a decision made on the sub-beat; the timer floor; the next beat queued, not interrupting, while the banking card is open; the validator rejects a second chained sub-beat.
 - **CR-19 (non-blocker): messenger new-contact chrome.** A "Not in your contacts" banner and the profile photo as the `image` checkable on chats from unknown numbers (§5 already promises this). Interim: the `sender.detail` text says it.
 - **CR-20 (non-blocker): recorded-message calls.** `message.recorded: true` shows "Recorded message" in the call header and hides the "you" lines. Interim: the first transcript line says "(Recorded message)".
 - **CR-21 (non-blocker): beat-bound pushers.** A pusher message may set `beat: <beat id>`; its `at_seconds` then counts from when that beat opens, and it never fires if the beat isn't reached (2-7's "11 tasks to go" on `top_up`). Interim: leave that follow-up out.

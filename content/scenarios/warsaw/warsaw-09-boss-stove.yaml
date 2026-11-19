@@ -1,0 +1,292 @@
+# 5-9 Boss: the stove (GDD §25.6; marketplace-collect-payment-link). Evening; Kasia is at her concert.
+# Beat 1 (marketplace buyer chat, start, 40 s): "let's continue on Kettle". R: request. D: sender (W1),
+#   link (W3), reference (listing card), phone number. "Move the chat to Kettle" is an engage that ends the
+#   beat at ★★ (CR-35, ruling R14): beat 2 continues the conversation (covered_by: [start]).
+# Beat 2 (Kettle, +45 s, 40 s): the number from beat 1 (W5: neutral here, the tell already happened):
+#   "collect your payment here" (card). R: link, request. D: sender, reference, claim.
+# Beat 3 (Kettle, +45 s, 40 s): "payment on hold until you confirm with your bank: log in here".
+#   R: link, request. D: sender, claim. Design combination (fraud-researcher): the brief sources a collect
+#   page asking for a card "or your bank login"; "release a payment on hold" as a separate follow-up is the
+#   game's combination and no debrief presents it as a known sequence. The claim is kept free of times
+#   (a claim is never a deadline); the courier time stays in the body and the pusher.
+# Boss beats offer no engage kinds on fraud except CR-35's beat 1 ("<do X> through the link", §16 ruling 4).
+# No fake pages here: the fall happens "through the link". Never a Swaploft sign-in page.
+# Interrupt after beat 3 (genuine, Kasia back on her own account), never after a fall (on_fall: skip).
+# Every fall outcome sets warsaw_bank_called (story only, R17). Damage control: one merged list of six.
+# Counts: R = 1 + 2 + 2 = 5; decoys on scheduled beats 4 + 3 + 2 = 9; max 51.
+id: warsaw-09-boss-stove
+chapter: warsaw
+role: boss
+pattern: marketplace-collect-payment-link
+theme: marketplace
+learning_objectives: [LO-10, LO-02, LO-05, LO-04, LO-16]
+difficulty: 4
+is_fraud: true
+device: marketplace
+setup: "Evening. Kasia is at her concert and Mateus is packing. Your stove listing has a new message."
+brands: [swaploft, kettle, larchwick]
+cast: [kasia]
+pressure:
+  timer: true
+  levers: [helpfulness, urgency, greed]
+  pusher:
+    messages:
+      - { at_seconds: 20, beat: release, text: "Kurier jest na dole!!", lang: pl, translation: "Courier's downstairs!!" }
+
+message:
+  app: { brand: swaploft }
+  listing: { title: "Camping stove", price: "€40.00" }
+  sender: { display: "user 3150", detail: "Swaploft buyer · user 3150" }
+  body: "Cześć! Biorę kuchenkę za 40 € i dorzucę 5 € za szybki odbiór 🙂 Rzadko tu zaglądam, piszmy dalej na Kettle: +48 5•• ••• •31. Chodzi o tę: swaploft.example/item/7702"
+  lang: pl
+  translation: "Hi! I'll take the stove for €40 and add €5 for a quick pick-up 🙂 I'm hardly ever on here, let's continue on Kettle: +48 5•• ••• •31. This one: swaploft.example/item/7702"
+  request: reply
+  ask:
+    text: "piszmy dalej na Kettle"
+    translation: "let's continue on Kettle"
+  phone_numbers: ["+48 5•• ••• •31"]
+  l10n_note: "Polish in-world text (Warsaw), translation inline. Buyer handles are neutral (GDD §2)."
+
+inspectables:
+  - target: sender.detail
+    reveal: "A buyer's account inside Swaploft's own chat, as a real buyer's would be. Anyone can open one, so it can't prove anything either way."
+    red_flag: false
+    type: sender
+  - target: link
+    reveal: "swaploft.example: Swaploft's own address, pointing at your listing. Anyone can paste a real link, so it can't prove anything either way."
+    red_flag: false
+    type: link
+  - target: reference
+    reveal: "Your own stove listing. It's public, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: phone_number
+    reveal: "A number for chatting. Real buyers share numbers too, so it can't prove anything either way. What matters is leaving Swaploft."
+    red_flag: false
+    type: phone_number
+  - target: request
+    reveal: "Asks you to leave Swaploft's chat for Kettle. Off the platform, Swaploft can't see the deal or protect it."
+    red_flag: true
+    type: request
+
+actions:
+  - id: move_chat_kettle
+    label: "Move the chat to Kettle"
+    kind: reply
+    outcome: chat_moved
+    pressure_target: true
+  - id: keep_in_swaploft
+    label: "Keep it in Swaploft: check your sales"
+    kind: check_with_platform
+    outcome: nothing_paid_yet
+  - id: report_buyer_3150
+    label: "Report the buyer in Swaploft"
+    kind: report
+    outcome: buyer_3150_reported
+  - id: ignore_buyer_3150
+    label: "Ignore it"
+    kind: ignore
+    outcome: buyer_3150_ignored
+
+beats:
+  - id: collect
+    device: messenger
+    arrives_after: 45
+    timer_seconds: 40
+    covered_by: [start]
+    message:
+      sender: { display: "+48 5•• ••• •31", detail: "+48 5•• ••• •31", new_contact: true }
+      body: "To ja, kupujący kuchenkę 🙂 Płatność już wysłana, dostawa kurierem w cenie. Żeby dostać pieniądze, odbierz swoją płatność tutaj: swaploft-safe-delivery.example/collect/3150. Kurier będzie za godzinę."
+      lang: pl
+      translation: "It's me, the stove buyer 🙂 Payment already sent, courier delivery included. To receive the money, collect your payment here: swaploft-safe-delivery.example/collect/3150. The courier comes in an hour."
+      request: enter_details
+      ask:
+        text: "Żeby dostać pieniądze, odbierz swoją płatność tutaj"
+        translation: "To receive the money, collect your payment here"
+      claims:
+        - text: "Płatność już wysłana, dostawa kurierem w cenie."
+          translation: "Payment already sent, courier delivery included."
+      references: ["kupujący kuchenkę"]
+    inspectables:
+      - target: sender.detail
+        reveal: "Not in your contacts: the number the buyer gave you in Swaploft. It is the buyer, so it can't tell you anything either way."
+        red_flag: false
+        type: sender
+      - target: link
+        reveal: "swaploft-safe-delivery.example. Read the end: the owner part is swaploft-safe-delivery.example, not swaploft.example."
+        red_flag: true
+        type: link
+      - target: reference
+        reveal: "Says it's the buyer for your stove. Anyone who saw the listing can say that, so it can't prove anything either way."
+        red_flag: false
+        type: reference
+      - target: claim
+        reveal: "Says they've paid. A real buyer might say so too; if it's true, it shows in your Swaploft sales, so the message can't prove anything either way."
+        red_flag: false
+        type: claim
+      - target: request
+        reveal: "A link to collect money. When you're paid, it shows inside Swaploft; nobody sends you a link to receive it."
+        red_flag: true
+        type: request
+    actions:
+      - id: enter_card_boss
+        label: "Enter your card details through the link"
+        kind: enter_details
+        outcome: card_typed_boss
+        pressure_target: true
+      - id: open_sales_boss
+        label: "Open your Swaploft sales yourself"
+        kind: check_with_platform
+        outcome: no_payment_shown
+      - id: block_report_boss
+        label: "Block and report"
+        kind: block
+        outcome: number_blocked_boss
+      - id: ignore_collect_boss
+        label: "Ignore it"
+        kind: ignore
+        outcome: collect_ignored_boss
+
+  - id: release
+    device: messenger
+    arrives_after: 45
+    timer_seconds: 40
+    covered_by: [start, collect]
+    message:
+      sender: { display: "+48 5•• ••• •31", detail: "+48 5•• ••• •31", new_contact: true }
+      body: "Kurier będzie za 30 minut! Twoja płatność jest wstrzymana, dopóki nie potwierdzisz jej w banku. Zaloguj się tutaj, żeby ją odblokować: swaploft-safe-delivery.example/release/3150"
+      lang: pl
+      translation: "Courier's here in 30 minutes! Your payment is on hold until you confirm it with your bank. Log in here to release it: swaploft-safe-delivery.example/release/3150"
+      request: log_in
+      ask:
+        text: "Zaloguj się tutaj, żeby ją odblokować"
+        translation: "Log in here to release it"
+      claims:
+        - text: "Twoja płatność jest wstrzymana, dopóki nie potwierdzisz jej w banku."
+          translation: "Your payment is on hold until you confirm it with your bank."
+    inspectables:
+      - target: sender.detail
+        reveal: "Not in your contacts: the same number the buyer gave you in Swaploft. It is the buyer, so it can't tell you anything either way."
+        red_flag: false
+        type: sender
+      - target: link
+        reveal: "swaploft-safe-delivery.example again. The owner part is swaploft-safe-delivery.example, not swaploft.example, and certainly not your bank."
+        red_flag: true
+        type: link
+      - target: claim
+        reveal: "Says a payment is waiting for you. If it were, it would show in your Swaploft sales, so the message can't prove anything either way."
+        red_flag: false
+        type: claim
+      - target: request
+        reveal: "A bank login to receive money. Nobody needs your banking password to pay you."
+        red_flag: true
+        type: request
+    actions:
+      - id: bank_login_boss
+        label: "Log in with your bank through the link"
+        kind: enter_details
+        outcome: bank_login_typed
+        pressure_target: true
+      - id: open_sales_release
+        label: "Open your Swaploft sales yourself"
+        kind: check_with_platform
+        outcome: still_nothing_paid
+      - id: block_report_release
+        label: "Block and report"
+        kind: block
+        outcome: release_blocked
+      - id: ignore_release
+        label: "Ignore it"
+        kind: ignore
+        outcome: release_ignored
+
+interrupts:
+  - id: kasia_concert_done
+    after_beat: release
+    on_fall: skip
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Kasia (Warsaw)", detail: "Saved contact: Kasia (Warsaw)" }
+      from_cast: kasia
+      body: "Concert done! I think I played well 🎻 Home by eleven."
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Kasia's saved contact, in your usual chat with her. That isn't proof on its own, so weigh it with what she asks for: nothing, she's on her way home."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_kasia_bravo
+        label: "Reply: bravo, see you soon!"
+        kind: proceed
+        outcome: kasia_bravo
+        pressure_target: true
+      - id: report_kasia_concert
+        label: "Report the message"
+        kind: report
+        outcome: kasia_concert_reported
+
+outcomes:
+  chat_moved:
+    narrative: "You move the chat to Kettle. A minute later, a Kettle message arrives from the number the buyer gave you."
+  nothing_paid_yet:
+    narrative: "Nothing paid yet. Real offers and payments show here. Then Kettle pings anyway: the number from the chat."
+  buyer_3150_reported:
+    narrative: "Reported with Swaploft's own button. Then Kettle pings anyway: the number from the chat."
+  buyer_3150_ignored:
+    narrative: "You leave it. Then Kettle pings anyway: the number from the chat."
+  card_typed_boss:
+    narrative: "\"Processing your payout…\" Nothing comes in. Your Larchwick app shows a card payment to an online shop you've never heard of."
+    sets_flags: [warsaw_bank_called]
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: change_password, category: secure }
+      - { step: report_buyer_in_app, category: report }
+      - { step: ask_buyer_to_cancel, category: harmful }
+      - { step: wait_for_money, category: harmful }
+  no_payment_shown:
+    narrative: "Your Swaploft sales: the stove is still listed, nothing paid. Real payments show here."
+  number_blocked_boss:
+    narrative: "Blocked and reported. The scammer tries again in a new chat."
+  collect_ignored_boss:
+    narrative: "You leave it. The number writes again."
+  bank_login_typed:
+    narrative: "\"Payment released!\" Nothing comes in. Your Larchwick app sends an alert: a sign-in from a new device."
+    sets_flags: [warsaw_bank_called]
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: change_password, category: secure }
+      - { step: report_buyer_in_app, category: report }
+      - { step: ask_buyer_to_cancel, category: harmful }
+      - { step: wait_for_money, category: harmful }
+  still_nothing_paid:
+    narrative: "Your Swaploft sales: nothing on hold, nothing paid. There was never a payment to release."
+  release_blocked:
+    narrative: "Blocked and reported. The chat goes quiet."
+  release_ignored:
+    narrative: "You leave it. No courier comes. The chat goes quiet."
+  kasia_bravo:
+    narrative: "Kasia: \"Thank you! And thanks for this afternoon.\""
+  kasia_concert_reported:
+    narrative: "You reported it. Careful is good; this one really was Kasia, back on her own account."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Off Swaploft, a link to collect, then your bank login."
+    what_works: "Money comes to you inside the app. Check there."
+  layer2:
+    message_flags:
+      - "Swaploft chat: leaving the platform is the first step of this scam."
+      - "First Kettle message: a link to collect money, on a look-alike address."
+      - "Second Kettle message: a bank login \"to release\" a payment. Nobody needs it to pay you."
+    notes: "Each step sounded small: a quicker chat, a link, a login. Compare the morning's real sale: a notice inside the app, money held by Swaploft, nothing to collect. If you've been paid, it shows in the app you open yourself."
+  device_tip: "On a real phone, keep buyer chats inside the marketplace app and open your sales list yourself. A courier never needs your bank login."
+  habit_card: stay-on-the-platform
+  already_clicked:
+    entered_details: "Typed card details? Block the card in your banking app now. Typed a bank login? Call your bank on the number on your card and change the password from the real app."
+  sources: [pl-nask-okazja-czy-pulapka-2025, eu-esas-ai-scams-factsheet-nl, pl-cert-monthly-2025-12, pl-cert-monthly-2026-01, pl-cert-monthly-2026-03]

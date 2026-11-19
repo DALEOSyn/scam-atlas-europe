@@ -1,0 +1,171 @@
+# 5-6 Kasia's real Kettle, taken over: "Can you send me a 6-digit payment code from your Larchwick app?"
+# (GDD §25.4 5-6; hijacked-friend-payment-code). The chapter's only scored code scenario (R12).
+# Fraud, difficulty 4, timer (slot length) + pusher at 20 s (same chat); interrupt at 12 s (Noor).
+# Levers affection, urgency, small_amount, helpfulness. Kasia is never at fault (R13): her account was taken
+# over at rehearsal, never shown how.
+# Checkables (4; R 1): sender D (W2), claim D, claim#2 D (neutral promise), request R. The lesson is the
+# code request (psych S3): no reveal, outcome or debrief says her story didn't fit.
+# CR-34: sending the code opens the Larchwick confirmation (code_confirm): "Confirm payment · €249.00 · to
+# TREMOLIK". Confirm = the fall; Decline / "Decline and call Kasia" keep the code-then-confirm cap
+# (producer ruling after the CR review: ★★, the balance star cap for code-then-confirm = 2 on the engine
+# branch). €249.00 is invented and never presented as typical. No prevalence claim. Refunds: never promised.
+id: warsaw-06-kasia-payment-code
+chapter: warsaw
+role: standard
+pattern: hijacked-friend-payment-code
+theme: friend
+twin_of: warsaw-04-kasia-twelve-euros
+learning_objectives: [LO-05, LO-07, LO-16]
+difficulty: 4
+is_fraud: true
+device: messenger
+brands: [kettle, larchwick, tremolik]
+cast: [kasia, noor]
+pressure:
+  timer: true
+  levers: [affection, urgency, small_amount, helpfulness]
+  pusher:
+    messages:
+      - { at_seconds: 20, text: "Please, they're waiting at the till 😬" }
+
+message:
+  sender: { display: "Kasia (Warsaw)", detail: "Saved contact: Kasia (Warsaw)" }
+  earlier:
+    - { when: "This morning", body: "Tape's in the hall if you need it 📦" }
+    - { when: "This afternoon", body: "Leaving for rehearsal!" }
+  body: "Help! I'm at the music shop for new strings and my card's been declined 😩 Can you send me a 6-digit payment code from your Larchwick app? I'll pay you back tonight, promise."
+  request: share_code
+  ask: { text: "Can you send me a 6-digit payment code from your Larchwick app?" }
+  claims:
+    - text: "my card's been declined"
+    - text: "I'll pay you back tonight, promise."
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows Kasia's saved contact, in your usual chat with her, as a real message from her would. An account can be taken over and show the same contact, so it can't prove anything either way. Judge the request."
+    red_flag: false
+    type: sender
+  - target: claim
+    reveal: "An excuse for asking. Real friends' cards do get declined, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: claim#2
+    reveal: "A promise to pay you back. Real friends say this too, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "A payment code from your banking app. A code like this pays from your account once you confirm, wherever it's typed. Never send it to anyone, even a friend."
+    red_flag: true
+    type: request
+
+actions:
+  - id: send_payment_code
+    label: "Make a code and send it to her"
+    kind: share_code
+    next_beat: code_confirm
+    pressure_target: true
+  - id: call_kasia_saved
+    label: "Call Kasia's saved number (a normal call)"
+    kind: call_back_known
+    outcome: kasia_in_rehearsal
+  - id: report_kasia_chat
+    label: "Report the chat"
+    kind: report
+    outcome: kasia_chat_reported
+  - id: ignore_kasia_chat
+    label: "Ignore it"
+    kind: ignore
+    outcome: kasia_chat_ignored
+
+beats:
+  - id: code_confirm
+    device: banking
+    message:
+      payee: { name: "TREMOLIK", amount: "€249.00", code_confirm: true }
+      request: pay
+    inspectables:
+      - target: payee.name
+        reveal: "Not Kasia: a shop you're not in."
+        red_flag: true
+        type: payee
+    actions:
+      - id: confirm_tremolik
+        label: "Confirm"
+        kind: pay
+        outcome: paid_tremolik
+        pressure_target: true
+      - id: decline_call_kasia
+        label: "Decline and call Kasia"
+        kind: call_back_known
+        outcome: declined_kasia_called
+      - id: decline_tremolik
+        label: "Decline"
+        kind: ignore
+        outcome: declined_tremolik
+
+interrupts:
+  - id: noor_cold
+    at_seconds: 12
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Noor", detail: "Saved contact: Noor" }
+      from_cast: noor
+      body: "inspector, quick q: is Warsaw cold?? packing for a trip"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Noor's saved contact, in your usual chat with her. That isn't proof on its own, so weigh it with what she asks for: a weather report."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_noor_cold
+        label: "Reply: pack a proper coat"
+        kind: proceed
+        outcome: noor_coat
+        pressure_target: true
+      - id: report_noor_cold
+        label: "Report the message"
+        kind: report
+        outcome: noor_cold_reported
+
+outcomes:
+  paid_tremolik:
+    narrative: "You confirm, as you would at a till. Your Larchwick app shows €249.00 paid to TREMOLIK. \"Thanks!! 😘\" Then: \"It didn't go through, can you send one more?\""
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - step: tell_real_person
+        category: warn
+      - { step: report_account_in_app, category: report }
+      - { step: send_code_to_cancel, category: harmful }
+      - { step: reply_ask_money_back, category: harmful }
+  declined_kasia_called:
+    narrative: "You decline: nothing leaves your account. Kasia picks up between pieces: \"Strings? I'm in rehearsal, my phone was in my bag. Someone's in my Kettle!\""
+  declined_tremolik:
+    narrative: "You decline: nothing leaves your account. The chat pings again: \"Did you send it??\""
+  kasia_in_rehearsal:
+    narrative: "Kasia picks up between pieces: \"Strings? I'm in rehearsal, my phone was in my bag. Someone's in my Kettle!\""
+  kasia_chat_reported:
+    narrative: "Reported. Now call Kasia on her number, a normal call, so she can get her account back."
+  kasia_chat_ignored:
+    narrative: "You leave it. Two more pings, then nothing. Kasia still doesn't know her Kettle was taken over."
+  noor_coat:
+    narrative: "Noor: \"a PROPER coat. noted 🧥\""
+  noor_cold_reported:
+    narrative: "You reported it. Careful is good; this one really was Noor, packing."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Her real chat, but a code from your bank."
+    what_works: "Never send codes; call her saved number."
+  layer2:
+    message_flags: []
+    notes: "A Kettle call goes to whoever holds the account; a normal phone call goes to her SIM. Read who gets the money before you confirm anything in your app: here it was a shop, not Kasia. Compare this afternoon's real request: a normal transfer, to her own account, that you start yourself. A payment code from your banking app is money: only type it where you are paying yourself, and read what you're confirming."
+  device_tip: "In a real banking app, the confirmation screen names the amount and who gets it. Read both before you confirm, every time."
+  habit_card: codes-are-only-for-you
+  already_clicked:
+    shared_code: "Sent a code? If the app asks you to confirm, don't. If you already confirmed, call your bank now on the number on your card. Then call your friend another way."
+  sources: [pl-policja-psp-na-znajomego, pl-nask-metoda-na-2020, pl-uknf-seniors-payments-2025, pl-cert-monthly-2026-07, nl-politie-hulpvraagfraude-2025, pl-blik-podszywacze-2026]

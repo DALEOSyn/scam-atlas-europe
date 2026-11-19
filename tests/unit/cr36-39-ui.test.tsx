@@ -10,6 +10,11 @@ import { DeviceView } from '../../src/ui/devices/Device.tsx';
 import type { DeviceProps } from '../../src/ui/devices/types.ts';
 import { FairmeasurePanel, RegisterResult, registerResultLines } from '../../src/ui/Fairmeasure.tsx';
 import { listFiles, readYaml } from '../../scripts/lib/content.ts';
+import { brandProjection } from '../../scripts/lib/yaml-module.ts';
+import { registerAvailable, registerEntries } from '../../src/content/brands.ts';
+import { balance } from '../../src/content/balance.ts';
+import { ScenarioView } from '../../src/ui/ScenarioView.tsx';
+import { parse } from 'yaml';
 import { ROOT } from '../content/fixtures.ts';
 
 beforeEach(() => {
@@ -98,7 +103,7 @@ describe('CR-38: Fairmeasure', () => {
   it('result cards as lists: "not on the register" always says a clean warning list proves nothing', () => {
     expect(registerResultLines({ firm: 'Quorvex Wealth', result: 'not_listed' })).toEqual([
       'Quorvex Wealth: not on the register.',
-      'Warning list: nothing.',
+      'Warning list: no warning found.',
       "Not on the register means don't pay, even when the warning list is clean.",
     ]);
     expect(registerResultLines({ firm: 'Ellisfen Invest', result: 'authorised', address: '3 Quillon Street, Dublin', phone: '+353 1 ••• ••42' })).toEqual([
@@ -134,6 +139,24 @@ describe('CR-38: Fairmeasure', () => {
     expect(screen.getByText('Two lists: firms allowed to sell investments, and firms the regulator warns about.')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Got it' }));
     expect(seen).toHaveBeenCalled();
+  });
+});
+
+describe('CR-38 (psych M1): no empty register in the menu', () => {
+  it('offered only when the register lists an authorised firm: absent with the shipped brands.yaml, present with the fixture register', () => {
+    const shipped = brandProjection(parse(readFileSync(join(ROOT, 'content', 'brands.yaml'), 'utf8')));
+    const fixtureBrands = brandProjection(parse(readFileSync(join(ROOT, 'tests', 'fixtures', 'brands-register.yaml'), 'utf8')));
+    expect(registerAvailable(registerEntries(shipped))).toBe(false);
+    expect(registerAvailable(registerEntries([...shipped, ...fixtureBrands]))).toBe(true);
+    // A warning list alone is not a register to look things up in.
+    expect(registerAvailable([{ name: 'Brindlecove Bonds', status: 'warning_list' }])).toBe(false);
+  });
+  it('the HUD menu of a scenario has no "Fairmeasure register" item with the shipped brands', () => {
+    const s = fixture('cr36-voice-call.yaml');
+    const { container } = render(<ScenarioView scenario={s} ctx={{ balance, slot: 4, settings: { timerMode: 'off', pushers: true }, stress: 10 }} onDone={() => undefined} />);
+    fireEvent.click(container.querySelector('[data-hud="menu"]') as HTMLElement);
+    expect(container.querySelector('#hud-menu')?.hasAttribute('hidden')).toBe(false);
+    expect(container.querySelector('[data-menu="register"]')).toBeNull();
   });
 });
 

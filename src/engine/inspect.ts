@@ -118,15 +118,18 @@ export function shownText(device: Device, m: Message, target: string, links: rea
       // CR-36: "Sounds like Grandpa Teo" (cast display name).
       return m.voice ? t('call_sounds_like', { name: castMember(m.voice.sounds_like)?.name ?? m.voice.sounds_like }) : undefined;
     case 'qr.mount':
-      return m.qr?.mount ? qrMountText(device, m.qr.mount) : undefined;
+      return m.qr?.mount ? qrMountText(device, m.qr.mount, m.qr.surface) : undefined;
     default:
       return device === 'call' ? m.sender?.detail : undefined;
   }
 }
 
 /** CR-37: the text alternative for how a code is attached (A6). */
-export function qrMountText(device: Device, mount: 'printed' | 'sticker'): string {
-  return mount === 'sticker' ? t('qr_mount_sticker') : device === 'letter' ? t('qr_mount_printed_letter') : t('qr_mount_printed');
+export function qrMountText(device: Device, mount: 'printed' | 'sticker', surface?: string): string {
+  if (mount === 'sticker') return t('qr_mount_sticker');
+  // S1: a qr beat may name what the code is printed on ("panel" on a parking meter); else a neutral "it".
+  if (surface) return t('qr_mount_printed_on', { surface });
+  return device === 'letter' ? t('qr_mount_printed_letter') : t('qr_mount_printed');
 }
 
 /** All checkables of a beat in reading order, each with its reveal (or the neutral filler). */

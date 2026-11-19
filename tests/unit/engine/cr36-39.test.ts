@@ -114,9 +114,20 @@ describe('CR-37: how a QR code is attached', () => {
   });
   it('text alternative (A6): sticker, printed panel, printed letter', () => {
     expect(qrMountText('qr', 'sticker')).toBe('Sticker stuck over the printed code');
-    expect(qrMountText('qr', 'printed')).toBe('Printed on the panel');
+    expect(qrMountText('qr', 'printed')).toBe('Printed on it');
+    expect(qrMountText('qr', 'printed', 'panel')).toBe('Printed on the panel');
     expect(qrMountText('letter', 'printed')).toBe('Printed on the letter');
     expect(checkablesOf({ ...s, id: 'start' }).find((c) => c.target === 'qr.mount')?.shown).toBe('Sticker stuck over the printed code');
+  });
+  it('S1: surface names what a printed code is printed on, and needs mount: printed', () => {
+    const printed = clone(raw('cr37-qr-sticker.yaml'));
+    Object.assign(msg(printed).qr as Raw, { mount: 'printed', surface: 'panel' });
+    (ins(printed).find((i) => i.target === 'qr.mount') as Raw).red_flag = false;
+    expect(schemaErrors(printed)).toEqual([]);
+    expect(checkablesOf({ ...scenarioSchema.parse(printed), id: 'start' }).find((c) => c.target === 'qr.mount')?.shown).toBe('Printed on the panel');
+    const sticker = clone(raw('cr37-qr-sticker.yaml'));
+    (msg(sticker).qr as Raw).surface = 'panel';
+    expect(schemaErrors(sticker).join('\n')).toMatch(/surface names what a printed code is printed on: it needs mount: printed/);
   });
   it('validator: red flag only on a sticker ("printed" is never proof), never "It fits", type qr_mount', () => {
     const printed = clone(raw('cr37-qr-sticker.yaml'));

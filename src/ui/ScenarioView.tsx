@@ -29,7 +29,7 @@ import { deadlineText, WHAT_NOW_KEYS } from './labels.ts';
 import { RichText } from './RichText.tsx';
 import { SettingsPanel } from './Settings.tsx';
 import { COACH_FAIRMEASURE, FairmeasurePanel, RegisterResult } from './Fairmeasure.tsx';
-import { registerEntries } from '../content/brands.ts';
+import { registerAvailable, registerEntries } from '../content/brands.ts';
 import { linePace, readingHoldSeconds, unrevealedTargets } from './text.ts';
 import styles from './ScenarioView.module.css';
 
@@ -645,7 +645,8 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
               onQuit: () => onQuit?.(),
               onOpen: (open) => runner.freeze('pause_menu', open),
               onSettings: settings && onSettings ? openSettings : undefined,
-              onRegister: openRegister,
+              // CR-38 (psych M1): only when the register lists at least one authorised firm.
+              onRegister: registerAvailable() ? openRegister : undefined,
             }}
           />
         </div>

@@ -445,7 +445,7 @@
   "bank_confirm_code": "Payment code used",
   "call_sounds_like": "Sounds like {name}",
   "qr_mount_sticker": "Sticker stuck over the printed code",
-  "qr_mount_printed": "Printed on the panel",
+  "qr_mount_printed": "Printed on it",
   "qr_mount_printed_letter": "Printed on the letter",
   "qr_mount_label": "How the code is attached:",
   "element_voice": "Voice",
@@ -465,9 +465,10 @@
   "register_address": "Address: {address}",
   "register_phone": "Phone: {phone}",
   "register_result_not_listed": "{firm}: not on the register.",
-  "register_warning_nothing": "Warning list: nothing.",
+  "register_warning_nothing": "Warning list: no warning found.",
   "register_not_listed_rule": "Not on the register means don't pay, even when the warning list is clean.",
   "register_result_warning": "{firm}: on the warning list. Not on the register.",
   "register_warning_rule": "Don't pay.",
-  "register_warning_clean_rule": "A name missing from this list proves nothing: scammers change names."
+  "register_warning_clean_rule": "A name missing from this list proves nothing: scammers change names.",
+  "qr_mount_printed_on": "Printed on the {surface}"
 }

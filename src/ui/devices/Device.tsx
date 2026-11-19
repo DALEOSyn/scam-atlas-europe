@@ -741,7 +741,7 @@ function QrView({ m, device, chip = true, inChat = false }: { m: Message; device
     return () => clearTimeout(id);
   }, [found]);
   if (!qr) return null;
-  const mount = qr.mount && !inChat ? qrMountText(device, qr.mount) : undefined;
+  const mount = qr.mount && !inChat ? qrMountText(device, qr.mount, qr.surface) : undefined;
   const sticker = qr.mount === 'sticker' && !inChat;
   const alt = inChat
     ? t('qr_alt_chat', { host: qr.destination })

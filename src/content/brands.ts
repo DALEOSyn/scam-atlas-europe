@@ -71,3 +71,11 @@ export function registerEntries(registry: readonly BrandMark[] = brands): Regist
     .flatMap((b) => (b.register ? [{ name: b.name, ...b.register }] : []))
     .sort((a, b) => a.name.localeCompare(b.name, 'en'));
 }
+
+/**
+ * CR-38 (psych M1): the Fairmeasure view is offered only when the register has at least one authorised firm,
+ * so a player never opens an empty register ("not on the register" would be true of every firm).
+ */
+export function registerAvailable(entries: readonly RegisterEntry[] = registerEntries()): boolean {
+  return entries.some((e) => e.status === 'authorised');
+}

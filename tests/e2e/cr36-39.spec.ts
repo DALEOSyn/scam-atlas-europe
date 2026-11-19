@@ -71,7 +71,7 @@ for (const width of [320, 1280]) {
     await press(page, 'Look Quorvex up on the Fairmeasure register yourself');
     const card = page.locator('[data-register-result="not_listed"]');
     await expect(card).toBeVisible();
-    await expect(card.locator('li')).toHaveText(['Quorvex Wealth: not on the register.', 'Warning list: nothing.', "Not on the register means don't pay, even when the warning list is clean."]);
+    await expect(card.locator('li')).toHaveText(['Quorvex Wealth: not on the register.', 'Warning list: no warning found.', "Not on the register means don't pay, even when the warning list is clean."]);
     await noOverflow(page);
     await axeClean(page);
     expect(await done(page)).toMatchObject({ stars: 3 });

@@ -123,8 +123,14 @@ export const qrSchema = z
      * may be a red flag. Required on every qr / letter QR beat from slot CR37_FROM_SLOT (rules.ts), for parity.
      */
     mount: z.enum(QR_MOUNTS).optional(),
+    /**
+     * CR-37 (S1): what a printed code is printed on, for the text "Printed on the {surface}" (e.g. "panel" on a
+     * parking meter). Without it: "Printed on it" (qr) or "Printed on the letter" (letter). Needs `mount: printed`.
+     */
+    surface: z.string().regex(/^[a-z][a-z' -]{0,29}$/u, 'surface is a short lower-case noun such as panel or poster').optional(),
   })
-  .strict();
+  .strict()
+  .refine((q) => q.surface === undefined || q.mount === 'printed', { message: 'surface names what a printed code is printed on: it needs mount: printed (CR-37)', path: ['surface'] });
 
 export const senderSchema = z
   .object({

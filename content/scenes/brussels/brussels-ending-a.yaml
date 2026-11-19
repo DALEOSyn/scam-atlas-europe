@@ -1,0 +1,43 @@
+# Brussels ending A (GDD §30.6, STORY §3.10 part 1; sensitive; 3 panels of 4): the player reported the profile
+# at an arc slot up to 6, with nothing in. Plays after Teo's chat (the reveal inside it) and the timeline.
+# Teo's fixed line "Same picture, different name. Good thing I asked you." is split over two panels, word for
+# word, to show "sheepish, then proud" (STORY §3.10). It is true in every branch of Teo's chat: he asked you.
+# Psych note (GDD §30.14 item 9): every A player already reported earlier, so the "never too late to start"
+# line is not in this scene (it is in A′ only, and gated there). Adaeze's line, one of two (R22(2)):
+# - arc_told_someone (Teo's chat: the photo check together, or "Tell him to report the profile"): "Teo asked
+#   you, and you helped him check. That's what works."
+# - otherwise (Teo's chat: "stop replying" or "A little can't hurt"): the player's own early report, in plain
+#   words, "And you reported yours early. That's what works." (no "told someone" without the flag).
+id: brussels-ending-a
+chapter: brussels
+slot: resolution
+sensitive: true
+if_arc_ending: [A]
+panels:
+  - backdrop: brussels-office
+    crop: right
+    speaker: teo
+    expression: sheepish
+    flip: true
+    line: "Same picture, different name."
+    alt: "Teo with a sheepish smile by the desk with the laptop, under the high window."
+  - backdrop: brussels-office
+    crop: left
+    speaker: teo
+    expression: proud
+    line: "Good thing I asked you."
+    alt: "Teo, proud, by the stacked boxes and the noticeboard."
+  - backdrop: brussels-office
+    crop: centre
+    speaker: adaeze
+    expression: calm
+    if_flag: arc_told_someone
+    line: "Teo asked you, and you helped him check. That's what works."
+    alt: "Adaeze, calm, at the desk with the laptop and the small projector."
+  - backdrop: brussels-office
+    crop: centre
+    speaker: adaeze
+    expression: calm
+    unless_flag: arc_told_someone
+    line: "And you reported yours early. That's what works."
+    alt: "Adaeze, calm, at the desk with the laptop and the small projector."

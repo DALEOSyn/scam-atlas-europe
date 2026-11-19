@@ -89,8 +89,9 @@ describe('Brussels chapter file (GDD §30.1, §30.11)', () => {
     expect(dc).toContainEqual({ step: 'tell_trusted_adult', category: 'stop' });
     expect(dc).toContainEqual({ step: 'stop_paying', category: 'stop' });
   });
-  it('no story scenes yet (part 2): `scenes` is left out, which the validator allows', () => {
-    expect(brussels.scenes).toBeUndefined();
+  it('story scenes (part 2) are wired in; their wording and gating are pinned in brussels-scenes.test.ts', () => {
+    expect(brussels.scenes?.arrival).toBe('brussels-arrival');
+    expect(brussels.scenes?.resolution).toContain('brussels-open-evening');
   });
   it('the Atlas page links the four habit cards of STORY §3.10', () => {
     expect(brussels.atlas_cards).toEqual(['easy-money-costs-you', 'nobody-needs-your-screen', 'a-real-friend-never-needs-your-money', 'ask-someone']);

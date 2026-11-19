@@ -1,0 +1,40 @@
+# Brussels ending A′ (GDD §30.6, STORY §3.10 part 1; sensitive; 3 panels of 4): the arc closed by a second
+# Close at slot 1, with nothing in. Plays after Teo's chat (the reveal inside it) and the timeline.
+# Teo's fixed line "Same picture, different name. Good thing I asked you." is split over two panels, word for
+# word, to show "sheepish, then proud" (STORY §3.10).
+# Psych note (GDD §30.14 item 9): "It's never too late to start" shows only to a player who has told nobody:
+# A′ (no earlier report, no "Tell me now") and unless_flag arc_told_someone. A player who did the photo check
+# with Teo or told him to report gets "Teo asked you, and you helped him check. That's what works." instead.
+id: brussels-ending-a-prime
+chapter: brussels
+slot: resolution
+sensitive: true
+if_arc_ending: [A_prime]
+panels:
+  - backdrop: brussels-office
+    crop: right
+    speaker: teo
+    expression: sheepish
+    flip: true
+    line: "Same picture, different name."
+    alt: "Teo with a sheepish smile by the desk with the laptop, under the high window."
+  - backdrop: brussels-office
+    crop: left
+    speaker: teo
+    expression: proud
+    line: "Good thing I asked you."
+    alt: "Teo, proud, by the stacked boxes and the noticeboard."
+  - backdrop: brussels-office
+    crop: centre
+    speaker: adaeze
+    expression: calm
+    if_flag: arc_told_someone
+    line: "Teo asked you, and you helped him check. That's what works."
+    alt: "Adaeze, calm, at the desk with the laptop and the small projector."
+  - backdrop: brussels-office
+    crop: centre
+    speaker: adaeze
+    expression: calm
+    unless_flag: arc_told_someone
+    line: "Telling someone early is what works. It's never too late to start."
+    alt: "Adaeze, calm, at the desk with the laptop and the small projector."

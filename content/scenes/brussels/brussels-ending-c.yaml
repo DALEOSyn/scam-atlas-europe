@@ -1,0 +1,52 @@
+# Brussels ending C (GDD §30.6, STORY §3.10 part 1; sensitive; 4 panels of 5): money went in and "Tell me now"
+# was not used. Plays after the arc damage control, the recovery-agency test and the timeline.
+# Lines word for word from STORY §3.10: Adaeze (warm) puts the blame on the lie; Adaeze (calm) gives the
+# recovery panel, true in every branch, no refund promise and no amount; Teo (warm) last, his own Home slip as
+# the coping model ("It happens").
+# Psych note (GDD §30.14 item 9): never "you checked before anything else" when money went in. Who reaches C:
+# (a) the arc still open on entry: the close beat, whose photo check and report both set arc_told_someone, so
+# "And you checked in the end. That's what works."; (b) the arc closed earlier by a report, with money in: the
+# reveal only, no flag, so the truthful variant "And you reported it. That's what works." (no "told someone"
+# without the flag, R22(2)).
+# Deviation (GDD §30.2 part 2 note): "The list below" is now "The Help link", since the scene's help link
+# ("Need to talk? Where to get help") sits in the heading row, above the panels.
+id: brussels-ending-c
+chapter: brussels
+slot: resolution
+sensitive: true
+if_arc_ending: [C]
+panels:
+  - backdrop: brussels-office
+    crop: centre
+    speaker: adaeze
+    expression: warm
+    line: "You were kind to someone who turned out not to exist. The lie was theirs, not yours."
+    alt: "Adaeze smiling gently at the desk with the laptop, under the high window."
+  - backdrop: brussels-office
+    crop: centre
+    speaker: adaeze
+    expression: calm
+    if_flag: arc_told_someone
+    line: "And you checked in the end. That's what works."
+    alt: "Adaeze, calm, at the desk with the laptop and the small projector."
+  - backdrop: brussels-office
+    crop: centre
+    speaker: adaeze
+    expression: calm
+    unless_flag: arc_told_someone
+    line: "And you reported it. That's what works."
+    alt: "Adaeze, calm, at the desk with the laptop and the small projector."
+  - backdrop: brussels-office
+    crop: left
+    speaker: adaeze
+    expression: calm
+    line: "Stop paying, call the bank on the number on your card, and keep the chats. The Help link shows who else can help."
+    alt: "Adaeze, calm, by the stacked boxes and the noticeboard."
+  - backdrop: brussels-office
+    crop: right
+    speaker: teo
+    expression: warm
+    flip: true
+    with: { id: adaeze, expression: calm }
+    line: "I typed my card into a prize page, remember? It happens. What counts is what you do next, and you're doing it."
+    alt: "Teo smiling beside a big plant under the high window; Adaeze listens, calm."

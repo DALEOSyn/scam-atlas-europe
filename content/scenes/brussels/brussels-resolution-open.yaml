@@ -1,0 +1,27 @@
+# Brussels resolution, opening (GDD §30.2 beat 3, CR-43(d)): the first scene of the resolution list, after the
+# arc finale block (§30.6). Variant brussels_bank_called (story-only, set by every boss fall outcome:
+# pointer_moves_b1, pointer_moves_b2, logged_in_phone_off; STORY §4.2 rule 5, R17 approach) is the first panel,
+# Adaeze (calm), word for word from GDD §30.2: it names the step already taken and Adaeze's plan (IT checks the
+# laptop), true in every fall branch; no blame, no refund promise, no amount, never "again".
+# Deviation (GDD §30.2, part 2 note): the validator needs one panel shown to everyone in every scene, so the
+# opening has a second, shared panel (Adaeze, warm) that sets the evening before the Open Evening (the close
+# beat's "The Open Evening is tomorrow"). It names nothing from the finale, so it is true for every ending.
+id: brussels-resolution-open
+chapter: brussels
+slot: resolution
+panels:
+  - backdrop: brussels-office
+    crop: left
+    speaker: adaeze
+    expression: calm
+    if_flag: brussels_bank_called
+    line: "The bank was called straight away, the right first step. We'll see what it can do. IT will check the laptop too."
+    alt: "Adaeze, calm, at the desk with the laptop and the small projector, boxes stacked beside her."
+  - backdrop: brussels-office
+    crop: right
+    speaker: adaeze
+    expression: warm
+    flip: true
+    caption: "That evening, in the office."
+    line: "The Open Evening is tomorrow. Before we carry the boxes over, sit with me a minute."
+    alt: "Adaeze smiling by the desk under the high window, a big plant beside her."

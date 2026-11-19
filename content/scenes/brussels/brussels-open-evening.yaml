@@ -1,0 +1,50 @@
+# Brussels resolution, part 2: the Open Evening (GDD §30.2, STORY §1.5, §3.10; all players; 5 panels): the last
+# scene of the resolution list, so it ends on the If-then panel and has no if_arc_ending (CR-43(d)).
+# Noor (relieved), word for word: true in every branch, since Noor never shares and always asks you and her mum
+# (R19(1), STORY §3.10 constraint). The video wall: caption "Everyone you met, on one wall." The 3 × 3 portrait
+# grid (ART_DIRECTION §7.6) is not built yet, so the alt describes only the hall's big plain screen.
+# Flip the postcard (CR-44(a)): the player picks a postcard and Teo reads its cue; pose warm-postcard.
+# Adaeze (proud): her last line, word for word, the panel just before Noor's If-then (R19(3)) and the end
+# screen's epigraph (CR-44(b)), shown to everyone.
+# If-then (Noor; Brussels exception, STORY §4.4), word for word, with the extra line under it (GDD §30.2).
+# Noor has no proud expression in her SVG; calm, not a phone pose (her action is to say no and ask someone).
+id: brussels-open-evening
+chapter: brussels
+slot: resolution
+title: "The Open Evening"
+panels:
+  - backdrop: brussels-hall
+    crop: left
+    speaker: noor
+    expression: relieved
+    caption: "The next evening. The hall fills up."
+    line: "I nearly said yes. Then I asked you, and I told Mum too. Asking was the smart bit."
+    alt: "Noor, relieved, under the bunting by a tall window, rows of chairs behind her."
+  - backdrop: brussels-hall
+    crop: centre
+    caption: "Everyone you met, on one wall."
+    alt: "The hall's big screen above rows of chairs, bunting overhead."
+  - backdrop: brussels-hall
+    crop: right
+    speaker: teo
+    expression: warm-postcard
+    flip: true
+    flip_postcard: true
+    alt: "Teo smiling, holding up a postcard, by the table with cups and a plant."
+  - backdrop: brussels-hall
+    crop: centre
+    speaker: adaeze
+    expression: proud
+    epigraph: true
+    line: "Pause. Check on a number or app you already know. Ask someone. Then be the someone for the next person."
+    alt: "Adaeze, proud, in front of the big screen, chairs in rows below the bunting."
+  - backdrop: brussels-hall
+    crop: right
+    speaker: noor
+    expression: calm
+    flip: true
+    if_then:
+      cue: "If an easy-money offer wants my bank login or card,"
+      action: "then I say no and ask someone first."
+      extra: "Nobody needs your screen, either."
+    alt: "Noor, calm, by the table with cups and a plant, under the bunting."

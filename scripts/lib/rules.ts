@@ -10,11 +10,12 @@
  *   `status: draft` chapters, so chapters can be written incrementally.
  */
 import { deriveCheckables } from '../../src/content/checkables.ts';
-import { classOf, isFall, starsFor, truthOf } from '../../src/engine/scoring.ts';
+import { classOf, isFall, isUnscoredClass, starsFor, truthOf } from '../../src/engine/scoring.ts';
 import { choiceLineText, nextTimeText, overCautionOf } from '../../src/engine/choiceText.ts';
 import type { ChoiceLine } from '../../src/engine/debrief.ts';
 import { lookup } from '../../src/i18n/index.ts';
 import {
+  CR17_ASK_REQUESTS,
   HIGH_STAKES_REQUESTS,
   LANGUAGE_TYPES,
   NEVER_PROOF_TYPES,
@@ -177,7 +178,8 @@ export function anyFall(s: Scenario, balance: Registries['balance']): boolean {
 export function choiceLines(s: Scenario, balance: Registries['balance']): string[] {
   const truth = truthOf(s);
   const below3 = (cls: ReturnType<typeof classOf>) => {
-    if (cls === 'meta' || isFall(cls, truth)) return false;
+    // Pause and start_transfer (step, CR-18) never decide, so they never name a "You chose" line.
+    if (isUnscoredClass(cls) || isFall(cls, truth)) return false;
     if (cls === 'engage') return true;
     const st = starsFor(balance, cls, truth);
     return typeof st === 'number' ? st < 3 : true;
@@ -240,13 +242,15 @@ const ACTION_RANK_NAMES = ["the message's own action", 'verify', 'other proceed/
 
 /**
  * Rank of an action in the canonical order: 1 the message's own action (its pressure_target, or with
- * request: none the first proceed/engage/comply action), 2 verify, 3 any other proceed/engage/comply,
- * 4 report, 5 dismiss. Meta actions (pause) and others rank with dismiss.
+ * request: none the first proceed/engage/comply/step action), 2 verify, 3 any other
+ * proceed/engage/comply/step (start_transfer, CR-18: "Set up the transfer" sits with the doing
+ * actions), 4 report, 5 dismiss. Meta actions (pause) and others rank with dismiss.
  */
 export function actionRank(m: Pick<Message, 'request'>, actions: readonly Action[], a: Action, balance: Pick<Registries['balance'], 'action_kinds'>): number {
   const c = classOf(balance, a.kind);
-  const doing = c === 'proceed' || c === 'engage' || c === 'comply';
-  const own = m.request === 'none' ? actions.find((x) => ['proceed', 'engage', 'comply'].includes(classOf(balance, x.kind))) : actions.find((x) => x.pressure_target);
+  const doingClasses = ['proceed', 'engage', 'comply', 'step'];
+  const doing = doingClasses.includes(c);
+  const own = m.request === 'none' ? actions.find((x) => doingClasses.includes(classOf(balance, x.kind))) : actions.find((x) => x.pressure_target);
   if (own === a) return 1;
   if (c === 'verify') return 2;
   if (doing) return 3;
@@ -356,6 +360,24 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
         );
         break;
       }
+    }
+  }
+  // CR-18(b): the banking beat opened by start_transfer offers at least one verify and one dismiss.
+  for (const b of story) {
+    for (const a of b.actions) {
+      if (a.kind !== 'start_transfer' || a.next_beat === undefined) continue;
+      if (cls(a) !== 'step') errors.push(`${b.where}: action "${a.id}": start_transfer must be class step in balance.yaml (CR-18)`);
+      const target = s.beats.find((x) => x.id === a.next_beat);
+      if (!target) continue;
+      if (!target.actions.some((x) => cls(x) === 'verify')) errors.push(`beat "${target.id}": the banking beat opened by start_transfer needs at least one verify action (CR-18(b))`);
+      if (!target.actions.some((x) => cls(x) === 'dismiss')) errors.push(`beat "${target.id}": the banking beat opened by start_transfer needs at least one dismiss action, e.g. "Cancel" (CR-18(b))`);
+    }
+  }
+  // CR-23: "Matches" only says whose account it is, on genuine and fraud alike; its reveal never opens like a genuine fit.
+  for (const b of beats) {
+    if (b.device !== 'banking' || b.message.payee?.name_check !== 'match') continue;
+    for (const ins of b.inspectables) {
+      if (ins.target === 'payee.name_check' && /^\s*It fits\b/i.test(ins.reveal)) errors.push(`${b.where}: payee.name_check: a "match" reveal must not start with "It fits" (a match only shows whose account it is; CR-23)`);
     }
   }
   // Shared a code (ruling QA m10): code-sharing and approval actions need their own "If you already…" advice.
@@ -551,6 +573,21 @@ export function chapterRules(c: Chapter, fileBase: string, scenarios: Scenario[]
         if (!['sms', 'messenger', 'email', 'social', 'call'].includes(b.device)) continue;
         if ((b.message.request === 'share_code' || b.message.request === 'approve') && !b.message.ask) {
           errors.push(`scenario "${s.id}" ${b.where}: request ${b.message.request} needs message.ask (the sentence that asks for the code or approval)`);
+        }
+      }
+    }
+  }
+
+  // CR-17(a) (Amsterdam, reused by Paris): from slot 2 on, every scored beat whose message asks to pay,
+  // enter details or reply quotes that sentence in message.ask, genuine or fraud alike, so "always tag
+  // the request" cannot tell twins apart. Banking beats are exempt: their payee is the checkable.
+  if (c.slot >= 2) {
+    for (const s of scenarios) {
+      if (!SCORED_ROLES.includes(s.role)) continue;
+      for (const b of beatsOf(s)) {
+        if (b.interrupt || !b.scored || b.device === 'banking') continue;
+        if (CR17_ASK_REQUESTS.includes(b.message.request) && !b.message.ask) {
+          errors.push(`scenario "${s.id}" ${b.where}: request ${b.message.request} needs message.ask from slot 2 on (CR-17: the sentence that asks, genuine or fraud)`);
         }
       }
     }

@@ -19,7 +19,7 @@ import type { CheckableView, RunnerContext, RunnerLogEntry, RunnerState, RunnerV
 import { t } from '../i18n/index.ts';
 import { AnnounceContext } from './Announcer.tsx';
 import { CheckCard, CheckContext, DetailsList, type CheckApi } from './check/Check.tsx';
-import { channelKind, DeviceView, deviceHeading } from './devices/Device.tsx';
+import { actionsInDevice, channelKind, DeviceView, deviceHeading, nameCheckResultId, visibleLines } from './devices/Device.tsx';
 import { Translate } from './devices/parts.tsx';
 import type { CallStage } from './devices/types.ts';
 import { BreathPanel, formatTime, Hud } from './Hud.tsx';
@@ -43,6 +43,9 @@ export interface ScenarioViewProps {
   settings?: Settings;
   defaultTimer?: TimerMode;
   onSettings?: (next: Settings) => void;
+  /** Coach marks already shown in this game (save.coachMarks), and where a newly shown one is recorded. */
+  coachMarks?: readonly string[];
+  onCoachMarkSeen?: (id: string) => void;
 }
 
 function useDesk(): boolean {
@@ -169,7 +172,7 @@ function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recover
 }
 
 /** One scenario from arrival to the end of damage control. Give it a `key` to restart. */
-export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines = 'auto', onCallLines, alwaysTranslate = false, onQuit, settings, defaultTimer = 'standard', onSettings }: ScenarioViewProps) {
+export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines = 'auto', onCallLines, alwaysTranslate = false, onQuit, settings, defaultTimer = 'standard', onSettings, coachMarks = [], onCoachMarkSeen }: ScenarioViewProps) {
   const runner = useScenarioRunner(scenario, ctx);
   const { view, state } = runner;
   const announce = useContext(AnnounceContext);
@@ -191,6 +194,34 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
     runner.freeze('translation', openTranslations.current > 0);
     if (open) announce.polite(2, t('translation_shown'));
   };
+
+  // ---- coach marks (CR-23): the timer is frozen while one is open; once shown it is recorded for the game.
+  const [coachSeen, setCoachSeen] = useState<readonly string[]>(coachMarks);
+  const coachSeenRef = useRef<readonly string[]>(coachMarks);
+  /** The coach mark on screen, if any: any action or Check use closes it and lifts the freeze (sceptic T-3.3). */
+  const coachOpen = useRef<string | null>(null);
+  const onCoachMark = useCallback(
+    (id: string, open: boolean) => {
+      runner.freeze('coach_mark', open);
+      coachOpen.current = open ? id : coachOpen.current === id ? null : coachOpen.current;
+      if (open || coachSeenRef.current.includes(id)) return;
+      coachSeenRef.current = [...coachSeenRef.current, id];
+      setCoachSeen(coachSeenRef.current);
+      onCoachMarkSeen?.(id);
+    },
+    [runner.freeze, onCoachMarkSeen],
+  );
+
+  const closeCoach = () => {
+    if (coachOpen.current) onCoachMark(coachOpen.current, false);
+  };
+  const doAct = (id: string) => {
+    closeCoach();
+    runner.act(id);
+  };
+  // CR-23: is the payee-check result on screen (not "Checking…"), per beat.
+  const [nameCheckReady, setNameCheckReady] = useState<Record<string, boolean>>({});
+  const onNameCheck = useCallback((beatId: string, ready: boolean) => setNameCheckReady((x) => (x[beatId] === ready ? x : { ...x, [beatId]: ready })), []);
 
   // ---- result
   const reported = useRef(false);
@@ -250,14 +281,14 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
     isCall && beat
       ? { ...(callState && callState.beatId === beat.id ? callState : { beatId: beat.id, answered: false, shown: 0, ended: false, step: callLines === 'step' }), ended: view.phase === 'what_now' }
       : null;
-  const lines = beat?.message.transcript ?? [];
+  const lines = beat ? visibleLines(beat.message) : [];
   const revealing = !!call && !call.ended && (!call.answered || call.shown < lines.length);
   useEffect(() => {
     runner.freeze('call_lines', revealing);
   }, [revealing]);
   useEffect(() => {
     if (!call || !call.answered || call.ended || call.step || call.shown >= lines.length || view.pause.open) return undefined;
-    const id = setTimeout(() => setCallState({ ...call, shown: call.shown + 1 }), linePace(lines[call.shown - 1]?.text ?? '') * 1000);
+    const id = setTimeout(() => setCallState({ ...call, shown: call.shown + 1 }), linePace(lines[call.shown - 1]?.line.text ?? '') * 1000);
     return () => clearTimeout(id);
     // Only stage changes restart the line timer; engine ticks must not (QA B1).
   }, [call?.beatId, call?.shown, call?.answered, call?.ended, call?.step, view.pause.open, lines.length]);
@@ -359,8 +390,18 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
       root.style.scrollPaddingBottom = '';
     };
   });
+  /**
+   * On a payee-check beat the options sit inside the result card: skip and jump links go to the result
+   * paragraph, so reading runs result → footer → tip → options (learning-psychologist T-3.3).
+   */
+  const focusOptions = (): HTMLElement | null => {
+    const id = beat && actionsInDevice(beat.device, beat.message) ? nameCheckResultId(beat.id) : null;
+    const target = (id ? document.getElementById(id) : null) ?? optionsRef.current;
+    target?.focus();
+    return target;
+  };
   const jumpToOptions = () => {
-    const el = optionsRef.current;
+    const el = beat && actionsInDevice(beat.device, beat.message) ? document.getElementById(nameCheckResultId(beat.id)) ?? optionsRef.current : optionsRef.current;
     if (typeof el?.scrollIntoView === 'function') el.scrollIntoView({ block: 'start', behavior: 'auto' });
     el?.focus();
   };
@@ -371,7 +412,8 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
     // Elements not on screen yet (a ringing call, unrevealed lines) are not listed (no free preview, QA B3).
     if (call && !call.answered) list = list.filter((c) => c.target === 'caller_id');
     else if (call && beat) {
-      const hidden = unrevealedTargets(beat.message, call.ended ? Infinity : call.shown);
+      // `shown` counts the lines on screen (a recorded message hides "you" lines, CR-20): map it to the transcript.
+      const hidden = unrevealedTargets(beat.message, call.ended || call.shown >= lines.length ? Infinity : (lines[call.shown]?.index ?? Infinity));
       list = list.filter((c) => c.beatId !== beat.id || !hidden.has(c.target));
     }
     return list;
@@ -407,6 +449,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
       const c = itemMap.get(target);
       if (!c) return;
       returnEl.current = el;
+      closeCoach();
       doCheck(c);
       setToast(null); // the touch hint never sits on top of the sheet (QA B10)
       setOpenTarget(target);
@@ -432,7 +475,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
         class={styles.skip}
         onClick={(e) => {
           e.preventDefault();
-          optionsRef.current?.focus();
+          focusOptions();
         }}
       >
         {t('skip_to_options')}
@@ -491,9 +534,12 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                 pushers={view.pusherMessages}
                 actions={beat.actions}
                 canAct={view.phase === 'playing'}
-                onAct={runner.act}
+                onAct={doAct}
+                onNameCheck={onNameCheck}
                 onTranslation={onTranslation}
                 alwaysTranslate={alwaysTranslate}
+                coachMarks={coachSeen}
+                onCoachMark={onCoachMark}
                 call={call}
                 onAnswer={answer}
                 onDecline={hangUpAction ? () => runner.act(hangUpAction.id) : null}
@@ -582,11 +628,22 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
             {beat && view.phase === 'playing' ? (
               ringing ? (
                 <p class={styles.note}>{t('call_answer_first')}</p>
+              ) : actionsInDevice(beat.device, beat.message) ? (
+                // CR-23: the payee-check card holds this beat's actions (in action_order); not repeated here.
+                // The pointer goes to the result first (not the buttons), and waits until the check is done.
+                nameCheckReady[beat.id] ? (
+                  <p class={styles.note} data-options-in-device="">
+                    {t('bank_options_in_card')}{' '}
+                    <button type="button" class={styles.small} onClick={focusOptions}>
+                      {t('bank_options_go')}
+                    </button>
+                  </p>
+                ) : null
               ) : (
                 <ul class={styles.actions}>
                   {beat.actions.map((a) => (
                     <li key={a.id}>
-                      <button type="button" class={a.styled ? `${styles.action} ${styles.pressure}` : styles.action} data-action={a.id} onClick={() => runner.act(a.id)}>
+                      <button type="button" class={a.styled ? `${styles.action} ${styles.pressure}` : styles.action} data-action={a.id} onClick={() => doAct(a.id)}>
                         {a.label}
                       </button>
                     </li>

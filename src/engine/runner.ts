@@ -51,7 +51,8 @@ export interface RunnerContext {
  * `call_lines`: a call is ringing or its lines are still being revealed (UI_SPEC §3.4: the beat timer
  * starts only after the last line of the beat is shown).
  */
-export type FreezeReason = 'pause_menu' | 'settings' | 'help' | 'debrief' | 'take_a_breath' | 'translation' | 'call_lines';
+/** `coach_mark`: a coach mark is open (GDD §8, CR-23: the first payee-name check). */
+export type FreezeReason = 'pause_menu' | 'settings' | 'help' | 'debrief' | 'take_a_breath' | 'translation' | 'call_lines' | 'coach_mark';
 /**
  * `interrupt`: an `after_beat` interrupt still waits for an answer at the end of the scenario (ruling
  * QA M6): its own "New notification" step before the debrief.
@@ -92,6 +93,11 @@ export interface GroupState {
   pausedUnderPressure: boolean;
   /** Keys checked before the decisive action (LO-01). */
   checkedBefore: string[];
+  /**
+   * CR-18: the banking beat opened by `start_transfer` in this group. While it is on screen in a boss,
+   * the next scheduled beat is held (CR-18(e)): it arrives only after the banking card closes.
+   */
+  transferBeat?: string | undefined;
 }
 
 export interface InterruptState {
@@ -248,6 +254,7 @@ function newGroup(s: Scenario, beatId: string): GroupState {
     resolved: false,
     pausedUnderPressure: false,
     checkedBefore: [],
+    transferBeat: undefined,
   };
 }
 
@@ -302,7 +309,7 @@ function underPressure(s: Scenario, ctx: RunnerContext, st: RunnerState): boolea
   const timerActive = st.timer !== null && st.timer.expiries < 2;
   const g = activeGroup(st);
   const plan = st.pushers.fired.length > 0 && g ? pusherPlanOf(s) : [];
-  const pusherActive = st.pushers.nextDue !== null || st.pushers.fired.some((f) => plan[f.index]?.beat === g?.beatId);
+  const pusherActive = st.pushers.nextDue !== null || st.pushers.fired.some((f) => ownsPusher(g, plan[f.index]?.beat));
   return timerActive || pusherActive || stressState(ctx.balance, st.stress) !== 'calm';
 }
 
@@ -317,6 +324,20 @@ function noteStyling(s: Scenario, ctx: RunnerContext, st: RunnerState): RunnerSt
 
 function frozen(st: RunnerState): boolean {
   return st.freezes.length > 0;
+}
+
+/** A follow-up belongs to the live group: its scheduled beat, or (CR-21) a beat-bound follow-up of a beat it visited. */
+function ownsPusher(g: GroupState | undefined, beat: string | undefined): boolean {
+  return !!g && beat !== undefined && (beat === g.beatId || g.visited.includes(beat));
+}
+
+/**
+ * CR-18(e): in a boss, the banking card opened by start_transfer is on screen. The next scheduled beat
+ * is held (it neither arrives nor waits as a notification) until the card closes.
+ */
+export function holdingForTransfer(st: Pick<RunnerState, 'groups'>): boolean {
+  const g = st.groups[st.groups.length - 1];
+  return !!g && !g.resolved && g.transferBeat !== undefined && g.current === g.transferBeat;
 }
 
 // ---------------------------------------------------------------------------
@@ -416,15 +437,33 @@ function finishWithOutcome(s: Scenario, ctx: RunnerContext, st: RunnerState, g: 
   return resolveGroup(s, ctx, st, { ...g, outcome });
 }
 
-function moveToBeat(s: Scenario, ctx: RunnerContext, st: RunnerState, g: GroupState, beatId: string): RunnerState {
+function moveToBeat(s: Scenario, ctx: RunnerContext, st: RunnerState, g: GroupState, beatId: string, via?: ActionKind): RunnerState {
   const beat = s.beats.find((b) => b.id === beatId);
   if (!beat) return st;
-  const g2: GroupState = { ...g, current: beatId, visited: g.visited.includes(beatId) ? g.visited : [...g.visited, beatId] };
+  const firstVisit = !g.visited.includes(beatId);
+  const g2: GroupState = { ...g, current: beatId, visited: firstVisit ? [...g.visited, beatId] : g.visited };
   const prev = storyBeat(s, g.current);
   // A call beat runs on its own call length; other follow-ups keep the running timer.
   const verified = g.decision?.cls === 'verify';
-  const timer = !verified && beat.device === 'call' && prev?.device !== 'call' ? newTimer(s, ctx, 'call', false) : st.timer;
-  return noteStyling(s, ctx, withGroup({ ...st, timer }, g2));
+  let timer = !verified && beat.device === 'call' && prev?.device !== 'call' ? newTimer(s, ctx, 'call', false) : st.timer;
+  // CR-18(e): in a boss, the beat timer carries over to the banking card, with a floor of the boss-beat
+  // length (40 s, scaled by the timer mode), so the card always gets time to read the name check.
+  if (via === 'start_transfer' && s.role === 'boss' && timer && timer.expiries < 2) timer = transferFloor(ctx, timer);
+  let next: RunnerState = { ...st, timer };
+  // CR-21: follow-ups bound to this beat are timed from now; they never fire if the beat is not reached.
+  if (firstVisit && pusherPlanOf(s).some((p) => p.beat === beatId) && !st.schedule.some((x) => x.beatId === beatId)) {
+    next = { ...next, pushers: armBeat(ctx.balance, pusherPlanOf(s), next.pushers, beatId, next.clock, stressState(ctx.balance, next.stress)) };
+  }
+  return noteStyling(s, ctx, withGroup(next, g2));
+}
+
+/** CR-18(e): remaining time on the banking card is at least timers.boss_beat × mode. */
+export function transferFloor(ctx: RunnerContext, t: TimerState): TimerState {
+  const f = modeFactor(ctx.balance, ctx.settings.timerMode);
+  if (f === null) return t;
+  const floor = ctx.balance.timers.boss_beat * f;
+  if (t.remaining >= floor) return t;
+  return { ...t, remaining: floor, length: Math.max(t.length, floor) };
 }
 
 // ---------------------------------------------------------------------------
@@ -469,7 +508,8 @@ function nextEventAt(st: RunnerState): number {
   let t = Infinity;
   if (st.pushers.nextDue !== null) t = Math.min(t, st.pushers.nextDue);
   for (const i of st.interrupts) if (!i.arrived) t = Math.min(t, i.at);
-  for (const b of st.schedule) if (!st.arrived.includes(b.beatId)) t = Math.min(t, b.at);
+  // A held boss beat (CR-18(e)) is not a clock event while the banking card is open.
+  if (!holdingForTransfer(st)) for (const b of st.schedule) if (!st.arrived.includes(b.beatId)) t = Math.min(t, b.at);
   return t;
 }
 
@@ -487,6 +527,7 @@ function fireDue(s: Scenario, ctx: RunnerContext, st: RunnerState): RunnerState 
     }
   }
   for (const b of next.schedule) {
+    if (holdingForTransfer(next)) break;
     if (!next.arrived.includes(b.beatId) && b.at <= next.clock) {
       next = { ...next, arrived: [...next.arrived, b.beatId], log: [...next.log, { type: 'beat_arrived', beatId: b.beatId, at: next.clock }] };
     }
@@ -604,7 +645,9 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
       }
       // Verify shows the truth: the deadline pressure is over for this group (sceptic T-2.1 #2).
       if (g2.decision?.cls === 'verify') next = { ...next, timer: null };
-      if (action.next_beat !== undefined) return moveToBeat(s, ctx, next, g2, action.next_beat);
+      // CR-18: start_transfer (class step) never decides; it opens the banking beat, whose action decides.
+      if (action.kind === 'start_transfer' && action.next_beat !== undefined) g2 = { ...g2, transferBeat: action.next_beat };
+      if (action.next_beat !== undefined) return moveToBeat(s, ctx, next, g2, action.next_beat, action.kind);
       if (action.outcome !== undefined) return finishWithOutcome(s, ctx, next, g2, action.outcome);
       return withGroup(next, g2);
     }
@@ -786,7 +829,8 @@ export interface RunnerView {
    * `lang`/`translation` for in-world foreign text (CR-14). Earlier beats' follow-ups are not shown.
    */
   pusherMessages: PusherMessageView[];
-  timer: { remaining: number; length: number; expiries: number; frozen: boolean } | null;
+  /** `coachMark`: frozen because a coach mark is open (HUD: "Paused while the tip is open", CR-23). */
+  timer: { remaining: number; length: number; expiries: number; frozen: boolean; coachMark: boolean } | null;
   stress: { value: number; state: StressState };
   pause: { open: boolean; available: boolean; cooldownLeft: number };
   whatNow: WhatNowView | null;
@@ -863,7 +907,8 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
     checkables,
     // "k checked" counts the beat on screen only (QA E3).
     checkedCount: checkables.filter((c) => c.checked).length,
-    waitingBeats: st.arrived.filter((id) => !st.groups.some((x) => x.beatId === id)),
+    // CR-18(e): nothing waits on top of the banking card; an already-arrived beat shows again once it closes.
+    waitingBeats: holdingForTransfer(st) ? [] : st.arrived.filter((id) => !st.groups.some((x) => x.beatId === id)),
     // Hidden while a consequence or damage control is on screen (QA E10).
     interrupts: st.interrupts
       .filter((i) => i.arrived && i.actionId === undefined && (st.phase === 'playing' || st.phase === 'what_now' || st.phase === 'interrupt'))
@@ -875,11 +920,14 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
       ? st.pushers.fired.flatMap((f) => {
           const m = messages[f.index];
           const owner = plan[f.index]?.beat;
-          const ob = owner === g.beatId ? storyBeat(s, owner) : undefined;
+          const bound = ownsPusher(g, owner) && owner !== undefined ? storyBeat(s, owner) : undefined;
+          // A follow-up bound to a banking beat or a page (CR-21) still comes from the person who sent the
+          // message: channel and sender of the group's scheduled beat (sceptic T-3.3).
+          const ob = bound && (bound.device === 'banking' || !bound.message.sender) ? storyBeat(s, g.beatId) : bound;
           return m && ob ? [{ index: f.index, text: m.text, at: f.at, lang: m.lang, translation: m.translation, beatId: ob.id, device: ob.device, sender: ob.message.sender?.display ?? '' }] : [];
         })
       : [],
-    timer: st.timer && live ? { remaining: st.timer.remaining, length: st.timer.length, expiries: st.timer.expiries, frozen: frozen(st) } : null,
+    timer: st.timer && live ? { remaining: st.timer.remaining, length: st.timer.length, expiries: st.timer.expiries, frozen: frozen(st), coachMark: st.freezes.includes('coach_mark') } : null,
     stress: { value: st.stress, state },
     pause: {
       open: st.pause.open,

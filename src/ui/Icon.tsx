@@ -27,9 +27,13 @@ export type IconName =
   | 'battery'
   | 'star'
   | 'star-empty'
-  | 'gate';
+  | 'gate'
+  | 'tick'
+  | 'warning';
 
 const PATHS: Record<IconName, string> = {
+  tick: 'M5 12.5l4.5 4.5L19 7.5',
+  warning: 'M12 3.5 21.5 20h-19zM12 10v4.5M12 17.5v.5',
   magnifier: 'M10.5 4a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13zM15.5 15.5 21 21',
   checked: 'M10.5 4a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13zM15.5 15.5 21 21M7.5 10.5l2 2 3.5-4',
   flag: 'M5 21V4h11l-2 4 2 4H5',

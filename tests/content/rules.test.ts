@@ -505,9 +505,13 @@ describe('"What now?" extras and banners (GDD §6, §17 1-9)', () => {
     if (last) last.type = 'sender';
     expect(schemaErrors(wrongType).join('\n')).toMatch(/a request checkable has type: request/);
 
+    // CR-17: pay, enter_details and reply may carry an ask too; other requests may not.
     const payAsk = structuredClone(r);
     msg(payAsk).request = 'pay';
-    expect(schemaErrors(payAsk).join('\n')).toMatch(/ask is only for messages whose request is share_code or approve/);
+    expect(schemaErrors(payAsk).join('\n')).not.toMatch(/ask is only for messages/);
+    const linkAsk = structuredClone(r);
+    msg(linkAsk).request = 'open_link';
+    expect(schemaErrors(linkAsk).join('\n')).toMatch(/ask is only for messages whose request is share_code, approve, pay, enter_details, reply/);
 
     const foreign = structuredClone(r);
     msg(foreign).lang = 'de';

@@ -749,25 +749,220 @@
   background: var(--color-surface-sunken) !important;
   overflow-wrap: anywhere;
 }
-.nameOk,
-.nameWarn,
-.nameNeutral {
+/* Payee-name check (CR-23, GDD §23.5). Warning colours only on "doesn't match"; information colours
+   (accent rule on a neutral surface) on a close match; no seal, shield or badge on a match. */
+.checkCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: var(--border-w) solid var(--color-border);
+  background: var(--color-surface);
+}
+.checkResult {
   margin: 0;
   display: flex;
+  min-height: var(--tap-min);
   gap: var(--space-2);
   align-items: flex-start;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-sm);
 }
-.nameOk {
-  background: var(--color-ok-bg);
-  color: var(--color-ok-text);
+.checkResult > svg {
+  flex: none;
 }
-.nameWarn {
+.checkResult:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+/* Match: neutral surface plus a tick (producer ruling T-3.3): a match only says whose account it is. */
+.checkMatch .checkResult,
+.checkChecking .checkResult {
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+}
+.checkChecking .checkResult {
+  font-style: italic;
+}
+.checkClose .checkResult {
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+  box-shadow: inset 4px 0 0 var(--color-accent);
+}
+.checkMismatch .checkResult {
   background: var(--color-warn-bg);
   color: var(--color-warn-text);
 }
-.nameNeutral {
+.checkUnavailable .checkResult {
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+}
+/* The footer is part of the lesson: normal text colour and size (producer ruling T-3.3). */
+.checkFooter {
+  margin: 0;
+  color: var(--color-text);
+}
+.cardActions {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-2);
+}
+.cardAction {
+  width: 100%;
+  min-height: 48px;
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  border-radius: var(--radius-sm);
+  border: var(--border-w) solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+.cardAction[aria-disabled='true'] {
+  cursor: not-allowed;
+  color: var(--color-text-muted);
+}
+.cardPressure {
+  background: var(--color-pressure);
+  color: var(--color-on-pressure);
+  border-color: var(--color-pressure);
+  font-weight: var(--fw-bold);
+}
+.cardAction:focus-visible,
+.small:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+.coach {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: start;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  border: var(--border-w) solid var(--color-border);
+  background: var(--color-surface-sunken);
+}
+.coach p {
+  margin: 0;
+}
+.coachTitle {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  font-weight: var(--fw-bold);
+}
+.small {
+  min-height: var(--tap-min);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  border: var(--border-w) solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+.requestFrom {
+  margin: 0;
+  font-weight: var(--fw-bold);
+}
+.requestAmount {
+  margin: 0;
+  font-size: var(--fs-2xl);
+}
+
+/* Bank-details card in an email, chat or letter (CR-22): our own layout, never a real bank's slip. */
+.bankDetails {
+  display: grid;
+  gap: var(--space-1);
+  margin: var(--space-2) 0;
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-w) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+}
+.bankDetailsTitle {
+  margin: 0;
+  font-weight: var(--fw-bold);
+}
+.bankDetailsRows {
+  margin: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+.bankDetailsRows dt {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+.bankDetailsRows dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+/* The IBAN keeps the dotted checkable underline of inline identifiers, in the mono face. */
+.ibanId {
+  font-family: var(--font-mono) !important;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
+/* Messenger new-contact banner (CR-19, UI_SPEC §3.3): neutral, not warning colours. */
+.newContact {
+  margin: 0;
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+  font-size: var(--fs-sm);
+}
+
+/* Email thread history (CR-25): muted quoted emails with sender and time, not chat bubbles. */
+.mailQuote {
+  margin: 0;
+  padding: var(--space-1) var(--space-3);
+  border-left: 3px solid var(--color-border);
+  color: var(--color-text-muted);
+}
+.mailQuote p {
+  margin: 0;
+}
+.mailQuoteMeta {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+}
+.mailEarlier {
+  display: grid;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: var(--border-w) solid var(--color-border-subtle);
+  color: var(--color-text-muted);
+}
+
+/* Call header labels (CR-20 recorded message, CR-24 video call) and the illustrated video frame. */
+.callKind {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+}
+.videoFrame {
+  margin: var(--space-2) var(--space-3) 0;
+}
+.videoButton {
+  display: block !important;
+  padding: 0 !important;
+  width: 100%;
+}
+.videoImg {
+  display: block;
+  width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  border-radius: var(--radius-md);
   background: var(--color-surface-sunken);
 }
 

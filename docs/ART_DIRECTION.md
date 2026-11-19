@@ -401,10 +401,12 @@ public/art/
   backdrops/<city>-<place>.svg    city = chapter id; place = short noun (berlin-courtyard, lisbon-kitchen)
   frames/postcard-stamp.svg       and other small decorations
   props/<name>.svg                only if a prop must be placed separately from a backdrop or pose
+  video/<id>.svg                  video-call stills (UI_SPEC §3.4, CR-24); id = the scenario's `message.video.illustration` stem
   map/europe.svg, map/glyphs/<city>.svg
   rig/face-parts.svg              reference library, not loaded by the game
   samples/                        style proofs for review, not loaded by the game
 ```
+- **Video-call stills (`video/`)** are governed by §12 in full (header comment, §12.3 SVG rules, palette, budget) and are checked by `redline:lint` through `scripts/lib/svg-safety.ts` (every SVG under `public/`), and by `content:validate`, which fails if the referenced file is missing or unsafe. They are one still frame drawn with the character rig (§4), in the same flat style as every other character: never photoreal, no glitch, blur or "deepfake" artefacts, no lettering or call-UI chrome (the device draws that). A scammer's fake face follows §4.8: a fictional rig face, or the specced cast file where §4.8 allows it (the Paris boss "Solène"), never a likeness of a real person.
 - File names: lowercase ASCII kebab-case, `.svg` only. Scene YAML ids equal file stems (`backdrop: berlin-courtyard`, `speaker: jonas`, `expression: relieved`).
 - Internal ids are prefixed with a short file prefix (`teo-sil`, `bbc-w`) so files never collide if inlined. **Exception:** expression groups are exactly `x-<expression>` or `x-<expression>-<pose>` (they are the fragment API).
 

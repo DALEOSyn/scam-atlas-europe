@@ -7,8 +7,9 @@
  * (Red Line 1). Every visible element of the beat on screen is a Checkable; elements of earlier beats
  * render as plain text. Device content is always rendered as text, never as HTML.
  */
+import type { ComponentChildren } from 'preact';
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
-import { brandById, brandForName } from '../../content/brands.ts';
+import { assetUrl, brandById, brandForName } from '../../content/brands.ts';
 import type { Device, Message } from '../../content/schema.ts';
 import type { ActionView } from '../../engine/runner.ts';
 import { t } from '../../i18n/index.ts';
@@ -35,13 +36,13 @@ export function deviceHeading(device: Device, m: Message): string {
     case 'social':
       return t('heading_social', { from });
     case 'call':
-      return t('heading_call', { from });
+      return m.video ? t('heading_video_call', { from }) : t('heading_call', { from });
     case 'browser':
       return t('heading_browser', { page: m.page?.title ?? m.page?.address ?? '' });
     case 'qr':
       return t('heading_qr');
     case 'banking':
-      return t('heading_banking', { payee: m.payee?.name ?? '' });
+      return m.payee?.payment_request ? t('heading_bank_request', { name: m.payee.name }) : t('heading_banking', { payee: m.payee?.name ?? '' });
     case 'auth':
       return t('heading_auth', { service: m.prompt?.service ?? '' });
     case 'letter':
@@ -118,7 +119,14 @@ export function channelKind(device: Device): string {
       return t('banner_kind_chat');
     case 'call':
       return t('banner_kind_call');
-    default:
+    // Never the SMS fallback for a page, camera or letter (sceptic T-3.3).
+    case 'browser':
+      return t('banner_kind_browser');
+    case 'qr':
+      return t('banner_kind_qr');
+    case 'letter':
+      return t('banner_kind_letter');
+    case 'sms':
       return t('banner_kind_sms');
   }
 }
@@ -172,6 +180,11 @@ export function spokenText(text: string): string {
   if (out.toLowerCase().startsWith(`${label}:`)) out = out.slice(label.length + 1).trim();
   const m = /^["“„](.*)["”“]$/su.exec(out);
   return m?.[1] ?? out;
+}
+
+/** Transcript lines on screen, with their index in the authored transcript. CR-20: a recorded message hides "you" lines. */
+export function visibleLines(m: Pick<Message, 'transcript' | 'recorded'>): { line: NonNullable<Message['transcript']>[number]; index: number }[] {
+  return (m.transcript ?? []).map((line, index) => ({ line, index })).filter((x) => !(m.recorded && x.line.speaker === 'you'));
 }
 
 /** Earlier texts of the thread (ruling QA L5): muted, never checkable, links as plain text, no actions. */
@@ -239,6 +252,7 @@ function Mail(p: DeviceProps) {
             </span>
           </div>
           <MessageBody message={m} collapse />
+          {m.payee ? <BankDetails m={m} /> : null}
           {m.attachments?.length ? (
             <ul class={styles.chips}>
               {m.attachments.map((a, i) => (
@@ -255,6 +269,22 @@ function Mail(p: DeviceProps) {
           <Chips items={segs.leftover} />
           {m.image ? <ImageBox alt={m.image.alt} /> : null}
           <Translate message={m} onFreeze={p.onTranslation} alwaysOpen={p.alwaysTranslate} />
+          {/* CR-25: earlier messages of the thread, below today's, muted and never checkable. */}
+          {m.earlier?.length ? (
+            <section class={styles.mailEarlier} aria-label={t('thread_earlier')}>
+              <p class={styles.earlierSep}>{t('thread_earlier')}</p>
+              {m.earlier.map((e, i) => (
+                <blockquote key={i} class={styles.mailQuote} data-earlier="">
+                  <p class={styles.mailQuoteMeta}>{e.from ? t('mail_quote_meta', { from: e.from, when: e.when }) : e.when}</p>
+                  {/* Plain text: hosts follow §1.5, never a link or a checkable. */}
+                  <p lang={e.lang}>
+                    <RichText text={e.body} />
+                  </p>
+                  <Translate message={e} id={`earlier-translation-${i}`} onFreeze={p.onTranslation} alwaysOpen={p.alwaysTranslate} />
+                </blockquote>
+              ))}
+            </section>
+          ) : null}
         </article>
       </div>
     </LaptopFrame>
@@ -291,6 +321,13 @@ function Chat(p: DeviceProps) {
     <PhoneFrame label={region} brand={app?.id}>
       {app ? <BrandBar brand={app} title={app.name} /> : null}
       {sender}
+      {/* CR-19: neutral banner on every chat from a number that isn't a saved contact (UI_SPEC §3.3). */}
+      {m.sender?.new_contact && p.device === 'messenger' ? (
+        <p class={styles.newContact} data-new-contact="">
+          <Icon name="info" />
+          <span>{t('chat_not_in_contacts', { number: m.sender.detail ?? '' })}</span>
+        </p>
+      ) : null}
       {p.banner ? <Banner banner={p.banner} beatId={p.beatId} onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} /> : null}
       <div class={styles.chat}>
         {m.earlier?.length && p.device !== 'social' ? <Earlier items={m.earlier} onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} /> : null}
@@ -324,6 +361,7 @@ function Chat(p: DeviceProps) {
               <MessageBody message={m} />
               <Chips items={segs.leftover} />
               {m.image && p.device !== 'messenger' ? <ImageBox alt={m.image.alt} /> : null}
+              {m.payee ? <BankDetails m={m} /> : null}
             </div>
             <Translate message={m} onFreeze={p.onTranslation} alwaysOpen={p.alwaysTranslate} />
             {/* Pusher follow-ups are ordinary bubbles with no "follow-up" label (UI_SPEC §3.2). */}
@@ -349,7 +387,8 @@ function Call(p: DeviceProps) {
   const display = m.sender?.display ?? '';
   const stage = p.call;
   const segs = segmentMessage(m);
-  const lines = m.transcript ?? [];
+  // CR-20: a recorded message has no "you" lines on screen.
+  const lines = visibleLines(m);
   const shown = stage?.shown ?? lines.length;
   const answered = stage?.answered ?? true;
   const ended = stage?.ended ?? false;
@@ -379,12 +418,28 @@ function Call(p: DeviceProps) {
     <PhoneFrame label={t('region_call')}>
       <div class={styles.call}>
         <div class={styles.caller}>
-          <Avatar name={display} size={64} />
+          {/* The ringing screen keeps the photo/avatar, video or not (the 3-9 reveal mentions it). */}
+          {m.video && answered ? null : <Avatar name={display} size={64} />}
+          {m.video ? <span class={styles.callKind}>{t('call_video')}</span> : null}
           <Checkable target="caller_id" class={styles.callerName}>
             {display}
           </Checkable>
           <span class={styles.callerSub}>{ended ? t('call_ended') : answered ? t('call_in_progress') : t('call_incoming')}</span>
+          {/* Known only once the call is answered (sceptic T-3.3). */}
+          {m.recorded && answered ? <span class={styles.callKind} data-recorded="">{t('call_recorded')}</span> : null}
         </div>
+        {/* CR-24: a stylised illustration of a fictional person, never photoreal; no audio, no glitch effects. */}
+        {m.video && answered ? (
+          <figure class={styles.videoFrame}>
+            <Checkable target="video" class={styles.videoButton} name={t('call_video_frame', { alt: m.video.alt })}>
+              <img src={assetUrl(m.video.illustration.replace(/^public\//, ''))} alt="" class={styles.videoImg} />
+            </Checkable>
+            {/* The checkable frame already carries the description: the caption is not read twice. */}
+            <figcaption class={styles.vh} aria-hidden="true">
+              {t('call_video_frame', { alt: m.video.alt })}
+            </figcaption>
+          </figure>
+        ) : null}
         {p.banner && answered ? <Banner banner={p.banner} beatId={p.beatId} onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} /> : null}
         {!answered && !ended ? (
           <div class={styles.callButtons}>
@@ -406,9 +461,9 @@ function Call(p: DeviceProps) {
             </h3>
             <div role="log" aria-labelledby="transcript-h">
             <ol class={styles.transcript}>
-              {lines.slice(0, shown).map((l, i) => (
-                <li key={i} ref={i === shown - 1 ? lastLineRef : undefined} tabIndex={i === shown - 1 ? -1 : undefined}>
-                  <span class={styles.speaker}>{l.speaker === 'caller' ? t('call_caller') : t('call_you')}</span> <Segments segs={segs.transcript[i] ?? []} />
+              {lines.slice(0, shown).map(({ line: l, index }, i) => (
+                <li key={index} ref={i === shown - 1 ? lastLineRef : undefined} tabIndex={i === shown - 1 ? -1 : undefined}>
+                  <span class={styles.speaker}>{l.speaker === 'caller' ? t('call_caller') : t('call_you')}</span> <Segments segs={segs.transcript[index] ?? []} />
                 </li>
               ))}
               {/* The caller's spoken follow-ups are call lines, not text messages (QA M2). */}
@@ -558,54 +613,232 @@ function groupIban(iban: string): string {
   return iban.replace(/\s+/g, '').replace(/(.{4})/g, '$1 ').trim();
 }
 
+/**
+ * CR-23: the result screen runs only on a transfer with a name check (never on a payment-request page,
+ * CR-18(c)). Its card holds the beat's actions, in their authored order (action_order); the tray then
+ * points here instead of repeating them.
+ */
+export function actionsInDevice(device: Device, m: Message): boolean {
+  return device === 'banking' && !!m.payee?.name_check && !m.payee.payment_request;
+}
+
+/** Coach-mark ids (save.coachMarks): shown once per game. */
+export const COACH_PAYEE_CHECK = 'payee_check';
+
+/** The payee-check result paragraph: focus target for "Go to the options", the skip link and the coach mark's "Got it". */
+export function nameCheckResultId(beatId: string): string {
+  return `name-check-result-${beatId}`;
+}
+
+/**
+ * A coach mark (UI_SPEC §4.5): a skippable note that never blocks the tray. While it is open the timer
+ * is frozen (freeze reason `coach_mark`, GDD §8, CR-23). It closes on "Got it", on any card action and on
+ * any use of the Check tool (ScenarioView closes it there); "Got it" returns focus to `returnTo`.
+ */
+function CoachMark({ id, text, onCoachMark, returnTo }: { id: string; text: string; onCoachMark: DeviceProps['onCoachMark']; returnTo: () => void }) {
+  // Layout effect: the freeze starts in the same commit that shows the mark, before any click can land.
+  useLayoutEffect(() => {
+    onCoachMark(id, true);
+    return () => onCoachMark(id, false);
+  }, [id]);
+  return (
+    <div class={styles.coach} role="note" aria-labelledby={`coach-${id}-h`} data-coach={id}>
+      <p class={styles.coachTitle} id={`coach-${id}-h`}>
+        <Icon name="info" />
+        <span>{t('coach_title')}</span>
+      </p>
+      <p>{text}</p>
+      <button
+        type="button"
+        class={styles.small}
+        onClick={() => {
+          // Focus first: the button unmounts when the mark closes, and focus must not fall to <body>.
+          returnTo();
+          onCoachMark(id, false);
+        }}
+      >
+        {t('coach_got_it')}
+      </button>
+    </div>
+  );
+}
+
+/**
+ * The payee-name check result card (GDD §23.5): fictional copy, four results, the same footer on every
+ * card. One role="status" paragraph is mounted from the start and only its text changes ("Checking…" →
+ * the result), so the result is announced, also with reduced motion (where the switch is immediate).
+ */
+function NameCheckCard(p: DeviceProps & { bankName: string }) {
+  const payee = p.message.payee;
+  const result = payee?.name_check;
+  const [checking, setChecking] = useState(true);
+  const resultRef = useRef<HTMLParagraphElement>(null);
+  useEffect(() => {
+    if (!checking) return undefined;
+    const id = setTimeout(() => setChecking(false), prefersReducedMotion() ? 0 : 800);
+    return () => clearTimeout(id);
+  }, [checking]);
+  useEffect(() => {
+    p.onNameCheck?.(p.beatId, !checking);
+  }, [checking, p.beatId]);
+  if (!payee || !result) return null;
+  // Holder name only on a close match (Reg. (EU) 2024/886 Art. 5c); never on a no match (CR-23).
+  const text = checking
+    ? t('bank_check_checking')
+    : result === 'match'
+      ? t('bank_check_match', { name: payee.name })
+      : result === 'close_match'
+        ? t('bank_check_close', { holder: payee.holder ?? '' })
+        : result === 'mismatch'
+          ? t('bank_check_mismatch', { bank: p.bankName })
+          : t('bank_check_unavailable');
+  const cls = checking ? styles.checkChecking : result === 'match' ? styles.checkMatch : result === 'close_match' ? styles.checkClose : result === 'mismatch' ? styles.checkMismatch : styles.checkUnavailable;
+  const icon = result === 'match' ? 'tick' : result === 'mismatch' ? 'warning' : 'info';
+  const seen = p.coachMarks.includes(COACH_PAYEE_CHECK);
+  return (
+    <section class={`${styles.checkCard} ${cls}`} aria-labelledby={`name-check-${p.beatId}`} data-name-check={checking ? 'checking' : result}>
+      <h3 class={styles.vh} id={`name-check-${p.beatId}`}>
+        {t('bank_check_title')}
+      </h3>
+      <p class={styles.checkResult} role="status" id={nameCheckResultId(p.beatId)} tabIndex={-1} ref={resultRef}>
+        {checking ? null : <Icon name={icon} />}
+        <span>{text}</span>
+      </p>
+      {checking ? null : (
+        <>
+          <p class={styles.checkFooter}>{t('bank_check_footer', { bank: p.bankName })}</p>
+          {seen ? null : <CoachMark id={COACH_PAYEE_CHECK} text={t('coach_payee_check')} onCoachMark={p.onCoachMark} returnTo={() => resultRef.current?.focus()} />}
+          <ul class={styles.cardActions} id={`bank-options-${p.beatId}`}>
+            {p.actions.map((a) => (
+              <li key={a.id}>
+                <button
+                  type="button"
+                  class={a.styled ? `${styles.cardAction} ${styles.cardPressure}` : styles.cardAction}
+                  data-action={a.id}
+                  aria-disabled={!p.canAct}
+                  onClick={() => p.canAct && p.onAct(a.id)}
+                >
+                  {a.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </section>
+  );
+}
+
+function Field({ label, children }: { label: string; children: ComponentChildren }) {
+  return (
+    <div class={styles.field}>
+      <span class={styles.fieldLabel}>{label}</span>
+      {children}
+    </div>
+  );
+}
+
 function Bank(p: DeviceProps) {
   const m = p.message;
   const payee = m.payee;
   const bank = brandById('larchwick');
+  const bankName = bank?.short_name ?? bank?.name ?? '';
   const segs = segmentMessage(m);
-  const check = payee?.name_check;
+  const request = !!payee?.payment_request;
+  const inCard = actionsInDevice('banking', m);
+  const transfer = payee ? (
+    <div class={styles.transfer}>
+      {m.account ? (
+        // CR-26: whose money it is.
+        <Field label={t('bank_account')}>
+          <span class={styles.fieldValue}>{m.account.nickname}</span>
+        </Field>
+      ) : null}
+      {request ? (
+        // CR-18(c): payment-request page. "Request from <name> · amount · note"; no name check runs here.
+        <>
+          <p class={styles.requestFrom}>
+            <Checkable target="payee.name">{t('bank_request_from', { name: payee.name })}</Checkable>
+          </p>
+          {payee.amount ? <p class={styles.requestAmount}>{payee.amount}</p> : null}
+          {payee.note ? (
+            <Field label={t('bank_request_note')}>
+              <span class={styles.fieldValue}>{payee.note}</span>
+            </Field>
+          ) : null}
+        </>
+      ) : (
+        <Field label={t('bank_payee')}>
+          <Checkable target="payee.name_check" class={styles.fieldValue}>
+            {payee.name}
+          </Checkable>
+        </Field>
+      )}
+      {payee.iban ? (
+        <Field label={t('bank_iban')}>
+          <Checkable target="payee.iban" class={`${styles.fieldValue} ${styles.mono}`}>
+            {groupIban(payee.iban)}
+          </Checkable>
+        </Field>
+      ) : null}
+      {payee.amount && !request ? (
+        <Field label={t('bank_amount')}>
+          <span class={styles.fieldValue}>{payee.amount}</span>
+        </Field>
+      ) : null}
+    </div>
+  ) : null;
   return (
     <PhoneFrame label={t('region_banking', { app: bank?.name ?? '' })} brand="larchwick">
-      <BrandBar brand={bank} title={bank?.name ?? ''} sub={t('bank_payments')} />
+      <BrandBar brand={bank} title={bank?.name ?? ''} sub={m.account ? t('bank_business') : request ? t('bank_request_title') : t('bank_payments')} />
       <div class={styles.bank}>
         <SimPill />
         <MessageBody message={m} />
-        {payee ? (
-          <div class={styles.transfer}>
-            <div class={styles.field}>
-              <span class={styles.fieldLabel}>{t('bank_payee')}</span>
-              <Checkable target="payee.name_check" class={styles.fieldValue}>
-                {payee.name}
-              </Checkable>
-            </div>
-            {payee.iban ? (
-              <div class={styles.field}>
-                <span class={styles.fieldLabel}>{t('bank_iban')}</span>
-                <Checkable target="payee.iban" class={`${styles.fieldValue} ${styles.mono}`}>
-                  {groupIban(payee.iban)}
-                </Checkable>
-              </div>
-            ) : null}
-            {check ? (
-              <p class={check === 'match' ? styles.nameOk : check === 'unavailable' ? styles.nameNeutral : styles.nameWarn} role="status">
-                <Icon name={check === 'match' ? 'seal' : 'info'} />
-                <span>
-                  {check === 'match'
-                    ? t('bank_name_match')
-                    : check === 'mismatch'
-                      ? t('bank_name_mismatch', { holder: payee.holder ?? '' })
-                      : check === 'close_match'
-                        ? t('bank_name_close', { holder: payee.holder ?? '' })
-                        : t('bank_name_unavailable')}
-                </span>
-              </p>
-            ) : null}
-          </div>
-        ) : null}
+        {inCard ? (
+          // A training page (UI_SPEC §5): the frame, watermark and "nothing is sent" note; no field takes input.
+          <SimulatedForm label={t('form_label')} onSimulatedSubmit={() => undefined}>
+            {transfer}
+            <NameCheckCard {...p} bankName={bankName} />
+          </SimulatedForm>
+        ) : (
+          transfer
+        )}
         <Chips items={segs.leftover} />
-        {m.request !== 'none' ? <TrainingForm m={{ ...m, request: 'pay' }} actions={p.actions} canAct={p.canAct} onAct={p.onAct} idPrefix="bank" /> : null}
+        {/* A payment-request page has no card fields: its own actions are in the tray (sceptic T-3.3). */}
+        {!inCard && !request && m.request !== 'none' ? <TrainingForm m={{ ...m, request: 'pay' }} actions={p.actions} canAct={p.canAct} onAct={p.onAct} idPrefix="bank" /> : null}
       </div>
     </PhoneFrame>
+  );
+}
+
+/** CR-22: the "Bank details" card in an email or chat (never a letter: Red Line 8). The IBAN is checkable; no name check outside the bank app. */
+function BankDetails({ m }: { m: Message }) {
+  const payee = m.payee;
+  if (!payee?.iban) return null;
+  return (
+    <section class={styles.bankDetails} aria-label={t('bank_details_title')} data-bank-details="">
+      <p class={styles.bankDetailsTitle}>{t('bank_details_title')}</p>
+      <dl class={styles.bankDetailsRows}>
+        <div>
+          <dt>{t('bank_details_name')}</dt>
+          <dd>{payee.name}</dd>
+        </div>
+        <div>
+          <dt>{t('bank_iban')}</dt>
+          <dd>
+            <Checkable target="payee.iban" class={styles.ibanId}>
+              {groupIban(payee.iban)}
+            </Checkable>
+          </dd>
+        </div>
+        {payee.amount ? (
+          <div>
+            <dt>{t('bank_amount')}</dt>
+            <dd>{payee.amount}</dd>
+          </div>
+        ) : null}
+      </dl>
+    </section>
   );
 }
 

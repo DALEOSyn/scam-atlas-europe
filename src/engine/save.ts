@@ -58,6 +58,8 @@ export interface SaveState {
   arc: ArcState;
   habits: Record<string, HabitProgress>;
   callouts: { pressureAny: boolean; pressureGenuine: boolean };
+  /** Coach marks already shown in this game, e.g. `payee_check` (CR-23: first payee-name check). */
+  coachMarks: string[];
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -78,6 +80,7 @@ export function freshSave(): SaveState {
     arc: { ...EMPTY_ARC, vars: {}, timeline: [] },
     habits: {},
     callouts: { pressureAny: false, pressureGenuine: false },
+    coachMarks: [],
   };
 }
 
@@ -222,6 +225,7 @@ export function parseSave(raw: string | null): ParseResult {
     arc: sanitiseArc(o.arc),
     habits: sanitiseHabits(o.habits),
     callouts: { pressureAny: bool(callouts.pressureAny, false), pressureGenuine: bool(callouts.pressureGenuine, false) },
+    coachMarks: strings(o.coachMarks, SNAKE),
   };
   return { save, status: migrated ? 'migrated' : 'ok' };
 }

@@ -69,6 +69,7 @@ export function shownText(device: Device, m: Message, target: string, links: rea
     case 'page.info':
       return m.page?.title;
     case 'payee.name_check':
+    case 'payee.name':
       return m.payee?.name;
     case 'payee.iban':
       return m.payee?.iban;
@@ -88,6 +89,10 @@ export function shownText(device: Device, m: Message, target: string, links: rea
       return m.image?.alt;
     case 'request':
       return m.ask?.text;
+    case 'claim':
+      return nth(m.claims, target)?.text;
+    case 'video':
+      return m.video?.alt;
     default:
       return device === 'call' ? m.sender?.detail : undefined;
   }

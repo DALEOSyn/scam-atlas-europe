@@ -62,7 +62,7 @@ export function Hud({ view, progress, chip, timersOff, onPause, menu }: { view: 
         <span class={low ? `${styles.timer} ${styles.low}` : styles.timer} role="timer" aria-live="off" aria-label={t('timer_label')}>
           <Icon name={timer.frozen ? 'breath' : 'hourglass'} size={16} />
           <span>{low ? t('timer_value_low', { time: formatTime(timer.remaining) }) : formatTime(timer.remaining)}</span>
-          {timer.frozen ? <span class={styles.vh}> {t('timer_paused')}</span> : null}
+          {timer.coachMark ? <span class={styles.frozenNote}>{t('coach_frozen')}</span> : timer.frozen ? <span class={styles.vh}> {t('timer_paused')}</span> : null}
           <span class={styles.bar} aria-hidden="true">
             <span style={{ width: `${Math.max(0, Math.min(100, (timer.remaining / Math.max(1, timer.length)) * 100))}%` }} />
           </span>

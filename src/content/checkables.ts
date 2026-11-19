@@ -28,6 +28,7 @@ export const CHECKABLE_TARGETS = [
   'page.address',
   'page.info',
   'payee.name_check',
+  'payee.name',
   'payee.iban',
   'prompt.service',
   'prompt.where',
@@ -36,6 +37,8 @@ export const CHECKABLE_TARGETS = [
   'prompt.number',
   'letterhead',
   'image',
+  'video',
+  'claim',
   'request',
 ] as const;
 
@@ -64,6 +67,8 @@ function numbered(base: string, count: number): string[] {
 export function deriveCheckables(device: Device, m: Message): string[] {
   const out: string[] = [];
   if (m.sender) out.push(device === 'call' ? 'caller_id' : 'sender.detail');
+  // CR-24: the video frame ("Face and voice") on a video call.
+  if (m.video && device === 'call') out.push('video');
   if (m.letterhead) out.push('letterhead');
   if (m.page) out.push('page.address', 'page.info');
   if (m.prompt) {
@@ -77,10 +82,18 @@ export function deriveCheckables(device: Device, m: Message): string[] {
   out.push(...numbered('phone_number', m.phone_numbers?.length ?? 0));
   if (m.qr) out.push('qr.destination');
   if (m.payee) {
-    out.push('payee.name_check');
-    if (m.payee.iban) out.push('payee.iban');
+    if (device === 'banking') {
+      // CR-18(c): a payment-request page runs no name check; its payee name is a plain checkable.
+      out.push(m.payee.payment_request ? 'payee.name' : 'payee.name_check');
+      if (m.payee.iban) out.push('payee.iban');
+    } else if (m.payee.iban) {
+      // CR-22: a bank-details card in an email or chat. No name check outside the bank app.
+      out.push('payee.iban');
+    }
   }
   if (m.image) out.push('image');
+  // CR-17(b): what they say (offers, promises, excuses), then the ask.
+  out.push(...numbered('claim', m.claims?.length ?? 0));
   if (m.ask) out.push('request');
   return out;
 }

@@ -35,6 +35,7 @@ action_kinds:
   proceed:                { class: proceed, los: [LO-17, LO-09] } # normal action on genuine; ALSO the in-message action of anything the player started (reset link, own sign-in)
   pay_protected:          { class: proceed, los: [LO-11] }
   pause:                  { class: meta,    los: [LO-04] }       # unscored, see pause
+  start_transfer:         { class: step,    los: [] }            # CR-18: opens the banking beat; never scored, never decisive, no cap (GDD §6)
 
 # ---------------------------------------------------------------------------
 # Stars (0–3) per class x truth. Points = stars x 5, with the two exceptions below.
@@ -161,7 +162,7 @@ timers:
   on_first_expiry: escalate
   escalation_extra_seconds: 20
   on_second_expiry: dismiss
-  freeze_while_open: [pause_menu, settings, help, debrief, take_a_breath, translation]
+  freeze_while_open: [pause_menu, settings, help, debrief, take_a_breath, translation, coach_mark]   # coach_mark: CR-23 (GDD §8)
   modes: { standard: 1.0, extended: 2.0, off: null }
   mode_choice: onboarding_before_first_timed_scenario
   default_mode: { standard: true, extended_if: prefers_reduced_motion }

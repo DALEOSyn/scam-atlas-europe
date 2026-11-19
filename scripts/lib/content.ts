@@ -8,6 +8,7 @@ import { parseDocument } from 'yaml';
 import { yamlStructureIssues } from './yaml-safety.ts';
 import type { z } from 'zod';
 import { isAllowedSourceHost } from './source-hosts.ts';
+import { svgSafetyIssues } from './svg-safety.ts';
 import { chapterRules, padlockRevealIssues, scenarioRules, unregisteredHostIssues, type Registries } from './rules.ts';
 import {
   balanceSchema,
@@ -392,6 +393,8 @@ export function validateContent(contentDir: string, opts: ValidateOptions = {}):
     report.warnings.push(...r.warnings.map((w) => `${file}: ${w}`));
   }
   for (const p of padlockRevealIssues(all)) report.errors.push(`${fileOf.get(p.id) ?? p.id}: ${p.message}`);
+  const publicRoot = join(contentDir, '..');
+  for (const s of all) for (const m of videoAssetIssues(s, publicRoot)) report.errors.push(`${fileOf.get(s.id) ?? s.id}: ${m}`);
   for (const [base, { file, chapter }] of chapters) {
     report.chapters?.set(chapter.city, chapter);
     const r = chapterRules(chapter, base, all.filter((s) => s.chapter === chapter.city), reg);
@@ -402,4 +405,24 @@ export function validateContent(contentDir: string, opts: ValidateOptions = {}):
     if (!chapters.has(s.chapter)) report.errors.push(`${fileOf.get(s.id) ?? s.id}: chapter "${s.chapter}" has no content/chapters/${s.chapter}.yaml`);
   }
   return report;
+}
+
+/**
+ * CR-24: every video-call illustration exists and is drawn as SVG code (no embedded photo, page,
+ * script or external reference; ART_DIRECTION §12.3). Also linted by redline:lint.
+ */
+export function videoAssetIssues(s: Scenario, root: string): string[] {
+  const out: string[] = [];
+  const beats = [{ id: 'start', message: s.message }, ...s.beats.map((b) => ({ id: b.id, message: b.message }))];
+  for (const b of beats) {
+    const path = b.message.video?.illustration;
+    if (!path) continue;
+    const file = join(root, path);
+    if (!existsSync(file)) {
+      out.push(`beat "${b.id}": video.illustration "${path}" does not exist`);
+      continue;
+    }
+    for (const i of svgSafetyIssues(readFileSync(file, 'utf8'))) out.push(`beat "${b.id}": video.illustration "${path}": ${i.message}`);
+  }
+  return out;
 }

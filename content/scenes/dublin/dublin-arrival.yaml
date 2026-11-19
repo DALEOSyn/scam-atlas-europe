@@ -1,0 +1,25 @@
+# Dublin arrival (GDD §28.2 beat 1, STORY §3.8; calm; 2 panels): before the arc beat and 8-1. A community-centre
+# hall set up for Waymarker's money clinic, an urn and a tray of biscuits. Róisín welcomes you; Declan states
+# the human problem (job loss, a lump sum, no plan; STORY §4.2 rule 3) in his own words, dignified.
+# No scam content: no ad, celebrity, platform, balance, firm name or amount (GDD §28.2). The "22 years" is his
+# work history, written in words, not an amount.
+# Not sensitive (producer ruling, GDD §28.11 Q5): the chapter content note is shown on the map instead.
+id: dublin-arrival
+chapter: dublin
+slot: arrival
+panels:
+  - backdrop: dublin-hall
+    crop: left
+    speaker: roisin
+    expression: warm
+    caption: "Dublin. A community hall, set up for the money clinic."
+    line: "Thanks for coming. Dad's been a bit lost since the warehouse closed."
+    alt: "Róisín smiling in a community hall with tall arched windows, a small noticeboard and a tea table with biscuits and an urn."
+  - backdrop: dublin-hall
+    crop: right
+    speaker: declan
+    expression: thinking
+    flip: true
+    with: { id: roisin, expression: calm }
+    line: "Twenty-two years. Now I've a lump sum, a daughter in college and no plan."
+    alt: "Declan, thinking, by the tea table with the urn, cups and biscuits; Róisín listens, calm. Folding chairs are stacked by the wall."

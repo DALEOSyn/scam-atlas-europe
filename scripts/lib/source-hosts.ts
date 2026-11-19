@@ -21,6 +21,9 @@ export const SOURCE_HOST_ALLOWLIST: readonly string[] = [
   // France
   'gouv.fr',
   'cybermalveillance.gouv.fr',
+  'justice.fr',
+  'inc-conso.fr',
+  'lesclesdelabanque.com',
   // Netherlands, Belgium
   'ncsc.nl',
   'politie.nl',

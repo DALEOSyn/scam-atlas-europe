@@ -78,6 +78,7 @@ Source ids refer to `content/sources.research.yaml` (to be merged into `content/
 - **Concern for a 14+ consumer audience:** BEC mainly hits businesses. Two ways to keep it relevant:
   - it fits the "trust inspector" job premise, so play it as the player's workplace task;
   - add a **consumer** variant: a landlord, sports club or tradesperson "changed bank details", delivered by **email or messenger** (Red Line 8: never a paper-only notice). This variant is *inferred* from the supplier-IBAN pattern; no consumer-specific official source was verified.
+  - **Update 2026-11-19 (Paris briefs):** the landlord and tradesperson variants are now **sourced** [fr-cybermalveillance-fiche-faux-rib], [fr-fbf-cles-faux-rib-2025]. The sports-club and school variants remain inferred. See `ceo-fraud-bec.md` and `payment-detail-change.md`.
 - **France also strong for "fake bank adviser":** manipulation fraud was 32% of French payment-fraud value in 2024 [fr-bdf-osmp-2024]. That overlaps with Madrid, so keep it there.
 - **Habit:** verify any payment change on a number you already hold; follow a fixed two-person validation [fr-gendarmerie-fovi]; take a "no match" payee-name warning seriously [eu-ecb-ipr].
 

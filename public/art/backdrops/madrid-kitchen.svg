@@ -1,0 +1,37 @@
+<!-- Scam Atlas: Europe. City backdrop: a sunny Madrid flat kitchen at eight in the morning, a glass balcony door onto geraniums and rooftops, a moka pot, a fruit bowl and keys on the table, a plain tiled floor; no lettering, no leaflet, no team colours. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="mk-t"><title id="mk-t">A sunny kitchen with a balcony door, geraniums and rooftops</title>
+<defs><linearGradient id="mk-air" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfdde6"/><stop offset="1" stop-color="#d9e6f6"/></linearGradient>
+<g id="mk-tile"><rect width="40" height="35" fill="#e7d3b0"/><path d="M20 4L36 17.5L20 31L4 17.5Z" fill="#d6bf98"/></g>
+</defs>
+<rect width="960" height="540" fill="#f1e4c8"/>
+<rect width="960" height="20" fill="#e7d3b0"/>
+<rect x="530" y="56" width="196" height="414" rx="6" fill="#f6efe2"/>
+<rect x="544" y="70" width="80" height="390" rx="3" fill="url(#mk-air)"/><rect x="632" y="70" width="80" height="390" rx="3" fill="url(#mk-air)"/>
+<path d="M544 300L572 282H600L624 300V360H544ZM632 290L660 270H690L712 290V360H632Z" fill="#e7d3b0"/>
+<path d="M544 300L572 282H600L624 300ZM632 290L660 270H690L712 290Z" fill="#c8714f"/>
+<rect x="544" y="360" width="168" height="100" fill="#e7d3b0"/>
+<path d="M544 370H712M544 398H712" stroke="#9c978a" stroke-width="3"/>
+<path d="M564 370V398M604 370V398M652 370V398M692 370V398" stroke="#9c978a" stroke-width="2"/>
+<path d="M560 370h24l-3 -14h-18ZM612 370h24l-3 -14h-18ZM664 370h24l-3 -14h-18Z" fill="#c8714f"/>
+<path d="M558 350a8 8 0 1 0 16 0a8 8 0 1 0 -16 0ZM570 346a8 8 0 1 0 16 0a8 8 0 1 0 -16 0ZM610 350a8 8 0 1 0 16 0a8 8 0 1 0 -16 0ZM622 346a8 8 0 1 0 16 0a8 8 0 1 0 -16 0ZM662 350a8 8 0 1 0 16 0a8 8 0 1 0 -16 0ZM674 346a8 8 0 1 0 16 0a8 8 0 1 0 -16 0Z" fill="#86a175"/>
+<path d="M567 340a5 5 0 1 0 10 0a5 5 0 1 0 -10 0ZM619 340a5 5 0 1 0 10 0a5 5 0 1 0 -10 0ZM671 340a5 5 0 1 0 10 0a5 5 0 1 0 -10 0Z" fill="#e3a6a0"/><path d="M582 344a4 4 0 1 0 8 0a4 4 0 1 0 -8 0ZM634 344a4 4 0 1 0 8 0a4 4 0 1 0 -8 0Z" fill="#c8714f"/>
+<path d="M628 70V460" stroke="#f6efe2" stroke-width="8"/>
+<rect x="0" y="294" width="300" height="56" fill="#e7d3b0"/>
+<rect x="0" y="346" width="310" height="16" rx="3" fill="#d6bf98"/>
+<rect x="0" y="362" width="300" height="108" fill="#d9a441"/>
+<path d="M100 368V466M200 368V466" stroke="#bd8a2c" stroke-width="3"/>
+<path d="M80 410h10M110 410h10M180 410h10M210 410h10" stroke="#f6efe2" stroke-width="5" stroke-linecap="round"/>
+<rect x="0" y="40" width="300" height="96" rx="4" fill="#d9a441"/><path d="M100 46V130M200 46V130" stroke="#bd8a2c" stroke-width="3"/>
+<path d="M60 346V318L52 304H84L76 318V346Z" fill="#b8b4a6"/><path d="M84 314H92" stroke="#5d6672" stroke-width="4" stroke-linecap="round"/><path d="M64 300a4 4 0 1 0 8 0a4 4 0 1 0 -8 0Z" fill="#9c978a"/>
+<path d="M200 346Q200 326 228 326Q256 326 256 346Z" fill="#fffaf0"/><path d="M207 324a9 9 0 1 0 18 0a9 9 0 1 0 -18 0ZM227 322a9 9 0 1 0 18 0a9 9 0 1 0 -18 0Z" fill="#d9a441"/><path d="M218 316a8 8 0 1 0 16 0a8 8 0 1 0 -16 0Z" fill="#e9a23b"/>
+<path d="M830 0V50" stroke="#5d6672" stroke-width="3"/><path d="M806 76Q806 48 830 48Q854 48 854 76Z" fill="#8fae8b"/>
+<rect y="470" width="960" height="70" fill="#e7d3b0"/>
+<use href="#mk-tile" x="0" y="470"/><use href="#mk-tile" x="40" y="470"/><use href="#mk-tile" x="80" y="470"/><use href="#mk-tile" x="120" y="470"/><use href="#mk-tile" x="160" y="470"/><use href="#mk-tile" x="200" y="470"/><use href="#mk-tile" x="240" y="470"/><use href="#mk-tile" x="280" y="470"/><use href="#mk-tile" x="320" y="470"/><use href="#mk-tile" x="360" y="470"/><use href="#mk-tile" x="400" y="470"/><use href="#mk-tile" x="440" y="470"/><use href="#mk-tile" x="480" y="470"/><use href="#mk-tile" x="520" y="470"/><use href="#mk-tile" x="560" y="470"/><use href="#mk-tile" x="600" y="470"/><use href="#mk-tile" x="640" y="470"/><use href="#mk-tile" x="680" y="470"/><use href="#mk-tile" x="720" y="470"/><use href="#mk-tile" x="760" y="470"/><use href="#mk-tile" x="800" y="470"/><use href="#mk-tile" x="840" y="470"/><use href="#mk-tile" x="880" y="470"/><use href="#mk-tile" x="920" y="470"/>
+<path d="M560 470L700 470L760 540H600Z" fill="#f3d08a" opacity=".5"/>
+<rect x="330" y="398" width="300" height="16" rx="5" fill="#c8714f"/>
+<rect x="346" y="414" width="12" height="70" rx="4" fill="#8a6a4f"/><rect x="602" y="414" width="12" height="70" rx="4" fill="#8a6a4f"/>
+<path d="M380 382H404V394Q404 400 392 400Q380 400 380 394Z" fill="#fffaf0"/><path d="M404 384Q412 384 412 390Q412 396 404 396" fill="none" stroke="#ddcca9" stroke-width="3"/>
+<path d="M430 382H454V394Q454 400 442 400Q430 400 430 394Z" fill="#fffaf0"/><path d="M454 384Q462 384 462 390Q462 396 454 396" fill="none" stroke="#ddcca9" stroke-width="3"/>
+<path d="M554 390a6 6 0 1 0 12 0a6 6 0 1 0 -12 0Z" fill="none" stroke="#9c978a" stroke-width="3"/><path d="M564 394l12 4v3l-3 1l2 2l-3 1l-10 -6Z" fill="#c98f2e"/><path d="M552 396l-6 10l4 2l7 -9Z" fill="#c98f2e"/>
+<path d="M800 470h60l-6 -50h-48Z" fill="#c8714f"/><path d="M804 396a26 26 0 1 0 52 0a26 26 0 1 0 -52 0ZM790 410a16 16 0 1 0 32 0a16 16 0 1 0 -32 0ZM838 412a16 16 0 1 0 32 0a16 16 0 1 0 -32 0Z" fill="#86a175"/>
+</svg>

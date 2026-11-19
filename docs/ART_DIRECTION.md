@@ -206,7 +206,7 @@ Device-layer pictures (profile pictures of non-cast personas, the "fictional cel
 | Bastien | calm, warm | — |
 | Lucía | calm, warm, thinking, relieved | — |
 | Andrés | calm, worried, laughing, proud | — |
-| Kasia | calm, warm, focused, laughing | — |
+| Kasia | calm, warm, focused, laughing, **+ worried** (placed beat `warsaw-kasia-back`, GDD §25.9) | `x-worried-phone-look` (shared pose: back from rehearsal, phone in hand) |
 | Bruna | calm, warm, thinking, proud | — |
 | Davide | calm, sheepish, worried, relieved | — |
 | Giulia | calm, laughing, relieved | `x-laughing-wave` (video) |
@@ -245,8 +245,9 @@ Allowed cues: building typology, roof shapes, window rhythm, materials, plants, 
 | `paris-studio` | Paris arrival (your studio flat) | small top-floor room, zinc-grey roofs through the window, chimney pots | famous skyline silhouettes |
 | `paris-workshop` | Ruchelune scenes | print-and-design cooperative: big table, paper stacks, a generic printing press, procedure card on the wall with abstract ruled bars, no lettering | machine maker names; no lettering |
 | `paris-street` | Paris arrival, the walk to Ruchelune | generic cream stone apartment facades, grey zinc mansard roofs with dormers and chimney pots, a carriage door, a blank shopfront under a plain awning, café tables, plane trees | famous skyline silhouettes or monuments, shop or café names, street signs and house numbers, transit stops or vehicles in livery |
-| `madrid-kitchen` | Madrid all scenes | sunny 8 a.m. kitchen, balcony with geraniums, rooftops, tiled floor | football colours, bank leaflets |
-| `warsaw-flat` | Warsaw all scenes | flat with moving boxes (plain), cello case, lamp, big windows | courier logos on boxes, marketplace UI |
+| `madrid-kitchen` | Madrid arrival, turn, resolution | sunny 8 a.m. kitchen, glass balcony door onto geraniums and rooftops, moka pot, fruit bowl, keys on the table (resolution), plain two-tone tiled floor | football colours, bank leaflets, any card, statement or phone screen on the table |
+| `madrid-street` | Madrid arrival caption ("Madrid. Your host's spare room…") | warm ochre and cream apartment facades, shutters, balconies with geraniums on the top and first floors only (rails outside the head band), plain doorway, blank awning, a tree at each edge | shop or bank signs, street signs, house numbers, landmarks, team colours |
+| `warsaw-flat` | Warsaw all scenes (resolution uses the right crop: emptied shelves) | half-packed flat: plain taped boxes and a lamp on the left, a fridge with the selling-rules card (abstract ruled bars, no lettering), two big windows, a rolled rug, emptied shelves on the right. The cello case is Kasia's signature prop and is drawn on her portrait, not in the backdrop | courier or locker logos and colours on boxes, marketplace UI, listing prices |
 | `rome-bnb` | Rome all scenes | small B&B courtyard, lemon tree, shutters, terracotta | ancient monuments, religious symbols |
 | `lisbon-street` | Lisbon arrival | steep tiled street with **original** geometric tile patterns, laundry, steps | trams or funiculars in livery, copies of historic tile designs |
 | `lisbon-kitchen` | Lisbon turn, resolution | family kitchen, pots, tiled wall in original pattern | product packaging |

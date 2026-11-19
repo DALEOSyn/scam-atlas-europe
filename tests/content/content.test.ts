@@ -345,7 +345,7 @@ describe('brand registry (T-1.8)', () => {
     const r = report();
     const brands = loadBrands(CONTENT, r);
     expect(r.errors).toEqual([]);
-    expect(brands.size).toBe(16); // 8 + Amsterdam (T-3.4): klaverwerk, tallyfern + Paris (T-3.5): ruchelune, volet-bleu, feuillemont, platinoir, cuivrelin, ostrelle
+    expect(brands.size).toBe(18); // 8 + Amsterdam (T-3.4): klaverwerk, tallyfern + Paris (T-3.5): ruchelune, volet-bleu, feuillemont, platinoir, cuivrelin, ostrelle + Madrid/Warsaw story art (T-S6a): votelark, tremolik
   });
 
   it('collects domain, sub-brand domains, email hosts and look-alikes incl. {host} objects', () => {

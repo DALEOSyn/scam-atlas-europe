@@ -1,0 +1,37 @@
+# Stockholm turn (GDD §29.2 beat 2, STORY §3.9; laughing → thinking; 4 panels): the stop point, after 9-3.
+# Drill 9-4 (Jamal's "police" call; he asks you and hangs up in every branch) follows directly.
+# Birgitta's rule ("rudeness is free", SK5) is a general habit, never wrong on the genuine twins later in the
+# chapter (9-7 is started by the player, no caller): STORY §4.2 rule 2. It never mocks politeness: "Be polite
+# to people. Hang up on requests." An older woman teaches a younger man, who brings his own lab know-how;
+# being new is the risk, not ability (STORY §3.9 note). No prompt, caller, number, QR code or screen.
+id: stockholm-turn
+chapter: stockholm
+slot: turn
+panels:
+  - backdrop: stockholm-courtyard
+    crop: left
+    speaker: birgitta
+    expression: laughing
+    line: "My rule: if a caller wants me to log in, I'm rude. I hang up. Rudeness is free."
+    alt: "Birgitta laughing by the bare tree in the snowy courtyard."
+  - backdrop: stockholm-courtyard
+    crop: right
+    speaker: jamal
+    expression: worried
+    flip: true
+    line: "I'm new here. I want to be polite."
+    alt: "Jamal, looking worried, by the bikes under snow."
+  - backdrop: stockholm-courtyard
+    crop: centre
+    speaker: birgitta
+    expression: calm
+    with: { id: jamal, expression: calm }
+    line: "Be polite to people. Hang up on requests."
+    alt: "Birgitta, calm, in the courtyard by the door with a lit fanlight; Jamal listens, calm."
+  - backdrop: stockholm-courtyard
+    crop: right
+    speaker: jamal
+    expression: thinking
+    flip: true
+    line: "At the lab we never sign for a sample we didn't order. Same idea, I suppose."
+    alt: "Jamal, thinking, in the snowy courtyard by the door with a lit fanlight."

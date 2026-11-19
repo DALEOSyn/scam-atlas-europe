@@ -262,8 +262,33 @@ function walkYaml(
   }
 }
 
+/**
+ * Results of lintText by config object, then by file path and exact text
+ * (CR-47: the test suite lints content/ more than once per process). The key
+ * includes the full text, so an edited file is linted afresh; callers get
+ * copies, so a cached result cannot be changed from outside. Calls with
+ * `briefs` (tests) bypass the cache.
+ */
+const lintCache = new WeakMap<RuleConfig, Map<string, FileFinding[]>>();
+
 /** `briefs` overrides the pattern ids from docs/patterns (tests). */
 export function lintText(file: string, text: string, cfg: RuleConfig, briefs?: ReadonlySet<string>): FileFinding[] {
+  if (briefs) return lintTextUncached(file, text, cfg, briefs);
+  let byKey = lintCache.get(cfg);
+  if (!byKey) {
+    byKey = new Map();
+    lintCache.set(cfg, byKey);
+  }
+  const key = `${file}\0${text}`;
+  let found = byKey.get(key);
+  if (!found) {
+    found = lintTextUncached(file, text, cfg);
+    byKey.set(key, found);
+  }
+  return found.map((f) => ({ ...f }));
+}
+
+function lintTextUncached(file: string, text: string, cfg: RuleConfig, briefs?: ReadonlySet<string>): FileFinding[] {
   const found: FileFinding[] = [];
   const seen = new Set<string>();
   const add = (f: Finding): void => {

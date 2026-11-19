@@ -32,6 +32,13 @@ export interface BrandMatcher {
   entry: ListEntry;
   re: RegExp;
   exceptions: string[];
+  /**
+   * The name's letter units joined without separators. Every spelling `re`
+   * accepts consists of exactly these units, in order, with only SEP_CHARS
+   * between them, so a text can match `re` only if it contains `compact`
+   * once all SEP_CHARS are removed (see findBrandHits, CR-47).
+   */
+  compact: string;
 }
 
 export const MIN_SKELETON = 3;
@@ -77,6 +84,7 @@ function escapeRe(s: string): string {
 /** Separators allowed between letters, folded like the text so they line up. */
 const SEP_SOURCE = [' ', '\t', '\n', '\r', '.', '-', '_', "'", String.fromCodePoint(0x00b7), String.fromCodePoint(0x2019)];
 const SEP_CHARS = `[${[...new Set(SEP_SOURCE.map((c) => foldForBrand(c) || c))].map(escapeRe).join('')}]`;
+const SEP_RE = new RegExp(SEP_CHARS, 'gu');
 const B_BEFORE = '(?<![\\p{L}\\p{N}])';
 const B_AFTER = '(?![\\p{L}\\p{N}])';
 /** camelCase splits are honoured only when both sides have at least this many letters (Pay|Pal, not In|Post). */
@@ -108,9 +116,9 @@ export function nameSegments(name: string): string[] {
   return out;
 }
 
-/** One regex unit per source character, so "m" (folded to "rn") stays a single letter in spelled-out forms. */
+/** One unit per source character, so "m" (folded to "rn") stays a single letter in spelled-out forms. Units are literal letters/digits. */
 const skeletonOf = (s: string): string[] =>
-  [...s].map((c) => foldForBrand(c).replace(/[^\p{L}\p{N}]/gu, '')).filter(Boolean).map(escapeRe);
+  [...s].map((c) => foldForBrand(c).replace(/[^\p{L}\p{N}]/gu, '')).filter(Boolean);
 
 /**
  * Accepted spellings (always as a stand-alone word):
@@ -120,7 +128,9 @@ const skeletonOf = (s: string): string[] =>
  * mode affix/prefix additionally match the compact form inside/at the start of longer words.
  */
 export function compileEntry(entry: ListEntry): BrandMatcher {
-  const segments = nameSegments(entry.name).map(skeletonOf).filter((seg) => seg.length > 0);
+  const literalSegments = nameSegments(entry.name).map(skeletonOf).filter((seg) => seg.length > 0);
+  const literal = literalSegments.flat().join('');
+  const segments = literalSegments.map((seg) => seg.map(escapeRe));
   const letters = segments.flat();
   const compact = letters.join('');
   const alts: string[] = [];
@@ -136,6 +146,7 @@ export function compileEntry(entry: ListEntry): BrandMatcher {
     entry,
     re: new RegExp(alts.map((a) => `(?:${a})`).join('|'), 'gu'),
     exceptions: entry.except.map((p) => foldForBrand(p)),
+    compact: literal,
   };
 }
 
@@ -144,6 +155,52 @@ export interface BrandHit {
   /** Offsets into the normalised text. */
   start: number;
   end: number;
+}
+
+interface BigramIndex {
+  /** Matcher positions by the first two UTF-16 units of `compact`. */
+  byBigram: Map<string, number[]>;
+  /** Matchers whose `compact` is shorter than two units: always candidates. */
+  always: number[];
+}
+
+const bigramIndexes = new WeakMap<readonly BrandMatcher[], BigramIndex>();
+
+function bigramIndex(matchers: readonly BrandMatcher[]): BigramIndex {
+  let index = bigramIndexes.get(matchers);
+  if (index) return index;
+  index = { byBigram: new Map(), always: [] };
+  matchers.forEach((m, i) => {
+    if (m.compact.length < 2) {
+      index.always.push(i);
+      return;
+    }
+    const key = m.compact.slice(0, 2);
+    const list = index.byBigram.get(key);
+    if (list) list.push(i);
+    else index.byBigram.set(key, [i]);
+  });
+  bigramIndexes.set(matchers, index);
+  return index;
+}
+
+/**
+ * Matchers whose `compact` could occur in `stripped`: an occurrence implies its
+ * first two units occur adjacently, so only matchers keyed by a bigram present
+ * in the text are returned. Original list order is kept, so hits come out in
+ * the same order as a plain loop over all matchers.
+ */
+function candidateMatchers(stripped: string, matchers: readonly BrandMatcher[]): BrandMatcher[] {
+  const { byBigram, always } = bigramIndex(matchers);
+  const picked = new Set<number>(always);
+  const seen = new Set<string>();
+  for (let i = 0; i + 1 < stripped.length; i++) {
+    const key = stripped.slice(i, i + 2);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    for (const idx of byBigram.get(key) ?? []) picked.add(idx);
+  }
+  return [...picked].sort((a, b) => a - b).map((i) => matchers[i] as BrandMatcher);
 }
 
 function coveredByException(folded: string, s: number, e: number, phrases: readonly string[]): boolean {
@@ -160,11 +217,35 @@ function coveredByException(folded: string, s: number, e: number, phrases: reado
   return false;
 }
 
-/** Find brand hits in already-normalised text. */
+/**
+ * Find brand hits in already-normalised text.
+ *
+ * Speed (CR-47): running ~470 Unicode regexes with lookbehinds over every
+ * string was ~90% of the linter's time. Each matcher's regex can only match
+ * a run of its letter units (`compact`, literal alphanumerics) with
+ * separators from SEP_CHARS in between, so deleting every SEP_CHARS
+ * character from the text turns any match into a literal occurrence of
+ * `compact`. A plain substring test on that stripped text is therefore a
+ * sound pre-filter: it never skips a matcher that could match, and the
+ * matcher's own regex (unchanged) still decides every hit, its offsets,
+ * overlaps and except: phrases. Findings are identical; only matchers that
+ * cannot match are skipped.
+ */
 export function findBrandHits(normalised: string, matchers: readonly BrandMatcher[]): BrandHit[] {
+  return brandHits(normalised, matchers, true);
+}
+
+/** Reference for tests: every matcher's regex over the text, no pre-filter (the pre-CR-47 behaviour). */
+export function findBrandHitsUnfiltered(normalised: string, matchers: readonly BrandMatcher[]): BrandHit[] {
+  return brandHits(normalised, matchers, false);
+}
+
+function brandHits(normalised: string, matchers: readonly BrandMatcher[], prefilter: boolean): BrandHit[] {
   const { text: folded, origin } = foldWithOrigin(normalised);
+  const stripped = prefilter ? folded.replace(SEP_RE, '') : '';
   const hits: BrandHit[] = [];
-  for (const m of matchers) {
+  for (const m of prefilter ? candidateMatchers(stripped, matchers) : matchers) {
+    if (prefilter && !stripped.includes(m.compact)) continue;
     for (const r of folded.matchAll(m.re)) {
       const s = r.index;
       const e = s + r[0].length;

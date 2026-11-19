@@ -71,8 +71,10 @@ export interface SaveState {
 /**
  * One-time fixes on load, by id. A fresh save has them all; a save without one gets it applied once in `parseSave`.
  * - `arc_flags_cr51`: arc flags for saves from builds before CR-51 / R28 (`fixArcFlags`).
+ * - `arc_choices_cr55`: arc slot choices stored as `timer_expiry` for a reply, before CR-55 (`fixArcChoices`).
  */
-export const SAVE_FIXES: readonly string[] = ['arc_flags_cr51'];
+export const ARC_CHOICES_FIX = 'arc_choices_cr55';
+export const SAVE_FIXES: readonly string[] = ['arc_flags_cr51', ARC_CHOICES_FIX];
 
 export const DEFAULT_SETTINGS: Settings = {
   timerMode: null,
@@ -266,7 +268,8 @@ export function parseSave(raw: string | null): ParseResult {
     story: sanitiseStory(o.story),
     fixes: strings(o.fixes, SNAKE),
   };
-  const fixed = save.fixes.includes('arc_flags_cr51') ? save : { ...save, flags: fixArcFlags(save.flags, save.arc), fixes: [...save.fixes, 'arc_flags_cr51'] };
+  const fixed51 = save.fixes.includes('arc_flags_cr51') ? save : { ...save, flags: fixArcFlags(save.flags, save.arc), fixes: [...save.fixes, 'arc_flags_cr51'] };
+  const fixed = fixed51.fixes.includes(ARC_CHOICES_FIX) ? fixed51 : { ...fixed51, arc: fixArcChoices(fixed51.arc), fixes: [...fixed51.fixes, ARC_CHOICES_FIX] };
   return { save: fixed, status: migrated ? 'migrated' : 'ok' };
 }
 
@@ -291,6 +294,20 @@ export function fixArcFlags(flags: readonly string[], arc: Pick<ArcState, 'choic
   if (teoOnly && out.has(ARC_TOLD_SOMEONE) && !toldBySlot) out.add(ARC_HELPED_TEO);
   if (toldBySlot) out.add(ARC_TOLD_SOMEONE);
   return [...out];
+}
+
+/**
+ * One-time fix `arc_choices_cr55` (CR-55, QA P3 B2) for saves written before it. Older builds stored
+ * `timer_expiry` for an arc slot answered with `reply` (a reply never became the scoring decision), so the timeline
+ * said "You stepped back from it." to players who replied or went along. No arc slot beat has ever had a timer
+ * (every `*-arc-alex-*` file in the history has `pressure.timer: false`) and `reply` is the only kind in them that
+ * ends the beat without a decision, so a stored `timer_expiry` on slots 1–9 can only be a reply. The kind feeds the
+ * timeline wording only: `closes` (an `ignore`), `reportedAtSlot` and `arc_told_someone` (report, ask_someone) never
+ * read it. `arc.choices` only ever holds slot beats (1–9), so every entry is a slot. Applied once (a future timed arc beat's real expiry, stored after the fix, is kept). Idempotent.
+ */
+export function fixArcChoices<A extends Pick<ArcState, 'choices'>>(arc: A): A {
+  if (!arc.choices.some((c) => c.kind === 'timer_expiry')) return arc;
+  return { ...arc, choices: arc.choices.map((c) => (c.kind === 'timer_expiry' ? { ...c, kind: 'reply' } : c)) };
 }
 
 /** Minimal Storage surface (localStorage, or a fake in tests). */

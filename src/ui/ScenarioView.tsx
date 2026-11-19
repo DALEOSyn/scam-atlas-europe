@@ -386,6 +386,8 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
       onDone(runner.state, runner.result);
     }
   }, [runner.result, runner.state, onDone, announce]);
+  // CR-55: the read-only "Your steps" (CR-53) is on screen: no "Your options" heading above it.
+  const stepsReadOnly = view.phase === 'damage_control' && view.recovery?.readOnly === true;
   // The last beat is over (its consequence, damage control or the closing interrupt step): nothing of
   // the scenario's timer, stress or message news is announced any more (QA m5).
   const ended = view.phase === 'damage_control' || view.phase === 'interrupt' || view.phase === 'done' || (view.phase === 'consequence' && state.schedule.length <= state.groups.length);
@@ -881,9 +883,10 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
               ))}
             </aside>
           ) : null}
-          <section id="options" class={styles.tray} aria-labelledby={view.phase === 'consequence' ? 'consequence-h' : 'actions-h'} tabIndex={-1} ref={optionsRef}>
-            {/* No empty "Your options" during the consequence step: its own heading labels the panel (QA F4). */}
-            {view.phase !== 'consequence' ? (
+          <section id="options" class={styles.tray} aria-labelledby={view.phase === 'consequence' ? 'consequence-h' : stepsReadOnly ? 'damage-feedback-heading' : 'actions-h'} tabIndex={-1} ref={optionsRef}>
+            {/* No empty "Your options" during the consequence step: its own heading labels the panel (QA F4). Nor
+                above the read-only "Your steps" (CR-53): there is nothing to choose there (CR-55, QA P3 minor 2). */}
+            {view.phase !== 'consequence' && !stepsReadOnly ? (
               <h2 id="actions-h" class={styles.trayTitle}>
                 {t('your_options')}
               </h2>

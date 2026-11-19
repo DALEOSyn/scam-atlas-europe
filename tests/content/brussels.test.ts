@@ -333,9 +333,10 @@ describe('Finale scenarios (GDD §30.6; CR-43, R22)', () => {
   it('the close beat: Alex sends nothing new (no request, no amount) and the layer-2 line is word for word', () => {
     const s = sc('brussels-arc-close');
     expect(s.message.request).toBe('none');
-    // QA round 1: slot 9's message is history ("Yesterday", under "Earlier"), not a new bubble under "Today";
+    // QA round 1: slot 9's message is history (under "Earlier"), not a new bubble under "Today";
     // the body a messenger beat needs is that message's own last word, so Alex adds no new words.
-    expect(s.message.earlier).toEqual([{ when: 'Yesterday', body: "I'm in trouble. My account's frozen. You're the only one I can ask." }]);
+    // CR-55 (QA P3 M1): re-pinned from "Yesterday" to "Earlier this week": slot 9 plays at least two days before.
+    expect(s.message.earlier).toEqual([{ when: 'Earlier this week', body: "I'm in trouble. My account's frozen. You're the only one I can ask." }]);
     expect(s.message.body).toBe('Please?');
     expect([...(s.message.earlier ?? []).map((e) => e.body), s.message.body].join(' ')).toBe("I'm in trouble. My account's frozen. You're the only one I can ask. Please?");
     expect(JSON.stringify(s.message)).not.toMatch(/€|\d{2,}/u);

@@ -9,9 +9,9 @@ import { betterStamp, nextIndex, recordOf, sequenceOf, summarise, type ChapterSu
 import { pressureCalloutFor } from './debrief.ts';
 import { demonstratedLos, recordHabits } from './habits.ts';
 import type { ScenarioResult } from './result.ts';
-import type { RunnerState } from './runner.ts';
+import type { GroupState, RunnerState } from './runner.ts';
 import type { ChapterProgress, SaveState } from './save.ts';
-import type { EngineBalance } from './scoring.ts';
+import { classOf, isUnscoredClass, type EngineBalance } from './scoring.ts';
 import { afterScenario } from './stress.ts';
 import { recordPostcard } from './story.ts';
 
@@ -20,7 +20,7 @@ export function chapterProgress(save: SaveState, city: string): ChapterProgress 
 }
 
 /** Start (or resume) a chapter run. Records its play position the first time. */
-export function beginChapter(save: SaveState, city: string, chapter?: Pick<Chapter, 'scenario_order'>): SaveState {
+export function beginChapter(save: SaveState, city: string, chapter?: Pick<Chapter, 'scenario_order' | 'arc_beat'>): SaveState {
   const p = chapterProgress(save, city);
   if (p.run && !(chapter && runIsTampered(p.run, chapter))) return save;
   const position = p.position ?? Object.values(save.chapters).filter((c) => c.position !== null).length;
@@ -30,11 +30,36 @@ export function beginChapter(save: SaveState, city: string, chapter?: Pick<Chapt
 /**
  * QA E8: a run whose index is beyond what its records explain (index = 1 + the furthest recorded
  * scenario) can only come from an edited save. Such a run starts again instead of skipping scenarios.
+ *
+ * CR-55 (QA P3 B1): the chapter's arc position plays the lowest arc slot not yet played (CR-49), often another
+ * chapter's arc file, so the run records an id outside this chapter's sequence there. Such a record is explained
+ * by the chapter's arc-beat position (`arc_beat`), and by nothing else: a chapter without an arc beat explains
+ * none, and a foreign record never explains more than the arc position. Without this, every arc beat borrowed
+ * from another chapter read as tampering and restarted the run, which chained arc beats (the arc position came
+ * round again) and wiped the scenarios played before it.
  */
-export function runIsTampered(run: { index: number; records: readonly { id: string }[] }, chapter: Pick<Chapter, 'scenario_order'>): boolean {
+export function runIsTampered(run: { index: number; records: readonly { id: string }[] }, chapter: Pick<Chapter, 'scenario_order' | 'arc_beat'>): boolean {
   const seq = sequenceOf(chapter);
-  const explained = run.records.reduce((m, r) => Math.max(m, seq.findIndex((e) => e.id === r.id) + 1), 0);
+  const arcAt = chapter.arc_beat === undefined ? -1 : seq.findIndex((e) => e.id === chapter.arc_beat);
+  const at = (id: string): number => {
+    const own = seq.findIndex((e) => e.id === id);
+    return own >= 0 ? own : arcAt;
+  };
+  const explained = run.records.reduce((m, r) => Math.max(m, at(r.id) + 1), 0);
   return run.index > explained;
+}
+
+/**
+ * CR-55 (QA P3 B2): the action kind that decided an arc slot, for the timeline wording and the arc rules. A reply
+ * (an engage on a fraud beat) never becomes the group's scoring `decision` (engage is not terminal), so the last
+ * scored action taken stands for it. undefined (stored as `timer_expiry`) only when the timer really ran out and
+ * nothing decided, or when nothing was chosen at all.
+ */
+export function arcDecisiveKind(b: Pick<EngineBalance, 'action_kinds'>, g: Pick<GroupState, 'decision' | 'timerExpired' | 'kinds'> | undefined): string | undefined {
+  if (!g) return undefined;
+  if (g.decision) return g.decision.kind;
+  if (g.timerExpired) return undefined;
+  return [...g.kinds].reverse().find((k) => !isUnscoredClass(classOf(b, k)));
 }
 
 /** Stress the next scenario starts with: decayed after a scenario, 10 on resume (balance stress.on_resume). */
@@ -70,7 +95,7 @@ export function commitScenario(
     pressureGenuine: save.callouts.pressureGenuine || callout === 'first_genuine',
   };
   let arc = save.arc;
-  const decisive = st.groups[0]?.decision?.kind;
+  const decisive = s.role === 'arc' && s.arc_slot !== undefined ? arcDecisiveKind(b, st.groups[0]) : undefined;
   if (s.role === 'arc' && s.arc_slot !== undefined) arc = applyArcBeat(arc, s.arc_slot, r, decisive);
   // CR-51 (R25(5)): an arc slot decided by a report or by asking someone sets arc_told_someone.
   const engineFlags = s.role === 'arc' && s.arc_slot !== undefined ? arcSlotFlags(decisive) : [];

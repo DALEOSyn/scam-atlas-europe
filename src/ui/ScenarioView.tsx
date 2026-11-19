@@ -362,7 +362,13 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                 call={call}
                 onAnswer={answer}
                 onDecline={hangUpAction ? () => runner.act(hangUpAction.id) : null}
-                onNextLine={() => call && setCallState({ ...call, shown: call.shown + 1 })}
+                onNextLine={() =>
+                  // Functional update: two quick presses before a re-render still reveal two lines.
+                  call && setCallState((prev) => {
+                    const base = prev && prev.beatId === call.beatId ? prev : call;
+                    return { ...base, shown: Math.min(base.shown + 1, lines.length) };
+                  })
+                }
                 heading={deviceHeading(beat.device, beat.message)}
                 headingRef={deviceHeadingRef}
               />

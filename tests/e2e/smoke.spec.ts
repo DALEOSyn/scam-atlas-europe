@@ -365,10 +365,13 @@ test('call, step-through mode: after the last "Next line" focus stays in the cal
   await page.getByRole('button', { name: 'Call lines: step through' }).click();
   await page.keyboard.press('Escape');
   await page.getByRole('button', { name: 'Answer' }).click();
+  // Answer moves focus to the transcript heading (B2); wait for it before using the keyboard.
+  await expect(page.getByRole('heading', { name: 'Call transcript' })).toBeFocused();
   const next = page.getByRole('button', { name: 'Next line' });
   for (let i = 0; i < 3; i++) {
     await next.focus();
     await page.keyboard.press('Enter');
+    await expect(page.getByRole('log').locator('li')).toHaveCount(i + 2);
   }
   await expect(page.getByRole('log').locator('li')).toHaveCount(4);
   await expect(next).toHaveCount(0);

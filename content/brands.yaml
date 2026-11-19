@@ -163,6 +163,7 @@ brands:
       - "larchwick-bank.example-verify.test"
       - "larchwick-kundenservice.example"
       - "larchvvick-bank.example"       # "vv" for "w": survives lowercasing; difficulty 4+ only
+      - "caseportal-verify.example"     # Rome boss beat 3: a "police" text asking for your Larchwick login (GDD §26.10; no police wording in the host)
     trademark_search: "web-checked 2026-11-18; formal TMview/EUIPO pending before G4"
     status: draft
 

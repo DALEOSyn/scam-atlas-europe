@@ -114,3 +114,8 @@ steps:
   - id: send_code_to_cancel
     label: "Send another code to cancel the payment"
     feedback: "A code only ever makes a payment; it can't cancel one. Call your bank on the number on your card instead."
+  # Rome (GDD §26.10, T-3.8). Rome also uses Madrid's keep_call_evidence, call_back_caller_number and
+  # call_back_text_number (GDD §24.10, above); one copy kept at the merge.
+  # Labels stay generic: real bodies are named only on the Italy help card.
+  - id: report_number_in_app
+    label: "Block and report the number in Kettle"

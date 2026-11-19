@@ -1,0 +1,102 @@
+# 6-2 Teo's REAL call, from his saved number (GDD §26.4 6-2; genuine twin of 6-4, pattern
+# cloned-voice-family-emergency, in focus). Genuine, low stakes (a yes or no), difficulty 3, call timer.
+# A "police" caller told Teo you'd had an accident; he hung up, called the police himself, then you.
+# Checkables (G, 4; parity with 6-4): caller ID (RM1 neutral), Teo's voice and "my own phone" (claim; RM2
+# neutral wording), his story about someone else's call (claim#2, neutral), the request.
+# CR-36 (the "Sounds like" voice label) is not in the engine yet, so the first transcript line is claims[0]
+# with the RM2 wording (GDD §26.9 fallback); the spec's claims[0] (line 2) becomes claim#2.
+# Hang up opens "What now?": Teo's saved number (an extra of kind call_back_known with its outcome; it
+# replaces the built-in call-back), report, Done ("Leave it there").
+id: rome-02-teo-calls-you
+chapter: rome
+role: standard
+pattern: cloned-voice-family-emergency
+theme: family
+twin_of: rome-04-grandpa-new-number
+learning_objectives: [LO-17, LO-07, LO-08]
+difficulty: 3
+is_fraud: false
+stakes: low
+device: call
+setup: "Mid-morning, on the terrace. Your phone rings: Grandpa Teo."
+cast: [teo]
+pressure:
+  timer: true
+  levers: []
+  honest_deadline: "None: Teo only wants to hear you're all right, whenever you answer"
+
+message:
+  sender: { display: "Grandpa Teo", detail: "Saved contact: Grandpa Teo (home)" }
+  from_cast: teo
+  transcript:
+    - { speaker: caller, text: "Kiddo, it's Grandpa, on my own phone." }
+    - { speaker: caller, text: "A man rang me saying he was police, and that you'd had an accident in Rome. The screen showed an official-looking number." }
+    - { speaker: caller, text: "I hung up, rang the police myself: nothing. Then I rang you, on the number I have saved." }
+    - { speaker: caller, text: "So, are you all right? That's all I need." }
+    - { speaker: caller, text: "And if anyone rings you saying they're police: same thing. The number on the screen is the caller's choice; the number you dial is yours." }
+  request: reply
+  ask: { text: "So, are you all right? That's all I need." }
+  claims:
+    - { text: "Kiddo, it's Grandpa, on my own phone." }
+    - { text: "A man rang me saying he was police, and that you'd had an accident in Rome." }
+
+inspectables:
+  - target: caller_id
+    reveal: "Shows Teo's saved contact, as a real call from him would. A number on screen can be faked, so it can't prove anything either way. Judge what he asks."
+    red_flag: false
+    type: caller_id
+  - target: claim
+    reveal: "Sounds like Grandpa Teo. A voice can be copied from a short recording, so it can't prove anything either way. Judge what he asks."
+    red_flag: false
+    type: claim
+  - target: claim#2
+    reveal: "His story about someone else's call. It asks you for nothing."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "Asks only whether you're all right. No money, no code, no number to call."
+    red_flag: false
+    type: request
+
+actions:
+  - id: tell_teo_fine
+    label: "Tell him you're fine"
+    kind: proceed
+    outcome: teo_relieved
+    pressure_target: true
+  - id: hang_up_teo
+    label: "Hang up"
+    kind: hang_up
+    outcome: teo_call_left
+
+what_now:
+  outcomes:
+    report: teo_call_reported
+    done: teo_call_left
+  extra:
+    - id: call_teo_saved_after
+      label: "Call Teo's saved number"
+      kind: call_back_known
+      outcome: teo_picks_up
+
+outcomes:
+  teo_relieved:
+    narrative: "Teo, relieved: \"Good. Back to my café, then. Eight neighbours and a cake.\""
+  teo_picks_up:
+    narrative: "Teo picks up at once: \"Calling back? That's my grandchild.\""
+  teo_call_reported:
+    narrative: "You report the call. That evening Teo rings again, puzzled: \"Did you hang up on me? I only wanted to know you're all right.\""
+  teo_call_left:
+    narrative: "You leave it there. Later Teo texts: \"Just checking you're all right. Ring when you can.\""
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "His saved number, and he asks only about you."
+    what_works: "Answer him. Calling back is never wrong."
+  layer2:
+    message_flags: []
+    notes: "A real relative with a scare still asks for nothing you'd regret, and is happy for you to call back. Teo's rule is on your card: the number he dialled was his own choice."
+  device_tip: "On a real phone, end the call yourself, then open your contacts and call the saved number. Don't use redial or the call log."
+  habit_card: hang-up-call-back
+  sources: [it-carabinieri-contro-truffe, it-mur-smishing-vishing, eu-esas-ai-scams-factsheet-it, nl-veiliginternetten-voice-cloning]

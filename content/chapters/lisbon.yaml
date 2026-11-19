@@ -9,8 +9,10 @@
 # timers) vs fraud 4/5 (7-2, 7-3, 7-6, boss); genuine at difficulty 3, 4 and 5.
 # CR-37 (the QR mount field) is not built yet: the fallback is used (sticker described in 7-2's body and caption,
 # R 13, silver 5, gold 9; GDD §27.7 note).
-# Story scenes (GDD §27.2: lisbon-arrival, lisbon-turn, lisbon-resolution, variant lisbon_acted_fast) are
-# a later ticket; `scenes` is added with them. No content note proposed (money theme only, as Madrid).
+# Story scenes (GDD §27.2, STORY §3.7): arrival before the intro, the turn at the stop point after 7-3
+# (drill 7-4 follows), resolution after the boss debrief (variant lisbon_acted_fast, set by every boss fall
+# outcome, opens it). No placed beat. No content note proposed (money theme only, as Madrid).
+# Map invitation (Mateus, STORY §3.7) is not built yet (ENGINE "Not in S3").
 # The Portugal "Where to report and get help" card wording is on the Lisbon sources page in docs/patterns.
 slot: 7
 city: lisbon
@@ -31,3 +33,7 @@ rules:
     - "Book and pay in the Roostwell app. Never by a link or a transfer someone sends."
     - "Pay parking in the Zonelet app, or read where the code goes before you open it."
 atlas_cards: [stay-on-the-platform, check-before-you-pay, read-the-link]
+scenes:
+  arrival: lisbon-arrival
+  turn: lisbon-turn
+  resolution: lisbon-resolution

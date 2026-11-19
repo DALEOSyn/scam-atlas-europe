@@ -4,7 +4,8 @@
  * harmful pick, floor 0, max 9. LO-16 needs ≥ 6 and a first pick with
  * category `stop` in this scenario.
  */
-import type { ActionKind, Balance, Outcome, Scenario } from '../content/schema.ts';
+import { linksIn } from '../content/checkables.ts';
+import type { Action, ActionKind, Balance, Device, Message, Outcome, Scenario } from '../content/schema.ts';
 
 export type RecoveryCategory = 'stop' | 'secure' | 'report' | 'warn' | 'harmful';
 export interface RecoveryOption {
@@ -66,6 +67,37 @@ const PAID: readonly ActionKind[] = ['pay', 'pay_unprotected'];
 const SHARED: readonly ActionKind[] = ['share_code', 'approve_prompt'];
 const ENTERED: readonly ActionKind[] = ['enter_details', 'install_or_remote'];
 const CLICKED: readonly ActionKind[] = ['open_link', 'scan_qr_and_open', 'call_number_in_message', 'reply'];
+
+/** CR-45: what the scenario's "clicked" situation is: opening a link, calling the number, replying or scanning a code. */
+export type ClickedVia = 'link' | 'call' | 'reply' | 'qr' | 'mixed';
+const VIA: Partial<Record<ActionKind, ClickedVia>> = { open_link: 'link', call_number_in_message: 'call', reply: 'reply', scan_qr_and_open: 'qr' };
+/** Devices whose message body can carry a link the player follows ("Pay the fee through the link"). */
+const LINK_DEVICES: readonly Device[] = ['email', 'sms', 'messenger', 'marketplace', 'social', 'letter'];
+/** Kinds that, on a message with a link in its body, are done through that link (CR-45 round 3, QA B2). */
+const THROUGH_LINK: readonly ActionKind[] = ['pay', 'pay_unprotected', 'enter_details'];
+
+type ViaBeat = { device: Device; message: Pick<Message, 'body'>; actions: readonly Pick<Action, 'kind'>[] };
+
+function viaOf(kind: ActionKind, b: ViaBeat, isFraud: boolean): ClickedVia | undefined {
+  // A reply only "clicks" when it goes to the fraud sender; replying to a genuine person (Teo) is not it.
+  if (kind === 'reply') return isFraud ? 'reply' : undefined;
+  if (THROUGH_LINK.includes(kind)) return LINK_DEVICES.includes(b.device) && linksIn(b.message.body).length > 0 ? 'link' : undefined;
+  return VIA[kind];
+}
+
+/**
+ * The way the player could "click" in this scenario: the one kind shared by every "click" of the opening
+ * and the beats; `mixed` for several kinds; `link` when there is none. A click is opening a link, calling
+ * the number in the message, scanning the code, paying or typing details through a link in the message
+ * body, or replying to the fraud sender (never on a genuine scenario). Not counted (CR-45 round 3, QA B2):
+ * interrupts (small talk with someone else) and What-now extras (an engage there, e.g. "Call back this
+ * number", happens after the call, not as the way in).
+ */
+export function clickedViaOf(s: Pick<Scenario, 'is_fraud' | 'device' | 'message' | 'actions' | 'beats'>): ClickedVia {
+  const beats: ViaBeat[] = [{ device: s.device, message: s.message, actions: s.actions }, ...s.beats];
+  const vias = new Set(beats.flatMap((b) => b.actions.flatMap((a) => viaOf(a.kind, b, s.is_fraud) ?? [])));
+  return vias.size === 0 ? 'link' : vias.size === 1 ? ([...vias][0] ?? 'link') : 'mixed';
+}
 
 /** The most serious situation among the actions taken; undefined if the player never engaged. */
 export function situationOf(kinds: readonly ActionKind[]): AlreadySituation | undefined {

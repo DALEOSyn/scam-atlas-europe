@@ -7,6 +7,7 @@
  * - Masked numbers carry a spoken form that starts with the visible text ("0800 … 3310, masked number").
  */
 import { useLayoutEffect, useRef, useState } from 'preact/hooks';
+import { langPieces } from '../content/inlineLang.ts';
 import { t } from '../i18n/index.ts';
 import { hostParts, maskedParts, richPieces } from './text.ts';
 import styles from './text.module.css';
@@ -110,10 +111,48 @@ export function Masked({ text }: { text: string }) {
   );
 }
 
-export function RichText({ text }: { text: string }) {
+function Pieces({ text }: { text: string }) {
   return (
     <>
       {richPieces(text).map((p, i) => (p.kind === 'host' ? <Host key={i} text={p.text} /> : p.kind === 'masked' ? <Masked key={i} text={p.text} /> : p.text))}
     </>
+  );
+}
+
+/** Rich text; CR-45 inline language spans (`{lang:es}…{/lang}`) become `<span lang>` (WCAG 3.1.2). */
+export function RichText({ text }: { text: string }) {
+  return (
+    <>
+      {langPieces(text).map((p, i) =>
+        p.lang ? (
+          <span key={i} lang={p.lang} data-lang-span="">
+            <Pieces text={p.text} />
+          </span>
+        ) : (
+          <Pieces key={i} text={p.text} />
+        ),
+      )}
+    </>
+  );
+}
+
+/**
+ * Plain text (labels, "You chose" lines) with CR-45 inline language spans as `<span lang>`; no other markup.
+ * One inline wrapper (QA B1, CR-45 round 3): inside a flex button (`.action`, `.option`) the label stays a
+ * single flex item, so a span mid-label flows and wraps with the text around it instead of becoming a column.
+ */
+export function LangText({ text }: { text: string }) {
+  return (
+    <span data-lang-text="">
+      {langPieces(text).map((p, i) =>
+        p.lang ? (
+          <span key={i} lang={p.lang} data-lang-span="">
+            {p.text}
+          </span>
+        ) : (
+          p.text
+        ),
+      )}
+    </span>
   );
 }

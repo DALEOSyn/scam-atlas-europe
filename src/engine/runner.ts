@@ -21,6 +21,7 @@
  *   settings, help, debrief, Take a breath, an expanded translation).
  */
 import type { Action, ActionClass, ActionKind, Message, Device, RegisterCard, Scenario, WhatNow } from '../content/schema.ts';
+import { callDirectionOf } from '../content/callDirection.ts';
 import type { CheckableBeat } from './inspect.ts';
 import { checkablesOf, keyOf } from './inspect.ts';
 import { armBeat, firePusher, planPushers, startPushers, stopPushers, type PusherPlan, type PusherState } from './pushers.ts';
@@ -825,6 +826,8 @@ export interface ActionView {
   kind: ActionKind;
   /** Bright "pressure" style: Tense or higher and the action the message is pushing. */
   styled: boolean;
+  /** CR-45: English translation of the label's inline language span (Translate toggle beside the button). */
+  translation?: string;
 }
 
 export interface BeatView {
@@ -834,6 +837,8 @@ export interface BeatView {
   actions: ActionView[];
   /** Notification shown inside the beat (code SMS, approval prompt). No actions, never reportable. */
   banner: { device: Device; message: Message } | null;
+  /** CR-45: a call the player dialled ("Calling …", then connected; no Answer or Decline). Set only when true. */
+  outgoing?: true;
 }
 
 export interface WhatNowView {
@@ -856,6 +861,8 @@ export interface CheckableView {
   /** CR-27: language of `shown` when it is message text in another language, and its English translation. */
   lang?: string | undefined;
   translation?: string | undefined;
+  /** CR-45: on a call the player dialled, set by the UI: the caller ID is "Number you dialled". */
+  outgoing?: boolean;
 }
 
 /** A beat that speaks with a sender of its own (not a page and not the banking app). */
@@ -979,7 +986,7 @@ function groupFell(g: GroupState, truth: Truth): boolean {
 }
 
 function actionViews(actions: readonly Action[], state: StressState): ActionView[] {
-  return actions.map((a) => ({ id: a.id, label: a.label, kind: a.kind, styled: pressureStyled(state, a.pressure_target) }));
+  return actions.map((a) => ({ id: a.id, label: a.label, kind: a.kind, styled: pressureStyled(state, a.pressure_target), ...(a.translation ? { translation: a.translation } : {}) }));
 }
 
 export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): RunnerView {
@@ -994,6 +1001,7 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
         message: cur.message,
         actions: st.phase === 'what_now' ? [] : actionViews(cur.actions, state),
         banner: cur.banner ? { device: cur.banner.device, message: cur.banner.message } : null,
+        ...(cur.device === 'call' && callDirectionOf(s, cur.id) === 'outgoing' ? { outgoing: true as const } : {}),
       }
     : null;
   const checkables: CheckableView[] = cur && st.phase === 'playing'

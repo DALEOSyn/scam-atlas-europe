@@ -1,4 +1,5 @@
-# Test fixture (CR-43(d)): endings A and A-prime, and R without money in; one panel for R only.
+# Test fixture (CR-43(d)): endings A and A-prime, and R without money in; one panel for R only. R22 (psych M1):
+# the told-someone line is gated on arc_told_someone, with a truthful variant for everyone else.
 id: fx-finale-ending-a
 chapter: fxfinale
 slot: resolution
@@ -14,3 +15,13 @@ panels:
     if_arc_ending: [R]
     line: "Sometimes you just want to know. Asking is never wrong."
     alt: "Teo smiling, putting his phone away."
+  - speaker: adaeze
+    expression: calm
+    if_flag: arc_told_someone
+    line: "And you told someone. That's what works."
+    alt: "Adaeze, calm, nodding."
+  - speaker: adaeze
+    expression: calm
+    unless_flag: arc_told_someone
+    line: "Telling someone early is what works. It's never too late to start."
+    alt: "Adaeze, calm, nodding."

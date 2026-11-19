@@ -10,11 +10,12 @@ import { chapterRules, scenarioRules } from '../../../scripts/lib/rules.ts';
 import { readYaml } from '../../../scripts/lib/content.ts';
 import { sceneSetRules } from '../../../scripts/lib/scenes.ts';
 import { deriveCheckables } from '../../../src/content/checkables.ts';
-import { chapterSchema, sceneSchema, scenarioSchema, timelineTextIssues, type Chapter, type Scenario, type Scene } from '../../../src/content/schema.ts';
+import { ARC_TOLD_SOMEONE, chapterSchema, sceneSchema, scenarioSchema, timelineTextIssues, type Chapter, type Scenario, type Scene } from '../../../src/content/schema.ts';
 import {
   advanceFinale,
   applyArcBeat,
   arcSlotAt,
+  arcSlotForRun,
   EMPTY_ARC,
   enterFinale,
   finaleDone,
@@ -32,6 +33,7 @@ import { resultOf, type ScenarioResult } from '../../../src/engine/result.ts';
 import { startScenario, step, viewOf } from '../../../src/engine/runner.ts';
 import { freshSave, parseSave } from '../../../src/engine/save.ts';
 import { isFall } from '../../../src/engine/scoring.ts';
+import { orderOptions } from '../../../src/engine/recovery.ts';
 import { chapterSceneIds, epigraphOf, resolutionSceneId, resolutionSceneIds, scenePlaysFor, visiblePanels } from '../../../src/engine/story.ts';
 import { ROOT, realRegistries } from '../../content/fixtures.ts';
 import { act, B, ctx, play, run, tick, type Raw } from './helpers.ts';
@@ -224,8 +226,8 @@ describe('CR-43(a), (e): the finale dispatch from the saved arc state (GDD §30.
   it('open with nothing in: close beat → timeline (B)', () => {
     expect(finalePlan(arc({ timeline: [1, 2, 3] }))).toEqual({ ending: 'B', steps: ['close', 'timeline'] });
   });
-  it('"Tell me now": the recovery-agency test (money in) or Teo\'s chat → timeline (R)', () => {
-    expect(finalePlan(tellMeNow(arc({ vars: invested })))).toEqual({ ending: 'R', steps: ['recovery_offer', 'timeline'] });
+  it('"Tell me now": arc damage control → recovery-agency test (money in, R22: §10.3 wins), or Teo\'s chat → timeline (R)', () => {
+    expect(finalePlan(tellMeNow(arc({ vars: invested })))).toEqual({ ending: 'R', steps: ['damage_control', 'recovery_offer', 'timeline'] });
     expect(finalePlan(tellMeNow(arc()))).toEqual({ ending: 'R', steps: ['teo', 'timeline'] });
   });
   it('a second Close: Teo\'s chat → timeline (A′); reported at slot ≤ 6: Teo\'s chat → timeline (A)', () => {
@@ -284,7 +286,10 @@ describe('CR-43: the finale scenarios', () => {
     expect(schemaErrors(notFinale).join('\n')).toMatch(/the reveal card is shown in the finale block only/);
     const via = clone(rawFinale('fx-finale-arc-teo.yaml'));
     (outcomes(via).stopped as Raw).reveal = true;
-    expect(schemaErrors(via).join('\n')).toMatch(/reached by verify_identity or report actions only/);
+    expect(schemaErrors(via)).toEqual([]); // R22: in Teo's chat, ignore and advise_comply reach the reveal too
+    const offer = clone(rawFinale('fx-finale-arc-recovery.yaml'));
+    (outcomes(offer).deleted as Raw).reveal = true;
+    expect(schemaErrors(offer).join('\n')).toMatch(/reached by verify_identity, report actions only here/);
   });
   it('finale scenarios bank their points as arc points, never in a chapter rating', () => {
     const s = finale('fx-finale-arc-recovery.yaml');
@@ -316,7 +321,7 @@ describe('CR-43(c): the red-flag timeline', () => {
     a = applyArcBeat(a, 2, res(), 'ask_someone');
     const rows = timelineRows(a, (slot) => (slot === 1 ? 'Nothing to notice yet.' : slot === 2 ? 'Leaving the app.' : undefined));
     expect(rows).toEqual([
-      { slot: 1, tell: 'Nothing to notice yet.', choice: 'went_along' },
+      { slot: 1, tell: 'Nothing to notice yet.', choice: 'replied' },
       { slot: 2, tell: 'Leaving the app.', choice: 'asked' },
     ]);
   });
@@ -355,6 +360,17 @@ describe('CR-43(f): arc slots follow play position (STORY §1.4)', () => {
     expect(arcSlotAt(once, 2)).toBe(1);
     expect(arcSlotAt(applyArcBeat(once, 1, res(), 'reply'), 3)).toBe(3);
   });
+  it('QA B1: the slot-1 repeat is offered once; position 2 plays nothing more; a replayed chapter plays no arc beat', () => {
+    const once = applyArcBeat(arc(), 1, res(), 'ignore');
+    const repeated = applyArcBeat(once, 1, res(), 'reply'); // timeline [1, 1], still one close
+    expect(arcSlotAt(repeated, 2)).toBeNull();
+    expect(arcSlotForRun(once, { finished: false, position: 2 })).toBe(1);
+    expect(arcSlotForRun(once, { finished: true, position: 2 }), 'replaying Berlin\'s successor').toBeNull();
+    expect(arcSlotForRun(arc({ timeline: [1, 2, 3] }), { finished: true, position: 3 })).toBeNull();
+    expect(arcSlotForRun(arc({ timeline: [1, 2] }), { finished: false, position: 3 })).toBe(3);
+    // A slot-2 arc beat is never offered at position 2 after a pause (skipped, R22).
+    expect(arcSlotAt(arc({ closes: 1, timeline: [1, 1] }), 2)).toBeNull();
+  });
   it('validator: a chapter\'s arc beat carries the chapter\'s map slot; the finale has none', () => {
     const c = chapterRaw();
     const withBeat = { ...c, arc_beat: 'fx-finale-01-warning' };
@@ -391,8 +407,15 @@ describe('CR-43(d): resolution scenes keyed to the arc ending', () => {
     expect(scenePlaysFor(get('fx-finale-ending-b'), null)).toBe(false);
   });
   it('panels keyed to an ending (R adds Teo\'s line)', () => {
-    expect(visiblePanels(get('fx-finale-ending-a'), new Set(), 'R')).toHaveLength(2);
-    expect(visiblePanels(get('fx-finale-ending-a'), new Set(), 'A')).toHaveLength(1);
+    expect(visiblePanels(get('fx-finale-ending-a'), new Set(), 'R')).toHaveLength(3);
+    expect(visiblePanels(get('fx-finale-ending-a'), new Set(), 'A')).toHaveLength(2);
+  });
+  it('R22 (psych M1): a told-someone line only when the player did; a truthful variant otherwise', () => {
+    const told = visiblePanels(get('fx-finale-ending-a'), new Set([ARC_TOLD_SOMEONE]), 'A').map((p) => p.line);
+    const not = visiblePanels(get('fx-finale-ending-a'), new Set(), 'A').map((p) => p.line);
+    expect(told).toContain("And you told someone. That's what works.");
+    expect(not).not.toContain("And you told someone. That's what works.");
+    expect(not).toContain("Telling someone early is what works. It's never too late to start.");
   });
   it('the epigraph is the panel marked epigraph (Adaeze\'s last line)', () => {
     expect(epigraphOf([get('fx-finale-open'), get('fx-finale-evening')])).toEqual({
@@ -419,6 +442,58 @@ describe('CR-43(d): resolution scenes keyed to the arc ending', () => {
     const flag = clone(readYaml(join(FINALE, 'scenes', 'fx-finale-ending-c.yaml')) as Raw);
     delete flag.if_arc_ending;
     expect(sceneSchema.safeParse(flag).error?.issues.map((i) => i.message).join('\n')).toMatch(/scene-level if_flag \/ unless_flag goes with if_arc_ending/);
+  });
+});
+
+describe('R22: round-1 review fixes (finale)', () => {
+  it('psych M1: every outcome of the close beat and Teo\'s chat opens the reveal', () => {
+    const teo = clone(rawFinale('fx-finale-arc-teo.yaml'));
+    delete (outcomes(teo).stopped as Raw).reveal;
+    expect(schemaErrors(teo).join('\n')).toMatch(/every outcome of the finale's Teo's chat opens the reveal card/);
+    const close = clone(rawFinale('fx-finale-arc-close.yaml'));
+    delete (outcomes(close).reported_profile as Raw).reveal;
+    expect(schemaErrors(close).join('\n')).toMatch(/every outcome of the finale's close beat opens the reveal card/);
+    const s = finale('fx-finale-arc-teo.yaml');
+    for (const a of ['little_cant_hurt', 'photo_check_teo', 'tell_report', 'stop_replying']) {
+      const st = step(s, ctx({ timerMode: 'off' }), startScenario(s, ctx({ timerMode: 'off' })), act(a));
+      expect(viewOf(s, ctx({ timerMode: 'off' }), st).consequenceReveal, a).toBe(true);
+    }
+  });
+  it('psych M1: arc_told_someone is set by a report, a photo check or asking someone, never by stepping away', () => {
+    const close = clone(rawFinale('fx-finale-arc-close.yaml'));
+    delete (outcomes(close).same_picture as Raw).sets_flags;
+    expect(schemaErrors(close).join('\n')).toMatch(/a report, photo check or asking someone sets arc_told_someone/);
+    const teo = clone(rawFinale('fx-finale-arc-teo.yaml'));
+    (outcomes(teo).stopped as Raw).sets_flags = [ARC_TOLD_SOMEONE];
+    expect(schemaErrors(teo).join('\n')).toMatch(/stepping away is not telling someone/);
+  });
+  it('finale scenarios have no timer', () => {
+    const r = clone(rawFinale('fx-finale-arc-recovery.yaml'));
+    r.pressure = { timer: true, levers: [] };
+    expect(schemaErrors(r).join('\n')).toMatch(/the finale block has no timer/);
+  });
+  it('psych M4: an authored recovery_note shows on the "Your steps" screen; it needs damage control', () => {
+    const s = finale('fx-finale-arc-recovery.yaml');
+    const st = run(s, ctx({ timerMode: 'off' }), [act('pay_fee')]);
+    expect(viewOf(s, ctx({ timerMode: 'off' }), st).recovery?.note).toBe("Recovery offers often follow a loss because scammers share victims' details. That says nothing about you.");
+    const bad = clone(rawFinale('fx-finale-arc-recovery.yaml'));
+    (outcomes(bad).deleted as Raw).recovery_note = 'A note.';
+    expect(schemaErrors(bad).join('\n')).toMatch(/recovery_note is shown with damage control/);
+  });
+  it('sceptic nb4: the reveal step\'s tell and habit are content (arc_finale.reveal), never blame', () => {
+    expect(chapter().arc_finale?.reveal).toEqual({ tell: 'Same picture, other names.', habit: 'A photo check and a trusted person beat a feeling.' });
+    const f = chapterRaw().arc_finale as Raw;
+    const errs = chapterSchema.safeParse({ ...chapterRaw(), arc_finale: { ...f, reveal: { tell: 'You fell for it.', habit: 'x' } } }).error?.issues.map((i) => i.message).join('\n');
+    expect(errs).toMatch(/the reveal is never blame/);
+  });
+  it('QA B2: arc damage control options are shuffled, seeded by the close beat\'s id (stable, a permutation)', () => {
+    const f = chapter().arc_finale;
+    if (!f) throw new Error('fixture has arc_finale');
+    const opts = f.damage_control.map((x) => ({ step: x.step, category: x.category }));
+    const a = orderOptions(opts, f.close);
+    expect(a).toEqual(orderOptions(opts, f.close));
+    expect([...a].map((o) => o.step).sort()).toEqual(opts.map((o) => o.step).sort());
+    expect(['x', 'y', 'z', f.close].some((seed) => orderOptions(opts, seed).map((o) => o.step).join() !== opts.map((o) => o.step).join())).toBe(true);
   });
 });
 

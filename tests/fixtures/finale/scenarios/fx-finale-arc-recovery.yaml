@@ -48,6 +48,7 @@ actions:
 outcomes:
   paid_fee:
     narrative: "The page says 'File opened'. Then a second fee appears."
+    recovery_note: "Recovery offers often follow a loss because scammers share victims' details. That says nothing about you."
     recovery:
       - { step: stop_paying, category: stop }
       - { step: call_bank_known_number, category: stop }

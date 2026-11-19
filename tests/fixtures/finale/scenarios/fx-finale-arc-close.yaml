@@ -32,9 +32,11 @@ outcomes:
   same_picture:
     narrative: "The photo check finds the same picture on other profiles."
     reveal: true
+    sets_flags: [arc_told_someone]
   reported_profile:
     narrative: "You report the profile. The photo check runs as part of the report."
     reveal: true
+    sets_flags: [arc_told_someone]
 
 debrief:
   variant: arc

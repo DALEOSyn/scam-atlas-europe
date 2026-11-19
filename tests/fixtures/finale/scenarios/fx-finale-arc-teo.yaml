@@ -1,5 +1,5 @@
 # Test fixture (CR-40, CR-43): Teo's chat. You advise Teo; he never sends money. The photo check plays the reveal.
-# Not game content.
+# R22: every outcome ends in the reveal. Not game content.
 id: fx-finale-arc-teo
 chapter: fxfinale
 role: arc
@@ -46,14 +46,19 @@ actions:
 
 outcomes:
   teo_asks:
-    narrative: "Teo: \"Hmm. I'll ask Adaeze too.\""
+    narrative: "Teo: \"Hmm. I'll ask Adaeze too.\" Adaeze runs a photo check with him."
+    reveal: true
   same_picture:
     narrative: "Teo: \"Well. That settles it.\""
     reveal: true
+    sets_flags: [arc_told_someone]
   reported:
-    narrative: "Teo reports the profile."
+    narrative: "Teo reports the profile. The photo check runs as part of the report."
+    reveal: true
+    sets_flags: [arc_told_someone]
   stopped:
-    narrative: "Teo stops replying."
+    narrative: "Teo stops replying. Later he runs a photo check anyway."
+    reveal: true
 
 debrief:
   variant: arc

@@ -120,7 +120,9 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
   const items = useRef<(HTMLLIElement | null)[]>([]);
   const replies = useRef<(HTMLParagraphElement | null)[]>([]);
   /** What gets focus after the next render: the heading, a panel, or a choice reply. */
-  const focusNext = useRef<{ kind: 'heading' } | { kind: 'panel'; i: number } | { kind: 'reply'; i: number }>({ kind: 'heading' });
+  const focusNext = useRef<{ kind: 'heading' } | { kind: 'panel'; i: number } | { kind: 'reply'; i: number } | { kind: 'picked' }>({ kind: 'heading' });
+  /** CR-44(a), QA B3: the "You picked {city}." line, focused after a postcard pick. */
+  const pickedLine = useRef<HTMLParagraphElement | null>(null);
 
   const fill = (text: string) => fillStory(text, vars);
   const sensitive = scene.sensitive;
@@ -169,6 +171,7 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
       el.focus({ preventScroll: true });
       revealPanel(el, footerRef.current, prefersReducedMotion() ? 'auto' : 'smooth');
     } else if (f.kind === 'reply') replies.current[f.i]?.focus();
+    else if (f.kind === 'picked') pickedLine.current?.focus();
     else {
       heading.current?.focus({ preventScroll: true });
       // CR-27 / CR-28 round 2: on open the heading row (focused h1, Help, Skip) stays fully in view, and the
@@ -176,7 +179,7 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
       const first = items.current[0];
       if (view === 'panels' && shown === 1 && first) revealOnOpen(headRef.current, first, footerRef.current);
     }
-  }, [view, shown, picked]);
+  }, [view, shown, picked, chosen]);
 
   // CR-29: a rotation (or any width change) lifts every inline art cap, which was measured for the old
   // viewport, and reveals the newest panel again for the new one (on open: the heading row first). A
@@ -337,8 +340,11 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
                       withRole={!!firstOfSpeaker}
                       flip={flip}
                       choices={choosing ? flipChoices : null}
+                      pickedRef={(el) => {
+                        pickedLine.current = el;
+                      }}
                       onChoose={(c) => {
-                        focusNext.current = { kind: 'panel', i };
+                        focusNext.current = { kind: 'picked' };
                         setChosen(c);
                         onFlip?.(c.city);
                       }}
@@ -503,6 +509,7 @@ function PanelText({
   picked,
   onPick,
   replyRef,
+  pickedRef,
 }: {
   p: ScenePanel;
   fill: (s: string) => string;
@@ -514,6 +521,7 @@ function PanelText({
   picked: number | undefined;
   onPick: (option: number) => void;
   replyRef: (el: HTMLParagraphElement | null) => void;
+  pickedRef?: ((el: HTMLParagraphElement | null) => void) | undefined;
 }) {
   const member = p.speaker && p.speaker !== 'you' ? castMember(p.speaker) : undefined;
   const label = p.speaker === 'you' ? t('scene_you') : member?.name ?? null;
@@ -561,7 +569,11 @@ function PanelText({
       ) : null}
       {p.flip_postcard && flip ? (
         <>
-          {choices ? <p class={styles.youSaid}>{t('scene_postcard_picked', { city: flip.cityName })}</p> : null}
+          {choices ? (
+            <p class={styles.youSaid} tabIndex={-1} ref={pickedRef} data-postcard-picked="">
+              {t('scene_postcard_picked', { city: flip.cityName })}
+            </p>
+          ) : null}
           <p class={styles.narrationText}>{t('scene_flip_caption')}</p>
           <FlipCard ifThen={flip.ifThen} cityName={flip.cityName} />
         </>

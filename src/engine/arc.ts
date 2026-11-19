@@ -84,12 +84,6 @@ export function arcEnding(arc: ArcState): ArcEnding {
   return 'B';
 }
 
-/** Ending R with money in also plays C's damage control and recovery-agency test. */
-export function endingPlaysRecovery(arc: ArcState): boolean {
-  const invested = arc.vars[ARC_INVESTED];
-  return typeof invested === 'number' && invested > 0;
-}
-
 export function setFlags(flags: readonly string[], add: readonly string[]): string[] {
   return [...new Set([...flags, ...add])];
 }
@@ -101,12 +95,22 @@ export function setFlags(flags: readonly string[], add: readonly string[]): stri
  * The arc slot that plays in a chapter at this play position (Home 0, Berlin 1, the middle chapters 2–9 in the
  * order played; the finale 10 has none). Slot N plays in the Nth chapter played, so slot 9 is always the last
  * one before the finale. After one "Close the app" at slot 1 (GDD §10.2), Alex messages once more in the next
- * chapter: slot 1 plays again there. null: no arc beat here (Home, the finale, a closed arc, a slot already played).
+ * chapter: slot 1 plays again there, once (timeline exactly [1]); slot 2 is then skipped (accepted, R22; for the
+ * balancing pass). null: no arc beat here (Home, the finale, a closed arc, a slot already played). A replayed
+ * (finished) chapter never plays an arc beat: the caller passes null for it.
  */
 export function arcSlotAt(arc: ArcState, position: number | null): number | null {
   if (arc.closed || position === null || position < 1 || position > 9) return null;
-  if (arcPaused(arc) && position === 2 && !arc.timeline.includes(2)) return 1;
+  // QA B1: the paused slot-1 repeat is offered once, on the first visit to position 2 (only slot 1 played so far).
+  if (arcPaused(arc) && position === 2 && arc.timeline.length === 1 && arc.timeline[0] === 1) return 1;
+  // Position 2 already played the slot-1 repeat: nothing more there (slot 2 is skipped, R22).
+  if (position === 2 && arc.timeline.filter((x) => x === 1).length > 1) return null;
   return arc.timeline.includes(position) ? null : position;
+}
+
+/** The arc slot for a chapter run: none in a replayed (finished) chapter (QA B1), else `arcSlotAt` its position. */
+export function arcSlotForRun(arc: ArcState, chapter: { finished: boolean; position: number | null }): number | null {
+  return chapter.finished ? null : arcSlotAt(arc, chapter.position);
 }
 
 // ---------------------------------------------------------------------------
@@ -123,7 +127,8 @@ function invested(arc: ArcState): boolean {
  * GDD §30.6 dispatch from the saved arc state on entering the finale (first match wins, §10.3 order):
  * - open, invested: close beat → arc damage control → recovery-agency test → timeline (C);
  * - open, nothing invested: close beat → timeline walk-through (B);
- * - closed by "Tell me now": recovery-agency test (invested) or Teo's chat → timeline (R);
+ * - closed by "Tell me now": arc damage control → recovery-agency test (invested), or Teo's chat → timeline (R;
+ *   R22: GDD §10.3 wins over the §30.6 table, R with money in plays C's damage control too);
  * - closed by a second Close (A′), or reported at slot ≤ 6 with nothing invested (A): Teo's chat → timeline;
  * - reported at slot 7–9 (or earlier with money in): the reveal → (invested: arc damage control → recovery-agency
  *   test) → timeline (B or C). Damage control at the report itself is not built, so it runs here (CR-43(e)).
@@ -135,7 +140,7 @@ export function finalePlan(arc: ArcState): { ending: ArcEnding; steps: FinaleSte
   const recovery: FinaleStep[] = money ? ['damage_control', 'recovery_offer'] : [];
   let steps: FinaleStep[];
   if (!arc.closed) steps = ['close', ...recovery];
-  else if (arc.tellMeNow) steps = money ? ['recovery_offer'] : ['teo'];
+  else if (arc.tellMeNow) steps = money ? recovery : ['teo'];
   else if (arc.closes >= 2) steps = money ? ['reveal', ...recovery] : ['teo'];
   else if (arc.reportedAtSlot !== null && arc.reportedAtSlot <= 6 && !money) steps = ['teo'];
   else steps = ['reveal', ...recovery];
@@ -172,18 +177,20 @@ export function bankArcPoints(arc: ArcState, points: number): ArcState {
 /**
  * CR-43(c), GDD §30.6 (psych M3): the fixed wording of the player's choice on one timeline slot, by kind. Keys in
  * content/i18n (timeline_choice_*): pay "{name} asked for money, and you sent some." · reply (and other ways of
- * going along) "{name} pushed, and you went along." · ignore and other ways of leaving it "You stepped back from
+ * going along) "{name} pushed, and you went along." (a reply at slot 1: "You replied. Nothing wrong with that.") · ignore and other ways of leaving it "You stepped back from
  * it." · ask_someone "You asked someone." · report "You reported it." · check_official_list / verify_identity
  * (and other checks) "You checked."
  */
-export type TimelineChoice = 'paid' | 'went_along' | 'stepped_back' | 'asked' | 'reported' | 'checked';
+export type TimelineChoice = 'paid' | 'went_along' | 'replied' | 'stepped_back' | 'asked' | 'reported' | 'checked';
 
 const PAID_KINDS = ['pay', 'pay_unprotected', 'pay_protected'];
 const ALONG_KINDS = ['reply', 'open_link', 'call_number_in_message', 'scan_qr_and_open', 'enter_details', 'share_code', 'approve_prompt', 'install_or_remote', 'proceed', 'advise_comply'];
 const CHECK_KINDS = ['check_official_list', 'verify_identity', 'verify_in_app', 'call_back_known', 'check_with_platform'];
 
-export function timelineChoice(kind: string | undefined): TimelineChoice {
+export function timelineChoice(kind: string | undefined, slot?: number): TimelineChoice {
   if (kind === undefined) return 'stepped_back';
+  // R22: replying at slot 1 is just being friendly ("You replied. Nothing wrong with that.").
+  if (slot === 1 && kind === 'reply') return 'replied';
   if (PAID_KINDS.includes(kind)) return 'paid';
   if (ALONG_KINDS.includes(kind)) return 'went_along';
   if (kind === 'ask_someone') return 'asked';
@@ -205,6 +212,6 @@ export function timelineRows(arc: Pick<ArcState, 'timeline' | 'choices'>, tellOf
   return slots.flatMap((slot) => {
     const tell = tellOf(slot);
     if (tell === undefined) return [];
-    return [{ slot, tell, choice: timelineChoice(arc.choices.find((c) => c.slot === slot)?.kind) }];
+    return [{ slot, tell, choice: timelineChoice(arc.choices.find((c) => c.slot === slot)?.kind, slot) }];
   });
 }

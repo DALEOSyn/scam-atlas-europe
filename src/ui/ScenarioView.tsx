@@ -106,7 +106,11 @@ export function logAnnouncement(
   }
 }
 
-export function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recovery']>; onDone: (picks: string[]) => void }) {
+/**
+ * Damage control. `intro`: a line before any steps (R22, psych M3: the arc's "{name} was never real…" when money is
+ * in). `view.note`: an authored note on the feedback screen (R22, psych M4).
+ */
+export function DamageControl({ view, intro, onDone }: { view: NonNullable<RunnerView['recovery']>; intro?: string | undefined; onDone: (picks: string[]) => void }) {
   const [picks, setPicks] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -159,6 +163,7 @@ export function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['
             );
           })}
         </ol>
+        {view.note ? <p data-recovery-note="">{view.note}</p> : null}
         <button type="button" class={styles.primary} onClick={() => onDone(picks)}>
           {t('app_continue')}
         </button>
@@ -170,6 +175,11 @@ export function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['
       <h3 id="damage-heading" ref={heading} tabIndex={-1}>
         {t('damage_title')}
       </h3>
+      {intro ? (
+        <p data-damage-intro="">
+          <strong>{intro}</strong>
+        </p>
+      ) : null}
       <p>{t('damage_sub')}</p>
       <p data-damage-prompt="">{forName ? t('damage_prompt_for', { name: forName }) : t('damage_prompt')}</p>
       <ul class={styles.actions}>

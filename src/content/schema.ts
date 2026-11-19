@@ -645,6 +645,10 @@ export function timelineTextIssues(text: string): string[] {
   return out;
 }
 
+/** R22 (psych M1): the flag the finale's close beat and Teo's chat set when the player told or checked with someone. */
+export const ARC_TOLD_SOMEONE = 'arc_told_someone';
+const TOLD_KINDS: readonly ActionKind[] = ['report', 'verify_identity', 'ask_someone'];
+
 /** CR-40: what nobody does in an advice scenario (the player advises; the cast member stays safe). */
 export const ADVICE_UNSAFE_KINDS: readonly ActionKind[] = ['pay', 'pay_unprotected', 'pay_protected', 'enter_details', 'share_code', 'approve_prompt', 'install_or_remote', 'proceed', 'start_transfer', 'open_link', 'scan_qr_and_open', 'call_number_in_message'];
 
@@ -692,6 +696,15 @@ export const outcomeSchema = z
           })
           .strict(),
       )
+      .optional(),
+    /**
+     * R22 (psych M4): an optional authored note on the damage-control feedback screen ("Your steps"), after the
+     * picks, e.g. the recovery offer: "…scammers share victims' details. That says nothing about you." Needs recovery.
+     */
+    recovery_note: z
+      .string()
+      .min(1)
+      .refine((v) => v.trim().split(/\s+/u).length <= 30, 'recovery_note is at most 30 words (R22)')
       .optional(),
     sets_flags: z.array(flagName).optional(),
     /**
@@ -835,6 +848,7 @@ export const scenarioSchema = z
     if (s.role === 'boss' && s.beats.length === 0) issue(['beats'], 'a boss has several beats');
     if (s.role === 'arc' && (s.arc_slot === undefined) === (s.finale === undefined)) issue(['arc_slot'], 'arc beats need arc_slot (1–9), or `finale` for the finale block (CR-43), not both');
     if (s.role !== 'arc' && s.finale !== undefined) issue(['finale'], 'finale is for arc scenarios (CR-43)');
+    if (s.finale !== undefined && s.pressure.timer) issue(['pressure', 'timer'], 'the finale block has no timer: pressure.timer: false (CR-43, R22)');
     if (s.role !== 'arc' && s.arc_slot !== undefined) issue(['arc_slot'], 'arc_slot is for arc beats only');
     if ((s.role === 'arc') !== (s.debrief.variant === 'arc')) issue(['debrief', 'variant'], 'debrief.variant is arc exactly for arc beats');
     if (s.pressure.honest_deadline && s.is_fraud) issue(['pressure', 'honest_deadline'], 'honest_deadline is for genuine messages');
@@ -1072,12 +1086,26 @@ export const scenarioSchema = z
     for (const b of beats) {
       if (b.message.forwarded && !s.advice) issue([...b.path, 'message', 'forwarded'], 'a forwarded message belongs to an advice scenario (advice: { for: <cast id> }, CR-40)');
     }
-    // CR-43(b): the reveal card follows a photo check or a report in the finale block.
+    // CR-43(b), R22 (psych M1): every player sees the reveal. In the close beat and Teo's chat every outcome an
+    // action reaches opens it; elsewhere in the finale it follows a photo check or a report.
+    const revealKinds: readonly ActionKind[] = s.finale === 'close' || s.finale === 'teo' ? ['verify_identity', 'report', 'ignore', 'advise_comply', 'ask_someone'] : ['verify_identity', 'report'];
     for (const [key, o] of Object.entries(s.outcomes)) {
+      const via = beats.flatMap((b) => b.actions.filter((a) => a.outcome === key).map((a) => a.kind));
+      if ((s.finale === 'close' || s.finale === 'teo') && via.length > 0 && !o.reveal) issue(['outcomes', key, 'reveal'], `every outcome of the finale's ${s.finale === 'close' ? 'close beat' : "Teo's chat"} opens the reveal card: reveal: true (R22, psych M1)`);
       if (!o.reveal) continue;
       if (s.finale === undefined) issue(['outcomes', key, 'reveal'], 'the reveal card is shown in the finale block only (scenarios with finale, CR-43(b))');
-      const via = beats.flatMap((b) => b.actions.filter((a) => a.outcome === key).map((a) => a.kind));
-      if (via.some((k) => k !== 'verify_identity' && k !== 'report')) issue(['outcomes', key, 'reveal'], 'the reveal card is reached by verify_identity or report actions only (CR-43(b))');
+      if (via.some((k) => !revealKinds.includes(k))) issue(['outcomes', key, 'reveal'], `the reveal card is reached by ${revealKinds.join(', ')} actions only here (CR-43(b), R22)`);
+    }
+    for (const [key, o] of Object.entries(s.outcomes)) if (o.recovery_note && !o.recovery?.length) issue(['outcomes', key, 'recovery_note'], 'recovery_note is shown with damage control: this outcome has no recovery (R22)');
+    // R22 (psych M1): ending lines that say the player told someone are gated on ARC_TOLD_SOMEONE; it is set exactly
+    // where it is true (a report, a photo check, asking someone) and never by stepping away.
+    if (s.finale === 'close' || s.finale === 'teo') {
+      for (const [key, o] of Object.entries(s.outcomes)) {
+        const via = beats.flatMap((b) => b.actions.filter((a) => a.outcome === key).map((a) => a.kind));
+        const told = o.sets_flags?.includes(ARC_TOLD_SOMEONE) === true;
+        if (via.some((k) => TOLD_KINDS.includes(k)) && !told) issue(['outcomes', key, 'sets_flags'], `a report, photo check or asking someone sets ${ARC_TOLD_SOMEONE} (R22, psych M1)`);
+        if (told && via.length > 0 && via.every((k) => k === 'ignore')) issue(['outcomes', key, 'sets_flags'], `stepping away is not telling someone: no ${ARC_TOLD_SOMEONE} here (R22)`);
+      }
     }
     if (s.role === 'boss') {
       // CR-18(e): a scheduled boss beat chains through start_transfer to exactly one banking sub-beat.
@@ -1222,6 +1250,11 @@ export const chapterSchema = z
         recovery_offer: slug,
         teo: slug,
         reveal_names: z.tuple([z.string().min(1).max(20), z.string().min(1).max(20), z.string().min(1).max(20)]),
+        /**
+         * R22 (sceptic nb4): the finale's reveal step (an arc closed earlier) is authored: its tell and habit lines
+         * are content, so the engine owns no lesson wording. Shown under the reveal card and its fixed line.
+         */
+        reveal: z.object({ tell: z.string().min(1).max(120), habit: z.string().min(1).max(120) }).strict(),
         damage_control: z
           .array(z.object({ step: snakeId, category: z.enum(RECOVERY_CATEGORIES), feedback: z.string().min(1).optional() }).strict())
           .min(5)
@@ -1270,6 +1303,7 @@ export const chapterSchema = z
       f.reveal_names.forEach((n, i) => {
         for (const what of sceneArtefacts(n)) ctx.addIssue({ code: 'custom', path: ['arc_finale', 'reveal_names', i], message: `a profile name only: this looks like ${what}` });
       });
+      for (const k of ['tell', 'habit'] as const) for (const what of timelineTextIssues(f.reveal[k])) ctx.addIssue({ code: 'custom', path: ['arc_finale', 'reveal', k], message: `the reveal is never blame: ${what} (R22)` });
       if (!f.damage_control.some((x) => x.category === 'harmful')) ctx.addIssue({ code: 'custom', path: ['arc_finale', 'damage_control'], message: 'damage control offers at least one harmful step (GDD §9)' });
       if (!f.damage_control.some((x) => x.category === 'stop')) ctx.addIssue({ code: 'custom', path: ['arc_finale', 'damage_control'], message: 'damage control offers at least one stop step (GDD §9)' });
       if (new Set(f.damage_control.map((x) => x.step)).size !== f.damage_control.length) ctx.addIssue({ code: 'custom', path: ['arc_finale', 'damage_control'], message: 'a step is listed twice' });

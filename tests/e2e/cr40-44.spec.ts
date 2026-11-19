@@ -67,7 +67,7 @@ test('CR-41: damage control for Noor\'s friend, voiced by Noor', async ({ page }
 });
 
 /** Open the seeded finale chapter in the App, play its one scenario (Close on the overlay) to the arc block. */
-async function toArcBlock(page: Page, arc: 'C' | 'A') {
+async function toArcBlock(page: Page, arc: 'C' | 'A' | 'R') {
   await page.goto(`${HARNESS_URL}/?view=app&arc=${arc}`);
   await press(page, 'Start');
   await press(page, 'Start');
@@ -82,8 +82,10 @@ const BLAME = /\b(fell|fooled|mistake|lost)\b|€|\d+\s*(times|falls)/i;
 async function timeline(page: Page) {
   const tl = page.locator('[data-finale-step="timeline"]');
   await expect(tl).toBeVisible();
+  await expect(tl.getByRole('heading', { level: 1 })).toHaveText('What you saw so far');
+  await expect(tl).not.toContainText(/points|banked/i);
   await expect(tl.locator('[data-timeline-header]')).toHaveText("Every step below was Alex's plan, not your fault.");
-  await expect(tl.locator('[data-timeline-slot="1"]')).toContainText('Alex pushed, and you went along.');
+  await expect(tl.locator('[data-timeline-slot="1"]')).toContainText('You replied. Nothing wrong with that.');
   expect(await tl.locator('[data-timeline]').innerText()).not.toMatch(BLAME);
   await axeClean(page);
   await press(page, 'Continue');
@@ -108,12 +110,19 @@ test('CR-43/44, ending C: reveal card, damage control, recovery offer, timeline,
   await expect(reveal).toBeVisible();
   await expect(reveal.getByRole('heading')).toHaveText('The same picture Alex used.');
   await expect(reveal).toContainText('Names on the three profiles: Alex, Robin, Sacha.');
+  await expect(reveal.locator('[data-reveal-line]')).toHaveText('A picture that checks out proves nothing either. Telling someone is what works.');
   await axeClean(page);
   await press(page, 'Continue');
   await expect(page.getByRole('button', { name: 'Play again' }), 'no replay of a finale step').toHaveCount(0);
   await press(page, 'Continue');
   // Ending C: money in, so damage control for the arc.
   await expect(page.getByText('Limit the damage')).toBeVisible();
+  // R22 (psych M3): the comfort line comes before any step.
+  await expect(page.locator('[data-damage-intro]')).toHaveText('Alex was never real. The lie was theirs, not yours.');
+  // QA B2: shuffled (seeded by the close beat), not in the authored order.
+  const order = await page.locator('[data-step]').evaluateAll((els) => els.map((e) => e.getAttribute('data-step')));
+  expect(order.slice().sort()).toEqual(['call_bank_known_number', 'keep_evidence', 'pay_last_fee', 'pay_recovery_service', 'report_to_police_online', 'stop_paying']);
+  expect(order).not.toEqual(['stop_paying', 'call_bank_known_number', 'keep_evidence', 'report_to_police_online', 'pay_last_fee', 'pay_recovery_service']);
   for (const st of ['stop_paying', 'call_bank_known_number', 'keep_evidence']) await pressOn(page, page.locator(`[data-step="${st}"]`), st);
   await press(page, 'Done');
   await press(page, 'Continue');
@@ -128,7 +137,8 @@ test('CR-43/44, ending C: reveal card, damage control, recovery offer, timeline,
   await press(page, 'Continue');
   await expect(page.getByText('You were kind to someone who turned out not to exist.')).toBeVisible();
   await expect(page.getByText('Good thing I asked you.')).toHaveCount(0);
-  await press(page, 'Continue');
+  // R22 (psych M1): the photo check set arc_told_someone, so the told-someone line plays.
+  await storyUntil(page, "text=And you checked before anything else. That's what works.");
   await storyUntil(page, '[data-postcard-pick]');
   const pick = page.locator('[data-postcard-pick]');
   await expect(pick).toContainText('Pick a postcard for Teo to read. Any one will do.');
@@ -137,6 +147,8 @@ test('CR-43/44, ending C: reveal card, damage control, recovery offer, timeline,
   await axeClean(page);
   await pressOn(page, pick.locator('[data-postcard="fxpast"]'), 'the Berlin postcard');
   await expect(page.getByText('You picked Berlin.')).toBeVisible();
+  await settle(page);
+  await expect(page.locator('[data-postcard-picked]'), 'QA B3: focus on the pick line').toBeFocused();
   await expect(page.locator('[data-flip-card]')).toContainText('If a parcel message wants money or a click');
   await storyUntil(page, 'text=Chapter complete');
   await press(page, 'Back to the chapters');
@@ -163,6 +175,8 @@ test('CR-40/43, ending A: Teo forwards a profile; "A little can\'t hurt" shows t
   await expect(page.locator('[data-forwarded]')).toContainText('Forwarded from');
   await axeClean(page);
   await press(page, "A little can't hurt");
+  // R22 (psych M1): every Teo outcome ends in the reveal.
+  await expect(page.locator('[data-reveal-card]')).toBeVisible();
   await press(page, 'Continue');
   await expect(page.locator('[data-advice-line]')).toHaveText('Teo asked, and that was the smart bit. With an offer like this, the answer is always no.');
   await expect(page.getByText('Limit the damage')).toHaveCount(0);
@@ -171,4 +185,27 @@ test('CR-40/43, ending A: Teo forwards a profile; "A little can\'t hurt" shows t
   await press(page, 'Continue');
   await expect(page.getByText('Same picture, different name. Good thing I asked you.')).toBeVisible();
   await expect(page.getByText('You were kind to someone who turned out not to exist.')).toHaveCount(0);
+  // "A little can't hurt" is not telling someone: the truthful variant plays, never the told-someone line.
+  await storyUntil(page, "text=Telling someone early is what works. It's never too late to start.");
+  await expect(page.getByText("And you told someone. That's what works.")).toHaveCount(0);
+});
+
+test('R22, "Tell me now" with money in: arc damage control first, then the recovery test; a fall shows the authored note', async ({ page }) => {
+  await toArcBlock(page, 'R');
+  await expect(page.getByText('Limit the damage')).toBeVisible();
+  await expect(page.locator('[data-damage-intro]')).toHaveText('Alex was never real. The lie was theirs, not yours.');
+  for (const st of ['stop_paying', 'call_bank_known_number', 'keep_evidence']) await pressOn(page, page.locator(`[data-step="${st}"]`), st);
+  await press(page, 'Done');
+  await press(page, 'Continue');
+  await expect(page.getByText('We can get your money back').filter({ visible: true }).first()).toBeVisible();
+  await press(page, 'Pay the fee to open your file');
+  await expect(async () => {
+    const cont = page.getByRole('button', { name: 'Continue', exact: true });
+    if (await cont.first().isVisible()) await cont.first().click();
+    await expect(page.locator('[data-step]').first()).toBeVisible({ timeout: 500 });
+  }).toPass({ timeout: 10_000 });
+  for (const st of ['stop_paying', 'call_bank_known_number', 'keep_evidence']) await pressOn(page, page.locator(`[data-step="${st}"]`), st);
+  await press(page, 'Done');
+  await expect(page.locator('[data-recovery-note]')).toHaveText("Recovery offers often follow a loss because scammers share victims' details. That says nothing about you.");
+  await axeClean(page);
 });

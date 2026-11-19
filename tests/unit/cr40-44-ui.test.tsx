@@ -14,7 +14,7 @@ import { resultOf } from '../../src/engine/result.ts';
 import { startScenario, step } from '../../src/engine/runner.ts';
 import { lookup, t } from '../../src/i18n/index.ts';
 import { ArcReveal } from '../../src/ui/ArcReveal.tsx';
-import { RedFlagTimeline, RevealCard, TIMELINE_CHOICE_KEYS } from '../../src/ui/ArcFinale.tsx';
+import { RedFlagTimeline, RevealCard, RevealScreen, TIMELINE_CHOICE_KEYS, TimelineScreen } from '../../src/ui/ArcFinale.tsx';
 import { DebriefView } from '../../src/ui/DebriefView.tsx';
 import { DeviceView } from '../../src/ui/devices/Device.tsx';
 import type { DeviceProps } from '../../src/ui/devices/types.ts';
@@ -79,7 +79,11 @@ describe('CR-40: the forwarded card and the advice line', () => {
     const st = step(s, CTX, step(s, CTX, st0, { type: 'act', actionId: 'probably_fine' }), { type: 'continue' });
     const d = debriefOf(s, st, resultOf(s, balance, st), { pressureAny: true, pressureGenuine: true });
     const { container } = render(<DebriefView data={d} onContinue={() => undefined} onAgain={() => undefined} />);
-    expect(container.querySelector('[data-advice-line]')?.textContent).toBe('Noor asked, and that was the smart bit. With an offer like this, the answer is always no.');
+    const line = container.querySelector('[data-advice-line]') as HTMLElement;
+    expect(line.textContent).toBe('Noor asked, and that was the smart bit. With an offer like this, the answer is always no.');
+    // R22: below the stars, not above them.
+    const stars = container.querySelector('[role="img"][aria-label*="of 3"]') as HTMLElement;
+    expect(stars.compareDocumentPosition(line) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(container.textContent).toContain('You chose: A few transfers? Probably fine.');
     expect(container.textContent).not.toContain(t('debrief_no_shame'));
   });
@@ -116,6 +120,7 @@ describe('CR-42: the browser warning overlay', () => {
     expect(overlay.querySelector('h3')?.textContent).toBe('Security alert');
     expect(overlay.textContent).toMatch(/simulation/i);
     expect(overlay.querySelector('[role="dialog"]')).toBeNull();
+    expect(container.querySelector('[data-overlay-behind]')?.textContent).toMatch(/^Page behind the warning: .*festival of street music/);
     // The page's own text is backdrop, hidden from the accessibility tree and never checkable.
     expect([...container.querySelectorAll('[aria-hidden="true"]')].some((e) => e.textContent?.includes('festival of street music'))).toBe(true);
     fireEvent.click(overlay.querySelector('[data-overlay-close]') as HTMLElement);
@@ -137,6 +142,37 @@ describe('CR-43: the reveal card and the red-flag timeline', () => {
     expect(container.querySelectorAll('img')).toHaveLength(3);
     expect(new Set([...container.querySelectorAll('img')].map((i) => i.getAttribute('src')))).toEqual(new Set(['/art/cast/alex.svg']));
     expect(container.textContent).toContain('Names on the three profiles: Alex, Robin, Sacha.');
+    expect(container.querySelector('[data-reveal-line]')?.textContent).toBe('A picture that checks out proves nothing either. Telling someone is what works.');
+  });
+  it('R22: the reveal step\'s tell and habit are the authored lines it is given; the timeline screen\'s h1 names it, with no points', () => {
+    const r = render(<RevealScreen names={['Alex', 'Robin', 'Sacha']} tell="Authored tell." habit="Authored habit." onContinue={() => undefined} />);
+    expect(r.container.querySelector('[data-reveal-tell]')?.textContent).toBe('Authored tell.');
+    expect(r.container.querySelector('[data-reveal-habit]')?.textContent).toBe('Authored habit.');
+    cleanup();
+    const { container } = render(<TimelineScreen rows={[{ slot: 1, tell: 'Nothing to notice yet.', choice: 'replied' }]} onContinue={() => undefined} />);
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('What you saw so far');
+    expect(container.querySelectorAll('h2')).toHaveLength(0);
+    expect(container.textContent).toContain('You replied. Nothing wrong with that.');
+    expect(container.textContent).not.toMatch(/points|banked/i);
+  });
+  it('psych M3/M4: the arc damage control opens with the intro line; the authored note shows with the feedback', () => {
+    const options = [
+      { step: 'stop_paying', category: 'stop' as const },
+      { step: 'call_bank_known_number', category: 'stop' as const },
+      { step: 'keep_evidence', category: 'secure' as const },
+      { step: 'pay_last_fee', category: 'harmful' as const },
+    ];
+    const { container } = render(<DamageControl view={{ options, pick: 3, forCast: null, forLabel: null, note: 'That says nothing about you.' }} intro={t('arc_damage_intro', { name: 'Alex' })} onDone={() => undefined} />);
+    const intro = container.querySelector('[data-damage-intro]') as HTMLElement;
+    expect(intro.textContent).toBe('Alex was never real. The lie was theirs, not yours.');
+    expect(intro.compareDocumentPosition(container.querySelector('[data-step]') as HTMLElement) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    for (const st of ['stop_paying', 'call_bank_known_number', 'keep_evidence']) fireEvent.click(container.querySelector(`[data-step="${st}"]`) as HTMLElement);
+    fireEvent.click(screen.getByRole('button', { name: t('damage_done') }));
+    expect(container.querySelector('[data-recovery-note]')?.textContent).toBe('That says nothing about you.');
+  });
+  it('the stamp hint uses a plural ("1 red flag")', () => {
+    expect(t('tier_need_spotted', { n: 1, net: 0 })).toBe('Spot at least 1 red flag. Each mark on a safe detail takes one off. Your count: 0.');
+    expect(t('tier_need_spotted', { n: 2, net: 0 })).toContain('Spot at least 2 red flags.');
   });
   it('the timeline: header, tells and fixed choice wording; no amount, no count, no blame words', () => {
     const rows = [
@@ -152,7 +188,7 @@ describe('CR-43: the reveal card and the red-flag timeline', () => {
     expect(items[2]).toContain('You asked someone.');
   });
   it('every timeline template passes the timeline rule (validator, CR-43(c))', () => {
-    for (const key of [...Object.values(TIMELINE_CHOICE_KEYS), 'timeline_header', 'reveal_caption', 'reveal_alt']) {
+    for (const key of [...Object.values(TIMELINE_CHOICE_KEYS), 'timeline_header', 'reveal_caption', 'reveal_alt', 'reveal_fixed_line', 'arc_damage_intro']) {
       const text = lookup(key);
       expect(text, key).toBeDefined();
       expect(timelineTextIssues((text ?? '').replace('{name}', 'Alex')), key).toEqual([]);
@@ -181,6 +217,7 @@ describe('CR-44(a): the Open Evening postcard pick', () => {
     fireEvent.click(pick.querySelector('[data-postcard="paris"]') as HTMLElement);
     expect(onFlip).toHaveBeenCalledWith('paris');
     expect(container.textContent).toContain('You picked Paris.');
+    expect(document.activeElement, 'QA B3: focus on the pick line').toBe(container.querySelector('[data-postcard-picked]'));
     expect(container.querySelector('[data-flip-card]')?.textContent).toContain('If bank details change by email…');
   });
 });

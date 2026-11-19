@@ -44,6 +44,10 @@ export function RevealCard({ names, headingLevel = 3 }: { names: readonly string
         ))}
       </div>
       <p class={styles.intro}>{t('reveal_names', { names: names.join(', ') })}</p>
+      {/* R22 (psych M2): a clean photo check proves nothing either; the habit is telling someone. */}
+      <p class={styles.intro} data-reveal-line="">
+        {t('reveal_fixed_line')}
+      </p>
     </section>
   );
 }
@@ -51,6 +55,7 @@ export function RevealCard({ names, headingLevel = 3 }: { names: readonly string
 const CHOICE_KEYS = {
   paid: 'timeline_choice_paid',
   went_along: 'timeline_choice_went_along',
+  replied: 'timeline_choice_replied',
   stepped_back: 'timeline_choice_stepped_back',
   asked: 'timeline_choice_asked',
   reported: 'timeline_choice_reported',
@@ -63,15 +68,21 @@ export function timelineChoiceText(choice: TimelineRow['choice'], name: string):
 }
 export const TIMELINE_CHOICE_KEYS = CHOICE_KEYS;
 
-export function RedFlagTimeline({ rows, points, headingLevel = 2 }: { rows: readonly TimelineRow[]; points?: number | null; headingLevel?: 2 | 3 }) {
-  const H = headingLevel === 2 ? 'h2' : 'h3';
+/**
+ * The timeline. `headingLevel` null: the screen's own h1 names it (TimelineScreen, UI_SPEC §7). No points line
+ * (R22: a player who fell would see a higher number).
+ */
+export function RedFlagTimeline({ rows, headingLevel = 2 }: { rows: readonly TimelineRow[]; headingLevel?: 2 | 3 | null }) {
   const name = arcName();
+  const H = headingLevel === 3 ? 'h3' : 'h2';
   return (
     <section aria-labelledby="timeline-h" data-timeline="">
-      <H id="timeline-h" class={styles.name}>
-        {t('reveal_timeline')}
-      </H>
-      <p class={styles.intro} data-timeline-header="">
+      {headingLevel === null ? null : (
+        <H id="timeline-h" class={styles.name}>
+          {t('reveal_timeline')}
+        </H>
+      )}
+      <p class={styles.intro} data-timeline-header="" id={headingLevel === null ? 'timeline-h' : undefined}>
         <strong>{t('timeline_header', { name })}</strong>
       </p>
       <ol class={styles.list}>
@@ -83,7 +94,6 @@ export function RedFlagTimeline({ rows, points, headingLevel = 2 }: { rows: read
           </li>
         ))}
       </ol>
-      {points !== undefined && points !== null ? <p class={styles.intro}>{t('timeline_points', { points })}</p> : null}
     </section>
   );
 }
@@ -95,7 +105,7 @@ function useHeadingFocus() {
 }
 
 /** A finale step: the reveal on its own (an arc closed earlier by a report or a second Close, §30.6). */
-export function RevealScreen({ names, onContinue }: { names: readonly string[]; onContinue: () => void }) {
+export function RevealScreen({ names, tell, habit, onContinue }: { names: readonly string[]; tell: string; habit: string; onContinue: () => void }) {
   const heading = useHeadingFocus();
   return (
     <main class={styles.shell} data-finale-step="reveal">
@@ -103,8 +113,13 @@ export function RevealScreen({ names, onContinue }: { names: readonly string[]; 
         {t('finale_reveal_title')}
       </h1>
       <RevealCard names={names} headingLevel={2} />
-      <p class={styles.intro}>{t('finale_reveal_tell')}</p>
-      <p class={styles.intro}>{t('finale_reveal_habit')}</p>
+      {/* R22 (sceptic nb4): authored in the chapter's arc_finale.reveal, not engine wording. */}
+      <p class={styles.intro} data-reveal-tell="">
+        {tell}
+      </p>
+      <p class={styles.intro} data-reveal-habit="">
+        {habit}
+      </p>
       <button type="button" class={styles.primary} onClick={onContinue}>
         {t('app_continue')}
       </button>
@@ -112,15 +127,15 @@ export function RevealScreen({ names, onContinue }: { names: readonly string[]; 
   );
 }
 
-/** A finale step: the red-flag timeline (all endings; B's walk-through is the same screen). */
-export function TimelineScreen({ rows, points, onContinue }: { rows: readonly TimelineRow[]; points: number; onContinue: () => void }) {
+/** A finale step: the red-flag timeline (all endings; B's walk-through is the same screen). h1 per UI_SPEC §7. */
+export function TimelineScreen({ rows, onContinue }: { rows: readonly TimelineRow[]; onContinue: () => void }) {
   const heading = useHeadingFocus();
   return (
     <main class={styles.shell} data-finale-step="timeline">
       <h1 id="finale-timeline-h" ref={heading} tabIndex={-1} class={styles.title}>
-        {t('finale_timeline_title')}
+        {t('reveal_timeline')}
       </h1>
-      <RedFlagTimeline rows={rows} points={points} />
+      <RedFlagTimeline rows={rows} headingLevel={null} />
       <button type="button" class={styles.primary} onClick={onContinue}>
         {t('app_continue')}
       </button>

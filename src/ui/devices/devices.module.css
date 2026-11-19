@@ -1313,6 +1313,9 @@
   outline-offset: 2px;
 }
 .overlayClose[aria-disabled='true'] {
-  cursor: default;
-  opacity: 0.6;
+  /* Sceptic nb7: visibly unavailable without dimming the text below AA: no fill, a dashed border, no pointer. */
+  cursor: not-allowed;
+  background: transparent;
+  border-style: dashed;
+  font-weight: 400;
 }

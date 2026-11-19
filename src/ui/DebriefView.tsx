@@ -133,15 +133,15 @@ export function DebriefView({ data, onContinue, onAgain, onTellMeNow }: DebriefV
         {l1.youChose.map((c, i) => (
           <p key={i}>{choiceText(c)}</p>
         ))}
-        {/* CR-40: after bad advice, the authored line without blame (psych M1); never "You fell". */}
+        {l1.nextTime ? <p>{nextTimeText(l1.nextTime, lookup)}</p> : null}
+        {arc && l2.safeguardingLine ? <p>{l2.safeguardingLine}</p> : null}
+        {l1.stars !== null ? <Stars n={l1.stars} /> : null}
+        {/* CR-40: after bad advice, the authored line without blame (psych M1), below the stars (R22); never "You fell". */}
         {l1.adviceLine ? (
           <p data-advice-line="">
             <RichText text={l1.adviceLine} />
           </p>
         ) : null}
-        {l1.nextTime ? <p>{nextTimeText(l1.nextTime, lookup)}</p> : null}
-        {arc && l2.safeguardingLine ? <p>{l2.safeguardingLine}</p> : null}
-        {l1.stars !== null ? <Stars n={l1.stars} /> : null}
         {best ? <p class={styles.best}>{t(l1.bestLine === 'acted' ? 'outcome_best_acted' : 'outcome_best')}</p> : null}
         {ac ? (
           <p>

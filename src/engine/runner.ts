@@ -939,7 +939,7 @@ export interface RunnerView {
    * feedback is voiced by them. CR-41: `forLabel` names someone off-cast ("Noor's friend") in the prompt, and
    * `forCast` is then the cast member who voices the feedback (`voiced_by`).
    */
-  recovery: { options: RecoveryOption[]; pick: number; forCast: string | null; forLabel?: string | null } | null;
+  recovery: { options: RecoveryOption[]; pick: number; forCast: string | null; forLabel?: string | null; note?: string | null } | null;
   /**
    * CR-31: the on-call bar over a banking beat reached by start_transfer from a call: "On a call · {caller} ·
    * mm:ss". `seconds` since the call started (scenario clock); `hangUp` lists the banking beat's own
@@ -1067,7 +1067,7 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
     consequenceRegister: st.phase === 'consequence' && !st.tail && last?.outcome ? (s.outcomes[last.outcome]?.register ?? null) : null,
     consequenceReveal: st.phase === 'consequence' && !st.tail && !!last?.outcome && s.outcomes[last.outcome]?.reveal === true,
     consequenceAsides: st.phase !== 'consequence' ? [] : st.tail ? interruptNarratives(s, st, st.groups.length) : last ? interruptNarratives(s, st, st.groups.indexOf(last)) : [],
-    recovery: st.phase === 'damage_control' && st.recovery ? { options: st.recovery.options, pick: ctx.balance.recovery.pick, ...recoveryForOf(s, st) } : null,
+    recovery: st.phase === 'damage_control' && st.recovery ? { options: st.recovery.options, pick: ctx.balance.recovery.pick, ...recoveryForOf(s, st), note: recoveryNoteOf(s, st) } : null,
     onCall: onCallOf(s, ctx, st, live && st.phase === 'playing' ? g : undefined),
   };
 }
@@ -1083,6 +1083,15 @@ export function recoveryForOf(s: Scenario, st: Pick<RunnerState, 'groups'>): { f
     return typeof r === 'string' ? { forCast: r, forLabel: null } : { forCast: r.voiced_by, forLabel: r.label };
   }
   return { forCast: null, forLabel: null };
+}
+
+/** R22 (psych M4): the authored note for the "Your steps" screen, from the latest outcome that has one. */
+export function recoveryNoteOf(s: Scenario, st: Pick<RunnerState, 'groups'>): string | null {
+  for (const g of [...st.groups].reverse()) {
+    const n = g.outcome ? s.outcomes[g.outcome]?.recovery_note : undefined;
+    if (n) return n;
+  }
+  return null;
 }
 
 function onCallOf(s: Scenario, ctx: RunnerContext, st: RunnerState, g: GroupState | undefined): RunnerView['onCall'] {

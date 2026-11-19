@@ -14,6 +14,9 @@ arc_finale:
   recovery_offer: fx-finale-arc-recovery
   teo: fx-finale-arc-teo
   reveal_names: ["Alex", "Robin", "Sacha"]
+  reveal:
+    tell: "Same picture, other names."
+    habit: "A photo check and a trusted person beat a feeling."
   damage_control:
     - { step: stop_paying, category: stop }
     - { step: call_bank_known_number, category: stop }

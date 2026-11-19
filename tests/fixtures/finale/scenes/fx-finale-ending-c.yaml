@@ -9,3 +9,8 @@ panels:
     expression: warm
     line: "You were kind to someone who turned out not to exist. The lie was theirs, not yours."
     alt: "Adaeze smiling gently, sitting beside you."
+  - speaker: adaeze
+    expression: calm
+    if_flag: arc_told_someone
+    line: "And you checked before anything else. That's what works."
+    alt: "Adaeze, calm, nodding."

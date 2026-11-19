@@ -790,9 +790,15 @@ function Browser(p: DeviceProps) {
             {!brand && page?.title ? <h3 class={styles.pageTitle}>{page.title}</h3> : null}
             {overlay ? (
               m.body ? (
-                <div class={styles.body} aria-hidden="true">
-                  <RichText text={m.body} />
-                </div>
+                <>
+                  {/* Sceptic nb7: screen readers get the backdrop as one labelled note, never as checkable text. */}
+                  <p class={styles.vh} data-overlay-behind="">
+                    {t('overlay_page_behind')} <RichText text={m.body} />
+                  </p>
+                  <div class={styles.body} aria-hidden="true">
+                    <RichText text={m.body} />
+                  </div>
+                </>
               ) : null
             ) : (
               <>

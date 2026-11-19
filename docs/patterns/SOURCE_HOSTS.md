@@ -124,6 +124,24 @@ www.polizei-beratung.de | Police crime prevention (ProPK), www host (the host wi
 
 T-2.4b also cites a new page on www.europol.europa.eu (already listed).
 
+## Hosts from phase 3, chapter 2 (Amsterdam briefs, 2026-11-19)
+
+The six hosts below are now in `scripts/lib/source-hosts.ts`. That allow-list matches suffixes, so its entries `veiligbankieren.nl`, `nvb.nl`, `veiliginternetten.nl`, `rijksoverheid.nl` and `rvig.nl` cover the www hosts too. `betaalvereniging.nl` was also added on this branch.
+
+veiligbankieren.nl | Veilig Bankieren (Dutch Banking Association, NVB), host without www as opened | 3
+www.veiligbankieren.nl | Veilig Bankieren (Dutch Banking Association, NVB) | 3
+www.nvb.nl | Nederlandse Vereniging van Banken (Dutch Banking Association) | 3
+veiliginternetten.nl | Veiliginternetten.nl (Ministry of Economic Affairs, NCSC-NL and ECP) | 3
+www.rijksoverheid.nl | Rijksoverheid (Government of the Netherlands) | 3
+www.rvig.nl | Rijksdienst voor Identiteitsgegevens (RvIG), incl. Centraal Meldpunt Identiteitsfraude | 3
+
+The chapter-2 briefs also cite new pages on hosts already listed: www.politie.nl, www.fraudehelpdesk.nl, www.betaalvereniging.nl.
+
+**Follow-up (payee-name check sources, 2026-11-19):**
+- eur-lex.europa.eu | EUR-Lex (Official Journal of the EU) | 1 | covered by the `europa.eu` suffix entry.
+- www.europeanpaymentscouncil.eu | European Payments Council | 3 | listed above under EU level, but **not in `scripts/lib/source-hosts.ts`**, so it gives a warning.
+- febelfin.be | Febelfin (Belgian banking federation) | 3 | listed above under Belgium, but **not in `scripts/lib/source-hosts.ts`**, so it gives a warning.
+- business.gov.nl is not used (`nl-business-gov-minimum-wage-2026` was not added).
 ## New hosts from phase 3, chapter 3 (Paris research, 2026-11-19)
 
 **Already in `scripts/lib/source-hosts.ts`** (added by the engineer as base domains, checked 2026-11-19):

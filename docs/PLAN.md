@@ -8,7 +8,7 @@ The plan is built so the `producer` agent can run it with minimal supervision. W
 
 ## Game concept (seed for the GDD, to be refined in Phase 1)
 
-**Premise.** You've just landed a job as a travelling "trust inspector" for a fictional pan-European agency. Your phone, inbox and wallet come with you from city to city. Every chapter, the scammers adapt to where you are. A recurring cast (your manager, a colleague, your gran back home, a charming online stranger) gives the game an arc; one of them is quietly running a romance/investment scam across the whole game, revealed in the finale.
+**Premise.** You've just landed a job as a travelling "trust inspector" for a fictional pan-European agency. Your phone, inbox and wallet come with you from city to city. Every chapter, the scammers adapt to where you are. A recurring cast (your manager, a colleague, Grandpa Teo back home, a friendly online stranger) gives the game an arc; the stranger is quietly running a friendship-based investment/money scam across the whole game (friendship only, GDD §10), revealed in the finale.
 
 **Core loop (one scenario, 1–3 min).** Something arrives (mail, SMS, messenger, call, QR, ad, shop page) → inspect it (magnifier on sender, link, QR, payment details) → choose an action (open, reply, pay, call back, verify in app, ask someone, report, ignore) → see the believable consequence → debrief with red flags, the verification habit, and "already clicked? do this".
 
@@ -27,7 +27,7 @@ The plan is built so the `producer` agent can run it with minimal supervision. W
 | 7 | Lisbon | Fake shops, holiday-rental scams, tampered QR codes on parking meters | Check the shop's history; pay with buyer protection; type URLs, don't scan stickers |
 | 8 | Dublin | Investment/crypto scams with fake celebrity endorsement ads, recovery scams | Check the regulator's warning list; nobody "recovers" your money for a fee |
 | 9 | Stockholm | eID/MFA approval fatigue, fake support asking you to approve a login | Never approve a sign-in you didn't start |
-| 10 | Brussels (finale) | Romance scam arc pays off; tech-support remote-access scam; everything mixed | Pause, verify, talk to someone; recovery and reporting |
+| 10 | Brussels (finale) | Friendship-based investment scam arc pays off (friendship only, GDD §10); tech-support remote-access scam; everything mixed | Pause, verify, talk to someone; recovery and reporting |
 
 ---
 
@@ -57,9 +57,17 @@ Each phase lists its owner(s), deliverables and **exit criteria**. The producer 
 
 ### Phase 3 — Content production (agent-run, repeated per chapter)
 - For each chapter 2–10: research check → chapter spec → scenarios → parallel reviews → QA play-through → done. Producer runs up to 2 chapters in parallel.
-- Cross-chapter arc (romance/investment storyline), finale, end screen with habit-card summary and "Where to report" per locale.
+- Cross-chapter arc (friendship-based investment/money scam, friendship only, GDD §10), finale, end screen with habit-card summary and "Where to report" per locale.
 - Balancing pass by `game-designer` using QA timing data.
-- **Exit:** all chapters PASS; full-game e2e green; red-line lint clean; sources complete. → **G3**.
+- **Track S, story and scene layer (added 2026-11-19 at Roman's request: "having an actual story with a graphical element is having more impact on learning").** Runs in parallel with the chapters; the device scenarios stay the core loop, and the story wraps them. Scope set by Roman's decision D-S1 (2026-11-19): an **illustrated story layer**, not a walkable world.
+  - **S1 Story bible** (`game-designer` + `learning-psychologist`, `scenario-writer` for voice): `docs/STORY.md`. One through-line for the whole trip, built on the existing cast (Teo, Alex, the Waymarker team, locals). Per chapter: an arrival scene, the local character's problem that the chapter's scams grow out of, a mid-chapter turn, and a resolution that shows the habit working. Characters model good habits and recoverable mistakes.
+  - **S2 Art direction** (`ux-artist` + `learning-psychologist`): `docs/ART_DIRECTION.md`. Original SVG/CSS only, in `public/art/**` (scanned by `redline:lint`, licensed CC BY-SA): character sheets with a few expressions each, one illustrated backdrop per city, comic-style story panels, and the illustrated map. Warm, light, no fear imagery; works at 320 px, in dark mode and with reduced motion; every image has alt text.
+    - **Red Line 1 guard for art:** no real logos, signage, vehicle liveries, uniforms or insignia (police, government, banks, couriers, transit); only brands from `brands.yaml`; any visible text uses fictional or reserved identifiers. No likeness of real or public people. Alex is illustrated, never photo-realistic and never romance-coded. No AI-generated images, traced references, stock assets or externally hosted fonts. `sceptic-reviewer` checks every illustration for brand and likeness resemblance.
+  - **Scene rules (all of track S):** a scene never contains a scam message or artefact; those live only in device scenarios, which have the debrief (Red Line 4). Scenes stay inside Red Line 8 and show no offline fraud as a lesson. Alex's scene lines follow GDD §10.1 (≤ 25 words, no polished persuasion copy). Scene choices set no score or arc flag unless `game-designer` specs one.
+  - **S3 Scene engine** (`frontend-engineer`): a `scene` content type in YAML under `content/scenes/<city>/` (panels, speaker, portrait plus expression, backdrop, short lines, optional choice that never scores), checked by `content:validate` and `redline:lint` like scenarios, schema and validator rules, a scene player between scenarios, keyboard and screen-reader support, skip and replay, and a bundle budget for art.
+  - **S4 Retrofit** Home and Berlin with scenes, then every new chapter ships its scenes with its scenarios (the chapter spec names them).
+  - **S5 Review:** every scene passes `sceptic-reviewer`, `learning-psychologist` and `qa-playtester`. Proposed: before G4, a qualified human (learning or behavioural psychologist, or a CERT/consumer-body awareness lead) reviews tone and safety; Roman decides on it at G3.
+- **Exit:** all chapters PASS, with story scenes as decided in D-S1; full-game e2e green; red-line lint clean; sources complete. → **G3**.
 
 ### Phase 4 — Hardening and release prep (agent-run)
 - Accessibility audit (WCAG 2.2 AA), performance budget, privacy check (no third-party requests), content freeze.

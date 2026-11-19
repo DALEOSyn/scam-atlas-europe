@@ -49,11 +49,17 @@ Approve `docs/GDD.md`, the chapter list (`docs/patterns/MAP.md`), the learning o
 - **2026-11-18: keep the scams in the cybersecurity realm.** Every scenario must hinge on a digital or cyber vector; purely offline fraud is out of scope. Recorded as Red Line 8 in CLAUDE.md, which the sceptic-reviewer enforces.
 - **2026-11-18: widen the scope to malicious cyber campaigns, not only scams** (Roman: "both yes" to the catalogue questions). Malware and technical campaigns from THREAT_CATALOGUE.md Part B may become scenarios when the player can see the vector and act on it, at the defender's level only. Webcam-blackmail emails: help card only, never a scenario. Recorded in CLAUDE.md Red Line 8.
 
-## G2 — Vertical slice approved (state: Open)
+## G2 — Vertical slice approved (state: Approved ✅)
 Play the tutorial + first city chapter yourself (link to preview build). Approve fun, tone and difficulty before content is mass-produced.
 
+**Roman, 2026-11-19: "ok, game makes sense, we can continue."** Played the private G2 preview (tutorial + Berlin, build 2f58f36, delivered as a private claude.ai page and a local zip; nothing deployed publicly). Phase 3 (content production) may start. ✅
+
+**Roman, 2026-11-19 (Phase 3): add an actual story with graphical elements, because it has more impact on learning, and onboard a psychological advisor agent.** Recorded as PLAN.md Phase 3 track S and the new `learning-psychologist` agent (TEAM.md). Level of visual ambition: see the decision below.
+
+**D-S1, decided by Roman 2026-11-19: "Illustrated story layer".** Comic-style scenes, character portraits, city backdrops and an illustrated map around the existing device scenarios, built in Phase 3 (track S). Not chosen: a walkable 2D city, or graphics after G3. ✅
+
 ## G3 — Content complete (state: Open)
-All chapters in English pass review. Approve sources list and "Where to report" pages. Decide on external expert review (e.g. a contact at a CERT or consumer body), optional.
+All chapters in English pass review. Approve sources list and "Where to report" pages. Decide on external expert review (e.g. a contact at a CERT or consumer body), optional, including the proposed human review of story tone and emotional safety (PLAN.md track S5).
 
 ## G4 — Public release (state: Open)
 Approve going public: deploy to GitHub Pages (or other host), domain, announcement. Irreversible in practice (content gets indexed).

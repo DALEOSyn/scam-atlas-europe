@@ -388,7 +388,8 @@ function finish(ctx: RunnerContext, st: RunnerState): RunnerState {
 function enterDamageControlOrDone(s: Scenario, ctx: RunnerContext, st: RunnerState): RunnerState {
   if (s.role === 'arc') return finish(ctx, st);
   // Boss: damage control once at the end, with the steps of every beat that fell, merged in beat order
-  // and de-duplicated (QA L2). Others: the outcome reached.
+  // (the first fallen beat's steps first), de-duplicated (QA L2) and capped at RECOVERY_OPTIONS_MAX
+  // (follow-up f, GDD §9: 5–6 options). Others: the outcome reached.
   const truth = st.truth;
   const sources =
     s.role === 'boss'
@@ -417,10 +418,16 @@ export function coveredDecision(s: Scenario, groups: readonly GroupState[], g: G
   return { decision: { ...d, cls: 'verify' }, covered: true };
 }
 
-/** Merge damage-control steps: first appearance wins (order and category), no step twice. */
-export function mergeRecoveryOptions(lists: readonly (readonly RecoveryOption[])[]): RecoveryOption[] {
+/** Damage control offers at most this many steps (GDD §9: 5–6 options), also after a multi-fall boss. */
+export const RECOVERY_OPTIONS_MAX = 6;
+
+/**
+ * Merge damage-control steps: first appearance wins (order and category), no step twice, at most `max`
+ * (the first fallen beat's steps come first, so they are always kept).
+ */
+export function mergeRecoveryOptions(lists: readonly (readonly RecoveryOption[])[], max = RECOVERY_OPTIONS_MAX): RecoveryOption[] {
   const out: RecoveryOption[] = [];
-  for (const list of lists) for (const o of list) if (!out.some((x) => x.step === o.step)) out.push(o);
+  for (const list of lists) for (const o of list) if (out.length < max && !out.some((x) => x.step === o.step)) out.push(o);
   return out;
 }
 

@@ -15,7 +15,7 @@ import { deriveCheckables } from '../../../src/content/checkables.ts';
 import { chapterSchema, scenarioSchema, type Scenario } from '../../../src/content/schema.ts';
 import { checkablesOf } from '../../../src/engine/inspect.ts';
 import { resultOf } from '../../../src/engine/result.ts';
-import { holdingForTransfer, senderBeatBefore, startScenario, step, transferFloor, viewOf } from '../../../src/engine/runner.ts';
+import { holdingForTransfer, mergeRecoveryOptions, senderBeatBefore, startScenario, step, transferFloor, viewOf } from '../../../src/engine/runner.ts';
 import { classOf, mergeDecision, scoreGroup, starsFor } from '../../../src/engine/scoring.ts';
 import { ROOT, rawFraud, rawGenuine, realRegistries, scenario } from '../../content/fixtures.ts';
 import { act, B, check, ctx, play, run, tag, tick, type Raw } from './helpers.ts';
@@ -544,6 +544,28 @@ describe('review fixes: schema (#5, #17) and SVG safety (#4)', () => {
     expect(msgs).toMatch(/links outside the file/);
     expect(msgs).toMatch(/url\(\) outside the file/);
     expect(svgSafetyIssues(bad).filter((i) => i.match.includes('#ok'))).toEqual([]);
+  });
+  it('follow-up e: a banking page reached from a scheduled beat does not count towards the three scored boss beats', () => {
+    const raw = rawBoss();
+    const call = beatOf(raw, 'lawyer_call');
+    const callBeat = (id: string): Raw => {
+      const b: Raw = { ...call, id, arrives_after: 30, actions: (call.actions as Raw[]).map((a) => ({ ...a, id: `${a.id as string}_${id}` })) };
+      delete b.covered_by;
+      return b;
+    };
+    const second = callBeat('second_call');
+    raw.beats = [...(raw.beats as Raw[]), second];
+    // opening + lawyer_call + second_call = 3 scheduled scored beats; boss_transfer scores inside the opening.
+    expect(ruleErrors(raw)).toEqual([]);
+    const third = callBeat('third_call');
+    raw.beats = [...(raw.beats as Raw[]), third];
+    expect(ruleErrors(raw).join('\n')).toMatch(/at most 3 scored beats \(has 4\)/);
+  });
+  it('follow-up f: boss damage control merges every fallen beat, de-duplicated, first beat first, at most 6', () => {
+    const opt = (step: string) => ({ step, category: 'stop' as const });
+    const first = ['a', 'b', 'c', 'd'].map(opt);
+    const second = ['b', 'e', 'f', 'g', 'h'].map(opt);
+    expect(mergeRecoveryOptions([first, second]).map((o) => o.step)).toEqual(['a', 'b', 'c', 'd', 'e', 'f']);
   });
   it('follow-up b: svgSafetyIssues rejects <!DOCTYPE, <!ENTITY and @import', () => {
     const bad = '<!DOCTYPE svg [<!ENTITY t "x">]><svg><style>@import "other.css";</style></svg>';

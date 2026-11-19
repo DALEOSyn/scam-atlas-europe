@@ -473,7 +473,9 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
     }
   }
   if (s.role === 'boss') {
-    const scoredBeats = story.filter((b) => b.scored).length;
+    // Scored beat groups: the opening and scored scheduled beats. Banking or request pages reached from a
+    // scheduled beat (next_beat) score inside their parent beat, so they never count here (follow-up e).
+    const scoredBeats = story.filter((b) => b.scheduled && b.scored).length;
     const max = balance.multi_step.boss.scored_beats_max;
     if (scoredBeats > max) errors.push(`a boss has at most ${max} scored beats (has ${scoredBeats}); mark later beats scored: false`);
   }

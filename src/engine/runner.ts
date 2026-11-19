@@ -294,8 +294,12 @@ function resolveGroup(s: Scenario, ctx: RunnerContext, st: RunnerState, g: Group
   const fell = !done.timerExpired && done.decision !== undefined && isFall(done.decision.cls, st.truth);
   if (fell) next = setStress(ctx, next, next.stress + ctx.balance.stress.on_fall);
 
+  // The consequence step (GDD §3 step 4, UI_SPEC §7) follows every resolved beat that has a narrative
+  // or an expired timer, also the last one, before damage control or the debrief (layer-1 ruling
+  // 2026-11-19: the narrative is not part of debrief layer 1).
   const moreScheduled = next.schedule.length > next.groups.length;
-  if (moreScheduled) return { ...next, phase: 'consequence' };
+  const narrative = done.outcome ? s.outcomes[done.outcome]?.narrative : undefined;
+  if (moreScheduled || narrative || done.timerExpired) return { ...next, phase: 'consequence' };
   return enterDamageControlOrDone(s, next);
 }
 

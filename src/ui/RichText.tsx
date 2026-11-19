@@ -1,10 +1,12 @@
 /**
  * Text rendering shared by devices, Check cards and the debrief.
- * - Hosts never wrap at hyphens: line breaks only at scheme | subdomain labels | owner part | path
- *   (UI_SPEC §1.5 host wrapping rule).
- * - Masked numbers carry a spoken form ("number ending 3310") built only from the digits shown.
+ * - Hosts never wrap at hyphens, and the owner part never wraps at all (UI_SPEC §1.5): line breaks
+ *   only between scheme | subdomain labels | owner part | path. Where the owner part is wider than
+ *   its container, it scrolls sideways inside itself as a focusable box (OwnerPart), or, inside a
+ *   control (Checkable), the control's container scrolls (devices / check CSS).
+ * - Masked numbers carry a spoken form that starts with the visible text ("0800 … 3310, masked number").
  */
-import { Fragment } from 'preact';
+import { useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { t } from '../i18n/index.ts';
 import { hostParts, maskedParts, richPieces } from './text.ts';
 import styles from './text.module.css';
@@ -18,23 +20,50 @@ export function spokenNumber(text: string): string {
 const Break = () => <wbr />;
 const NoBreak = () => null;
 
-/** A host or address with break opportunities only between its parts. `strong` marks the owner part (address bar after a check, Check card). */
-export function Host({
-  text,
-  strong = false,
-  boxed = false,
-  oneLine = false,
-  breakOwner = !oneLine,
-}: {
-  text: string;
-  strong?: boolean;
-  boxed?: boolean;
-  oneLine?: boolean;
-  /** Allow a break after the dot inside the owner part (never at a hyphen). Default: on, except one-line hosts. */
-  breakOwner?: boolean;
-}) {
+const INTERACTIVE = 'button, a[href], input, select, textarea, [role="button"], [tabindex]:not([tabindex="-1"])';
+
+/**
+ * The owner part: one unbreakable piece. Outside controls it is an inline box that scrolls sideways
+ * when it does not fit; only then does it become focusable (tabindex 0, role group, named by the
+ * owner part), so keyboard users can scroll it. Inside a control it stays plain text, because a
+ * focusable box inside a button would be nested interactive content; there the container scrolls.
+ */
+function OwnerPart({ text, cls }: { text: string; cls: string }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [inControl, setInControl] = useState(false);
+  const [over, setOver] = useState(false);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return undefined;
+    if (el.parentElement?.closest(INTERACTIVE)) {
+      setInControl(true);
+      return undefined;
+    }
+    if (typeof ResizeObserver === 'undefined') return undefined;
+    const check = () => setOver(el.scrollWidth > el.clientWidth + 1);
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return (
+    <span
+      ref={ref}
+      class={inControl ? cls : `${cls} ${styles.ownerScroll}`}
+      data-owner=""
+      tabIndex={over ? 0 : undefined}
+      role={over ? 'group' : undefined}
+      aria-label={over ? text : undefined}
+    >
+      {text}
+    </span>
+  );
+}
+
+/** A host or address with break opportunities only between its parts. `strong` marks the owner part; `boxed` frames it (Check card). */
+export function Host({ text, strong = false, boxed = false, oneLine = false }: { text: string; strong?: boolean; boxed?: boolean; oneLine?: boolean }) {
   const p = hostParts(text);
-  // The address bar is one line that truncates from the left (UI_SPEC §3.5): no break opportunities.
+  // A one-line host has no break opportunities at all.
   const Wbr = oneLine ? NoBreak : Break;
   const ownerClass = [styles.nowrap, strong ? styles.owner : '', boxed ? styles.boxed : ''].filter(Boolean).join(' ');
   return (
@@ -57,24 +86,7 @@ export function Host({
           <Wbr />
         </span>
       ))}
-      {breakOwner ? (
-        <span class={[strong ? styles.owner : '', boxed ? styles.boxed : ''].filter(Boolean).join(' ') || undefined}>
-          {p.owner.split('.').map((label, i, all) =>
-            i < all.length - 1 ? (
-              <Fragment key={i}>
-                <span class={styles.nowrap}>{label}.</span>
-                <wbr />
-              </Fragment>
-            ) : (
-              <span key={i} class={styles.nowrap}>
-                {label}
-              </span>
-            ),
-          )}
-        </span>
-      ) : (
-        <span class={ownerClass}>{p.owner}</span>
-      )}
+      <OwnerPart text={p.owner} cls={ownerClass} />
       {p.path.map((seg, i) => (
         <span key={i}>
           <Wbr />
@@ -95,10 +107,10 @@ export function Masked({ text }: { text: string }) {
   );
 }
 
-export function RichText({ text, breakOwner = true }: { text: string; breakOwner?: boolean }) {
+export function RichText({ text }: { text: string }) {
   return (
     <>
-      {richPieces(text).map((p, i) => (p.kind === 'host' ? <Host key={i} text={p.text} breakOwner={breakOwner} /> : p.kind === 'masked' ? <Masked key={i} text={p.text} /> : p.text))}
+      {richPieces(text).map((p, i) => (p.kind === 'host' ? <Host key={i} text={p.text} /> : p.kind === 'masked' ? <Masked key={i} text={p.text} /> : p.text))}
     </>
   );
 }

@@ -29,13 +29,26 @@ describe('hostParts (owner part = last two labels)', () => {
 });
 
 describe('Host rendering never wraps at hyphens', () => {
-  it('puts each label in a nowrap span with break opportunities only at dots and slashes', () => {
+  it('keeps the owner part in one unbreakable piece; breaks only between parts', () => {
     const { container } = render(<Host text="https://desk.waymarker-network.example/travel-pass" />);
-    const label = [...container.querySelectorAll('span')].find((s) => s.textContent === 'waymarker-network.');
-    expect(label?.className).toMatch(/nowrap/);
-    // Breaks: after the scheme, after "desk.", after "waymarker-network.", before the path. Never at a hyphen.
-    expect(container.querySelectorAll('wbr')).toHaveLength(4);
+    const owner = container.querySelector('[data-owner]');
+    expect(owner?.textContent).toBe('waymarker-network.example');
+    expect(owner?.className).toMatch(/nowrap/);
+    expect(owner?.querySelector('wbr')).toBeNull();
+    // Breaks: after the scheme, after "desk.", before the path. Never inside the owner part or at a hyphen.
+    expect(container.querySelectorAll('wbr')).toHaveLength(3);
     for (const s of container.querySelectorAll('[class*="nowrap"]')) expect(s.querySelector('wbr')).toBeNull();
+    // Outside a control it is a sideways-scrolling box (focusable only once it overflows; no layout in jsdom).
+    expect(owner?.className).toMatch(/ownerScroll/);
+    expect(owner?.hasAttribute('tabindex')).toBe(false);
+  });
+  it('inside a control the owner part is plain text (no nested focusable box)', () => {
+    const { container } = render(
+      <button type="button">
+        <Host text="kettle.example-verify.test/keep" />
+      </button>,
+    );
+    expect(container.querySelector('[data-owner]')?.className).not.toMatch(/ownerScroll/);
   });
   it('oneLine (address bar) has no break opportunities; strong marks the owner part', () => {
     const { container } = render(<Host text="https://desk.waymarker-network.example/x" oneLine strong />);
@@ -52,7 +65,8 @@ describe('masked numbers', () => {
     expect(maskedParts('0800 123')).toBeNull();
     expect(spokenNumber('••• 3310')).toMatch(/3310/);
     // The accessible name starts with what is visible (axe label-content-name-mismatch, QA B8).
-    expect(spokenNumber('+32 2 ••• •• 00')).toBe('+32 2 … 00, number ending 00');
+    expect(spokenNumber('+32 2 ••• •• 00')).toBe('+32 2 … 00, masked number');
+    expect(spokenNumber('••• 3310')).toBe('… 3310, masked number'); // no repeated digits (sceptic note 5)
     expect(spokenNumber('••• 3310')).not.toMatch(/\d{5,}/);
   });
   it('richPieces finds hosts and masked numbers in running text', () => {

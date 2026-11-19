@@ -23,3 +23,15 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+/* Owner part outside controls: never wraps; scrolls sideways inside itself when it does not fit. */
+.ownerScroll {
+  display: inline-block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  vertical-align: bottom;
+}
+.ownerScroll:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: 1px;
+}

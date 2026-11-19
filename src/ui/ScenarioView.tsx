@@ -475,23 +475,14 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                   <Icon name="info" />
                   <span>{view.consequenceTimerExpired ? t('deadline_fake') : <RichText text={view.consequence ?? ''} />}</span>
                 </p>
-                <button type="button" class={styles.primary} onClick={runner.continueBoss}>
+                <button type="button" class={styles.primary} onClick={runner.continueConsequence}>
                   {t('app_continue')}
                 </button>
               </div>
             ) : null}
             {view.phase === 'damage_control' && view.recovery ? (
-              <>
-                {view.consequence ? (
-                  <p class={styles.caption}>
-                    <Icon name="info" />
-                    <span>
-                      <RichText text={view.consequence} />
-                    </span>
-                  </p>
-                ) : null}
-                <DamageControl view={view.recovery} onDone={runner.submitRecovery} />
-              </>
+              // The outcome was the caption of the consequence step just before; not repeated here (ruling 2026-11-19).
+              <DamageControl view={view.recovery} onDone={runner.submitRecovery} />
             ) : null}
           </section>
         </CheckContext.Provider>

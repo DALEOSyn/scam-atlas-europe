@@ -38,6 +38,8 @@ describe('App: Check, tag, debrief layer 2, chapter stamp, save', () => {
     expect(screen.getByRole('button', { name: 'Details you can check · 2 checked' })).toBeTruthy();
 
     fireEvent.click(screen.getByRole('button', { name: /Open the Trundle app yourself/ }));
+    await waitFor(() => screen.getByRole('heading', { level: 3, name: 'What happened' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     await waitFor(() => screen.getByRole('heading', { level: 1, name: /This was a scam/ }));
     expect(screen.getByRole('img', { name: '3 of 3 stars' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'More' }));

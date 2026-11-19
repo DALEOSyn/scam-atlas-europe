@@ -364,7 +364,7 @@ Reduced motion is on when the OS asks **or** `data-motion="reduced"`; `data-moti
 ---
 
 ## 7. Consequence and damage control
-- **Consequence** plays in-device (≤ 15 s) with a game-layer caption: info icon, `outcomes.*.narrative`, "Continue". No red screens, no alarms.
+- **Consequence** plays in-device (≤ 15 s) with a game-layer caption: info icon, `outcomes.*.narrative`, "Continue". No red screens, no alarms. It follows **every** resolved scenario (and every boss beat) that has a narrative or an expired timer (then the caption is "The deadline was fake. Nothing happened."), including the last beat, before damage control or the debrief (layer-1 ruling 2026-11-19). Focus moves to its heading ("What happened", `h3`); the caption comes straight after it. Damage control does not repeat the caption.
 - **Damage control** (GDD §9): heading "Limit the damage", sub "This happens to careful people every day." Prompt: "Pick the step you'd do first, then 2 more." 5–6 options as toggle buttons (`aria-pressed`), 56 px; selected items show their order number ("1st", "2nd", "3rd") as text. "Move up / Move down" buttons on selected items (no drag). Counter "2 of 3 chosen". Sticky "Done" bar (scroll-padding §1.3; static under 500 px height). Feedback lists each pick with check-seal "Helps" or info "Doesn't help: …".
 
 ---
@@ -373,23 +373,25 @@ Reduced motion is on when the OS asks **or** `data-motion="reduced"`; `data-moti
 
 ### 8.1 Layer 1 (always shown, ≤ 40 words, one screen at 375×812)
 Focus lands on the `h1`. Reading and focus order (nothing of layer 1 comes before the `h1`):
-1. **`h1` = verdict + tell in one heading** [U4]. After a fall the heading starts with "This could happen to anyone. Here is the tell." (Red Line 5, never on a good outcome) on its own line; the outcome narrative follows directly after the `h1`. Example: "**This was a scam:** the link went to trundle-zoll.example, not trundle.example." The verdict part is styled as a chip *inside* the heading (tag-crossed icon, `--color-flag-bg`/`--color-flag-text`); genuine: check-seal + "This was genuine:" with `--color-ok-*`. Genuine tells say why it was safe to act and never present a reassuring detail as proof ("It asked for nothing and matched your order. The sender fits, but senders can be faked.").
+1. **`h1` = verdict + tell in one heading** [U4]. After a fall the heading starts with "This could happen to anyone." (Red Line 5, never on a good outcome) on its own line. The outcome narrative is **not** in layer 1: it was the consequence caption (§7) and is repeated in layer 2 under "What happened". Example: "**This was a scam:** the link went to trundle-zoll.example, not trundle.example." The verdict part is styled as a chip *inside* the heading (tag-crossed icon, `--color-flag-bg`/`--color-flag-text`); genuine: check-seal + "This was genuine:" with `--color-ok-*`. Genuine tells say why it was safe to act and never present a reassuring detail as proof ("It asked for nothing and matched your order. The sender fits, but senders can be faked.").
 2. **What works**: one line naming the verification step ("What works: open the Trundle app yourself."), from `debrief.layer1.what_works`. **"You chose" line**, only when the scenario (or a boss beat) scored fewer than 3 stars. **Layer 1 shows at most one "You chose" line (CR-15).** On a boss it is the line of the beat with the fewest stars (on a tie, the latest beat); the other beats' lines move to layer 2 ("Your other choices"). The line uses: "You chose: <action label>." using the `label` of the action that cost the stars:
    - a fall: the decisive action's label (always, even after an engage);
    - **an engage cap** (GDD §6: engage on fraud caps at ★★): the label of the **first engage action** the player picked, **not** the later action, also when that later action was a dismiss or report (producer ruling, T-2.1: the engage is what cost the stars and teaches more). E.g. 1-9 beat 3: "You chose: Call back this number." even though the player then called the number on the card; "You chose: Open the link." when the player then closed the page;
    - otherwise a report or dismiss: the decisive action's label;
    - a verify followed by comply, proceed or report (GDD §6): the follow-up action's label;
    - timer expiry: "You let the timer run out."
-   Never shown on arc debriefs. On a ★★★ standard debrief the same slot holds "That is the habit that works." (6 words).
+   Never shown on arc debriefs. On a ★★★ standard debrief the same slot holds "That is the habit that works." (6 words). **After a fall the kind line in the `h1` takes the slot**: layer 1 shows no "You chose" line and no best line; the lead beat's line moves to the top of layer 2 "Your other choices" (layer-1 ruling 2026-11-19).
 3. **Stars**: 3 icons + "3 of 3 stars" (`role="img"` with that name).
 4. **Already clicked?** one line linking to the full advice in layer 2 ("Already clicked or paid? See what to do").
 5. Buttons: **More** (opens layer 2, `aria-expanded`) and **Continue**.
-- **Word budget (validator, balance `debrief_layer1_max_words: 40`). Rule: layer 1 never renders more than 40 words, in the worst case, including the "You chose" line.** For each scenario the validator checks:
-  `fixed + authored + choice_worst ≤ 40`, where
-  - **fixed** (`LAYER1_OVERHEAD` in `scripts/lib/rules.ts`) = **14** for `debrief.variant: standard` (standard and boss): "This was a scam:" 4 (the longer of the two verdict chips); "What works:" 2; "Already clicked or paid? See what to do" 8. **10** for `debrief.variant: arc`: "The habit:" 2; "Already did this? See what to do next" 8 (see the arc layout below).
-  - **authored** = words in `debrief.layer1.tell` + `debrief.layer1.what_works`, **plus `debrief.safeguarding_line` on arc debriefs** (required at arc slots 2–3, shown in layer 1).
-  - **choice_worst** (standard only; one line, also on a boss, CR-15) = the largest of: 2 + the word count of the `label` of every action in the scenario (or boss beat, including actions in a "What now?" step) that can leave it below 3 stars, **engage actions included**; and 6 ("You let the timer run out.") if the scenario has a timer. The ★★★ line "That is the habit that works." uses the same slot, so the validator counts **max(choice_worst, 6)** (`BEST_LINE_WORDS`). Arc debriefs: 0 (no "You chose" line).
-  - Action labels are capped at 8 words (validator), so choice_worst ≤ 10 and **≤ 16 authored words is always safe** for standard debriefs; a scenario with shorter action labels gets the difference back (e.g. longest such label 4 words → choice_worst 6 → up to 20 authored). Arc debriefs: up to **30** authored words including the safeguarding line.
+- **Word budget (validator, balance `debrief_layer1_max_words: 40`). Rule: layer 1 never renders more than 40 words, in the worst case.** (Layer-1 ruling 2026-11-19.) For each scenario the validator (`scripts/lib/rules.ts`) checks:
+  - standard: `words = fixed (14) + wc(tell) + wc(what_works) + slot`;
+  - arc: `words = fixed (10) + wc(tell) + wc(what_works) + wc(safeguarding_line) + (anyFall ? wc(debrief_no_shame) : 0)`;
+  - `slot = max(wc(outcome_best) = 6; anyFall ? wc(debrief_no_shame) = 5 : 0; the longest "You chose" line that can appear)`. "You chose" lines: every action, "What now?" extra and built-in that can leave the scenario (or a boss beat) below ★★★ and is **not a fall**, engage actions included, counted as the exact text `choiceLineText()` renders (`src/engine/choiceText.ts`, shared with the debrief); plus "You let the timer run out." (6) when timed. Optional catalogue lines count as soon as their keys exist: `you_chose_whatnow_*`, `you_chose_report_genuine` / `_dismiss_genuine` / `_dismiss_started` (genuine), `next_time_after_hang_up` (boss with a dismiss on fraud).
+  - **fixed** (`LAYER1_OVERHEAD`, read from `ui.json`) = **14** for standard: the longer verdict chip ("This was a scam:" 4), "What works:" 2, "Already clicked or paid? See what to do" 8. **10** for arc: "The habit:" 2, "Already did this? See what to do next" 8.
+  - Narratives and "The deadline was fake…" count 0: they are no longer in layer 1.
+  - `anyFall` = some action in the scenario is a fall (comply or proceed on fraud).
+  - Action labels are capped at 8 words (validator).
   - **Counting** = `wordCount()` in `scripts/lib/rules.ts`: split on whitespace and count tokens that contain a letter or digit ("isn't" = 1, "–" = 0); a domain or URL counts as one word. A `{nickname}` placeholder counts as one word. Item 3 (stars) and item 5 (buttons) are not counted.
 - **Arc layout** (`debrief.variant: arc`, GDD §10.2). Focus lands on the `h1`. Order:
   1. `h1` = `debrief.layer1.tell` ("Things to notice"), **no verdict chip**.
@@ -401,6 +403,7 @@ Focus lands on the `h1`. Reading and focus order (nothing of layer 1 comes befor
 - Points are **not** in layer 1 [LI-4].
 
 ### 8.2 Layer 2 ("More", inline disclosure below layer 1)
+0. **What happened** (`h2`): the outcome narratives (boss: one paragraph per beat, each said once) and, on a fraud timer expiry, "The deadline was fake. Nothing happened." Then **Your other choices** (boss lines, and after a fall the lead line first).
 1. **What gave it away** (`h2`). Each flag: flag icon + text + status:
    - flags bound to a checkable: "You marked this" (filled flag) / "Not marked" (outline flag);
    - flags that live in the message text (pressure, request): **"In the message"**, with no status [LI-2];

@@ -52,7 +52,10 @@ describe('QA E3/E10: view details', () => {
     });
     const playing = run(s, ctx(), [tick(6)]);
     expect(viewOf(s, ctx(), playing).interrupts).toHaveLength(1);
-    const dc = step(s, ctx(), step(s, ctx(), playing, act('tap_link')), act('enter_card'));
+    const fell = step(s, ctx(), step(s, ctx(), playing, act('tap_link')), act('enter_card'));
+    expect(fell.phase).toBe('consequence');
+    expect(viewOf(s, ctx(), fell).interrupts).toEqual([]);
+    const dc = step(s, ctx(), fell, { type: 'continue' });
     expect(dc.phase).toBe('damage_control');
     expect(viewOf(s, ctx(), dc).interrupts).toEqual([]);
   });
@@ -63,7 +66,7 @@ describe('QA E4: narratives are said once', () => {
     const s = boss();
     const { st, r } = play(s, ctx(), [act('open_app'), { type: 'continue' }, act('check_app_2'), { type: 'continue' }, act('hang_up'), { type: 'what_now', choice: 'done' }]);
     expect(r.outcomes).toEqual(['fine', 'fine', 'hung_up']);
-    expect(debriefOf(s, st, r, none).narratives).toEqual(['No fee.', 'The line goes quiet.']);
+    expect(debriefOf(s, st, r, none).layer2.narratives).toEqual(['No fee.', 'The line goes quiet.']);
   });
 });
 
@@ -174,8 +177,10 @@ describe('CR-15: a boss debrief shows one "You chose" line in layer 1', () => {
     const { st, r } = play(s, ctx(), [act('report_it'), { type: 'continue' }, act('pay_invoice'), { type: 'continue' }, act('hang_up'), { type: 'what_now', choice: 'done' }, { type: 'recovery', picks: [] }]);
     expect(st.phase).toBe('done');
     const d = debriefOf(s, st, r, none);
-    expect(d.layer1.youChose).toEqual([{ beatId: 'invoice', kind: 'action', label: 'Pay the invoice' }]);
+    // Paying was a fall: the kind line holds the layer-1 slot and the lead line opens layer 2.
+    expect(d.layer1.youChose).toEqual([]);
     expect(d.layer2.youChoseOther).toEqual([
+      { beatId: 'invoice', kind: 'action', label: 'Pay the invoice' },
       { beatId: 'start', kind: 'action', label: 'Report it' },
       { beatId: 'support_call', kind: 'what_now', choice: 'done' },
     ]);

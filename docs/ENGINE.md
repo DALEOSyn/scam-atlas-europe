@@ -30,7 +30,7 @@ runner.whatNow(choiceId);          // "What now?" after hanging up: built-ins or
 runner.pause(); runner.endPause(); // Take a breath (auto-closes after 5 s)
 runner.freeze('translation', on);  // freeze reasons: pause_menu, settings, help, debrief, take_a_breath, translation, call_lines
 runner.answerInterrupt(id, actionId);
-runner.continueBoss();             // after a boss beat's consequence
+runner.continueConsequence();      // after the consequence step (every resolved beat with a narrative or expired timer)
 runner.submitRecovery(stepIds);    // damage control
 runner.result                      // ScenarioResult once view.phase === 'done'
 ```
@@ -59,7 +59,9 @@ The state's `log` lists announcement-worthy events (`beat_arrived`, `pusher`, `i
 - **Chapter runs:** `beginChapter` starts `run = { index, records, flags: [] }`; `runIndex` is clamped to the sequence length. Echo flags (`snake_case`) live in `run.flags`, per chapter run, so a replay starts clean; only `role: arc` scenarios write global arc flags. A replayed scenario keeps the best record by points. `summarise` exposes `spottedShown = clamp(spotted, 0, R)` for "x of R".
 - **Check and tag** are accepted only in phase `playing`; `view.checkables` is empty in every other phase (no checks after hanging up, in "What now?", consequence or damage control).
 - **Corrupt run (QA E8):** `beginChapter(save, city, chapter?)` restarts the run when the saved index is beyond 1 + the furthest recorded scenario of the chapter's sequence (tampered saves only).
-- **Debrief data (T-2.3):** `drill` (unscored drill) and `fell` (the player fell; the UI shows "This could happen to anyone" only then). `layer1.verdict` is null when unscored (arc, drill). CR-15: `layer1.youChose` holds at most one line, for the boss beat with the fewest stars (tie → latest beat); other lines are in `layer2.youChoseOther`.
+- **Consequence step:** after every resolved beat group that has an outcome narrative or an expired timer (also the last one), the phase is `consequence`; `continue` goes to the next boss beat, damage control or `done` (layer-1 ruling 2026-11-19).
+- **Debrief data (T-2.3):** `drill` (unscored drill) and `fell` (the player fell; the UI shows "This could happen to anyone." only then). `layer1.verdict` is null when unscored (arc, drill). CR-15: `layer1.youChose` holds at most one line, for the boss beat with the fewest stars (tie → latest beat); other lines are in `layer2.youChoseOther`. After a fall `layer1.youChose` is empty and the lead line opens `layer2.youChoseOther`. `layer2.narratives` and `layer2.deadlineWasFake` feed "What happened"; they are not in layer 1.
+- **Choice lines:** `choiceLineText(line, lookup)` (`src/engine/choiceText.ts`) is the one source of the rendered "You chose" text, used by DebriefView and by the validator's `choiceLines()` / `layer1Slot()`.
 - **Pause** (Take a breath) works only in `playing` and `what_now`. Interrupts are hidden during consequence and damage control. `checkedCount` counts the current beat only.
 - **Unlocking:** home → Berlin → free choice of slots 2–9 → finale when all of those exist and are finished. Never score-gated.
 - **Save:** key `scam-atlas-europe:save`, `version: 1`. Unknown or corrupt data → fresh save; a newer version → read-only for the session (never overwritten); every field sanitised separately; storage errors are swallowed and the game runs in memory. `useSave` writes outside the state updater; `useScenarioRunner` clamps each tick to at most 1 s (`clampDt`), so a backgrounded tab cannot expire a timer in one jump.

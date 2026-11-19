@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { BEST_LINE_WORDS, chapterRules, choiceWorst, scenarioRules, LAYER1_OVERHEAD, wordCount } from '../../scripts/lib/rules.ts';
+import { anyFall, BEST_LINE_WORDS, chapterRules, choiceLines, choiceWorst, layer1Slot, scenarioRules, LAYER1_OVERHEAD, wordCount } from '../../scripts/lib/rules.ts';
 import { deriveCheckables, linksIn } from '../../src/content/checkables.ts';
 import { scenarioSchema, type Scenario } from '../../src/content/schema.ts';
 import { rawFraud, rawGenuine, realRegistries, ROOT, scenario, validChapter } from './fixtures.ts';
@@ -140,19 +140,42 @@ describe('per-scenario rules (scenarioRules)', () => {
   describe('words', () => {
     it('debrief layer 1 counts the fixed copy and the worst "You chose" line towards the 40-word limit', () => {
       const r = rawFraud();
-      // rawFraud's longest below-3-star label is "Enter card details" (3 words) → "You chose: …" = 5.
+      // rawFraud's longest non-fall line below ★★★ is "You chose: Open the link." (5); "Enter card details"
+      // is a fall, where the kind line takes the slot instead.
       expect(choiceWorst(scenario(r), reg.balance)).toBe(5);
-      // The ★★★ line "That is the habit that works." (6) takes the same slot, so the slot costs max(5, 6).
+      // The ★★★ line "That is the habit that works." (6) takes the same slot, so the slot costs max(5, 5, 6).
       const budget = reg.balance.session.debrief_layer1_max_words - LAYER1_OVERHEAD.standard - BEST_LINE_WORDS;
       const tell = (n: number) => Array.from({ length: n }, () => 'word').join(' ');
       (r.debrief as Raw).layer1 = { tell: tell(budget - 1), what_works: 'Open it.' };
-      expect(errorsOf(r).join('\n')).toMatch(/debrief\.layer1 is 41 words in the worst case \(authored 21 \+ fixed 14 \+ "You chose" or best line 6\)/);
+      expect(errorsOf(r).join('\n')).toMatch(/debrief\.layer1 is 41 words in the worst case \(authored 21 \+ fixed 14 \+ slot 6: the ★★★ line\)/);
       (r.debrief as Raw).layer1 = { tell: tell(budget - 2), what_works: 'Open it.' };
       expect(errorsOf(r)).toEqual([]);
     });
-    it('BEST_LINE_WORDS matches the catalogue line it stands for', () => {
+    it('BEST_LINE_WORDS and LAYER1_OVERHEAD match the catalogue strings they count', () => {
       const ui = JSON.parse(readFileSync(resolve(ROOT, 'content/i18n/en/ui.json'), 'utf8')) as Record<string, string>;
       expect(wordCount(ui['outcome_best'])).toBe(BEST_LINE_WORDS);
+      expect(BEST_LINE_WORDS).toBe(6);
+      // "This was a scam:" 4 + "What works:" 2 + "Already clicked or paid? See what to do" 8.
+      expect(LAYER1_OVERHEAD.standard).toBe(Math.max(wordCount(ui['debrief_verdict_fraud']), wordCount(ui['debrief_verdict_genuine'])) + wordCount(ui['debrief_what_works']) + wordCount(ui['debrief_already_link']));
+      expect(LAYER1_OVERHEAD).toEqual({ standard: 14, arc: 10 });
+      expect(wordCount(ui['debrief_no_shame'])).toBe(5);
+    });
+    it('slot after a fall: a fall label never counts (the kind line replaces it); non-fall labels do', () => {
+      const r = rawFraud();
+      const enter = (r.beats as Raw[])[0]?.actions as Raw[];
+      enter[0] = { ...enter[0], label: 'Type in every single card detail they asked' }; // 8 words, a fall
+      expect(anyFall(scenario(r), reg.balance)).toBe(true);
+      expect(choiceWorst(scenario(r), reg.balance)).toBe(5);
+      expect(layer1Slot(scenario(r), reg.balance)).toEqual({ words: 6, source: 'the ★★★ line' });
+      // A long engage label (not a fall) does take the slot.
+      actions(r)[0] = { ...actions(r)[0], label: 'Open the link they sent you right now' };
+      expect(layer1Slot(scenario(r), reg.balance)).toEqual({ words: 10, source: '"You chose: Open the link they sent you right now."' });
+    });
+    it('slot without any fall: no kind line; the exact rendered "You chose" text is counted', () => {
+      const g = rawGenuine();
+      expect(anyFall(scenario(g), reg.balance)).toBe(false);
+      for (const line of choiceLines(scenario(g), reg.balance)) expect(line).toMatch(/^You chose: .+\.$|^You let the timer run out\.$/);
+      expect(layer1Slot(scenario(g), reg.balance).words).toBeGreaterThanOrEqual(BEST_LINE_WORDS);
     });
     it('choice_worst counts the timer line, engage labels and "What now?" extras', () => {
       const timed = rawFraud('t1', { pressure: { timer: true, levers: [] } });

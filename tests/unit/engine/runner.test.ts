@@ -101,12 +101,16 @@ describe('runner: timers, Calm mode and freezing', () => {
     const s = timed(rawFraud());
     const first = run(s, ctx(), [check('link'), tag('link'), tick(58)]);
     expect(first.timer).toMatchObject({ expiries: 1, remaining: B.timers.escalation_extra_seconds });
-    const after = step(s, ctx(), first, tick(B.timers.escalation_extra_seconds));
+    const expired = step(s, ctx(), first, tick(B.timers.escalation_extra_seconds));
+    // The consequence step ("The deadline was fake") comes first, then the debrief.
+    expect(expired.phase).toBe('consequence');
+    expect(viewOf(s, ctx(), expired).consequenceTimerExpired).toBe(true);
+    const after = step(s, ctx(), expired, { type: 'continue' });
     expect(after.phase).toBe('done');
     const r = resultOf(s, B, after);
     expect(r).toMatchObject({ stars: 2, points: 10, tagBonus: 0, timerExpired: true, correctTags: 1 });
     const d = debriefOf(s, after, r, seen);
-    expect(d.layer1.deadlineWasFake).toBe(true);
+    expect(d.layer2.deadlineWasFake).toBe(true);
     expect(d.layer1.youChose).toEqual([{ beatId: 'start', kind: 'timer' }]);
     expect(after.stress).toBe(10 + 2 * B.stress.on_timer_expiry);
   });

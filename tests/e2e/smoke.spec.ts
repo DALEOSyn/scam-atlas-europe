@@ -9,7 +9,21 @@ async function axeClean(page: Page) {
 
 const debriefHeading = (page: Page) => page.getByRole('heading', { level: 1, name: /This was (a scam|genuine):|Teo was right/ });
 
+const consequenceHeading = (page: Page) => page.getByRole('heading', { level: 3, name: 'What happened' });
+
+/**
+ * The consequence step after every resolved scenario (layer-1 ruling 2026-11-19): focus lands on its
+ * heading with the outcome caption right after it; Continue goes on to damage control or the debrief.
+ */
+async function passConsequence(page: Page, axe = false) {
+  await expect(consequenceHeading(page)).toBeFocused();
+  if (axe) await axeClean(page);
+  await page.getByRole('button', { name: 'Continue' }).click();
+}
+
 async function continueToNext(page: Page) {
+  await expect(consequenceHeading(page).or(debriefHeading(page))).toBeVisible();
+  if (await consequenceHeading(page).isVisible()) await passConsequence(page);
   await expect(debriefHeading(page)).toBeVisible();
   await page.getByRole('button', { name: 'Continue' }).click();
 }
@@ -30,6 +44,21 @@ async function tapTargetsOk(page: Page) {
       .map((el) => `${el.tagName} "${(el.textContent ?? '').trim().slice(0, 40)}" ${Math.round(el.getBoundingClientRect().width)}x${Math.round(el.getBoundingClientRect().height)}`),
   );
   expect(small).toEqual([]);
+}
+
+/** UI_SPEC §1.5: an owner part is never split across lines (it scrolls inside its box instead). */
+async function ownersOneLine(page: Page) {
+  const split = await page.evaluate(() =>
+    [...document.querySelectorAll('[data-owner], [data-check="page.address"] strong')]
+      .filter((el) => !el.closest('[hidden]') && el.getClientRects().length > 0)
+      .filter((el) => {
+        const rects = [...el.getClientRects()];
+        const lh = parseFloat(getComputedStyle(el).lineHeight) || parseFloat(getComputedStyle(el).fontSize) * 1.6;
+        return rects.length > 1 || (rects[0]?.height ?? 0) > lh * 1.5;
+      })
+      .map((el) => el.textContent),
+  );
+  expect(split).toEqual([]);
 }
 
 /** Answer a call and wait for the actions (lines arrive at reading pace). */
@@ -70,6 +99,7 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
   await expect(page.locator('[data-check="sender.detail"]')).toBeFocused();
   await tapTargetsOk(page);
   await page.getByRole('button', { name: /Find the pack in Waymarker Desk yourself/ }).click();
+  await passConsequence(page, true);
   await expect(debriefHeading(page)).toBeFocused();
   await expect(page.getByText('That is the habit that works.', { exact: false })).toBeVisible();
   await expect(page.getByText(/could happen to anyone/)).toHaveCount(0);
@@ -93,6 +123,7 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
   await page.getByRole('button', { name: 'Go to your inbox' }).click();
   await expect(page.getByRole('heading', { name: 'Email from Waymarker Desk' })).toBeFocused();
   await page.getByRole('button', { name: /Use the link and set a new password/ }).click();
+  await passConsequence(page);
   await expect(page.getByRole('img', { name: '3 of 3 stars' })).toBeVisible();
   await continueToNext(page);
 
@@ -109,6 +140,7 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
   // 0-5 drill in the Kettle chat: damage control for Teo, unscored; drill layout has no verdict or stars.
   await expect(page.getByRole('region', { name: 'Phone: Kettle' })).toBeVisible();
   await page.getByRole('button', { name: /Talk Teo through/ }).click();
+  await passConsequence(page);
   await expect(page.getByRole('heading', { name: 'Limit the damage' })).toBeFocused();
   await axeClean(page);
   await page.getByRole('button', { name: /Block your card/ }).click();
@@ -139,6 +171,7 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
   await expect(page.getByRole('button', { name: /Details you can check/ })).toHaveCount(0);
   await axeClean(page);
   await page.getByRole('button', { name: 'Ask Adaeze through the staff directory' }).click();
+  await passConsequence(page);
   await expect(page.getByRole('img', { name: '3 of 3 stars' })).toBeVisible();
   await axeClean(page);
   await continueToNext(page);
@@ -160,6 +193,7 @@ test('tutorial 0-2: fall on the training page, damage control feedback, blame-fr
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
   await page.getByRole('button', { name: /Report the email as phishing/ }).click();
+  await passConsequence(page);
   await expect(page.getByRole('img', { name: '0 of 3 stars' })).toBeVisible();
   await expect(page.getByText(/You chose: Report the email as phishing/)).toBeVisible();
   await expect(page.getByText(/could happen to anyone/)).toHaveCount(0);
@@ -183,7 +217,8 @@ test('tutorial 0-2: fall on the training page, damage control feedback, blame-fr
   await axeClean(page);
   // The training page's own button routes to the authored action; nothing is submitted anywhere.
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
-  await expect(page.getByRole('heading', { name: 'Limit the damage' })).toBeVisible();
+  await passConsequence(page, true);
+  await expect(page.getByRole('heading', { name: 'Limit the damage' })).toBeFocused();
   await page.getByRole('button', { name: /Change the password/ }).first().click();
   await page.getByRole('button', { name: /Keep it to yourself/ }).click();
   await page.getByRole('button', { name: /Sign out of every other session/ }).click();
@@ -193,7 +228,12 @@ test('tutorial 0-2: fall on the training page, damage control feedback, blame-fr
   await page.getByRole('button', { name: 'Continue' }).click();
   await expect(debriefHeading(page)).toBeFocused();
   // After a fall the no-blame line is part of the focused h1, before the verdict (QA B9).
-  await expect(debriefHeading(page)).toHaveAccessibleName(/^This could happen to anyone\. Here is the tell\. This was a scam: /);
+  await expect(debriefHeading(page)).toHaveAccessibleName(/^This could happen to anyone\. This was a scam: /);
+  // After a fall the kind line takes the slot: no "You chose" line in layer 1; the outcome is under "What happened".
+  await expect(page.locator('section[aria-labelledby="debrief-h1"]')).not.toContainText('You chose');
+  await page.getByRole('button', { name: 'More' }).click();
+  await expect(page.getByRole('heading', { level: 2, name: 'What happened' })).toBeVisible();
+  await expect(page.locator('#debrief-more')).toContainText('You chose: Type your Waymarker password and sign in.');
   await page.getByRole('button', { name: 'Already clicked or paid? See what to do' }).click();
   await expect(page.getByRole('heading', { name: 'If you already…' })).toBeFocused();
   await axeClean(page);
@@ -223,38 +263,52 @@ for (const vp of [
     if (vp.width >= 1024) await expect(firstAction).toBeInViewport();
     await axeClean(page);
     await noHScroll();
+    await ownersOneLine(page);
     await page.keyboard.press('Escape');
     await tapTargetsOk(page);
     await firstAction.click();
     await axeClean(page);
     await noHScroll();
+    await ownersOneLine(page);
     await continueToNext(page);
     await page.getByRole('button', { name: /Tap the link and free up space/ }).click();
     // The owner part always stays visible in the address bar, with "…" where text is cut (QA B5).
     const bar = page.locator('[data-check="page.address"]');
     const owner = bar.locator('strong');
     const [barBox, ownerBox] = [await bar.boundingBox(), await owner.boundingBox()];
-    expect(barBox && ownerBox && ownerBox.x >= barBox.x - 1 && ownerBox.x + ownerBox.width <= barBox.x + barBox.width + 1).toBe(true);
-    if (vp.width < 320) await expect(bar.locator('[class*="addrMore"]').first()).toBeVisible();
+    if (vp.width >= 320) {
+      expect(barBox && ownerBox && ownerBox.x >= barBox.x - 1 && ownerBox.x + ownerBox.width <= barBox.x + barBox.width + 1).toBe(true);
+    } else {
+      // Under 320 px: "…" + the owner part; if that is still wider, the bar (a focusable control) scrolls sideways.
+      await expect(bar.locator('[class*="addrMore"]').first()).toBeVisible();
+      expect(await bar.evaluate((el) => getComputedStyle(el).overflowX)).toBe('auto');
+      expect(await bar.evaluate((el) => el.scrollWidth >= (el.querySelector('strong')?.getBoundingClientRect().width ?? 0))).toBe(true);
+    }
     await axeClean(page);
     await noHScroll();
+    await ownersOneLine(page);
     await tapTargetsOk(page);
     await page.getByRole('button', { name: 'Sign in', exact: true }).click();
+    await passConsequence(page, true);
+    await noHScroll();
+    await ownersOneLine(page);
     for (const step of [/Change the password/, /Keep it to yourself/, /Sign out of every other session/]) await page.getByRole('button', { name: step }).first().click();
     await page.getByRole('button', { name: 'Done' }).click();
     await axeClean(page);
     await noHScroll();
+    await ownersOneLine(page);
     await page.getByRole('button', { name: 'Continue' }).click();
     // The debrief h1 names waymarker-network.example and must not widen the page (QA B7).
     await expect(debriefHeading(page)).toBeFocused();
     await axeClean(page);
     await noHScroll();
+    await ownersOneLine(page);
     await tapTargetsOk(page);
   });
 }
 
-test('boss call: lines arrive at reading pace, the call timer starts, checks follow the transcript', async ({ page }) => {
-  test.setTimeout(120_000);
+/** Play the tutorial to 0-6 beat 3 (the IT call) with Standard timers. */
+async function reachBossCall(page: Page) {
   await page.goto('/');
   // Reach 0-6 beat 3 quickly with timers on (Standard).
   await page.getByRole('button', { name: 'Start' }).click();
@@ -269,6 +323,7 @@ test('boss call: lines arrive at reading pace, the call timer starts, checks fol
   await page.getByRole('button', { name: /Open Kettle yourself/ }).click();
   await continueToNext(page);
   await page.getByRole('button', { name: /Talk Teo through/ }).click();
+  await passConsequence(page);
   for (const step of [/Block your card/, /Call your bank/, /Report it to the police/]) await page.getByRole('button', { name: step }).click();
   await page.getByRole('button', { name: 'Done' }).click();
   await page.getByRole('button', { name: 'Continue' }).click();
@@ -277,6 +332,11 @@ test('boss call: lines arrive at reading pace, the call timer starts, checks fol
   await page.getByRole('button', { name: 'Continue' }).click();
   await page.getByRole('button', { name: /Check with Adaeze/ }).click();
   await page.getByRole('button', { name: 'Continue' }).click();
+}
+
+test('boss call: lines arrive at reading pace, the call timer starts, checks follow the transcript', async ({ page }) => {
+  test.setTimeout(120_000);
+  await reachBossCall(page);
 
   const timer = page.getByRole('timer');
   const time = async () => /\d+:\d\d/.exec((await timer.textContent()) ?? '')?.[0] ?? '';
@@ -296,6 +356,45 @@ test('boss call: lines arrive at reading pace, the call timer starts, checks fol
   await expect(page.getByRole('button', { name: /^Check Phone number/ })).toHaveCount(1);
   // The call timer starts once the last line is in.
   await expect.poll(time, { timeout: 5_000 }).not.toBe(before);
+});
+
+test('call, step-through mode: after the last "Next line" focus stays in the call (QA R1)', async ({ page }) => {
+  test.setTimeout(120_000);
+  await reachBossCall(page);
+  await page.getByRole('button', { name: 'Menu' }).click();
+  await page.getByRole('button', { name: 'Call lines: step through' }).click();
+  await page.keyboard.press('Escape');
+  await page.getByRole('button', { name: 'Answer' }).click();
+  const next = page.getByRole('button', { name: 'Next line' });
+  for (let i = 0; i < 3; i++) {
+    await next.focus();
+    await page.keyboard.press('Enter');
+  }
+  await expect(page.getByRole('log').locator('li')).toHaveCount(4);
+  await expect(next).toHaveCount(0);
+  const inCall = await page.evaluate(() => {
+    const a = document.activeElement;
+    return !!a && a !== document.body && !!a.closest('[aria-label="Phone: Call"], section[aria-label^="Phone: Call"]') ? 'in call' : (a?.outerHTML.slice(0, 120) ?? 'none');
+  });
+  expect(inCall).toBe('in call');
+  await expect(page.getByRole('log').locator('li').last()).toBeFocused();
+  await axeClean(page);
+});
+
+test('1440x900: with every detail checked, hidden text stays inside the scrolling rail (QA R2)', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: /Details you can check/ }).click();
+  const rows = page.locator('[data-check-row]');
+  const n = await rows.count();
+  expect(n).toBeGreaterThan(1);
+  for (let i = 0; i < n; i++) {
+    await rows.nth(i).click();
+    await page.keyboard.press('Escape');
+  }
+  await expect(page.getByRole('button', { name: `Details you can check · ${n} checked` })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight + 1)).toBe(true);
 });
 
 test('keyboard only: skip link, Check from the Details list, tag, act, debrief (shortcuts off)', async ({ page }) => {
@@ -332,6 +431,11 @@ test('keyboard only: skip link, Check from the Details list, tag, act, debrief (
   }
   await expect(page.getByRole('button', { name: 'Leave it for later' })).toBeFocused();
   await page.keyboard.press('Enter');
+  // Consequence step: focus on its heading; Tab reaches Continue.
+  await expect(consequenceHeading(page)).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeFocused();
+  await page.keyboard.press('Enter');
   await expect(debriefHeading(page)).toBeFocused();
   // Wrong tag on a genuine message: shown in layer 2 without the bonus clause (no bonus on genuine).
   await page.getByRole('button', { name: 'More' }).click();
@@ -342,6 +446,7 @@ test('reload mid-chapter offers Continue and resumes at the next scenario', asyn
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
   await page.getByRole('button', { name: /Find the pack in Waymarker Desk yourself/ }).click();
+  await passConsequence(page);
   await expect(debriefHeading(page)).toBeVisible();
   await page.reload();
   await page.getByRole('button', { name: 'Continue' }).click();

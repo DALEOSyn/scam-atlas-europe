@@ -8,9 +8,10 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { habitCard } from '../content/habitCards.ts';
 import type { ChoiceLine, DebriefData } from '../engine/debrief.ts';
-import { t, type MessageKey } from '../i18n/index.ts';
+import { choiceLineText } from '../engine/choiceText.ts';
+import { lookup, t, type MessageKey } from '../i18n/index.ts';
 import { Icon } from './Icon.tsx';
-import { elementLabel, WHAT_NOW_KEYS } from './labels.ts';
+import { elementLabel } from './labels.ts';
 import { RichText } from './RichText.tsx';
 import styles from './DebriefView.module.css';
 
@@ -26,8 +27,9 @@ const STATUS_KEYS: Record<DebriefData['layer2']['flags'][number]['status'], Mess
   in_message: 'debrief_in_message',
 };
 
+/** The exact line the validator counts (src/engine/choiceText.ts). */
 function choiceText(c: ChoiceLine): string {
-  return c.kind === 'timer' ? t('you_chose_timer') : t('you_chose', { label: c.kind === 'action' ? c.label : t(WHAT_NOW_KEYS[c.choice]) });
+  return choiceLineText(c, lookup);
 }
 
 function Stars({ n }: { n: number }) {
@@ -58,7 +60,8 @@ export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
   const ac = l2.alreadyClicked;
   const card = habitCard(l2.habitCard ?? undefined);
   const genuine = l1.verdict === 'genuine';
-  const best = l1.stars === 3 && l1.youChose.length === 0;
+  // The ★★★ line shares the slot; after a fall the kind line holds it (layer-1 ruling 2026-11-19).
+  const best = l1.stars === 3 && !data.fell && l1.youChose.length === 0;
   const flagged = l2.flags.length > 0;
   const bonusPossible = l2.points !== null && l2.spotted.could > 0;
 
@@ -76,19 +79,9 @@ export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
             </span>
           ) : null}{' '}
           <span>
-            <RichText text={l1.tell} breakOwner />
+            <RichText text={l1.tell} />
           </span>
         </h1>
-        {data.narratives.length > 0 || l1.deadlineWasFake ? (
-          <div class={styles.outcome}>
-            {data.narratives.map((n, i) => (
-              <p key={i}>
-                <RichText text={n} />
-              </p>
-            ))}
-            {l1.deadlineWasFake ? <p>{t('deadline_fake')}</p> : null}
-          </div>
-        ) : null}
         <p>
           <strong>{arc ? t('debrief_the_habit') : t('debrief_what_works')} </strong>
           <RichText text={l1.whatWorks} />
@@ -128,6 +121,17 @@ export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
       </section>
 
       <div id="debrief-more" class={styles.layer2} hidden={!more}>
+        {l2.narratives.length > 0 || l2.deadlineWasFake ? (
+          <section aria-labelledby="what-happened-h">
+            <h2 id="what-happened-h">{t('debrief_what_happened')}</h2>
+            {l2.narratives.map((n, i) => (
+              <p key={i}>
+                <RichText text={n} />
+              </p>
+            ))}
+            {l2.deadlineWasFake ? <p>{t('deadline_fake')}</p> : null}
+          </section>
+        ) : null}
         {l2.youChoseOther.length > 0 ? (
           <section aria-labelledby="other-choices-h">
             <h2 id="other-choices-h">{t('debrief_you_chose_more')}</h2>

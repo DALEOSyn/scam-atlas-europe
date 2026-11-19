@@ -271,4 +271,9 @@
   .cardHead {
     flex-wrap: wrap;
   }
+  /* A Details row (a button) scrolls sideways if an owner part in it does not fit. */
+  .row {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
 }

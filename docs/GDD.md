@@ -33,7 +33,7 @@ Scammers are faceless: "unknown sender", a spoofed fictional brand, or a transcr
 1. **Arrive.** A notification lands on a device (§5). Pressure may start: timer, pusher, stress.
 2. **Check and tag (optional).** Use the **Check** tool (magnifier icon) on any element. You may then mark the detail as **suspicious**. Only correct tags count (§7).
 3. **Act.** Choose from 2–5 plain-language actions. Each has a `kind` (§6). Calls and bosses have several beats.
-4. **Consequence.** A short in-device outcome (≤ 15 s).
+4. **Consequence.** A short in-device outcome (≤ 15 s), after every scenario (and every boss beat) with an outcome or an expired timer, before damage control or the debrief. It is not repeated in debrief layer 1 (layer-1 ruling 2026-11-19); layer 2 keeps it under "What happened".
 5. **Damage control** after falling for fraud (§9). Not on arc beats.
 6. **Debrief, two layers** (Red Line 4 content is always in layer 1):
    - **Layer 1 (≤ 40 words, always shown):** verdict, the one key tell, the verification step that works, a one-line "Already clicked?", and stars.

@@ -13,6 +13,13 @@ const memoryless = () => createStore(null);
 
 afterEach(cleanup);
 
+/** The consequence step after the last beat: focus on its heading, then Continue (ruling 2026-11-19). */
+async function passConsequence() {
+  const h = await waitFor(() => screen.getByRole('heading', { level: 3, name: 'What happened' }));
+  await waitFor(() => expect(document.activeElement).toBe(h));
+  fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+}
+
 /** Every rendered form must be simulated, have no action/method, and swallow submit. */
 function assertFormsAreSafe(container: ParentNode): number {
   const forms = Array.from(container.querySelectorAll('form'));
@@ -86,6 +93,7 @@ describe('App shell', () => {
     expect(screen.getByRole('timer').textContent).toMatch(/1:00/);
 
     fireEvent.click(screen.getByRole('button', { name: /Open the Trundle app yourself/ }));
+    await passConsequence();
     await waitFor(() => screen.getByRole('heading', { level: 1, name: /This was a scam/ }));
     expect(document.activeElement).toBe(screen.getByRole('heading', { level: 1 }));
     expect(screen.getByText(/No fee\./)).toBeTruthy();
@@ -122,9 +130,12 @@ describe('App shell', () => {
     expect(screen.getByRole('region', { name: 'Laptop: Browser, training page' })).toBeTruthy();
     assertFormsAreSafe(container);
     fireEvent.click(screen.getByRole('button', { name: /Enter your card details/ }));
-    // Damage control (GDD §9): pick the first step, then 2 more.
+    // The consequence step says what happened (focus on its heading, caption right after), then damage control.
+    await waitFor(() => screen.getByText(/payments you don't recognise/));
+    await passConsequence();
+    // Damage control (GDD §9): pick the first step, then 2 more. The caption is not repeated there.
     await waitFor(() => screen.getByRole('heading', { name: 'Limit the damage' }));
-    expect(screen.getByText(/payments you don't recognise/)).toBeTruthy();
+    expect(screen.queryByText(/payments you don't recognise/)).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: /Wait and see/ }));
     fireEvent.click(screen.getByRole('button', { name: /Reply to the scammer/ }));
     fireEvent.click(screen.getByRole('button', { name: /Block your card/ }));
@@ -137,8 +148,11 @@ describe('App shell', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     await waitFor(() => screen.getByRole('heading', { level: 1, name: /This was a scam/ }));
     expect(screen.getByRole('img', { name: '0 of 3 stars' })).toBeTruthy();
-    expect(screen.getByText('You chose: Enter your card details and pay.')).toBeTruthy();
-    expect(screen.getByText(/could happen to anyone/)).toBeTruthy();
+    // After a fall the kind line (in the h1) takes the slot: no "You chose" or best line in layer 1.
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toMatch(/^This could happen to anyone\. /);
+    const layer1 = container.querySelector('section[aria-labelledby="debrief-h1"]');
+    expect(layer1?.textContent).not.toMatch(/You chose/);
+    expect(screen.getByText('You chose: Enter your card details and pay.').closest('#debrief-more')).toBeTruthy();
     // The advice lives in layer 2 only (no inline duplicate in layer 1).
     expect(screen.getAllByText(scenario.debrief.already_clicked?.paid ?? '-').length).toBe(1);
     expect(screen.queryByText(/That is the habit that works/)).toBeNull();

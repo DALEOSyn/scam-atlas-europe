@@ -7,7 +7,6 @@
  * (Red Line 1). Every visible element of the beat on screen is a Checkable; elements of earlier beats
  * render as plain text. Device content is always rendered as text, never as HTML.
  */
-import { Fragment } from 'preact';
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { brandById, brandForName } from '../../content/brands.ts';
 import type { Device, Message } from '../../content/schema.ts';
@@ -304,6 +303,14 @@ function Call(p: DeviceProps) {
     if (answered && !wasAnswered.current && !ended) transcriptRef.current?.focus();
     wasAnswered.current = answered;
   }, [answered, ended]);
+  // Step-through: the last "Next line" press unmounts the button, so focus moves to the line it
+  // revealed instead of falling to <body> (QA R1).
+  const lastLineRef = useRef<HTMLLIElement>(null);
+  const nextLine = () => {
+    const last = shown + 1 >= lines.length;
+    p.onNextLine();
+    if (last) setTimeout(() => lastLineRef.current?.focus(), 0);
+  };
   return (
     <PhoneFrame label={t('region_call')}>
       <div class={styles.call}>
@@ -336,14 +343,14 @@ function Call(p: DeviceProps) {
             <div role="log" aria-labelledby="transcript-h">
             <ol class={styles.transcript}>
               {lines.slice(0, shown).map((l, i) => (
-                <li key={i}>
+                <li key={i} ref={i === shown - 1 ? lastLineRef : undefined} tabIndex={i === shown - 1 ? -1 : undefined}>
                   <span class={styles.speaker}>{l.speaker === 'caller' ? t('call_caller') : t('call_you')}</span> <Segments segs={segs.transcript[i] ?? []} />
                 </li>
               ))}
             </ol>
             </div>
             {stage && stage.step && shown < lines.length && !ended ? (
-              <button type="button" class={styles.pageButton} onClick={p.onNextLine}>
+              <button type="button" class={styles.pageButton} onClick={nextLine}>
                 {t('call_next_line')}
               </button>
             ) : null}
@@ -356,10 +363,11 @@ function Call(p: DeviceProps) {
 }
 
 /**
- * Address bar text (UI_SPEC §3.5): the owner part is bold at all times. Scheme and subdomains
- * truncate from the left behind a visible "…", the path from the right, so the owner part always
- * stays visible; under 320 CSS px only "…" + the owner part is shown (subdomain and path stay in
- * the Check card). The full address is the Checkable's accessible name.
+ * Address bar text (UI_SPEC §3.5): the owner part is bold at all times and never wraps. Scheme and
+ * subdomains truncate from the left behind a visible "…", the path from the right, so the owner part
+ * always stays visible; under 320 CSS px only "…" + the owner part is shown (subdomain and path stay
+ * in the Check card), and if the owner part is still wider, the bar (the address control itself)
+ * scrolls sideways. The full address is the Checkable's accessible name.
  */
 function AddressText({ address }: { address: string }) {
   const p = hostParts(address);
@@ -375,20 +383,7 @@ function AddressText({ address }: { address: string }) {
           <span class={styles.addrMore}>…</span>
         </>
       ) : null}
-      <strong class={styles.addrOwner}>
-        {p.owner.split('.').map((label, i, all) =>
-          i < all.length - 1 ? (
-            <Fragment key={i}>
-              <span class={styles.addrLabel}>{label}.</span>
-              <wbr />
-            </Fragment>
-          ) : (
-            <span key={i} class={styles.addrLabel}>
-              {label}
-            </span>
-          ),
-        )}
-      </strong>
+      <strong class={styles.addrOwner}>{p.owner}</strong>
       {path ? (
         <>
           <span class={styles.addrPath}>{path}</span>

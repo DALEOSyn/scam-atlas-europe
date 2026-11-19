@@ -1,5 +1,6 @@
 /* Game layer: shell, stage and the action tray / rail (UI_SPEC §1, §2.2). */
 .play {
+  position: relative;
   min-height: 100dvh;
   background: var(--color-bg);
   color: var(--color-text);
@@ -63,6 +64,9 @@
     flex: none;
   }
   .tray > .trayScroll {
+    /* Containing block for absolutely positioned (visually hidden) text inside, so it can't escape
+       the scroller and add page height (QA R2). */
+    position: relative;
     flex: 0 1 auto;
     min-height: 0;
     overflow-y: auto;
@@ -306,6 +310,9 @@
 }
 .vh {
   position: absolute;
+  /* Pinned to the top of its containing block so it never extends the page (QA R2). */
+  top: 0;
+  left: 0;
   width: 1px;
   height: 1px;
   overflow: hidden;

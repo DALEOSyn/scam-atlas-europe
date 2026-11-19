@@ -466,6 +466,10 @@
   border-radius: var(--radius-md);
   padding: var(--space-2) var(--space-3);
 }
+.transcript li:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
 .speaker {
   font-weight: var(--fw-bold);
 }
@@ -550,19 +554,32 @@
   .addrMore {
     display: inline;
   }
-  /* The owner part may break only after a dot, never at a hyphen. */
-  .addr,
+  /* The owner part never wraps (UI_SPEC §1.5): if "…" + owner is still wider than the bar, the bar
+     (the address control, focusable) scrolls sideways. */
   .address {
-    white-space: normal;
+    overflow-x: auto;
+    overflow-y: hidden;
   }
-  .addrOwner {
-    flex: 0 1 auto;
-    min-width: 0;
+  /* Text containers whose checkables hold hosts: the owner part never wraps, so the container
+     scrolls sideways; the checkable inside it is the focusable control. */
+  .body,
+  .bannerBody,
+  .transcript li,
+  .bubbleIn,
+  .notification,
+  .qrChip,
+  .pageBody {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .chips > li > button,
+  .attachment {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
   }
 }
-.addrLabel {
-  white-space: nowrap;
-}
+
 @media (max-width: 519px) {
   .address {
     flex-basis: 100%;

@@ -39,7 +39,7 @@ inspectables:
     red_flag: true
     type: link
   - target: reference
-    reveal: "A tracking number in Trundle's format. Real and look-alike texts both carry them; the Trundle app you open yourself shows which parcels are really yours."
+    reveal: "Shows a tracking number in Trundle's format, as a real Trundle text would. Look-alike texts carry them too, so it can't prove anything either way. The Trundle app you open yourself shows which parcels are yours."
     red_flag: false
     type: reference
 
@@ -77,7 +77,7 @@ beats:
         red_flag: true
         type: page_address
       - target: page.info
-        reveal: "The connection is encrypted. Necessary, but never proof of who runs the site."
+        reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
         red_flag: false
         type: padlock
     actions:

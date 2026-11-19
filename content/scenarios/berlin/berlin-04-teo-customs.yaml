@@ -32,7 +32,7 @@ message:
 
 inspectables:
   - target: sender.detail
-    reveal: "Teo's saved contact, the one you always use. He's sharing something he spotted, not asking for money or a code."
+    reveal: "It fits: Teo's saved contact, the one you always use. That isn't proof on its own, so weigh it with what he asks for: he's sharing something he spotted, not asking for money or a code."
     red_flag: false
     type: sender
     reassures: true

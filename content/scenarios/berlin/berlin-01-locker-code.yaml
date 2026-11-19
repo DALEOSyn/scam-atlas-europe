@@ -31,23 +31,26 @@ message:
   translation: "TRUNDLE: Your parcel TR-58K2-41 from Thimble & Pine is in the Trundle Locker on Weserstraße. Pick-up code: 7314. The locker holds your parcel for 7 days. You'll also find the code in the Trundle app."
   request: none
   references: ["TR-58K2-41", "7314"]
+  earlier:
+    - when: "Yesterday"
+      body: "TRUNDLE: Ihre Sendung TR-58K2-41 von Thimble & Pine ist unterwegs. Zustellung morgen an einen Trundle Locker. Infos in der Trundle-App."
+      lang: de
+      translation: "TRUNDLE: Your parcel TR-58K2-41 from Thimble & Pine is on its way. Delivery tomorrow to a Trundle Locker. Details in the Trundle app."
   l10n_note: "German in-world text is intentional (Berlin chapter); the English translation is shown inline. Weserstraße is an ordinary Berlin street name with no house number."
 
 inspectables:
   - target: sender.detail
-    reveal: "TRUNDLE, the sender name your earlier Trundle texts came from, in the same thread. It fits, but a sender name isn't proof on its own."
+    reveal: "Shows the sender name TRUNDLE, in the same thread as your earlier Trundle texts, as a real Trundle text would. Any sender can set this name, so it can't prove anything either way."
     red_flag: false
     type: sender
-    reassures: true
   - target: reference
-    reveal: "A tracking number in Trundle's format. Real and look-alike texts both carry them; the Trundle app you open yourself shows which parcels are really yours."
+    reveal: "Shows a tracking number in Trundle's format, as a real Trundle text would. Look-alike texts carry them too, so it can't prove anything either way. The Trundle app you open yourself shows which parcels are yours."
     red_flag: false
     type: reference
   - target: reference#2
-    reveal: "A 4-digit pick-up code. It opens a locker door; it isn't a sign-in, payment or account code."
+    reveal: "Shows a 4-digit pick-up code, as a real locker text would. It only opens a locker door, not an account. On its own it can't prove anything either way."
     red_flag: false
     type: reference
-    reassures: true
 
 actions:
   - id: collect_parcel
@@ -81,7 +84,7 @@ debrief:
   variant: standard
   layer1:
     tell: "It asked for nothing and matched an order you placed."
-    what_works: "Collect it, or check the Trundle app."
+    what_works: "Collect it, or check the app."
   layer2:
     message_flags: []
     notes: "Why it was safe to act: you had ordered something from Thimble & Pine, the text came in Trundle's usual thread, it had no link, and it asked for nothing: no fee, no details, no code to pass on. A pick-up code only opens a locker. None of these alone is proof (sender names can be copied); together they fit. When a parcel text does ask for something, open the courier's app yourself and look there."

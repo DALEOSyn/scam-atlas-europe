@@ -1,14 +1,17 @@
 # 1-9 Boss (GDD §17; brief multichannel-support-callback, decision of 2026-11-18 in §8).
 # Setup (chapter intro): your inspector documents are on their way from Brussels by Trundle, so a
-# parcel text is expected. The real parcel goes to Jonas next door (his interrupt in beat 3).
+# parcel text is expected. The real parcel goes to Jonas next door (his interrupt arrives when the
+# call ends, by any route: after_beat, design ruling QA M6).
 # Beat 1: a "TRUNDLE" text in the real Trundle thread (spoofed sender name) with correct-looking
-#   details and a look-alike link. Red flag: link. Decoys: sender name, tracking number.
-# Beat 2: a "customs invoice" email. Red flags: sender, link. Decoy: logo.
+#   details and a look-alike link. Red flag: link. Decoys: sender name, tracking number. The thread
+#   history (earlier) shows the real Trundle texts from 1-1, so "same thread" is visible (ruling QA L5).
+# Beat 2: a "customs invoice" email. Red flags: sender, link. Decoy: logo. covered_by: [start]: if the
+#   player verified beat 1, report or dismiss here also scores as verify (ruling QA fun note a).
 # Beat 3: a call showing "Larchwick Bank" from its "fraud team": a charge is under way, read out the
 #   code just texted "to stop it". Code-SMS variant (request: share_code). The code text is a
 #   banner inside the call screen (no actions, never reportable) and says the code AUTHORISES a payment.
 #   Decoys: caller ID, the number the caller quotes, case number.
-#   Red flag: the request (its checkable shows the banner text; GDD §17, T-2.4b ruling 1).
+#   Red flag: the request (the caller's ask, transcript line 4; the reveal quotes the banner).
 # Boss rules: no open_link on fraud boss beats (GDD §16 ruling 4): "<do X> through the link".
 # Hang up opens "What now?": call the number on the Larchwick card = verify; "Call back this number"
 # = engage (note, caps the beat at ★★, GDD §17); report; Done = dismiss.
@@ -45,11 +48,20 @@ message:
   translation: "TRUNDLE: Delivery of your parcel TR-64B9-17 is on hold: customs clearance is outstanding. We have sent you the invoice by email. Status and payment: trundle.example-tracking.test/TR-64B9-17"
   request: pay
   references: ["TR-64B9-17"]
+  earlier:
+    - when: "Yesterday"
+      body: "TRUNDLE: Ihre Sendung TR-58K2-41 von Thimble & Pine ist unterwegs. Zustellung morgen an einen Trundle Locker. Infos in der Trundle-App."
+      lang: de
+      translation: "TRUNDLE: Your parcel TR-58K2-41 from Thimble & Pine is on its way. Delivery tomorrow to a Trundle Locker. Details in the Trundle app."
+    - when: "This morning"
+      body: "TRUNDLE: Ihre Sendung TR-58K2-41 von Thimble & Pine liegt im Trundle Locker Weserstraße. Abholcode: 7314. Das Fach hält Ihre Sendung 7 Tage. Den Code finden Sie auch in der Trundle-App."
+      lang: de
+      translation: "TRUNDLE: Your parcel TR-58K2-41 from Thimble & Pine is in the Trundle Locker on Weserstraße. Pick-up code: 7314. The locker holds your parcel for 7 days. You'll also find the code in the Trundle app."
   l10n_note: "German in-world text is intentional (Berlin chapter); the English translation is shown inline."
 
 inspectables:
   - target: sender.detail
-    reveal: "TRUNDLE, the same sender name as your earlier locker texts, in the same thread. Any sender can set the name a text shows, so this settles nothing."
+    reveal: "Shows the sender name TRUNDLE, in the same thread as your earlier Trundle texts, as a real Trundle text would. Any sender can set this name, so it can't prove anything either way."
     red_flag: false
     type: sender
   - target: link
@@ -57,7 +69,7 @@ inspectables:
     red_flag: true
     type: link
   - target: reference
-    reveal: "A tracking number in Trundle's format. Real and look-alike texts both carry them; the Trundle app you open yourself shows which parcels are really yours."
+    reveal: "Shows a tracking number in Trundle's format, as a real Trundle text would. Look-alike texts carry them too, so it can't prove anything either way. The Trundle app you open yourself shows which parcels are yours."
     red_flag: false
     type: reference
 
@@ -84,6 +96,7 @@ beats:
   - id: customs_invoice
     device: email
     arrives_after: 45
+    covered_by: [start]
     message:
       sender: { display: "Trundle Zollservice", detail: "rechnung@trundie.example" }
       subject: "Zollrechnung zu Ihrer Sendung TR-64B9-17"
@@ -108,7 +121,7 @@ beats:
         red_flag: true
         type: link
       - target: image
-        reveal: "The Trundle logo. Anyone can paste a logo into an email, so it proves nothing either way."
+        reveal: "Shows the Trundle logo, as a real Trundle email would. Logos are easy to copy, so it can't prove anything either way."
         red_flag: false
         type: logo
     actions:
@@ -143,6 +156,7 @@ beats:
         - { speaker: caller, text: "Don't worry, we can stop it. I've just sent a code to your phone. Read it out to me and I'll cancel the payment." }
         - { speaker: caller, text: "You can see we're calling from +49 30 •••• ••40, the number on your card. Please be quick. Case LW-77310." }
       request: share_code
+      ask: { text: "I've just sent a code to your phone. Read it out to me and I'll cancel the payment." }
       references: ["LW-77310"]
       phone_numbers: ["+49 30 •••• ••40"]
     banner:
@@ -159,15 +173,15 @@ beats:
         red_flag: false
         type: caller_id
       - target: phone_number
-        reveal: "The caller says this is the number on your card. It might even be. A number on an incoming call can be set by the caller, so only a call you dial yourself tells you who answers."
+        reveal: "Shows the number the caller says is on your card, as a real bank call might. It may even be the bank's real number: a caller can make a call show any number, so it can't prove anything either way. Only a call you dial yourself tells you who answers."
         red_flag: false
         type: phone_number
       - target: reference
-        reveal: "LW-77310 sounds like a case number. Anyone can make one up; it proves nothing either way."
+        reveal: "Shows a case number, LW-77310, as a real bank call might. Anyone can make one up, so it can't prove anything either way."
         red_flag: false
         type: reference
       - target: request
-        reveal: "The caller wants the code from the text above. That text says the code authorises a card payment of €489.00, not that it stops one."
+        reveal: "The caller wants the code from the text above, to \"cancel the payment\". The Larchwick text itself says what the code does: \"Your code to authorise a card payment of EUR 489.00 to an online shop… Don't give this code to anyone, not even Larchwick staff.\" A code that approves a payment can't stop one. Being asked to read it out is the tell."
         red_flag: true
         type: request
     actions:
@@ -194,7 +208,7 @@ beats:
 
 interrupts:
   - id: jonas_parcel
-    at_seconds: 100
+    after_beat: fraud_team_call
     is_fraud: false
     device: messenger
     message:
@@ -207,7 +221,7 @@ interrupts:
       request: reply
     inspectables:
       - target: sender.detail
-        reveal: "Jonas's saved contact, in your usual chat with him. He's telling you where your parcel is, not asking for anything."
+        reveal: "It fits: Jonas's saved contact, in your usual chat with him. That isn't proof on its own, so weigh it with what he asks for: he's telling you where your parcel is, nothing more."
         red_flag: false
         type: sender
         reassures: true
@@ -278,6 +292,6 @@ debrief:
   habit_card: hang-up-call-back
   already_clicked:
     clicked: "Close the page and type nothing. Delete the text or email, or report it."
-    entered_details: "Read out a code? Call Larchwick now on the number on your card and ask it to block the card and stop or recall the payment. Keep the numbers and times, and report it to the police."
+    shared_code: "Call Larchwick now on the number on your card and ask it to block the card and stop or recall the payment. Keep the numbers and times, and report it to the police."
     paid: "Block your card in the Larchwick app, call Larchwick on the number on your card and ask about a chargeback. Then ignore anyone who calls offering to stop the payment for a code."
   sources: [ch-ncsc-double-phishing-2026, de-vzhh-fake-bank-calls-2025, pl-cert-fake-consultants, es-incibe-smishing-bank-callback-2025, eu-epc-threats-2025, se-polisen-campaign-2026, de-zoll-phishing, de-vz-paketdienst-sms]

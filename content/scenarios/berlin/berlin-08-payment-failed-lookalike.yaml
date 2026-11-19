@@ -47,11 +47,11 @@ inspectables:
     red_flag: true
     type: link
   - target: reference
-    reveal: "An order number in Thimble & Pine's format. Real and look-alike emails both carry them; your account at thimbleandpine.example shows your real orders."
+    reveal: "Shows an order number in Thimble & Pine's format, as a real shop email would. Look-alike emails carry them too, so it can't prove anything either way. Your account at thimbleandpine.example shows your real orders."
     red_flag: false
     type: reference
   - target: image
-    reveal: "The Thimble & Pine logo, as on the shop's emails. A logo isn't proof on its own."
+    reveal: "Shows the Thimble & Pine logo, as a real shop email would. Logos are easy to copy, so it can't prove anything either way."
     red_flag: false
     type: logo
 
@@ -87,7 +87,7 @@ beats:
         red_flag: true
         type: page_address
       - target: page.info
-        reveal: "The connection is encrypted. Necessary, but never proof of who runs the site."
+        reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
         red_flag: false
         type: padlock
     actions:

@@ -2,12 +2,13 @@
 # you" (GDD §17). Fraud, difficulty 3, timer 60 (slot length). Brief: the pattern below
 # §2 (code request shape), §3 red flags 1–4, §5 recovery.
 # The real Kettle code text arrives first as a banner (no actions, not checkable). It says the code
-# registers Kettle on a new device (brief §3 red flag 3: read what the code is for).
+# registers Kettle on a new device (brief §3 red flag 3: read what the code is for). The banner is the
+# evidence, not the tell; the request reveal quotes it (design ruling QA L1).
 # Sender-or-link decoy: the sender name "Kettle" (the real code and the request arrive under the same
 # name). No link.
 # Red flags (GDD §17 T-2.4b ruling 2): the private mobile number the code is to be texted to (brief §3
 # red flag 1; §7 "a real service never asks you to send it a code by chat or SMS reply") and the request
-# (its checkable shows the banner text, which says the code registers the account on a new device).
+# (its checkable is the ask sentence in the body; the reveal quotes the banner).
 # The 10-minute deadline is a layer-2 text flag: a deadline is never a checkable red flag.
 # Decoys: sender name, request number.
 id: berlin-05-kettle-code
@@ -41,17 +42,20 @@ message:
   lang: de
   translation: "Kettle: We have received a request to delete your account (request K-7710). Wasn't that you? Then text the 6-digit code we just sent you to +49 1•• •••• ••90 within 10 minutes. Otherwise your account and all your chats will be deleted."
   request: share_code
+  ask:
+    text: "senden Sie den 6-stelligen Code, den wir Ihnen gerade geschickt haben"
+    translation: "text the 6-digit code we just sent you"
   references: ["K-7710"]
   phone_numbers: ["+49 1•• •••• ••90"]
   l10n_note: "German in-world text is intentional (Berlin chapter); the English translation is shown inline."
 
 inspectables:
   - target: sender.detail
-    reveal: "The sender name says Kettle, the same name as the code text above. Any sender can set the name a text shows, so it settles nothing either way."
+    reveal: "Shows the sender name Kettle, the same name as the code text above, as a real Kettle text would. Any sender can set this name, so it can't prove anything either way."
     red_flag: false
     type: sender
   - target: reference
-    reveal: "K-7710 looks like a request number. Anyone can make one up; it proves nothing either way."
+    reveal: "Shows a request number, K-7710, as a real notice might. Anyone can make one up, so it can't prove anything either way."
     red_flag: false
     type: reference
   - target: phone_number
@@ -59,7 +63,7 @@ inspectables:
     red_flag: true
     type: phone_number
   - target: request
-    reveal: "It asks you to pass on the code Kettle just sent you. The code text says the code registers your account on a new device."
+    reveal: "It asks you to pass on the code Kettle just texted you. The code text itself says what that code does: \"This code registers your Kettle account on a new device. Don't give it to anyone.\" The code text is real. Being asked to pass the code on is the tell."
     red_flag: true
     type: request
 
@@ -113,5 +117,5 @@ debrief:
   device_tip: "In your real messaging app, find Settings › Linked devices and the two-step PIN now, so you know where they are if you ever need them."
   habit_card: codes-are-only-for-you
   already_clicked:
-    entered_details: "Open Kettle. If it has signed you out, set it up again with your own number (it can take a while). Then turn on the two-step PIN, warn your contacts another way straight away, and report it to the police."
+    shared_code: "Open Kettle. If it has signed you out, set it up again with your own number (it can take a while). Then turn on the two-step PIN, warn your contacts another way straight away, and report it to the police."
   sources: [nl-politie-whatsapp-takeover-2024, de-vzn-ghost-pairing-2026, pl-cert-phishing-kb-2026, ie-ncsc-phishing-guide]

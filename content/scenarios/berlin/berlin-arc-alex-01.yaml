@@ -24,7 +24,7 @@ message:
 
 inspectables:
   - target: sender.detail
-    reveal: "Alex, a practice partner on Wordswap. You met here this week."
+    reveal: "Shows Alex, a practice partner on Wordswap you met this week, as any profile would. A profile name can't prove anything either way."
     red_flag: false
     type: sender
 

@@ -33,15 +33,14 @@ message:
 
 inspectables:
   - target: sender.detail
-    reveal: "Adaeze's saved contact, the one from your staff directory, in your usual chat with her. It fits, but a familiar name isn't proof on its own."
+    reveal: "It fits: Adaeze's saved contact from your staff directory, in your usual chat with her. That isn't proof on its own, so weigh it with what the message asks for."
     red_flag: false
     type: sender
     reassures: true
   - target: reference
-    reveal: "Tomorrow's briefing, now at 10:00. A change of time: no link, no payment, no code."
+    reveal: "Shows tomorrow's briefing time, 10:00, as a real update would. A time can't prove anything either way; this one comes with no link, payment or code."
     red_flag: false
     type: reference
-    reassures: true
 
 actions:
   - id: reply_see_you

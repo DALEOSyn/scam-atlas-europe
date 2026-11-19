@@ -42,21 +42,21 @@ message:
 
 inspectables:
   - target: sender.detail
-    reveal: "orders@thimbleandpine.example. Read the end: the owner part is thimbleandpine.example, Thimble & Pine's own domain. It fits, but a sender address isn't proof on its own."
+    reveal: "It fits: orders@thimbleandpine.example. Read the end: the owner part is thimbleandpine.example, Thimble & Pine's own domain. That isn't proof on its own, so weigh it with what the email asks for."
     red_flag: false
     type: sender
     reassures: true
   - target: link
-    reveal: "thimbleandpine.example/account/orders/TP-48213. Read the end: the owner part is thimbleandpine.example, Thimble & Pine's own site."
+    reveal: "It fits: thimbleandpine.example/account/orders/TP-48213. Read the end: the owner part is thimbleandpine.example, Thimble & Pine's own site. That isn't proof on its own, so weigh it with what the email asks for."
     red_flag: false
     type: link
     reassures: true
   - target: reference
-    reveal: "An order number in Thimble & Pine's format. Real and look-alike emails both carry them; your account at thimbleandpine.example shows your real orders."
+    reveal: "Shows an order number in Thimble & Pine's format, as a real shop email would. Look-alike emails carry them too, so it can't prove anything either way. Your account at thimbleandpine.example shows your real orders."
     red_flag: false
     type: reference
   - target: image
-    reveal: "The Thimble & Pine logo, as on the shop's emails. A logo isn't proof on its own."
+    reveal: "Shows the Thimble & Pine logo, as a real shop email would. Logos are easy to copy, so it can't prove anything either way."
     red_flag: false
     type: logo
 
@@ -93,7 +93,7 @@ debrief:
   variant: standard
   layer1:
     tell: "It matched your order; your account shows the same notice."
-    what_works: "Update the card in the shop yourself."
+    what_works: "Update it in the shop yourself."
   layer2:
     message_flags: []
     notes: "Why it was safe to act: you really had ordered that lamp, the email named it and the price, and the same notice was waiting in your account. The 48-hour deadline was honest: real shops cancel unpaid orders. Updating through the link worked this time, but opening the shop yourself works every time, including when an email only looks like this one."

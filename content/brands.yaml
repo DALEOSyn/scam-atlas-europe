@@ -205,7 +205,10 @@ brands:
     sector: second-hand marketplace (peer to peer)
     role_in_game: >
       Where the player sells and buys used items (Warsaw, Lisbon). Teaches "stay on the platform":
-      genuine in-app messages vs. off-platform "safe delivery" links.
+      genuine in-app messages vs. off-platform "safe delivery" links. Warsaw (GDD §25.9): the fake page on
+      swaploft-safe-delivery.example labels itself "Swaploft Safe Delivery" (/collect/<id>, /release/<id>);
+      debriefs only ever say "a link to collect your payment". Real-domain paths: /sales/<id>, /item/<id>,
+      /help/payouts.
     domain: swaploft.example
     app_name: "Swaploft app"
     palette:
@@ -223,7 +226,7 @@ brands:
         cluster on teal/turquoise, orange, green and multi-colour. Palette fixed in rework 1: the Hoardly
         draft borrowed Gatewren's peach and Wordswap's apricot; Swaploft uses only its own colours.
       typography: "Heavy lowercase sans, tight tracking."
-    checked_against: ["Vinted", "Wallapop", "Leboncoin", "Kleinanzeigen", "Marktplaats", "OLX", "Allegro Lokalnie", "Blocket", "Tori", "Subito", "Depop", "eBay", "Facebook Marketplace", "GoHoardly", "SW Lofts (UK loft conversions)"]
+    checked_against: ["Vinted", "Wallapop", "Leboncoin", "Kleinanzeigen", "Marktplaats", "OLX", "Allegro Lokalnie", "Blocket", "Tori", "Subito", "Depop", "eBay", "Facebook Marketplace", "GoHoardly", "SW Lofts (UK loft conversions)", "Swappie", "Swapfiets"]
     web_check: "Low. Only an unrelated UK loft-conversion firm and crypto 'SWFT' results (BRAND_CHECK §5, alternatives)."
     lookalike_examples:
       - "swaploft-safe-delivery.example"
@@ -477,35 +480,38 @@ brands:
     trademark_search: "web-checked 2026-11-19; INPI, company directory and TMview pending before G4"
     status: draft
 
+  # Warsaw (GDD §25.9; T-3.7 and story art T-S6a). Kept by BRAND_CHECK MW3 (Votelark) and MW4 (TREMOLIK).
   - id: votelark
     name: "Votelark"
     sector: online "school contest" voting page (scam-only)
     role_in_game: >
-      Warsaw callback 5-2: a "vote for my class" page that asks for your phone number and then the code you
-      get, which takes over your chat-app account. Training pages only; never a real service.
+      Warsaw callback 5-2: a "vote for my little sister's band" page that asks for your phone number and then
+      the code you get; the code really registers your Kettle account on a new device. Training pages only;
+      never a real service. Real institutions do run online votes, so the tell is the code banner, never
+      "votes are fake".
     domain: votelark-vote.example
     rationale:
-      name: "Coined: 'vote' + 'lark' (a songbird, light and playful). Kept by BRAND_CHECK MW1-MW4; alternatives Cheerpoll, Tunepoll."
+      name: "Coined: 'vote' + 'lark' (a songbird, light and playful). No exact hit (BRAND_CHECK MW3); alternatives Cheerpoll, Tunepoll."
       colour_shape: "No mark drawn: the page shows the name as plain text in the device's neutral page style, so no palette or shape can echo a real voting or contest site."
-    checked_against: ["Real school-contest and poll apps (BRAND_CHECK MW1-MW4)"]
-    web_check: "Low. Keep (BRAND_CHECK MW1-MW4)."
+    checked_against: ["Vote Owl", "VOTEism", "Votemar", "ActiVote", "Lark (office suite)", "Real school-contest and poll apps (BRAND_CHECK MW1-MW4)"]
+    web_check: "Low. Keep (BRAND_CHECK MW3)."
     lookalike_examples: []
-    trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"
+    trademark_search: "web-checked 2026-11-19; formal TMview/EUIPO pending before G4"
     status: draft
 
   - id: tremolik
     name: "TREMOLIK"
     sector: online music shop (merchant name only)
     role_in_game: >
-      The merchant name on the Larchwick payment-code confirmation in 5-6 and drill 5-7. A fictional online
-      music shop; no domain, no address, never drawn.
+      The merchant name on the Larchwick payment-code confirmation in 5-6 and drill 5-7 ("Confirm payment ·
+      €249.00 · to TREMOLIK"). A fictional online music shop; no domain, no address, never drawn.
     rationale:
-      name: "Coined from 'tremolo'. Kept by BRAND_CHECK MW1-MW4; no alternatives kept (both earlier ones were too close to a real retailer and a real festival)."
+      name: "Coined from 'tremolo' (a music term). No company or shop found (BRAND_CHECK MW4); no alternatives kept (both earlier ones were too close to a real retailer and a real festival)."
       colour_shape: "No mark: shown only as a payee name in Larchwick's own confirmation style."
-    checked_against: ["Polish music retailers and festivals (BRAND_CHECK MW1-MW4)"]
-    web_check: "Low. Keep (BRAND_CHECK MW1-MW4)."
+    checked_against: ["Tremach Sp. z o.o.", "tremolo (guitar-effect listings)", "Polish music retailers and festivals (BRAND_CHECK MW1-MW4)"]
+    web_check: "Low. Keep (BRAND_CHECK MW4)."
     lookalike_examples: []
-    trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"
+    trademark_search: "web-checked 2026-11-19; formal TMview/EUIPO pending before G4"
     status: draft
 
   # -------------------------------------------------------------------------------------------

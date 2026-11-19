@@ -1,0 +1,35 @@
+# Chapter 5 — Warsaw. GDD §25. Slot 5, difficulty 3–4, boss 4. 8 scored scenarios (3 genuine = 37.5%),
+# plus 1 drill (5-7, Mateus's damage control) and 1 arc beat (Alex; the engine plays arc slot N by play
+# position, STORY §1.4; this file carries slot 5, the default).
+# Habit (H): "Money comes to you inside the app; codes stay with you."
+# New patterns: marketplace-collect-payment-link (5-1 genuine twin, 5-3, 5-5, boss) and
+# hijacked-friend-payment-code (5-4 genuine twin, 5-6, drill 5-7). Callback: the account-takeover code pattern (5-2).
+# Mix (GDD §25.1): truth G F F · G F F G F(boss), max run 2; themes marketplace 5-1, 5-3, 5-5, boss;
+# friend 5-2, 5-4, 5-6; work 5-8 (never adjacent); pressure parity genuine 2/3 (5-1, 5-4) vs fraud 4/5
+# (5-3, 5-5, 5-6, boss); genuine at difficulty 3 and 4; sender-or-link decoys in 5-2, 5-5, 5-6, boss.
+# Help card: layer 2 of every Warsaw debrief points to "Where to report and get help (Poland)"; its wording
+# is in the chapter 5 sources file in docs/patterns ("Poland help card"). Real bodies appear only there and on
+# the help screen (Red Line 1). The schema has no per-chapter help-card field yet, so this is the pointer.
+# Story scenes (GDD §25.2) come in a later ticket. When they exist, add:
+#   scenes: { arrival: warsaw-arrival, turn: warsaw-turn, resolution: warsaw-resolution,
+#             placed: [{ scene: warsaw-kasia-back, after: warsaw-07-mateus-asks }] }
+# (content:validate rejects scene ids that have no file yet, so the block is left out for now.)
+slot: 5
+city: warsaw
+name: "Warsaw"
+status: complete
+patterns: [marketplace-collect-payment-link, hijacked-friend-payment-code]
+callbacks: [messenger-account-takeover-code]
+lo_focus: [LO-01, LO-02, LO-05, LO-07, LO-10, LO-14, LO-16, LO-17, LO-18]
+scenario_order:
+  am: [warsaw-01-rucksack-sold, warsaw-02-vote-for-the-band, warsaw-03-collect-your-payment]
+  pm: [warsaw-04-kasia-twelve-euros, warsaw-arc-alex-05, warsaw-05-card-photo-in-app, warsaw-06-kasia-payment-code, warsaw-07-mateus-asks, warsaw-08-atlas-lines, warsaw-09-boss-stove]
+boss: warsaw-09-boss-stove
+arc_beat: warsaw-arc-alex-05
+intro: "Warsaw: Kasia, a Waymarker volunteer, is moving to a smaller flat to afford her last year of music school, and is selling half of what she owns on Swaploft. You're helping, and selling your old rucksack and camping stove too.\n\nOn the fridge:"
+rules:
+  title: "Kasia's selling rules"
+  items:
+    - "The deal and the money stay inside Swaploft."
+    - "Paid? It shows in the Swaploft app. Check there, not in a message."
+atlas_cards: [codes-are-only-for-you, stay-on-the-platform, call-the-number-you-know, stop-the-damage-first]

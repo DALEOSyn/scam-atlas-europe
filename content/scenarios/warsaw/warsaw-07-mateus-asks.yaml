@@ -1,0 +1,83 @@
+# 5-7 Drill: Mateus asks for help (GDD §25.4 5-7; hijacked-friend-payment-code). Unscored, like Home 0-5.
+# He got the same message as 5-6 on his own phone, sent a code and confirmed without reading it. It reads
+# the same whatever the player did in 5-6. The player guides his damage control (CR-32 recovery_for).
+# psych S2: no shame; "the gadget guy" is never teased. Kasia is never at fault (R13).
+# Whatever the player picks, Mateus calls his bank first (the placed beat warsaw-kasia-back and the
+# resolution depend on it). The engine has no outcome narrative after damage control, so the spec's
+# closing line ("Mateus calls Larchwick… Done. Thanks for staying calm for me.") opens layer 2 (spec gap,
+# reported); the "let it go" branch says it in its own outcome.
+# The payment-code sentence appears here and in 5-6 only (not on the shared codes card; sceptic 8).
+id: warsaw-07-mateus-asks
+chapter: warsaw
+role: drill
+pattern: hijacked-friend-payment-code
+learning_objectives: [LO-16, LO-18]
+difficulty: 3
+is_fraud: false
+device: messenger
+brands: [kettle, larchwick, tremolik]
+cast: [mateus, kasia]
+pressure:
+  timer: false
+  levers: []
+
+message:
+  sender: { display: "Mateus (work phone)", detail: "Saved contact: Mateus (work phone)" }
+  from_cast: mateus
+  body: "Um. \"Kasia\" asked me for a payment code an hour ago. I sent it AND confirmed in my app, didn't even read it. €249 to some music shop. Kasia just rang from rehearsal: it wasn't her. What do I do first? 😬"
+  request: reply
+  ask: { text: "What do I do first?" }
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: Mateus's saved contact, in your usual chat with him. He asks for advice, not money or a code."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: request
+    reveal: "He asks what to do first. That's a question you can help with."
+    red_flag: false
+    type: request
+
+actions:
+  - id: help_mateus_steps
+    label: "Talk Mateus through it, step by step"
+    kind: proceed
+    outcome: helping_mateus
+    pressure_target: true
+  - id: let_it_go_mateus
+    label: "Tell him it's only €249, let it go"
+    kind: reply
+    outcome: mateus_calls_anyway
+
+outcomes:
+  helping_mateus:
+    narrative: "Mateus puts you on speaker. \"Okay. I'm listening. What first?\""
+    recovery_for: mateus
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: keep_evidence, category: secure }
+      - { step: report_account_in_app, category: report }
+      - { step: report_to_police, category: report }
+      - step: send_code_to_cancel
+        category: harmful
+        feedback: "Another code? That's how they'd take more. Bank first."
+      - step: keep_quiet
+        category: harmful
+        feedback: "Feeling embarrassed is normal. The advice is to call the bank straight away, without shame. I'm calling."
+  mateus_calls_anyway:
+    narrative: "Mateus: \"Mm. I'll still call the bank, it takes two minutes.\" He does, and comes back: \"Glad I did.\""
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "He told someone fast, and the bank came first."
+    what_works: "Stop the damage: call the bank first."
+  layer2:
+    message_flags: []
+    notes: "Mateus calls Larchwick on the number on his card, then reports Kasia's account in Kettle. \"Done. Thanks for staying calm for me.\" Experts get caught too. What counts is the next ten minutes. A payment code from your banking app is money: only type it where you are paying yourself, and read what you're confirming."
+  device_tip: "Find the number on the back of your card, or the bank's number inside its app, before you ever need it."
+  habit_card: stop-the-damage-first
+  already_clicked:
+    shared_code: "Sent a code and confirmed? Call your bank now on the number on your card, without shame. Keep the chat and the payment record, report the account in the app, and tell your friend another way."
+  sources: [pl-uknf-seniors-payments-2025, pl-nask-okazja-czy-pulapka-2025, pl-policja-psp-na-znajomego, pl-blik-podszywacze-2026]

@@ -11,12 +11,12 @@ panels:
   - backdrop: paris-street
     crop: centre
     caption: "Your studio is three floors up. Ruchelune's workshop is round the corner."
-    alt: "A street of cream stone buildings with zinc roofs and plane trees."
+    alt: "Cream stone buildings with zinc roofs, a carriage door and a shopfront."
   - backdrop: paris-workshop
     crop: left
     speaker: solene
     expression: worried
-    line: "Bastien's on leave, the festival order is late, and it's our busiest week. So I asked Waymarker for an extra pair of hands."
+    line: "Bastien's on leave, the festival order is late, and it's our busiest week. So I asked Waymarker for an inspector."
     alt: "Solène in the print workshop, looking worried, by the big table and paper stacks."
   - backdrop: paris-workshop
     crop: right

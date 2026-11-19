@@ -4,8 +4,8 @@
 # lesson that a call or video call proves nothing). The player dials, so the scene never treats an
 # incoming caller as proof. Variant on paris_boss_sent (any boss fall): GDD §23.13 has two lines keyed to
 # the first damage-control pick, which the story layer cannot read yet (only story-only flags), so one
-# line true in both branches is used: the bank was called first thing (by you, or together), no refund
-# promise. Panel 2, Tuesday: Inès with Bastien (back from leave; calm, also after a loss) adds the new
+# line true in both branches is used: the bank was called straight away (by you, or together), no refund
+# promise ("straight away", never "first thing", which could read as next morning). Rulings R4–R8. Panel 2, Tuesday: Inès with Bastien (back from leave; calm, also after a loss) adds the new
 # line to the card and has shown her mum. Panel 3: Solène's If-then line (calm phone-ear pose: the
 # number in our file).
 id: paris-resolution
@@ -22,7 +22,7 @@ panels:
     expression: calm-phone-ear
     if_flag: paris_boss_sent
     caption: "Friday evening. You ring Solène on the directory number."
-    line: "Thanks for ringing. None of that was me. The bank was called first thing, the right first step. We'll see what it can recall."
+    line: "Thanks for ringing. None of that was me. The bank was called straight away, the right first step. We'll see what it can recall."
     alt: "Solène, calm, phone to her ear."
   - backdrop: paris-workshop
     crop: left
@@ -31,7 +31,7 @@ panels:
     with: { id: bastien, expression: calm }
     caption: "Tuesday."
     line: "New line on the card: a call or video call never replaces the sign-off. I've shown my mum too."
-    alt: "Inès, proud, by the procedure card in the workshop; Bastien listens, calm."
+    alt: "Inès, proud, in the workshop; Bastien listens, calm, by the procedure card."
   - backdrop: paris-workshop
     crop: right
     speaker: solene

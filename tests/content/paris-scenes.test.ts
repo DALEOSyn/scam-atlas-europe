@@ -80,8 +80,9 @@ describe('fixed wording (STORY §3.3, §4.4; GDD §23.13)', () => {
   it('the turn: "no exceptions" for everyone; the paris_pay_redirected variant puts the details back and blames nobody', () => {
     const plain = shown('paris-ines-name', []);
     const fell = shown('paris-ines-name', ['paris_pay_redirected']);
-    expect(plain.at(-1)?.line).toBe('This is why the card says no exceptions.');
-    expect(fell.at(-1)?.line).toBe('This is why the card says no exceptions.');
+    const last = 'None of this is on you, Inès. This is why the card says no exceptions.';
+    expect(plain.at(-1)?.line).toBe(last);
+    expect(fell.at(-1)?.line).toBe(last);
     expect(plain.at(-1)?.expression).toBe('calm');
     const fellText = fell.map(text).join(' ');
     expect(fellText).toContain("We've put your real details back before payroll, and we'll sort this together.");
@@ -94,7 +95,8 @@ describe('fixed wording (STORY §3.3, §4.4; GDD §23.13)', () => {
     expect(r).toMatch(/shown my mum/);
     const fell = shown('paris-resolution', ['paris_boss_sent']).map(text).join(' ');
     const fine = shown('paris-resolution', []).map(text).join(' ');
-    expect(fell).toMatch(/bank was called first thing/);
+    expect(fell).toMatch(/bank was called straight away/);
+    expect(r).not.toMatch(/first thing/);
     expect(fell).not.toMatch(/nothing went out/);
     expect(fine).toMatch(/nothing went out/);
     expect(r).not.toMatch(/refund|get it back|money back|you'll get|we'll get/i);

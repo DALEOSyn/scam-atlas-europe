@@ -44,7 +44,7 @@ inspectables:
     type: claim
     context: quoted
   - target: request
-    reveal: "In Teo's screenshot: a secret, and an offer to show him how to make money. Someone you've only met online steering you to money is the pattern."
+    reveal: "In Teo's screenshot: a secret, and an offer to show him how to make money. Someone you've only met online steering you to money is the pattern. Tell someone you trust."
     red_flag: true
     type: request
     context: quoted

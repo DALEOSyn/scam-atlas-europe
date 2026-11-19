@@ -2343,7 +2343,7 @@ STORY §3.8, updated with this spec. No panel shows an ad, a celebrity, a platfo
    - Declan (calm): "And anyone charging a fee to get lost money back? Same crowd."
    - **If-then panel (Declan), word for word from STORY §3.8:** "If an investment promises guaranteed returns, then I find the firm on the regulator's register myself." Extra line under it: "Not on the register? Don't pay. Paying to get money out or back? Stop."
 - **Map invitation (Róisín):** "My dad lost his job and everyone's selling him a plan. Could you come and talk to him?" (STORY §3.8.)
-- **Panels:** 2 + 3 + 3 = 8 (+1 with the variant).
+- **Panels:** 2 + 2 + 3 = 7 (+1 with the variant). The turn's reply sits inside its choice panel.
 - **Safety:** job loss and money worry (STORY §5.3). Declan stays dignified and in charge of his choices; nobody calls him naive. **Content note** (producer ruling, §28.11 Q5): "This chapter touches on job loss and on losing money to investment scams. You can pause or skip any story scene, and help is one tap away." No scene is `sensitive`.
 
 ### 28.3 Scenario list

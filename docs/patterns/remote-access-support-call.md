@@ -35,9 +35,9 @@ A caller from "your bank", "IT support", "the provider" or an investment "advise
 
 ## 5. Already caught? (generic)
 1. **Take the device offline** (airplane mode) and stop using it for banking (help-screen first step `disconnect`; sources there).
-2. **Call your bank now** on the number on your card, from another phone if you can [se-polisen-telefonbedrageri].
-3. **Change passwords** from a different, clean device [eu-esas-ai-scams-factsheet-sv].
-4. **Get the device checked** before using it again [pl-cert-fake-consultants].
+2. **Call your bank now** on the number on your card [se-polisen-telefonbedrageri]; using another phone if you can is generic advice, not from this source.
+3. **Change passwords** [eu-esas-ai-scams-factsheet-sv]; doing it from a different device is generic advice, not from this source.
+4. **Get the device checked** before using it again (generic advice, not from these sources; [pl-cert-fake-consultants] only says never to let anyone control your device remotely).
 5. **Report to the police** (SE: 114 14) [se-polisen-telefonbedrageri].
 
 ## 6. Stockholm preview: design notes

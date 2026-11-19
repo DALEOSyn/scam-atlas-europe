@@ -39,7 +39,7 @@ This brief covers one pipeline in three stages. **(A)** A social-media ad with a
 **Levers:** borrowed authority (celebrity, "state-backed", official look); social proof; reward and greed; sunk cost ("protect your gains"); urgency ("limited window") [ie-cbi-avoiding-scams], [ie-fraudsmart-state-scheme-ads-2026]; friendliness and trust built over time [se-konsumentverket-investment-fraud].
 
 ## 3. Red flags a normal person can spot
-1. **A celebrity or politician "recommends" an investment in an ad.** These endorsements are usually fake, made with AI, and used without permission [ie-ccpc-investment-scams], [se-konsumentverket-investment-fraud], [eu-esas-ai-scams-factsheet-sv].
+1. **A celebrity or politician "recommends" an investment in an ad.** These endorsements are often fake: some are made with AI, and the famous person never agreed to them [ie-ccpc-investment-scams], [se-konsumentverket-investment-fraud], [eu-esas-ai-scams-factsheet-sv].
 2. **High or "guaranteed" returns with little or no risk** [ie-cbi-avoiding-scams], [ie-ccpc-investment-scams], [ie-garda-crimecall-investment-2024].
 3. **Pressure to pay now** or "a limited window" [ie-fraudsmart-state-scheme-ads-2026], [ie-cbi-avoiding-scams].
 4. **The firm isn't on the regulator's register of authorised firms**, or it's on the warning list [ie-cbi-avoiding-scams], [ie-ccpc-investment-scams].
@@ -74,7 +74,7 @@ This brief covers one pipeline in three stages. **(A)** A social-media ad with a
    - IE: the Gardaí (local station) [ie-ccpc-spot-a-scam-2026], [ie-garda-investment-2025]; the Central Bank (report an unauthorised firm) [ie-cbi-avoiding-scams], [ie-cbi-report-unauthorised]. The Garda Confidential Line 1800 666 111 is given for investment fraud [ie-garda-investment-2025].
    - Report the ad on the social network.
 6. **Expect a second scam:** anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam (`recovery-scam.md`).
-7. **Refunds:** a payment you made yourself to an investment scam is generally not an "unauthorised" payment; the Irish statutory refund right the central bank mentions is for unauthorised payments [ie-cbi-fraud-research-2026]. Never promise a refund; say "call your bank straight away; reporting makes recovery more likely" [ie-cbi-fraud-research-2026].
+7. **Refunds:** a payment you made yourself to an investment scam is generally not an "unauthorised" payment; the Irish statutory refund right the central bank mentions is for unauthorised payments [ie-cbi-fraud-research-2026]. Never promise a refund; say "call your bank straight away; people who report it get money back more often" [ie-cbi-fraud-research-2026].
 8. **Shame:** 38% of Irish victims never report [ie-cbi-fraud-research-2026] (designer context; keep the figure off screen). Debrief tone: "This could happen to anyone. Reporting helps."
 
 ## 6. Variations by country

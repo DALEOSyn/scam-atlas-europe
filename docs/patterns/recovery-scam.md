@@ -21,7 +21,7 @@ After a loss, the victim is contacted by someone who offers to get the money bac
 ## 2. Channel and psychological levers
 **What the victim sees:** a call, email, message or social post, soon after a loss or months later:
 - someone who knows about the loss and claims they can trace or freeze the money [ie-bpfi-recovery-2024], [se-konsumenternas-raddningshjalp];
-- they pose as a lawyer, a recovery firm, a "regulator", the police or another authority, sometimes with official-looking papers or a spoofed number [ie-cbi-avoiding-scams], [eu-esas-crypto-factsheet-2025], [de-evz-online-trading-scam-2026], [se-konsumenternas-raddningshjalp];
+- they pose as a lawyer, a recovery firm, a "regulator", the police or another authority, sometimes with a spoofed number [ie-cbi-avoiding-scams], [eu-esas-crypto-factsheet-2025], [de-evz-online-trading-scam-2026], [se-konsumenternas-raddningshjalp];
 - **the ask:** a fee, "tax", "retainer" or "administration fee" first [ie-bpfi-recovery-2024], [ie-cbi-avoiding-scams], [se-konsumenternas-raddningshjalp]; or to log in to your bank or hand over details "so we can return the money" [se-konsumenternas-raddningshjalp].
 
 **Levers:** hope and desperation after a loss [ie-cbi-fraud-landscape-2025]; borrowed authority; shame (wanting to fix it quietly); urgency.
@@ -47,7 +47,7 @@ After a loss, the victim is contacted by someone who offers to get the money bac
 5. Never promise a refund on screen.
 
 ## 6. Variations by country
-- **IE:** "retainer"/"processing" fees [ie-bpfi-recovery-2024]; fictitious government agencies with official-looking papers [ie-cbi-avoiding-scams] (papers: show only as an email attachment, Red Line 8).
+- **IE:** "retainer"/"processing" fees [ie-bpfi-recovery-2024]; fictitious government agencies [ie-cbi-avoiding-scams].
 - **SE:** fake "supervisor" calls with spoofed numbers that ask you to log in to your bank; "agents" for several victims [se-konsumenternas-raddningshjalp].
 - **BE/DE:** recovery offers after trading-platform fraud; posing as regulators, mediators or solicitors [be-fsma-trading-platforms-2025], [de-evz-online-trading-scam-2026].
 - **EU:** "being scammed once does not prevent you from being scammed again" [eu-esas-crypto-factsheet-2025], [eu-esas-ai-scams-factsheet-sv].

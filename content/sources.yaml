@@ -2653,7 +2653,7 @@ sources:
     notes: "Ads with a fake interview with a famous person ('the celebrity has not been asked for permission'); small deposit first, then pressure; fake login portals show rising values, 'manipulated to create a sense of security'. Never let someone you don't know access your computer remotely; don't use the e-ID or log in to your bank at someone else's request; never share login details. Recovery: 'Never pay money to someone who says they want to help you'; they pose as a company, bank or authority. Check the supervisor's register AND warning list, but scammers change names, so a clean result doesn't guarantee legitimacy. If scammed: bank at once; police report (114 14) even for attempts; notify the supervisor (it cannot help you personally); victim-support authority."
 
   - id: se-konsumenternas-raddningshjalp
-    publisher: Konsumenternas Bank- och finansbyrå (consumer bureau backed by FI, Konsumentverket and the industry)
+    publisher: Konsumenternas Bank- och finansbyrå (consumer bureau backed by FI, Konsumentverket and the industry; backing not re-checked)
     title: "Räddningshjälp - ofta nytt bedrägeri"
     url: https://konsumenternasbankochfinansbyra.se/konsumentstod/guider--checklistor/guider---sparande--pension/undvik-investeringsbedragerier/raddningshjalp---ofta-nytt-bedrageri
     published: "2026-11-13 (last modified)"

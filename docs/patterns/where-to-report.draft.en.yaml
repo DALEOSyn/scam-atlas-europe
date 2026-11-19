@@ -123,7 +123,7 @@ first_steps:
     title: "Beware of 'we'll get your money back' offers"
     body: "Anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam."
     checked: 2026-11-18
-    sources: [ie-bpfi-recovery-2024, eu-esas-ai-scams-factsheet-nl, ie-cbi-fraud-landscape-2025]
+    sources: [ie-bpfi-recovery-2024, eu-esas-ai-scams-factsheet-nl]
 
 # ---------------------------------------------------------------- 2. Fallbacks (shown when no verified country entry exists)
 fallbacks:

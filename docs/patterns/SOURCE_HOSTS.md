@@ -239,7 +239,7 @@ The chapter 4–5 research also cites new pages on cert.pl (still not in the all
 ### Ireland
 www.centralbank.ie | Central Bank of Ireland | 3 | **new** (suggest `centralbank.ie`, which also covers the two below)
 centralbank.ie | Central Bank of Ireland (host without www, as opened; also the help-screen link for reporting an unauthorised firm) | 3 | **new**
-edit.centralbank.ie | Central Bank of Ireland (press-release host as indexed) | 3 | **new**
+edit.centralbank.ie | Central Bank of Ireland (press-release host as indexed; re-find on www.centralbank.ie before G3, dropped from help-entry sources) | 3 | **new**
 www.ccpc.ie | Competition and Consumer Protection Commission | 3 | **new**
 
 ### Sweden

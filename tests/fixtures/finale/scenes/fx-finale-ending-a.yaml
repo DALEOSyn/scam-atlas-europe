@@ -1,6 +1,6 @@
 # Test fixture (CR-43(d)): endings A and A-prime, and R without money in; one panel for R only. R28 (mirrors
 # content/scenes/brussels/brussels-ending-a*.yaml): "you helped him" is gated on arc_helped_teo (Teo's photo check or
-# report); otherwise A's early report, or A-prime's "never too late to start".
+# report); otherwise A's early report, or A-prime's "You stepped back early…".
 id: fx-finale-ending-a
 chapter: fxfinale
 slot: resolution
@@ -31,5 +31,5 @@ panels:
     expression: calm
     unless_flag: arc_helped_teo
     if_arc_ending: [A_prime]
-    line: "Telling someone early is what works. It's never too late to start."
+    line: "You stepped back early, and you never sent any money. Next time, telling someone too makes it even easier."
     alt: "Adaeze, calm, nodding."

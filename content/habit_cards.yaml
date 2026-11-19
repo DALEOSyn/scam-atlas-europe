@@ -64,7 +64,7 @@ cards:
     title: "Call the number you already know"
     habit: "Asked by message for money you didn't expect, or to an account that isn't theirs? Call a number you already had. For requests you didn't agree in person."
     example: "\"Noor\" on a new number wants €84 today? A call from you, on Noor's saved number."
-    already_clicked: "Call your bank now on the number on your card (with a parent or trusted adult if you're under 18). Don't pay a second request."
+    already_clicked: "Call your bank now on the number on your card (under 18: with a parent, carer or another adult you trust). Don't pay a second request."
   # R19(5) (Brussels, GDD §30.11): the example and already-clicked lines gain Brussels' account-lending case;
   # the habit sentence is unchanged.
 # R27, T-3.13g (psych): already_clicked is one de-duplicated line in MMR §7 order, opening "It's not too late:".
@@ -110,7 +110,7 @@ cards:
     title: "Nobody needs your screen"
     habit: "Never install an app or share your screen for someone who contacted you. Hang up and contact the company yourself, through its own app, card or website."
     example: "A 'support' caller wants you to install a helper app and read out its code? Hang up and open the company's own app yourself."
-    already_clicked: "Installed something for them? Turn on airplane mode, call your bank from another phone if you can, change your passwords from another device, and get the device checked."
+    already_clicked: "Installed something for them? Take the device offline (wifi off, cable out or airplane mode), call your bank from another phone if you can, change your passwords from another device, and get the device checked."
   # Dublin (GDD §28.10, LO-13 v3.1). First shown at 8-2; the example uses no scam domain or firm name.
   - id: if-its-guaranteed-and-high-its-not
     lo: LO-13

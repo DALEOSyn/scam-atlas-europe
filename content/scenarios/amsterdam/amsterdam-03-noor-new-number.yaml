@@ -142,5 +142,5 @@ debrief:
   device_tip: "On a real phone, open your contacts and call the number you already have for the person, not the new one in the chat."
   habit_card: call-the-number-you-know
   already_clicked:
-    paid: "Call your bank now on the number on your card (with a parent or trusted adult if you're under 18). Save the chat, then report it. Don't pay a second request."
+    paid: "Call your bank now on the number on your card (under 18: with a parent, carer or another adult you trust). Save the chat, then report it. Don't pay a second request."
   sources: [nl-politie-hulpvraagfraude-2025, nl-fraudehelpdesk-hulpvraag-campaign, nl-veiligbankieren-hulpvraag, nl-veiliginternetten-hulpvraag, eu-ec-ipr-vop-2025, eu-ecb-ipr, eu-eurlex-ipr-2024-886, eu-epc-vop-scheme, nl-betaalvereniging-iban-name-check, nl-politie-aangifte-hulpvraagfraude, nl-betaalvereniging-after-whatsapp-fraud]

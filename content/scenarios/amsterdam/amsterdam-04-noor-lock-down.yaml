@@ -86,5 +86,5 @@ debrief:
   device_tip: "On a real phone, look in your chat app's settings for two-step verification and a PIN, and set who can see your profile photo."
   habit_card: call-the-number-you-know
   already_clicked:
-    paid: "Call your bank now on the number on your card (with a parent or trusted adult if you're under 18). Save the chat, report it, and don't pay a second request."
+    paid: "Call your bank now on the number on your card (under 18: with a parent, carer or another adult you trust). Save the chat, report it, and don't pay a second request."
   sources: [nl-fraudehelpdesk-hulpvraag-campaign, nl-fraudehelpdesk-takeover-alert-2026, nl-politie-hulpvraagfraude-2025]

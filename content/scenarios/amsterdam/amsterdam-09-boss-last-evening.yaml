@@ -331,5 +331,5 @@ debrief:
   habit_card: call-the-number-you-know
   already_clicked:
     clicked: "Opened the link or the request? Close it and pay nothing."
-    paid: "Call your bank now on the number on your card (with a parent or trusted adult if you're under 18). Stop paying, don't pay a second request, and keep the chats."
+    paid: "Call your bank now on the number on your card (under 18: with a parent, carer or another adult you trust). Stop paying, don't pay a second request, and keep the chats."
   sources: [nl-fraudehelpdesk-vacature-alert-2025, nl-fraudehelpdesk-baan-aangeboden, eu-epc-threats-2025, nl-politie-hulpvraagfraude-2025, nl-veiligbankieren-hulpvraag, nl-veiliginternetten-hulpvraag, be-febelfin-vop-faq, nl-fraudehelpdesk-hulpvraag-campaign, nl-veiliginternetten-voice-cloning, nl-veiligbankieren-voice-cloning-2023, eu-esas-ai-scams-factsheet-nl]

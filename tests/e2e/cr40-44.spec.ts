@@ -211,7 +211,7 @@ test('CR-40/43, ending A: Teo forwards a profile; "A little can\'t hurt" shows t
   // R28: "A little can't hurt" did not help Teo: the player's own early report is the line, never "you helped him".
   await storyUntil(page, "text=And you reported yours early. That's what works.");
   await expect(page.getByText("Teo asked you, and you helped him. That's what works.")).toHaveCount(0);
-  await expect(page.getByText("It's never too late to start.")).toHaveCount(0);
+  await expect(page.getByText("You stepped back early, and you never sent any money.")).toHaveCount(0);
 });
 
 test('R22, "Tell me now" with money in: arc damage control first, then the recovery test; a fall shows the authored note', async ({ page }) => {

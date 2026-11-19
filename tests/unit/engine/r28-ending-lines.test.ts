@@ -57,12 +57,12 @@ function endingLines(save: SaveState): string[] {
 
 const A_HELPED = "Teo asked you, and you helped him. That's what works.";
 const A_REPORTED = "And you reported yours early. That's what works.";
-const A_START = "Telling someone early is what works. It's never too late to start.";
+const A_STEPPED_BACK = "You stepped back early, and you never sent any money. Next time, telling someone too makes it even easier.";
 const B_TOLD = "You told someone, and the timeline did the rest. That's the whole trick.";
 const B_UNTOLD = "You never sent any money, and the timeline did the rest. Next time, telling someone early makes it even easier.";
 const C_CHECKED = "You checked in the end. That's what works.";
 const C_REPORTED = "You reported it. That's what works.";
-const ADAEZE_ENDING = [A_HELPED, A_REPORTED, A_START, B_TOLD, B_UNTOLD, C_CHECKED, C_REPORTED];
+const ADAEZE_ENDING = [A_HELPED, A_REPORTED, A_STEPPED_BACK, B_TOLD, B_UNTOLD, C_CHECKED, C_REPORTED];
 /** The ending lines on what the player did (Adaeze's), in play order. */
 const said = (save: SaveState): string[] => endingLines(save).filter((l) => ADAEZE_ENDING.includes(l));
 
@@ -92,8 +92,8 @@ describe('R28: ending A′ (two Closes at slot 1), per Teo option (real engine)'
     return enter(play(once, 'berlin', 'berlin-arc-alex-01', 'close_wordswap'), 'A_prime', ['teo', 'timeline']);
   };
   it.each([
-    ['advise_little_cant_hurt', A_START],
-    ['advise_teo_stop', A_START],
+    ['advise_little_cant_hurt', A_STEPPED_BACK],
+    ['advise_teo_stop', A_STEPPED_BACK],
     ['photo_check_robin', A_HELPED],
     ['advise_teo_report', A_HELPED],
   ])('Teo option %s → "%s"', (actionId, line) => {

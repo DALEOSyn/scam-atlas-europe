@@ -142,5 +142,5 @@ debrief:
   device_tip: "On a real phone, call the person from your phone's contacts as a normal call, not from inside the chat app."
   habit_card: check-who-gets-the-money
   already_clicked:
-    paid: "Call your bank now on the number on your card (with a parent or trusted adult if you're under 18). Don't pay a second request. Then phone Jonas so he can recover his account."
+    paid: "Call your bank now on the number on your card (under 18: with a parent, carer or another adult you trust). Don't pay a second request. Then phone Jonas so he can recover his account."
   sources: [nl-fraudehelpdesk-takeover-alert-2026, nl-politie-whatsapp-takeover-2024, nl-veiligbankieren-hulpvraag, nl-veiliginternetten-hulpvraag, nl-politie-hulpvraagfraude-2025, eu-ec-ipr-vop-2025, eu-ecb-ipr, eu-eurlex-ipr-2024-886, eu-epc-vop-scheme, nl-betaalvereniging-iban-name-check, be-febelfin-vop-faq]

@@ -934,7 +934,7 @@ export interface RunnerView {
    * `fake_fell` on fraud after an earlier fall in the scenario ("The deadline was fake."; QA m1),
    * `genuine` on a genuine scenario ("Time's up in the game, not in real life. The message's own deadline:
    * {pressure.honest_deadline}…", ruling QA L4) when the expiry scores ★ or ★★, `genuine_missed` when it scores 0
-   * ("Time's up in the game, so it counts like leaving it…", CR-50, R26(2)).
+   * ("Time's up in the game, so it counts as leaving it…", CR-50, R26(2)).
    * null when the timer did not end the beat.
    */
   consequenceDeadline: DeadlineLine;
@@ -982,7 +982,7 @@ export function callBehind(s: Scenario, g: Pick<GroupState, 'current' | 'visited
 
 /**
  * The timer-expiry line (consequence caption and layer 2 "What happened", UI_SPEC §7). CR-50 (R26(2)): on a
- * genuine message `genuine_missed` when the expiry scored 0 stars ("…so it counts like leaving it…", never
+ * genuine message `genuine_missed` when the expiry scored 0 stars ("…so it counts as leaving it…", never
  * "Nothing is lost yet"), `genuine` when it scored ★ or ★★.
  */
 export type DeadlineLine = 'fake' | 'fake_fell' | 'genuine' | 'genuine_missed' | null;

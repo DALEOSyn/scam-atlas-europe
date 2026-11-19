@@ -2,8 +2,8 @@
  * Brussels story scenes (T-3.12 part 2; GDD §30.2, §30.6, §30.14 item 9; STORY §1.5, §3.10, §5; R19, R22, CR-43(d),
  * CR-44): wiring and the resolution list, the fixed wording word for word, the story-only variant
  * brussels_bank_called opening the resolution, exactly one ending scene per arc ending, the gating of every
- * "you told someone" line on arc_told_someone (R22), the two psych notes on ending wording (A's "never too late
- * to start" only for a player who told nobody; C never "before anything else"), Adaeze's last line just before
+ * "you told someone" line on arc_told_someone (R22), the two psych notes on ending wording (A′'s "You stepped
+ * back early…" only for a player who told nobody; C never "before anything else"), Adaeze's last line just before
  * Noor's If-then and as the epigraph (R19(3)), Noor never sharing, the panel budget, sensitive flags and the
  * content note (STORY §5.6, R19(4)), and the art rules the generic validator cannot see (crop/flip, alt per
  * crop, expressions in the SVGs, listeners, habit poses).
@@ -101,7 +101,7 @@ const C_CHECKED = "You checked in the end. That's what works.";
 const C_REPORTED = "You reported it. That's what works.";
 const A_HELPED = "Teo asked you, and you helped him. That's what works.";
 const A_REPORTED = "And you reported yours early. That's what works.";
-const A_START = "Telling someone early is what works. It's never too late to start.";
+const A_STEPPED_BACK = "You stepped back early, and you never sent any money. Next time, telling someone too makes it even easier.";
 const B_TOLD = "You told someone, and the timeline did the rest. That's the whole trick.";
 const B_UNTOLD = "You never sent any money, and the timeline did the rest. Next time, telling someone early makes it even easier.";
 const B_PATTERN = "Friendly, patient, and asking for a bit more each time. It's built to work on anyone.";
@@ -155,16 +155,17 @@ describe('panel budget (GDD §30.2: about 16–17 panels, each scene at most 6)'
     expect(seen('brussels-ending-c', { ending: 'C', invested: true, checked: true })).toBe(3);
     expect(seen('brussels-ending-c', { ending: 'C', invested: true, told: true, checked: true })).toBe(3);
     expect(seen('brussels-ending-c', { ending: 'C', invested: true, told: true })).toBe(3);
-    expect(seen('brussels-ending-r', { ending: 'R', invested: true })).toBe(4);
+    // psych on T-3.13 (R25(4) reasoning): R with money drops Adaeze's warm panel too.
+    expect(seen('brussels-ending-r', { ending: 'R', invested: true })).toBe(3);
     expect(seen('brussels-ending-r', { ending: 'R' })).toBe(3);
     expect(seen('brussels-ending-a', { ending: 'A' })).toBe(3);
     expect(seen('brussels-ending-a-prime', { ending: 'A_prime' })).toBe(3);
     expect(seen('brussels-ending-b', {})).toBe(2);
   });
-  it('the longest run is 17 panels with the arrival and the turn; no scene has more than 6', () => {
+  it('the longest run is 16 panels (T-3.13 trims: C and R with money at 3) with the arrival and the turn; no scene has more than 6', () => {
     for (const s of scenes.values()) expect(s.panels.length, s.id).toBeLessThanOrEqual(6);
     const total = (st: State) => 4 + run(st).reduce((n, s) => n + s.panels.length, 0);
-    expect(Math.max(...STATES.map(total))).toBe(17);
+    expect(Math.max(...STATES.map(total))).toBe(16);
     expect(Math.min(...STATES.map(total))).toBe(14);
   });
 });
@@ -188,11 +189,11 @@ describe('fixed wording (STORY §3.10, §4.4, §5.6; GDD §30.2)', () => {
         case 'C':
           return [st.checked ? C_CHECKED : C_REPORTED, C_RECOVERY, C_TEO];
         case 'R':
-          return st.invested ? [C_KIND, C_RECOVERY, C_TEO, R_LINE] : [...TEO_A, R_LINE];
+          return st.invested ? [C_RECOVERY, C_TEO, R_LINE] : [...TEO_A, R_LINE];
         case 'A':
           return [...TEO_A, st.helped ? A_HELPED : A_REPORTED];
         case 'A_prime':
-          return [...TEO_A, st.helped ? A_HELPED : A_START];
+          return [...TEO_A, st.helped ? A_HELPED : A_STEPPED_BACK];
         case 'B':
           return [B_PATTERN, st.told ? B_TOLD : B_UNTOLD];
       }
@@ -202,7 +203,7 @@ describe('fixed wording (STORY §3.10, §4.4, §5.6; GDD §30.2)', () => {
       expect(ending?.panels.map((p) => p.line), label(st)).toEqual(want(st));
     }
   });
-  it('Teo is sheepish, then proud; C: Adaeze calm, Adaeze calm (recovery), Teo warm last; R-with-money: Adaeze warm, Adaeze calm, Teo warm', () => {
+  it('Teo is sheepish, then proud; C: Adaeze calm, Adaeze calm (recovery), Teo warm last; R-with-money: Adaeze calm (recovery), Teo warm, Teo (R line)', () => {
     for (const id of ['brussels-ending-a', 'brussels-ending-a-prime']) {
       expect(scene(id).panels.slice(0, 2).map((p) => [p.speaker, p.expression]), id).toEqual([
         ['teo', 'sheepish'],
@@ -219,9 +220,9 @@ describe('fixed wording (STORY §3.10, §4.4, §5.6; GDD §30.2)', () => {
     }
     // R25(4), T-3.13h: Adaeze's warm panel is dropped from C (the arc damage control opens with "The lie was theirs").
     expect(scene('brussels-ending-c').panels.some((p) => p.line === C_KIND)).toBe(false);
+    expect(scene('brussels-ending-r').panels.some((p) => p.line === C_KIND)).toBe(false);
     const r = visiblePanels(scene('brussels-ending-r'), flagsOf({ ending: 'R', invested: true, told: false, checked: false, helped: false, bank: false }), 'R');
     expect(r.map((p) => [p.speaker, p.expression])).toEqual([
-      ['adaeze', 'warm'],
       ['adaeze', 'calm'],
       ['teo', 'warm'],
       ['teo', 'warm'],
@@ -299,15 +300,17 @@ describe('brussels_bank_called opens the resolution (GDD §30.2, STORY §4.2 rul
 });
 
 describe('ending wording: R22 and the psych notes (GDD §30.14 item 9)', () => {
-  it('"never too late to start" shows only to an A′ player who told nobody (no report, no "Tell me now", no arc_told_someone)', () => {
+  it('"You stepped back early…" shows only to an A′ player who told nobody (no report, no "Tell me now", no arc_told_someone)', () => {
     for (const st of STATES) {
-      const start = runLines(st).some((l) => /never too late to start/i.test(l));
+      const start = runLines(st).includes(A_STEPPED_BACK);
       expect(start, label(st)).toBe(st.ending === 'A_prime' && !st.told);
     }
     // R28: gated on arc_helped_teo, which in A′ coincides with arc_told_someone (only Teo's chat can set either).
-    const panel = scene('brussels-ending-a-prime').panels.find((p) => p.line === A_START);
+    const panel = scene('brussels-ending-a-prime').panels.find((p) => p.line === A_STEPPED_BACK);
     expect(panel?.unless_flag).toBe(ARC_HELPED_TEO);
-    for (const id of ['brussels-ending-a', 'brussels-ending-b', 'brussels-ending-c', 'brussels-ending-r']) expect(all(scene(id)), id).not.toMatch(/too late|\bstart\b/i);
+    for (const id of ['brussels-ending-a', 'brussels-ending-b', 'brussels-ending-c', 'brussels-ending-r']) expect(all(scene(id)), id).not.toMatch(/too late|\bstart\b|stepped back/i);
+    // psych (T-3.13): no "never too late to start" anywhere: the A′ line says what the player did instead.
+    for (const s of scenes.values()) expect(all(s), s.id).not.toMatch(/never too late/i);
   });
   it('ending C never says "before anything else"; the photo-check variant is "You checked in the end." (R25(5), CR-51)', () => {
     for (const s of scenes.values()) expect(all(s), s.id).not.toMatch(/before anything else/i);

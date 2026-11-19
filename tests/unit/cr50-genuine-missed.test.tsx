@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 /**
- * CR-50 (R26(2)): a genuine expiry that scores 0 stars says "Time's up in the game, so it counts like leaving it…"
+ * CR-50 (R26(2)): a genuine expiry that scores 0 stars says "Time's up in the game, so it counts as leaving it…"
  * (`deadline_genuine_missed`, `_plain` without `honest_deadline`), never "Nothing is lost yet"; ★ / ★★ expiries keep
  * `deadline_genuine` / `_plain`. Checked in the consequence view data, the rendered debrief layer 2 and on every
  * shipped timed genuine scenario.
@@ -24,7 +24,7 @@ afterEach(cleanup);
 
 const none = { pressureAny: false, pressureGenuine: false };
 const LOST = 'Nothing is lost yet';
-const MISSED = "Time's up in the game, so it counts like leaving it.";
+const MISSED = "Time's up in the game, so it counts as leaving it.";
 
 /** A genuine, high-stakes, timed message with a "Leave it" option: R21 scores its expiry like leaving it, 0 stars. */
 function highStakes(honest: boolean): Scenario {
@@ -57,9 +57,9 @@ function debriefText(s: Scenario): { caption: ReturnType<typeof viewOf>['consequ
 describe('CR-50: genuine-expiry copy follows the stars (R26(2))', () => {
   it('the copy is the ruled wording', () => {
     expect(t('deadline_genuine_missed', { deadline: 'Pay by Friday' })).toBe(
-      "Time's up in the game, so it counts like leaving it. The message's real deadline: Pay by Friday. Checking it your own way works.",
+      "Time's up in the game, so it counts as leaving it. The message's real deadline: Pay by Friday. Checking it your own way works.",
     );
-    expect(t('deadline_genuine_missed_plain')).toBe("Time's up in the game, so it counts like leaving it. Checking it your own way works.");
+    expect(t('deadline_genuine_missed_plain')).toBe("Time's up in the game, so it counts as leaving it. Checking it your own way works.");
     expect(t('deadline_genuine_missed_plain')).not.toContain(LOST);
     expect(deadlineText('genuine_missed', null)).toBe(t('deadline_genuine_missed_plain'));
     expect(deadlineText('genuine_missed', 'X')).toBe(t('deadline_genuine_missed', { deadline: 'X' }));
@@ -73,7 +73,7 @@ describe('CR-50: genuine-expiry copy follows the stars (R26(2))', () => {
     expect(deadlineLine(true, true, 0)).toBe('fake_fell');
   });
   for (const honest of [true, false]) {
-    it(`0-star genuine expiry (${honest ? 'with' : 'without'} honest_deadline): caption and layer 2 say "counts like leaving it", never "${LOST}"`, () => {
+    it(`0-star genuine expiry (${honest ? 'with' : 'without'} honest_deadline): caption and layer 2 say "counts as leaving it", never "${LOST}"`, () => {
       const d = debriefText(highStakes(honest));
       expect(d.stars).toBe(0);
       expect(d.caption).toBe('genuine_missed');

@@ -251,6 +251,14 @@ www.esma.europa.eu | European Securities and Markets Authority | 1 | covered by 
 
 T-3.10r also cites new pages on hosts already listed: www.garda.ie, bpfi.ie, www.fsma.be, www.evz.de, polisen.se, www.eba.europa.eu.
 
+## New hosts from phase 3, chapter 10 (Brussels research, T-3.12r, 2026-11-19): not yet checked against `scripts/lib/source-hosts.ts`
+
+### Belgium
+news.belgium.be | Federal government press-release portal (carrying a CCB press release, be-ccb-remote-access-2019) | 2 | **new** (exact host only)
+www.zelfmoord1813.be | Zelfmoordlijn 1813 operator site *(operator, help list only, tier 4)* | 4 | **new**; help-list source only. Don't add it to the allow-list unless the engineer exempts help-only sources; the warning is expected.
+
+T-3.12r also cites new pages on hosts already listed: febelfin.be (still gives a warning, see chapter 2 note above), www.police.be, www.fsma.be (listed under T-R.1 as **new**; it warns until added), www.europol.europa.eu.
+
 **Not a source host:** the Central Bank's report form sits on a third-party survey host. It is NOT linked from the help screen or sources (link the centralbank.ie page instead).
 
 ## Notes for the engineer

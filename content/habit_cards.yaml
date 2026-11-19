@@ -77,8 +77,7 @@ cards:
     habit: "New or different account, or urgent or secret? Call the person on a number you already have. Name doesn't match? Stop. Matches? Still call: it only shows whose account it is. At work, keep the two-person sign-off."
     example: "Paying a bill or a new payee? Type the name from your own papers, not the message. No papers? Call first."
     already_clicked: "Paid already? Call your bank now on the number you already have and ask it to try to stop or recall the payment. Then tell the real person, on a number you already have."
-  # Lisbon (GDD §27.10). `stay-on-the-platform` is Warsaw's card (GDD §25.9), added here word for word
-  # because Lisbon may merge first; keep one copy when both branches land.
+  # Warsaw (GDD §25.9). First shown at 5-3; the example uses no scam domain.
   - id: stay-on-the-platform
     lo: LO-10
     title: "Stay on the platform"

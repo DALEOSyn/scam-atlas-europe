@@ -580,8 +580,7 @@ export const scenarioSchema = z
     player_started: z.boolean().default(false),
     /**
      * Scene-setting line shown above the first beat (e.g. a boss's "18:40, the last working day…").
-     * Placeholder added by scenario-writer for Paris T-3.5 rework; engine branch CR-27 adds the same field
-     * and renders it (coordinator reconciles at merge). Not rendered yet on this branch.
+     * Rendered by ScenarioView as a lead-in paragraph above the first beat (CR-27).
      */
     setup: z.string().min(1).optional(),
     learning_objectives: z.array(loId).min(1),

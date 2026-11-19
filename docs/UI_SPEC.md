@@ -74,7 +74,7 @@ Every scroll container that has a sticky or fixed bar over it sets `scroll-paddi
 ### 1.5 Type
 - Body and message text `--fs-md` (16 px), `--lh-body`. Never below `--fs-xs` (13 px), which is used only for meta text.
 - Identifiers (addresses, domains, numbers, IBANs, QR destinations) in `--font-mono` inside the Check card so look-alikes (rn/m, cl/d, vv/w, i/l, 0/O) can be told apart.
-- **Host wrapping rule** [U13]: the owner part of a host (§4.4) is `white-space: nowrap`; line breaks are allowed only at the boundaries scheme | subdomain | owner part | path (insert `<wbr>` there and nowhere else). If the owner part alone is wider than its box, the box scrolls horizontally inside itself (`overflow-x: auto`, keyboard-focusable) rather than breaking the name.
+- **Host wrapping rule** [U13]: only the owner part of a host (§4.4) is `white-space: nowrap`; it never breaks. `<wbr>` marks the preferred breaks at the boundaries scheme | subdomain labels | owner part | path. The other parts (scheme, local part, subdomain labels, path segments) may also break anywhere (`overflow-wrap: anywhere`) when they don't fit, so a long label never widens the page (QA T-2.8 m4, e.g. `waymarker-network.` at 188 px). If the owner part alone is wider than its box, the box scrolls horizontally inside itself (`overflow-x: auto`, keyboard-focusable) rather than breaking the name.
 - Text-size setting: 100 / 115 / 130 %, plus browser zoom to 200 %.
 - No web fonts (offline, privacy, avoids real brand typefaces).
 

@@ -9,7 +9,8 @@ import { maxPointsOfScenario, resultOf } from '../../../src/engine/result.ts';
 import { isSetupStep, step, viewOf } from '../../../src/engine/runner.ts';
 import { createStore, freshSave, type SaveState, type StorageLike } from '../../../src/engine/save.ts';
 import { scenarioSchema, type Scenario } from '../../../src/content/schema.ts';
-import { rawFraud, rawGenuine, scenario } from '../../content/fixtures.ts';
+import { rawFraud, rawGenuine, realRegistries, scenario } from '../../content/fixtures.ts';
+import { scenarioRules } from '../../../scripts/lib/rules.ts';
 import { readYaml } from '../helpers.ts';
 import { act, B, boss, check, ctx, play, run, tag, tick, type Raw } from './helpers.ts';
 
@@ -208,14 +209,44 @@ describe('producer rulings', () => {
     expect(checked.groups[0]?.checkedBefore.length).toBe(1);
   });
 
+  /** A fraud opener that asks nothing, with a proceed that only moves on to the scam page (sceptic T-2.8 repro). */
+  const fraudOpener = (): Raw => {
+    const raw = rawFraud('f-opener', { pressure: { timer: true, levers: ['urgency'] } });
+    (raw.message as Raw).request = 'none';
+    raw.actions = (raw.actions as Raw[]).map((a) => (a.id === 'tap_link' ? { ...a, kind: 'proceed' } : a));
+    return raw;
+  };
+
+  it('fraud: a proceed from an opener that asks nothing stays decisive; an expiry on the scam page is still a fall (sceptic T-2.8)', () => {
+    const s = scenario(fraudOpener());
+    const c = ctx({ slot: 1 });
+    const st = run(s, c, [act('tap_link')]);
+    expect(st.groups[0]?.decision).toMatchObject({ cls: 'proceed' });
+    const { r } = play(s, c, [act('tap_link'), ...Array.from({ length: 400 }, () => tick(1))]);
+    expect(r.beats[0]).toMatchObject({ fell: true, stars: 0, timerExpired: false });
+    expect(r.stars).toBe(0);
+  });
+
+  it('validator: a fraud message with request none and a proceed with next_beat and no outcome is rejected (use open_link)', () => {
+    const reg = realRegistries();
+    expect(scenarioRules(scenario(fraudOpener()), reg).errors.join('\n')).toMatch(/opening message: action "tap_link": a proceed with next_beat from a fraud message with request: none is ambiguous; use kind open_link/);
+    const asOpenLink = fraudOpener();
+    asOpenLink.actions = (asOpenLink.actions as Raw[]).map((a) => (a.id === 'tap_link' ? { ...a, kind: 'open_link' } : a));
+    expect(scenarioRules(scenario(asOpenLink), reg).errors.join('\n')).not.toMatch(/ambiguous/);
+    // Home 0-3 (genuine) is untouched by the rule.
+    expect(scenarioRules(home('home-03-password-reset'), reg).errors.join('\n')).not.toMatch(/ambiguous/);
+  });
+
   it('isSetupStep: only a non-terminal proceed from a beat that asks nothing', () => {
     const none = { message: { request: 'none' } } as Parameters<typeof isSetupStep>[0];
     const asks = { message: { request: 'log_in' } } as Parameters<typeof isSetupStep>[0];
-    expect(isSetupStep(none, { next_beat: 'x' }, 'proceed')).toBe(true);
-    expect(isSetupStep(asks, { next_beat: 'x' }, 'proceed')).toBe(false); // e.g. 0-2 "Tap the link": a click on fraud stays a fall
-    expect(isSetupStep(none, { next_beat: 'x', outcome: 'o' }, 'proceed')).toBe(false);
-    expect(isSetupStep(none, { outcome: 'o' }, 'proceed')).toBe(false);
-    expect(isSetupStep(none, { next_beat: 'x' }, 'verify')).toBe(false);
+    expect(isSetupStep(none, { next_beat: 'x' }, 'proceed', 'legit_high')).toBe(true);
+    expect(isSetupStep(asks, { next_beat: 'x' }, 'proceed', 'legit_high')).toBe(false); // e.g. 0-2 "Tap the link": a click on fraud stays a fall
+    expect(isSetupStep(none, { next_beat: 'x', outcome: 'o' }, 'proceed', 'legit_high')).toBe(false);
+    expect(isSetupStep(none, { outcome: 'o' }, 'proceed', 'legit_high')).toBe(false);
+    expect(isSetupStep(none, { next_beat: 'x' }, 'verify', 'legit_high')).toBe(false);
+    expect(isSetupStep(none, { next_beat: 'x' }, 'proceed', 'legit_low')).toBe(true);
+    expect(isSetupStep(none, { next_beat: 'x' }, 'proceed', 'fraud')).toBe(false); // a proceed on fraud is a fall
   });
 });
 

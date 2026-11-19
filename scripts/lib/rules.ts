@@ -392,6 +392,11 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
       if (a.kind === 'approve_prompt' && mix.approve_prompt_only_on_fraud && !beatFraud) {
         errors.push(`${b.where}: action "${a.id}": approve_prompt only on fraud (a prompt you started is proceed)`);
       }
+      // A proceed that only moves on from a fraud beat that asks nothing reads as a setup step but is a
+      // fall in the engine; author it as open_link (engage) instead (sceptic T-2.8, GDD §6 opener ruling).
+      if (beatFraud && b.message.request === 'none' && cls(a) === 'proceed' && a.next_beat !== undefined && a.outcome === undefined) {
+        errors.push(`${b.where}: action "${a.id}": a proceed with next_beat from a fraud message with request: none is ambiguous; use kind open_link (engage), or give the message a request`);
+      }
       if (!b.interrupt && s.is_fraud && s.role !== 'arc' && cls(a) === 'engage' && !balance.points.engage_on_fraud.terminal && !a.next_beat) {
         errors.push(`${b.where}: action "${a.id}": engage on fraud is never terminal; it needs next_beat`);
       }

@@ -180,7 +180,10 @@ export function beatById(s: Scenario, id: string): BeatLike | undefined {
  * A setup step: `proceed` that only moves on (next_beat, no outcome) from a beat whose message asks
  * nothing (`request: none`), e.g. 0-3's "check your inbox" page → the reset email. Never decisive.
  */
-export function isSetupStep(beat: Pick<BeatLike, 'message'>, action: Pick<Action, 'next_beat' | 'outcome'>, cls: ActionClass): boolean {
+export function isSetupStep(beat: Pick<BeatLike, 'message'>, action: Pick<Action, 'next_beat' | 'outcome'>, cls: ActionClass, truth: Truth): boolean {
+  // On fraud a proceed is always decisive (a fall), even from a beat that asks nothing (sceptic T-2.8);
+  // the validator makes authors use open_link (engage) there instead.
+  if (truth === 'fraud') return false;
   return cls === 'proceed' && action.next_beat !== undefined && action.outcome === undefined && beat.message.request === 'none';
 }
 
@@ -587,7 +590,7 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
         let ended: RunnerState = { ...withGroup(next, { ...g2, pendingOutcome: action.outcome }), phase: 'what_now', timer: null, pushers: stopPushers(next.pushers) };
         for (const i of ended.interrupts) if (i.afterBeat !== undefined && !i.arrived && g2.visited.includes(i.afterBeat)) ended = arriveInterrupt(ctx, ended, i.id);
         return ended;
-      } else if (isSetupStep(beat, action, cls)) {
+      } else if (isSetupStep(beat, action, cls, st.truth)) {
         // GDD §6 / §16 ruling 2: proceeding from a setup beat (an opener that asks nothing) is not the
         // decisive action. Recording it would let a timer expiry on the next beat score as that proceed
         // (QA T-2.8 M1), and would end LO-01/LO-04 credit (checks and pauses "before deciding") early.

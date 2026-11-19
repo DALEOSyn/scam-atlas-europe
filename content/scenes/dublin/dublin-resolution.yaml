@@ -1,0 +1,46 @@
+# Dublin resolution (GDD §28.2 beat 3, STORY §3.8; relieved; 2 panels + If-then): after the boss debrief.
+# Variant dublin_bank_called (story-only, set by every boss fall outcome: card_typed_application,
+# bond_transfer_sent, verification_fee_paid; R17 approach): the first panel, Róisín (calm). It names the step
+# already taken; no refund promise, no amount, never "again" (STORY §4.2 rule 5, §5.2, §5.4).
+# Declan never falls; his plan (a savings account and retraining) is his own choice in every branch. Declan
+# has no "relieved" expression in the cast SVG; the spec gives laughing and calm for his two lines.
+# If-then (Declan), word for word from STORY §3.8, with the extra line under it. The panel models the habit
+# with the shared pose calm-phone-look (ART_DIRECTION §1.2.2, cast.yaml): phone in hand, screen turned away,
+# looking the firm up himself.
+# Map invitation (Róisín, STORY §3.8) is not built yet (ENGINE "Not in S3").
+# Not sensitive (producer ruling, GDD §28.11 Q5): the chapter content note is shown on the map instead.
+id: dublin-resolution
+chapter: dublin
+slot: resolution
+panels:
+  - backdrop: dublin-hall
+    crop: right
+    speaker: roisin
+    expression: calm
+    flip: true
+    if_flag: dublin_bank_called
+    line: "The bank was called straight away, the right first step. We'll see what it can do."
+    alt: "Róisín, calm, by the tea table with the urn, cups and biscuits."
+  - backdrop: dublin-hall
+    crop: left
+    speaker: declan
+    expression: laughing
+    with: { id: roisin, expression: warm }
+    line: "Boring savings account and a course to retrain. Róisín says boring is the new exciting."
+    alt: "Declan laughing in the community hall by the tall arched windows; Róisín listens, smiling."
+  - backdrop: dublin-hall
+    crop: right
+    speaker: declan
+    expression: calm
+    flip: true
+    line: "And anyone charging a fee to get lost money back? Same crowd."
+    alt: "Declan, calm, by the tea table with the urn, cups and biscuits."
+  - backdrop: dublin-hall
+    crop: centre
+    speaker: declan
+    expression: calm-phone-look
+    if_then:
+      cue: "If an investment promises guaranteed returns,"
+      action: "then I find the firm on the regulator's register myself."
+      extra: "Not on the register? Don't pay. Paying to get money out or back? Stop."
+    alt: "Declan, calm, phone in hand, screen turned away, under the warm lamps between the tall arched windows."

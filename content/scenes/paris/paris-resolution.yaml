@@ -29,7 +29,7 @@ panels:
     speaker: ines
     expression: proud
     with: { id: bastien, expression: calm }
-    caption: "Tuesday."
+    caption: "Tuesday. Bastien's back from leave."
     line: "New line on the card: a call or video call never replaces the sign-off. I've shown my mum too."
     alt: "Inès, proud, in the workshop; Bastien listens, calm, by the procedure card."
   - backdrop: paris-workshop

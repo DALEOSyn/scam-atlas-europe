@@ -347,7 +347,7 @@ describe('brand registry (T-1.8)', () => {
     const r = report();
     const brands = loadBrands(CONTENT, r);
     expect(r.errors).toEqual([]);
-    expect(brands.size).toBe(30); // 8 + Amsterdam (T-3.4): klaverwerk, tallyfern + Paris (T-3.5): ruchelune, volet-bleu, feuillemont, platinoir, cuivrelin, ostrelle + Madrid/Warsaw story art (T-S6a): votelark, tremolik + Lisbon (T-S6b): roostwell, zonelet + Dublin/Stockholm (T-S6c): postwick, ellisfen, quorvex, glimmerfund, backhaven-recovery, brindlecove-bonds, orla-fennick, kindhand, skarvlund-trygg + Dublin regulator (CR-38, sceptic): fairmeasure
+    expect(brands.size).toBe(33); // 8 + Amsterdam (T-3.4): klaverwerk, tallyfern + Paris (T-3.5): ruchelune, volet-bleu, feuillemont, platinoir, cuivrelin, ostrelle + Madrid/Warsaw story art (T-S6a): votelark, tremolik + Lisbon (T-S6b): roostwell, zonelet + Dublin/Stockholm (T-S6c): postwick, ellisfen, quorvex, glimmerfund, backhaven-recovery, brindlecove-bonds, orla-fennick, kindhand, skarvlund-trygg + Dublin regulator (CR-38, sceptic): fairmeasure + Brussels (T-3.12): marrowby, summer-euro-club, capital-courant
   });
 
   it('collects domain, sub-brand domains, email hosts and look-alikes incl. {host} objects', () => {

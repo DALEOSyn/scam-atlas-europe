@@ -1,0 +1,183 @@
+# 10-2 SMS "TRUNDLE": the posters are held for a €1.95 delivery fee (GDD §30.4 10-2; smishing-parcel-fee
+# callback, Berlin). Fraud, difficulty 4, timer 35 s; pusher at 18 s (same thread); interrupt (Adaeze) at
+# 12 s. Levers urgency, small_amount. Trundle spoofed; look-alike trundle-redelivery.example (registered).
+# Checkables (5; R 2): sender D (anyone can set a sender name; the sender-or-link decoy) · reference D (a parcel
+# is easy to guess) · link R (look-alike owner part) · claim R (a fee by text; the app shows real fees) ·
+# request D (couriers can charge fees; where you pay matters). The request is a decoy on purpose (§30.8 6c).
+# fee_page: read-only training page (Red Line 2), fields as the engine's pay page. Not in R.
+# Spec deviation (§30.4 shared rule, "tell_trusted_adult is stop in every personal-money fall"): the player's
+# own card was used, so tell_trusted_adult joins as a stop step and keep_evidence ("the text and the page
+# address") moves to layer 2 and already_clicked (max 6, exactly 2 harmful). reply_to_scam_text is Berlin's
+# shipped reply_ask_money_back.
+id: brussels-02-poster-parcel
+chapter: brussels
+role: standard
+pattern: smishing-parcel-fee
+theme: parcel
+learning_objectives: [LO-02, LO-03]
+difficulty: 4
+is_fraud: true
+device: sms
+setup: "The Atlas posters are on their way with Trundle."
+brands: [trundle, larchwick, kettle, waymarker]
+cast: [adaeze]
+pressure:
+  timer: true
+  levers: [urgency, small_amount]
+  pusher:
+    messages:
+      - { at_seconds: 18, text: "Last reminder: your parcel goes back to the sender today." }
+
+message:
+  sender: { display: "TRUNDLE", detail: "Sender name: TRUNDLE" }
+  body: "TRUNDLE: Your parcel (Waymarker posters) is held: unpaid delivery fee of €1.95. Pay today at trundle-redelivery.example/pay or it goes back."
+  request: pay
+  ask: { text: "Pay today at trundle-redelivery.example/pay" }
+  claims:
+    - text: "Your parcel (Waymarker posters) is held: unpaid delivery fee of €1.95."
+  references: ["Waymarker posters"]
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows TRUNDLE, as a real Trundle text would. Anyone can set a sender name, so it can't prove anything either way."
+    red_flag: false
+    type: sender
+  - target: link
+    reveal: "trundle-redelivery.example: the owner part is trundle-redelivery.example, not trundle.example."
+    red_flag: true
+    type: link
+  - target: reference
+    reveal: "Names your posters. A parcel is easy to guess, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "A small fee to release a parcel, by text. Trundle shows any real fee in its app."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "Asks you to pay. Couriers can charge fees, so it can't prove anything either way. Where you pay is what matters."
+    red_flag: false
+    type: request
+
+actions:
+  - id: open_fee_link
+    label: "Pay the fee through the link"
+    kind: open_link
+    next_beat: fee_page
+    pressure_target: true
+  - id: open_trundle_app_posters
+    label: "Open the Trundle app yourself"
+    kind: verify_in_app
+    outcome: posters_out_for_delivery
+  - id: report_fee_text_posters
+    label: "Report the text as spam"
+    kind: report
+    outcome: poster_text_reported
+  - id: delete_fee_text_posters
+    label: "Delete the text"
+    kind: delete
+    outcome: poster_text_deleted
+
+beats:
+  - id: fee_page
+    device: browser
+    message:
+      page: { address: "trundle-redelivery.example/pay", title: "Trundle · Pay delivery fee" }
+      body: "Delivery fee €1.95. Enter your card details to release your parcel today."
+      request: pay
+      ask: { text: "Enter your card details to release your parcel today." }
+    inspectables:
+      - target: page.address
+        reveal: "The address bar still says trundle-redelivery.example, not trundle.example."
+        red_flag: true
+        type: page_address
+      - target: page.info
+        reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
+        red_flag: false
+        type: padlock
+      - target: request
+        reveal: "Your card details, on a page you reached from a text. Trundle shows any real fee in its own app."
+        red_flag: true
+        type: request
+    actions:
+      - id: pay_redelivery_fee
+        label: "Pay €1.95"
+        kind: enter_details
+        outcome: fee_card_misused
+        pressure_target: true
+      - id: close_open_trundle_app
+        label: "Close it and open the Trundle app"
+        kind: verify_in_app
+        outcome: posters_out_for_delivery
+      - id: close_fee_page_posters
+        label: "Close the page"
+        kind: ignore
+        outcome: fee_page_closed
+
+interrupts:
+  - id: adaeze_badges
+    at_seconds: 12
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Adaeze Okafor-Lind", detail: "Saved contact: Adaeze Okafor-Lind (staff directory)" }
+      from_cast: adaeze
+      body: "Badges printed! One says 'Inspecter'. We'll live."
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Adaeze's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what she asks for: nothing, just a typo report."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_adaeze_badges
+        label: "Reply: it's a collector's item"
+        kind: proceed
+        outcome: adaeze_badge_kept
+        pressure_target: true
+      - id: report_adaeze_badges
+        label: "Report the message"
+        kind: report
+        outcome: adaeze_badges_reported
+
+outcomes:
+  fee_card_misused:
+    narrative: "The page says \"Paid\". That evening your Larchwick app shows a card payment you didn't make."
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: report_to_police_online, category: report }
+      - { step: wait_and_see, category: harmful }
+      - step: reply_ask_money_back
+        category: harmful
+        feedback: "Asking for it back feels fair, but the reply goes to whoever sent the fake text, and tells them your number is live. Block the card and call your bank instead."
+  posters_out_for_delivery:
+    narrative: "You open the Trundle app yourself. Posters: out for delivery today. No fee."
+  poster_text_reported:
+    narrative: "Reported. Your phone files the text under spam."
+  poster_text_deleted:
+    narrative: "Deleted. The posters arrive that afternoon, fee-free."
+  fee_page_closed:
+    narrative: "You close the page without paying. The posters arrive that afternoon, fee-free."
+  adaeze_badge_kept:
+    narrative: "Adaeze: \"A collector's item. I'm wearing it myself.\""
+  adaeze_badges_reported:
+    narrative: "You reported it. Careful is good; this one really was Adaeze, about the badges."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A small fee by text, on a look-alike address."
+    what_works: "Open the courier's app yourself."
+  layer2:
+    message_flags:
+      - "\"Last reminder: your parcel goes back to the sender today\": a deadline, so you pay before you check."
+    notes: "Same trick as ever: a tiny fee, a deadline, a link. The app you installed tells you the truth. If you paid, keep the text and the page address for your bank and the police. Where to report and get help (Belgium) is on the help screen."
+  device_tip: "On a real phone, don't tap a delivery link in a text. Open the courier's app or type its address yourself and look up the parcel."
+  habit_card: open-it-yourself
+  already_clicked:
+    clicked: "Opened the page but typed nothing? Close it and delete the text."
+    entered_details: "Typed your card on the page? Block the card in your banking app, call your bank on the number on your card, and keep the text and the page address."
+  sources: [be-ccb-safeonweb-2025, be-febelfin-phishing-2025, de-vz-paketdienst-sms, ch-ncsc-links-2025]

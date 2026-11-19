@@ -809,3 +809,64 @@ brands:
 # Not yet registered (request ux-artist before writing these scenarios): streaming service (0-4 now
 # uses Kettle, so possibly not needed), utility company (Rome), in-world regulator warning list
 # (Dublin; Fairmeasure, registered in the engine branch).
+
+  # -------------------------------------------------------------------------------------------
+  # Brussels (GDD §30.11, BRAND_CHECK BR1-BR3; T-3.12 scenario-writer, 2026-11-19). Proposed here so the
+  # scenarios validate; ux-artist owns marks and palettes (none needed: text only), sceptic-reviewer checks
+  # resemblance. The real Belgian card-blocking service is named only on the Belgium help card.
+  - id: marrowby
+    name: "Marrowby"
+    kind: other
+    sector: in-world card-blocking line (genuine; impersonated on Brussels boss beat 2)
+    role_in_game: >
+      The in-world line you call to block a lost or stolen card. On screen always "Marrowby, the card-blocking
+      line" (BRAND_CHECK BR1 condition), never "Marrowby Card Stop" or any wording that borrows the real
+      line's name. It never calls anyone first; the Brussels boss shows a caller using its name. No domain.
+    known_channels: "The number on the back of your Larchwick card and in the Larchwick app (shown masked, never dialled from a message)."
+    rationale:
+      name: "Coined, place-like ('Marrowby'); no word or sound meaning stop, halt, block or card (BRAND_CHECK BR1; Stillcard, Cardhalt and Haltwell rejected, R19(6))."
+      colour_shape: "No mark drawn: plain text in the call screen's caller ID. Never the real line's colours; its masked numbers never resemble the real line's number (GDD §30.4)."
+    checked_against: ["Belgian card-blocking service (named on the help card only)", "Garrowby", "Barrowby", "Harrowby", "Borrowby", "Moorby"]
+    web_check: "Low (BRAND_CHECK BR1): no bank, card, fraud-line or Belgian service of that name."
+    lookalike_examples: []
+    trademark_search: "web-checked 2026-11-19; TMview and the Belgian KBO/BCE pending before G4"
+    status: draft
+
+  - id: summer-euro-club
+    name: "Summer Euro Club"
+    kind: other
+    sector: money-mule recruiter profile on Postwick (scam-only; Brussels 10-4)
+    role_in_game: >
+      The profile that DMs Noor an "easy money" offer in 10-4 (handle @summer_euro_club: no dot, so it never
+      ends in a real TLD). Shown only inside the forwarded card; never a page, link or mark.
+    rationale:
+      name: "Replaces Easy Euro Club (BRAND_CHECK BR2: echoes a real euro-account platform). Spare: Quick Cash Crew."
+      colour_shape: "Not drawn; name and handle only."
+    checked_against: ["EasyEuro (white-label neobanking platform; BRAND_CHECK BR2)", "Summer Cup pages (unrelated)"]
+    web_check: "Low (BRAND_CHECK BR2): no hit for 'Summer Euro Club'."
+    lookalike_examples: []
+    trademark_search: "web-checked 2026-11-19; TMview and the Belgian KBO/BCE pending before G4"
+    status: draft
+
+  - id: capital-courant
+    name: "Capital Courant"
+    kind: other
+    sector: news website (genuine in-world site; Brussels boss beat 1 shows a fake warning on it)
+    role_in_game: >
+      A fictional Brussels culture-and-news site open on the projector laptop when a fake "virus" warning
+      covers it (GDD §30.7 beat 1). The site is genuine; the warning is not its own. No mark.
+    domain: capital-courant.example
+    rationale:
+      name: >
+        GDD §30.11's alternative to brussels-daily.example, chosen because "<city> Daily" is a common real
+        news-brand pattern and was not in BRAND_CHECK; "Capital Courant" is coined (French 'courant', current).
+        Needs a BRAND_CHECK pass (scenario-writer flag, T-3.12).
+      colour_shape: "No mark drawn: the page header is plain text in the browser device's neutral page style."
+    checked_against: []
+    web_check: "Not yet checked (T-3.12 flag): request BRAND_CHECK before merge."
+    lookalike_examples: []
+    trademark_search: "not yet checked; BRAND_CHECK requested (T-3.12)"
+    status: draft
+  # Scam-side names (GDD §30.11, BRAND_CHECK BR3): "Robin" and "Sacha" (the two other names on the Alex reveal
+  # card; "Robin" is also the profile in Teo's chat) and "M. Ferreira" (10-8's payee name, borrowed from Mateus,
+  # never his fault). Generic first names without surnames: not brands, so not registered as entries.

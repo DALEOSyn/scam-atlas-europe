@@ -1,0 +1,125 @@
+# 10-6 A Gatewren login you started, on the office laptop (GDD §30.4 10-6; e-id-approval-on-call, in-focus
+# genuine twin of boss beat 3; callback: Stockholm and Home "sign in only where you started").
+# Genuine, high stakes (an approval), difficulty 5, honest timer 35 s, honest deadline "Gatewren requests
+# expire after 3 minutes"; interrupt (Mateus) at 14 s. Approve is `proceed` (player_started).
+# Checkables (G, 5): the four prompt details (the first "It fits" with the caveat, SK2; `when` neutral) and the
+# request (the prompt's own line as `ask`).
+id: brussels-06-desk-signin
+chapter: brussels
+role: standard
+pattern: e-id-approval-on-call
+theme: work
+player_started: true
+learning_objectives: [LO-09, LO-17]
+difficulty: 5
+is_fraud: false
+stakes: high
+device: auth
+setup: "On the office laptop you opened Waymarker Desk yourself to print tomorrow's guest list, and tapped 'Log in with Gatewren'."
+brands: [gatewren, waymarker, kettle]
+cast: [mateus]
+pressure:
+  timer: true
+  levers: [urgency]
+  honest_deadline: "Gatewren requests expire after 3 minutes"
+
+message:
+  prompt: { type: sign_in, service: "Waymarker Desk", where: "Brussels, Belgium", device: "Laptop", when: "Just now" }
+  body: "Log in to Waymarker Desk?"
+  request: approve
+  ask: { text: "Log in to Waymarker Desk?" }
+
+inspectables:
+  - target: prompt.service
+    reveal: "It fits: Waymarker Desk, the site you just opened yourself. That isn't proof on its own, so weigh it with what you started."
+    red_flag: false
+    type: prompt
+    reassures: true
+  - target: prompt.where
+    reveal: "It fits: here, in Brussels."
+    red_flag: false
+    type: prompt
+  - target: prompt.device
+    reveal: "It fits: the office laptop."
+    red_flag: false
+    type: prompt
+  - target: prompt.when
+    reveal: "'Just now'. Every request says that, so it can't prove anything either way."
+    red_flag: false
+    type: prompt
+  - target: request
+    reveal: "A login you started, to the site you opened. Approving is right."
+    red_flag: false
+    type: request
+
+actions:
+  - id: approve_desk_signin
+    label: "Approve"
+    kind: proceed
+    outcome: guest_list_printing
+    pressure_target: true
+  - id: check_desk_page_first
+    label: "Check the Waymarker Desk page first"
+    kind: verify_in_app
+    outcome: desk_page_says_waiting
+  - id: report_desk_signin
+    label: "Report the request"
+    kind: report
+    outcome: desk_signin_reported
+  - id: deny_desk_signin
+    label: "Deny it"
+    kind: deny_prompt
+    outcome: guest_list_waits
+
+interrupts:
+  - id: mateus_train
+    at_seconds: 14
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Mateus (work phone)", detail: "Saved contact: Mateus (work phone)" }
+      from_cast: mateus
+      body: "On the train, arriving at 6. Save me a chair and a sandwich."
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Mateus's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what he asks for: a chair and a sandwich, nothing more."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_mateus_chair
+        label: "Reply: chair saved, sandwich negotiable"
+        kind: proceed
+        outcome: mateus_chair_saved
+        pressure_target: true
+      - id: report_mateus_train
+        label: "Report the message"
+        kind: report
+        outcome: mateus_train_reported
+
+outcomes:
+  guest_list_printing:
+    narrative: "Gatewren: \"Logged in.\" Waymarker Desk opens, and tomorrow's guest list starts printing. Sixty names, one jammed page."
+  desk_page_says_waiting:
+    narrative: "The page says \"Waiting for Gatewren\". You approve, and the guest list starts printing."
+  desk_signin_reported:
+    narrative: "You report it. The IT desk writes back: \"That was your own login, so nothing to worry about. Try again whenever you like.\" The guest list waits."
+  guest_list_waits:
+    narrative: "You deny it and try again later. The guest list waits."
+  mateus_chair_saved:
+    narrative: "Mateus: \"Negotiable?! I'm bringing my own then.\""
+  mateus_train_reported:
+    narrative: "You reported it. Careful is good; this one really was Mateus, on his saved number."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "You opened it, chose to log in, and the request names it."
+    what_works: "Approving was right."
+  layer2:
+    message_flags: []
+    notes: "Approve only what you started. That's the whole rule, whoever calls. Where to report and get help (Belgium) is on the help screen."
+  device_tip: "On a real device, approve a sign-in in your e-ID or sign-in app only right after you opened the site yourself and chose to log in."
+  habit_card: only-approve-what-you-started
+  sources: [be-febelfin-vishing-2026, eu-epc-threats-2025]

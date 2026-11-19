@@ -1,0 +1,108 @@
+# 10-4 Noor forwards a Postwick DM: "use your account for a few transfers" (GDD §30.4 10-4; money-mule-recruitment).
+# Advice scenario (CR-40, R19(1)-(2)): you advise Noor; Noor never sends anything, whatever you say. Every
+# branch ends with Noor saying no and telling her mum. Fraud, difficulty 4, calm on purpose (no timer, no
+# pusher, no interrupt: a sensitive topic, and Noor asks before anything is due). Levers greed, social_proof,
+# helpfulness. Postwick is the genuine platform; "Summer Euro Club" (@summer_euro_club) is the scam-side
+# profile (BRAND_CHECK BR2).
+# Checkables (4; R 2), all on the forwarded DM (Noor's own bubble is never checkable): the forwarded sender D ·
+# reference D (social proof) · claim R (easy money for "a few transfers") · request R (her banking-app login and
+# card details). "Banking-app login" is the game's wording for "login details or codes" (MMR §10); the DM never
+# says how money moves (BXS rules).
+# Wording (BX7, MMR §6-§7): the consequence sentence appears here only, in layer 2, followed by the next step;
+# the pressure sentence and "Asking for help is never the wrong thing to do." follow. Outcome lines never call
+# anyone's action a crime, never mention punishment, parents' liability or threats, and never say "you won't
+# be in trouble". After advise_comply the debrief adds the advice_line (psych M1), without blame.
+id: brussels-04-noor-easy-money
+chapter: brussels
+role: standard
+pattern: money-mule-recruitment
+theme: easy-money
+learning_objectives: [LO-12, LO-18, LO-05]
+difficulty: 4
+is_fraud: true
+device: messenger
+setup: "After lunch. Noor is at the next desk, scrolling. Your phone buzzes: it's her."
+brands: [kettle, postwick, summer-euro-club]
+cast: [noor]
+advice: { for: noor }
+pressure:
+  timer: false
+  levers: [greed, social_proof, helpfulness]
+
+message:
+  sender: { display: "Noor", detail: "Saved contact: Noor" }
+  from_cast: noor
+  body: "Can I ask you now? Someone on Postwick sent me this. It's just a few transfers, and I really want summer job money 👀 Is this legit??"
+  request: enter_details
+  forwarded:
+    app: postwick
+    sender: { display: "Summer Euro Club", detail: "@summer_euro_club · Postwick · 2 mutual friends" }
+    body: "Hey Noor! Want €300 this week? Super easy 💸 I just need to use your account for a few transfers. Send me your banking-app login and card details. Totally safe, loads of people at your school already do it 🙂"
+  ask: { text: "Send me your banking-app login and card details." }
+  claims:
+    - text: "Want €300 this week? Super easy"
+  references: ["loads of people at your school already do it"]
+  earlier:
+    - { when: "This morning", body: "Train food: a sandwich-shaped disappointment" }
+  l10n_note: "Noor is 15 and texts like it ('??', emoji). Keep her voice casual in every locale. The DM's '€300 this week' is an offer, not a loss."
+
+inspectables:
+  - target: forwarded.sender
+    reveal: "Two mutual friends. Friends' accounts can be faked or tricked too, so it can't prove anything either way."
+    red_flag: false
+  - target: reference
+    reveal: "Says others at her school do it. Anyone can say that, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "Easy money you didn't ask for, for 'a few transfers'."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "Her banking-app login and card details. Nobody needs those to pay you."
+    red_flag: true
+    type: request
+
+actions:
+  - id: advise_probably_fine
+    label: "Only a few transfers? Probably fine"
+    kind: advise_comply
+    outcome: noor_checks_with_mum
+    pressure_target: true
+  - id: advise_tell_mum
+    label: "It's a trap. Send nothing, tell your mum"
+    kind: ask_someone
+    outcome: noor_telling_mum
+  - id: advise_report_postwick
+    label: "Let's report the account on Postwick"
+    kind: report
+    outcome: noor_reported_account
+  - id: advise_block
+    label: "Ignore it and block them"
+    kind: ignore
+    outcome: noor_blocked
+
+outcomes:
+  noor_checks_with_mum:
+    narrative: "Noor: \"Hmm. I'll check with Mum too.\" A few minutes later: \"Mum says no way. I'm not sending anything.\""
+  noor_telling_mum:
+    narrative: "Noor: \"Okay. Telling Mum now. She says thanks, inspector.\""
+  noor_reported_account:
+    narrative: "Noor: \"Reported. And I'm telling Mum too.\""
+  noor_blocked:
+    narrative: "Noor: \"Blocked. I'll tell Mum as well, just in case.\""
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Easy money for using your account, login or card."
+    what_works: "Never lend your account. Say no and ask someone."
+  layer2:
+    message_flags: []
+    notes: "Letting someone use your account like this is a crime, and the account holder can be held responsible. If it's already happened, getting help early is the right move. If anyone pressures you to keep going, that's a reason to get help now. Asking for help is never the wrong thing to do. Where to report and get help (Belgium) is on the help screen."
+  device_tip: "On a real phone, never send a banking login, card details or codes in a chat, whoever asks. Report the account in the app and tell someone you trust."
+  habit_card: easy-money-costs-you
+  advice_line: "Noor asked, and that was the smart bit. With an offer like this, the answer is always no."
+  already_clicked:
+    entered_details: "If you've already shared it, it's not too late: change your login, call your bank on the number on your card, and tell a trusted adult."
+  sources: [eu-europol-mule-flyer-be-fr, be-febelfin-money-mules, be-febelfin-games-campaign-2025, be-police-money-mules-2020, be-febelfin-money-mules-2023]

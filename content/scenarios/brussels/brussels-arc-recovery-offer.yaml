@@ -1,0 +1,102 @@
+# Arc finale: the recovery-agency test (GDD §30.6; CR-43(e); §28.5 items 2 and 9). Plays for every ending with
+# money in (C; R and a report with money in, R22(1)), after the arc damage control. Unscored for the chapter
+# (arc points only); no timer (R22). Blame on the lie first (STORY §5.8) in the setup. No amount anywhere
+# (§28.5 item 8); never "again" or "twice" (§28.5 item 9).
+# Checkables (5): sender D · link D · reference D (scammers share victims' details) · claim R (BE FSMA: recovery
+# firms may falsely claim to work with the police or supervisors) · request R (a fee first).
+# The fall's recovery_note (R22(5), psych M2/M4) shows the "says nothing about you" line on "Your steps" at once.
+# Spec deviation (§30.4 shared rule): the fall's list is Dublin's with tell_trusted_adult as a stop step in place
+# of keep_evidence (as Dublin 8-3); "keep the emails" is in already_clicked.
+id: brussels-arc-recovery-offer
+chapter: brussels
+role: arc
+finale: recovery_offer
+learning_objectives: [LO-13, LO-16]
+is_fraud: true
+device: email
+setup: "Alex was never real. The lie was theirs, not yours. A few days later, an email arrives."
+brands: [backhaven-recovery, glimmerfund, fairmeasure, larchwick]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Backhaven Recovery", detail: "cases@backhaven-recovery.example" }
+  subject: "We can get your money back"
+  body: "Hi Sam, our records show you lost money on Glimmerfund. Our legal team works with the police and the regulator to trace it. A small release fee opens your file today: backhaven-recovery.example/file"
+  request: pay
+  ask: { text: "A small release fee opens your file today" }
+  claims:
+    - text: "Our legal team works with the police and the regulator"
+  references: ["you lost money on Glimmerfund"]
+
+inspectables:
+  - target: sender.detail
+    reveal: "A firm's own address. A website and email address can't tell you who runs them, so it can't prove anything either way."
+    red_flag: false
+    type: sender
+  - target: link
+    reveal: "backhaven-recovery.example, its own address. It can't prove anything either way."
+    red_flag: false
+    type: link
+  - target: reference
+    reveal: "Knows where you lost money. Scammers share victims' details, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "Recovery firms may falsely claim to work with the police or the regulator. Regulators never contact people to recover money for a fee."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "A fee first, to get money back."
+    red_flag: true
+    type: request
+
+actions:
+  - id: pay_release_fee
+    label: "Pay the fee to open your file"
+    kind: pay
+    outcome: release_fee_paid
+    pressure_target: true
+  - id: look_up_backhaven
+    label: "Look Backhaven up on the Fairmeasure register"
+    kind: check_official_list
+    outcome: backhaven_not_authorised
+  - id: report_backhaven_offer
+    label: "Report the email"
+    kind: report
+    outcome: backhaven_offer_reported
+  - id: delete_backhaven_offer
+    label: "Delete it"
+    kind: delete
+    outcome: backhaven_offer_deleted
+
+outcomes:
+  release_fee_paid:
+    narrative: "The page says \"File opened\". A day later another email arrives: a second fee is due before anything can be traced."
+    recovery_note: "People who've lost money are often targeted on purpose afterwards, because scammers share victims' details. That says nothing about you."
+    recovery:
+      - { step: stop_paying, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: report_firm_to_regulator, category: report }
+      - { step: pay_recovery_service, category: harmful }
+      - { step: pay_last_fee, category: harmful }
+  backhaven_not_authorised:
+    narrative: "You open the Fairmeasure register yourself. Backhaven Recovery: not authorised. Fairmeasure's own page says it never works with recovery firms and never charges fees to get money back."
+    register: { firm: "Backhaven Recovery", result: not_listed }
+  backhaven_offer_reported:
+    narrative: "Reported. Your mail app moves it to junk. Your bank and the police are where help really is."
+  backhaven_offer_deleted:
+    narrative: "Deleted. Your bank and the police are where help really is, and they don't charge a fee."
+
+debrief:
+  variant: arc
+  layer1:
+    tell: "A stranger offering your money back, fee first."
+    what_works: "Never pay to get money back."
+  layer2:
+    message_flags: []
+    notes: "Anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam. People who've lost money are often targeted on purpose afterwards, because scammers share victims' details. That says nothing about you. Call your bank straight away; it may be able to help. Where to report and get help (Belgium) is on the help screen."
+  habit_card: stop-the-damage-first
+  already_clicked:
+    paid: "Paid a fee already? Stop paying, call your bank on the number on your card, and keep the emails. It says nothing about you."
+  sources: [be-fsma-recovery-room, be-fsma-trading-platforms-2025, be-fsma-warnings-list, ie-bpfi-recovery-2024]

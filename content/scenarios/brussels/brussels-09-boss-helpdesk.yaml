@@ -1,0 +1,322 @@
+# 10-9 Boss: the helpdesk (GDD §30.7; remote-access-support-call, with spoofed-authority-call and
+# e-id-approval-on-call). Late afternoon, the projector laptop. Beats are scammer-driven and arrive whatever
+# the player did. Theme support. Levers fear, authority, urgency, helpfulness. One deciding question per beat
+# (RAS §8): beat 1 "did a warning give me a number to call?", beat 2 "did someone who contacted me ask to get
+# onto my device?", beat 3 "did I start this sign-in?". A design combination (fraud-researcher): no debrief
+# presents the sequence as a known one.
+# Beat 1 (browser, start, 40 s; CR-42): a game-styled warning over a genuine news page (capital-courant.example,
+# GDD §30.11's alternative to brussels-daily.example; see brands.yaml). R: claim#2 (the countdown), the request
+# (BX2). D: the page address, page info (the shared padlock line), phone_number
+# (BX3), claim. Close (the overlay's button) picks the one dismiss action.
+# Beat 2 (call, +45 s, 30 s, covered_by start): "Marrowby" (BR1: always "Marrowby, the card-blocking line").
+# request install: no ask (CR-30), so the install line is claim#2. R: claim (BX1, scoped to the card-blocking
+# line only), claim#2 (BX4). D: caller_id (SK1), reference. The €1,240 "waiting payment" is story text, never
+# a loss. Hang up opens "What now?".
+# Beat 3 (call, +45 s, 30 s, covered_by start + card_call): "Larchwick Bank" with a Gatewren banner (display
+# only, §17). R: request (BX5), claim#2 ("switch off your phone"). D: caller_id, claim. Written to read true
+# whatever the player did at beats 1–2.
+# Interrupt after beat 3 (genuine, Noor), never after a fall (on_fall: skip).
+# Fall narratives: narrative cut only (RAS §3, §29.5); nothing about what the app can do beyond layer 2's
+# "they could see and do what you can". No amount lost. Every fall sets the story-only flag
+# brussels_bank_called (the resolution's opening panel, part 2).
+# Layer 1 tell shortened from GDD §30.7 ("A pop-up number, a 'card line' calling you, a sign-in you didn't
+# start.") to fit the 40-word budget with the longest "You chose" line; the what-works line is unchanged.
+# Damage control (merged, cap 6, exactly 2 harmful; RAS §6 order). Spec deviation (§30.4 shared rule,
+# "tell_trusted_adult is stop in every personal-money fall"; the player's own card and bank are at stake):
+# tell_trusted_adult joins as a stop step and change_password moves to layer 2 and already_clicked ("from
+# another device"). The step labels are shared, so the per-step wording of §30.7 ("turn off the laptop's wifi",
+# fact-check S3's "switch your phone back on…") lives in layer 2 and already_clicked.
+id: brussels-09-boss-helpdesk
+chapter: brussels
+role: boss
+pattern: remote-access-support-call
+theme: support
+learning_objectives: [LO-15, LO-08, LO-09, LO-16]
+difficulty: 5
+is_fraud: true
+device: browser
+setup: "Late afternoon in Waymarker's office. IT has been and gone, and Teo and Noor have gone to the hotel. You're loading tomorrow's slides on the projector laptop."
+brands: [capital-courant, kindhand, marrowby, larchwick, gatewren, waymarker, kettle]
+cast: [noor]
+pressure:
+  timer: true
+  levers: [fear, authority, urgency, helpfulness]
+  pusher:
+    messages:
+      - { at_seconds: 16, beat: card_call, text: "Are you installing it? It goes through in two minutes." }
+
+message:
+  page:
+    address: "capital-courant.example/culture"
+    title: "Capital Courant · Culture"
+    overlay:
+      title: "Security alert"
+      body: "Virus detected. This computer is blocked to protect your data. Call Kindhand Support now on 02 ••• •• 17. You have 5 minutes before your files are deleted."
+  body: "This weekend: a brass band parade through the Marolles, and free entry at three small museums."
+  request: call
+  ask: { text: "Call Kindhand Support now on 02 ••• •• 17." }
+  claims:
+    - text: "Virus detected. This computer is blocked to protect your data."
+    - text: "You have 5 minutes before your files are deleted."
+  phone_numbers: ["02 ••• •• 17"]
+  l10n_note: "The Marolles is a Brussels neighbourhood (flavour only). The warning panel is game-styled: no operating-system or security-product look, no real countdown (CR-42)."
+
+inspectables:
+  - target: page.address
+    reveal: "A news site. Warnings like this can pop up on ordinary sites, so it can't prove anything either way."
+    red_flag: false
+    type: page_address
+  - target: page.info
+    reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
+    red_flag: false
+    type: padlock
+  - target: phone_number
+    reveal: "A Brussels number. A number on screen can be bought anywhere, so it can't prove anything either way."
+    red_flag: false
+    type: phone_number
+  - target: claim
+    reveal: "A page can show any warning it likes, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: claim#2
+    reveal: "A countdown, so you call before you think."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "A warning that gives you a number to call. That's the scam: close it, don't call."
+    red_flag: true
+    type: request
+
+actions:
+  - id: call_kindhand_number
+    label: "Call the number and let support fix it"
+    kind: install_or_remote
+    outcome: pointer_moves_b1
+    pressure_target: true
+  - id: close_tell_it_desk
+    label: "Close the browser and tell the IT desk"
+    kind: call_back_known
+    outcome: it_desk_closing_right
+  - id: report_warning_page
+    label: "Report the page"
+    kind: report
+    outcome: warning_page_reported
+  - id: close_browser_b1
+    label: "Close the browser"
+    kind: ignore
+    outcome: browser_closed_b1
+
+beats:
+  - id: card_call
+    device: call
+    arrives_after: 45
+    covered_by: [start]
+    message:
+      sender: { display: "Marrowby", detail: "+32 2 ••• •• 64 · Not a saved contact" }
+      transcript:
+        - { speaker: caller, text: "Good afternoon, Marrowby, the card-blocking line. We're calling about your Larchwick card." }
+        - { speaker: caller, text: "A payment of €1,240 is waiting to go through." }
+        - { speaker: caller, text: "To block it, install Kindhand on the computer you're using and read me the code it shows." }
+      request: install
+      claims:
+        - { text: "Marrowby, the card-blocking line. We're calling about your Larchwick card." }
+        - { text: "install Kindhand on the computer you're using and read me the code it shows" }
+      references: ["your Larchwick card"]
+    inspectables:
+      - target: caller_id
+        reveal: "Shows Marrowby. A caller can set the name and number on your screen, so it can't prove anything either way."
+        red_flag: false
+        type: caller_id
+      - target: reference
+        reveal: "Knows your bank. Lots of people bank there, so it can't prove anything either way."
+        red_flag: false
+        type: reference
+      - target: claim
+        reveal: "The real card-blocking line never calls you first. It's a number you call."
+        red_flag: true
+        type: claim
+      - target: claim#2
+        reveal: "Install an app and read out a code, for someone who called you. A genuine bank employee never asks you to install remote-access software."
+        red_flag: true
+        type: claim
+    actions:
+      - id: install_kindhand_card_line
+        label: "Install Kindhand and read out the code"
+        kind: install_or_remote
+        outcome: pointer_moves_b2
+        pressure_target: true
+      - id: hang_up_call_card_b2
+        label: "Hang up, call the number on your card"
+        kind: call_back_known
+        outcome: larchwick_no_payment
+      - id: report_card_call
+        label: "Report the call"
+        kind: report
+        outcome: card_call_reported
+      - id: hang_up_card_call
+        label: "Hang up"
+        kind: hang_up
+        outcome: card_call_left
+    what_now:
+      call_back_label: "Call the number on your Larchwick card"
+      outcomes:
+        call_back_known: larchwick_no_payment
+        report: card_call_reported
+        done: card_call_left
+
+  - id: bank_call
+    device: call
+    arrives_after: 45
+    covered_by: [start, card_call]
+    message:
+      sender: { display: "Larchwick Bank", detail: "+32 2 ••• •• 00 · Not a saved contact" }
+      transcript:
+        - { speaker: caller, text: "Larchwick fraud team. Marrowby passed your case to us." }
+        - { speaker: caller, text: "Approve the security sign-in Gatewren is showing you now." }
+        - { speaker: caller, text: "Then switch off your phone for an hour, so the scammers can't reach you." }
+      request: approve
+      ask: { text: "Approve the security sign-in Gatewren is showing you now." }
+      claims:
+        - { text: "Marrowby passed your case to us." }
+        - { text: "Then switch off your phone for an hour, so the scammers can't reach you." }
+    banner:
+      device: auth
+      message:
+        sender: { display: "Gatewren" }
+        body: "Gatewren · Log in to Larchwick internet bank · Windows computer · Antwerp · Just now"
+        request: none
+    inspectables:
+      - target: caller_id
+        reveal: "Shows Larchwick Bank. A caller can set the name and number on your screen, so it can't prove anything either way."
+        red_flag: false
+        type: caller_id
+      - target: claim
+        reveal: "Card lines and banks do work together, so it can't prove anything either way."
+        red_flag: false
+        type: claim
+      - target: claim#2
+        reveal: "Switching off your phone cuts you off from your bank's alerts. That's what they want."
+        red_flag: true
+        type: claim
+      - target: request
+        reveal: "A sign-in you didn't start, for a caller. Gatewren shows a Windows computer in Antwerp, not you."
+        red_flag: true
+        type: request
+    actions:
+      - id: approve_switch_off
+        label: "Approve it and switch off your phone"
+        kind: approve_prompt
+        outcome: logged_in_phone_off
+        pressure_target: true
+      - id: deny_call_card_b3
+        label: "Deny, hang up, call your card's number"
+        kind: call_back_known
+        outcome: larchwick_wasnt_us
+      - id: report_bank_call_b3
+        label: "Report the call"
+        kind: report
+        outcome: bank_call_reported
+      - id: deny_bank_prompt_b3
+        label: "Deny it"
+        kind: deny_prompt
+        outcome: bank_prompt_denied
+
+interrupts:
+  - id: noor_projector
+    after_beat: bank_call
+    on_fall: skip   # the default, set explicitly: no cheerful message right after a fall (CR-27)
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Noor", detail: "Saved contact: Noor" }
+      from_cast: noor
+      body: "Grandad wants to know if the projector works yet 😄 Also Mum says hi."
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Noor's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what she asks for: a projector update, nothing more."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_noor_nearly
+        label: "Reply: nearly!"
+        kind: proceed
+        outcome: noor_nearly
+        pressure_target: true
+      - id: report_noor_projector
+        label: "Report the message"
+        kind: report
+        outcome: noor_projector_reported
+
+outcomes:
+  pointer_moves_b1:
+    narrative: "You call. A calm voice asks you to install a helper app and read out its code. You do. The pointer starts moving on its own… Then the screen goes dark: \"Repair in progress. Do not turn off.\""
+    sets_flags: [brussels_bank_called]
+    recovery:
+      - { step: go_offline, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: get_device_checked, category: secure }
+      - { step: let_caller_finish, category: harmful }
+      - { step: pay_to_unlock, category: harmful }
+  pointer_moves_b2:
+    narrative: "You install it and read out the code. The pointer starts moving on its own. Then the screen goes dark: \"Repair in progress. Do not turn off.\""
+    sets_flags: [brussels_bank_called]
+    recovery:
+      - { step: go_offline, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: get_device_checked, category: secure }
+      - { step: let_caller_finish, category: harmful }
+      - { step: pay_to_unlock, category: harmful }
+  logged_in_phone_off:
+    narrative: "Gatewren: \"Logged in.\" Your phone is off. When you switch it back on, Larchwick has sent three alerts."
+    sets_flags: [brussels_bank_called]
+    recovery:
+      - { step: go_offline, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: get_device_checked, category: secure }
+      - { step: let_caller_finish, category: harmful }
+      - { step: pay_to_unlock, category: harmful }
+  it_desk_closing_right:
+    narrative: "You close the browser and ring the IT desk on its directory number: \"Closing it was exactly right. I'll check the laptop tomorrow anyway.\""
+  warning_page_reported:
+    narrative: "You report the page and close the browser. The slides are still there."
+  browser_closed_b1:
+    narrative: "You close the browser. The warning goes with it. The slides are still there."
+  larchwick_no_payment:
+    narrative: "Larchwick, on the number on your card: \"No payment waiting. The card-blocking line never calls you first, and we'd never ask you to install anything.\""
+  card_call_reported:
+    narrative: "Reported. Keep a note of the time and what was said."
+  card_call_left:
+    narrative: "You hang up and leave it there. Nothing was installed."
+  larchwick_wasnt_us:
+    narrative: "You deny it, hang up and call the number on your card. Larchwick: \"That wasn't us. Your account's fine. Keep your phone on.\""
+  bank_call_reported:
+    narrative: "You deny the request, hang up and report the call. Your phone stays on."
+  bank_prompt_denied:
+    narrative: "You deny it. Nobody is logged in. You hang up while the caller is still talking."
+  noor_nearly:
+    narrative: "Noor: \"Grandad says 'nearly' is his favourite word. Mum says hi again.\""
+  noor_projector_reported:
+    narrative: "You reported it. Careful is good; this one really was Noor."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Pop-up number, 'card line' call, sign-in you didn't start."
+    what_works: "Nobody needs your screen. Call the number on your card."
+  layer2:
+    message_flags:
+      - "The warning: a real virus warning on a web page never gives you a number to call. Close it."
+      - "The \"card line\": the real card-blocking line never calls you first. A genuine bank employee never asks you to install remote-access software."
+      - "The \"bank\": a sign-in you didn't start, and \"switch off your phone\". Keep your phone on and call your bank. If it's off, switch it back on first."
+    notes: "With a helper app like that, they could see and do what you can. If it happened: turn off the laptop's wifi or unplug it, call your bank on the number on your card and ask it to block your card and banking app, change your passwords from another device, and have IT check the laptop. Tell someone you trust. Go to the police with screenshots, the numbers used and a short timeline. Where to report and get help (Belgium) is on the help screen."
+  device_tip: "On a real computer, a warning with a phone number is never the real thing: close the browser, or restart. On a real phone, hang up and dial the number on your card yourself."
+  habit_card: nobody-needs-your-screen
+  already_clicked:
+    clicked: "Called the number but installed nothing? Hang up, close the browser, and tell your IT desk or someone you trust."
+    shared_code: "Installed it, read out a code or approved it? Go offline, call your bank on the number on your card, change your passwords from another device, and get the device checked. It can happen to anyone, and telling someone helps."
+  sources: [be-police-microsoft-scam-2024, be-ccb-remote-access-2019, ch-ncsc-fake-support-2024, be-febelfin-vishing-2026, be-febelfin-helpdesk-fraud, be-febelfin-fraudstop-2026, eu-epc-threats-2025, be-police-plainte-arnaque-en-ligne]

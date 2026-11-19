@@ -1,0 +1,171 @@
+# 10-8 Kettle, a new number, "Mateus": a €60 hotel deposit to a new account (GDD §30.4 10-8;
+# family-impersonation chat callback, Amsterdam and Rome). Fraud, difficulty 5, timer 35 s; pusher at
+# 15 s (same chat); interrupt (Adaeze) at 12 s. Levers affection, urgency, small_amount. New contact (CR-19).
+# Checkables (4; R 2): sender R (a new number using a friend's name, as Rome 8-8: the sender-or-link decoy
+# count comes from 10-2, 10-3 and the boss) · claim D (phones get lost) · claim#2 D (friends do pay back) ·
+# request R (money to a new account, from a new number).
+# Payee "M. Ferreira" is borrowed from Mateus (never his fault); typed from the message, "Mateus Ferreira";
+# the name check doesn't match.
+# Spec deviation (§30.4 shared rule): tell_trusted_adult is a stop step in this personal-money fall, so
+# keep_evidence moves to layer 2 and already_clicked (max 6, exactly 2 harmful). call_bank_stop_payment is the
+# shipped "try to stop or recall the payment" step.
+id: brussels-08-mateus-new-number
+chapter: brussels
+role: standard
+pattern: messenger-family-impersonation
+theme: family
+learning_objectives: [LO-07, LO-06]
+difficulty: 5
+is_fraud: true
+device: messenger
+setup: "Late afternoon, back at the office. A Kettle chat opens from a number you don't know."
+brands: [kettle, larchwick, waymarker]
+cast: [mateus, adaeze]
+pressure:
+  timer: true
+  levers: [affection, urgency, small_amount]
+  pusher:
+    messages:
+      - { at_seconds: 15, text: "Please? The desk is waiting 🙏" }
+
+message:
+  sender: { display: "Mateus", detail: "+32 4•• •• •• 58", new_contact: true }
+  body: "Hey, it's Mateus! Lost my phone at the station, using a friend's. The hotel wants a €60 deposit and my card won't work here. Can you send it to this account? I'll pay you back tonight 🙏 BE•• … 0419, M. Ferreira"
+  request: pay
+  ask: { text: "Can you send it to this account?" }
+  claims:
+    - text: "Lost my phone at the station, using a friend's."
+    - text: "I'll pay you back tonight"
+
+inspectables:
+  - target: sender.detail
+    reveal: "Not in your contacts: a new number saying it's Mateus. Anyone can type his name; his saved number is the one to call."
+    red_flag: true
+    type: sender
+  - target: claim
+    reveal: "Phones do get lost, so it can't prove anything either way. His saved number will tell you."
+    red_flag: false
+    type: claim
+  - target: claim#2
+    reveal: "Friends do pay back, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "Money to a new account, from a new number."
+    red_flag: true
+    type: request
+
+actions:
+  - id: send_deposit_app
+    label: "Send €60 in the Larchwick app"
+    kind: start_transfer
+    next_beat: deposit_transfer
+    pressure_target: true
+  - id: call_mateus_saved
+    label: "Call Mateus's saved number"
+    kind: call_back_known
+    outcome: real_mateus_on_train
+  - id: block_report_mateus_number
+    label: "Block and report the number"
+    kind: block
+    outcome: mateus_number_blocked
+  - id: ignore_mateus_number
+    label: "Ignore it"
+    kind: ignore
+    outcome: mateus_number_ignored
+
+beats:
+  - id: deposit_transfer
+    device: banking
+    message:
+      account: { nickname: "Your current account" }
+      payee: { name: "Mateus Ferreira", iban: "BE•• … 0419", name_check: mismatch, amount: "€60.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "Doesn't match: this account isn't held by Mateus Ferreira."
+        red_flag: true
+        type: payee
+      - target: payee.iban
+        reveal: "The account number from the chat. An IBAN looks the same whoever holds it, so it can't prove anything either way. The name check tells you more."
+        red_flag: false
+        type: payee
+    actions:
+      - id: send_deposit_anyway
+        label: "Send €60 anyway"
+        kind: pay
+        outcome: deposit_sent
+        pressure_target: true
+      - id: cancel_call_mateus_saved
+        label: "Cancel and call Mateus's saved number"
+        kind: call_back_known
+        outcome: real_mateus_on_train
+      - id: cancel_deposit
+        label: "Cancel"
+        kind: ignore
+        outcome: deposit_cancelled
+
+interrupts:
+  - id: adaeze_chairs
+    at_seconds: 12
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Adaeze Okafor-Lind", detail: "Saved contact: Adaeze Okafor-Lind (staff directory)" }
+      from_cast: adaeze
+      body: "Chairs: sixty. Sandwiches: questionable."
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Adaeze's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what she asks for: nothing, just a count."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_adaeze_chairs
+        label: "Reply: blame Noor"
+        kind: proceed
+        outcome: adaeze_blames_noor
+        pressure_target: true
+      - id: report_adaeze_chairs
+        label: "Report the message"
+        kind: report
+        outcome: adaeze_chairs_reported
+
+outcomes:
+  deposit_sent:
+    narrative: "Sent. Ten minutes later the real Mateus texts from his saved number: \"Save me a sandwich!\" He knows nothing about a deposit."
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: tell_real_person, category: warn }
+      - { step: report_number_in_app, category: report }
+      - { step: pay_second_request, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  real_mateus_on_train:
+    narrative: "Mateus, on his saved number: \"My phone's right here, at eighty percent. Not me! I'm on the train.\""
+  mateus_number_blocked:
+    narrative: "Blocked and reported. The chat goes quiet."
+  mateus_number_ignored:
+    narrative: "You leave it. The \"Please?\" sits there unanswered. At 6, Mateus walks in with his own phone."
+  deposit_cancelled:
+    narrative: "You cancel. Nothing is sent. His saved number is one tap away."
+  adaeze_blames_noor:
+    narrative: "Adaeze: \"Noted. Noor denies everything, with crumbs on her jumper.\""
+  adaeze_chairs_reported:
+    narrative: "You reported it. Careful is good; this one really was Adaeze, counting chairs."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A new number, a friend's name, money to a new account."
+    what_works: "Call the number you already have."
+  layer2:
+    message_flags:
+      - "\"Please? The desk is waiting\": a nudge to pay before you call."
+    notes: "A friend's name proves nothing. The name check didn't match, and his saved number reached the real Mateus. If you sent money, keep the chat and the payment details for your bank. Where to report and get help (Belgium) is on the help screen."
+  device_tip: "On a real phone, call the person on the number you already have saved before you send anything, however small."
+  habit_card: call-the-number-you-know
+  already_clicked:
+    paid: "Sent it already? Call your bank now on the number on your card and ask it to try to stop or recall the payment. Then call the real person on their saved number, and keep the chat."
+  sources: [nl-politie-hulpvraagfraude-2025, nl-veiliginternetten-hulpvraag, be-febelfin-vop-faq, eu-ec-ipr-vop-2025]

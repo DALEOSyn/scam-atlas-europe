@@ -181,8 +181,8 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Channel:** social messenger. **Audience:** teen, adult. **ATT&CK:** T1586, T1657.
 - **Red flags:** a code request from anyone; urgency; an unusual way of writing.
 - **Habit:** call the friend; never share payment or login codes.
-- **Reported in:** PL. **Status:** used (planned: Warsaw ch5). **Fit:** high. **Conf.:** Medium (2020 source).
-- **Sources:** pl-nask-metoda-na-2020.
+- **Reported in:** PL. **Status:** used (planned: Warsaw ch5; brief `hijacked-friend-payment-code.md`, T-3.6r). **Fit:** high. **Conf.:** Medium-high for takeover plus money request, Medium for the payment-code detail (police-hosted warning, undated; NASK 2020; CERT Polska 2026 on friend-account takeovers).
+- **Sources:** pl-policja-psp-na-znajomego, pl-nask-metoda-na-2020, pl-cert-monthly-2026-07.
 
 **A3.4 `sim-swap-number-hijack`**: your phone number is moved to a criminal's SIM
 - **Sees:** a sudden, lasting loss of mobile signal; you can't call or text; then login alerts or bank activity. It is often preceded by calls or messages pretending to be from your mobile operator.
@@ -207,8 +207,8 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Channel:** SMS → call → banking app. **Audience:** all. **ATT&CK:** T1684.001, T1657.
 - **Red flags:** a number to call inside an SMS; being asked to move money to a "safe" or "backup" account.
 - **Habit:** no bank moves your money "to safety". Hang up and call the number on your card.
-- **Reported in:** ES, FR, NL. **Status:** used (planned: Madrid ch4). **Fit:** high. **Conf.:** High.
-- **Sources:** es-incibe-smishing-bank-callback-2025, fr-bdf-osmp-2024, nl-fraudehelpdesk-2025.
+- **Reported in:** ES, FR, NL, PL. **Status:** used (planned: Madrid ch4; brief `bank-safe-account-call.md`, T-3.6r). **Fit:** high. **Conf.:** High.
+- **Sources:** es-incibe-smishing-bank-callback-2025, es-bde-sms-callerid-spoofing-2022, fr-bdf-osmp-2024, nl-fraudehelpdesk-2025, pl-cert-fake-consultants.
 
 **A4.3 `spoofed-police-or-relative-call`**: fake police, lawyer or bank call with a familiar-looking number
 - **Sees:** a caller from "the police" says a relative is in trouble and money is needed now; the line is kept open.
@@ -327,8 +327,8 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Channel:** marketplace chat → messenger → browser. **Audience:** teen, adult. **ATT&CK:** T1566.003, T1657.
 - **Red flags:** moving off the platform; "receiving" money needs your card details.
 - **Habit:** keep the deal and payment on the platform.
-- **Reported in:** PL, EU. **Status:** used (planned: Warsaw ch5). **Fit:** high. **Conf.:** High.
-- **Sources:** pl-cert-monthly-2025-12, eu-esas-ai-scams-factsheet-nl.
+- **Reported in:** PL, EU. **Status:** used (planned: Warsaw ch5; brief `marketplace-collect-payment-link.md`, T-3.6r). **Fit:** high. **Conf.:** High.
+- **Sources:** pl-cert-monthly-2025-12, pl-cert-monthly-2026-01, pl-cert-monthly-2026-03, pl-nask-okazja-czy-pulapka-2025, eu-esas-ai-scams-factsheet-nl.
 
 **A7.2 `fake-shop-social-ad`**: a fake web shop with big discounts
 - **Sees:** a professional-looking shop (often via an ad) with low prices; at checkout only bank transfer is offered; the goods never arrive.

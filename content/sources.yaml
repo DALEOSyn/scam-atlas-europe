@@ -32,6 +32,8 @@
 #                ceo-fraud-bec | payment-detail-change   (chapter 3 Paris briefs; added phase 3, 2026-11-19)
 #                spoofed-authority-call | cloned-voice-family-emergency   (chapter 6 Rome briefs; T-3.8r, 2026-11-19)
 #                rental-offplatform-payment | qr-sticker-parking   (chapter 7 Lisbon briefs; T-3.8r, 2026-11-19)
+#                bank-safe-account-call | marketplace-collect-payment-link | hijacked-friend-payment-code
+#                  (chapters 4 Madrid and 5 Warsaw briefs; added T-3.6r, 2026-11-19)
 #              An empty list means provenance only: not cited directly, kept because another entry's
 #              date or content relies on it.
 #   notes      what the source actually supports; caveats
@@ -69,7 +71,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [email-phishing-credential, it-portal-credential-phishing, task-job-scam, MAP-ch0, MAP-ch7, MAP-ch8, MAP-ch10, MAP-missing, MAP-crosscutting, campaign-catalogue, rental-offplatform-payment]
+    used_for: [email-phishing-credential, it-portal-credential-phishing, task-job-scam, MAP-ch0, MAP-ch7, MAP-ch8, MAP-ch10, MAP-missing, MAP-crosscutting, campaign-catalogue, rental-offplatform-payment, marketplace-collect-payment-link]
     notes: "Fraud is 'the fastest-growing area of organised crime'. Investment fraud especially prevalent, increasingly via ads on very large online platforms. Romance and tech-support among most common typologies reported by Member States. AI-assisted impersonation of bank helpdesk and law-enforcement staff. Malvertising for fake accommodation/merchandise listings. Minors drawn into laundering via 'get-rich' social-media schemes. Victims 'relentlessly re-victimised'. Publication date from eu-eucrim-iocta-2026. T-R.1 re-read (catalogue): 'financial sexual extortion continues to surge'; offenders target children on gaming platforms; violent online networks groom children (8-17) with love-bombing; voice chat bots pre-screen victims 'at industrial volume'; infostealers 'a key enabler'; SIM swapping mentioned only in passing (collectives); minors may launder by renting out wallets or receiving crypto 'gifts'. NOT found: ticket or charity scams, 'deepfake' by name."
 
   - id: eu-eucrim-iocta-2026
@@ -102,7 +104,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [email-phishing-credential, multichannel-support-callback, MAP-ch4, campaign-catalogue, ceo-fraud-bec]
+    used_for: [email-phishing-credential, multichannel-support-callback, bank-safe-account-call, MAP-ch4, campaign-catalogue, ceo-fraud-bec]
     notes: "Red flags: urgency; sender address differs from earlier genuine mail; requests to click, download or give credentials. Habit: type the bank's address yourself; take caller details and call back on a number you look up; don't verify using a number the caller gives. Older campaign material."
 
   - id: eu-ebf-cyberscams
@@ -135,7 +137,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [email-phishing-credential, it-portal-credential-phishing, messenger-family-impersonation, MAP-ch2, MAP-ch5, MAP-ch6, MAP-ch7, MAP-ch10, MAP-missing, MAP-crosscutting, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue, ceo-fraud-bec, payment-detail-change, spoofed-authority-call, cloned-voice-family-emergency, rental-offplatform-payment]
+    used_for: [email-phishing-credential, it-portal-credential-phishing, messenger-family-impersonation, MAP-ch2, MAP-ch5, MAP-ch6, MAP-ch7, MAP-ch10, MAP-missing, MAP-crosscutting, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue, ceo-fraud-bec, payment-detail-change, spoofed-authority-call, cloned-voice-family-emergency, rental-offplatform-payment, marketplace-collect-payment-link]
     notes: "Covers impersonation incl. voice cloning/deepfakes of relatives and banks; celebrity investment ads; dating-to-investment; phishing inserted into existing email threads; marketplace deals moving the victim off-platform to a fake bank login. Advice: pause; verify via known numbers; family safe word; check regulator warning lists (IOSCO I-SCAN); never install remote-access software; contact the bank at once; beware 'recovery' offers. Notes AI removes grammar errors, so polish is not proof."
 
   - id: eu-epc-threats-2025
@@ -146,7 +148,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 3
-    used_for: [email-phishing-credential, messenger-account-takeover-code, it-portal-credential-phishing, multichannel-support-callback, messenger-family-impersonation, task-job-scam, MAP-ch2, MAP-ch4, MAP-ch6, MAP-ch7, MAP-ch9, MAP-ch10, MAP-missing, campaign-catalogue, ceo-fraud-bec, payment-detail-change, spoofed-authority-call, cloned-voice-family-emergency, qr-sticker-parking]
+    used_for: [email-phishing-credential, messenger-account-takeover-code, it-portal-credential-phishing, multichannel-support-callback, messenger-family-impersonation, task-job-scam, MAP-ch2, MAP-ch4, MAP-ch6, MAP-ch7, MAP-ch9, MAP-ch10, MAP-missing, campaign-catalogue, ceo-fraud-bec, payment-detail-change, spoofed-authority-call, cloned-voice-family-emergency, qr-sticker-parking, bank-safe-account-call, hijacked-friend-payment-code]
     notes: "Social engineering increasingly targets people rather than technology. Covers: spoofed sender names/numbers; messages that give a phone number instead of a link; 'safe account' scams; call-then-home-visit; fake remote support; task scams with small early payouts; recovery scams; cloned voices in family-emergency scams; QR swaps on letters, invoices and EV chargers; victims asked to approve login QR codes sent via messaging apps; money mules. Read to char 100000 of ~130000. Re-read 2026-11-19 (Paris briefs), full text incl. chars 100000-130011: targets shifting to 'company executives, employees (through CEO fraud)' (p.6); AI produces 'voice and video impersonating well-known persons (e.g. CEO fraud)' (p.6) and deepfakes 'impersonate executives' (p.22); 'a particular increase in business email compromise' (p.22); invoicing exposed to 'APP fraud or IBAN manipulation' incl. QR tampering on invoices (p.7, p.17); fraudsters instruct victims 'to ignore or dismiss alerts' (p.23, bank alerts in general, not VOP specifically). VOP mentioned only as a new scheme with no fraud cases yet (p.8). No passage on VOP limits or on matching-name accounts."
 
   - id: eu-ec-ipr-vop-2025
@@ -179,7 +181,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [MAP-ch8]
+    used_for: [bank-safe-account-call, MAP-ch8]
     notes: "Added in rework (finding 1). EEA payment fraud in 2024: EUR 4.2bn TOTAL, all types (2023: EUR 3.5bn); fraud rate ~0.002% of transaction value. Credit transfers EUR 2.2bn, cards EUR 1.329bn. Payment-service users bore ~85% of credit-transfer fraud losses in 2024, mainly from scams that tricked users into starting the transaction. NO investment-fraud figure. Read via the press release; the full joint report PDF (ecb.europa.eu/press/intro/publications/pdf/ecb.ebaecb202512.en.pdf) was found but not opened."
 
   - id: eu-eccnet-about
@@ -458,7 +460,7 @@ sources:
     accessed: 2026-11-18
     region: FR
     tier: 3
-    used_for: [MAP-ch3, MAP-ch4, campaign-catalogue]
+    used_for: [bank-safe-account-call, MAP-ch3, MAP-ch4, campaign-catalogue]
     notes: "Payment fraud just under EUR 1.2bn in 2024; manipulation fraud 32% of fraud amount (fake bank advisers, fake anti-fraud services). Advice: don't act on unsolicited contacts; hang up on 'bank' callers who ask for data or validation."
 
   - id: fr-gendarmerie-fovi
@@ -478,11 +480,11 @@ sources:
     title: "Campaña de smishing que suplanta entidades bancarias solicitando que les llames"
     url: https://www.incibe.es/ciudadania/avisos/campana-de-smishing-que-suplanta-entidades-bancarias-solicitando-que-les-llames
     published: 2025-09-30
-    accessed: 2026-11-18
+    accessed: 2026-11-19
     region: ES
     tier: 2
-    used_for: [multichannel-support-callback, MAP-ch4, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
-    notes: "Severity 'Alta'. An SMS about a big unrecognised transfer, with a number to call, can appear in the bank's genuine SMS thread. A fake 'security department' guides the victim in the real app to move money to a 'backup security account'. Report to INCIBE or call the free helpline 017; contact the bank via official channels; keep evidence; file a police report and keep a copy for the bank."
+    used_for: [multichannel-support-callback, bank-safe-account-call, MAP-ch4, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    notes: "Severity '4 - Alta'. An SMS about a big unrecognised transfer (amount, masked destination account, a code 'never share it', 'if you don't recognise it, call'), with a number to call, can appear in the bank's genuine SMS thread. Variants: 'contact the bank if you didn't make it'; a charge, 'call immediately'. The call starts with an automated voice imitating the bank; a person from the 'security department' says a suspicious transaction was detected, says they WON'T ask for personal or bank data, and guides the victim in the bank's real app or web area to move money to a 'cuenta de respaldo de seguridad'; the money is lost. If you only got the SMS: report it to INCIBE, block and delete. If you called: report to INCIBE or call 017; contact the bank via its official channels (not numbers from the message or call) to report and claim the transfers; watch the account; keep screenshots and call logs; file a police report and give the bank a copy. Re-opened 2026-11-19 (first opened 2026-11-18)."
 
   # ---------------------------------------------------------------- Netherlands
   - id: nl-fraudehelpdesk-2025
@@ -493,7 +495,7 @@ sources:
     accessed: 2026-11-18
     region: NL
     tier: 3
-    used_for: [multichannel-support-callback, messenger-family-impersonation, task-job-scam, MAP-ch2, MAP-missing, campaign-catalogue]
+    used_for: [multichannel-support-callback, messenger-family-impersonation, task-job-scam, bank-safe-account-call, marketplace-collect-payment-link, MAP-ch2, MAP-missing, campaign-catalogue]
     notes: "101,734 reports (+60%), EUR 68.5m losses. Private-individual reports: helpdesk fraud #1 (17,264), buy/sell fraud #2, advance-fee #3. Losses: investment fraud #1 (EUR 34.1m). Online-to-offline trend (fake bank staff collecting cards at home, fake landlords). Neither friend-in-need nor task/job scams are itemised. Table labels partly garbled in extraction."
 
   - id: nl-politie-hulpvraagfraude-2025
@@ -504,7 +506,7 @@ sources:
     accessed: 2026-11-18
     region: NL
     tier: 3
-    used_for: [messenger-account-takeover-code, messenger-family-impersonation, MAP-ch2, WHERE_TO_REPORT, campaign-catalogue, cloned-voice-family-emergency]
+    used_for: [messenger-account-takeover-code, messenger-family-impersonation, MAP-ch2, WHERE_TO_REPORT, campaign-catalogue, cloned-voice-family-emergency, hijacked-friend-payment-code]
     notes: "Re-opened 2026-11-19: form version 20250901; adds excuses (stranded abroad, phone broken so no banking), evidence to gather, bank first, and the bank-data request procedure for non-bank fraud (within 13 months). Does NOT mention voice messages or AI voices. The criminal poses as a friend or relative via a hacked or fake account or a 'new number', asks urgently for money, often with a second request; mostly WhatsApp, also SMS, email, Snapchat, Telegram. Habit: call or speak to the person; ask a question only they'd know; check account details against known ones. A police report-preparation form."
 
   - id: nl-betaalvereniging-friend-in-need-2020
@@ -546,11 +548,11 @@ sources:
     title: "Podsumowanie CSIRT NASK 2025/12 (monthly summary, Dec 2025 + full year)"
     url: https://cert.pl/uploads/docs/Podsumowanie_CSIRT_NASK_2025_12.pdf
     published: 2026-01 (covers 2025-12)
-    accessed: 2026-11-18
+    accessed: 2026-11-19
     region: PL
     tier: 2
-    used_for: [smishing-parcel-fee, card-phishing-payment-failed, multichannel-support-callback, MAP-ch5, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
-    notes: "2025: 260.8k incidents (+152%), ~98% fraud; 244.3k malicious domains added to the warning list; 295.2k suspicious SMS reports. Lures: fake marketplace 'buyer has paid, collect via link' pages, also imitating couriers; courier customs-fee emails and address/payment SMS, some appearing in genuine threads; investment is the largest group. Report SMS free to 8080; sites at incydent.cert.pl."
+    used_for: [smishing-parcel-fee, card-phishing-payment-failed, multichannel-support-callback, marketplace-collect-payment-link, MAP-ch5, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    notes: "2025: 260.8k incidents (+152%), ~98% fraud; 244.3k malicious domains added to the warning list; 295.2k suspicious SMS reports. Lures: fake marketplace 'buyer has paid, collect via link' pages, also imitating couriers; courier customs-fee emails and address/payment SMS, some appearing in genuine threads; investment is the largest group. Report SMS free to 8080; sites at incydent.cert.pl. Re-opened 2026-11-19: p.19 (marketplace) 'Oszuści kontaktują się z potencjalną ofiarą przez komunikator WhatsApp'; they claim to have paid and send a link to a page where you can supposedly withdraw the money; the page imitates the marketplace and couriers; 'Podanie danych karty powoduje utratę środków finansowych przechowywanych na koncie bankowym'. p.6: 'Podejrzane SMS-y można bezpłatnie przesyłać pod numer 8080'; sites via incydent.cert.pl/phishing. No passage on hijacked friends' accounts or payment-code requests."
 
   - id: pl-nask-metoda-na-2020
     publisher: NASK (national research institute running CERT Polska), via Polish Police district site
@@ -560,7 +562,7 @@ sources:
     accessed: 2026-11-18
     region: PL
     tier: 2
-    used_for: [messenger-account-takeover-code, messenger-family-impersonation, MAP-ch5, MAP-missing, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    used_for: [messenger-account-takeover-code, messenger-family-impersonation, hijacked-friend-payment-code, MAP-ch5, MAP-missing, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "'Na kod' / 'na znajomego': a hijacked friend's social account asks for the 6-digit code from your banking app. Habit: confirm via another channel (call); never share app codes. If your account is hijacked, WARN YOUR CONTACTS and change passwords (supports WHERE_TO_REPORT step 7). Report to incydent.cert.pl. Older (2020)."
 
   - id: pl-polskieradio-fake-shops-2025
@@ -755,7 +757,7 @@ sources:
     accessed: 2026-11-18
     region: NL
     tier: 3
-    used_for: [messenger-account-takeover-code, messenger-family-impersonation, help-where-to-report-en, campaign-catalogue]
+    used_for: [messenger-account-takeover-code, messenger-family-impersonation, hijacked-friend-payment-code, help-where-to-report-en, campaign-catalogue]
     notes: "Police report-preparation form for a hijacked messenger account (English gloss: 'form for reporting a taken-over/hacked WhatsApp account'). Victim receives a verification code by SMS; someone says it was sent by mistake and asks for it; the account is then used for friend-in-need fraud. Advice: set a two-step verification PIN; never pass on codes; verify money requests another way; don't publish your number in listings; warn contacts; re-register with your own number to regain access (may need to wait hours). Names a real messenger: game uses Kettle only."
 
   # ---------------------------------------------------------------- Germany (T-2.5)
@@ -767,7 +769,7 @@ sources:
     accessed: 2026-11-18
     region: DE
     tier: 3
-    used_for: [messenger-account-takeover-code, help-where-to-report-en, campaign-catalogue]
+    used_for: [messenger-account-takeover-code, hijacked-friend-payment-code, help-where-to-report-en, campaign-catalogue]
     notes: "Title paraphrased in English gloss; check exact German title at G3. A message from a friend or from 'the messenger' asks for a vote, security check or ID confirmation; a link or QR leads to a fake page asking for the phone number, then a code or approval; passing it on links the attacker's device. Signs: unusual requests, unexpected code prompts, unknown linked devices. Advice: never share codes; check and remove linked devices; enable two-step verification; warn contacts."
   - id: de-ngk-116111-flyer-2026
     publisher: Nummer gegen Kummer e.V. (national operator of 116 111 in Germany; member of Kinderschutzbund)
@@ -799,7 +801,7 @@ sources:
     accessed: 2026-11-18
     region: PL
     tier: 2
-    used_for: [messenger-account-takeover-code, help-where-to-report-en, campaign-catalogue]
+    used_for: [messenger-account-takeover-code, hijacked-friend-payment-code, help-where-to-report-en, campaign-catalogue]
     notes: "English gloss: 'Beware of vote requests from friends'. Hijacked friends' messenger accounts ask you to vote; you scan a QR code on a fake page or read out a code, which pairs another device to your account. Advice: unlink unknown devices; report at incydent.cert.pl or via the mObywatel app ('Bezpiecznie w sieci'); suspicious SMS to 8080."
   - id: pl-cert-phishing-kb-2026
     publisher: CERT Polska (NASK)
@@ -819,7 +821,7 @@ sources:
     accessed: 2026-11-18
     region: PL
     tier: 2
-    used_for: [it-portal-credential-phishing, multichannel-support-callback, help-where-to-report-en, campaign-catalogue, spoofed-authority-call, WHERE_TO_REPORT]
+    used_for: [it-portal-credential-phishing, multichannel-support-callback, help-where-to-report-en, campaign-catalogue, spoofed-authority-call, WHERE_TO_REPORT, bank-safe-account-call]
     notes: "English gloss: 'Fake consultants'. Callers posing as bank or institution staff; caller ID and caller names can be spoofed; 'safe account' transfers; requests to install remote-access software. Advice: hang up and call back on the number from the official site or app; never let anyone remotely control your device."
 
   # ---------------------------------------------------------------- Spain (T-2.5)
@@ -861,7 +863,7 @@ sources:
     accessed: 2026-11-18
     region: ES
     tier: 2
-    used_for: [card-phishing-payment-failed, help-where-to-report-en, campaign-catalogue]
+    used_for: [card-phishing-payment-failed, campaign-catalogue]
     notes: "OLDER (2021). Real brand in title/URL: reference only. Unsolicited prize email -> survey -> 'you won' -> asks for personal and card details and ~EUR 5.99 shipping (real charge may be higher). Advice: never enter bank data in promotions you didn't request; verify on the company's official site/app. If card entered: contact the bank at once; report to police; free helpline 017. Also lists spelling errors as a sign: NOT to be taught as reliable (AI)."
 
   # ---------------------------------------------------------------- Switzerland (non-EU, supporting only) (T-2.5)
@@ -2197,6 +2199,232 @@ sources:
     tier: 3
     used_for: [qr-sticker-parking, MAP-ch7, campaign-catalogue]
     notes: "Municipal warning: stickers reading 'pay by phone' with a fake QR code were stuck over the legitimate QR code on parking ticket machines; users were asked to enter personal details. Advice: pay only with the city's official parking app; ignore other payment options shown on machines; check the explanatory sticker on the back. No URL-check or reporting advice."
+  # ---------------------------------------------------------------- Phase 3, chapters 4-5 (Madrid, Warsaw research, T-3.6r, 2026-11-19)
+  # Every entry below was opened on 2026-11-19. Pattern labels: bank-safe-account-call (Madrid),
+  # marketplace-collect-payment-link and hijacked-friend-payment-code (Warsaw).
+
+  # Spain
+  - id: es-incibe-sms-banks-2022
+    publisher: INCIBE (Spanish National Cybersecurity Institute)
+    title: "Aumentan los envíos de SMS fraudulentos que suplantan entidades bancarias"
+    url: https://www.incibe.es/ciudadania/avisos/aumentan-los-envios-de-sms-fraudulentos-que-suplantan-entidades-bancarias
+    published: "2022-03-08"
+    accessed: "2026-11-19"
+    region: ES
+    tier: 2
+    used_for: [bank-safe-account-call]
+    notes: "OLDER (2022). Severity '5 - Crítica'. Bank-impersonation SMS (account blocked, unknown device, suspicious card use, unexplained charge) with a link to a fake bank login; some spoof the bank's sender name and can be 'añadirse al mismo hilo de mensajes de los SMS legítimos', next to real messages such as verification codes. Some ask you to call a number. Advice: type the bank's address yourself or use the official app; 'un banco nunca notifica incidentes de tu cuenta a través de correo electrónico o SMS' with a link (the game uses only the link part, not 'never by SMS'). If affected: contact the bank at once, block cards, change passwords, report to the police, 017. Also lists spelling errors as a sign: NOT taught as reliable (AI)."
+
+  - id: es-bde-sms-callerid-spoofing-2022
+    publisher: Banco de España (Portal del Cliente Bancario)
+    title: "Suplantación de SMS y del identificador de llamadas"
+    url: https://clientebancario.bde.es/pcb/es/blog/suplantacion-de-sms-y-del-identificador-de-llamadas.html
+    published: "2022-01-11"
+    accessed: "2026-11-19"
+    region: ES
+    tier: 3
+    used_for: [bank-safe-account-call, MAP-ch4, campaign-catalogue]
+    notes: "Central bank's consumer portal. SMS spoofing replaces the sender number with an alphanumeric name that looks like the bank, so a fake SMS can appear in the same thread as genuine bank messages. Caller-ID spoofing makes a call appear to come from another number; attacks aim at banks' customer-service numbers. The bank will never ask for passwords or full keys; a caller may say a fraudulent operation happened and ask for a temporary code to cancel it: a code makes no sense if you made no operation, and the bank needs no code to cancel a fraud. Advice: check your account yourself; if something doesn't add up, hang up and call the bank on its official number. Does not mention 'safe account' transfers."
+
+  - id: es-bde-vishing-2020
+    publisher: Banco de España (Portal del Cliente Bancario)
+    title: "Vishing: llamada telefónica no deseada"
+    url: https://clientebancario.bde.es/pcb/es/blog/vishing.html
+    published: "2020-03-24"
+    accessed: "2026-11-19"
+    region: ES
+    tier: 3
+    used_for: [bank-safe-account-call, MAP-ch4, WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "OLDER (2020). Fake bank employee says a fraudulent card operation is under way and asks for card details and the SMS one-time codes 'to cancel' it. 'Si la llamada te parece sospechosa, simplemente cuelga el teléfono'; 'Llama al número oficial de la compañía para contrastar lo sucedido'. If a victim: 'Denuncia los hechos ante la Policía, la Guardia Civil o los tribunales'."
+
+  - id: es-bde-medidas-fraude-telefono-2025
+    publisher: Banco de España (Portal del Cliente Bancario)
+    title: "These are the new measures to combat phone fraud"
+    url: https://clientebancario.bde.es/pcb/en/blog/estas-son-las-nuevas-medidas-para-combatir-los-fraudes-por-telefono.html
+    published: "2025-04-01"
+    accessed: "2026-11-19"
+    region: ES
+    tier: 3
+    used_for: [bank-safe-account-call]
+    notes: "Read in the bank's own English machine translation (the page says the Spanish text prevails). Summarises the ministerial order of 12 Feb 2025 (links BOE-A-2025-2870 = Orden TDF/149/2025): blocking calls and SMS from unassigned numbers and from abroad showing a Spanish number (roaming excepted); an alias register for SMS sender names managed by the CNMC, with messages under unregistered aliases blocked; no mobile numbers for customer-service or unsolicited commercial calls; 800/900 ranges for customer service. Makes no statement about what banks themselves will or won't do."
+
+  - id: es-boe-orden-tdf-149-2025
+    publisher: Ministerio para la Transformación Digital y de la Función Pública (Boletín Oficial del Estado)
+    title: "Orden TDF/149/2025, de 12 de febrero (medidas contra la suplantación de identidad en llamadas y mensajes)"
+    url: https://www.boe.es/boe/dias/2025/02/15/pdfs/BOE-A-2025-2870.pdf
+    published: "2025-02-15"
+    accessed: "2026-11-19"
+    region: ES
+    tier: 3
+    used_for: [bank-safe-account-call, MAP-ch4]
+    notes: "Legal text. Operators must block calls and SMS/MMS/RCS with an empty or unassigned Spanish number (arts. 4, 6); calls and messages from abroad presenting a Spanish number (arts. 5.1, 7.1, within 3 months) or a Spanish alias (art. 7.2); and messages whose alias is not in the CNMC alias register or not sent by a provider authorised for it (art. 8.3). Companies and administrations must register aliases before use (art. 8). Mobile ranges may not be used for customer-service or unsolicited commercial calls (art. 9); 800/900 for customer service (art. 10). Alias articles originally effective 15 months after entry into force; later postponed (see es-boe-cnmc-circular-2-2026). Banks are named only in the preamble."
+
+  - id: es-boe-cnmc-circular-1-2026
+    publisher: Comisión Nacional de los Mercados y la Competencia (CNMC), in the Boletín Oficial del Estado
+    title: "Circular 1/2026, de 18 de marzo, de la CNMC, por la que se regula el Registro de Alias"
+    url: https://www.boe.es/eli/es/cir/2026/03/18/1/con/20260327
+    published: "2026-03-27"
+    accessed: "2026-11-19"
+    region: ES
+    tier: 3
+    used_for: [bank-safe-account-call]
+    notes: "Creates the rules of the SMS/MMS/RCS sender-alias register 'gestionado por la Comisión Nacional de los Mercados y la Competencia'; in force 28 Mar 2026. Gave the blocking start as 7 June 2026 (15 months after the order), later moved to 15 Sept 2026 (see es-boe-cnmc-circular-2-2026)."
+
+  - id: es-boe-cnmc-circular-2-2026
+    publisher: Comisión Nacional de los Mercados y la Competencia (CNMC), in the Boletín Oficial del Estado
+    title: "Circular 2/2026, de 5 de junio, de la CNMC, por la que se modifica la Circular 1/2026 (Registro de Alias)"
+    url: https://www.boe.es/eli/es/cir/2026/06/05/2
+    published: "2026-06-09"
+    accessed: "2026-11-19"
+    region: ES
+    tier: 3
+    used_for: [bank-safe-account-call]
+    notes: "Records 'la prórroga de la fecha de inicio de la aplicación de las obligaciones de bloqueo al 15 de septiembre de 2026', made by Orden TDF/558/2026 of 4 June (that order itself was NOT opened; its date and number are as cited in this circular). Over 75,000 alias requests in the first two months."
+
+  - id: es-boe-cnmc-circular-3-2026
+    publisher: Comisión Nacional de los Mercados y la Competencia (CNMC), in the Boletín Oficial del Estado
+    title: "Circular 3/2026, de 8 de septiembre, de la CNMC, por la que se modifica la Circular 1/2026 (Registro de Alias)"
+    url: https://www.boe.es/boe/dias/2026/09/12/pdfs/BOE-A-2026-19053.pdf
+    published: "2026-09-12"
+    accessed: "2026-11-19"
+    region: ES
+    tier: 3
+    used_for: [bank-safe-account-call, MAP-ch4]
+    notes: "Confirms the blocking obligations take effect 'a partir del día 15 de septiembre de 2026' (no further postponement in this text). Transitional measure: aliases whose registration was requested before 15:00 on 14 Sept 2026 are provisionally pre-registered so they can keep being used until the holder's authorisation period ends or the CNMC decides."
+
+  - id: es-cnmc-alias-callout-2026
+    publisher: Comisión Nacional de los Mercados y la Competencia (CNMC)
+    title: "La CNMC insta a las empresas a registrar sus alias ... antes del 15 de septiembre (press release)"
+    url: https://cnmc.es/en/node/422166
+    published: "2026-09-01"
+    accessed: "2026-11-19"
+    region: ES
+    tier: 3
+    used_for: [bank-safe-account-call, MAP-ch4]
+    notes: "From 15 Sept 2026 operators must block SMS/MMS/RCS with aliases not in the CNMC register, and registered aliases sent by unregistered operators. A company without a registered alias 'no podrá seguir enviando mensajes identificándose con su nombre o marca' but can still message customers without the alias. Aliases can be registered after the date too. The CNMC says the register lets recipients check that a sender name belongs to the company. No figures on effectiveness; nothing says spoofed messages can no longer reach a genuine thread."
+
+  - id: es-incibe-017-faq
+    publisher: INCIBE (Spanish National Cybersecurity Institute)
+    title: "Your Help in Cybersecurity (017): FAQ"
+    url: https://www.incibe.es/en/linea-de-ayuda-en-ciberseguridad/faq
+    published: n/d
+    accessed: "2026-11-19"
+    region: ES
+    tier: 2
+    used_for: [bank-safe-account-call, WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Free and confidential cybersecurity helpline, 017; WhatsApp 900 116 117; Telegram @INCIBE017; online form; in person in León by appointment. 'From 8:00 am to 11:00 pm every day of the year.' Calls are not recorded. For adults and minors (minors can be helped in person without an adult). It 'is not a line for reports, but rather an advisory channel': reports go to the police (Fuerzas y Cuerpos de Seguridad del Estado) or other authorities; 017 advises which. Languages not stated."
+
+  - id: es-bde-reclamacion
+    publisher: Banco de España (Portal del Cliente Bancario)
+    title: "Cómo realizar una reclamación"
+    url: https://clientebancario.bde.es/pcb/es/menu-horizontal/podemosayudarte/consultasreclama/comorealizarrecl/
+    published: n/d
+    accessed: "2026-11-19"
+    region: ES
+    tier: 3
+    used_for: [bank-safe-account-call, WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "First complain in writing to the bank's customer service department or customer ombudsman (mandatory). Then the Banco de España if you disagree or get no reply within 15 business days (payment services), one month (other, consumers). Online, in writing or at a branch; include proof of the prior bank complaint. Consumer claims are inadmissible after one year from the bank complaint."
+
+  - id: es-bde-msr2025-fraude
+    publisher: Banco de España (Memoria del Servicio de Reclamaciones 2025, chapter 4)
+    title: "Memoria del Servicio de Reclamaciones 2025, capítulo 4"
+    url: https://www.bde.es/f/webbe/Secciones/Publicaciones/PublicacionesAnuales/MemoriaServicioReclamaciones/25/MSR2025_Cap4.pdf
+    published: n/d (report on 2025)
+    accessed: "2026-11-19"
+    region: ES
+    tier: 3
+    used_for: [bank-safe-account-call, hijacked-friend-payment-code]
+    notes: "pp. 76-78 (fraud section, about phishing emails). Distinguishes 'operación autorizada mediante engaño' (the customer made, consented to or gave credentials for the payment: go to the police, consumer authorities or courts, which settle the facts and consequences) from an unauthorised operation (report 'sin demora', within 13 months; the bank must prove correct authentication and refund by the next business day unless it proves fraud or gross negligence by the user). Supports 'your bank may not have to refund a transfer you made yourself'. No passage on SMS/call spoofing or 'safe accounts'. Exact publication date of the Memoria not shown; read as a PDF chapter."
+
+  # Poland
+  - id: pl-cert-monthly-2026-01
+    publisher: CERT Polska (NASK)
+    title: "Podsumowanie CERT Polska 2026/01 (monthly summary)"
+    url: https://cert.pl/uploads/docs/Podsumowanie_CERT_Polska_2026_01.pdf
+    published: n/d (covers 2026-01)
+    accessed: "2026-11-19"
+    region: PL
+    tier: 2
+    used_for: [marketplace-collect-payment-link, MAP-ch5, campaign-catalogue]
+    notes: "p.16 (marketplace): scammers 'wyrażają zainteresowanie przedmiotem z ogłoszenia, następnie informują, że zapłacili'; contact via a messenger app; then send a link to a page where you can supposedly withdraw the money; the page imitates the marketplace and several couriers; 'Podanie danych karty powoduje utratę środków finansowych'. Publication month inferred from the series (not shown)."
+
+  - id: pl-cert-monthly-2026-03
+    publisher: CERT Polska (NASK)
+    title: "Podsumowanie CERT Polska 2026/03 (monthly summary)"
+    url: https://cert.pl/uploads/docs/Podsumowanie_CERT_Polska_2026_03.pdf
+    published: n/d (covers 2026-03)
+    accessed: "2026-11-19"
+    region: PL
+    tier: 2
+    used_for: [marketplace-collect-payment-link, MAP-ch5, campaign-catalogue]
+    notes: "p.24: scammers impersonate a parcel-locker courier and target users of two second-hand marketplaces; they show interest in a listing, say they 'opłacili produkt' and send a link to a site where you can supposedly withdraw the money; the site has a fake payment panel; card details entered there lead to loss of funds. p.22: Telegram account takeover via an SMS, then a phone number and a verification code. Publication month inferred."
+
+  - id: pl-cert-monthly-2026-07
+    publisher: CERT Polska (NASK)
+    title: "Podsumowanie CERT Polska 2026/07 (monthly summary)"
+    url: https://cert.pl/uploads/docs/Podsumowanie_CERT_Polska_2026_07.pdf
+    published: n/d (covers 2026-07)
+    accessed: "2026-11-19"
+    region: PL
+    tier: 2
+    used_for: [hijacked-friend-payment-code, marketplace-collect-payment-link, MAP-ch5, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    notes: "p.14: summer-scam warnings include 'fałszywe wiadomości od znajomych z prośbą o pożyczkę' sent after a social-media account is taken over. p.22: messenger (Telegram) takeover with a verification code. p.8: suspicious SMS 'poprzez bezpłatny skrócony numer 8080'; p.4 fn 1: reports via https://incydent.cert.pl. No seller-marketplace or payment-code passage. Publication month inferred."
+
+  - id: pl-nask-okazja-czy-pulapka-2025
+    publisher: NASK (national research institute running CERT Polska)
+    title: "Okazja czy pułapka? Poradnik o bezpiecznych zakupach online"
+    url: https://www.nask.pl/media/2025/11/Okazja-czy-pulapka.pdf
+    published: 2025 (file path suggests November)
+    accessed: "2026-11-19"
+    region: PL
+    tier: 2
+    used_for: [marketplace-collect-payment-link, hijacked-friend-payment-code, MAP-ch5, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    notes: "Guide (CC BY-NC 4.0; says it is not the ministry's official position). Seller checklist p.26: does the buyer push you to ship before the money arrives; ask for your card details 'w celu finalizacji płatności'; send 'wiadomości z linkami do potwierdzenia swojej płatności'. p.16: 'prośby o przejście na komunikatory poza platformą', payment outside the platform, requests for document scans or a photo of your card. After a fraud (pp.21-23): change passwords; tell your bank or payment provider quickly, as some transfers can be stopped; keep messages, confirmations and screenshots; police report (prosecutor for large losses); report to the platform; report to CERT Polska at incydent.cert.pl or in the government ID app; forward suspicious SMS free to 8080. Does NOT describe fake courier 'safe delivery' pages or payment codes."
+
+  - id: pl-policja-psp-na-znajomego
+    publisher: Polish Police website (policja.pl), hosting a warning whose issuer is not stated (file name points to the national mobile-payment scheme operator)
+    title: "Oszustwo „na znajomego” z mediów społecznościowych"
+    url: https://www.policja.pl/download/1/342434/PSPkomunikatbezpieczenstwa2.pdf
+    published: n/d
+    accessed: "2026-11-19"
+    region: PL
+    tier: 4
+    used_for: [hijacked-friend-payment-code, MAP-ch5, campaign-catalogue]
+    notes: "Tier 4: undated, issuer not named (file name points to the payment-scheme operator), hosted on the police site. Criminals take over social-media accounts and message the owner's contacts: a 'friend' urgently needs money and asks for the mobile-payment code. 'Ofiara musi podać specjalny kod, a następnie potwierdzić transakcję w swojej aplikacji bankowości mobilnej'; many approve with their PIN without checking. Advice: two-step verification on social accounts; verify the friend, ideally by phone; 'ZAWSZE TRZEBA SPRAWDZAĆ DANE TRANSAKCJI PRZED JEJ ZATWIERDZENIEM'. No steps for after the code was given. Undated; issuer inferred from the file name only."
+
+  - id: pl-blik-podszywacze-2026
+    publisher: Campaign site of the Polish mobile-payment scheme (organiser logo; UOKiK honorary partner)
+    title: "#StopPodszywaczom (podszywacze.pl)"
+    url: https://podszywacze.pl
+    published: n/d (campaign launched January 2026 per trade press)
+    accessed: "2026-11-19"
+    region: PL
+    tier: 4
+    used_for: [hijacked-friend-payment-code]
+    notes: "SUPPORTING ONLY (payment-industry campaign, not a public authority; real brand: research label only, Red Line 1). 'Gdy prośba wygląda podejrzanie, zadzwoń bezpośrednio - nie przez komunikator'; no saved number, no loan; agree a check word with close contacts but don't keep it in the same chat; use the platform's report button. The site itself does not mention codes or what to do after giving one."
+
+  - id: pl-uknf-seniors-payments-2025
+    publisher: Urząd Komisji Nadzoru Finansowego (UKNF), Cybersecurity Department (slides on samorzad.gov.pl)
+    title: "Bezpieczne płatności w Internecie dla seniorów – II termin"
+    url: https://samorzad.gov.pl/attachment/2837cd09-44cb-412c-8002-da74c36a5d39
+    published: "2025-06-26"
+    accessed: "2026-11-19"
+    region: PL
+    tier: 3
+    used_for: [marketplace-collect-payment-link, hijacked-friend-payment-code, bank-safe-account-call, WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Financial supervisor's training slides. Payment codes listed among data criminals want (p.8); impersonation of couriers (p.22) and classified-ad portals (p.23), no detail; callers posing as bank advisers or security staff (p.35); you can always hang up and call back (p.42). If scammed (p.67): call your bank immediately without shame, block whatever was obtained, complain to the bank, report to the police. Slides, not a guide: cite only for these points."
+
+  # EU
+  - id: eu-ep-psr-deal-2025
+    publisher: European Parliament (press release)
+    title: "Payment services deal: More protection from online fraud and hidden fees"
+    url: https://www.europarl.europa.eu/news/en/press-room/20251121IPR31540/payment-services-deal-more-protection-from-online-fraud-and-hidden-fees
+    published: "2025-11-27"
+    accessed: "2026-11-19"
+    region: EU
+    tier: 1
+    used_for: [bank-safe-account-call]
+    notes: "PROVISIONAL deal on the Payment Services Regulation: if a scammer poses as a payment provider's employee and tricks a customer into approving a payment, 'the PSP must refund the full amount as long as the customer reports the fraud to the police and informs their PSP'; platforms liable in some cases. 'Needs to be formally adopted ... before it can come into force.' Adoption, Official Journal publication and application date NOT verified this session (trade press expects application around 2028). DESIGN USE: never tell players a refund is guaranteed; at most 'EU rules on this are changing'."
 
   # ------------------------------------------------ placeholders (example scenario only)
   - id: europol-scam-smishing

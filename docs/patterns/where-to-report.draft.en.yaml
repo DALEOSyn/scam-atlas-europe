@@ -2,9 +2,7 @@
 # Owner: fraud-researcher. Status: DRAFT, rework 1 after sceptic FAIL (T-2.5). Entries checked 2026-11-18;
 # T-3.8r (2026-11-19) added the per-country verified help list (reporting route, police, bank step,
 # emotional-support line, child/youth line) for DE, NL, FR, ES, PL, IT, PT, IE, SE, BE + the generic EU entry.
-# NOTE for merge: branch phase3/madrid-warsaw-research (T-3.6r) also edits the ES and PL blocks of this file
-# (es-bde-complaint, pl-police). Keep the T-3.6r ES/PL entries and add the T-3.8r ones; ids here are chosen
-# so that only `pl-police` can overlap (same meaning: keep one).
+# ES and PL entries from T-3.6r (Madrid/Warsaw research) and T-3.8r merged 2026-11-19; one entry per id.
 #
 # LOCATION: parked under docs/ because it trips redline:lint under content/. The engineer adds a path-specific
 # exemption plus a dedicated checker, then moves it back to content/help/where-to-report.en.yaml.
@@ -257,18 +255,33 @@ countries:
     - id: es-017
       role: report
       name: "INCIBE: Tu Ayuda en Ciberseguridad"
-      body: "Free helpline for advice after a scam or online problem."
+      body: "Free and confidential helpline for advice after a scam or online problem, for adults and young people. It tells you what to do and where to report; it is not a police report."
       phones:
         - number: "017"
-          label: "Free advice"
-      checked: 2026-11-18
-      sources: [es-incibe-smishing-bank-callback-2025, es-incibe-prize-2021]
+          label: "Free advice (call)"
+        - number: "900 116 117"
+          label: "WhatsApp"
+      url: https://www.incibe.es/en/linea-de-ayuda-en-ciberseguridad/faq
+      scope: "Every day, 8:00 to 23:00."
+      checked: 2026-11-19
+      sources: [es-incibe-017-faq, es-incibe-smishing-bank-callback-2025]
+      review_note: "Re-verified 2026-11-19 on INCIBE's own 017 FAQ (English page): 017, WhatsApp 900 116 117, Telegram @INCIBE017 (not shown), 8:00-23:00 every day, calls not recorded, minors helped, 'not a line for reports'. The INCIBE 'Reporte de fraude' page could not be opened, so no report URL or email is listed."
     - id: es-police
       role: police
       name: "Police report (denuncia)"
-      body: "File a report and keep a copy for your bank."
-      checked: 2026-11-18
-      sources: [es-incibe-smishing-bank-callback-2025]
+      body: "File a report with the Policía Nacional or the Guardia Civil and keep a copy for your bank."
+      checked: 2026-11-19
+      sources: [es-incibe-smishing-bank-callback-2025, es-bde-vishing-2020]
+      review_note: "No URL: the online police-report route (scope, in-person confirmation) was not verified. Regional police forces not checked."
+    - id: es-bde-complaint
+      role: bank
+      name: "Banco de España (complaints about your bank)"
+      body: "If your bank won't help, first complain to it in writing. If it says no or doesn't answer in time, you can complain to the Banco de España."
+      url: https://clientebancario.bde.es/pcb/es/menu-horizontal/podemosayudarte/consultasreclama/comorealizarrecl/
+      scope: "For payment services, you can go to the Banco de España after 15 business days without an answer from your bank."
+      checked: 2026-11-19
+      sources: [es-bde-reclamacion]
+      review_note: "Page in Spanish only. A complaint, not an emergency step: list it after the bank and police entries."
     - id: es-bank
       role: bank
       name: "Your bank"
@@ -508,23 +521,24 @@ countries:
       phones:
         - number: "8080"
           label: "SMS only"
-      checked: 2026-11-18
-      sources: [pl-cert-monthly-2025-12, pl-cert-vote-takeover-2026]
+      checked: 2026-11-19
+      sources: [pl-cert-monthly-2025-12, pl-cert-monthly-2026-07, pl-nask-okazja-czy-pulapka-2025, pl-cert-vote-takeover-2026]
+      review_note: "Re-confirmed 2026-11-19 in CERT Polska's own July 2026 summary (p.8, 'bezpłatny skrócony numer 8080') and Dec 2025 summary (p.6)."
     - id: pl-cert-incident
       role: report
       name: "CERT Polska incident report"
-      body: "Report phishing sites and other online incidents."
+      body: "Report fake websites, such as a fake page to 'collect a payment', and other online incidents."
       url: https://incydent.cert.pl
-      checked: 2026-11-18
-      sources: [pl-cert-monthly-2025-12, pl-cert-vote-takeover-2026]
-      review_note: "Page loaded 2026-11-18 (title 'Zgłoś incydent | CERT.PL', JavaScript app). The destination runs its own first-party analytics (analytics.cert.pl); the game adds no tracking. See meta.external_links_note."
+      checked: 2026-11-19
+      sources: [pl-cert-monthly-2025-12, pl-cert-monthly-2026-07, pl-nask-okazja-czy-pulapka-2025, pl-cert-vote-takeover-2026]
+      review_note: "Portal loaded 2026-11-18 (title 'Zgłoś incydent | CERT.PL', JavaScript app). On 2026-11-19 the URL was re-confirmed in CERT Polska's July 2026 summary (p.4, fn 1) and NASK's 2025 guide (p.23), not reloaded. The destination runs its own first-party analytics (analytics.cert.pl); the game adds no tracking. See meta.external_links_note."
     - id: pl-police
       role: police
-      name: "Police (Policja)"
-      body: "If you think you've been defrauded, contact the police and file a report."
+      name: "Police (zawiadomienie)"
+      body: "Report the fraud at a police station. Keep the chats, links and payment confirmations."
       checked: 2026-11-19
-      sources: [pl-policja-oszukany]
-      review_note: "T-3.8r. T-3.6r (madrid-warsaw branch) adds a pl-police entry with other sources; keep one entry and merge the source lists."
+      sources: [pl-nask-okazja-czy-pulapka-2025, pl-uknf-seniors-payments-2025, pl-policja-oszukany]
+      review_note: "No URL or phone: no official Polish online fraud-report route was verified. NASK's guide also mentions the prosecutor's office for large losses (not shown)."
     - id: pl-bank
       role: bank
       name: "Your bank"
@@ -645,4 +659,8 @@ countries:
 # - phishing@ncsc.gov.ie: scoped to suspected fake QR codes only (NCSC Ireland QR guide).
 # - Fraudehelpdesk phone number / report URL, German Länder police portals, Portuguese online complaint portal,
 #   INCIBE incident-report email, Safeonweb language variants (verdacht@): not verified.
+# - T-3.6r (2026-11-19): INCIBE "Reporte de fraude" page (could not be opened), Spanish online police report,
+#   INCIBE 017 Telegram channel (verified but not shown: one messaging channel is enough), Polish online police
+#   report, UOKiK (purchase fraud only; not needed for the Warsaw patterns), the Polish government ID app's
+#   reporting feature (named in CERT/NASK sources, but it is a real app: help-card text only if the producer wants it).
 # - Sextortion help card (GDD §9): separate content, not drafted here.

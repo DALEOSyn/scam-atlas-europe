@@ -216,6 +216,21 @@ T-3.8r also cites new pages on hosts already listed: www.dn.pt, www.deco.protest
 
 ### Help-screen link targets only (not sources)
 17cyber.gouv.fr | 17Cyber (French government online assistance; live site opened 2026-11-19) | 2
+## New hosts from phase 3, chapters 4–5 (Madrid and Warsaw research, T-3.6r, 2026-11-19)
+
+**Already covered by `scripts/lib/source-hosts.ts`:** www.incibe.es (`incibe.es`), www.europarl.europa.eu (`europa.eu`).
+
+**Not yet in `scripts/lib/source-hosts.ts`** (new; content:validate warns until added):
+clientebancario.bde.es | Banco de España, Portal del Cliente Bancario | 3 | **new** (suggest `bde.es`, which also covers www.bde.es)
+www.bde.es | Banco de España (Memoria del Servicio de Reclamaciones) | 3 | **new**
+www.boe.es | Boletín Oficial del Estado (Spain's official gazette: ministerial order, CNMC circulars) | 3 | **new** (suggest `boe.es`)
+cnmc.es | Comisión Nacional de los Mercados y la Competencia (host without www, as opened) | 3 | **new**
+www.nask.pl | NASK, national research institute running CERT Polska | 2 | **new** (suggest `nask.pl`)
+www.policja.pl | Polish Police, national site (hosting a warning whose issuer is not stated) | 3 | **new** (suggest `policja.pl`; district sites such as zabkowice-slaskie.policja.gov.pl sit under a different domain, `policja.gov.pl`)
+samorzad.gov.pl | Polish government portal (hosting UKNF slides) | 3 | **new** (exact host only; gov.pl is too broad)
+podszywacze.pl | Payment-scheme campaign site *(industry, supporting only, tier 4)* | 4 | **new**; do not add to the allow-list, the warning is correct
+
+The chapter 4–5 research also cites new pages on cert.pl (still not in the allow-list, see below) and www.incibe.es.
 
 ## Notes for the engineer
 - **New to `scripts/lib/source-hosts.ts`** (not in the allow-list yet, per sceptic review 2026-11-18): `politie.nl` (no www), `moje.cert.pl`, `wiedza.cert.pl`, `www.nummergegenkummer.de`, `www.bmbfsfj.bund.de`, `www.bacs.admin.ch`, `www.verbraucherzentrale-niedersachsen.de`, and `incydent.cert.pl` (help file only). The last two were already used in `content/sources.yaml` before T-2.5 but never added to the allow-list.

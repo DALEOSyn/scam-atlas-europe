@@ -144,11 +144,11 @@ beats:
       transcript:
         - { speaker: caller, text: "Good evening, Maître Vellacourt from Cabinet Ostrelle. Ms Arbogast asked me to call you about Projet Lys." }
         - { speaker: caller, text: "I confirm everything in her email. The deposit must leave before seven, or the seller walks away." }
-        - { speaker: you, text: "Normally Bastien or Solène signs off." }
+        - { speaker: you, text: "Bastien or Solène should sign this off." }
         - { speaker: caller, text: "She has authorised it herself. Has it gone? If not, please send it now and keep it strictly confidential until Tuesday." }
         - { speaker: caller, text: "If you need to check, call me back on 01 •• •• •• 07. Your bank will show the name matches." }
       request: pay
-      ask: { text: "If not, please send it now and keep it strictly confidential until Tuesday." }
+      ask: { text: "please send it now and keep it strictly confidential until Tuesday." }
       references: ["Cabinet Ostrelle"]
       phone_numbers: ["01 •• •• •• 07"]
     inspectables:
@@ -320,7 +320,7 @@ outcomes:
   boss_transfer_cancelled:
     narrative: "You cancel, and nothing goes out. Then your phone rings: a Paris number you don't know."
   solene_no_lawyer:
-    narrative: "Solène answers on the directory number, at home: \"I don't know any Maître Vellacourt. Don't send anything.\""
+    narrative: "Solène answers on the directory number, at home: \"I don't know any Maître Vellacourt. Don't send anything. If something's already gone, call the bank now.\""
   lawyer_call_reported:
     narrative: "Reported. Keep a note of the number and the time. Then Kettle rings: a video call."
   lawyer_call_left:
@@ -328,7 +328,7 @@ outcomes:
   solene_video_wasnt_me:
     narrative: "Solène answers from home: \"A video call? That wasn't me. Don't pay anything. I'm calling our bank and changing my email password now.\""
   adaeze_dont_send:
-    narrative: "Adaeze: \"End of the week, secret, no sign-off? Don't send. I'll ring Solène on her directory number.\""
+    narrative: "Adaeze: \"End of the week, secret, no sign-off? Don't send anything. If something's already gone, call the bank now. I'll ring Solène on her directory number.\""
   video_call_reported:
     narrative: "Reported. Keep a note of the time and what was said."
   video_call_left:

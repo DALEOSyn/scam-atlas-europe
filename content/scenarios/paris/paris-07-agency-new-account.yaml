@@ -72,7 +72,7 @@ inspectables:
     red_flag: false
     type: reference
   - target: claim
-    reveal: "Says the agency has changed banks, as a real agency sometimes does. A real change and a fake one read the same, so it can't prove anything either way. The number in your lease can."
+    reveal: "Says the agency has changed banks, as a real agency sometimes does. A real change and a fake one read the same, so it can't prove anything either way. The phone number in your lease can."
     red_flag: false
     type: claim
   - target: request
@@ -112,7 +112,7 @@ beats:
         red_flag: true
         type: payee
       - target: payee.iban
-        reveal: "The account number from the RIB. An account number looks the same whoever holds it, so it can't prove anything either way. The number in your lease can."
+        reveal: "The account number from the RIB. An account number looks the same whoever holds it, so it can't prove anything either way. The phone number in your lease can."
         red_flag: false
         type: payee
     actions:

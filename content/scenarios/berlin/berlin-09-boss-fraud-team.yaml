@@ -292,6 +292,6 @@ debrief:
   habit_card: hang-up-call-back
   already_clicked:
     clicked: "Close the page and type nothing. Delete the text or email, or report it."
-    shared_code: "Call Larchwick now on the number on your card and ask it to block the card and stop or recall the payment. Keep the numbers and times, and report it to the police."
+    shared_code: "Call Larchwick now on the number on your card and ask it to block the card and try to stop or recall the payment. Keep the numbers and times, and report it to the police."
     paid: "Block your card in the Larchwick app, call Larchwick on the number on your card and ask about a chargeback. Then ignore anyone who calls offering to stop the payment for a code."
   sources: [ch-ncsc-double-phishing-2026, de-vzhh-fake-bank-calls-2025, pl-cert-fake-consultants, es-incibe-smishing-bank-callback-2025, eu-epc-threats-2025, se-polisen-campaign-2026, de-zoll-phishing, de-vz-paketdienst-sms]

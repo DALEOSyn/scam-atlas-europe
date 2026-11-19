@@ -75,7 +75,7 @@ actions:
   - id: call_feuillemont_file
     label: "Call Feuillemont on your supplier file's number"
     kind: call_back_known
-    outcome: lucie_confirms
+    outcome: odile_confirms
   - id: report_feuillemont
     label: "Report it as a scam"
     kind: report
@@ -110,7 +110,7 @@ beats:
       - id: cancel_call_feuillemont
         label: "Cancel and call your supplier file's number"
         kind: call_back_known
-        outcome: lucie_confirms
+        outcome: odile_confirms
       - id: cancel_report_feuillemont
         label: "Cancel and report it"
         kind: report
@@ -121,7 +121,7 @@ beats:
         outcome: feuillemont_cancelled
 
 outcomes:
-  lucie_confirms:
+  odile_confirms:
     narrative: "Odile picks up on the number in your supplier file: \"Yes, new bank since Monday. The account ends 47.\" It does. You add the new details and send the payment to Solène for approval."
   feuillemont_paid_unchecked:
     narrative: "Solène approves it, and the money reaches Feuillemont: the change was real. But nobody had checked it, and a fake change looks just the same until it's too late."
@@ -139,7 +139,7 @@ debrief:
     what_works: "Call before paying."
   layer2:
     message_flags: []
-    notes: "Real bank changes happen. The name check told you whose account it is; the call told you the change was real. Solène's approval checks the payment, not the change: she sees the same email you did. A match must not lower your guard: it looks the same on a real change and a fake one."
+    notes: "Real bank changes happen. The name check told you whose account it is; the call told you the change was real. Solène's approval checks the payment, not the change: she sees the same details you took from the email. A match must not lower your guard: it looks the same on a real change and a fake one."
   device_tip: "In a real banking app, add new bank details only after you've called the supplier on the number you already had, not one in the email."
   habit_card: check-who-gets-the-money
   sources: [fr-cybermalveillance-fiche-faux-rib, fr-bdf-fraude-moyens-paiement, fr-fbf-cles-faux-rib-2025, fr-cybermalveillance-fiche-fovi, eu-epc-vop-scheme]

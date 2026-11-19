@@ -198,8 +198,7 @@ debrief:
   layer2:
     message_flags:
       - "New bank details right before the long weekend, just as the invoice falls due."
-      - "Sign-off catches a fake boss, because the real boss sees the request. It can't catch a fake supplier: Solène sees the same email you did."
-    notes: "A match only tells you whose account it is. The payee name came from the email, so the bank matched it. Had it been Platinoir, the name in your own file, the check should have flagged that the account isn't Platinoir's. Use names from your own records, and call the number in your file. If it happens for real, keep the emails, the bank details and the transfer record."
+    notes: "A match only tells you whose account it is. The payee name came from the email, so the bank matched it. Had it been Platinoir, the name in your own file, the check should have flagged that the account isn't Platinoir's. Use names from your own records, and call the number in your file. Here, the sign-off catches a fake Solène, because the real Solène sees the request. It can't catch a fake supplier: she sees the same details you took from the email. If it happens for real, keep the emails, the bank details and the transfer record."
   device_tip: "In a real banking app, type the payee name from your own records, not from the email, so the name check can warn you. Then call anyway."
   habit_card: check-who-gets-the-money
   already_clicked:

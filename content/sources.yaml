@@ -2695,7 +2695,7 @@ sources:
     accessed: "2026-11-19"
     region: IE
     tier: 3
-    used_for: [investment-ad-fake-platform, recovery-scam, MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    used_for: [arc, investment-ad-fake-platform, recovery-scam, MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "Scams 'often appear through online ads, social media or fake celebrity promotions', incl. 'deepfake videos of celebrities'; trading platforms 'not regulated or licensed by any authority'; high returns, urgency, secrecy; small early 'trial' returns to build trust. 'Always check if a firm is regulated on the Central Bank of Ireland register'; confirm it's the real firm, not an impostor; check the Central Bank's unauthorised-firm warnings. If scammed: contact your bank or provider and the Gardai immediately. No recovery-scam or withdrawal-fee detail."
 
   - id: ie-ccpc-spot-a-scam-2026

@@ -1,0 +1,28 @@
+# Berlin resolution (STORY §3.1, §6.2): after the berlin-09-boss-fraud-team debrief. Jonas with both
+# parcels: your documents came to him (the boss interrupt jonas_parcel, which every branch receives) and
+# Mia's present, found through the app he opened himself (phone-look pose). Jonas's If-then panel last.
+# Map invitations are not built yet (ENGINE "Not in S3").
+id: berlin-resolution
+chapter: berlin
+slot: resolution
+panels:
+  - backdrop: berlin-courtyard
+    crop: left
+    speaker: jonas
+    expression: relieved-parcels
+    line: "Your documents came to me. And look: Mia's present was in a locker all along."
+    alt: "Jonas in the courtyard, relieved, holding two parcels."
+  - backdrop: berlin-courtyard
+    crop: centre
+    speaker: jonas
+    expression: calm-phone-look
+    line: "After my nap I opened the Trundle app myself. There it was, waiting. Mia will be thrilled."
+    alt: "Jonas, calm, looks down at his own phone; the screen is turned away."
+  - backdrop: berlin-courtyard
+    crop: left
+    speaker: jonas
+    expression: proud
+    if_then:
+      cue: "If a parcel message wants money or a click,"
+      action: "then I open the courier's app myself."
+    alt: "Jonas, proud, by the parcel locker."

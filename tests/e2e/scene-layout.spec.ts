@@ -3,7 +3,8 @@ import { HARNESS_URL } from '../../playwright.config.ts';
 
 /**
  * Scene-player and HUD layout on phones (review T-S3 items 3, 4, 5), measured in a real browser on the
- * test-only harness (tests/e2e/harness), because the production build bundles zero scenes so far.
+ * test-only harness (tests/e2e/harness) with fixed fixture scenes, so the measurements do not move when the
+ * authored scenes change (the real scenes are played in story-scenes.spec.ts and smoke.spec.ts).
  */
 const PHONES = [
   { width: 320, height: 568 },

@@ -1,0 +1,29 @@
+# Amsterdam beat 3, the turn (GDD §22.1, STORY §3.2; worried → determined): the start of the afternoon,
+# after "Keep going". Her mum rang Sanne's real number first; Sanne gives her brother the same rule (the
+# chapter habit H, worded with who dials and which number). Following it is never wrong on the genuine
+# twins later (2-5, 2-6). Noor on a video call, waving, shown fine after 2-3/2-4 (STORY §5.7).
+# Panel 1 is by the canal (right crop, flipped) so it never repeats the last picture of Sanne's story.
+id: amsterdam-turn
+chapter: amsterdam
+slot: turn
+sensitive: true
+panels:
+  - backdrop: amsterdam-canal
+    crop: right
+    speaker: sanne
+    expression: relieved
+    flip: true
+    line: "Mum didn't pay. She rang my real number first, and I picked up."
+    alt: "Sanne, relieved, by the canal."
+  - backdrop: amsterdam-guesthouse
+    crop: right
+    speaker: sanne
+    expression: focused
+    flip: true
+    line: "My brother gets the same rule. Money by message he didn't expect? He calls me, on the number he already has."
+    alt: "Sanne, concentrating, by the key hooks."
+  - video: true
+    speaker: noor
+    expression: laughing-wave
+    line: "Hi Sanne! Our family has that rule now too. Grandad's teaching it at his café."
+    alt: "Noor on a video call, laughing and waving."

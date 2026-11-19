@@ -1,0 +1,26 @@
+# Home arrival (STORY §3.0, §6.1): before home-01-welcome-pack. Introduces Teo, Noor (named in home-04's
+# outcome) and the postcard ritual. Adaeze is not drawn yet: her welcome email (0-1) introduces her.
+id: home-arrival
+chapter: home
+slot: arrival
+panels:
+  - backdrop: home-kitchen
+    crop: left
+    speaker: teo
+    expression: laughing
+    line: "Trust inspector, eh? I'd better hide the biscuits before you inspect them."
+    alt: "Teo laughing in his small kitchen, next to a half-packed suitcase."
+  - backdrop: home-kitchen
+    crop: right
+    speaker: noor
+    expression: focused
+    flip: true
+    with: { id: teo, expression: warm }
+    line: "Your phone's all set up, inspector. Apps, contacts, the lot. You're welcome."
+    alt: "Noor in the kitchen, concentrating; Teo smiles beside her."
+  - backdrop: home-kitchen
+    crop: centre
+    speaker: teo
+    expression: proud
+    line: "One postcard from every city, kiddo, with what you learned written on the back. I'll read them at my Thursday phone café."
+    alt: "Teo, proud, beside the blank postcards on the kitchen table."

@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { playScene, skipScene } from './scene-helpers.ts';
 
 const WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 
@@ -106,6 +107,8 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
   await expect(page.getByRole('heading', { level: 1, name: 'Scam Atlas: Europe' })).toBeVisible();
   await axeClean(page);
   await page.getByRole('button', { name: 'Start' }).click();
+  // Home arrival (S4): read every panel; art loads from the game's own origin (checked below).
+  await playScene(page, 'home-arrival', { axe: true });
   await passIntro(page, 'Home', true);
 
   // 0-1 genuine welcome email on the laptop mail device: Check card + tag, then the verify habit.
@@ -156,6 +159,7 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
   await expect(page.getByText('3 messages left today. Your progress is saved.')).toBeVisible();
   await axeClean(page);
   await keepGoing(page);
+  await playScene(page, 'home-turn', { choose: 'Pause' });
 
   // 0-4 SMS with a timer and pushers: Take a breath, then open Kettle yourself.
   await expect(page.getByRole('region', { name: 'Phone: Messages' })).toBeVisible();
@@ -206,7 +210,10 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
   await axeClean(page);
   await continueToNext(page);
 
+  // Home resolution (S4): Adaeze, Noor and Teo, then Teo's If-then panel; the postcard carries it word for word.
+  await playScene(page, 'home-resolution', { axe: true });
   await expect(page.getByRole('heading', { level: 1, name: 'Chapter complete' })).toBeFocused();
+  await expect(page.getByText("then I block it in the bank app and tell someone.", { exact: false }).first()).toBeVisible();
   await expect(page.getByText(/^Passport stamp: Home, (bronze|silver|gold)$/)).toBeVisible();
   await expect(page.getByText(/Red flags you spotted: 0 of \d+ · Marks on safe details: \d+ · Genuine messages you reported: 0/)).toBeVisible();
   await expect(page.getByText(/To reach silver next time:/)).toBeVisible();
@@ -228,6 +235,7 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
 test('tutorial 0-2: fall on the training page, damage control feedback, blame-free debrief', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
+  await skipScene(page, 'home-arrival');
   await passIntro(page);
   await page.getByRole('button', { name: /Report the email as phishing/ }).click();
   await passConsequence(page);
@@ -294,6 +302,7 @@ for (const vp of [
     await page.goto('/');
     const noHScroll = async () => expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
     await page.getByRole('button', { name: 'Start' }).click();
+    await skipScene(page, 'home-arrival');
     await passIntro(page);
     const firstAction = page.getByRole('button', { name: /Find the pack/ });
     await page.getByRole('button', { name: /Details you can check/ }).click();
@@ -357,6 +366,7 @@ async function reachBossCall(page: Page) {
   await page.goto('/');
   // Reach 0-6 beat 3 quickly with timers on (Standard).
   await page.getByRole('button', { name: 'Start' }).click();
+  await skipScene(page, 'home-arrival');
   await passIntro(page);
   await page.getByRole('button', { name: /Find the pack in Waymarker Desk yourself/ }).click();
   await continueToNext(page);
@@ -367,6 +377,7 @@ async function reachBossCall(page: Page) {
   await page.getByRole('button', { name: /Use the link and set a new password/ }).click();
   await continueToNext(page);
   await keepGoing(page);
+  await skipScene(page, 'home-turn');
   await page.getByRole('button', { name: /Open Kettle yourself/ }).click();
   await continueToNext(page);
   await page.getByRole('button', { name: /Talk Teo through/ }).click();
@@ -436,6 +447,7 @@ test('1440x900: with every detail checked, hidden text stays inside the scrollin
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
+  await skipScene(page, 'home-arrival');
   await passIntro(page);
   await page.getByRole('button', { name: /Details you can check/ }).click();
   const rows = page.locator('[data-check-row]');
@@ -453,6 +465,13 @@ test('keyboard only: skip link, Check from the Details list, tag, act, debrief (
   await page.goto('/');
   await page.keyboard.press('Tab');
   await expect(page.getByRole('button', { name: 'Start' })).toBeFocused();
+  await page.keyboard.press('Enter');
+  // The Home arrival scene (S4) opens with focus on its heading; Tab reaches "Skip story" by keyboard.
+  const arrival = page.locator('main[data-scene-id="home-arrival"]');
+  await expect(arrival.getByRole('heading', { level: 1 })).toBeFocused();
+  const skipStory = arrival.locator('[data-scene="skip"]');
+  for (let i = 0; i < 6 && !(await skipStory.evaluate((el) => el === document.activeElement)); i++) await page.keyboard.press('Tab');
+  await expect(skipStory).toBeFocused();
   await page.keyboard.press('Enter');
   // CR-27: the chapter intro, keyboard only: the h1 has focus, Tab reaches Start.
   await expect(page.getByRole('heading', { level: 1, name: 'Home' })).toBeFocused();
@@ -502,6 +521,7 @@ test('keyboard only: skip link, Check from the Details list, tag, act, debrief (
 test('reload mid-chapter offers Continue and resumes at the next scenario', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
+  await skipScene(page, 'home-arrival');
   await passIntro(page);
   await page.getByRole('button', { name: /Find the pack in Waymarker Desk yourself/ }).click();
   await passConsequence(page);
@@ -540,6 +560,7 @@ test('start screen: Chapters list, Settings page; Start continues the next unfin
   const saved = await page.evaluate(() => localStorage.getItem('scam-atlas-europe:save'));
   expect(JSON.parse(saved ?? '{}')).toMatchObject({ settings: { alwaysTranslate: true } });
   await page.getByRole('button', { name: 'Start' }).click();
+  await skipScene(page, 'home-arrival');
   await passIntro(page);
   await expect(page.getByRole('heading', { name: 'Email from Adaeze Okafor-Lind' })).toBeFocused();
 });
@@ -548,6 +569,7 @@ test('in a scenario: sticky HUD, Settings dialog from the menu, Jump to your opt
   await page.setViewportSize({ width: 375, height: 560 });
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
+  await skipScene(page, 'home-arrival');
   await passIntro(page);
   await expect(page.getByRole('heading', { name: 'Email from Adaeze Okafor-Lind' })).toBeFocused();
   await page.evaluate(() => window.scrollTo(0, 0));
@@ -584,6 +606,7 @@ test('0-3: "Go to your inbox", then the reset email\'s timer runs out twice → 
   await page.clock.install();
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
+  await skipScene(page, 'home-arrival');
   await passIntro(page);
   await page.getByRole('button', { name: /Find the pack in Waymarker Desk yourself/ }).click();
   await continueToNext(page);

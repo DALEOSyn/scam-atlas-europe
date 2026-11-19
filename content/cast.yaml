@@ -33,6 +33,11 @@ cast:
     name: "Jonas"
     role: "Neighbour, Berlin"
     known_channel: { label: "Saved contact", detail: "Jonas (neighbour)" }
+  - id: sanne
+    name: "Sanne"
+    role: "Guesthouse desk, Amsterdam"
+    known_channel: { label: "Guesthouse desk", detail: "Sanne (guesthouse desk)" }
+    notes: "Local, Amsterdam (GDD §22.1, STORY §2.3): 19, student, job hunting after a rent rise. Story scenes only: she never sends a scored message and no scam impersonates her in a scored scenario. Her mum (capable, rang Sanne's real number first) and her little brother stay off screen."
   # Paris (GDD §23.10, story bible §3.3). Margaux (front desk) is a directory entry, not cast.
   - id: solene
     name: "Solène Arbogast"

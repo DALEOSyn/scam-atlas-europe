@@ -16,3 +16,8 @@ scenario_order:
   pm: [home-04-kettle-locked, home-05-teo-prize, home-06-boss-new-portal]
 boss: home-06-boss-new-portal
 intro: "Before the trip: your phone, your inbox and a few habits that travel well."
+scenes:
+  arrival: home-arrival
+  turn: home-turn
+  resolution: home-resolution
+atlas_cards: [stop-the-damage-first, ask-someone, open-it-yourself]

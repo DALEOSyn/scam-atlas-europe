@@ -437,9 +437,15 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
   // top = HUD + bar, so a focused element is never under either (WCAG 2.4.11).
   const jumpRef = useRef<HTMLButtonElement>(null);
   // Runs in the live phases only (playing, "What now?"), when the bar shows or hides; it follows the bar's
-  // size while shown. Cleanup puts the scroll padding back to the HUD's alone (or nothing without a HUD).
+  // size. Cleanup puts the scroll padding back to the HUD's alone (or nothing without a HUD).
+  // CR-28 (Paris QA round 3, 720×450): the padding counted the bar only while it was visible, but the bar
+  // shows *after* a focus scroll (its IntersectionObserver fires once the tray or result has left the
+  // view), so a Shift+Tab target could land at HUD + 8 px and then sit under the bar that appeared. Off
+  // the desk the padding now always keeps the bar's room in the live phases: its measured height when it
+  // is in the layout (shown or reserved), else the 44 px target it will have.
   const jumpLive = view.phase === 'playing' || view.phase === 'what_now';
   const jumpShown = jumpLive && !desk && !trayInView;
+  const jumpRoom = jumpLive && !desk;
   useEffect(() => {
     const root = typeof document !== 'undefined' ? document.documentElement : null;
     if (!root || !jumpLive) return undefined;
@@ -447,9 +453,10 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
       const hud = parseInt(root.style.getPropertyValue('--hud-h-live'), 10);
       return Number.isNaN(hud) ? '' : `${hud + 8}px`;
     };
-    const bar = jumpShown ? jumpRef.current : null;
+    const bar = jumpRoom ? jumpRef.current : null;
     const apply = () => {
-      const h = bar ? Math.ceil(bar.getBoundingClientRect().height) + 8 : 0;
+      const barH = bar ? Math.ceil(bar.getBoundingClientRect().height) : 0;
+      const h = jumpRoom ? Math.max(barH, 44) + 8 : 0;
       const hud = parseInt(root.style.getPropertyValue('--hud-h-live'), 10) || 0;
       root.style.setProperty('--jump-h-live', `${h}px`);
       root.style.scrollPaddingTop = hud || h ? `${hud + 8 + h}px` : '';
@@ -462,7 +469,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
       root.style.removeProperty('--jump-h-live');
       root.style.scrollPaddingTop = hudOnly();
     };
-  }, [jumpLive, jumpShown]);
+  }, [jumpLive, jumpRoom, jumpShown]);
   /**
    * On a payee-check beat the options sit inside the result card: skip and jump links go to the result
    * paragraph, so reading runs result → footer → tip → options (learning-psychologist T-3.3).

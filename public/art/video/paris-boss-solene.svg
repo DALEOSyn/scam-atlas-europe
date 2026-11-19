@@ -1,0 +1,47 @@
+<!-- Scam Atlas: Europe. Video-call still for the Paris boss, beat 3: Solène Arbogast (cast rig, calm) at a generic airport gate, no call chrome, no lettering. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-labelledby="pbs-t"><title id="pbs-t">Solène on a video call at an airport gate, calm, a parked plane through the window behind her</title>
+<defs>
+<g id="pbs-seat"><rect width="40" height="30" rx="8" fill="#8fa3b5"/><rect y="22" width="40" height="8" rx="4" fill="#7a8c9c"/><rect x="18" y="30" width="4" height="14" fill="#7a8c9c"/></g>
+<g id="pbs-sil"><path d="M24 330C24 244 60 204 120 198C180 204 216 244 216 330Z"/><rect x="104" y="166" width="32" height="40" rx="10"/><path d="M64 176C56 130 60 64 120 60C180 64 184 130 176 176Q174 186 164 186L76 186Q66 186 64 176Z"/><rect x="170" y="64" width="8" height="54" rx="3" transform="rotate(16 174 86)"/></g>
+</defs>
+<rect width="320" height="240" fill="#eef0e8"/>
+<rect width="320" height="12" fill="#e3d3b4"/>
+<ellipse cx="60" cy="6" rx="16" ry="3" fill="#f3d08a"/><ellipse cx="160" cy="6" rx="16" ry="3" fill="#f3d08a"/><ellipse cx="260" cy="6" rx="16" ry="3" fill="#f3d08a"/>
+<rect x="12" y="20" width="296" height="130" rx="6" fill="#cfdde6"/>
+<path d="M12 112H308V150H12Z" fill="#c9b28f"/>
+<path d="M12 112H308V118H12Z" fill="#b49c7a"/>
+<g fill="#9db58a"><ellipse cx="236" cy="110" rx="14" ry="6"/><ellipse cx="258" cy="109" rx="12" ry="7"/><ellipse cx="282" cy="110" rx="14" ry="6"/></g>
+<ellipse cx="248" cy="110" rx="10" ry="5" fill="#86a175"/>
+<path d="M14 104L22 80H32L42 102Z" fill="#9c978a"/>
+<path d="M16 100C16 94 24 92 36 92H92C102 92 108 96 110 100C108 104 102 108 92 108H28C20 108 16 106 16 100Z" fill="#b8b4a6"/>
+<path d="M48 104L70 104L54 120L44 120Z" fill="#9c978a"/>
+<ellipse cx="66" cy="112" rx="8" ry="3.5" fill="#9c978a"/>
+<path d="M40 112V120M84 108V120" stroke="#5d6672" stroke-width="2"/>
+<rect x="12" y="20" width="296" height="130" rx="6" fill="none" stroke="#f6efe2" stroke-width="6"/>
+<path d="M110 20V150M210 20V150" stroke="#f6efe2" stroke-width="6"/>
+<rect y="196" width="320" height="44" fill="#c9cfbf"/>
+<g><use href="#pbs-seat" x="6" y="158"/><use href="#pbs-seat" x="50" y="158"/><use href="#pbs-seat" x="230" y="158"/><use href="#pbs-seat" x="274" y="158"/></g>
+<g transform="translate(70 6) scale(.75)">
+<use href="#pbs-sil" fill="#fffaf0" stroke="#fffaf0" stroke-width="10" stroke-linejoin="round"/>
+<g stroke="#2b2433" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M24 330C24 244 60 204 120 198C180 204 216 244 216 330Z" fill="#3f6b4f"/>
+<path d="M156 208C186 222 206 260 210 330H176Z" fill="#325640" stroke="none"/>
+<path d="M58 238L72 216L196 330H168Z" fill="#5d6672"/>
+<path d="M64 176C56 130 60 64 120 60C180 64 184 130 176 176Q174 186 164 186L76 186Q66 186 64 176Z" fill="#4a3326"/>
+<rect x="104" y="166" width="32" height="40" rx="10" fill="#b97f58"/>
+<path d="M104 200L120 224L136 200Z" fill="#d39a70" stroke="none"/>
+<path d="M98 198L112 226L120 210L128 226L142 198" fill="#325640"/>
+<ellipse cx="120" cy="125" rx="50" ry="56" fill="#d39a70"/>
+<rect x="170" y="64" width="8" height="44" rx="3" fill="#c98f2e" stroke-width="2" transform="rotate(16 174 86)"/><path d="M171 108L178 108L174 116Z" fill="#f1e4c8" stroke-width="2" transform="rotate(16 174 86)"/>
+<path d="M66 172C58 128 62 64 120 60C178 64 182 128 174 172C168 178 162 180 156 180C160 156 160 128 158 102Q140 92 120 98Q100 92 82 102C80 128 80 156 84 180C78 180 72 178 66 172Z" fill="#4a3326"/>
+<path d="M92 76Q106 68 120 68" fill="none" stroke="#7a5232" stroke-width="2"/>
+<ellipse cx="120" cy="143" rx="7" ry="8" fill="#b97f58" stroke="none"/>
+</g>
+<g id="x-calm" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round">
+<path d="M90 109Q101 105 112 108M128 108Q139 105 150 109" fill="none" stroke-width="2.5"/>
+<ellipse cx="101" cy="125" rx="7" ry="6" fill="#fffdf8" stroke-width="2"/><ellipse cx="139" cy="125" rx="7" ry="6" fill="#fffdf8" stroke-width="2"/>
+<circle cx="101" cy="125" r="3.4" fill="#2b2433" stroke="none"/><circle cx="139" cy="125" r="3.4" fill="#2b2433" stroke="none"/>
+<path d="M110 164Q120 168 130 164" fill="none" stroke-width="3"/>
+</g>
+</g>
+</svg>

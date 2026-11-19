@@ -1,0 +1,145 @@
+# 3-4 Feuillemont really changed banks (GDD §23.4 3-4; payment-detail-change brief, genuine twin).
+# Genuine, high stakes, difficulty 3, no timer (honest terms: the usual 30 days). Supplier twin of
+# paris-08-supplier-thread-match (same five checkables, same neutral wording on sender, IBAN, reference
+# and attachment). French in-world email with inline translation, like its twin.
+# Checkables (5): sender neutral (P1), attachment and reference neutral, IBAN neutral (P2: a new
+# account is never a checkable red flag, because real changes have one too), request ("Asks you to…": a
+# change of bank details is a reason to call the number in your supplier file).
+# Banking beat (start_transfer): payee check match (P3 neutral, fixed suffix). Paying the new details
+# without the call is `pay` (comply, ★ on genuine high stakes): the change was never checked (GDD §23.3).
+# The call to the number in your file is the habit: ★★★, and Lucie confirms.
+id: paris-04-supplier-new-bank
+chapter: paris
+role: standard
+pattern: payment-detail-change
+theme: supplier
+twin_of: paris-08-supplier-thread-match
+learning_objectives: [LO-06, LO-17]
+difficulty: 3
+is_fraud: false
+stakes: high
+device: email
+brands: [feuillemont, ruchelune, larchwick]
+cast: [solene]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Feuillemont · Comptabilité", detail: "compta@feuillemont.example" }
+  subject: "Nouvelles coordonnées bancaires · facture F-2026-118"
+  body: |
+    Bonjour,
+
+    Nous avons changé de banque. À partir de la facture F-2026-118, merci de régler sur le compte ci-dessous. Conditions habituelles : 30 jours. Pour toute question, appelez-nous au numéro habituel.
+
+    Bonne journée,
+    Lucie, comptabilité
+  lang: fr
+  translation: "Hello, we've changed banks. From invoice F-2026-118, please pay to the account below. Usual terms: 30 days. Any questions, call us on the usual number. Have a good day, Lucie, accounts"
+  request: pay
+  ask:
+    text: "À partir de la facture F-2026-118, merci de régler sur le compte ci-dessous."
+    translation: "From invoice F-2026-118, please pay to the account below."
+  payee: { name: "Feuillemont", iban: "FR•••••••••••••••••••••••47" }
+  attachments: [{ name: "RIB_Feuillemont.pdf", size: "58 KB" }]
+  references: ["F-2026-118"]
+  l10n_note: "French in-world text is intentional (Paris chapter); the English translation is shown inline. 'RIB' is a bank-details slip."
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows compta@feuillemont.example, the address in your supplier file, as a real email would. A real mailbox can be misused, so it can't prove anything either way. Judge the request."
+    red_flag: false
+    type: sender
+  - target: attachment
+    reveal: "Opens a bank-details slip (RIB) for Feuillemont. A real RIB and a fake one look just as tidy, so it can't prove anything either way."
+    red_flag: false
+    type: attachment
+  - target: reference
+    reveal: "Shows invoice F-2026-118, which is in your supplier file. Invoice numbers can be copied from earlier mail, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: payee.iban
+    reveal: "A new account, as the email says. A real change and a fake one look the same here, so it can't prove anything either way. The number in your supplier file can."
+    red_flag: false
+    type: payee
+  - target: request
+    reveal: "Asks you to pay invoice F-2026-118 to a new account, with the usual 30 days. A change of bank details is a reason to call the number in your supplier file before paying."
+    red_flag: false
+    type: request
+
+actions:
+  - id: update_payee_email
+    label: "Update the payee from the email"
+    kind: start_transfer
+    next_beat: feuillemont_new
+    pressure_target: true
+  - id: call_feuillemont_file
+    label: "Call Feuillemont on your supplier file's number"
+    kind: call_back_known
+    outcome: lucie_confirms
+  - id: report_feuillemont
+    label: "Report it as a scam"
+    kind: report
+    outcome: feuillemont_reported
+  - id: leave_feuillemont
+    label: "Leave it for later"
+    kind: ignore
+    outcome: feuillemont_left
+
+beats:
+  - id: feuillemont_new
+    device: banking
+    message:
+      account: { nickname: "Ruchelune · current account" }
+      payee: { name: "Feuillemont", iban: "FR•••••••••••••••••••••••47", name_check: match, amount: "€1,960.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "Name matches: the account is held by Feuillemont. That shows whose account it is. Only a call on a number you already had shows the request is real."
+        red_flag: false
+        type: payee
+      - target: payee.iban
+        reveal: "A new account, as the email says. A real change and a fake one look the same here, so it can't prove anything either way. The number in your supplier file can."
+        red_flag: false
+        type: payee
+    actions:
+      - id: pay_new_feuillemont
+        label: "Pay the new account, send for approval"
+        kind: pay
+        outcome: feuillemont_paid_unchecked
+        pressure_target: true
+      - id: cancel_call_feuillemont
+        label: "Cancel and call your supplier file's number"
+        kind: call_back_known
+        outcome: lucie_confirms
+      - id: cancel_report_feuillemont
+        label: "Cancel and report it"
+        kind: report
+        outcome: feuillemont_reported
+      - id: cancel_feuillemont
+        label: "Cancel"
+        kind: ignore
+        outcome: feuillemont_cancelled
+
+outcomes:
+  lucie_confirms:
+    narrative: "Lucie picks up on the number in your supplier file: \"Yes, new bank since Monday. The account ends 47.\" It does. You add the new details and send the payment to Solène for approval."
+  feuillemont_paid_unchecked:
+    narrative: "Solène approves it, and the money reaches Feuillemont: the change was real. But nobody had checked it, and a fake change looks just the same until it's too late."
+  feuillemont_reported:
+    narrative: "Reported. Lucie writes again, puzzled: the change was real. A call to the number in your file would have settled it."
+  feuillemont_left:
+    narrative: "You leave it. A month later the invoice is overdue and Lucie chases it. The change was real."
+  feuillemont_cancelled:
+    narrative: "You cancel. The invoice is still due, and the change was real: a call to the number in your file would have settled it."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "It was real: confirmed on your file's number."
+    what_works: "New bank details? Call a number you had."
+  layer2:
+    message_flags: []
+    notes: "Real bank changes happen. The name check told you whose account it is; the call told you the change was real. A match must not lower your guard: it looks the same on a real change and a fake one."
+  device_tip: "In a real banking app, add new bank details only after you've called the supplier on the number you already had, not one in the email."
+  habit_card: check-who-gets-the-money
+  sources: [fr-cybermalveillance-fiche-faux-rib, fr-bdf-fraude-moyens-paiement, fr-fbf-cles-faux-rib-2025, fr-cybermalveillance-fiche-fovi, eu-epc-vop-scheme]

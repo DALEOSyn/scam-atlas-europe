@@ -1,0 +1,67 @@
+# Arc beat, slot 3 (GDD §10.1, §10.2; STORY §1.4: arc slot N plays by play position, so the line is
+# city-agnostic). Lots of praise and "keep this between us". Warning sign: secrecy, can't be verified.
+# Friendship only; Alex's line is ≤ 25 words, generic, no persuasion copy, no hint of a platform.
+# Options per §10.1 slot 3: Keep it secret → reply · Photo check → verify_identity · Tell Teo → ask_someone.
+# The photo check is inconclusive here (spec gap: §10.1 doesn't say what it finds at slot 3; the
+# finale's reveal, "the same picture on profiles with other names", can't play here without closing the
+# arc, so it finds nothing yet and says that proves nothing either way). Flagged for game-designer.
+# Debrief per §10.2 slot 3 (layer 1 words fixed there), with the safeguarding line.
+id: paris-arc-alex-03
+chapter: paris
+role: arc
+arc_slot: 3
+learning_objectives: [LO-14]
+is_fraud: true
+device: messenger
+brands: [wordswap]
+cast: [alex, teo]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Alex", detail: "Practice partner from Wordswap" }
+  from_cast: alex
+  body: |
+    You're honestly the smartest person I chat with 😊 I've got something exciting to tell you soon. Just keep it between us, OK?
+  request: reply
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows Alex, your practice partner from Wordswap, as any profile would. A profile name can't prove anything either way."
+    red_flag: false
+    type: sender
+
+actions:
+  - id: promise_secret
+    label: "Promise to keep it between you"
+    kind: reply
+    outcome: kept_secret
+    pressure_target: true
+  - id: photo_check_alex
+    label: "Do a photo check on Alex's profile"
+    kind: verify_identity
+    outcome: photo_check_nothing_yet
+  - id: tell_teo_secret
+    label: "Tell Teo about it"
+    kind: ask_someone
+    outcome: teo_on_secrets
+
+outcomes:
+  kept_secret:
+    narrative: "You reply: \"Promise 🤐\" Alex sends a row of stars and \"Knew I could trust you!\""
+  photo_check_nothing_yet:
+    narrative: "The photo check finds no other copies of the picture, for now. That can't prove who Alex is either way. The secret is still the thing to talk to someone about."
+  teo_on_secrets:
+    narrative: "Teo: \"Lots of compliments and 'keep it between us'? Being liked is lovely, kiddo, but a good friend doesn't need you to keep secrets from your family. Tell me what the news is when it comes.\""
+
+debrief:
+  variant: arc
+  layer1:
+    tell: "Secrets and lots of praise are common in scams."
+    what_works: "Tell Teo or Adaeze; do a photo check."
+  layer2:
+    message_flags: []
+    notes: "Most compliments are just kind. But praise followed by \"keep it between us\" cuts you off from the people who could help you check, which is why secrecy is a common step in online scams and grooming. A photo check can catch a copied picture, but finding nothing proves nothing. Telling someone you trust always helps."
+  safeguarding_line: "Asked to switch apps or keep secrets? Tell a trusted adult."
+  already_clicked:
+    clicked: "Promised already? That's fine: a promise like this isn't one you have to keep. Tell someone you trust, and if anyone asks you for money, talk to them first."
+  sources: [de-propk-cybergrooming-2026, de-polizei-lippe-cybergrooming, eu-bik-grooming-2020, be-police-romance-2026]

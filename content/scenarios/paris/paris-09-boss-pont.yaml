@@ -1,0 +1,352 @@
+# 3-9 Boss: the eve of the long weekend (GDD §23.6; ceo-fraud-bec brief, §7 design rule: one fake from a
+# real, misused mailbox, never shown how). 18:40, Bastien away, Solène left at five. Theme ceo.
+# Beat 1 (email, start, 40 s): Solène's REAL address: secret Projet Lys deposit, "send it yourself
+#   tonight, I can't approve from the plane", "not even Bastien", "email only". Bank-details card:
+#   Morvenac SAS (a different holder and IBAN from 3-2's). R: request. D: sender (P1), reference, IBAN.
+#   start_transfer -> boss_transfer (banking sub-beat, match, CR-18(e)): "Send it to Solène for her
+#   sign-off" is the four-eyes win. While the card is open, beat 2 is held (CR-18(e)).
+# Beat 2 (call, +45 s, 40 s, covered_by start): "Maître Vellacourt, Cabinet Ostrelle" on a Paris number
+#   not in your contacts. No spoofing shown or claimed. R: request, the number he gives to check him (P6).
+#   D: caller ID, the firm's name. Hang up -> "What now?": call Solène on the directory number (verify),
+#   "Call back the number he gave" (engage note), report, leave it there.
+# Beat 3 (video call, +45 s, 40 s, covered_by start + lawyer_call; CR-24): "Solène" on Kettle, a stylised
+#   illustration (public/art/video/paris-boss-solene.svg, ux-artist) at an airport gate; transcript only,
+#   no audio, no glitch effects (P5: the lesson is the request, not spotting artefacts). R: request.
+#   D: caller ID, face and voice. "What now?": directory call-back or "Message Adaeze through the staff
+#   directory" (ask_someone, verify): the DGSI case (ended the call, alerted management).
+# Interrupt after beat 3 (genuine): Inès says goodbye from her saved contact.
+# Damage control: the same six steps for every fall (engine merges and caps at 6), sets paris_boss_sent
+# (story only, GDD §23.13). Never says deepfake calls are "common"; no refund promise.
+# boss_transfer carries scored: false only for the validator's 3-scored-beat count (it counts the banking
+# sub-beat); the engine scores it as beat 1's decisive action (CR-18(e)), as in Amsterdam 2-9.
+id: paris-09-boss-pont
+chapter: paris
+role: boss
+pattern: ceo-fraud-bec
+theme: ceo
+learning_objectives: [LO-08, LO-06, LO-18, LO-04, LO-16]
+difficulty: 4
+is_fraud: true
+device: email
+brands: [ruchelune, larchwick, kettle, ostrelle, waymarker]
+cast: [solene, bastien, ines, adaeze]
+pressure:
+  timer: true
+  levers: [authority, secrecy, urgency, social_proof]
+  pusher:
+    messages:
+      - { at_seconds: 25, text: "Is it done? 19:00 is the deadline." }
+
+message:
+  sender: { display: "Solène Arbogast", detail: "solene@ruchelune.example" }
+  subject: "Projet Lys · confidentiel"
+  body: |
+    I can't talk about this on the phone: tonight we sign the purchase of a workshop in Lyon (Projet Lys). The €38,500 deposit must leave before 19:00 to the account below. Maître Vellacourt of Cabinet Ostrelle will call you to confirm.
+
+    Send it yourself tonight, I can't approve from the plane. Don't mention it to anyone before Tuesday's announcement, not even Bastien. Email only.
+
+    I know I can count on you.
+    Solène
+  request: pay
+  ask: { text: "Send it yourself tonight, I can't approve from the plane." }
+  payee: { name: "Morvenac SAS", iban: "FR•••••••••••••••••••••••64" }
+  references: ["Projet Lys"]
+  l10n_note: "'Projet Lys' and 'Maître' (the title for a lawyer) stay in French as local flavour."
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows solene@ruchelune.example, Solène's address in the Ruchelune directory, as a real email would. A real mailbox can be misused, so it can't prove anything either way. Judge the request."
+    red_flag: false
+    type: sender
+  - target: reference
+    reveal: "Shows a project name, Projet Lys, as a real deal might have. Anyone can make one up, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: payee.iban
+    reveal: "An account Ruchelune has never paid, on the bank-details card. Real new payees look the same here, so it can't prove anything either way. A call on a number you already had can."
+    red_flag: false
+    type: payee
+  - target: request
+    reveal: "Asks you to send a transfer nobody planned without the usual approval, before 19:00 on the eve of a long weekend, and to keep it even from Bastien, who co-signs. Skipping the sign-off and secrecy are the tells, whichever address it comes from."
+    red_flag: true
+    type: request
+
+actions:
+  - id: setup_boss_transfer
+    label: "Set up the transfer in Larchwick Pro"
+    kind: start_transfer
+    next_beat: boss_transfer
+    pressure_target: true
+  - id: call_solene_boss
+    label: "Call Solène on the Ruchelune directory number"
+    kind: call_back_known
+    outcome: solene_at_home
+  - id: report_boss_email
+    label: "Report it to Ruchelune IT"
+    kind: report
+    outcome: boss_email_reported
+  - id: leave_boss_email
+    label: "Leave it for now"
+    kind: ignore
+    outcome: boss_email_left
+
+beats:
+  - id: boss_transfer
+    device: banking
+    scored: false   # see header: inside beat 1's group (CR-18(e)); marked only for the validator's 3-scored-beat count
+    message:
+      account: { nickname: "Ruchelune · current account" }
+      payee: { name: "Morvenac SAS", iban: "FR•••••••••••••••••••••••64", name_check: match, amount: "€38,500.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "Name matches: the account is held by Morvenac SAS, the name the email gave you. That shows whose account it is. Only a call on a number you already had shows the request is real."
+        red_flag: false
+        type: payee
+      - target: payee.iban
+        reveal: "An account Ruchelune has never paid, on the bank-details card. Real new payees look the same here, so it can't prove anything either way. A call on a number you already had can."
+        red_flag: false
+        type: payee
+    actions:
+      - id: send_alone_boss
+        label: "Send it now, signing off alone"
+        kind: pay
+        outcome: boss_sent_alone
+        pressure_target: true
+      - id: send_boss_for_signoff
+        label: "Send it to Solène for her sign-off"
+        kind: ask_someone
+        outcome: solene_app_catches
+      - id: cancel_call_solene_boss
+        label: "Cancel and call Solène on the directory number"
+        kind: call_back_known
+        outcome: solene_at_home
+      - id: cancel_report_boss
+        label: "Cancel and report it"
+        kind: report
+        outcome: boss_transfer_reported
+      - id: cancel_boss
+        label: "Cancel"
+        kind: ignore
+        outcome: boss_transfer_cancelled
+
+  - id: lawyer_call
+    device: call
+    arrives_after: 45
+    timer_seconds: 40
+    covered_by: [start]
+    message:
+      sender: { display: "+33 1 •• •• •• 07", detail: "Not in your contacts: a Paris number" }
+      transcript:
+        - { speaker: caller, text: "Good evening, Maître Vellacourt from Cabinet Ostrelle. Ms Arbogast asked me to call you about Projet Lys." }
+        - { speaker: caller, text: "I confirm everything in her email. The deposit must leave before seven, or the seller walks away." }
+        - { speaker: you, text: "Normally Bastien or Solène signs off." }
+        - { speaker: caller, text: "She has authorised it herself. Please send it now and keep it strictly confidential until Tuesday." }
+        - { speaker: caller, text: "If you need to check, call me back on 01 •• •• •• 07. Your bank will show the name matches." }
+      request: pay
+      ask: { text: "Please send it now and keep it strictly confidential until Tuesday." }
+      references: ["Cabinet Ostrelle"]
+      phone_numbers: ["01 •• •• •• 07"]
+    inspectables:
+      - target: caller_id
+        reveal: "Shows a Paris number that isn't in your contacts, as a real lawyer's call might. A number on screen can't show who's calling, so it can't prove anything either way."
+        red_flag: false
+        type: caller_id
+      - target: reference
+        reveal: "Names a law firm, Cabinet Ostrelle, as a real lawyer would. Anyone can say a firm's name, so it can't prove anything either way."
+        red_flag: false
+        type: reference
+      - target: phone_number
+        reveal: "01 •• •• •• 07: the number he gives you to check him. Calling a number the caller gives you only reaches him again. Use the Ruchelune directory."
+        red_flag: true
+        type: phone_number
+      - target: request
+        reveal: "He wants the transfer sent now, without the usual sign-off, and kept secret. A second person \"confirming\" right after a secret request adds pressure, not proof."
+        red_flag: true
+        type: request
+    actions:
+      - id: send_on_lawyer_call
+        label: "Send the transfer now"
+        kind: pay
+        outcome: paid_on_lawyer_call
+        pressure_target: true
+      - id: hang_up_lawyer
+        label: "Hang up"
+        kind: hang_up
+        outcome: lawyer_call_left
+    what_now:
+      call_back_label: "Call Solène on the directory number"
+      outcomes:
+        call_back_known: solene_no_lawyer
+        report: lawyer_call_reported
+        done: lawyer_call_left
+      extra:
+        - id: call_back_lawyer_number
+          label: "Call back the number he gave"
+          kind: call_number_in_message
+          note: "That number reaches whoever gave it to you. Use the Ruchelune directory."
+
+  - id: video_call
+    device: call
+    arrives_after: 45
+    timer_seconds: 40
+    covered_by: [start, lawyer_call]
+    message:
+      sender: { display: "Solène Arbogast", detail: "Kettle video call · shows Solène Arbogast and her photo" }
+      video:
+        illustration: public/art/video/paris-boss-solene.svg
+        alt: "Illustration: Solène at an airport gate, coat on, a boarding pass in her hand"
+      transcript:
+        - { speaker: caller, text: "It's me. I know this is unusual, and I'm sorry to put it on you." }
+        - { speaker: caller, text: "I'm boarding in two minutes. I'm approving it myself, right now, so you don't need anyone else's sign-off tonight." }
+        - { speaker: you, text: "Shouldn't Bastien see it too?" }
+        - { speaker: caller, text: "No. Keep it between us until Tuesday. Please send it now. I'm counting on you." }
+      request: pay
+      ask: { text: "I'm approving it myself, right now, so you don't need anyone else's sign-off tonight." }
+    inspectables:
+      - target: caller_id
+        reveal: "Shows the name Solène Arbogast and her photo, as a real call from her would. Names and photos are easy to copy, so it can't prove anything either way."
+        red_flag: false
+        type: caller_id
+      - target: video
+        reveal: "Her face and voice, as you know them. A face and voice can be faked convincingly on a live call, so they can't prove anything either way. Judge the request."
+        red_flag: false
+        type: video
+      - target: request
+        reveal: "Her word on a call is meant to replace the sign-off, and you're asked to keep it secret. A real request keeps the usual sign-off, whoever is on the screen."
+        red_flag: true
+        type: request
+    actions:
+      - id: send_on_her_word
+        label: "Send it now on her word"
+        kind: pay
+        outcome: paid_on_video
+        pressure_target: true
+      - id: end_video_call
+        label: "End the call"
+        kind: hang_up
+        outcome: video_call_left
+    what_now:
+      call_back_label: "Call Solène on the directory number"
+      outcomes:
+        call_back_known: solene_video_wasnt_me
+        report: video_call_reported
+        done: video_call_left
+      extra:
+        - id: ask_adaeze_directory_paris
+          label: "Message Adaeze through the staff directory"
+          kind: ask_someone
+          outcome: adaeze_dont_send
+
+interrupts:
+  - id: ines_long_weekend
+    after_beat: video_call
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Inès (Ruchelune)", detail: "Saved contact: Inès (Ruchelune)" }
+      from_cast: ines
+      body: "Off now. Have a good long weekend! See you Tuesday 👋"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Inès's saved contact, in your usual chat with her. That isn't proof on its own, so weigh it with what she asks for: nothing, she's saying goodbye."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_ines_weekend
+        label: "Reply: have a lovely weekend!"
+        kind: proceed
+        outcome: ines_bonne_soiree
+        pressure_target: true
+      - id: report_ines_weekend
+        label: "Report the message"
+        kind: report
+        outcome: ines_weekend_reported
+
+outcomes:
+  boss_sent_alone:
+    narrative: "Sent: €38,500 to Morvenac SAS. A reply arrives at once: \"Thank you. Maître Vellacourt will call to confirm.\" Nobody else at Ruchelune knows yet."
+    sets_flags: [paris_boss_sent]
+    recovery:
+      - { step: call_bank_recall_transfer, category: stop }
+      - { step: tell_management_known_channel, category: warn }
+      - { step: secure_mailbox_owner, category: secure }
+      - { step: file_complaint_police, category: report }
+      - { step: wait_until_after_long_weekend, category: harmful }
+      - step: keep_quiet
+        category: harmful
+        feedback: "Feeling embarrassed is normal, and secrecy is exactly what the requests asked for. Anyone can be caught by this. Calling the bank now and telling Solène on the directory number is what gives the money the best chance."
+  paid_on_lawyer_call:
+    narrative: "While he's still on the line, the €38,500 goes to Morvenac SAS. \"Perfect. Ms Arbogast will be pleased.\" Nobody else at Ruchelune knows yet."
+    sets_flags: [paris_boss_sent]
+    recovery:
+      - { step: call_bank_recall_transfer, category: stop }
+      - { step: tell_management_known_channel, category: warn }
+      - { step: secure_mailbox_owner, category: secure }
+      - { step: file_complaint_police, category: report }
+      - { step: wait_until_after_long_weekend, category: harmful }
+      - step: keep_quiet
+        category: harmful
+        feedback: "Feeling embarrassed is normal, and secrecy is exactly what the requests asked for. Anyone can be caught by this. Calling the bank now and telling Solène on the directory number is what gives the money the best chance."
+  paid_on_video:
+    narrative: "\"Thank you. I knew I could count on you.\" The call ends, and the €38,500 has gone to Morvenac SAS. Nobody else at Ruchelune knows yet."
+    sets_flags: [paris_boss_sent]
+    recovery:
+      - { step: call_bank_recall_transfer, category: stop }
+      - { step: tell_management_known_channel, category: warn }
+      - { step: secure_mailbox_owner, category: secure }
+      - { step: file_complaint_police, category: report }
+      - { step: wait_until_after_long_weekend, category: harmful }
+      - step: keep_quiet
+        category: harmful
+        feedback: "Feeling embarrassed is normal, and secrecy is exactly what the requests asked for. Anyone can be caught by this. Calling the bank now and telling Solène on the directory number is what gives the money the best chance."
+  solene_at_home:
+    narrative: "Solène, at home: \"I'm not boarding anything, and I never sent that. I'll change my email password now. Please don't pay anything.\""
+  solene_app_catches:
+    narrative: "The approval request reaches Solène's own Larchwick Pro app, and she calls you on the directory line: \"What payment? I'm at home.\""
+  boss_email_reported:
+    narrative: "Reported to Ruchelune IT, and nothing goes out. Then your phone rings: a Paris number you don't know."
+  boss_email_left:
+    narrative: "You leave it, and nothing goes out. Then your phone rings: a Paris number you don't know."
+  boss_transfer_reported:
+    narrative: "You cancel and report it, and nothing goes out. Then your phone rings: a Paris number you don't know."
+  boss_transfer_cancelled:
+    narrative: "You cancel, and nothing goes out. Then your phone rings: a Paris number you don't know."
+  solene_no_lawyer:
+    narrative: "Solène answers on the directory number, at home: \"I don't know any Maître Vellacourt. Don't send anything.\""
+  lawyer_call_reported:
+    narrative: "Reported. Keep a note of the number and the time. Then Kettle rings: a video call."
+  lawyer_call_left:
+    narrative: "You hang up and leave it there. Then Kettle rings: a video call."
+  solene_video_wasnt_me:
+    narrative: "Solène answers from home: \"A video call? That wasn't me. Don't pay anything. I'm calling our bank and changing my email password now.\""
+  adaeze_dont_send:
+    narrative: "Adaeze: \"End of the week, secret, no sign-off? Don't send. I'll ring Solène on her directory number.\""
+  video_call_reported:
+    narrative: "Reported. Keep a note of the time and what was said."
+  video_call_left:
+    narrative: "You end the call and leave it there. Kettle rings once more, then stops."
+  ines_bonne_soiree:
+    narrative: "Inès: \"Bonne soirée! Don't stay too late.\""
+  ines_weekend_reported:
+    narrative: "You reported it. Careful is good; this one really was Inès, saying goodbye."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A secret transfer, a \"lawyer\", then her face: one request."
+    what_works: "End it. Call Solène on the directory number."
+  layer2:
+    message_flags:
+      - "The email: send it yourself, no sign-off, and keep it from Bastien. Skipping the sign-off and secrecy are the tells, whichever address it comes from."
+      - "The call: a second person \"confirming\" adds pressure, not proof, and the number he gave only reaches him."
+      - "The video call: her word was meant to replace the sign-off. A real request keeps the usual sign-off, whoever is on the screen."
+      - "Timing: these requests often come in the evening, on holidays and over long weekends, when accounts teams are short-staffed."
+    notes: "Even a real address can carry a fake request; Solène's mailbox may have been misused, so she changes its password. Most calls are what they seem. When one asks for money, secrecy or skipping a check, end it and call back. At home: the same trick works with a family member's face or voice: end the call and call them back on the number you have."
+  device_tip: "On a real phone, end the call yourself, then ring the person from your contacts or the staff directory. A call or video call never replaces the usual sign-off."
+  habit_card: hang-up-call-back
+  already_clicked:
+    paid: "Call your bank now on the number you already have and ask it to recall the transfer for fraud. Tell Solène on the directory number, keep everything, and file a complaint."
+  sources: [fr-gendarmerie-fovi, fr-cybermalveillance-fiche-fovi, eu-europol-ceo-bec-leaflet, fr-dgsi-flash-117-2025, eu-epc-threats-2025, de-bsi-deepfakes, fr-bdf-fraude-moyens-paiement, eu-epc-vop-scheme, eu-europol-phishing-leaflet, fr-inc-iban-rib-fraudes-2025, eu-esas-ai-scams-factsheet-nl]

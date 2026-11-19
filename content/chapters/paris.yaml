@@ -1,0 +1,24 @@
+# Chapter 3 — Paris. GDD §23. Slot 3, difficulty 2–4, boss 4. 8 scored scenarios (3 genuine = 37.5%),
+# plus 1 drill (3-3) and 1 arc beat (Alex; the engine plays arc slot N by play position, STORY §1.4).
+# Goal: before money goes to new bank details or on an urgent, secret request, check it with the person
+# on a number you already had, keep the two-person sign-off, and read the bank's payee-name check.
+# New patterns: ceo-fraud-bec (3-2, 3-6 genuine twin, boss) and payment-detail-change (3-1 genuine twin,
+# drill 3-3, 3-4 genuine twin, 3-5, 3-7, 3-8). No callbacks.
+# Mix (GDD §23.1): truth G F · G F G F F F(boss) (max 3 in a row); themes home 3-1, 3-7; ceo 3-2, 3-6,
+# boss; supplier 3-4, 3-8; payroll 3-5 (never adjacent); pressure parity genuine 2/3 (3-1 timer, 3-6
+# timer + pusher) vs fraud 4/5 (3-2, 3-7, 3-8, boss); genuine at difficulty 2, 3 and 4; sender decoys
+# (real, misused addresses) in 3-8 and the boss.
+# Story panels (GDD §23.13) are placed by the scene engine; the stop point follows 3-4.
+slot: 3
+city: paris
+name: "Paris"
+status: complete
+patterns: [ceo-fraud-bec, payment-detail-change]
+callbacks: []
+lo_focus: [LO-01, LO-04, LO-06, LO-08, LO-14, LO-16, LO-17, LO-18]
+scenario_order:
+  am: [paris-01-rent-close-match, paris-02-ceo-lookalike, paris-03-ines-plumber-rib, paris-04-supplier-new-bank]
+  pm: [paris-05-salary-change, paris-06-solene-urgent, paris-07-agency-new-account, paris-arc-alex-03, paris-08-supplier-thread-match, paris-09-boss-pont]
+boss: paris-09-boss-pont
+arc_beat: paris-arc-alex-03
+intro: "Paris, the last working day before a long weekend. Ruchelune, a print-and-design cooperative, needs an extra pair of hands: Bastien from accounts is on leave, so you prepare payments in Larchwick Pro and Solène, the director, approves them. Pinned by the screen: \"Payments at Ruchelune. 1. New payee or changed bank details: call the number in our file, never one in the message. 2. Every payment: one person prepares, Solène or Bastien approves. No exceptions, however urgent.\""

@@ -1,0 +1,142 @@
+# 3-6 The real Solène, urgent (GDD §23.4 3-6; ceo-fraud-bec brief §7, genuine twin). Genuine, high stakes,
+# difficulty 4, honest timer (slot length) + honest pusher at 30 s; interrupt at 15 s (Inès, small talk).
+# Twin of paris-02-ceo-lookalike: same four checkables, same "email only / can't pick up" pressure (so
+# that alone is never the tell), but nothing secret, a supplier and invoice already in the system, and
+# "send it to me for approval as usual".
+# Checkables (4): sender neutral (P1, same wording as the boss's beat 1), reference and attachment
+# neutral, request ("Asks you to…": why it's ordinary).
+# Normal response: prepare it and send it for approval (`proceed` ★★★). Calling Margaux at the front desk
+# (directory) is verify ★★★. Paying it alone skips the sign-off: `pay` (comply) on genuine high stakes,
+# ★. Report: 0, −5 (the over-reporting cost); leaving it: 0, the festival order goes out late.
+id: paris-06-solene-urgent
+chapter: paris
+role: standard
+pattern: ceo-fraud-bec
+theme: ceo
+twin_of: paris-02-ceo-lookalike
+learning_objectives: [LO-17, LO-04, LO-18]
+difficulty: 4
+is_fraud: false
+stakes: high
+device: email
+brands: [ruchelune, feuillemont, kettle]
+cast: [solene, ines]
+pressure:
+  timer: true
+  levers: [urgency, authority]
+  honest_deadline: "Feuillemont ships the rest of the paper today only if it's paid by 17:00"
+  pusher:
+    messages:
+      - { at_seconds: 30, text: "Any news? I'm out at five." }
+
+message:
+  sender: { display: "Solène Arbogast", detail: "solene@ruchelune.example" }
+  subject: "Urgent : facture Feuillemont F-2026-131"
+  body: |
+    Sorry for the rush: half the paper for the school festival order is missing. Feuillemont will only ship the rest today if invoice F-2026-131 (€1,240, already in the system) is paid before 17:00.
+
+    Can you prepare it and send it to me for approval as usual? I'm in meetings until 17:00 and can't pick up; Margaux at the front desk knows about it.
+
+    Solène
+  request: pay
+  ask: { text: "Can you prepare it and send it to me for approval as usual?" }
+  attachments: [{ name: "F-2026-131.pdf", size: "112 KB" }]
+  references: ["F-2026-131"]
+  l10n_note: "The subject keeps the French spacing before the colon ('Urgent : …') as local flavour."
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows solene@ruchelune.example, Solène's address in the Ruchelune directory, as a real email would. A real mailbox can be misused, so it can't prove anything either way. Judge the request."
+    red_flag: false
+    type: sender
+  - target: attachment
+    reveal: "Opens invoice F-2026-131 from Feuillemont. A real invoice and a fake one look just as tidy, so it can't prove anything either way."
+    red_flag: false
+    type: attachment
+  - target: reference
+    reveal: "Shows invoice F-2026-131, which is already in the system. Invoice numbers can be copied from earlier mail, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: request
+    reveal: "Asks you to prepare a payment to a supplier already in the system, for an invoice already there, and send it to her for approval as usual. Nothing secret, no new account."
+    red_flag: false
+    type: request
+    reassures: true
+
+actions:
+  - id: prepare_for_approval
+    label: "Prepare it and send it for Solène's approval"
+    kind: proceed
+    outcome: sent_for_approval
+    pressure_target: true
+  - id: call_margaux
+    label: "Call Margaux at the front desk (directory)"
+    kind: call_back_known
+    outcome: margaux_confirms
+  - id: pay_alone_genuine
+    label: "Pay it now, signing off alone"
+    kind: pay
+    outcome: paid_alone_genuine
+  - id: report_solene_real
+    label: "Report it as CEO fraud"
+    kind: report
+    outcome: solene_real_reported
+  - id: leave_until_tuesday
+    label: "Leave it until after the long weekend"
+    kind: ignore
+    outcome: festival_late
+
+interrupts:
+  - id: ines_printer
+    at_seconds: 15
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Inès (Ruchelune)", detail: "Saved contact: Inès (Ruchelune)" }
+      from_cast: ines
+      body: "Is the big printer jammed again, or is it just me? 🙃"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Inès's saved contact, in your usual chat with her. That isn't proof on its own, so weigh it with what she asks for: nothing, just printer trouble."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_ines_printer
+        label: "Reply: it's not you, I'll look soon"
+        kind: proceed
+        outcome: ines_printer_thanks
+        pressure_target: true
+      - id: report_ines_printer
+        label: "Report the message"
+        kind: report
+        outcome: ines_printer_reported
+
+outcomes:
+  sent_for_approval:
+    narrative: "Solène approves it from her phone between meetings at 16:20. Feuillemont ships the paper, and the festival order goes out on time."
+  margaux_confirms:
+    narrative: "Margaux, at the front desk: \"Yes, Solène told me this morning. It's the paper for the festival.\" You prepare it and send it to Solène, who approves it at 16:20."
+  paid_alone_genuine:
+    narrative: "The payment goes out and the paper ships. But it skipped the sign-off: Solène sees it afterwards and reminds you, kindly, that the card says no exceptions."
+  solene_real_reported:
+    narrative: "Reported as CEO fraud. IT checks: it really was Solène, from her real address, about an invoice already in the system. The 17:00 cut-off passes, and the paper ships late."
+  festival_late:
+    narrative: "You leave it. The 17:00 cut-off passes, and the festival order goes out late."
+  ines_printer_thanks:
+    narrative: "Inès: \"Phew. It's eaten three posters already.\""
+  ines_printer_reported:
+    narrative: "You reported it. Careful is good; this one really was Inès, fighting the printer."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Urgent, not secret: a known invoice, usual sign-off."
+    what_works: "Urgency alone isn't the tell; keep the procedure."
+  layer2:
+    message_flags: []
+    notes: "Compare this morning's fake: secret, unplanned, a new account, and \"not even Bastien\". A real urgent request still goes through the sign-off, and a real boss doesn't mind you checking. At home: a real urgent request from someone you know still survives a quick call back on their usual number."
+  device_tip: "In a real banking app, an urgent payment still goes through the usual approval step. If anything feels off, check with a colleague on the directory number."
+  habit_card: calm-not-paranoid
+  sources: [eu-europol-ceo-bec-leaflet, fr-gendarmerie-fovi, fr-cybermalveillance-fiche-fovi]

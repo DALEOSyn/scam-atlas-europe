@@ -1,0 +1,143 @@
+# 3-5 "Inès" asks to move her pay (GDD §23.4 3-5; payment-detail-change brief, salary variant). Fraud,
+# difficulty 4 (one subtle flag, real details mixed in), no timer, lever helpfulness. Interrupt at 20 s:
+# Adaeze (genuine small talk that never points at the verdict).
+# Red flag (R = 1): sender, an outside look-alike address (real name first, owner part example-rh.test).
+# Decoys (3): request (staff do change banks; a real request reads the same), the RIB, the staff number
+# (correct, and not hard to find out).
+# Fall (`enter_details`, comply): payroll updated, Inès gets a change notice, payroll hasn't gone out yet,
+# so the stop step is to put her real details back with her (sets paris_pay_redirected, story only).
+# Recovery fits the fall: no money has left, so no bank recall. `tell_it_team` (secure) stands in for the
+# GDD's keep_evidence, whose Paris label talks about a transfer that didn't happen here.
+# Inès is 17: layer 2 carries her side for players with a first job, and the 14+ line.
+id: paris-05-salary-change
+chapter: paris
+role: standard
+pattern: payment-detail-change
+theme: payroll
+learning_objectives: [LO-01, LO-06, LO-18]
+difficulty: 4
+is_fraud: true
+device: email
+brands: [ruchelune, kettle, waymarker]
+cast: [ines, adaeze]
+pressure:
+  timer: false
+  levers: [helpfulness]
+
+message:
+  sender: { display: "Inès Roussel", detail: "ines@ruchelune.example-rh.test" }
+  subject: "Changement de RIB pour ma paie"
+  body: |
+    Hi! I've opened an account with a new online bank. Can you pay my wages into it from this month? RIB attached. Payroll goes out tomorrow, thanks so much!
+
+    Inès (apprentice, staff no. R-0417)
+  request: enter_details
+  ask: { text: "Can you pay my wages into it from this month?" }
+  attachments: [{ name: "RIB_Ines_Roussel.pdf", size: "57 KB" }]
+  references: ["Staff no. R-0417"]
+  l10n_note: "The subject ('New RIB for my pay') stays in French as local flavour."
+
+inspectables:
+  - target: sender.detail
+    reveal: "ruchelune.example-rh.test. Read the end: the owner part is example-rh.test. The real name at the start is borrowed. Inès's directory address ends ruchelune.example."
+    red_flag: true
+    type: sender
+  - target: attachment
+    reveal: "Opens a bank-details slip (RIB) in Inès's name. A real RIB and a fake one look just as tidy, so it can't prove anything either way."
+    red_flag: false
+    type: attachment
+  - target: reference
+    reveal: "Her staff number, R-0417, which is correct. Details like this aren't hard to find out, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: request
+    reveal: "Asks you to pay her wages into a new account. Staff do change banks, and a real request reads just like this, so it can't prove anything either way. Check it with Inès herself."
+    red_flag: false
+    type: request
+
+actions:
+  - id: update_ines_pay
+    label: "Update her pay details from the RIB"
+    kind: enter_details
+    outcome: pay_details_changed
+    pressure_target: true
+  - id: ask_ines_kettle
+    label: "Ask Inès on her saved Kettle contact"
+    kind: call_back_known
+    outcome: ines_never_sent
+  - id: report_salary_email
+    label: "Report it to Ruchelune IT"
+    kind: report
+    outcome: salary_reported
+  - id: leave_for_bastien
+    label: "Leave it for Bastien"
+    kind: ignore
+    outcome: salary_left
+
+interrupts:
+  - id: adaeze_bakery
+    at_seconds: 20
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Adaeze Okafor-Lind", detail: "Saved contact: Adaeze Okafor-Lind (staff directory)" }
+      from_cast: adaeze
+      body: "How's Paris? Tried the bakery on the corner yet? 🥐"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Adaeze's saved contact from your staff directory, in your usual chat with her. That isn't proof on its own, so weigh it with what she asks for: nothing, she's just checking in."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_adaeze_bakery
+        label: "Reply: not yet, tomorrow morning!"
+        kind: proceed
+        outcome: adaeze_croissant
+        pressure_target: true
+      - id: report_adaeze_bakery
+        label: "Report the message"
+        kind: report
+        outcome: adaeze_reported
+
+outcomes:
+  pay_details_changed:
+    narrative: "Payroll is updated. An hour later Inès gets a \"your pay details have changed\" notice and comes to your desk: \"I didn't change anything.\" Payroll hasn't gone out yet."
+    sets_flags: [paris_pay_redirected]
+    recovery:
+      - { step: check_pay_details_with_person, category: stop }
+      - { step: tell_management_known_channel, category: warn }
+      - { step: tell_it_team, category: secure }
+      - { step: report_to_police_online, category: report }
+      - step: keep_quiet
+        category: harmful
+        feedback: "Feeling embarrassed is normal; it even had her staff number. Anyone could have been caught. Putting Inès's real details back with her now, before payroll runs, and telling Solène through the directory is what fixes it."
+      - step: reply_to_sender
+        category: harmful
+        feedback: "Replying feels like a way to sort it out, but the sender is the scammer, not Inès. Put her real details back with her in person, then tell Solène through the directory."
+  ines_never_sent:
+    narrative: "Inès, from across the workshop: \"What? I didn't send that. My bank's the same!\" She's shaken: it had her staff number."
+  salary_reported:
+    narrative: "Reported to Ruchelune IT, and payroll keeps Inès's real details. Tell Inès too, so she knows her name is being used."
+  salary_left:
+    narrative: "You leave it, and payroll keeps her real details. Inès only hears about it after the weekend; a quick message to her would have told her today."
+  adaeze_croissant:
+    narrative: "Adaeze: \"Get the almond one. Trust me.\""
+  adaeze_reported:
+    narrative: "You reported it. Careful is good; this one really was Adaeze, asking about croissants."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "An outside address using Inès's name to move her pay."
+    what_works: "Ask the person on a contact you already have."
+  layer2:
+    message_flags:
+      - "Payroll goes out tomorrow: a deadline that leaves no time to ask her."
+    notes: "The address borrowed Inès's name at the start; the end shows who really owns it. Her staff number was right, but details like that aren't hard to find. If your pay ever goes missing, tell your employer straight away; they call their bank. Under 18? Tell a parent or guardian straight away and call the bank with them: that call is the urgent step. They can make the complaint; some online complaint services are for adults only."
+  device_tip: "On a real computer, a change to someone's bank details is checked with that person on a contact you already have, never by replying to the email."
+  habit_card: who-really-sent
+  already_clicked:
+    entered_details: "Changed someone's pay details? Check with them directly and put the right ones back before payroll; if it already went out, call the bank."
+  sources: [fr-cybermalveillance-fiche-fovi, fr-cybermalveillance-fiche-faux-rib]

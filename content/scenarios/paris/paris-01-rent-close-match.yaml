@@ -1,0 +1,151 @@
+# 3-1 Rent: Volet Bleu's first-rent notice (GDD §23.4 3-1; payment-detail-change brief, genuine twin).
+# Genuine, high stakes (a payment), difficulty 2, honest timer (slot length) with honest_deadline. Home
+# twin of paris-07-agency-new-account. French in-world email with inline translation (never a tell: its
+# fraud twin is French too).
+# Checkables (4): sender neutral (Paris ruling P1: real addresses use the neutral wording, because 3-8 and
+# the boss misuse real mailboxes), reference and attachment neutral (same wording as 3-7), request ("Asks
+# you to…", P4; nothing new is asked).
+# Banking beat (start_transfer, class step): you type the name and account from your lease. Payee check:
+# close match, the holder's full company name is shown (CR-23). "It fits" only because the player can
+# compare it with a document they already hold (P3). The debrief never says why the names differ.
+# First payee check in the game is normally here, so the coach mark (CR-23) appears on this beat.
+# Habit card: calm-not-paranoid (LO-17); the LO-06 card is first shown at 3-2 (GDD §23.4).
+id: paris-01-rent-close-match
+chapter: paris
+role: standard
+pattern: payment-detail-change
+theme: home
+twin_of: paris-07-agency-new-account
+learning_objectives: [LO-06, LO-17]
+difficulty: 2
+is_fraud: false
+stakes: high
+device: email
+brands: [volet-bleu, larchwick]
+cast: []
+pressure:
+  timer: true
+  levers: []
+  honest_deadline: "Your rent is due by the 5th, four days from now"
+
+message:
+  sender: { display: "Volet Bleu · Loyers", detail: "loyers@voletbleu.example" }
+  subject: "Avis d'échéance · loyer VB-2291-03"
+  body: |
+    Bonjour,
+
+    Bienvenue dans votre studio ! Votre premier loyer de 690 € est à régler avant le 5 du mois, sur le compte indiqué dans votre bail (page 4). Merci d'indiquer la référence VB-2291-03 avec votre virement.
+
+    L'avis d'échéance est en pièce jointe.
+
+    Cordialement,
+    Volet Bleu · Gestion locative
+  lang: fr
+  translation: "Hello, welcome to your studio! Your first rent of €690 is due by the 5th of the month, to the account in your lease (page 4). Please give the reference VB-2291-03 with your transfer. The rent notice is attached. Kind regards, Volet Bleu · Lettings"
+  request: pay
+  ask:
+    text: "Votre premier loyer de 690 € est à régler avant le 5 du mois, sur le compte indiqué dans votre bail (page 4)."
+    translation: "Your first rent of €690 is due by the 5th of the month, to the account in your lease (page 4)."
+  attachments: [{ name: "Avis d'échéance VB-2291-03.pdf", size: "84 KB" }]
+  references: ["VB-2291-03"]
+  l10n_note: "French in-world text is intentional (Paris chapter); the English translation is shown inline. 'Avis d'échéance' is a rent notice."
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows loyers@voletbleu.example, the agency's address on your lease, as a real email would. A real mailbox can be misused, so it can't prove anything either way. Judge the request."
+    red_flag: false
+    type: sender
+  - target: attachment
+    reveal: "Opens a rent notice for VB-2291-03, as a real agency sends. A real document and a fake one look just as tidy, so it can't prove anything either way."
+    red_flag: false
+    type: attachment
+  - target: reference
+    reveal: "Your lease reference, VB-2291-03, as on your lease. A reference like this can be copied from earlier mail, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: request
+    reveal: "Asks you to pay this month's rent to the account in your lease, the one you agreed when you signed. Nothing new is asked."
+    red_flag: false
+    type: request
+    reassures: true
+
+actions:
+  - id: start_rent_transfer
+    label: "Pay it with the details from your lease"
+    kind: start_transfer
+    next_beat: rent_transfer
+    pressure_target: true
+  - id: call_agency_lease
+    label: "Call Volet Bleu on your lease's number"
+    kind: call_back_known
+    outcome: agency_confirms_rent
+  - id: report_rent_email
+    label: "Report the email as a scam"
+    kind: report
+    outcome: rent_email_reported
+  - id: leave_rent_email
+    label: "Leave it for now"
+    kind: ignore
+    outcome: rent_left
+
+beats:
+  - id: rent_transfer
+    device: banking
+    message:
+      payee: { name: "Volet Bleu", iban: "FR•••••••••••••••••••••••31", name_check: close_match, holder: "Volet Bleu Gestion SAS", amount: "€690.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "It fits: the bank shows the holder as Volet Bleu Gestion SAS, the company name in the footer of your lease. That isn't proof on its own, so weigh it with what you're paying: the rent, to the account in your lease."
+        red_flag: false
+        type: payee
+        reassures: true
+      - target: payee.iban
+        reveal: "It fits: the same account as page 4 of your lease, the one you agreed when you signed. That isn't proof on its own, so weigh it with what you're paying: this month's rent, as agreed."
+        red_flag: false
+        type: payee
+        reassures: true
+    actions:
+      - id: pay_rent_holder
+        label: "Use 'Volet Bleu Gestion SAS' and pay"
+        kind: proceed
+        outcome: rent_paid
+        pressure_target: true
+      - id: cancel_call_agency
+        label: "Cancel and call the number in your lease"
+        kind: call_back_known
+        outcome: agency_confirms_holder
+      - id: cancel_report_rent
+        label: "Cancel and report the email"
+        kind: report
+        outcome: rent_email_reported
+      - id: cancel_rent
+        label: "Cancel for now"
+        kind: ignore
+        outcome: rent_cancelled
+
+outcomes:
+  rent_paid:
+    narrative: "Paid: €690 to Volet Bleu Gestion SAS, reference VB-2291-03. Two days later a receipt arrives. Welcome to the third floor."
+  agency_confirms_rent:
+    narrative: "The agency picks up on the number in your lease: \"Yes, that's our notice. Pay to the account in your lease.\" You pay the €690 with the details from your lease."
+  agency_confirms_holder:
+    narrative: "The agency, on the number in your lease: \"Volet Bleu Gestion SAS, that's us. The account in your lease is right.\" You pay the €690."
+  rent_email_reported:
+    narrative: "Reported. It was the agency's real notice, though, and the rent is still due by the 5th."
+  rent_left:
+    narrative: "You leave it. The 5th passes, and a polite reminder arrives: the rent is now late."
+  rent_cancelled:
+    narrative: "You cancel. The rent is still due by the 5th, to the account in your lease."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Your lease's account, and the full company name."
+    what_works: "Compare the shown name with your papers."
+  layer2:
+    message_flags: []
+    notes: "A close match isn't an alarm. Read the name your bank shows. If it's someone you don't know, stop and call. Here it was the company name on your lease, paid to the account you agreed when you signed, and nothing about the request was new."
+  device_tip: "Banks in euro countries run this check on euro transfers. If your bank shows no name check, the call to the number you already had is your only check."
+  habit_card: calm-not-paranoid
+  sources: [fr-inc-vop-2025, eu-eurlex-ipr-2024-886, eu-epc-vop-scheme, eu-ecb-ipr, eu-ec-ipr-vop-2025]

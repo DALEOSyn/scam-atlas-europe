@@ -1,7 +1,4 @@
 .hud {
-  position: sticky;
-  top: 0;
-  z-index: var(--z-hud);
   min-height: var(--hud-h);
   display: flex;
   flex-wrap: wrap;
@@ -12,11 +9,8 @@
   color: var(--color-text);
   border-bottom: var(--border-w) solid var(--color-border-subtle);
 }
-@media (max-height: 499px) {
-  .hud {
-    position: static;
-  }
-}
+/* The HUD stays sticky at every height (UI_SPEC §1.1); only the tray and footers go static under 500 px.
+   The sticky element is ScenarioView's wrapper around it (QA M5). */
 .progress,
 .timer {
   flex: none;

@@ -17,11 +17,13 @@
 import type { ActionKind, Scenario } from '../content/schema.ts';
 import { tallyTags, redFlagsOf } from './inspect.ts';
 import { situationOf, type AlreadySituation, type RecoveryResult } from './recovery.ts';
-import { beatById, type GroupState, type RunnerState } from './runner.ts';
+import { beatById, coveredDecision, type GroupState, type RunnerState } from './runner.ts';
 import { classOf, groupEarnsTagBonus, maxPointsOf, scoreGroup, tagBonus, type EngineBalance, type GroupScore, type Truth } from './scoring.ts';
 
 export interface BeatResult extends GroupScore {
   beatId: string;
+  /** Boss "already checked" (ruling QA fun note a): report or dismiss here scored as verify. */
+  covered: boolean;
   scored: boolean;
   outcome: string | undefined;
   correctTags: number;
@@ -37,6 +39,8 @@ export interface ScenarioResult {
   scored: boolean;
   /** 0–3; null on arc beats (no stars shown, GDD §10.2). */
   stars: number | null;
+  /** A boss with a fall in any beat: stars capped at the standard fall result (ruling QA L3). */
+  bossFallCap: boolean;
   points: number;
   maxPoints: number;
   /** Points before tag bonus and damage control. */
@@ -101,9 +105,10 @@ export function maxPointsOfScenario(b: EngineBalance, s: Scenario): number {
 export function resultOf(s: Scenario, b: EngineBalance, st: RunnerState): ScenarioResult {
   const truth = st.truth;
   const beats: BeatResult[] = st.groups.map((g) => {
-    const score = scoreGroup(b, truth, g.decision, { engagedOnFraud: g.engagedOnFraud, timerExpired: g.timerExpired, slot: st.slot });
+    const { decision, covered } = coveredDecision(s, st.groups, g);
+    const score = scoreGroup(b, truth, decision, { engagedOnFraud: g.engagedOnFraud, timerExpired: g.timerExpired, slot: st.slot });
     const tags = groupTags(s, st, g);
-    return { ...score, beatId: g.beatId, scored: g.scored, outcome: g.outcome, correctTags: tags.correct, wrongTags: tags.wrong, kinds: g.kinds };
+    return { ...score, beatId: g.beatId, covered, scored: g.scored, outcome: g.outcome, correctTags: tags.correct, wrongTags: tags.wrong, kinds: g.kinds };
   });
   const scoredBeats = beats.filter((x) => x.scored);
   const fell = scoredBeats.some((x) => x.fell);
@@ -119,7 +124,10 @@ export function resultOf(s: Scenario, b: EngineBalance, st: RunnerState): Scenar
   let stars: number;
   let points: number;
   if (s.role === 'boss') {
-    stars = scoredBeats.length > 0 ? Math.round(scoredBeats.reduce((n, x) => n + x.stars, 0) / scoredBeats.length) : 0;
+    // A fall in any beat caps the boss's stars at the standard fall result (ruling QA L3); the points
+    // still count every beat handled well.
+    const mean = scoredBeats.length > 0 ? Math.round(scoredBeats.reduce((n, x) => n + x.stars, 0) / scoredBeats.length) : 0;
+    stars = fell ? (recovery?.stars ?? 0) : mean;
     points = base + bonus.bonus + recoveryPoints;
   } else if (fell) {
     stars = recovery?.stars ?? 0;
@@ -154,6 +162,7 @@ export function resultOf(s: Scenario, b: EngineBalance, st: RunnerState): Scenar
     truth,
     scored: s.role === 'standard' || s.role === 'boss',
     stars: s.role === 'arc' ? null : stars,
+    bossFallCap: s.role === 'boss' && fell,
     points,
     maxPoints: maxPointsOfScenario(b, s),
     base,

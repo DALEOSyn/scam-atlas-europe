@@ -3,7 +3,8 @@
  * - L1: descriptive "What now?" lines; ★★★ displayed with a lower beat → no "You chose", a "Next time" pointer.
  * - L2: caller ID / sender / logo decoys on fraud carry the "Fair instinct…" wrong-mark line.
  * - L3: the summary shows gross correct marks (capped at R) and wrong marks apart; stamps stay net.
- * - L4: tutorial grace in slot 0 (report on genuine, dismiss on genuine high stakes: ★, 0 points).
+ * - L4: tutorial grace in slot 0 (report on genuine, dismiss on genuine high stakes: ★; 5 points since the
+ *   producer ruling in T-2.8, so ★ = 5 everywhere and waiting out a timer never beats a deliberate pause).
  */
 import { describe, expect, it } from 'vitest';
 import { chapterSchema, scenarioSchema, type Scenario } from '../../../src/content/schema.ts';
@@ -30,13 +31,13 @@ const plain = { engagedOnFraud: false, timerExpired: false };
 
 describe('L4 tutorial grace: slot 0 against slot 1', () => {
   it('balance.yaml grants grace in slot 0 only', () => {
-    expect(B.tutorial_grace).toEqual({ slots: [0], report_on_legit: { stars: 1, points: 0 }, dismiss_on_legit_high: { stars: 1, points: 0 } });
+    expect(B.tutorial_grace).toEqual({ slots: [0], report_on_legit: { stars: 1, points: 5 }, dismiss_on_legit_high: { stars: 1, points: 5 } });
   });
 
   it.each([
-    ['report', 'legit_high', { stars: 1, points: 0 }, { stars: 0, points: -5 }],
-    ['report', 'legit_low', { stars: 1, points: 0 }, { stars: 0, points: -5 }],
-    ['dismiss', 'legit_high', { stars: 1, points: 0 }, { stars: 0, points: 0 }],
+    ['report', 'legit_high', { stars: 1, points: 5 }, { stars: 0, points: -5 }],
+    ['report', 'legit_low', { stars: 1, points: 5 }, { stars: 0, points: -5 }],
+    ['dismiss', 'legit_high', { stars: 1, points: 5 }, { stars: 0, points: 0 }],
   ] as const)('%s on %s: slot 0 %o, slot 1 %o', (cls, truth, slot0, slot1) => {
     expect(scoreGroup(B, truth, d(cls), { ...plain, slot: 0 })).toMatchObject(slot0);
     expect(scoreGroup(B, truth, d(cls), { ...plain, slot: 1 })).toMatchObject(slot1);
@@ -51,27 +52,33 @@ describe('L4 tutorial grace: slot 0 against slot 1', () => {
     }
   });
 
-  it('a timer running out is not a choice: no grace', () => {
-    expect(scoreGroup(B, 'legit_high', undefined, { engagedOnFraud: false, timerExpired: true, slot: 0 })).toMatchObject({ stars: 0, points: 0 });
+  it('a timer running out is not a choice: no grace; on genuine high stakes it scores ★ and 5 in every slot (ruling QA L4)', () => {
+    for (const slot of [0, 1, 5]) {
+      expect(scoreGroup(B, 'legit_high', undefined, { engagedOnFraud: false, timerExpired: true, slot })).toMatchObject({ stars: 1, points: 5 });
+    }
+    expect(scoreGroup(B, 'legit_low', undefined, { engagedOnFraud: false, timerExpired: true, slot: 0 })).toMatchObject({ stars: 2, points: 10 });
     expect(graceFor(B, undefined, 'report', 'legit_low')).toBeUndefined();
   });
 
-  it('★ at 0 points stays below ★★ (10 points), so stars and points never invert', () => {
+  it('grace ★ is worth 5 like every ★, stays below ★★ (10 points), and never below a timer running out (producer ruling T-2.8)', () => {
+    expect(B.tutorial_grace.report_on_legit.points).toBe(B.points.per_star);
+    expect(B.tutorial_grace.dismiss_on_legit_high.points).toBe(B.points.per_star);
+    expect(B.tutorial_grace.dismiss_on_legit_high.points).toBeGreaterThanOrEqual(B.timer_expiry.genuine_high.points);
     expect(B.tutorial_grace.report_on_legit.points).toBeLessThan(2 * B.points.per_star);
     expect(B.tutorial_grace.dismiss_on_legit_high.points).toBeLessThan(2 * B.points.per_star);
   });
 
-  it('home-01 (genuine, low): reporting scores ★ / 0 in the tutorial, 0 / −5 elsewhere; it still counts as reported', () => {
+  it('home-01 (genuine, low): reporting scores ★ / 5 in the tutorial, 0 / −5 elsewhere; it still counts as reported', () => {
     const s = home('home-01-welcome-pack');
-    expect(play(s, ctx({ slot: 0 }), [act('report_welcome')]).r).toMatchObject({ stars: 1, points: 0, genuineReported: 1 });
+    expect(play(s, ctx({ slot: 0 }), [act('report_welcome')]).r).toMatchObject({ stars: 1, points: 5, genuineReported: 1 });
     expect(play(s, ctx({ slot: 1 }), [act('report_welcome')]).r).toMatchObject({ stars: 0, points: -5, genuineReported: 1 });
   });
 
   it('home-03 (genuine, high, player started): closing the page or reporting the reset scores ★ in the tutorial', () => {
     const s = home('home-03-password-reset');
-    expect(play(s, ctx({ slot: 0 }), [act('close_forgot_page')]).r).toMatchObject({ stars: 1, points: 0 });
+    expect(play(s, ctx({ slot: 0 }), [act('close_forgot_page')]).r).toMatchObject({ stars: 1, points: 5 });
     expect(play(s, ctx({ slot: 1 }), [act('close_forgot_page')]).r).toMatchObject({ stars: 0, points: 0 });
-    expect(play(s, ctx({ slot: 0 }), [act('go_to_inbox'), act('ignore_reset')]).r).toMatchObject({ stars: 1, points: 0 });
+    expect(play(s, ctx({ slot: 0 }), [act('go_to_inbox'), act('ignore_reset')]).r).toMatchObject({ stars: 1, points: 5 });
   });
 });
 
@@ -212,8 +219,8 @@ describe('Home strategy check (slot 0, GDD §16): grace does not lift always-rep
     const sum = summarise(B, chapter, records, true);
     expect(sum.genuineReported).toBe(2);
     expect(sum.stamp).toBe('bronze');
-    // Grace: the two genuine reports score 0 points each instead of −5.
-    expect(records.filter((x) => x.genuineReported > 0).map((x) => [x.stars, x.points])).toEqual([[1, 0], [1, 0]]);
+    // Grace: the two genuine reports score ★ and 5 points each instead of 0 and −5; stamps don't use points.
+    expect(records.filter((x) => x.genuineReported > 0).map((x) => [x.stars, x.points])).toEqual([[1, 5], [1, 5]]);
   });
 });
 

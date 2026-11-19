@@ -29,10 +29,10 @@ describe('debrief data (UI_SPEC §8)', () => {
     const { st, r } = play(s, ctx(), [check('link'), tag('link'), check('reference'), tag('reference'), act('open_app')]);
     const d = debriefOf(s, st, r, none);
     expect(d.layer2.flags.map((f) => [f.target ?? null, f.status, f.senderCaveat])).toEqual([
-      ['sender.detail', 'not_marked', true],
-      ['link', 'marked', false],
+      ['sender.detail', 'not_marked', 'name'],
+      ['link', 'marked', null],
     ]);
-    expect(d.layer2.wrongTags).toEqual([{ beatId: 'start', target: 'reference', reveal: 'Looks like a tracking number.', type: undefined, fairInstinct: false }]);
+    expect(d.layer2.wrongTags).toEqual([{ beatId: 'start', device: 'sms', target: 'reference', reveal: 'Looks like a tracking number.', type: undefined, fairInstinct: false }]);
     expect(d.layer2.spotted).toEqual({ marked: 1, could: 2 });
     expect(d.layer1.youChose).toEqual([]);
   });

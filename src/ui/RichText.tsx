@@ -66,23 +66,26 @@ export function Host({ text, strong = false, boxed = false, oneLine = false }: {
   // A one-line host has no break opportunities at all.
   const Wbr = oneLine ? NoBreak : Break;
   const ownerClass = [styles.nowrap, strong ? styles.owner : '', boxed ? styles.boxed : ''].filter(Boolean).join(' ');
+  // UI_SPEC §1.5: only the owner part never wraps. Other labels break at the dots (<wbr>) and, at very
+  // narrow widths, inside the label, so they never widen the page (QA T-2.8 m4 / T-2.7 F1).
+  const label = oneLine ? styles.nowrap : styles.label;
   return (
     <span class={styles.host} data-host="">
       {p.scheme ? (
         <>
-          <span class={styles.nowrap}>{p.scheme}</span>
+          <span class={label}>{p.scheme}</span>
           <Wbr />
         </>
       ) : null}
       {p.local ? (
         <>
-          <span class={styles.nowrap}>{p.local}</span>
+          <span class={label}>{p.local}</span>
           <Wbr />
         </>
       ) : null}
       {p.sub.map((l, i) => (
         <span key={i}>
-          <span class={styles.nowrap}>{l}</span>
+          <span class={label}>{l}</span>
           <Wbr />
         </span>
       ))}
@@ -90,7 +93,7 @@ export function Host({ text, strong = false, boxed = false, oneLine = false }: {
       {p.path.map((seg, i) => (
         <span key={i}>
           <Wbr />
-          <span class={styles.nowrap}>{seg}</span>
+          <span class={label}>{seg}</span>
         </span>
       ))}
     </span>

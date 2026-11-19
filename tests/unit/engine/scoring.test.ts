@@ -52,7 +52,8 @@ describe('star table (GDD §7.1, balance stars)', () => {
   it('timer expiry with nothing decided scores as dismiss; a decision made before the deadline stands', () => {
     expect(scoreGroup(B, 'fraud', undefined, { engagedOnFraud: false, timerExpired: true })).toMatchObject({ cls: 'dismiss', stars: 2, points: 10, timerExpired: true });
     expect(scoreGroup(B, 'fraud', d('verify', 99), { engagedOnFraud: false, timerExpired: true })).toMatchObject({ cls: 'verify', stars: 3, points: 99, timerExpired: false });
-    expect(scoreGroup(B, 'legit_high', undefined, { engagedOnFraud: false, timerExpired: true })).toMatchObject({ stars: 0, points: 0 });
+    // Ruling QA L4: the game timer is not the message's deadline; ★ and 5 on genuine high stakes.
+    expect(scoreGroup(B, 'legit_high', undefined, { engagedOnFraud: false, timerExpired: true })).toMatchObject({ stars: 1, points: 5 });
   });
 
   it('an authored score override replaces the points, not the stars', () => {

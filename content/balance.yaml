@@ -58,13 +58,24 @@ points:
   engage_on_fraud: { terminal: false, star_cap: 2 }   # every fraud engage must have next_beat (validator)
 
 # Tutorial grace (design ruling L4, 2026-11-18): chapter slot 0 only. The player has not yet met a scam or
-# learned that over-reporting has a cost, so over-caution on a genuine message earns ★ and 0 points instead of
-# 0 stars (and −5 for a report). Stamps are unchanged: a report still counts as "genuine message reported".
-# ★ at 0 points stays below ★★ (10). Not applied to timer expiry (scored as dismiss, not a choice).
+# learned that over-reporting has a cost, so over-caution on a genuine message earns ★ and 5 points instead of
+# 0 stars (and −5 for a report); 5 points since the producer ruling in T-2.8, so ★ = 5 points everywhere and
+# waiting out a timer never beats a deliberate pause. Stamps are unchanged: they don't use points, and a report
+# still counts as "genuine message reported". ★ at 5 points stays below ★★ (10). Not applied to timer expiry
+# (not a choice; genuine high-stakes expiry has its own cell below).
+# Timer expiry on a genuine high-stakes message (design ruling 2026-11-19, QA L4), every slot: the game
+# timer is a pressure mechanic, not the message's deadline, so running out never scores like dropping it.
+# Order: verify 3 > expiry 1 = acting through the link 1 > ignore 0. Low stakes and fraud are unchanged
+# (scored as the star table's timer_expiry class; no tag bonus).
+timer_expiry:
+  genuine_high: { stars: 1, points: 5 }
+
 tutorial_grace:
   slots: [0]
-  report_on_legit: { stars: 1, points: 0 }       # report on genuine, high or low stakes
-  dismiss_on_legit_high: { stars: 1, points: 0 } # dismiss on genuine high stakes
+  # ★ = 5 points everywhere (producer ruling, T-2.8): a deliberate pause never scores below waiting out
+  # the timer (timer_expiry.genuine_high).
+  report_on_legit: { stars: 1, points: 5 }       # report on genuine, high or low stakes
+  dismiss_on_legit_high: { stars: 1, points: 5 } # dismiss on genuine high stakes
 
 tags:
   # Player may mark a checked detail "suspicious". Only fraud scenarios (and quoted examples) pay.

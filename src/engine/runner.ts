@@ -20,10 +20,10 @@
  * - The clock and timer freeze while any freeze reason is active (pause menu,
  *   settings, help, debrief, Take a breath, an expanded translation).
  */
-import type { Action, ActionKind, Message, Device, Scenario, WhatNow } from '../content/schema.ts';
+import type { Action, ActionClass, ActionKind, Message, Device, Scenario, WhatNow } from '../content/schema.ts';
 import type { CheckableBeat } from './inspect.ts';
 import { checkablesOf, keyOf } from './inspect.ts';
-import { firePusher, startPushers, type PusherState } from './pushers.ts';
+import { armBeat, firePusher, planPushers, startPushers, stopPushers, type PusherPlan, type PusherState } from './pushers.ts';
 import { orderOptions, recoveryOptionsOf, scoreRecovery, type RecoveryOption, type RecoveryResult } from './recovery.ts';
 import { classOf, decisionOf, isFall, mergeDecision, truthOf, type Decision, type EngineBalance, type Truth } from './scoring.ts';
 import { clampStress, onArrival, pressureStyled, stressState, type StressState } from './stress.ts';
@@ -52,7 +52,11 @@ export interface RunnerContext {
  * starts only after the last line of the beat is shown).
  */
 export type FreezeReason = 'pause_menu' | 'settings' | 'help' | 'debrief' | 'take_a_breath' | 'translation' | 'call_lines';
-export type Phase = 'playing' | 'what_now' | 'consequence' | 'damage_control' | 'done';
+/**
+ * `interrupt`: an `after_beat` interrupt still waits for an answer at the end of the scenario (ruling
+ * QA M6): its own "New notification" step before the debrief.
+ */
+export type Phase = 'playing' | 'what_now' | 'consequence' | 'damage_control' | 'interrupt' | 'done';
 /** Built-in "What now?" choices (GDD §6): call_back_known = verify, report = report, done = dismiss. */
 export type WhatNowBuiltin = 'call_back_known' | 'report' | 'done';
 export const WHAT_NOW_BUILTINS: readonly WhatNowBuiltin[] = ['call_back_known', 'report', 'done'];
@@ -92,10 +96,17 @@ export interface GroupState {
 
 export interface InterruptState {
   id: string;
+  /** Scenario-clock arrival; Infinity for `after_beat` interrupts (they arrive on events). */
   at: number;
+  /** Arrives when this beat's call or message ends (ruling QA M6). */
+  afterBeat?: string | undefined;
+  /** The beat ended without "What now?": arrives at the next beat, or before the debrief. */
+  due?: boolean | undefined;
   arrived: boolean;
   actionId: string | undefined;
   outcome: string | undefined;
+  /** Index of the beat group that was live when the player answered (its consequence step shows the outcome). */
+  group?: number | undefined;
 }
 
 export type RunnerLogEntry =
@@ -130,6 +141,8 @@ export interface RunnerState {
   /** Pressure styling appeared in this scenario (layer-2 callouts, GDD §8). */
   styledShown: boolean;
   recovery: { options: RecoveryOption[]; result: RecoveryResult | null } | null;
+  /** The consequence step after the end-of-scenario interrupt step (its outcome only). */
+  tail?: boolean | undefined;
   log: RunnerLogEntry[];
 }
 
@@ -163,6 +176,17 @@ export function beatById(s: Scenario, id: string): BeatLike | undefined {
   return s.beats.find((b) => b.id === id) ?? s.interrupts.find((i) => i.id === id);
 }
 
+/**
+ * A setup step: `proceed` that only moves on (next_beat, no outcome) from a beat whose message asks
+ * nothing (`request: none`), e.g. 0-3's "check your inbox" page → the reset email. Never decisive.
+ */
+export function isSetupStep(beat: Pick<BeatLike, 'message'>, action: Pick<Action, 'next_beat' | 'outcome'>, cls: ActionClass, truth: Truth): boolean {
+  // On fraud a proceed is always decisive (a fall), even from a beat that asks nothing (sceptic T-2.8);
+  // the validator makes authors use open_link (engage) there instead.
+  if (truth === 'fraud') return false;
+  return cls === 'proceed' && action.next_beat !== undefined && action.outcome === undefined && beat.message.request === 'none';
+}
+
 function storyBeat(s: Scenario, id: string): BeatLike | undefined {
   return id === 'start' ? beatById(s, 'start') : s.beats.find((b) => b.id === id);
 }
@@ -178,6 +202,11 @@ export function scheduleOf(s: Scenario): { beatId: string; at: number }[] {
     out.push({ beatId: b.id, at });
   }
   return out;
+}
+
+/** Each follow-up placed on its scheduled beat (pushers.ts). */
+export function pusherPlanOf(s: Scenario): PusherPlan[] {
+  return planPushers(s.pressure.pusher?.messages ?? [], scheduleOf(s));
 }
 
 // ---------------------------------------------------------------------------
@@ -237,8 +266,8 @@ export function startScenario(s: Scenario, ctx: RunnerContext): RunnerState {
     schedule: scheduleOf(s),
     arrived: ['start'],
     groups: [newGroup(s, 'start')],
-    pushers: startPushers(ctx.balance, s.pressure.pusher?.messages ?? [], ctx.settings.pushers, stressState(ctx.balance, stress)),
-    interrupts: s.interrupts.map((i) => ({ id: i.id, at: i.at_seconds, arrived: false, actionId: undefined, outcome: undefined })),
+    pushers: startPushers(ctx.balance, pusherPlanOf(s), ctx.settings.pushers, stressState(ctx.balance, stress)),
+    interrupts: s.interrupts.map((i) => ({ id: i.id, at: i.at_seconds ?? Infinity, afterBeat: i.after_beat, arrived: false, actionId: undefined, outcome: undefined })),
     checks: [],
     tags: [],
     pause: { open: false, closesAt: 0, cooldownUntil: 0, uses: 0 },
@@ -269,9 +298,11 @@ function setStress(ctx: RunnerContext, st: RunnerState, v: number): RunnerState 
 }
 
 /** Is a timer or pusher currently putting on pressure? */
-function underPressure(ctx: RunnerContext, st: RunnerState): boolean {
+function underPressure(s: Scenario, ctx: RunnerContext, st: RunnerState): boolean {
   const timerActive = st.timer !== null && st.timer.expiries < 2;
-  const pusherActive = st.pushers.nextDue !== null || st.pushers.fired.length > 0;
+  const g = activeGroup(st);
+  const plan = st.pushers.fired.length > 0 && g ? pusherPlanOf(s) : [];
+  const pusherActive = st.pushers.nextDue !== null || st.pushers.fired.some((f) => plan[f.index]?.beat === g?.beatId);
   return timerActive || pusherActive || stressState(ctx.balance, st.stress) !== 'calm';
 }
 
@@ -293,7 +324,8 @@ function frozen(st: RunnerState): boolean {
 
 function resolveGroup(s: Scenario, ctx: RunnerContext, st: RunnerState, g: GroupState): RunnerState {
   const done: GroupState = { ...g, resolved: true, pendingOutcome: undefined };
-  let next = withGroup({ ...st, timer: null }, done);
+  // The beat is over: its follow-ups stop (QA M2); its after_beat interrupts become due (ruling QA M6).
+  let next = withGroup({ ...st, timer: null, pushers: stopPushers(st.pushers), interrupts: markDue(st.interrupts, done.visited) }, done);
   const fell = !done.timerExpired && done.decision !== undefined && isFall(done.decision.cls, st.truth);
   if (fell) next = setStress(ctx, next, next.stress + ctx.balance.stress.on_fall);
 
@@ -302,19 +334,82 @@ function resolveGroup(s: Scenario, ctx: RunnerContext, st: RunnerState, g: Group
   // 2026-11-19: the narrative is not part of debrief layer 1).
   const moreScheduled = next.schedule.length > next.groups.length;
   const narrative = done.outcome ? s.outcomes[done.outcome]?.narrative : undefined;
-  if (moreScheduled || narrative || done.timerExpired) return { ...next, phase: 'consequence' };
-  return enterDamageControlOrDone(s, next);
+  const asides = interruptNarratives(s, next, next.groups.length - 1);
+  if (moreScheduled || narrative || done.timerExpired || asides.length > 0) return { ...next, phase: 'consequence' };
+  return enterDamageControlOrDone(s, ctx, next);
 }
 
-function enterDamageControlOrDone(s: Scenario, st: RunnerState): RunnerState {
-  if (s.role === 'arc') return { ...st, phase: 'done' };
-  // Boss: damage control once at the end, from the first beat that fell. Others: the outcome reached.
+function markDue(list: readonly InterruptState[], beats: readonly string[]): InterruptState[] {
+  return list.map((i) => (i.afterBeat !== undefined && !i.arrived && beats.includes(i.afterBeat) ? { ...i, due: true } : i));
+}
+
+function arriveInterrupt(ctx: RunnerContext, st: RunnerState, id: string): RunnerState {
+  const next = setStress(ctx, st, st.stress + ctx.balance.stress.on_interrupt);
+  return {
+    ...next,
+    interrupts: next.interrupts.map((x) => (x.id === id ? { ...x, arrived: true, due: false } : x)),
+    log: [...next.log, { type: 'interrupt', id, at: next.clock }],
+  };
+}
+
+/** Due after_beat interrupts arrive now. */
+function arriveDue(ctx: RunnerContext, st: RunnerState): RunnerState {
+  return st.interrupts.filter((i) => i.due && !i.arrived).reduce((acc, i) => arriveInterrupt(ctx, acc, i.id), st);
+}
+
+/** The scenario is over: an after_beat interrupt still unanswered gets its own step first (ruling QA M6). */
+function finish(ctx: RunnerContext, st: RunnerState): RunnerState {
+  const next = arriveDue(ctx, st);
+  const waiting = next.interrupts.some((i) => i.afterBeat !== undefined && i.arrived && i.actionId === undefined);
+  return { ...next, phase: waiting ? 'interrupt' : 'done' };
+}
+
+function enterDamageControlOrDone(s: Scenario, ctx: RunnerContext, st: RunnerState): RunnerState {
+  if (s.role === 'arc') return finish(ctx, st);
+  // Boss: damage control once at the end, with the steps of every beat that fell, merged in beat order
+  // and de-duplicated (QA L2). Others: the outcome reached.
   const truth = st.truth;
-  const fallen = st.groups.find((g) => g.decision && !g.timerExpired && isFall(g.decision.cls, truth) && g.outcome);
-  const source = s.role === 'boss' ? fallen : st.groups[st.groups.length - 1];
-  const options = recoveryOptionsOf(source?.outcome ? s.outcomes[source.outcome] : undefined);
-  if (options.length === 0) return { ...st, phase: 'done' };
+  const sources =
+    s.role === 'boss'
+      ? st.groups.filter((g) => g.decision && !g.timerExpired && isFall(g.decision.cls, truth) && g.outcome)
+      : st.groups.slice(-1);
+  const options = mergeRecoveryOptions(sources.map((g) => recoveryOptionsOf(g.outcome ? s.outcomes[g.outcome] : undefined)));
+  if (options.length === 0) return finish(ctx, st);
   return { ...st, phase: 'damage_control', recovery: { options: orderOptions(options, s.id), result: null } };
+}
+
+/**
+ * Boss "already checked" (ruling QA fun note a): this beat lists covering beats (`covered_by`) and the
+ * player's decisive action on one of them was verify (not overridden by a comply follow-up).
+ */
+export function isCovered(s: Scenario, groups: readonly GroupState[], g: GroupState): boolean {
+  if (s.role !== 'boss') return false;
+  const covers = s.beats.find((x) => x.id === g.beatId)?.covered_by;
+  if (!covers) return false;
+  return groups.some((h) => h !== g && covers.includes(h.beatId) && h.resolved && h.decision?.cls === 'verify');
+}
+
+/** A report or dismiss on a covered beat scores as verify; a fall stays a fall, a timer stays a timer. */
+export function coveredDecision(s: Scenario, groups: readonly GroupState[], g: GroupState): { decision: GroupState['decision']; covered: boolean } {
+  const d = g.decision;
+  if (!d || g.timerExpired || (d.cls !== 'report' && d.cls !== 'dismiss') || !isCovered(s, groups, g)) return { decision: d, covered: false };
+  return { decision: { ...d, cls: 'verify' }, covered: true };
+}
+
+/** Merge damage-control steps: first appearance wins (order and category), no step twice. */
+export function mergeRecoveryOptions(lists: readonly (readonly RecoveryOption[])[]): RecoveryOption[] {
+  const out: RecoveryOption[] = [];
+  for (const list of lists) for (const o of list) if (!out.some((x) => x.step === o.step)) out.push(o);
+  return out;
+}
+
+/** Outcome narratives of interrupts the player answered while group `group` was live, in answer order. */
+export function interruptNarratives(s: Scenario, st: Pick<RunnerState, 'interrupts'>, group: number): string[] {
+  return st.interrupts.flatMap((i) => {
+    if (i.group !== group || !i.outcome) return [];
+    const n = s.outcomes[i.outcome]?.narrative;
+    return n ? [n] : [];
+  });
 }
 
 function finishWithOutcome(s: Scenario, ctx: RunnerContext, st: RunnerState, g: GroupState, outcome: string): RunnerState {
@@ -357,13 +452,13 @@ function applyTimerEvents(s: Scenario, ctx: RunnerContext, st: RunnerState, even
 
 function firePusherNow(s: Scenario, ctx: RunnerContext, st: RunnerState): RunnerState {
   const messages = s.pressure.pusher?.messages ?? [];
-  const index = st.pushers.fired.length;
+  const index = st.pushers.cursor;
   const msg = messages[index];
-  if (!msg) return st;
+  if (!msg || st.pushers.nextDue === null) return st;
   let next = setStress(ctx, st, st.stress + ctx.balance.stress.on_pusher_message);
   next = {
     ...next,
-    pushers: firePusher(ctx.balance, messages, st.pushers, st.clock, stressState(ctx.balance, next.stress)),
+    pushers: firePusher(ctx.balance, pusherPlanOf(s), st.pushers, st.clock, stressState(ctx.balance, next.stress)),
     log: [...next.log, { type: 'pusher', index, text: msg.text, at: st.clock }],
   };
   return noteStyling(s, ctx, next);
@@ -424,11 +519,11 @@ function advanceClock(s: Scenario, ctx: RunnerContext, st: RunnerState, dt: numb
 // ---------------------------------------------------------------------------
 // Pause
 
-function doPause(ctx: RunnerContext, st: RunnerState): RunnerState {
+function doPause(s: Scenario, ctx: RunnerContext, st: RunnerState): RunnerState {
   // Pause only while a message is live (QA E6).
   if (st.real < st.pause.cooldownUntil || (st.phase !== 'playing' && st.phase !== 'what_now')) return st;
   const g = activeGroup(st);
-  const lo04 = !!g && !g.resolved && g.decision === undefined && underPressure(ctx, st);
+  const lo04 = !!g && !g.resolved && g.decision === undefined && underPressure(s, ctx, st);
   let next = setStress(ctx, st, st.stress - ctx.balance.pause.reduces_stress_by);
   const cost = ctx.settings.timerMode === 'off' ? 0 : ctx.balance.pause.timer_cost_seconds;
   next = {
@@ -487,11 +582,18 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
       let g2: GroupState = { ...g, kinds: [...g.kinds, action.kind], steps: [...g.steps, { beatId: beat.id, kind: action.kind }] };
       const cls = classOf(ctx.balance, action.kind);
       if (cls === 'meta') {
-        next = doPause(ctx, next);
+        next = doPause(s, ctx, next);
         g2 = { ...g2, pausedUnderPressure: activeGroup(next)?.pausedUnderPressure ?? g2.pausedUnderPressure };
       } else if (action.kind === 'hang_up' && (beat.device === 'call' || beat.what_now) && action.outcome !== undefined) {
         // GDD §6: hanging up is not terminal; "What now?" with the dialler open.
-        return { ...withGroup(next, { ...g2, pendingOutcome: action.outcome }), phase: 'what_now', timer: null };
+        // The call is over: its follow-ups stop with it (QA M2); its after_beat interrupts arrive now (ruling QA M6).
+        let ended: RunnerState = { ...withGroup(next, { ...g2, pendingOutcome: action.outcome }), phase: 'what_now', timer: null, pushers: stopPushers(next.pushers) };
+        for (const i of ended.interrupts) if (i.afterBeat !== undefined && !i.arrived && g2.visited.includes(i.afterBeat)) ended = arriveInterrupt(ctx, ended, i.id);
+        return ended;
+      } else if (isSetupStep(beat, action, cls, st.truth)) {
+        // GDD §6 / §16 ruling 2: proceeding from a setup beat (an opener that asks nothing) is not the
+        // decisive action. Recording it would let a timer expiry on the next beat score as that proceed
+        // (QA T-2.8 M1), and would end LO-01/LO-04 credit (checks and pauses "before deciding") early.
       } else {
         if (cls === 'engage' && !g2.firstEngage) g2 = { ...g2, firstEngage: { id: action.id, label: action.label } };
         g2 = {
@@ -566,7 +668,7 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
     }
 
     case 'pause':
-      return doPause(ctx, st);
+      return doPause(s, ctx, st);
 
     case 'pause_end':
       return endPause(st);
@@ -583,25 +685,34 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
       const def = s.interrupts.find((x) => x.id === ev.interruptId);
       const action = def?.actions.find((a) => a.id === ev.actionId);
       if (!i || !i.arrived || i.actionId !== undefined || !action) return st;
-      return { ...st, interrupts: st.interrupts.map((x) => (x.id === i.id ? { ...x, actionId: action.id, outcome: action.outcome } : x)) };
+      // In the end-of-scenario step the answer belongs after the last beat (a virtual group index).
+      const ending = st.phase === 'interrupt';
+      const group = ending ? st.groups.length : st.groups.length - 1;
+      const next: RunnerState = { ...st, interrupts: st.interrupts.map((x) => (x.id === i.id ? { ...x, actionId: action.id, outcome: action.outcome, group } : x)) };
+      if (!ending || next.interrupts.some((x) => x.arrived && x.actionId === undefined)) return next;
+      return interruptNarratives(s, next, group).length > 0 ? { ...next, phase: 'consequence', tail: true } : { ...next, phase: 'done' };
     }
 
     case 'continue': {
       if (st.phase !== 'consequence') return st;
       const nextBeat = st.schedule[st.groups.length];
-      if (!nextBeat) return enterDamageControlOrDone(s, st);
+      if (st.tail) return { ...st, phase: 'done', tail: false };
+      if (!nextBeat) return enterDamageControlOrDone(s, ctx, st);
       let next: RunnerState = { ...st, phase: 'playing' };
       if (next.clock < nextBeat.at) next = advanceClock(s, ctx, next, nextBeat.at - next.clock);
       if (next.phase !== 'playing') return next;
       if (!next.arrived.includes(nextBeat.beatId)) next = { ...next, arrived: [...next.arrived, nextBeat.beatId] };
       const beat = s.beats.find((b) => b.id === nextBeat.beatId);
       next = { ...next, groups: [...next.groups, newGroup(s, nextBeat.beatId)], timer: beat ? newTimer(s, ctx, beat.device, true, beat.timer_seconds) : null };
+      // This beat's follow-ups are timed from now, when it is on screen (QA M2).
+      next = { ...next, pushers: armBeat(ctx.balance, pusherPlanOf(s), next.pushers, nextBeat.beatId, next.clock, stressState(ctx.balance, next.stress)) };
+      next = arriveDue(ctx, next);
       return noteStyling(s, ctx, next);
     }
 
     case 'recovery': {
       if (st.phase !== 'damage_control' || !st.recovery) return st;
-      return { ...st, phase: 'done', recovery: { ...st.recovery, result: scoreRecovery(ctx.balance, st.recovery.options, ev.picks) } };
+      return finish(ctx, { ...st, recovery: { ...st.recovery, result: scoreRecovery(ctx.balance, st.recovery.options, ev.picks) } });
     }
   }
 }
@@ -636,6 +747,7 @@ export interface WhatNowView {
 export interface CheckableView {
   key: string;
   beatId: string;
+  device: Device;
   target: string;
   shown: string | undefined;
   /** Authored reveal; undefined → show the neutral filler. Only present once checked. */
@@ -645,8 +757,14 @@ export interface CheckableView {
 }
 
 export interface PusherMessageView {
+  /** Index in the authored list (stable key). */
+  index: number;
   text: string;
   at: number;
+  /** The scheduled beat it belongs to, and that beat's channel and sender (QA M2). */
+  beatId: string;
+  device: Device;
+  sender: string;
   lang?: string | undefined;
   translation?: string | undefined;
 }
@@ -663,7 +781,10 @@ export interface RunnerView {
   waitingBeats: string[];
   /** Arrived interrupts not yet answered. */
   interrupts: { id: string; device: Device; message: Message; actions: ActionView[] }[];
-  /** Sender follow-ups fired so far; `lang`/`translation` for in-world foreign text (CR-14). */
+  /**
+   * Follow-ups of the beat group on screen, fired so far, each with its own beat's channel and sender;
+   * `lang`/`translation` for in-world foreign text (CR-14). Earlier beats' follow-ups are not shown.
+   */
   pusherMessages: PusherMessageView[];
   timer: { remaining: number; length: number; expiries: number; frozen: boolean } | null;
   stress: { value: number; state: StressState };
@@ -675,11 +796,28 @@ export interface RunnerView {
   consequenceTimerExpired: boolean;
   /**
    * Which caption that expiry gets: `fake` on fraud ("The deadline was fake. Nothing happened."),
-   * `real` on a genuine scenario ("Time ran out. This one was genuine, and its deadline was real.").
+   * `fake_fell` on fraud after an earlier fall in the scenario ("The deadline was fake."; QA m1),
+   * `genuine` on a genuine scenario ("Time's up in the game, not in real life. The message's own deadline:
+   * {pressure.honest_deadline}…", ruling QA L4).
    * null when the timer did not end the beat.
    */
-  consequenceDeadline: 'fake' | 'real' | null;
+  consequenceDeadline: DeadlineLine;
+  /** Outcomes of interrupts answered during the beat that just ended (QA M3), shown with the caption. */
+  consequenceAsides: string[];
+  /** The beat that just ended was "already checked" (boss covered_by, ruling QA fun note a). */
+  consequenceCovered: boolean;
   recovery: { options: RecoveryOption[]; pick: number } | null;
+}
+
+/** The timer-expiry line (consequence caption and layer 2 "What happened", UI_SPEC §7). */
+export type DeadlineLine = 'fake' | 'fake_fell' | 'genuine' | null;
+
+export function deadlineLine(isFraud: boolean, fell: boolean): Exclude<DeadlineLine, null> {
+  return !isFraud ? 'genuine' : fell ? 'fake_fell' : 'fake';
+}
+
+function groupFell(g: GroupState, truth: Truth): boolean {
+  return !!g.decision && !g.timerExpired && isFall(g.decision.cls, truth);
 }
 
 function actionViews(actions: readonly Action[], state: StressState): ActionView[] {
@@ -717,6 +855,7 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
       : [];
   const last = st.groups.filter((x) => x.resolved).at(-1);
   const messages = s.pressure.pusher?.messages ?? [];
+  const plan = st.pushers.fired.length > 0 ? pusherPlanOf(s) : [];
   return {
     phase: st.phase,
     beat,
@@ -727,15 +866,19 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
     waitingBeats: st.arrived.filter((id) => !st.groups.some((x) => x.beatId === id)),
     // Hidden while a consequence or damage control is on screen (QA E10).
     interrupts: st.interrupts
-      .filter((i) => i.arrived && i.actionId === undefined && (st.phase === 'playing' || st.phase === 'what_now'))
+      .filter((i) => i.arrived && i.actionId === undefined && (st.phase === 'playing' || st.phase === 'what_now' || st.phase === 'interrupt'))
       .flatMap((i) => {
         const def = s.interrupts.find((x) => x.id === i.id);
         return def ? [{ id: def.id, device: def.device, message: def.message, actions: actionViews(def.actions, state) }] : [];
       }),
-    pusherMessages: st.pushers.fired.flatMap((f) => {
-      const m = messages[f.index];
-      return m ? [{ text: m.text, at: f.at, lang: m.lang, translation: m.translation }] : [];
-    }),
+    pusherMessages: live && g
+      ? st.pushers.fired.flatMap((f) => {
+          const m = messages[f.index];
+          const owner = plan[f.index]?.beat;
+          const ob = owner === g.beatId ? storyBeat(s, owner) : undefined;
+          return m && ob ? [{ index: f.index, text: m.text, at: f.at, lang: m.lang, translation: m.translation, beatId: ob.id, device: ob.device, sender: ob.message.sender?.display ?? '' }] : [];
+        })
+      : [],
     timer: st.timer && live ? { remaining: st.timer.remaining, length: st.timer.length, expiries: st.timer.expiries, frozen: frozen(st) } : null,
     stress: { value: st.stress, state },
     pause: {
@@ -754,9 +897,11 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
             note: g.whatNowNote ?? null,
           }
         : null,
-    consequence: last?.outcome ? (s.outcomes[last.outcome]?.narrative ?? null) : null,
-    consequenceTimerExpired: !!last && last.timerExpired && !last.outcome,
-    consequenceDeadline: !!last && last.timerExpired && !last.outcome ? (s.is_fraud ? 'fake' : 'real') : null,
+    consequence: !st.tail && last?.outcome ? (s.outcomes[last.outcome]?.narrative ?? null) : null,
+    consequenceTimerExpired: !st.tail && !!last && last.timerExpired && !last.outcome,
+    consequenceDeadline: !st.tail && !!last && last.timerExpired && !last.outcome ? deadlineLine(s.is_fraud, st.groups.some((x) => groupFell(x, st.truth))) : null,
+    consequenceCovered: st.phase === 'consequence' && !st.tail && !!last && coveredDecision(s, st.groups, last).covered,
+    consequenceAsides: st.phase !== 'consequence' ? [] : st.tail ? interruptNarratives(s, st, st.groups.length) : last ? interruptNarratives(s, st, st.groups.indexOf(last)) : [],
     recovery: st.phase === 'damage_control' && st.recovery ? { options: st.recovery.options, pick: ctx.balance.recovery.pick } : null,
   };
 }

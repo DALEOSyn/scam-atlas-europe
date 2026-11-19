@@ -12,7 +12,7 @@ import { choiceLineText, nextTimeText } from '../engine/choiceText.ts';
 import { lookup, t, type MessageKey } from '../i18n/index.ts';
 import { deviceHeading } from './devices/Device.tsx';
 import { Icon } from './Icon.tsx';
-import { elementLabel } from './labels.ts';
+import { deadlineText, elementLabel } from './labels.ts';
 import { RichText } from './RichText.tsx';
 import styles from './DebriefView.module.css';
 
@@ -20,7 +20,24 @@ export interface DebriefViewProps {
   data: DebriefData;
   onContinue: () => void;
   onAgain: () => void;
+  /** Arc debriefs (GDD §10.2): "Tell me now", behind a confirmation. Absent once the arc is closed. */
+  onTellMeNow?: (() => void) | undefined;
 }
+
+/** "If you already…" headings (UI_SPEC §8.2 item 3; shared_code: ruling QA m10). */
+const SITUATION_KEYS: Record<'clicked' | 'entered_details' | 'shared_code' | 'paid', MessageKey> = {
+  clicked: 'debrief_clicked',
+  entered_details: 'debrief_entered_details',
+  shared_code: 'debrief_shared_code',
+  paid: 'debrief_paid',
+};
+/** Arc beats are chats with no link (QA m4): `clicked` there means replying, moving chats or keeping secrets (GDD §10.2). */
+const ARC_SITUATION_KEYS: Record<'clicked' | 'entered_details' | 'shared_code' | 'paid', MessageKey> = {
+  clicked: 'debrief_arc_clicked',
+  entered_details: 'debrief_arc_entered_details',
+  shared_code: 'debrief_shared_code',
+  paid: 'debrief_arc_paid',
+};
 
 const STATUS_KEYS: Record<DebriefData['layer2']['flags'][number]['status'], MessageKey> = {
   marked: 'debrief_marked',
@@ -58,8 +75,17 @@ function Stars({ n }: { n: number }) {
   );
 }
 
-export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
+export function DebriefView({ data, onContinue, onAgain, onTellMeNow }: DebriefViewProps) {
   const heading = useRef<HTMLHeadingElement>(null);
+  const [confirm, setConfirm] = useState(false);
+  const confirmNo = useRef<HTMLButtonElement>(null);
+  const tellButton = useRef<HTMLButtonElement>(null);
+  const wasConfirm = useRef(false);
+  useEffect(() => {
+    if (confirm) confirmNo.current?.focus();
+    else if (wasConfirm.current) tellButton.current?.focus();
+    wasConfirm.current = confirm;
+  }, [confirm]);
   const alreadyRef = useRef<HTMLHeadingElement>(null);
   const [more, setMore] = useState(false);
   const [jump, setJump] = useState(false);
@@ -134,7 +160,25 @@ export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
           <button type="button" class={styles.secondary} onClick={onAgain}>
             {t('app_again')}
           </button>
+          {arc && onTellMeNow && !confirm ? (
+            <button type="button" class={styles.secondary} ref={tellButton} onClick={() => setConfirm(true)}>
+              {t('tell_me_now')}
+            </button>
+          ) : null}
         </div>
+        {arc && onTellMeNow && confirm ? (
+          <div class={styles.confirm} role="group" aria-labelledby="tell-me-now-q" data-tell-me-now="">
+            <p id="tell-me-now-q">{t('tell_me_now_confirm')}</p>
+            <div class={styles.buttons}>
+              <button type="button" class={styles.primary} onClick={onTellMeNow}>
+                {t('tell_me_now_yes')}
+              </button>
+              <button type="button" class={styles.secondary} ref={confirmNo} onClick={() => setConfirm(false)}>
+                {t('tell_me_now_no')}
+              </button>
+            </div>
+          </div>
+        ) : null}
       </section>
 
       <div id="debrief-more" class={styles.layer2} hidden={!more}>
@@ -146,7 +190,7 @@ export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
                 <RichText text={n} />
               </p>
             ))}
-            {l2.deadline ? <p>{t(l2.deadline === 'fake' ? 'deadline_fake' : 'deadline_real')}</p> : null}
+            {l2.deadline ? <p>{deadlineText(l2.deadline, l2.honestDeadline)}</p> : null}
           </section>
         ) : null}
         {l2.youChoseOther.length > 0 ? (
@@ -169,7 +213,7 @@ export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
                     <Icon name={f.status === 'marked' ? 'flag-filled' : 'flag'} />
                     <span>
                       <RichText text={f.text} /> <span class={styles.status}>({t(STATUS_KEYS[f.status])})</span>
-                      {f.senderCaveat ? <span> {t('debrief_sender_caveat')}</span> : null}
+                      {f.senderCaveat ? <span> {t(f.senderCaveat === 'number' ? 'debrief_sender_caveat_number' : 'debrief_sender_caveat')}</span> : null}
                     </span>
                   </li>
                 ))}
@@ -181,7 +225,7 @@ export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
                   <li key={`${w.beatId}|${w.target}`}>
                     <Icon name="info" />
                     <span>
-                      {elementLabel(w.target)}: {wrongTagText(w)}
+                      {elementLabel(w.target, w.device)}: {wrongTagText(w)}
                       {bonusPossible ? ` ${t('debrief_wrong_tag_bonus')}` : ''}
                     </span>
                   </li>
@@ -210,10 +254,10 @@ export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
               {t('debrief_already_clicked')}
             </h2>
             <dl class={styles.already}>
-              {(['clicked', 'entered_details', 'paid'] as const).map((k) =>
+              {(['clicked', 'entered_details', 'shared_code', 'paid'] as const).map((k) =>
                 ac[k] ? (
                   <div key={k} class={l1.alreadyClicked?.situation === k ? styles.yours : undefined}>
-                    <dt>{t(k === 'clicked' ? 'debrief_clicked' : k === 'entered_details' ? 'debrief_entered_details' : 'debrief_paid')}</dt>
+                    <dt>{t((arc ? ARC_SITUATION_KEYS : SITUATION_KEYS)[k])}</dt>
                     <dd>
                       <RichText text={ac[k] ?? ''} />
                     </dd>
@@ -257,6 +301,7 @@ export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
                 recovery: l2.points.recovery ?? 0,
               })}
             </p>
+            {l2.points.bossFallCap ? <p>{t('boss_fall_cap')}</p> : null}
           </details>
         ) : null}
       </div>

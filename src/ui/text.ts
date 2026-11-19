@@ -140,7 +140,7 @@ function toSegments(text: string, cands: Candidate[]): Segment[] {
  * body then transcript (engine order). References and phone numbers become inline checkables at
  * their first appearance; the ones not in the text are returned as leftovers.
  */
-export function segmentMessage(m: Pick<Message, 'body' | 'transcript' | 'references' | 'phone_numbers'>): MessageSegments {
+export function segmentMessage(m: Pick<Message, 'body' | 'transcript' | 'references' | 'phone_numbers' | 'ask'>): MessageSegments {
   const texts = [m.body ?? '', ...(m.transcript ?? []).map((l) => l.text)];
   const cands: Candidate[][] = [];
   let links = 0;
@@ -172,6 +172,19 @@ export function segmentMessage(m: Pick<Message, 'body' | 'transcript' | 'referen
   };
   place('phone_number', m.phone_numbers);
   place('reference', m.references);
+  // The ask (ruling QA L1) is highlighted where it stands, unless it overlaps another inline checkable
+  // (no nesting); it is always in the Details list either way.
+  if (m.ask) {
+    const ask = m.ask.text;
+    for (let k = 0; k < texts.length; k++) {
+      if (k > 0 && m.transcript?.[k - 1]?.speaker !== 'caller') continue;
+      const at = (texts[k] ?? '').indexOf(ask);
+      if (at < 0) continue;
+      const list = cands[k] ?? [];
+      if (!list.some((c) => at < c.end && at + ask.length > c.start)) list.push({ start: at, end: at + ask.length, target: 'request', text: ask });
+      break;
+    }
+  }
   const segs = texts.map((t, k) => toSegments(t, cands[k] ?? []));
   return { body: m.body ? (segs[0] ?? []) : [], transcript: segs.slice(1), leftover };
 }
@@ -185,7 +198,7 @@ export function words(text: string | undefined): number {
  * Checkable targets that appear only in transcript lines the player has not heard yet
  * (line index ≥ `shown`). The Details list hides them until their line is revealed (QA B3).
  */
-export function unrevealedTargets(m: Pick<Message, 'body' | 'transcript' | 'references' | 'phone_numbers'>, shown: number): Set<string> {
+export function unrevealedTargets(m: Pick<Message, 'body' | 'transcript' | 'references' | 'phone_numbers' | 'ask'>, shown: number): Set<string> {
   const segs = segmentMessage(m);
   const targets = (list: Segment[]) => list.flatMap((x) => (x.kind === 'check' ? [x.target] : []));
   const visible = new Set([...targets(segs.body), ...segs.transcript.slice(0, shown).flatMap(targets)]);

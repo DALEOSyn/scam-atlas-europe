@@ -104,38 +104,92 @@ function TrainingForm({ m, actions, canAct, onAct, idPrefix }: { m: Message; act
   );
 }
 
-/** A notification inside the beat (code SMS, approval prompt). Its text is the `request` checkable. */
-function Banner({ banner }: { banner: NonNullable<DeviceProps['banner']> }) {
-  const kind = banner.device === 'auth' ? t('banner_kind_auth') : banner.device === 'email' ? t('banner_kind_email') : banner.device === 'banking' ? t('banner_kind_banking') : t('banner_kind_sms');
+/** "Text message", "Email", "Chat message" … for a banner or notification from this channel. */
+export function channelKind(device: Device): string {
+  switch (device) {
+    case 'auth':
+      return t('banner_kind_auth');
+    case 'email':
+      return t('banner_kind_email');
+    case 'banking':
+      return t('banner_kind_banking');
+    case 'messenger':
+    case 'social':
+      return t('banner_kind_chat');
+    case 'call':
+      return t('banner_kind_call');
+    default:
+      return t('banner_kind_sms');
+  }
+}
+
+/**
+ * A notification inside the beat (code SMS, approval prompt). Displayed evidence only: no checkables
+ * (the beat's request checkable is the scam's ask, ruling QA L1). Foreign text has its own lang and
+ * Translate toggle (QA M1).
+ */
+function Banner({ banner, beatId, onTranslation, alwaysTranslate }: { banner: NonNullable<DeviceProps['banner']>; beatId: string; onTranslation: (open: boolean) => void; alwaysTranslate: boolean }) {
+  const m = banner.message;
   return (
     <div class={styles.deviceBanner} role="group" aria-label={t('banner_title')}>
       <p class={styles.bannerMeta}>
-        {kind}
-        {banner.message.sender ? ` · ${banner.message.sender.display}` : ''}
+        {channelKind(banner.device)}
+        {m.sender ? ` · ${m.sender.display}` : ''}
       </p>
-      <p class={styles.bannerBody}>
-        <Checkable target="request">
-          <RichText text={banner.message.body ?? ''} />
-        </Checkable>
+      <p class={styles.bannerBody} lang={m.lang}>
+        <RichText text={m.body ?? ''} />
       </p>
+      <Translate message={m} id={`banner-translation-${beatId}`} onFreeze={onTranslation} alwaysOpen={alwaysTranslate} />
     </div>
   );
 }
 
-function Notifications({ pushers, from, onTranslation, alwaysTranslate }: { pushers: DeviceProps['pushers']; from: string; onTranslation: (open: boolean) => void; alwaysTranslate: boolean }) {
+/** Follow-ups shown as notifications, each with its own channel and sender (QA M2). */
+function Notifications({ pushers, onTranslation, alwaysTranslate }: { pushers: DeviceProps['pushers']; onTranslation: (open: boolean) => void; alwaysTranslate: boolean }) {
   if (pushers.length === 0) return null;
   return (
     <ul class={styles.notifications} aria-label={t('pusher_from')}>
-      {pushers.map((p, i) => (
-        <li key={i} class={styles.notification}>
-          <span class={styles.bannerMeta}>{t('banner_kind_sms')}{from ? ` · ${from}` : ''}</span>
-          <span lang={p.lang}>
+      {pushers.map((p) => (
+        <li key={p.index} class={styles.notification} data-pusher={p.device}>
+          <span class={styles.bannerMeta}>
+            {channelKind(p.device)}
+            {p.sender ? ` · ${p.sender}` : ''}
+          </span>
+          <span class={styles.bannerBody} lang={p.lang}>
             <RichText text={p.text} />
           </span>
-          <Translate message={p} id={`pusher-translation-${i}`} onFreeze={onTranslation} alwaysOpen={alwaysTranslate} />
+          <Translate message={p} id={`pusher-translation-${p.index}`} onFreeze={onTranslation} alwaysOpen={alwaysTranslate} />
         </li>
       ))}
     </ul>
+  );
+}
+
+/** A caller's spoken follow-up as its own transcript line: "Caller: …" prefix and outer quotes dropped (QA M2). */
+export function spokenText(text: string): string {
+  const label = t('call_caller').replace(/:\s*$/u, '').toLowerCase();
+  let out = text.trim();
+  if (out.toLowerCase().startsWith(`${label}:`)) out = out.slice(label.length + 1).trim();
+  const m = /^["“„](.*)["”“]$/su.exec(out);
+  return m?.[1] ?? out;
+}
+
+/** Earlier texts of the thread (ruling QA L5): muted, never checkable, links as plain text, no actions. */
+function Earlier({ items, onTranslation, alwaysTranslate }: { items: NonNullable<Message['earlier']>; onTranslation: (open: boolean) => void; alwaysTranslate: boolean }) {
+  return (
+    <>
+      <p class={styles.earlierSep}>{t('thread_earlier')}</p>
+      {items.map((e, i) => (
+        <div key={i} class={styles.earlier} data-earlier="">
+          <span class={styles.earlierWhen}>{e.when}</span>
+          {/* RichText: hosts follow §1.5 (sceptic T-2.8); still plain text, never a link or a checkable. */}
+          <div class={styles.bubbleIn} lang={e.lang}>
+            <RichText text={e.body} />
+          </div>
+          <Translate message={e} id={`earlier-translation-${i}`} onFreeze={onTranslation} alwaysOpen={alwaysTranslate} />
+        </div>
+      ))}
+    </>
   );
 }
 
@@ -237,8 +291,9 @@ function Chat(p: DeviceProps) {
     <PhoneFrame label={region} brand={app?.id}>
       {app ? <BrandBar brand={app} title={app.name} /> : null}
       {sender}
-      {p.banner ? <Banner banner={p.banner} /> : null}
+      {p.banner ? <Banner banner={p.banner} beatId={p.beatId} onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} /> : null}
       <div class={styles.chat}>
+        {m.earlier?.length && p.device !== 'social' ? <Earlier items={m.earlier} onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} /> : null}
         <p class={styles.daySep}>{t('chat_today')}</p>
         {p.device === 'social' ? (
           <article class={styles.post}>
@@ -272,14 +327,16 @@ function Chat(p: DeviceProps) {
             </div>
             <Translate message={m} onFreeze={p.onTranslation} alwaysOpen={p.alwaysTranslate} />
             {/* Pusher follow-ups are ordinary bubbles with no "follow-up" label (UI_SPEC §3.2). */}
-            {p.pushers.map((x, i) => (
-              <div key={`p${i}`} class={styles.bubbleWrap}>
-                <div class={styles.bubbleIn} lang={x.lang}>
-                  <RichText text={x.text} />
+            {p.pushers
+              .filter((x) => x.device === p.device)
+              .map((x) => (
+                <div key={`p${x.index}`} class={styles.bubbleWrap}>
+                  <div class={styles.bubbleIn} lang={x.lang}>
+                    <RichText text={x.text} />
+                  </div>
+                  <Translate message={x} id={`pusher-translation-${x.index}`} onFreeze={p.onTranslation} alwaysOpen={p.alwaysTranslate} />
                 </div>
-                <Translate message={x} id={`pusher-translation-${i}`} onFreeze={p.onTranslation} alwaysOpen={p.alwaysTranslate} />
-              </div>
-            ))}
+              ))}
           </>
         )}
       </div>
@@ -328,7 +385,7 @@ function Call(p: DeviceProps) {
           </Checkable>
           <span class={styles.callerSub}>{ended ? t('call_ended') : answered ? t('call_in_progress') : t('call_incoming')}</span>
         </div>
-        {p.banner && answered ? <Banner banner={p.banner} /> : null}
+        {p.banner && answered ? <Banner banner={p.banner} beatId={p.beatId} onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} /> : null}
         {!answered && !ended ? (
           <div class={styles.callButtons}>
             <button type="button" class={styles.round} onClick={p.onAnswer}>
@@ -354,6 +411,17 @@ function Call(p: DeviceProps) {
                   <span class={styles.speaker}>{l.speaker === 'caller' ? t('call_caller') : t('call_you')}</span> <Segments segs={segs.transcript[i] ?? []} />
                 </li>
               ))}
+              {/* The caller's spoken follow-ups are call lines, not text messages (QA M2). */}
+              {shown >= lines.length
+                ? p.pushers
+                    .filter((x) => x.device === 'call')
+                    .map((x) => (
+                      <li key={`p${x.index}`} data-pusher="call" lang={x.lang}>
+                        <span class={styles.speaker}>{t('call_caller')}</span> <RichText text={spokenText(x.text)} />
+                        <Translate message={{ lang: x.lang, translation: x.translation ? spokenText(x.translation) : undefined }} id={`pusher-translation-${x.index}`} onFreeze={p.onTranslation} alwaysOpen={p.alwaysTranslate} />
+                      </li>
+                    ))
+                : null}
             </ol>
             </div>
             {stage && stage.step && shown < lines.length && !ended ? (
@@ -605,6 +673,11 @@ function Letter(p: DeviceProps) {
   );
 }
 
+/** Is a follow-up from `from` shown inside the `on` device (chat bubble or call line)? */
+function inDevice(on: Device, from: Device): boolean {
+  return on === from && (on === 'sms' || on === 'messenger' || on === 'call');
+}
+
 export function DeviceView(p: DeviceProps) {
   const body = (() => {
     switch (p.device) {
@@ -634,9 +707,10 @@ export function DeviceView(p: DeviceProps) {
       <h2 class={styles.deviceHeading} id="device-heading" ref={p.headingRef} tabIndex={-1}>
         {p.heading}
       </h2>
-      {/* Follow-ups on other devices arrive as notifications above the device. */}
-      {!chat ? <Notifications onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} pushers={p.pushers} from={p.thread[0]?.message.sender?.display ?? p.message.sender?.display ?? ''} /> : null}
-      {p.device !== 'call' && !chat && p.banner ? <Banner banner={p.banner} /> : null}
+      {/* Follow-ups from another channel arrive as notifications above the device; a chat's own follow-ups
+          are bubbles, a caller's are call lines (QA M2). */}
+      <Notifications onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} pushers={p.pushers.filter((x) => !inDevice(p.device, x.device))} />
+      {p.device !== 'call' && !chat && p.banner ? <Banner banner={p.banner} beatId={p.beatId} onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} /> : null}
       {body}
     </div>
   );

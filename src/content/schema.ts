@@ -151,11 +151,50 @@ export const messageSchema = z
     letterhead: z.string().min(1).optional(),
     image: z.object({ alt: z.string().min(1) }).strict().optional(),
     l10n_note: z.string().min(1).optional(),
+    /**
+     * The sentence that asks for the code or approval (design ruling 2026-11-19, QA L1): the beat's
+     * `request` checkable. Copied verbatim from the body or one caller line; `translation` verbatim
+     * from message.translation when the message is not in English. share_code / approve only.
+     */
+    ask: z.object({ text: z.string().min(1), translation: z.string().min(1).optional() }).strict().optional(),
+    /**
+     * Earlier texts in the same thread (ruling QA L5), oldest first, shown muted above today's message
+     * under "Earlier". SMS and messenger only. Never checkable, no actions, links shown as plain text.
+     */
+    earlier: z
+      .array(
+        z
+          .object({
+            when: z.string().min(1),
+            body: z.string().min(1),
+            lang: z.string().regex(/^[a-z]{2}(?:-[A-Z]{2})?$/, 'lang is a BCP 47 tag such as de or pt-PT').optional(),
+            translation: z.string().min(1).optional(),
+          })
+          .strict()
+          .superRefine((e, ctx) => {
+            if (e.lang && e.lang !== 'en' && !e.translation) ctx.addIssue({ code: 'custom', path: ['translation'], message: `text in lang "${e.lang}" needs an inline translation` });
+          }),
+      )
+      .max(3)
+      .optional(),
   })
   .strict()
   .superRefine((m, ctx) => {
     if (m.lang && m.lang !== 'en' && !m.translation) {
       ctx.addIssue({ code: 'custom', path: ['translation'], message: `text in lang "${m.lang}" needs an inline translation` });
+    }
+    if (m.ask) {
+      // A whole request, not a fragment like "the code" (sceptic T-2.8).
+      if (m.ask.text.trim().split(/\s+/u).filter(Boolean).length < 4) ctx.addIssue({ code: 'custom', path: ['ask', 'text'], message: 'ask.text must be at least 4 words: the sentence that asks, not a fragment' });
+      const callerLines = (m.transcript ?? []).filter((l) => l.speaker === 'caller').map((l) => l.text);
+      if (!(m.body ?? '').includes(m.ask.text) && !callerLines.some((l) => l.includes(m.ask?.text ?? ''))) {
+        ctx.addIssue({ code: 'custom', path: ['ask', 'text'], message: 'ask.text must be copied verbatim from the body or from one caller line of the transcript' });
+      }
+      if (m.lang && m.lang !== 'en') {
+        if (!m.ask.translation) ctx.addIssue({ code: 'custom', path: ['ask', 'translation'], message: `the message is in "${m.lang}": ask.translation is required` });
+        else if (!(m.translation ?? '').includes(m.ask.translation)) ctx.addIssue({ code: 'custom', path: ['ask', 'translation'], message: 'ask.translation must be copied verbatim from message.translation' });
+      }
+      if (m.request !== 'share_code' && m.request !== 'approve') ctx.addIssue({ code: 'custom', path: ['ask'], message: 'ask is only for messages whose request is share_code or approve' });
     }
   });
 export type Message = z.infer<typeof messageSchema>;
@@ -316,6 +355,11 @@ export const beatSchema = z
     timer_seconds: z.number().int().positive().optional(),
     /** Boss beats only: later beats can be narrative (balance multi_step.boss.scored_beats_max). */
     scored: z.boolean().default(true),
+    /**
+     * Boss only (ruling QA fun note a): earlier scheduled beats that tell the same story. If the player
+     * verified on one of them, report or dismiss here scores as verify ("already checked").
+     */
+    covered_by: z.array(z.string().min(1)).min(1).optional(),
   })
   .strict();
 export type Beat = z.infer<typeof beatSchema>;
@@ -324,11 +368,19 @@ export type Beat = z.infer<typeof beatSchema>;
 export const interruptSchema = z
   .object({
     id: snakeId,
-    at_seconds: z.number().int().positive(),
+    /** Arrives on the scenario clock … */
+    at_seconds: z.number().int().positive().optional(),
+    /**
+     * … or when that beat's call or message ends (ruling QA M6): on hang-up as "What now?" opens; after a
+     * fall or the last timer expiry, after damage control (or the consequence step) as its own step
+     * before the debrief. The debrief waits until it is answered.
+     */
+    after_beat: z.string().min(1).optional(),
     is_fraud: z.boolean(),
     ...beatBody,
   })
-  .strict();
+  .strict()
+  .refine((i) => (i.at_seconds === undefined) !== (i.after_beat === undefined), 'an interrupt has exactly one of at_seconds or after_beat');
 
 export const outcomeSchema = z
   .object({
@@ -376,10 +428,12 @@ export const debriefSchema = z
       .object({
         clicked: z.string().min(1).optional(),
         entered_details: z.string().min(1).optional(),
+        /** Shared a code or approved a request (ruling QA m10). Required where share_code / approve_prompt actions exist. */
+        shared_code: z.string().min(1).optional(),
         paid: z.string().min(1).optional(),
       })
       .strict()
-      .refine((a) => a.clicked || a.entered_details || a.paid, 'already_clicked needs at least one of clicked, entered_details, paid')
+      .refine((a) => a.clicked || a.entered_details || a.shared_code || a.paid, 'already_clicked needs at least one of clicked, entered_details, shared_code, paid')
       .optional(),
     /** Support line for arc slots 2–3 and other safeguarding moments. */
     safeguarding_line: z.string().min(1).optional(),
@@ -470,6 +524,9 @@ export const scenarioSchema = z
     ];
     s.interrupts.forEach((b, i) => {
       if (b.what_now) issue(['interrupts', i, 'what_now'], 'interrupts are single-step: no what_now');
+      if (b.after_beat !== undefined && b.after_beat !== 'start' && !s.beats.some((x) => x.id === b.after_beat)) {
+        issue(['interrupts', i, 'after_beat'], `after_beat "${b.after_beat}" is not a beat id`);
+      }
     });
     const beatIds = new Set<string>(['start']);
     s.beats.forEach((b, i) => {
@@ -485,13 +542,18 @@ export const scenarioSchema = z
       for (const part of DEVICE_PARTS[b.device]) {
         if (b.message[part] === undefined) issue([...b.path, 'message', part], `a ${b.device} message needs ${part}`);
       }
-      const visible = new Set(deriveCheckables(b.device, b.message, b.banner));
+      const visible = new Set(deriveCheckables(b.device, b.message));
+      if (b.message.earlier && b.device !== 'sms' && b.device !== 'messenger') issue([...b.path, 'message', 'earlier'], 'earlier (thread history) is for sms and messenger messages only');
+      // An ask is the tell itself: it always has an authored reveal (no neutral filler; ruling QA L1).
+      if (b.message.ask && !b.inspectables.some((ins) => ins.target === 'request' && ins.type === 'request')) {
+        issue([...b.path, 'inspectables'], 'a message with an ask needs an inspectable with target: request and type: request');
+      }
       b.inspectables.forEach((ins, i) => {
         if (!visible.has(ins.target)) {
-          const hint = ins.target === 'request' ? ' (a request checkable needs a banner on the beat that shows what the code or approval is for)' : '';
+          const hint = ins.target === 'request' ? ' (a request checkable comes from message.ask, the sentence that asks for the code or approval)' : '';
           issue([...b.path, 'inspectables', i, 'target'], `"${ins.target}" is not visible in this ${b.device} message (checkables: ${[...visible].join(', ')})${hint}`);
         }
-        // GDD §17 1-9 beat 3: the banner text is the reveal of the beat's single `request` inspectable.
+        // The ask (ruling QA L1) is the beat's single `request` inspectable; its reveal quotes the banner.
         if (ins.target === 'request' && ins.type !== undefined && ins.type !== 'request') {
           issue([...b.path, 'inspectables', i, 'type'], 'a request checkable has type: request');
         }
@@ -499,7 +561,7 @@ export const scenarioSchema = z
           issue([...b.path, 'inspectables', i, 'target'], 'a request checkable needs message.request on the same beat (e.g. share_code or approve), not none');
         }
       });
-      if (b.banner && !b.banner.message.body) issue([...b.path, 'banner', 'message', 'body'], 'a banner needs a body: its text is the beat\'s request checkable');
+      if (b.banner && !b.banner.message.body) issue([...b.path, 'banner', 'message', 'body'], 'a banner needs a body: it is displayed on the beat');
       if (b.what_now) {
         const hangUp = b.actions.find((a) => a.kind === 'hang_up');
         if (!hangUp) issue([...b.path, 'what_now'], 'what_now needs a hang_up action on the same beat');
@@ -692,6 +754,8 @@ export const balanceSchema = z
      * (report on genuine; dismiss on genuine high stakes) scores these stars and points instead of the
      * star table. Grace stays below ★★★ and never pays more than ★★ would.
      */
+    /** Timer expiry on genuine high stakes (ruling QA L4): these stars and points in every slot. */
+    timer_expiry: z.object({ genuine_high: graceCell }).strict(),
     tutorial_grace: z
       .object({
         slots: z.array(z.number().int().min(0)),

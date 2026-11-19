@@ -235,6 +235,25 @@ export function layer1Slot(s: Scenario, balance: Registries['balance']): { words
   return candidates.reduce((a, b) => (b.words > a.words ? b : a));
 }
 
+/** Canonical action order (ruling QA L6), 1-based ranks. */
+const ACTION_RANK_NAMES = ["the message's own action", 'verify', 'other proceed/engage/comply', 'report', 'dismiss'] as const;
+
+/**
+ * Rank of an action in the canonical order: 1 the message's own action (its pressure_target, or with
+ * request: none the first proceed/engage/comply action), 2 verify, 3 any other proceed/engage/comply,
+ * 4 report, 5 dismiss. Meta actions (pause) and others rank with dismiss.
+ */
+export function actionRank(m: Pick<Message, 'request'>, actions: readonly Action[], a: Action, balance: Pick<Registries['balance'], 'action_kinds'>): number {
+  const c = classOf(balance, a.kind);
+  const doing = c === 'proceed' || c === 'engage' || c === 'comply';
+  const own = m.request === 'none' ? actions.find((x) => ['proceed', 'engage', 'comply'].includes(classOf(balance, x.kind))) : actions.find((x) => x.pressure_target);
+  if (own === a) return 1;
+  if (c === 'verify') return 2;
+  if (doing) return 3;
+  if (c === 'report') return 4;
+  return 5;
+}
+
 export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
   const errors: string[] = [];
   const warnings: string[] = [];
@@ -326,6 +345,38 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
       if (wordCount(a.label) > ACTION_LABEL_MAX_WORDS) errors.push(`${b.where}: action "${a.id}" label is over ${ACTION_LABEL_MAX_WORDS} words (UI_SPEC §8.1)`);
     }
   }
+  // Action order (design ruling 2026-11-19, QA L6): one canonical order by role on every beat and
+  // interrupt, so position never hints at the verdict.
+  for (const b of beats) {
+    const ranks = b.actions.map((a) => actionRank(b.message, b.actions, a, balance));
+    for (let i = 1; i < ranks.length; i++) {
+      if ((ranks[i] ?? 0) < (ranks[i - 1] ?? 0)) {
+        errors.push(
+          `${b.where}: action_order: "${b.actions[i]?.id}" (${ACTION_RANK_NAMES[(ranks[i] ?? 1) - 1]}) comes after "${b.actions[i - 1]?.id}" (${ACTION_RANK_NAMES[(ranks[i - 1] ?? 1) - 1]}); order: the message's own action, verify, other proceed/engage/comply, report, dismiss`,
+        );
+        break;
+      }
+    }
+  }
+  // Shared a code (ruling QA m10): code-sharing and approval actions need their own "If you already…" advice.
+  const sharesCode = beats.some((b) => [...b.actions, ...(b.what_now?.extra ?? [])].some((a) => a.kind === 'share_code' || a.kind === 'approve_prompt'));
+  if (sharesCode && !s.debrief.already_clicked?.shared_code) errors.push('debrief.already_clicked.shared_code is required: a share_code or approve_prompt action exists');
+  // Genuine timer expiry shows the message's own deadline (ruling QA L4).
+  if (!s.is_fraud && s.pressure.timer && !s.pressure.honest_deadline) errors.push('a genuine timed scenario needs pressure.honest_deadline (shown when the game timer runs out)');
+  // Boss "already checked" (ruling QA fun note a): covered_by names earlier scheduled beats.
+  if (s.role === 'boss') {
+    const scheduled = ['start', ...s.beats.filter((x) => x.arrives_after !== undefined).map((x) => x.id)];
+    s.beats.forEach((b) => {
+      if (!b.covered_by) return;
+      const at = scheduled.indexOf(b.id);
+      if (at < 0) errors.push(`beat "${b.id}": covered_by is for scheduled boss beats (arrives_after)`);
+      for (const c of b.covered_by) {
+        const ci = scheduled.indexOf(c);
+        if (ci < 0 || (at >= 0 && ci >= at)) errors.push(`beat "${b.id}": covered_by "${c}" must be an earlier scheduled beat (start or a beat with arrives_after)`);
+      }
+    });
+  } else if (s.beats.some((b) => b.covered_by)) errors.push('covered_by is for boss beats only');
+
   // Producer ruling (T-2.1): a boss beat may state its own timer length, within the balance bounds.
   for (const b of s.beats) {
     if (b.timer_seconds === undefined) continue;
@@ -340,6 +391,11 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
     for (const a of b.actions) {
       if (a.kind === 'approve_prompt' && mix.approve_prompt_only_on_fraud && !beatFraud) {
         errors.push(`${b.where}: action "${a.id}": approve_prompt only on fraud (a prompt you started is proceed)`);
+      }
+      // A proceed that only moves on from a fraud beat that asks nothing reads as a setup step but is a
+      // fall in the engine; author it as open_link (engage) instead (sceptic T-2.8, GDD §6 opener ruling).
+      if (beatFraud && b.message.request === 'none' && cls(a) === 'proceed' && a.next_beat !== undefined && a.outcome === undefined) {
+        errors.push(`${b.where}: action "${a.id}": a proceed with next_beat from a fraud message with request: none is ambiguous; use kind open_link (engage), or give the message a request`);
       }
       if (!b.interrupt && s.is_fraud && s.role !== 'arc' && cls(a) === 'engage' && !balance.points.engage_on_fraud.terminal && !a.next_beat) {
         errors.push(`${b.where}: action "${a.id}": engage on fraud is never terminal; it needs next_beat`);
@@ -484,6 +540,21 @@ export function chapterRules(c: Chapter, fileBase: string, scenarios: Scenario[]
   if (c.boss && byId.get(c.boss)?.role !== 'boss') errors.push(`boss "${c.boss}" must be a scenario with role: boss`);
   if (c.arc_beat && byId.get(c.arc_beat)?.role !== 'arc') errors.push(`arc_beat "${c.arc_beat}" must be a scenario with role: arc`);
   for (const s of scenarios) if (s.role === 'boss' && s.id !== c.boss) errors.push(`scenario "${s.id}" is a boss but the chapter's boss is "${c.boss ?? '(none)'}"`);
+
+  // The ask (ruling QA L1): from slot 1 on, every scored beat whose message asks for a code or an
+  // approval quotes that sentence in message.ask (its request checkable). Home (slot 0) is exempt.
+  if (c.slot >= 1) {
+    for (const s of scenarios) {
+      if (!SCORED_ROLES.includes(s.role)) continue;
+      for (const b of beatsOf(s)) {
+        if (b.interrupt || !b.scored) continue;
+        if (!['sms', 'messenger', 'email', 'social', 'call'].includes(b.device)) continue;
+        if ((b.message.request === 'share_code' || b.message.request === 'approve') && !b.message.ask) {
+          errors.push(`scenario "${s.id}" ${b.where}: request ${b.message.request} needs message.ask (the sentence that asks for the code or approval)`);
+        }
+      }
+    }
+  }
 
   // Twins: same chapter, opposite truth, checkable-count parity ±1 (UI_SPEC §3).
   for (const s of scenarios) {

@@ -177,11 +177,12 @@ describe('CR-15: a boss debrief shows one "You chose" line in layer 1', () => {
     const { st, r } = play(s, ctx(), [act('report_it'), { type: 'continue' }, act('pay_invoice'), { type: 'continue' }, act('hang_up'), { type: 'what_now', choice: 'done' }, { type: 'recovery', picks: [] }]);
     expect(st.phase).toBe('done');
     const d = debriefOf(s, st, r, none);
-    // Paying was a fall: the kind line holds the layer-1 slot and the lead line opens layer 2.
+    // Paying was a fall: the kind line holds the layer-1 slot; layer 2 lists every line in beat order
+    // (Amsterdam QA l), the lead line at its own beat.
     expect(d.layer1.youChose).toEqual([]);
     expect(d.layer2.youChoseOther.map((o) => [o.line, o.stars, o.beat?.device])).toEqual([
-      [{ beatId: 'invoice', kind: 'action', label: 'Pay the invoice' }, 0, 'email'],
       [{ beatId: 'start', kind: 'action', label: 'Report it' }, 2, 'sms'],
+      [{ beatId: 'invoice', kind: 'action', label: 'Pay the invoice' }, 0, 'email'],
       [{ beatId: 'support_call', kind: 'what_now', choice: 'done' }, 2, 'call'],
     ]);
   });

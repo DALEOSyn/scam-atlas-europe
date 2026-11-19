@@ -33,12 +33,37 @@ export const CheckContext = createContext<CheckApi | null>(null);
 
 const LONG_PRESS_MS = 450;
 
+/**
+ * The text a screen reader would read for this element's content: text nodes in order, skipping
+ * aria-hidden parts and the state suffix, using an inner aria-label where there is one.
+ */
+export function contentName(el: Element): string {
+  let out = '';
+  for (const n of el.childNodes) {
+    if (n.nodeType === 3) out += n.textContent ?? '';
+    else if (n instanceof Element) {
+      if (n.getAttribute('aria-hidden') === 'true' || n.hasAttribute('data-state-text')) continue;
+      out += n.getAttribute('aria-label') ?? contentName(n);
+    }
+  }
+  return out.replace(/\s+/gu, ' ').trim();
+}
+
 /** An inline checkable element. Outside the beat on screen it renders as plain text. */
 export function Checkable({ target, children, class: cls, name }: { target: string; children: ComponentChildren; class?: string; name?: string }) {
   const api = useContext(CheckContext);
   const item = api?.items.get(target);
   const touch = useRef<{ timer: ReturnType<typeof setTimeout> | null; fired: boolean; isTouch: boolean }>({ timer: null, fired: false, isTouch: false });
   const [holding, setHolding] = useState(false);
+  const button = useRef<HTMLButtonElement>(null);
+  /** The content's name, read from the DOM once a state is shown (Amsterdam QA n). */
+  const [auto, setAuto] = useState<string | null>(null);
+  const state = item ? (item.tagged ? t('state_marked') : item.checked ? t('state_checked') : null) : null;
+  useLayoutEffect(() => {
+    const el = button.current;
+    const next = el && state && !name ? contentName(el) : null;
+    if (next !== auto) setAuto(next);
+  });
   useEffect(() => () => {
     if (touch.current.timer) clearTimeout(touch.current.timer);
   }, []);
@@ -55,7 +80,10 @@ export function Checkable({ target, children, class: cls, name }: { target: stri
       type="button"
       class={classes}
       data-check={target}
-      aria-label={name ? `${name}${item.tagged ? `, ${t('state_marked')}` : item.checked ? `, ${t('state_checked')}` : ''}` : undefined}
+      ref={button}
+      // A visually hidden ", checked" span inside the content made browsers compute "…forget! , checked"
+      // (a space before the comma, Amsterdam QA n). With a state shown, the name is built as one string.
+      aria-label={name ? `${name}${state ? `, ${state}` : ''}` : state && auto ? `${auto}, ${state}` : undefined}
       aria-describedby="check-hint"
       onPointerDown={(e) => {
         touch.current.isTouch = e.pointerType === 'touch';
@@ -91,7 +119,11 @@ export function Checkable({ target, children, class: cls, name }: { target: stri
       {children}
       {item.checked ? <Icon name="checked" class={styles.badge} /> : null}
       {item.tagged ? <Icon name="flag" class={styles.badge} /> : null}
-      {item.tagged ? <span class={styles.vh}>, {t('state_marked')}</span> : item.checked ? <span class={styles.vh}>, {t('state_checked')}</span> : null}
+      {state && !name && !auto ? (
+        <span class={styles.vh} data-state-text="">
+          , {state}
+        </span>
+      ) : null}
       {holding ? <span class={styles.hold} aria-hidden="true">{t('check_hold')}</span> : null}
     </button>
   );

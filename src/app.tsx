@@ -34,7 +34,7 @@ import {
 import { defaultTimerMode, type TimerMode } from './engine/timer.ts';
 import { t } from './i18n/index.ts';
 import { AnnouncerProvider } from './ui/Announcer.tsx';
-import { ChapterDone } from './ui/ChapterDone.tsx';
+import { ChapterDone, type BossLesson } from './ui/ChapterDone.tsx';
 import { ChapterList, type ChapterListFocus, type ChapterRow } from './ui/ChapterList.tsx';
 import { DebriefView } from './ui/DebriefView.tsx';
 import { ArcReveal } from './ui/ArcReveal.tsx';
@@ -60,7 +60,7 @@ type Screen =
   | { kind: 'debrief'; scenario: Scenario; data: DebriefData; progress: Progress }
   | { kind: 'stop'; done: number; total: number; left: number }
   | { kind: 'reveal'; timeline: { slot: number; tell: string }[] }
-  | { kind: 'chapter_done'; summary: ChapterSummary; city: string; postcard: { ifThen: IfThen; backdrop?: string | undefined } | null }
+  | { kind: 'chapter_done'; summary: ChapterSummary; city: string; postcard: { ifThen: IfThen; backdrop?: string | undefined } | null; boss: BossLesson | null }
   /** A story scene (S3). `then` runs after it ends (finished or skipped). */
   | { kind: 'scene'; scene: Scene; heading: string; chapterName: string; flip: FlipPick | null; note: string | null; flags: string[]; then: () => void }
   /** `back`: where the Atlas was opened from (the title screen or the chapter list). */
@@ -294,7 +294,10 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
     const resolution = await sceneById(resolutionSceneId(c));
     const ifThen = ifThenOf(resolution);
     const backdrop = resolution?.panels.at(-1)?.backdrop;
-    setScreen({ kind: 'chapter_done', summary: r.summary, city: c.name, postcard: ifThen ? { ifThen, backdrop } : null });
+    // [P] Amsterdam QA h: the stamp screen carries the boss's layer-1 tell and what works.
+    const bossScenario = c.boss ? await load(c.city, c.boss).catch(() => undefined) : undefined;
+    const boss = bossScenario ? { tell: bossScenario.debrief.layer1.tell, whatWorks: bossScenario.debrief.layer1.what_works } : null;
+    setScreen({ kind: 'chapter_done', summary: r.summary, city: c.name, postcard: ifThen ? { ifThen, backdrop } : null, boss });
   };
 
   /** Resolution scene (after the last debrief, before the summary), then the chapter end. */
@@ -556,7 +559,7 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
       ) : null}
       {screen.kind === 'stop' ? <StopScreen done={screen.done} total={screen.total} left={screen.left} onKeepGoing={keepGoing} onBack={toChapters} /> : null}
       {screen.kind === 'reveal' ? <ArcReveal timeline={screen.timeline} onContinue={() => void next(save)} /> : null}
-      {screen.kind === 'chapter_done' ? <ChapterDone summary={screen.summary} city={screen.city} postcard={screen.postcard} onBack={() => void toMap()} /> : null}
+      {screen.kind === 'chapter_done' ? <ChapterDone summary={screen.summary} city={screen.city} postcard={screen.postcard} boss={screen.boss} onBack={() => void toMap()} /> : null}
       {screen.kind === 'scene' ? (
         <ScenePlayer
           key={screen.scene.id}

@@ -377,13 +377,16 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
   // tray is out of view; it moves focus to the tray. Hidden on the desk (the rail is always in view).
   const [trayInView, setTrayInView] = useState(true);
   const showJumpRef = useRef(false);
+  // On a payee-check beat the options sit in the device, under the result (Amsterdam QA o): the bar
+  // watches the result paragraph there, so it hides once the player's options are in view.
+  const inDeviceOptions = !!beat && actionsInDevice(beat.device, beat.message);
   useEffect(() => {
-    const el = optionsRef.current;
+    const el = (inDeviceOptions && beat ? document.getElementById(nameCheckResultId(beat.id)) : null) ?? optionsRef.current;
     if (!el || typeof IntersectionObserver !== 'function') return undefined;
     const io = new IntersectionObserver((entries) => setTrayInView(entries.some((x) => x.isIntersecting)), { threshold: 0 });
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [inDeviceOptions, beat?.id, beat ? nameCheckReady[beat.id] : false]);
   // Scroll padding for the sticky HUD and the jump bar (UI_SPEC §1.3), measured: a focused element is
   // never hidden under them (WCAG 2.4.11).
   const hudRef = useRef<HTMLDivElement>(null);
@@ -405,12 +408,19 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
       root.style.scrollPaddingTop = '';
     };
   }, [view.phase === 'playing' || view.phase === 'what_now']);
+  // Scroll padding at the bottom = the jump bar's measured height + its gap (Amsterdam QA o: it covered
+  // the bank IBAN at 320 px and 720×450), so a focused or scrolled-to element is never under it.
+  const jumpRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     const root = typeof document !== 'undefined' ? document.documentElement : null;
     if (!root) return undefined;
-    root.style.scrollPaddingBottom = showJumpRef.current ? '72px' : '';
+    const bar = jumpRef.current;
+    const h = showJumpRef.current && bar ? Math.ceil(bar.getBoundingClientRect().height) + 16 : 0;
+    root.style.scrollPaddingBottom = h ? `${h}px` : '';
+    root.style.setProperty('--jump-h-live', `${h}px`);
     return () => {
       root.style.scrollPaddingBottom = '';
+      root.style.removeProperty('--jump-h-live');
     };
   });
   /**
@@ -621,7 +631,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
             </aside>
           ) : null}
           {showJump ? (
-            <button type="button" class={styles.jump} onClick={jumpToOptions} data-jump="">
+            <button type="button" class={styles.jump} onClick={jumpToOptions} data-jump="" ref={jumpRef}>
               {t('jump_to_options')}
             </button>
           ) : null}

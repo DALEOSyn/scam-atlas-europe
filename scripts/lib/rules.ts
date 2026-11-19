@@ -69,8 +69,8 @@ export const LAYER1_OVERHEAD = {
   arc: wcKey('debrief_the_habit') + wcKey('debrief_already_link_arc'),
 } as const;
 
-/** "That is the habit that works." (ui.json `outcome_best`): the ★★★ line in the layer-1 slot. */
-export const BEST_LINE_WORDS = wcKey('outcome_best');
+/** "That is the habit that works." / "Acting on it was right here." (`outcome_best`, `outcome_best_acted`): the ★★★ line in the layer-1 slot. */
+export const BEST_LINE_WORDS = Math.max(wcKey('outcome_best'), wcKey('outcome_best_acted'));
 
 export function wordCount(text: string | undefined): number {
   return text ? text.trim().split(/\s+/u).filter((w) => /[\p{L}\p{N}]/u.test(w)).length : 0;

@@ -97,6 +97,11 @@ export interface DebriefData {
     nextTime: 'after_hang_up' | null;
     /** Every scored beat earned ★★★ without a fall: the slot may hold "That is the habit that works." */
     allBest: boolean;
+    /**
+     * Which ★★★ line fits (Amsterdam QA i): `acted` on a genuine message won by acting on it (every scored
+     * beat `proceed`): "Acting on it was right here."; else `habit`: "That is the habit that works."
+     */
+    bestLine: 'habit' | 'acted';
     /** null on arc beats and drills (no stars, no points). */
     stars: number | null;
     alreadyClicked: { situation: AlreadySituation; text: string } | null;
@@ -145,10 +150,16 @@ const FAIR_INSTINCT_TYPES: ReadonlySet<string> = new Set(['caller_id', 'sender',
 
 /** A sender that shows a phone number, not a name (ruling QA m9). */
 const PHONE_DISPLAY = /^[+\d][\d\s•.-]*$/u;
+/** A sender flag about the number, not the name ("a new number", "an unknown number"). */
+const NEW_NUMBER = /\b(?:new|unknown|different|unsaved|another)\s+(?:mobile\s+|phone\s+)?number\b/i;
 
-export function senderCaveatOf(target: string, display: string | undefined): 'name' | 'number' | null {
+export function senderCaveatOf(target: string, display: string | undefined, ins?: { type?: string | undefined; reveal: string }): 'name' | 'number' | null {
   if (!SENDER_TARGETS.test(target)) return null;
-  return display && PHONE_DISPLAY.test(display.trim()) ? 'number' : 'name';
+  if (display && PHONE_DISPLAY.test(display.trim())) return 'number';
+  // Amsterdam QA k: "Even a familiar sender name can be faked." is about a name. A flag about a new or
+  // unknown number (type phone_number, or a reveal that says so) gets no caveat.
+  if (ins && (ins.type === 'phone_number' || NEW_NUMBER.test(ins.reveal))) return null;
+  return 'name';
 }
 
 /** Decide the pressure callout given what the game has already shown (save.callouts). */
@@ -173,6 +184,10 @@ export function debriefOf(
   const arc = d.variant === 'arc';
   const visited = new Set(st.groups.flatMap((g) => g.visited));
   const shownBeats = [...visited];
+  // Amsterdam QA j: "You spotted x of y" counts the same beats as the chapter's spotting (result.ts
+  // groupTags): beats of scored groups only. Flags on unscored beats (a boss's later narrative beat or
+  // request page) are still listed, but not counted.
+  const counted = new Set(st.groups.filter((g) => g.scored).flatMap((g) => g.visited));
 
   const flags: DebriefFlag[] = [];
   let could = 0;
@@ -184,9 +199,11 @@ export function debriefOf(
       const isFlag = ins.red_flag && (s.is_fraud || ins.context === 'quoted');
       if (!isFlag) continue;
       const tagged = st.tags.includes(`${id}|${ins.target}`);
-      could++;
-      if (tagged) marked++;
-      flags.push({ text: ins.reveal, status: tagged ? 'marked' : 'not_marked', target: ins.target, beatId: id, senderCaveat: senderCaveatOf(ins.target, beat.message.sender?.display) });
+      if (counted.has(id)) {
+        could++;
+        if (tagged) marked++;
+      }
+      flags.push({ text: ins.reveal, status: tagged ? 'marked' : 'not_marked', target: ins.target, beatId: id, senderCaveat: senderCaveatOf(ins.target, beat.message.sender?.display, ins) });
     }
   }
   for (const text of d.layer2.message_flags) flags.push({ text, status: 'in_message', senderCaveat: null });
@@ -218,12 +235,12 @@ export function debriefOf(
   // Layer 1 shows the lead line only when the displayed stars are below ★★★ and nobody fell. After a
   // fall the kind line takes the slot (layer-1 ruling 2026-11-19); with ★★★ displayed but a lower beat
   // (a boss's rounded mean), the "Next time" pointer or nothing does (ruling L1). Then the lead line
-  // opens "Your other choices".
+  // stays in "Your other choices", at its beat.
   const leadInLayer1 = !!lead && !r.fell && r.stars !== 3;
   const youChose = lead && leadInLayer1 ? [lead.line] : [];
-  const others = lines.filter((x) => x !== lead);
   const strip = ({ line, stars, beat }: OtherChoice): OtherChoice => ({ line, stars, beat });
-  const youChoseOther = (lead && !leadInLayer1 ? [lead, ...others] : others).map(strip);
+  // Amsterdam QA l: "Your other choices" in beat order (the lead line, when not in layer 1, sits at its beat).
+  const youChoseOther = lines.filter((x) => !(leadInLayer1 && x === lead)).map(strip);
   // Only a boss can show ★★★ over a lower beat; the role check keeps the engine and the validator
   // (scripts/lib/rules.ts counts this line only on a boss) in step.
   const nextTime = s.role === 'boss' && lead && !leadInLayer1 && !r.fell && r.stars === 3 && s.is_fraud && lead.cls === 'dismiss' ? ('after_hang_up' as const) : null;
@@ -239,6 +256,7 @@ export function debriefOf(
       youChose,
       nextTime,
       allBest: r.best,
+      bestLine: bestLineOf(s, r),
       stars: unscored ? null : r.stars,
       alreadyClicked: alreadyClickedLine(s, r.situation) ?? null,
     },
@@ -273,6 +291,12 @@ export function debriefOf(
         : { base: r.base, tagBonus: r.tagBonus, tagBonusVoided: r.tagBonusVoided, recovery: r.fell ? (r.recovery?.points ?? 0) : null, total: r.points, max: r.maxPoints, bossFallCap: r.bossFallCap },
     },
   };
+}
+
+/** Amsterdam QA i: a genuine message handled by acting on it did not need a checking habit. */
+export function bestLineOf(s: Pick<Scenario, 'is_fraud'>, r: Pick<ScenarioResult, 'beats'>): 'habit' | 'acted' {
+  const scored = r.beats.filter((b) => b.scored);
+  return !s.is_fraud && scored.length > 0 && scored.every((b) => b.cls === 'proceed') ? 'acted' : 'habit';
 }
 
 /** CR-15: the beat with the fewest stars leads layer 1; on a tie the latest beat. */

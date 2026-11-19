@@ -9,6 +9,7 @@
   "scenario_translation": "Translation",
   "outcome_stars": "{stars} of 3 stars",
   "outcome_best": "That is the habit that works.",
+  "outcome_best_acted": "Acting on it was right here.",
   "debrief_red_flags": "What gave it away",
   "debrief_verdict_fraud": "This was a scam:",
   "debrief_verdict_genuine": "This was genuine:",
@@ -408,5 +409,6 @@
   "atlas_empty": "No pages yet. Finish a city to add its page.",
   "atlas_cards": "Habit cards on this page",
   "atlas_back": "Back to the start",
+  "chapter_done_boss": "What to remember",
   "chapter_done_postcard": "Your postcard to Teo"
 }

@@ -480,6 +480,12 @@ export const interruptSchema = z
      * before the debrief. The debrief waits until it is answered.
      */
     after_beat: z.string().min(1).optional(),
+    /**
+     * With after_beat (Amsterdam QA q): wait until that beat's "What now?" choice is made, so a reassuring
+     * message (e.g. the real colleague: "Just landed, all fine here") does not give the answer away
+     * while the player is still choosing. Without "What now?" it changes nothing.
+     */
+    after_what_now: z.boolean().default(false),
     is_fraud: z.boolean(),
     ...beatBody,
   })
@@ -631,6 +637,7 @@ export const scenarioSchema = z
       if (b.after_beat !== undefined && b.after_beat !== 'start' && !s.beats.some((x) => x.id === b.after_beat)) {
         issue(['interrupts', i, 'after_beat'], `after_beat "${b.after_beat}" is not a beat id`);
       }
+      if (b.after_what_now && b.after_beat === undefined) issue(['interrupts', i, 'after_what_now'], 'after_what_now needs after_beat');
     });
     const beatIds = new Set<string>(['start']);
     s.beats.forEach((b, i) => {

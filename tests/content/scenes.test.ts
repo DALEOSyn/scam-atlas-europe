@@ -163,7 +163,7 @@ describe('scene validator (cross-file rules)', () => {
   it('missing portraits and backdrops fail; unknown cast fails', () => {
     const s = fixtureScene('berlin', 'berlin-arrival');
     const p = first(s.panels);
-    expect(sceneRules({ ...s, panels: [{ ...p, speaker: 'bruna' }] }, reg).join('\n')).toMatch(/unknown cast id "bruna"/);
+    expect(sceneRules({ ...s, panels: [{ ...p, speaker: 'not-in-cast' }] }, reg).join('\n')).toMatch(/unknown cast id "not-in-cast"/);
     expect(sceneRules({ ...s, panels: [{ ...p, speaker: 'noor' }] }, reg).join('\n')).toMatch(/cast\/noor\.svg does not exist/);
     expect(sceneRules({ ...s, panels: [{ ...p, backdrop: 'berlin-station' }] }, reg).join('\n')).toMatch(/berlin-station\.svg does not exist/);
   });

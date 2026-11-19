@@ -1,0 +1,87 @@
+# 6-1 Davide: breakfast on the terrace (GDD §26.4 6-1). Genuine, low stakes, difficulty 3, honest timer.
+# Off-focus for Rome: its pattern (a friend's hijacked chat) is not in the chapter's patterns or callbacks,
+# so calling Davide to check is an off-focus double check that costs gold (GDD §26.7 row 2).
+# Checkables (G, 2): sender + request.
+# Language: the engine marks a whole message's language, not a phrase inside it, so Davide writes the whole
+# message in Italian with the spec's English as the inline translation (as Madrid 4-1). Never a red flag.
+# Ask: the spec's "Coming?" is one word and the validator needs at least 4 (the sentence that asks), so the
+# last sentence is "Scendi a fare colazione?" ("Coming down for breakfast?"). Flagged for game-designer.
+id: rome-01-breakfast-till-ten
+chapter: rome
+role: standard
+pattern: hijacked-friend-payment-code
+theme: home
+learning_objectives: [LO-17]
+difficulty: 3
+is_fraud: false
+stakes: low
+device: messenger
+brands: [kettle]
+cast: [davide, bruna]
+pressure:
+  timer: true
+  levers: []
+  honest_deadline: "Breakfast till ten"
+
+message:
+  sender: { display: "Davide (B&B)", detail: "Saved contact: Davide (B&B)" }
+  from_cast: davide
+  body: |
+    Ciao! 🔑 La chiave verde apre il portone, quella piccola la tua camera. Nonna dice colazione in terrazza fino alle dieci. Scendi a fare colazione?
+  lang: it
+  translation: "Hi! 🔑 The green key opens the street door, the small one your room. Nonna says breakfast on the terrace till ten. Coming down for breakfast?"
+  request: reply
+  ask: { text: "Scendi a fare colazione?", translation: "Coming down for breakfast?" }
+  l10n_note: "Italian in-world text is intentional (Rome chapter); the English translation is shown inline. 'Nonna' (grandma) stays untranslated as a family word; keep a local word for grandma in other locales."
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: Davide's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what he asks: whether you're coming to breakfast."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: request
+    reveal: "Asks if you're coming to breakfast. No money, no code, no link."
+    red_flag: false
+    type: request
+
+actions:
+  - id: reply_on_my_way
+    label: "Reply: on my way!"
+    kind: proceed
+    outcome: coffee_on_terrace
+    pressure_target: true
+  - id: call_davide_check
+    label: "Call Davide first to check"
+    kind: call_back_known
+    outcome: davide_on_stairs
+  - id: report_breakfast
+    label: "Report the message"
+    kind: report
+    outcome: breakfast_reported
+  - id: leave_breakfast
+    label: "Don't answer"
+    kind: ignore
+    outcome: breakfast_unanswered
+
+outcomes:
+  coffee_on_terrace:
+    narrative: "Davide: \"Perfetto! Nonna's made too much, as always.\" The lemon tree shades half the terrace."
+  davide_on_stairs:
+    narrative: "Davide, from the stairs: \"Yes, me. Coffee's getting cold.\" A good habit, and this time a quick reply would have done."
+  breakfast_reported:
+    narrative: "Reported. Davide knocks at ten past nine: \"Did my message reach you? It was only about breakfast!\""
+  breakfast_unanswered:
+    narrative: "No reply. At ten Bruna puts a plate aside for you anyway, under a napkin."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Your host's grandson, about breakfast. Nothing else."
+    what_works: "Reply as normal."
+  layer2:
+    message_flags: []
+    notes: "Most messages are fine. Save your checks for ones that ask for money, codes or a login."
+  device_tip: "On a real phone, most messages from saved contacts are fine. If one asks for money or a code, call the person first, even if it's their saved number: accounts can be taken over."
+  habit_card: calm-not-paranoid
+  sources: [nl-politie-hulpvraagfraude-2025, nl-veiliginternetten-hulpvraag]

@@ -287,6 +287,8 @@
   "tier_need_genuine": "don't report genuine messages",
   "tier_need_spotted": "Spot at least {n, plural, one {# red flag} other {# red flags}}. Each mark on a safe detail takes one off. Your count: {net}.",
   "tier_need_offfocus": "skip extra checks on harmless messages outside this chapter's scams",
+  "tier_need_falls_recovery": "after a slip, pick only steps that help, starting with one that stops the damage",
+  "tier_need_falls": "keep it to one slip or none (you already stop the damage well)",
   "translation_shown": "Translation shown. Timer paused.",
   "thread_earlier": "Earlier",
   "announce_interrupt_from": "New notification: {kind} from {from}.",

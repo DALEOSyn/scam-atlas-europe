@@ -1816,6 +1816,10 @@ export const balanceSchema = z
             max_genuine_reported: z.number().int().min(0),
             min_spotted: spottedExpr,
             max_offfocus_doublechecks: z.number().int().min(0),
+            /** R24 (CR-48): at most this many falls in the chapter (a fallen standard scenario or scheduled boss beat = 1). */
+            max_falls: z.number().int().min(0),
+            /** R24 (CR-48): every fall's damage control must meet LO-16 (≥ 6 points, `stop` first). */
+            falls_need_lo16_recovery: z.boolean(),
           })
           .strict(),
       })

@@ -337,7 +337,7 @@ describe('Dublin strategy rows (GDD §28.7)', () => {
     expect(r.stamp).toBe('silver');
   });
 
-  it('row 12 "pays to get money back": falling for 8-3 and boss beat 3, well recovered: 156, gold (input to R15)', () => {
+  it('row 12 "pays to get money back": falling for 8-3 and boss beat 3, well recovered: 156, silver (R24: two falls)', () => {
     const r = summary({
       'dublin-03-recovery-offer': [act('open_case_page'), act('pay_retainer')],
       [BOSS]: [
@@ -352,7 +352,10 @@ describe('Dublin strategy rows (GDD §28.7)', () => {
     });
     expect(r.points).toBe(156);
     expect(r.spotted).toBe(11);
-    expect(r.stamp).toBe('gold');
+    // R24 (CR-48): both falls recovered (LO-16), but two falls exceed gold's max_falls 1. Was gold before R24.
+    expect(r.stamp).toBe('silver');
+    expect(r.rating).toBeGreaterThanOrEqual(90);
+    expect(r.nextTier).toEqual({ tier: 'gold', needs: ['falls'], spottedNeeded: expect.any(Number) as number });
   });
 });
 

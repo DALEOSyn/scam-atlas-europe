@@ -283,7 +283,7 @@ describe('Stockholm strategy rows (GDD §29.7)', () => {
     expect(r.stamp).toBe('silver');
   });
 
-  it('row 12 "a code that opens Gatewren is fine": 154 (90.6%), 9 spotted, gold (input to R15)', () => {
+  it('row 12 "a code that opens Gatewren is fine": 154 (90.6%), 9 spotted, silver (R24: two falls)', () => {
     const r = summary(ideal, {
       'stockholm-06-buyer-qr': [act('scan_buyer_code'), act('approve_buyer_prompt')],
       [BOSS]: [
@@ -298,7 +298,10 @@ describe('Stockholm strategy rows (GDD §29.7)', () => {
     });
     expect(r.points).toBe(154);
     expect(r.spotted).toBe(9);
-    expect(r.stamp).toBe('gold');
+    // R24 (CR-48): both falls recovered (LO-16), but two falls exceed gold's max_falls 1. Was gold before R24.
+    expect(r.stamp).toBe('silver');
+    expect(r.rating).toBeGreaterThanOrEqual(90);
+    expect(r.nextTier).toEqual({ tier: 'gold', needs: ['falls'], spottedNeeded: expect.any(Number) as number });
   });
 });
 

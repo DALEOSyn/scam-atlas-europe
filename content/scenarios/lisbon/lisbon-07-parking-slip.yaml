@@ -1,0 +1,135 @@
+# 7-7 A fake parking slip under the wiper with a QR code (GDD §27.4; qr-sticker-parking, fake fine).
+# Fraud, difficulty 5, no timer (calm on purpose). Levers fear (surcharge), authority. The slip is only the
+# carrier of the QR code (Red Line 8); the lesson is the destination. Look-alike zonelet-multas.example.
+# Real details mixed in (LS5): the car's plate (masked), the zone and a time.
+# CR-37 (the QR mount field) is not built: "printed" is in the caption only.
+# Checkables (4; R 1): letterhead D, reference D (LS5), QR destination R, claim D.
+# slip_page: a read-only training page (Red Line 2). Not in R.
+id: lisbon-07-parking-slip
+chapter: lisbon
+role: standard
+pattern: qr-sticker-parking
+theme: parking
+learning_objectives: [LO-02, LO-03, LO-04]
+difficulty: 5
+is_fraud: true
+device: letter
+setup: "Back at the car after lunch: a slip under the wiper."
+brands: [zonelet]
+pressure: { timer: false, levers: [fear, authority] }
+
+message:
+  letterhead: "Zonelet · Aviso de estacionamento"
+  body: "Zona 3 · AA-••-12 · 14:22. Estacionamento não pago. Pague €12,00 em 24 horas para evitar uma sobretaxa de €60. Digitalize para pagar."
+  lang: pt-PT
+  translation: "Zone 3 · AA-••-12 · 14:22. Unpaid parking. Pay €12.00 within 24 hours to avoid a €60 surcharge. Scan to pay."
+  qr: { payload: /qr/lisbon-parking-slip, destination: zonelet-multas.example, caption: "Printed on the slip" }
+  request: scan_qr
+  references: ["Zona 3 · AA-••-12 · 14:22"]
+  claims: [{ text: "para evitar uma sobretaxa de €60", translation: "to avoid a €60 surcharge" }]
+  l10n_note: "Portuguese in-world text on the slip is intentional (Lisbon chapter); 'multas' means fines. The English translation is shown inline."
+
+inspectables:
+  - target: letterhead
+    reveal: "Zonelet's name in print. Easy to copy, so it can't prove anything either way."
+    red_flag: false
+    type: letterhead
+  - target: reference
+    reveal: "Your car's plate, the zone and a time: real details anyone passing could read, so they can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: qr.destination
+    reveal: "zonelet-multas.example. Read the end: not zonelet.example. Check it yourself in the Zonelet app or on its site you open yourself, never through the slip's code."
+    red_flag: true
+    type: qr
+  - target: claim
+    reveal: "A surcharge if you wait. Real notices have deadlines too, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+
+actions:
+  - id: scan_slip
+    label: "Scan and open zonelet-multas.example"
+    kind: scan_qr_and_open
+    next_beat: slip_page
+    pressure_target: true
+  - id: check_zonelet_notice
+    label: "Check for a notice in the Zonelet app"
+    kind: verify_in_app
+    outcome: no_notice_in_app
+  - id: report_slip
+    label: "Report the slip"
+    kind: report
+    outcome: slip_reported
+  - id: bin_slip
+    label: "Bin it"
+    kind: ignore
+    outcome: slip_binned
+
+beats:
+  - id: slip_page
+    device: browser
+    message:
+      page: { address: "zonelet-multas.example/aviso", title: "Zonelet · Pay a parking notice" }
+      body: "Notice Zone 3 · AA-••-12. Pay €12.00 now to avoid the €60 surcharge."
+      request: enter_details
+      ask: { text: "Pay €12.00 now to avoid the €60 surcharge." }
+    inspectables:
+      - target: page.address
+        reveal: "The address bar still ends in zonelet-multas.example. Zonelet's own address is zonelet.example."
+        red_flag: true
+        type: page_address
+      - target: page.info
+        reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
+        red_flag: false
+        type: padlock
+      - target: request
+        reveal: "Your card details for a fine, on a page a slip sent you to. Check a real notice in the Zonelet app yourself."
+        red_flag: true
+        type: request
+    actions:
+      - id: pay_slip
+        label: "Pay the €12"
+        kind: enter_details
+        outcome: card_taken_slip
+        pressure_target: true
+      - id: close_check_zonelet
+        label: "Close it and check the Zonelet app"
+        kind: verify_in_app
+        outcome: no_notice_in_app
+      - id: close_slip_page
+        label: "Close the page"
+        kind: ignore
+        outcome: slip_binned
+
+outcomes:
+  card_taken_slip:
+    narrative: "\"Paid. Thank you.\" The next morning your Larchwick app shows €12.00, then €198.00 at an online shop."
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: report_sticker, category: report }
+      - { step: report_to_police, category: report }
+      - { step: wait_and_see, category: harmful }
+      - { step: rescan_to_cancel, category: harmful }
+  no_notice_in_app:
+    narrative: "You open the Zonelet app yourself. No notice. Your session ran until 14:40."
+  slip_reported:
+    narrative: "You photograph the slip and report it in the Zonelet app."
+  slip_binned:
+    narrative: "You bin it. No notice ever arrives in the Zonelet app."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Real plate and zone, but the code opens a look-alike."
+    what_works: "Check it yourself in the Zonelet app."
+  layer2:
+    message_flags: []
+    notes: "Real details on a slip prove nothing: anyone walking past can read a plate. Where the code goes is the tell. A QR code is a link: read the address it shows before you open it."
+  device_tip: "Check whether you owe anything in the parking app yourself, not through the notice's code."
+  habit_card: read-the-link
+  already_clicked:
+    clicked: "Opened the page but typed nothing? Close it, and check the parking app yourself."
+    entered_details: "Typed your card? Block it in your banking app now and call your bank on the number on your card."
+  sources: [pt-portugalpost-gnr-quishing-2026, lu-vdl-parking-qr, ie-ncsc-qr-guide, pt-deco-qrishing-2024, pt-bdp-ficaadica-2023]

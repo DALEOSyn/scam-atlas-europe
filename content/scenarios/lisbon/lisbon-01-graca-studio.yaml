@@ -1,0 +1,106 @@
+# 7-1 A real booking in the Roostwell app you opened (GDD §27.4; genuine twin of 7-3 and 7-6, pattern
+# rental-offplatform-payment). Genuine, high stakes (a payment), difficulty 3, honest timer 40 s with the
+# honest deadline "We hold it for you for 20 minutes". Roostwell notice with the listing card (CR-33).
+# Checkables (G, 4): the notice inside the app (LS1 "It fits"), the listing card (neutral), the "money held
+# until check-in" claim, the request.
+# Not player_started: the validator then requires an action of kind proceed, but the right action here is
+# pay_protected (LO-11). The host's greeting sits in the notice body (a notice has one sender).
+# "Ask the host to take a bank transfer" is pay_unprotected (★, producer §27.11 Q3). The L-S1 sentence is
+# fixed in layer 2 for every player: the engine has no hook for a line shown only on that choice.
+id: lisbon-01-graca-studio
+chapter: lisbon
+role: standard
+pattern: rental-offplatform-payment
+theme: rental
+twin_of: lisbon-03-alfama-ad
+learning_objectives: [LO-11, LO-17]
+difficulty: 3
+is_fraud: false
+stakes: high
+device: marketplace
+setup: "You've searched the Roostwell app for a place from Thursday."
+brands: [roostwell]
+cast: [leonor]
+pressure:
+  timer: true
+  levers: [urgency]
+  honest_deadline: "We hold it for you for 20 minutes"
+
+message:
+  app: { brand: roostwell }
+  notice: true
+  listing: { title: "Studio with a tiled kitchen, Graça · Thu–Sun", price: "€246.00" }
+  sender: { display: "Roostwell", detail: "Notice in the Roostwell app" }
+  body: |
+    Your dates are free. Reserve now: pay in the app to confirm. We hold it for you for 20 minutes. Your payment stays with Roostwell until check-in.
+
+    Leonor (host): Olá! Welcome in advance 🙂
+  request: pay
+  ask: { text: "Reserve now: pay in the app to confirm." }
+  claims: [{ text: "Your payment stays with Roostwell until check-in" }]
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: a notice inside the Roostwell app you opened yourself, for dates you searched. That isn't proof on its own, so weigh it with what it asks: to pay inside the app."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: reference
+    reveal: "The studio and dates you searched for. A listing card can be copied, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "Says the money is held until check-in. That's how a booking paid in the app works."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "Asks you to pay inside the Roostwell app, for a stay you searched for. No link, no transfer."
+    red_flag: false
+    type: request
+
+actions:
+  - id: pay_in_roostwell
+    label: "Pay in the Roostwell app"
+    kind: pay_protected
+    outcome: studio_booked
+    pressure_target: true
+  - id: read_reviews_first
+    label: "Read the reviews in the app first"
+    kind: check_with_platform
+    outcome: reviews_then_booked
+  - id: ask_host_transfer
+    label: "Ask the host to take a bank transfer"
+    kind: pay_unprotected
+    outcome: leonor_keeps_it_in_app
+  - id: report_studio
+    label: "Report the listing"
+    kind: report
+    outcome: studio_reported
+  - id: leave_studio
+    label: "Leave it"
+    kind: ignore
+    outcome: studio_released
+
+outcomes:
+  studio_booked:
+    narrative: "Booked: Graça, Thursday to Sunday. Leonor writes in the app: \"Obrigada! See you Thursday.\""
+  reviews_then_booked:
+    narrative: "Forty reviews, all in the app. You book."
+  leonor_keeps_it_in_app:
+    narrative: "Leonor replies in the app: \"Please pay in the app, it protects us both.\" You do."
+  studio_reported:
+    narrative: "You report the listing. Roostwell replies: \"This listing and host are verified.\" The 20 minutes run out. That afternoon you search again: it's still free, and you book it in the app."
+  studio_released:
+    narrative: "The 20 minutes run out and the studio goes back on the market. That afternoon you search again: it's still free, and you book it in the app."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "In the app you opened, for dates you chose."
+    what_works: "Paying in the app was right."
+  layer2:
+    message_flags: []
+    notes: "Remember this screen: a booking you search for and pay inside the app. Every fake this week tries to get you outside it. Asking for a bank transfer gives up the app's protection, even with a real host."
+  device_tip: "On a real phone, open the booking app from your home screen and pay on the booking itself, never by a transfer or a link someone sends."
+  habit_card: check-before-you-pay
+  sources: [de-evz-rental-fraud, pt-dn-psp-airbnb-2026]

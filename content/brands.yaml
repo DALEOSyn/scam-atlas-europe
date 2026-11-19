@@ -615,7 +615,7 @@ brands:
         are letters, a camera, a bird, a ghost, a note or a speech bubble. No letter, no bubble, no camera,
         no page-with-folded-corner (a document-app look). Kettle (messenger, tomato) stays clearly apart.
       typography: "Lowercase rounded sans."
-    checked_against: ["Facebook", "Instagram", "X (Twitter)", "Threads", "TikTok", "Snapchat", "LinkedIn", "Reddit", "Pinterest", "YouTube", "Bluesky", "Mastodon", "BeReal", "Natterly (BRAND_CHECK DS3)", "Natter (former UK social network)", "Google Docs (folded-page icon, avoided)", "Kettle (in-game)"]
+    checked_against: ["Facebook", "Instagram", "X (Twitter)", "Threads", "TikTok", "Snapchat", "LinkedIn", "Reddit", "Pinterest", "YouTube", "Bluesky", "Mastodon", "BeReal", "Natterly (BRAND_CHECK DS3)", "Natter (former UK social network)", "Google Docs (folded-page icon, avoided)", "Kettle (in-game)", "G4 watch: wallet apps whose icons stack cards (Apple Wallet, Google Wallet, Samsung Wallet, PayPal, Curve); the mark is a fan of post cards with an avatar dot and text bars, not payment cards, and must stay so"]
     web_check: "Low (BRAND_CHECK DS3): a village near Norwich; no app, company or brand."
     lookalike_examples: []
     trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"
@@ -756,7 +756,7 @@ brands:
         arrows, linked diamonds, monitors or a hand on a screen (GDD §29.10). No arrow, no monitor or screen,
         no hand, no diamond, no headset.
       typography: "Plain sans, title case."
-    checked_against: ["TeamViewer", "AnyDesk", "Quick Assist", "Chrome Remote Desktop", "RustDesk", "Splashtop", "Zoho Assist", "GoTo Resolve / LogMeIn", "ConnectWise ScreenConnect", "Kind Hands (NZ childcare; hand cream)", "KindConnect"]
+    checked_against: ["TeamViewer", "AnyDesk", "Quick Assist", "Chrome Remote Desktop", "RustDesk", "Splashtop", "Zoho Assist", "GoTo Resolve / LogMeIn", "ConnectWise ScreenConnect", "Kind Hands (NZ childcare; hand cream)", "KindConnect", "G4 watch: remote-support tools that use a life-ring or lifebuoy icon or 'Rescue' naming (LogMeIn Rescue, BeyondTrust Remote Support, help-desk suites with a lifebuoy mark); BRAND_CHECK BR4 conditions apply: no red, orange or blue ring with white, no Rescue/SOS/Assist wording, no arrows or screens"]
     web_check: "Low (BRAND_CHECK DS8)."
     lookalike_examples: []
     trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"

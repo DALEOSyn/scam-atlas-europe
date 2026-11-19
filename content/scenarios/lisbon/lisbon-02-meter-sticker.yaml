@@ -1,8 +1,7 @@
 # 7-2 A sticker over a parking meter's code (GDD §27.4; qr-sticker-parking core). Fraud, difficulty 3,
 # timer 40 s; follow-up from Beatriz (genuine) at 20 s. Look-alike zonelet-pay.example (registered).
-# CR-37 (the QR mount field) is not built, so the spec's fallback applies (GDD §27.9): the sticker is shown in the
-# camera caption and the meter text, "no app needed" stays a claim (decoy), and R is 1 (the destination).
-# Checkables (3; R 1): QR destination R (LS2), reference D (zone and price), claim D ("sem app").
+# CR-37: the code is a sticker over the printed one (mount: sticker), a supporting red flag; the destination stays the lesson (LS2).
+# Checkables (4; R 2): QR destination R (LS2), QR mount R (sticker), reference D (zone and price), claim D ("sem app").
 # The meter and the code are only the carrier of the QR code (Red Line 8); the lesson is the destination.
 id: lisbon-02-meter-sticker
 chapter: lisbon
@@ -27,9 +26,9 @@ message:
   qr: { payload: /qr/lisbon-meter-sticker, destination: zonelet-pay.example, caption: "A sticker stuck over the meter's printed code", mount: sticker }
   body: |
     Zonelet · ZONA 3 · €1,60/h
-    Autocolante: Pague pelo telemóvel, sem app. Digitalize aqui.
+    Pague pelo telemóvel, sem app. Digitalize aqui.
   lang: pt-PT
-  translation: "Zonelet · ZONE 3 · €1.60/h. Sticker: Pay by phone, no app needed. Scan here."
+  translation: "Zonelet · ZONE 3 · €1.60/h. Pay by phone, no app needed. Scan here."
   request: scan_qr
   references: ["ZONA 3 · €1,60/h"]
   claims: [{ text: "Pague pelo telemóvel, sem app.", translation: "Pay by phone, no app needed." }]
@@ -37,9 +36,13 @@ message:
 
 inspectables:
   - target: qr.destination
-    reveal: "zonelet-pay.example. Read the end: the owner part is zonelet-pay.example, not zonelet.example, where the parking app lives. And a sticker over the meter's own code is a reason not to scan."
+    reveal: "zonelet-pay.example. Read the end: the owner part is zonelet-pay.example, not zonelet.example, where the parking app lives."
     red_flag: true
     type: qr
+  - target: qr.mount
+    reveal: "A sticker stuck over the meter's printed code. A sticker is a reason not to scan; open the parking app yourself."
+    red_flag: true
+    type: qr_mount
   - target: reference
     reveal: "The zone and price match the meter. A sticker can copy them, so they can't prove anything either way."
     red_flag: false

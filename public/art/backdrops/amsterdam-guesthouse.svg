@@ -1,0 +1,36 @@
+<!-- Scam Atlas: Europe. City backdrop: the small reception of a family guesthouse in Amsterdam, with a desk, key hooks, plants, a steep staircase and warm wall lamps; no lettering, no logo, no booking screen. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="ag-t"><title id="ag-t">A small guesthouse reception with key hooks, plants and a steep staircase</title>
+<defs><linearGradient id="ag-air" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfdde6"/><stop offset="1" stop-color="#d9e6f6"/></linearGradient>
+<g id="ag-key"><path d="M-5 6a5 5 0 1 0 10 0a5 5 0 1 0 -10 0ZM-2 10h4v16h-4ZM2 18h4v3h-4ZM2 23h3v3h-3Z" fill="#c98f2e"/></g>
+<g id="ag-lamp"><rect x="-3" y="0" width="6" height="18" rx="2" fill="#8a6a4f"/><path d="M-18 40Q-18 14 0 14Q18 14 18 40Z" fill="#d9a441"/><path d="M-7 42a7 7 0 1 0 14 0a7 7 0 1 0 -14 0Z" fill="#f3d08a"/></g>
+</defs>
+<rect width="960" height="540" fill="#e7d3b0"/>
+<rect width="960" height="26" fill="#d6bf98"/>
+<rect y="380" width="960" height="90" fill="#9fb39b"/><rect y="374" width="960" height="8" fill="#879d83"/>
+<rect x="56" y="58" width="154" height="248" rx="6" fill="#f6efe2"/>
+<rect x="68" y="70" width="60" height="154" rx="3" fill="url(#ag-air)"/><rect x="138" y="70" width="60" height="154" rx="3" fill="url(#ag-air)"/>
+<rect x="68" y="234" width="130" height="60" rx="3" fill="#a9bccb"/>
+<path d="M68 200Q98 186 128 194V224H68ZM138 196Q168 182 198 192V224H138Z" fill="#9db58a"/>
+<rect x="48" y="300" width="170" height="12" rx="4" fill="#d6bf98"/>
+<path d="M90 300h30l-4 -22h-22ZM150 300h30l-4 -22h-22Z" fill="#c8714f"/>
+<path d="M92 266a13 13 0 1 0 26 0a13 13 0 1 0 -26 0ZM150 264a15 15 0 1 0 30 0a15 15 0 1 0 -30 0Z" fill="#86a175"/>
+<use href="#ag-lamp" x="300" y="120"/><use href="#ag-lamp" x="680" y="120"/>
+<rect x="404" y="196" width="160" height="60" rx="6" fill="#d6bf98"/>
+<path d="M424.5 210a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0 -7 0ZM454.5 210a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0 -7 0ZM484.5 210a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0 -7 0ZM514.5 210a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0 -7 0ZM542.5 210a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0 -7 0Z" fill="#8a6a4f"/>
+<use href="#ag-key" x="428" y="210"/><use href="#ag-key" x="458" y="210"/><use href="#ag-key" x="518" y="210"/><use href="#ag-key" x="546" y="210"/>
+<path d="M720 470V425H750V380H780V335H810V290H840V245H870V200H900V155H930V110H960V470Z" fill="#b9a88f"/>
+<path d="M720 425H750M750 380H780M780 335H810M810 290H840M840 245H870M870 200H900M900 155H930M930 110H960" stroke="#9c8c76" stroke-width="6" stroke-linecap="round"/>
+<path d="M704 400L944 64" stroke="#8a6a4f" stroke-width="7" stroke-linecap="round"/>
+<path d="M704 400V470" stroke="#8a6a4f" stroke-width="8" stroke-linecap="round"/>
+<rect y="470" width="960" height="70" fill="#c9b28f"/>
+<path d="M0 504H960M80 470V504M240 470V504M400 470V504M560 470V504M720 470V504M880 470V504M160 504V540M320 504V540M480 504V540M640 504V540M800 504V540" stroke="#b49c7a" stroke-width="3"/>
+<path d="M240 506a200 20 0 1 0 400 0a200 20 0 1 0 -400 0Z" fill="#e3a6a0"/>
+<rect x="232" y="348" width="416" height="122" rx="6" fill="#c8714f"/>
+<path d="M256 368H424V450H256ZM456 368H624V450H456Z" fill="none" stroke="#a95c3e" stroke-width="4" stroke-linejoin="round"/>
+<rect x="218" y="334" width="444" height="18" rx="5" fill="#f1e4c8"/>
+<path d="M264 334Q264 314 282 314Q300 314 300 334Z" fill="#b8b4a6"/><path d="M278 311a4 4 0 1 0 8 0a4 4 0 1 0 -8 0Z" fill="#9c978a"/>
+<rect x="500" y="320" width="66" height="14" rx="3" fill="#3f6b4f"/><rect x="560" y="322" width="4" height="10" fill="#f1e4c8"/>
+<path d="M600 334h28l-3 -18h-22Z" fill="#e3a6a0"/><path d="M599 306a9 9 0 1 0 18 0a9 9 0 1 0 -18 0ZM613 302a9 9 0 1 0 18 0a9 9 0 1 0 -18 0Z" fill="#86a175"/>
+<path d="M40 470h70l-8 -50h-54Z" fill="#c8714f"/>
+<path d="M46 380a30 30 0 1 0 60 0a30 30 0 1 0 -60 0ZM30 400a22 22 0 1 0 44 0a22 22 0 1 0 -44 0ZM76 402a24 24 0 1 0 48 0a24 24 0 1 0 -48 0ZM54 350a20 20 0 1 0 40 0a20 20 0 1 0 -40 0Z" fill="#86a175"/><path d="M72 372a14 14 0 1 0 28 0a14 14 0 1 0 -28 0ZM50 390a10 10 0 1 0 20 0a10 10 0 1 0 -20 0Z" fill="#9db58a"/>
+</svg>

@@ -1,0 +1,45 @@
+<!-- Scam Atlas: Europe. City backdrop: Teo's small warm kitchen at home, with a half-packed suitcase, blank postcards and a teapot on the table and plants on the window sill; no lettering, no brand mark, no flag. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="hk-t"><title id="hk-t">A small warm kitchen with a teapot, postcards and a half-packed suitcase</title>
+<defs><linearGradient id="hk-air" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfdde6"/><stop offset="1" stop-color="#d9e6f6"/></linearGradient>
+<g id="hk-pc"><rect width="34" height="24" rx="2" fill="#fffaf0"/><rect x="3" y="3" width="28" height="12" rx="1" fill="#d9e6f6"/><path d="M3 15Q12 9 20 13Q26 10 31 14V21H3Z" fill="#9db58a"/></g>
+<g id="hk-cup"><path d="M0 0H22V14Q22 22 11 22Q0 22 0 14Z" fill="#f1e4c8"/><path d="M22 4Q30 4 30 10Q30 15 22 15" fill="none" stroke="#ddcca9" stroke-width="3"/></g>
+<g id="hk-pot"><path d="M0 0H30L26 26H4Z" fill="#c8714f"/><rect x="-3" y="-4" width="36" height="8" rx="3" fill="#a95c3e"/></g>
+</defs>
+<rect width="960" height="540" fill="#e7d3b0"/>
+<rect y="0" width="960" height="22" fill="#d6bf98"/>
+<rect y="380" width="960" height="90" fill="#9fb39b"/><rect y="374" width="960" height="8" fill="#879d83"/>
+<rect x="96" y="64" width="222" height="212" rx="8" fill="#f6efe2"/>
+<rect x="110" y="78" width="90" height="184" rx="3" fill="url(#hk-air)"/><rect x="214" y="78" width="90" height="184" rx="3" fill="url(#hk-air)"/>
+<path d="M110 236Q150 214 200 226V262H110ZM214 230Q262 208 304 222V262H214Z" fill="#9db58a"/>
+<path d="M122 92h40M226 92h40" stroke="#fffaf0" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+<rect x="86" y="272" width="242" height="14" rx="4" fill="#d6bf98"/>
+<path d="M116 236a16 16 0 1 0 32 0a16 16 0 1 0 -32 0ZM136 226a14 14 0 1 0 28 0a14 14 0 1 0 -28 0ZM192 238a12 12 0 1 0 24 0a12 12 0 1 0 -24 0ZM252 230a18 18 0 1 0 36 0a18 18 0 1 0 -36 0ZM278 242a12 12 0 1 0 24 0a12 12 0 1 0 -24 0Z" fill="#86a175"/>
+<path d="M134 244a10 10 0 1 0 20 0a10 10 0 1 0 -20 0ZM246 244a10 10 0 1 0 20 0a10 10 0 1 0 -20 0Z" fill="#9db58a"/>
+<use href="#hk-pot" x="124" y="248"/><use href="#hk-pot" transform="translate(194 256) scale(.8)"/><use href="#hk-pot" x="258" y="248"/>
+<rect x="600" y="40" width="300" height="104" rx="6" fill="#9fb39b"/>
+<path d="M700 46V138M800 46V138" stroke="#879d83" stroke-width="3"/>
+<path d="M684 118a4 4 0 1 0 8 0a4 4 0 1 0 -8 0ZM708 118a4 4 0 1 0 8 0a4 4 0 1 0 -8 0ZM784 118a4 4 0 1 0 8 0a4 4 0 1 0 -8 0ZM808 118a4 4 0 1 0 8 0a4 4 0 1 0 -8 0Z" fill="#f6efe2"/>
+<rect x="600" y="300" width="360" height="48" fill="#eef0e8"/>
+<rect x="592" y="346" width="368" height="16" rx="3" fill="#f1e4c8"/>
+<rect x="600" y="362" width="360" height="108" fill="#9fb39b"/>
+<path d="M720 368V466M840 368V466" stroke="#879d83" stroke-width="3"/>
+<path d="M700 408h10M730 408h10M820 408h10M850 408h10" stroke="#f6efe2" stroke-width="5" stroke-linecap="round"/>
+<path d="M863 326a9 9 0 1 0 18 0a9 9 0 1 0 -18 0ZM881 322a9 9 0 1 0 18 0a9 9 0 1 0 -18 0ZM898 328a8 8 0 1 0 16 0a8 8 0 1 0 -16 0Z" fill="#d9a441"/><path d="M852 326Q852 346 880 346Q908 346 908 326Z" fill="#f1e4c8"/>
+<path d="M480 0V58" stroke="#5d6672" stroke-width="3"/>
+<path d="M446 86Q446 54 480 54Q514 54 514 86Z" fill="#d9a441"/><path d="M471 90a9 9 0 1 0 18 0a9 9 0 1 0 -18 0Z" fill="#f3d08a"/>
+<rect y="470" width="960" height="70" fill="#c9b28f"/>
+<path d="M0 500H960M120 470L96 540M360 470L352 540M600 470L608 540M840 470L864 540" stroke="#b49c7a" stroke-width="3"/>
+<rect x="178" y="436" width="14" height="76" rx="4" fill="#8a6a4f"/><rect x="488" y="436" width="14" height="76" rx="4" fill="#8a6a4f"/>
+<rect x="150" y="402" width="380" height="42" rx="8" fill="#c8714f"/><rect x="150" y="430" width="380" height="14" rx="6" fill="#a95c3e"/>
+<path d="M266 400Q262 360 300 356Q338 360 334 400Z" fill="#d9a441"/>
+<path d="M332 372Q352 364 360 350" fill="none" stroke="#d9a441" stroke-width="7" stroke-linecap="round"/>
+<path d="M268 368Q246 370 250 386Q252 396 266 394" fill="none" stroke="#bd8a2c" stroke-width="6"/>
+<path d="M280 356a20 6 0 1 0 40 0a20 6 0 1 0 -40 0Z" fill="#bd8a2c"/><path d="M295 348a5 5 0 1 0 10 0a5 5 0 1 0 -10 0Z" fill="#bd8a2c"/>
+<use href="#hk-cup" x="364" y="380"/><use href="#hk-cup" x="196" y="380"/>
+<use href="#hk-pc" x="410" y="386" transform="rotate(-8 427 398)"/><use href="#hk-pc" x="448" y="388" transform="rotate(6 465 400)"/><use href="#hk-pc" x="430" y="378" transform="rotate(-2 447 390)"/>
+<rect x="612" y="356" width="176" height="92" rx="12" fill="#7a8c9c"/><rect x="624" y="368" width="152" height="74" rx="8" fill="#8fa3b5"/>
+<rect x="604" y="442" width="192" height="58" rx="12" fill="#8fa3b5"/>
+<rect x="620" y="430" width="70" height="22" rx="4" fill="#f1e4c8"/><rect x="694" y="428" width="56" height="24" rx="4" fill="#e3a6a0"/><rect x="626" y="418" width="58" height="14" rx="4" fill="#8fae8b"/>
+<path d="M752 440Q770 420 784 440" fill="none" stroke="#d9a441" stroke-width="8" stroke-linecap="round"/>
+<path d="M604 470H796" stroke="#7a8c9c" stroke-width="4"/>
+</svg>

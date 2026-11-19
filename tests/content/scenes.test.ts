@@ -236,10 +236,11 @@ describe('scene validator (cross-file rules)', () => {
     const noStop = chapterSchema.safeParse({ ...raw, scenario_order: { am: ['berlin-01-locker-code'], pm: [] }, boss: undefined, arc_beat: undefined, status: 'draft', scenes: { turn: 'berlin-turn' } });
     expect(noStop.success ? [] : noStop.error.issues.map((i) => i.message).join('\n')).toMatch(/no stop point/);
   });
-  it('validateScenes reads content/scenes and the art; a repo with zero scenes is valid', () => {
+  it('validateScenes reads content/scenes and the art; the real scenes are valid', () => {
     const real = validateContent(CONTENT);
     expect(real.errors).toEqual([]);
-    expect(real.scenes?.size).toBe(0);
+    // Every scene file under content/scenes is read (S4: Home, Berlin, Amsterdam, I1).
+    expect(real.scenes?.size).toBe(listFiles(join(CONTENT, 'scenes'), ['.yaml']).length);
     // A content dir with the fixture scenes and the real registries.
     const contentDir = mkdtempSync(join(tmpdir(), 'sae-content-'));
     mkdirSync(join(contentDir, 'scenes', 'berlin'), { recursive: true });

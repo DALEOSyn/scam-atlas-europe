@@ -1,0 +1,43 @@
+# Paris mid-chapter turn (GDD §23.13 beat 3, STORY §3.3; worried → calm). Placed after
+# paris-05-salary-change, before 3-6 (the stop point follows 3-4, so this is a `placed` beat, not the
+# `turn` slot). Told only after 3-5's debrief (STORY §4.2 rule 7). Variant on the story-only flag
+# paris_pay_redirected (set by 3-5's fall): Inès's details were put back before payroll, Inès says it
+# would have fooled anyone, nobody is blamed and no money is promised (GDD §23.9). Default 2 panels,
+# variant 3. Ends on Solène, calm. "No exceptions" is the card's rule; following it is never wrong on the
+# genuine 3-6 that follows.
+id: paris-ines-name
+chapter: paris
+slot: beat
+title: "Inès's name"
+panels:
+  - backdrop: paris-workshop
+    crop: left
+    speaker: ines
+    expression: worried
+    unless_flag: paris_pay_redirected
+    line: "Someone used my name to try to change my pay details. They knew my staff number!"
+    alt: "Inès in the workshop, looking worried."
+  - backdrop: paris-workshop
+    crop: left
+    speaker: ines
+    expression: worried
+    if_flag: paris_pay_redirected
+    line: "Someone used my name to change my pay details. It even had my staff number. It would have fooled anyone."
+    alt: "Inès in the workshop, looking worried."
+  - backdrop: paris-workshop
+    crop: right
+    speaker: solene
+    expression: calm
+    flip: true
+    with: { id: ines, expression: calm }
+    if_flag: paris_pay_redirected
+    line: "We've put your real details back before payroll, and we'll sort this together."
+    alt: "Solène, calm, beside Inès at the big table; Inès listens, calm."
+  - backdrop: paris-workshop
+    crop: right
+    speaker: solene
+    expression: calm
+    flip: true
+    with: { id: ines, expression: calm }
+    line: "This is why the card says no exceptions."
+    alt: "Solène, calm, by the procedure card; Inès listens, calm."

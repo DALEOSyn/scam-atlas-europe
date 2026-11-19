@@ -27,3 +27,9 @@ rules:
   items:
     - "New payee or changed bank details: call the number in our file, never one in the message."
     - "Every payment: one person prepares, Solène or Bastien approves. No exceptions, however urgent."
+scenes:
+  arrival: paris-arrival
+  resolution: paris-resolution
+  placed:
+    - { scene: paris-ines-name, after: paris-05-salary-change }
+atlas_cards: [check-who-gets-the-money, ask-someone, hang-up-call-back]

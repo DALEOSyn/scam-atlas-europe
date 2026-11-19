@@ -121,7 +121,7 @@ outcomes:
   salary_reported:
     narrative: "Reported to Ruchelune IT, and payroll keeps Inès's real details. Tell Inès too, so she knows her name is being used."
   salary_left:
-    narrative: "You leave it, and payroll keeps her real details. Inès only hears about it after the weekend; a quick message to her would have told her today."
+    narrative: "You leave it, and payroll keeps her real details. Inès only hears about it later, from Solène; a quick message from you would have told her straight away."
   adaeze_croissant:
     narrative: "Adaeze: \"Get the almond one. Trust me.\""
   adaeze_reported:

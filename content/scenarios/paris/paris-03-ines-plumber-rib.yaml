@@ -23,9 +23,9 @@ message:
   sender: { display: "Inès (Ruchelune)", detail: "Saved contact: Inès (Ruchelune)" }
   from_cast: ines
   body: |
-    Mum got this from "Cuivrelin", the plumber who fixed our boiler. She nearly paid it! It felt off, so I called the number on his quote: he never changed bank 😮‍💨 Mum's reporting it. What would you have spotted?
+    Mum got this email from "Cuivrelin", the plumber who fixed our boiler. She nearly paid it! It felt off, so I called the number on his quote: he never changed bank 😮‍💨 Mum's reporting it. What would you have spotted?
 
-    "From factures@cuivrelin-factures.example: Balance of invoice 2026-088: €640. Following a change of bank, please pay to our new RIB attached, within 48 h. Questions: cuivrelin-factures.example/contact"
+    From factures@cuivrelin-factures.example: Balance of invoice 2026-088: €640. Following a change of bank, please pay to our new RIB attached, within 48 h. Questions: cuivrelin-factures.example/contact
   request: reply
   attachments: [{ name: "RIB_Cuivrelin.pdf (forwarded)" }]
   references: ["Invoice 2026-088"]
@@ -81,5 +81,5 @@ debrief:
   device_tip: "On a real phone, find the number on the quote, invoice or contract you already have, and call that, not a number in the email."
   habit_card: ask-someone
   already_clicked:
-    paid: "Call your bank at once on the number you already have and ask it to recall the transfer (with a parent or guardian if you're under 18). Then warn the real tradesperson on the number you already had."
-  sources: [fr-cybermalveillance-fiche-faux-rib, fr-fbf-cles-faux-rib-2025, fr-inc-iban-rib-fraudes-2025, eu-europol-ceo-bec-leaflet]
+    paid: "Call your bank at once on the number you already have and ask it to try to stop or recall the transfer (with a parent or guardian if you're under 18). Then warn the real tradesperson on the number you already have."
+  sources: [fr-cybermalveillance-fiche-faux-rib, fr-fbf-cles-faux-rib-2025, fr-inc-iban-rib-fraudes-2025, eu-europol-ceo-bec-leaflet, fr-justice-thesee-messagerie-2025]

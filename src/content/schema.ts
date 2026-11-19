@@ -566,6 +566,12 @@ export const scenarioSchema = z
     arc_slot: z.number().int().min(1).max(9).optional(),
     /** The player started this (reset link they requested, their own sign-in): in-message action is proceed. */
     player_started: z.boolean().default(false),
+    /**
+     * Scene-setting line shown above the first beat (e.g. a boss's "18:40, the last working day…").
+     * Placeholder added by scenario-writer for Paris T-3.5 rework; engine branch CR-27 adds the same field
+     * and renders it (coordinator reconciles at merge). Not rendered yet on this branch.
+     */
+    setup: z.string().min(1).optional(),
     learning_objectives: z.array(loId).min(1),
     difficulty: z.number().int().min(1).max(5).optional(),
     is_fraud: z.boolean(),

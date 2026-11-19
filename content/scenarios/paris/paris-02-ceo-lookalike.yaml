@@ -163,5 +163,5 @@ debrief:
   device_tip: "On a real computer or phone, find the person in your own contacts or staff directory and call that number; don't reply to the email or use a number in it."
   habit_card: check-who-gets-the-money
   already_clicked:
-    paid: "Call your bank now on the number you already have and ask it to recall the transfer for fraud. Then tell Solène on the directory number and keep the emails."
+    paid: "Call your bank now on the number you already have and ask it to try to stop or recall the transfer for fraud. Then tell Solène on the directory number and keep the emails."
   sources: [fr-gendarmerie-fovi, fr-cybermalveillance-fiche-fovi, eu-europol-ceo-bec-leaflet, fr-inc-vop-2025, eu-epc-vop-scheme]

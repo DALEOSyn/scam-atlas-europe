@@ -74,6 +74,6 @@ cards:
   - id: check-who-gets-the-money
     lo: LO-06
     title: "Check who gets the money"
-    habit: "Asked to pay a new or different account, or it's urgent or secret? Call the person on a number you already had. Name doesn't match? Stop. Name matches? Still call: it only shows whose account it is."
-    example: "A friend asks you to pay their landlord directly? The name can match and the story still be false. A call to your friend settles it."
-    already_clicked: "Paid already? Call your bank now on the number on your card and ask it to stop or recall the payment. Then tell the real person, with a call to their saved number."
+    habit: "Asked to pay a new or different account, or it's urgent or secret? Call the person on a number you already had. Name doesn't match? Stop. Name matches? Still call: it only shows whose account it is. At work, keep the two-person sign-off."
+    example: "Paying a bill or a new payee? Type the name from your own papers, not the message, so your bank's check can warn you."
+    already_clicked: "Paid already? Call your bank now on the number you already have and ask it to try to stop or recall the payment. Then tell the real person, on a number you already have."

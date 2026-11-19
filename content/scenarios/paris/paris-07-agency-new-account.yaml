@@ -8,6 +8,7 @@
 # has no logo checkable, so the GDD's logo decoy becomes this claim; same count, same strategy rows).
 # The French pusher (with translation, CR-14) is the sourced coaching tactic: "the name check may say it
 # doesn't match, just confirm" (EPC threats report; INC: don't confirm after a no-match).
+# The banking beat shows the same lease note as 3-1 (not checkable; the new IBAN differs from it).
 # Banking beat: you type "Volet Bleu" from your lease; the check says it doesn't match (no holder shown,
 # CR-23); the warning is a red flag on the sub-beat (counts toward spotting, not R).
 # Fall -> damage control (6, 2 harmful); layer 2 keeps "may not have to refund you" (never "won't").
@@ -102,6 +103,7 @@ beats:
   - id: agency_transfer
     device: banking
     message:
+      body: "Your lease, page 4: Volet Bleu Gestion SAS · account ending 31"
       payee: { name: "Volet Bleu", iban: "FR•••••••••••••••••••••••82", name_check: mismatch, amount: "€690.00" }
       request: pay
     inspectables:
@@ -140,7 +142,9 @@ outcomes:
       - { step: warn_creditor_known_number, category: warn }
       - { step: keep_transfer_evidence, category: secure }
       - { step: file_complaint_police, category: report }
-      - { step: reply_ask_money_back, category: harmful }
+      - step: reply_ask_money_back
+        category: harmful
+        feedback: "Asking for your money back feels fair, but the reply goes straight to the scammer and can invite a second scam. Call your bank now, then the agency on the number in your lease."
       - { step: pay_recovery_service, category: harmful }
   agency_no_change:
     narrative: "The agency, on the number in your lease: \"We haven't changed banks. Please don't pay that. Thanks for calling.\""
@@ -156,15 +160,15 @@ outcomes:
 debrief:
   variant: standard
   layer1:
-    tell: "A new account, pay early, and a warning to ignore."
+    tell: "New account, pay early, and told to ignore a warning."
     what_works: "Name warning? Stop. Call the number on your lease."
   layer2:
     message_flags:
       - "Pay early, before Friday, or late fees: a deadline just as a payment falls due."
-      - "The follow-up told you to expect a \"doesn't match\" warning and to confirm anyway. Being coached past a bank warning is a tell on its own."
-    notes: "After a \"doesn't match\" warning, your bank may not have to refund you. Call it at once anyway and ask it to recall the transfer. Under 18? Tell a parent or guardian straight away and call the bank with them: that call is the urgent step. They can make the complaint; some online complaint services are for adults only."
-  device_tip: "Banks in euro countries run this check on euro transfers. If your bank shows no name check, the call to the number you already had is your only check."
+      - "Scammers sometimes warn you to expect a \"doesn't match\" and say to confirm anyway. Being coached past a bank warning is a tell on its own."
+    notes: "After a \"doesn't match\" warning, your bank may not have to refund you. Call it at once anyway and ask it to try to stop or recall the transfer. Under 18? Tell a parent or guardian straight away and call the bank with them: that call is the urgent step. They can make the complaint; some online complaint services are for adults only."
+  device_tip: "Banks in euro countries run this check on most euro transfers. If your bank shows no name check, the call to the number you already had is your only check."
   habit_card: check-who-gets-the-money
   already_clicked:
-    paid: "Call your bank at once on the number you already have and ask it to recall the transfer for fraud. Then warn the agency on the number in your lease."
-  sources: [fr-cybermalveillance-fiche-faux-rib, fr-fbf-cles-faux-rib-2025, fr-inc-iban-rib-fraudes-2025, fr-inc-vop-2025, eu-eurlex-ipr-2024-886, fr-bdf-fraude-moyens-paiement, eu-epc-threats-2025, eu-ec-ipr-vop-2025, eu-ecb-ipr]
+    paid: "Call your bank at once on the number you already have and ask it to try to stop or recall the transfer for fraud. Then warn the agency on the number in your lease."
+  sources: [fr-cybermalveillance-fiche-faux-rib, fr-fbf-cles-faux-rib-2025, fr-inc-iban-rib-fraudes-2025, fr-inc-vop-2025, eu-eurlex-ipr-2024-886, fr-bdf-fraude-moyens-paiement, eu-epc-threats-2025, eu-ec-ipr-vop-2025, eu-ecb-ipr, fr-justice-thesee-messagerie-2025]

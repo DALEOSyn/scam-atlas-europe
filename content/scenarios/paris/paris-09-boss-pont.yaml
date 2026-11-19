@@ -14,7 +14,10 @@
 #   no audio, no glitch effects (P5: the lesson is the request, not spotting artefacts). R: request.
 #   D: caller ID, face and voice. "What now?": directory call-back or "Message Adaeze through the staff
 #   directory" (ask_someone, verify): the DGSI case (ended the call, alerted management).
-# Interrupt after beat 3 (genuine): Inès says goodbye from her saved contact.
+# Interrupt after beat 3 (genuine): Inès says goodbye from her saved contact, after the "What now?" choice
+# (after_what_now). on_fall (CR-27) is not in this schema yet, so it is not set.
+# After a beat-1 fall the later asks say "Has it gone? If not…" and pay outcomes say "you send €38,500",
+# which is true for a first payment and for a further one (QA rework).
 # Damage control: the same six steps for every fall (engine merges and caps at 6), sets paris_boss_sent
 # (story only, GDD §23.13). Never says deepfake calls are "common"; no refund promise.
 # boss_transfer carries scored: false only for the validator's 3-scored-beat count (it counts the banking
@@ -28,6 +31,7 @@ learning_objectives: [LO-08, LO-06, LO-18, LO-04, LO-16]
 difficulty: 4
 is_fraud: true
 device: email
+setup: "18:40, the last working day before the long weekend. Bastien is away; Solène left at five. You're closing the accounts inbox."
 brands: [ruchelune, larchwick, kettle, ostrelle, waymarker]
 cast: [solene, bastien, ines, adaeze]
 pressure:
@@ -141,10 +145,10 @@ beats:
         - { speaker: caller, text: "Good evening, Maître Vellacourt from Cabinet Ostrelle. Ms Arbogast asked me to call you about Projet Lys." }
         - { speaker: caller, text: "I confirm everything in her email. The deposit must leave before seven, or the seller walks away." }
         - { speaker: you, text: "Normally Bastien or Solène signs off." }
-        - { speaker: caller, text: "She has authorised it herself. Please send it now and keep it strictly confidential until Tuesday." }
+        - { speaker: caller, text: "She has authorised it herself. Has it gone? If not, please send it now and keep it strictly confidential until Tuesday." }
         - { speaker: caller, text: "If you need to check, call me back on 01 •• •• •• 07. Your bank will show the name matches." }
       request: pay
-      ask: { text: "Please send it now and keep it strictly confidential until Tuesday." }
+      ask: { text: "If not, please send it now and keep it strictly confidential until Tuesday." }
       references: ["Cabinet Ostrelle"]
       phone_numbers: ["01 •• •• •• 07"]
     inspectables:
@@ -195,12 +199,12 @@ beats:
       sender: { display: "Solène Arbogast", detail: "Kettle video call · shows Solène Arbogast and her photo" }
       video:
         illustration: public/art/video/paris-boss-solene.svg
-        alt: "Illustration: Solène at an airport gate, coat on, a boarding pass in her hand"
+        alt: "Solène on a video call at an airport gate, calm, a parked plane through the window behind her"
       transcript:
         - { speaker: caller, text: "It's me. I know this is unusual, and I'm sorry to put it on you." }
         - { speaker: caller, text: "I'm boarding in two minutes. I'm approving it myself, right now, so you don't need anyone else's sign-off tonight." }
         - { speaker: you, text: "Shouldn't Bastien see it too?" }
-        - { speaker: caller, text: "No. Keep it between us until Tuesday. Please send it now. I'm counting on you." }
+        - { speaker: caller, text: "No. Keep it between us until Tuesday. If it hasn't gone yet, please send it now. I'm counting on you." }
       request: pay
       ask: { text: "I'm approving it myself, right now, so you don't need anyone else's sign-off tonight." }
     inspectables:
@@ -241,6 +245,7 @@ beats:
 interrupts:
   - id: ines_long_weekend
     after_beat: video_call
+    after_what_now: true
     is_fraud: false
     device: messenger
     message:
@@ -279,7 +284,7 @@ outcomes:
         category: harmful
         feedback: "Feeling embarrassed is normal, and secrecy is exactly what the requests asked for. Anyone can be caught by this. Calling the bank now and telling Solène on the directory number is what gives the money the best chance."
   paid_on_lawyer_call:
-    narrative: "While he's still on the line, the €38,500 goes to Morvenac SAS. \"Perfect. Ms Arbogast will be pleased.\" Nobody else at Ruchelune knows yet."
+    narrative: "While he's still on the line, you send €38,500 to Morvenac SAS. \"Perfect. Ms Arbogast will be pleased.\" Nobody else at Ruchelune knows yet."
     sets_flags: [paris_boss_sent]
     recovery:
       - { step: call_bank_recall_transfer, category: stop }
@@ -291,7 +296,7 @@ outcomes:
         category: harmful
         feedback: "Feeling embarrassed is normal, and secrecy is exactly what the requests asked for. Anyone can be caught by this. Calling the bank now and telling Solène on the directory number is what gives the money the best chance."
   paid_on_video:
-    narrative: "\"Thank you. I knew I could count on you.\" The call ends, and the €38,500 has gone to Morvenac SAS. Nobody else at Ruchelune knows yet."
+    narrative: "You send €38,500 to Morvenac SAS on her word. \"Thank you. I knew I could count on you.\" The call ends. Nobody else at Ruchelune knows yet."
     sets_flags: [paris_boss_sent]
     recovery:
       - { step: call_bank_recall_transfer, category: stop }
@@ -337,16 +342,13 @@ debrief:
   variant: standard
   layer1:
     tell: "A secret transfer, a \"lawyer\", then her face: one request."
-    what_works: "End it. Call Solène on the directory number."
+    what_works: "Hang up. Call Solène on the directory number."
   layer2:
     message_flags:
-      - "The email: send it yourself, no sign-off, and keep it from Bastien. Skipping the sign-off and secrecy are the tells, whichever address it comes from."
-      - "The call: a second person \"confirming\" adds pressure, not proof, and the number he gave only reaches him."
-      - "The video call: her word was meant to replace the sign-off. A real request keeps the usual sign-off, whoever is on the screen."
       - "Timing: these requests often come in the evening, on holidays and over long weekends, when accounts teams are short-staffed."
-    notes: "Even a real address can carry a fake request; Solène's mailbox may have been misused, so she changes its password. Most calls are what they seem. When one asks for money, secrecy or skipping a check, end it and call back. At home: the same trick works with a family member's face or voice: end the call and call them back on the number you have."
+    notes: "Even a real address can carry a fake request; Solène's mailbox may have been misused, so she changes its password. Most calls are what they seem. When a call, a video call or a message asks for money, secrecy or skipping a check, hang up or stop there, and call back on a number you already have. At home: the same trick works with a family member's face or voice: end the call and call them back on the number you have."
   device_tip: "On a real phone, end the call yourself, then ring the person from your contacts or the staff directory. A call or video call never replaces the usual sign-off."
   habit_card: hang-up-call-back
   already_clicked:
-    paid: "Call your bank now on the number you already have and ask it to recall the transfer for fraud. Tell Solène on the directory number, keep everything, and file a complaint."
+    paid: "Call your bank now on the number you already have and ask it to try to stop or recall the transfer for fraud. Tell Solène on the directory number, keep everything, and file a complaint."
   sources: [fr-gendarmerie-fovi, fr-cybermalveillance-fiche-fovi, eu-europol-ceo-bec-leaflet, fr-dgsi-flash-117-2025, eu-epc-threats-2025, de-bsi-deepfakes, fr-bdf-fraude-moyens-paiement, eu-epc-vop-scheme, eu-europol-phishing-leaflet, fr-inc-iban-rib-fraudes-2025, eu-esas-ai-scams-factsheet-nl]

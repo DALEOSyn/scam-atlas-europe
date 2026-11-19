@@ -198,9 +198,10 @@ debrief:
   layer2:
     message_flags:
       - "New bank details right before the long weekend, on an invoice already due."
-    notes: "A match only tells you whose account it is. You typed the name the email gave you, so the bank matched it. Had you typed Platinoir, the name in your own file, the check should have flagged that the account isn't Platinoir's. Use names from your own records, and call. Sign-off catches a fake boss, because the real boss sees the request. It can't catch a fake supplier: Solène sees the same email you did. The call to the number in your file is the check. Even a real address in a real thread can carry a fake request. If it happens for real, keep the emails, the bank details and the transfer record."
+      - "Sign-off catches a fake boss, because the real boss sees the request. It can't catch a fake supplier: Solène sees the same email you did."
+    notes: "A match only tells you whose account it is. The payee name came from the email, so the bank matched it. Had it been Platinoir, the name in your own file, the check should have flagged that the account isn't Platinoir's. Use names from your own records, and call the number in your file. If it happens for real, keep the emails, the bank details and the transfer record."
   device_tip: "In a real banking app, type the payee name from your own records, not from the email, so the name check can warn you. Then call anyway."
   habit_card: check-who-gets-the-money
   already_clicked:
-    paid: "Call your bank at once on the number you already have and ask it to recall the transfer for fraud. Then warn Platinoir on the number in your supplier file, tell Solène through the directory, and keep the emails."
+    paid: "Call your bank at once on the number you already have and ask it to try to stop or recall the transfer for fraud. Then warn Platinoir on the number in your supplier file, tell Solène through the directory, and keep the emails."
   sources: [fr-bdf-fraude-moyens-paiement, eu-epc-vop-scheme, fr-cybermalveillance-fiche-faux-rib, fr-fbf-cles-faux-rib-2025, fr-cybermalveillance-fiche-fovi, eu-europol-ceo-bec-leaflet, eu-epc-threats-2025, eu-esas-ai-scams-factsheet-nl, eu-ecb-ipr, fr-gendarmerie-fovi]

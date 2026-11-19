@@ -117,7 +117,7 @@ outcomes:
         category: harmful
         feedback: "Replying feels like a way to sort it out, but the sender is the scammer, not Inès. Put her real details back with her in person, then tell Solène through the directory."
   ines_never_sent:
-    narrative: "Inès, from across the workshop: \"What? I didn't send that. My bank's the same!\" She's shaken: it had her staff number."
+    narrative: "Inès, on Kettle: \"What? I didn't send that. My bank's the same!\" She's shaken: it had her staff number."
   salary_reported:
     narrative: "Reported to Ruchelune IT, and payroll keeps Inès's real details. Tell Inès too, so she knows her name is being used."
   salary_left:
@@ -140,4 +140,4 @@ debrief:
   habit_card: who-really-sent
   already_clicked:
     entered_details: "Changed someone's pay details? Check with them directly and put the right ones back before payroll; if it already went out, call the bank."
-  sources: [fr-cybermalveillance-fiche-fovi, fr-cybermalveillance-fiche-faux-rib]
+  sources: [fr-cybermalveillance-fiche-fovi, fr-cybermalveillance-fiche-faux-rib, fr-justice-thesee-messagerie-2025]

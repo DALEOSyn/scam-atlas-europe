@@ -8,7 +8,8 @@
 # Banking beat (start_transfer, class step): you type the name and account from your lease. Payee check:
 # close match, the holder's full company name is shown (CR-23). "It fits" only because the player can
 # compare it with a document they already hold (P3). The debrief never says why the names differ.
-# First payee check in the game is normally here, so the coach mark (CR-23) appears on this beat.
+# The banking beat shows a one-line note from your lease (QA rework: something to compare against; not
+# checkable). First payee check in the game is normally here, so the coach mark (CR-23) appears on this beat.
 # Habit card: calm-not-paranoid (LO-17); the LO-06 card is first shown at 3-2 (GDD §23.4).
 id: paris-01-rent-close-match
 chapter: paris
@@ -92,6 +93,7 @@ beats:
   - id: rent_transfer
     device: banking
     message:
+      body: "Your lease, page 4: Volet Bleu Gestion SAS · account ending 31"
       payee: { name: "Volet Bleu", iban: "FR•••••••••••••••••••••••31", name_check: close_match, holder: "Volet Bleu Gestion SAS", amount: "€690.00" }
       request: pay
     inspectables:
@@ -142,10 +144,10 @@ debrief:
   variant: standard
   layer1:
     tell: "Your lease's account, and the full company name."
-    what_works: "Compare the shown name with your papers."
+    what_works: "Close match? Compare the name with your papers."
   layer2:
     message_flags: []
     notes: "A close match isn't an alarm. Read the name your bank shows. If it's someone you don't know, stop and call. Here it was the company name on your lease, paid to the account you agreed when you signed, and nothing about the request was new."
-  device_tip: "Banks in euro countries run this check on euro transfers. If your bank shows no name check, the call to the number you already had is your only check."
+  device_tip: "Banks in euro countries run this check on most euro transfers. If your bank shows no name check, the call to the number you already had is your only check."
   habit_card: calm-not-paranoid
   sources: [fr-inc-vop-2025, eu-eurlex-ipr-2024-886, eu-epc-vop-scheme, eu-ecb-ipr, eu-ec-ipr-vop-2025]

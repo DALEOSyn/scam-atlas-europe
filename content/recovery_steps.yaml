@@ -73,7 +73,7 @@ steps:
   # GDD §23.9's `keep_evidence` is Amsterdam's step with a chat-and-site label, so Paris uses its own
   # `keep_transfer_evidence` (emails, bank details, transfer, times) instead of rewording Amsterdam's.
   - id: call_bank_recall_transfer
-    label: "Call your bank at once on the number you already have and ask it to recall the transfer for fraud"
+    label: "Call your bank at once on the number you already have and ask it to try to stop or recall the transfer for fraud"
   - id: warn_creditor_known_number
     label: "Warn the real landlord or supplier on the number you already have: they're being impersonated, and their mailbox may be misused"
   - id: file_complaint_police

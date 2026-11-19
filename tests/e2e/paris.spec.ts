@@ -36,6 +36,8 @@ test('Paris 3-1 and 3-2: the payee check shows a close match, then "couldn\'t ch
   await page.getByRole('button', { name: /Pay it with the details from your lease/ }).click();
   const result = page.locator('[id^="name-check-result-"]');
   await expect(result).toContainText("Close match. The account is held by 'Volet Bleu Gestion SAS'.", { timeout: 5_000 });
+  // The lease note to compare against (QA rework: not checkable, shown on the bank card).
+  await expect(page.getByText('Your lease, page 4: Volet Bleu Gestion SAS · account ending 31')).toBeVisible();
   const gotIt = page.getByRole('button', { name: 'Got it' });
   if (await gotIt.isVisible()) {
     await axeClean(page); // coach mark open (first payee check in this save)

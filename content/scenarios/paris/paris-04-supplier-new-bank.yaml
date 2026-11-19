@@ -7,7 +7,7 @@
 # change of bank details is a reason to call the number in your supplier file).
 # Banking beat (start_transfer): payee check match (P3 neutral, fixed suffix). Paying the new details
 # without the call is `pay` (comply, ★ on genuine high stakes): the change was never checked (GDD §23.3).
-# The call to the number in your file is the habit: ★★★, and Lucie confirms.
+# The call to the number in your file is the habit: ★★★, and Odile confirms.
 id: paris-04-supplier-new-bank
 chapter: paris
 role: standard
@@ -32,9 +32,9 @@ message:
     Nous avons changé de banque. À partir de la facture F-2026-118, merci de régler sur le compte ci-dessous. Conditions habituelles : 30 jours. Pour toute question, appelez-nous au numéro habituel.
 
     Bonne journée,
-    Lucie, comptabilité
+    Odile, comptabilité
   lang: fr
-  translation: "Hello, we've changed banks. From invoice F-2026-118, please pay to the account below. Usual terms: 30 days. Any questions, call us on the usual number. Have a good day, Lucie, accounts"
+  translation: "Hello, we've changed banks. From invoice F-2026-118, please pay to the account below. Usual terms: 30 days. Any questions, call us on the usual number. Have a good day, Odile, accounts"
   request: pay
   ask:
     text: "À partir de la facture F-2026-118, merci de régler sur le compte ci-dessous."
@@ -122,24 +122,24 @@ beats:
 
 outcomes:
   lucie_confirms:
-    narrative: "Lucie picks up on the number in your supplier file: \"Yes, new bank since Monday. The account ends 47.\" It does. You add the new details and send the payment to Solène for approval."
+    narrative: "Odile picks up on the number in your supplier file: \"Yes, new bank since Monday. The account ends 47.\" It does. You add the new details and send the payment to Solène for approval."
   feuillemont_paid_unchecked:
     narrative: "Solène approves it, and the money reaches Feuillemont: the change was real. But nobody had checked it, and a fake change looks just the same until it's too late."
   feuillemont_reported:
-    narrative: "Reported. Lucie writes again, puzzled: the change was real. A call to the number in your file would have settled it."
+    narrative: "Reported. Odile writes again, puzzled: the change was real. A call to the number in your file would have settled it."
   feuillemont_left:
-    narrative: "You leave it. A month later the invoice is overdue and Lucie chases it. The change was real."
+    narrative: "You leave it. A month later the invoice is overdue and Odile chases it. The change was real."
   feuillemont_cancelled:
     narrative: "You cancel. The invoice is still due, and the change was real: a call to the number in your file would have settled it."
 
 debrief:
   variant: standard
   layer1:
-    tell: "It was real: confirmed on your file's number."
-    what_works: "New bank details? Call a number you had."
+    tell: "It was real, but only a call to your file's number showed that."
+    what_works: "Call before paying."
   layer2:
     message_flags: []
-    notes: "Real bank changes happen. The name check told you whose account it is; the call told you the change was real. A match must not lower your guard: it looks the same on a real change and a fake one."
+    notes: "Real bank changes happen. The name check told you whose account it is; the call told you the change was real. Solène's approval checks the payment, not the change: she sees the same email you did. A match must not lower your guard: it looks the same on a real change and a fake one."
   device_tip: "In a real banking app, add new bank details only after you've called the supplier on the number you already had, not one in the email."
   habit_card: check-who-gets-the-money
   sources: [fr-cybermalveillance-fiche-faux-rib, fr-bdf-fraude-moyens-paiement, fr-fbf-cles-faux-rib-2025, fr-cybermalveillance-fiche-fovi, eu-epc-vop-scheme]

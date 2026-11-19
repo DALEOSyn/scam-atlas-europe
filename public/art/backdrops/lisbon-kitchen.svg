@@ -1,0 +1,28 @@
+<!-- Scam Atlas: Europe. City backdrop: a warm Lisbon family kitchen, a frieze of original simple geometric tiles high on the wall, a stove with pots, a window with herbs, a table with a bowl of oranges and bread; no lettering, no product packaging, no copy of a historic tile design. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="lk-t"><title id="lk-t">A warm family kitchen with a tile frieze, pots on the stove and a window with herbs</title>
+<defs><linearGradient id="lk-air" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfdde6"/><stop offset="1" stop-color="#d9e6f6"/></linearGradient>
+<g id="lk-tl"><rect width="30" height="30" fill="#9fb39b"/><path d="M15 5L25 15L15 25L5 15Z" fill="#c4cab9"/><path d="M15 11L19 15L15 19L11 15Z" fill="#879d83"/></g><g id="lk-r"><use href="#lk-tl" x="0"/><use href="#lk-tl" x="30"/><use href="#lk-tl" x="60"/><use href="#lk-tl" x="90"/><use href="#lk-tl" x="120"/><use href="#lk-tl" x="150"/><use href="#lk-tl" x="180"/><use href="#lk-tl" x="210"/><use href="#lk-tl" x="240"/><use href="#lk-tl" x="270"/><use href="#lk-tl" x="300"/><use href="#lk-tl" x="330"/><use href="#lk-tl" x="360"/><use href="#lk-tl" x="390"/><use href="#lk-tl" x="420"/><use href="#lk-tl" x="450"/><use href="#lk-tl" x="480"/><use href="#lk-tl" x="510"/><use href="#lk-tl" x="540"/><use href="#lk-tl" x="570"/><use href="#lk-tl" x="600"/><use href="#lk-tl" x="630"/><use href="#lk-tl" x="660"/><use href="#lk-tl" x="690"/><use href="#lk-tl" x="720"/><use href="#lk-tl" x="750"/><use href="#lk-tl" x="780"/><use href="#lk-tl" x="810"/><use href="#lk-tl" x="840"/><use href="#lk-tl" x="870"/><use href="#lk-tl" x="900"/><use href="#lk-tl" x="930"/></g>
+</defs>
+<rect width="960" height="540" fill="#f1e4c8"/>
+<use href="#lk-r" y="34"/><use href="#lk-r" y="64"/><path d="M0 34H960M0 94H960" stroke="#76966f" stroke-width="4"/>
+<rect x="0" y="0" width="960" height="20" fill="#e7d3b0"/>
+<rect x="0" y="350" width="330" height="120" fill="#8fae8b"/><path d="M110 356V466M220 356V466" stroke="#76966f" stroke-width="3"/>
+<path d="M90 400h10M120 400h10M200 400h10M230 400h10" stroke="#f6efe2" stroke-width="5" stroke-linecap="round"/>
+<rect x="0" y="336" width="340" height="16" rx="3" fill="#d6bf98"/>
+<rect x="40" y="326" width="120" height="10" rx="2" fill="#9c978a"/>
+<path d="M50 326V292Q50 286 56 286H100Q106 286 106 292V326Z" fill="#c8714f"/><path d="M46 288h64" stroke="#a95c3e" stroke-width="5" stroke-linecap="round"/>
+<path d="M118 326V302h36v24Z" fill="#8fa3b5"/><path d="M154 308h14" stroke="#7a8c9c" stroke-width="5" stroke-linecap="round"/>
+<path d="M66 276q-6-10 0-20M84 276q-6-10 0-20" fill="none" stroke="#fffaf0" stroke-width="3" stroke-linecap="round"/>
+<path d="M230 336V316h50v20Z" fill="#ddcca9"/><path d="M236 316l6-10h28l6 10Z" fill="#c98f2e"/>
+<rect x="560" y="130" width="230" height="200" rx="6" fill="#f6efe2"/><rect x="574" y="144" width="96" height="172" rx="3" fill="url(#lk-air)"/><rect x="680" y="144" width="96" height="172" rx="3" fill="url(#lk-air)"/>
+<rect x="550" y="324" width="250" height="12" rx="4" fill="#d6bf98"/>
+<path d="M590 324h28l-4-20h-20ZM650 324h28l-4-20h-20ZM722 324h28l-4-20h-20Z" fill="#c8714f"/>
+<path d="M590 298a8 8 0 1 0 16 0a8 8 0 1 0 -16 0ZM602 294a8 8 0 1 0 16 0a8 8 0 1 0 -16 0ZM650 296a8 8 0 1 0 16 0a8 8 0 1 0 -16 0ZM662 292a8 8 0 1 0 16 0a8 8 0 1 0 -16 0ZM722 298a8 8 0 1 0 16 0a8 8 0 1 0 -16 0ZM734 294a8 8 0 1 0 16 0a8 8 0 1 0 -16 0Z" fill="#86a175"/>
+<rect y="470" width="960" height="70" fill="#c8714f"/>
+<path d="M0 505H960M80 470V540M200 470V540M320 470V540M440 470V540M560 470V540M680 470V540M800 470V540M920 470V540" stroke="#a95c3e" stroke-width="3"/>
+<rect x="400" y="400" width="320" height="16" rx="5" fill="#8a6a4f"/>
+<rect x="416" y="416" width="12" height="70" rx="4" fill="#8a6a4f"/><rect x="692" y="416" width="12" height="70" rx="4" fill="#8a6a4f"/>
+<path d="M600 400Q600 380 628 380Q656 380 656 400Z" fill="#fffaf0"/><path d="M607 376a9 9 0 1 0 18 0a9 9 0 1 0 -18 0ZM627 374a9 9 0 1 0 18 0a9 9 0 1 0 -18 0ZM618 366a8 8 0 1 0 16 0a8 8 0 1 0 -16 0Z" fill="#e9a23b"/>
+<path d="M440 400Q440 382 470 382Q500 382 500 400Z" fill="#c98f2e"/><path d="M452 388l12 -4M470 386l12 -4" stroke="#bd8a2c" stroke-width="2"/>
+<rect x="840" y="200" width="90" height="270" rx="4" fill="#ddcca9"/><path d="M840 330H930" stroke="#c4cab9" stroke-width="3"/><path d="M916 250V300M916 350V420" stroke="#9c978a" stroke-width="5" stroke-linecap="round"/>
+</svg>

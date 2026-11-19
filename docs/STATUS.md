@@ -29,6 +29,7 @@ Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR 
 - [x] T-3.2 | fraud-researcher + game-designer | Paris research and chapter spec: briefs ceo-fraud-bec and payment-detail-change, 13 FR/EU sources, GDD §23 (8 scenarios + drill + deepfake-call boss, payee-check screen, story beats, strategy check), CR-22..26 (reuses CR-17/18), brand check (Pressoria → Platinoir, Lenoir → Vellacourt, Encrevive → Feuillemont, new account holders), real bodies only on the France help card | branch phase3/paris-research | fraud-researcher: FAIL → PASS · sceptic: FAIL → PASS · learning-psychologist: FAIL → FAIL (two lines) → fixed verbatim
 
 ## Next up (Phase 3)
+- [ ] T-3.3 | frontend-engineer | Engine CR-17..26 (Amsterdam + Paris): ask from slot 2 on pay/enter_details/reply + claims; start_transfer (class step) → banking beat (verify + dismiss), request page, boss chaining (sub-beat = parent's decision, covered_by, 40 s floor, next beat held); new-contact banner, recorded calls, beat-bound pushers; bank-details card, payee-check result cards (holder only on close match) + coach mark (coach_mark freeze), video call (illustration + transcript), email thread history, business account; docs/ENGINE.md | branch phase3/engine-cr17-26 | in review: sceptic, qa, learning-psychologist pending
 
 ## Follow-ups (non-blocking, from reviews)
 - Linter: brand letters split by `/` `,` `*`; "x dot com"; source-host check warning-only → error before G4; `St.Gallen`-style false positives; pin Actions by SHA.

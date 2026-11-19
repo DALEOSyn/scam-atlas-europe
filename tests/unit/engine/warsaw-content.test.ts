@@ -184,7 +184,7 @@ describe('Warsaw boss (CR-33 buyer chat, CR-35 engage, covered_by)', () => {
 });
 
 describe('Warsaw strategy rows (GDD §25.7)', () => {
-  const PICKS_CARD = ['block_card_in_bank_app', 'tell_trusted_adult', 'keep_evidence'];
+  const PICKS_CARD = ['block_card_in_bank_app', 'call_bank_known_number', 'tell_trusted_adult'];
   const ideal = (): number[] => [
     points('warsaw-01-rucksack-sold', [act('print_rucksack_label')]).points,
     points('warsaw-02-vote-for-the-band', [...tagBoth('claim'), ...tagBoth('link'), act('call_ola_saved')]).points,
@@ -251,7 +251,7 @@ describe('Warsaw drill 5-7 and arc beat', () => {
   it('the arc beat is slot 5, unscored, and adding €50 banks alex_invested', () => {
     const s = get('warsaw-arc-alex-05');
     expect(s.arc_slot).toBe(5);
-    expect(play(s, c(), [act('check_warning_list')]).r.stars).toBeNull();
+    expect(play(s, c(), [act('check_official_register')]).r.stars).toBeNull();
     expect(s.outcomes['added_fifty']?.arc_effects).toEqual({ alex_invested: 50 });
   });
 });

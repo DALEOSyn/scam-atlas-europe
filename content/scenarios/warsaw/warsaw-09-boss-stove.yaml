@@ -250,7 +250,7 @@ outcomes:
   no_payment_shown:
     narrative: "Your Swaploft sales: the stove is still listed, nothing paid. Real payments show here."
   number_blocked_boss:
-    narrative: "Blocked and reported. A few minutes later, another message gets through from the same number on a new chat."
+    narrative: "Blocked and reported. The scammer tries again in a new chat."
   collect_ignored_boss:
     narrative: "You leave it. The number writes again."
   bank_login_typed:

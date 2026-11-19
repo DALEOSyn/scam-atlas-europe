@@ -54,7 +54,7 @@ inspectables:
     red_flag: false
     type: claim
   - target: request
-    reveal: "A photo of your card, sent to a buyer. Being paid never needs your card details, and the platform never asks for them through a buyer."
+    reveal: "A photo of your card, sent to a buyer. Being paid on Swaploft never needs your card, and the platform never asks for it through a buyer."
     red_flag: true
     type: request
 
@@ -110,7 +110,7 @@ outcomes:
     recovery:
       - { step: block_card_in_bank_app, category: stop }
       - { step: tell_trusted_adult, category: stop }
-      - { step: keep_evidence, category: secure }
+      - { step: call_bank_known_number, category: stop }
       - { step: report_buyer_in_app, category: report }
       - { step: ask_buyer_to_cancel, category: harmful }
       - { step: wait_for_money, category: harmful }
@@ -132,7 +132,7 @@ debrief:
     what_works: "Check your settings yourself; report the buyer."
   layer2:
     message_flags: []
-    notes: "Staying on the platform helps, but it isn't proof. What the buyer asks for is. A photo of both sides of a card shows everything someone needs to pay with it online."
+    notes: "Staying on the platform helps, but it isn't proof. What the buyer asks for is. A photo of both sides of a card shows what someone needs to pay with it at many online shops."
   device_tip: "On a real phone, open the marketplace app yourself and look under its payout settings: that's where your bank account for payouts is saved."
   habit_card: stay-on-the-platform
   already_clicked:

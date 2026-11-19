@@ -66,7 +66,7 @@ outcomes:
         category: harmful
         feedback: "Feeling embarrassed is normal. The advice is to call the bank straight away, without shame. I'm calling."
   mateus_calls_anyway:
-    narrative: "Mateus: \"Mm. I'll still call the bank, it's free.\" He does, and comes back: \"Glad I did.\""
+    narrative: "Mateus: \"Mm. I'll still call the bank, it takes two minutes.\" He does, and comes back: \"Glad I did.\""
 
 debrief:
   variant: standard

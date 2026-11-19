@@ -34,17 +34,17 @@ message:
   notice: true
   listing: { title: "Rucksack · order SW-•••• 4471", price: "€35.00" }
   sender: { display: "Swaploft", detail: "Notice in the Swaploft app" }
-  body: "Sprzedane! Twój plecak, 35,00 €. Swaploft trzyma płatność, dopóki kupujący jej nie odbierze, a potem wypłaca ją na Twoje zapisane konto. Wydrukuj etykietę i nadaj paczkę w automacie Trundle do piątku. swaploft.example/sales/4471"
+  body: "Sprzedano! Twój plecak, 35,00 €. Swaploft trzyma płatność, dopóki kupujący nie odbierze paczki, a potem wypłaca ją na Twoje zapisane konto bankowe. Wydrukuj etykietę i nadaj paczkę w automacie Trundle do piątku. swaploft.example/sales/4471"
   lang: pl
-  translation: "Sold! Your rucksack, €35.00. Swaploft holds the payment until the buyer receives it, then pays it to your saved account. Print your label and drop it at a Trundle locker by Friday. swaploft.example/sales/4471"
+  translation: "Sold! Your rucksack, €35.00. Swaploft holds the payment until the buyer receives the parcel, then pays it to your saved bank account. Print your label and drop it at a Trundle locker by Friday. swaploft.example/sales/4471"
   request: none
   ask:
     text: "Wydrukuj etykietę i nadaj paczkę w automacie Trundle do piątku."
     translation: "Print your label and drop it at a Trundle locker by Friday."
   claims:
-    - text: "Swaploft trzyma płatność, dopóki kupujący jej nie odbierze"
-      translation: "Swaploft holds the payment until the buyer receives it"
-  l10n_note: "Polish in-world text (Warsaw); the English translation is shown inline. 'Sprzedane!' means 'Sold!'. Amounts are in euros because the game uses one wallet everywhere; real Polish sales are in złoty."
+    - text: "Swaploft trzyma płatność, dopóki kupujący nie odbierze paczki"
+      translation: "Swaploft holds the payment until the buyer receives the parcel"
+  l10n_note: "Polish in-world text (Warsaw); the English translation is shown inline. 'Sprzedano!' means 'Sold!'. Amounts are in euros because the game uses one wallet everywhere; real Polish sales are in złoty."
 
 inspectables:
   - target: sender.detail

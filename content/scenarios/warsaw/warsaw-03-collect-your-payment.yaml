@@ -31,9 +31,9 @@ pressure:
 
 message:
   sender: { display: "+48 5•• ••• •12", detail: "+48 5•• ••• •12", new_contact: true }
-  body: "Cześć! Kupuję Twój plecak ze Swaploft 🙂 Płatność już wysłana, dostawa kurierem w cenie. Odbierz swoją płatność tutaj: swaploft-safe-delivery.example/collect/4471"
+  body: "Cześć! Kupuję Twój plecak ze Swaploft 🙂 Płatność już wysłana, dostawa kurierem w cenie. Odbierz swoją płatność tutaj: swaploft-safe-delivery.example/collect/8820"
   lang: pl
-  translation: "Hi! I'm buying your rucksack from Swaploft 🙂 Payment already sent, courier delivery included. Collect your payment here: swaploft-safe-delivery.example/collect/4471"
+  translation: "Hi! I'm buying your rucksack from Swaploft 🙂 Payment already sent, courier delivery included. Collect your payment here: swaploft-safe-delivery.example/collect/8820"
   request: open_link
   ask:
     text: "Odbierz swoją płatność tutaj"
@@ -89,7 +89,7 @@ beats:
   - id: collect_page
     device: browser
     message:
-      page: { address: "swaploft-safe-delivery.example/collect/4471", title: "Swaploft Safe Delivery · Collect your payment" }
+      page: { address: "swaploft-safe-delivery.example/collect/8820", title: "Swaploft Safe Delivery · Collect your payment" }
       body: "Collect €35.00. Enter your card to receive the payment: card number, expiry date and security code."
       request: enter_details
       ask: { text: "Enter your card to receive the payment" }
@@ -127,14 +127,14 @@ outcomes:
     recovery:
       - { step: block_card_in_bank_app, category: stop }
       - { step: tell_trusted_adult, category: stop }
-      - { step: keep_evidence, category: secure }
+      - { step: call_bank_known_number, category: stop }
       - { step: report_buyer_in_app, category: report }
       - { step: ask_buyer_to_cancel, category: harmful }
       - { step: wait_for_money, category: harmful }
   no_sale_shown:
-    narrative: "You open Swaploft yourself. No sale, no payment on the rucksack. Real payments show here."
+    narrative: "Your sales list shows this morning's real sale: rucksack, €35.00, money held by Swaploft until delivery, then paid to your saved account. Nothing to collect, and that buyer never wrote from this number."
   number_blocked:
-    narrative: "Blocked and reported. The number can't write to you again, and your rucksack is still listed."
+    narrative: "Blocked and reported. The number can't write to you again, and this morning's real sale is untouched."
   collect_chat_ignored:
     narrative: "You leave it. Five o'clock comes and goes; no courier, no buyer. The deadline was invented."
   collect_page_closed:
@@ -148,10 +148,10 @@ debrief:
   layer2:
     message_flags:
       - "A courier deadline to hurry you before you check. Real buyers can wait while you open the app."
-    notes: "Compare this morning's real sale: a notice inside the app you opened, money held by Swaploft, nothing to collect. Receiving money never needs your card number or its security code, and a page that copies a brand's look proves nothing: read the owner part of the address."
+    notes: "Compare this morning's real sale: a notice inside the app you opened, money held by Swaploft, nothing to collect. Receiving a payment never needs your card's security code, and on Swaploft it never needs your card at all. A page that copies a brand's look proves nothing: read the owner part of the address."
   device_tip: "On a real phone, open the marketplace app yourself from your home screen, not from a link: if you've been paid, it shows in your sales."
   habit_card: stay-on-the-platform
   already_clicked:
     clicked: "Opened the page but typed nothing? Close it and block the number. Report the buyer in the marketplace if you can find them there."
-    entered_details: "Typed card details? Block the card in your banking app now. Then call your bank on the number on your card; some payments can still be stopped. Keep the chat and the address, and report the buyer in the app."
+    entered_details: "Typed card details? Block the card in your banking app now. Then call your bank on the number on your card straight away: the sooner you call, the more it may be able to do. Keep the chat and the address, and report the buyer in the app."
   sources: [pl-cert-monthly-2025-12, pl-cert-monthly-2026-01, pl-cert-monthly-2026-03, pl-nask-okazja-czy-pulapka-2025, eu-esas-ai-scams-factsheet-nl, pl-uknf-seniors-payments-2025]

@@ -168,4 +168,4 @@ debrief:
   habit_card: codes-are-only-for-you
   already_clicked:
     shared_code: "Sent a code? If the app asks you to confirm, don't. If you already confirmed, call your bank now on the number on your card. Then call your friend another way."
-  sources: [pl-policja-psp-na-znajomego, pl-nask-metoda-na-2020, pl-uknf-seniors-payments-2025, pl-cert-monthly-2026-07, nl-politie-hulpvraagfraude-2025, es-bde-sms-callerid-spoofing-2022, pl-blik-podszywacze-2026]
+  sources: [pl-policja-psp-na-znajomego, pl-nask-metoda-na-2020, pl-uknf-seniors-payments-2025, pl-cert-monthly-2026-07, nl-politie-hulpvraagfraude-2025, pl-blik-podszywacze-2026]

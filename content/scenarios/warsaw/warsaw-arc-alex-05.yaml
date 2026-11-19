@@ -5,8 +5,8 @@
 # plus "Tell Teo" (ask_someone), as in slots 2–3 (writer addition, flagged).
 # Placement (GDD §25.4): between 5-4 and 5-5, never next to 5-6, so a "friend asks for money in a chat"
 # debrief can't be read against the arc.
-# No regulator is named (the in-world regulator list is not registered yet; Dublin): "the official
-# warning list". A fall on an arc beat gets no damage control here (GDD §10.2); alex_invested += 50.
+# No regulator is named (the in-world regulator is not registered yet; Dublin): "the official
+# register". A fall on an arc beat gets no damage control here (GDD §10.2); alex_invested += 50.
 # Sources are investment-fraud ids from sources.yaml (not in the chapter 5 sources file: the arc is cross-
 # chapter); flagged for fraud-researcher.
 id: warsaw-arc-alex-05
@@ -39,8 +39,8 @@ actions:
     kind: pay
     outcome: added_fifty
     pressure_target: true
-  - id: check_warning_list
-    label: "Check the app on the official warning list"
+  - id: check_official_register
+    label: "Look the app up on the official register"
     kind: check_official_list
     outcome: not_registered
   - id: tell_teo_trading
@@ -53,7 +53,7 @@ outcomes:
     narrative: "You sign up and add €50. Within an hour your dashboard shows €61. Alex: \"Told you! 🚀\""
     arc_effects: { alex_invested: 50 }
   not_registered:
-    narrative: "You ask Alex for the app's name and look it up on the financial regulator's public lists. It isn't registered to offer investments anywhere you can find."
+    narrative: "You ask Alex for the app's name and look it up on the financial regulator's public register. It isn't on the register of firms allowed to offer investments."
   teo_on_trading:
     narrative: "Teo: \"A friend from a language app, and now an investment app? Ask where it's registered, kiddo. And keep your €50 for now.\""
 
@@ -61,10 +61,10 @@ debrief:
   variant: arc
   layer1:
     tell: "A friend online steering you to an app you can't check."
-    what_works: "Check the official list; tell someone you trust."
+    what_works: "Check the official register; tell someone you trust."
   layer2:
     message_flags: []
     notes: "Most friends who mention an app are just chatting. But an online friend steering you to put money into a platform you can't find on any official register is a common step in investment scams. A real investment firm is registered, and checking costs nothing."
   already_clicked:
     paid: "Already added money? Don't add more, whatever the dashboard shows. Call your bank on the number on your card, keep the chats, and tell a trusted adult."
-  sources: [ie-garda-investment-2025, ie-fraudsmart-investment-2025, be-police-romance-2026]
+  sources: [ie-garda-investment-2025, ie-fraudsmart-investment-2025, be-police-romance-2026, eu-esas-ai-scams-factsheet-nl]

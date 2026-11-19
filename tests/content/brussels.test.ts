@@ -322,7 +322,7 @@ describe('Finale scenarios (GDD §30.6; CR-43, R22)', () => {
   });
   it('the recovery-agency test: blame on the lie first, the Dublin line, the M2 line and its recovery_note', () => {
     const s = sc('brussels-arc-recovery-offer');
-    expect(s.setup).toBe('Alex was never real. The lie was theirs, not yours. A few days later, an email arrives.');
+    expect(s.setup).toBe('A few days later, an email arrives.');
     expect(s.message.sender).toEqual({ display: 'Backhaven Recovery', detail: 'cases@backhaven-recovery.example' });
     const m2 = "People who've lost money are often targeted on purpose afterwards, because scammers share victims' details. That says nothing about you.";
     expect(s.debrief.layer2.notes).toContain(`Anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam. ${m2} Call your bank straight away; it may be able to help.`);

@@ -91,7 +91,7 @@ describe('Stockholm fixed wording (STORY §3.9, §4.4)', () => {
   it('turn lines are word for word: laughing → thinking, ending on Jamal thinking', () => {
     expect(lines('stockholm-turn')).toEqual([
       "My rule: if a caller wants me to log in, I'm rude. I hang up. Rudeness is free.",
-      "I'm new here. I want to be polite.",
+      "Everything's new here. I want to be polite.",
       'Be polite to people. Hang up on requests.',
       "At the lab we never sign for a sample we didn't order. Same idea, I suppose.",
     ]);

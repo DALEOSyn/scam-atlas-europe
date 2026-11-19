@@ -19,7 +19,7 @@ panels:
     speaker: jamal
     expression: worried
     flip: true
-    line: "I'm new here. I want to be polite."
+    line: "Everything's new here. I want to be polite."
     alt: "Jamal, looking worried, by the bikes under snow."
   - backdrop: stockholm-courtyard
     crop: centre

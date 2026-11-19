@@ -1,0 +1,18 @@
+<!-- Scam Atlas: Europe. Arc portrait: Alex, the one fixed picture for profile cards and the reveal; short tousled brown hair, plain slate jumper, mustard scarf, friendly closed-mouth smile, plain light background; no expression groups. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300" role="img" aria-labelledby="al-t"><title id="al-t">Alex</title>
+<rect width="240" height="300" fill="#d9e6f6"/>
+<path d="M40 300C42 246 76 206 120 200C164 206 198 246 200 300ZM70 125a50 56 0 1 0 100 0a50 56 0 1 0 -100 0ZM60 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM160 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM70 118C62 80 88 60 120 60C152 60 178 80 170 118C166 100 158 90 146 86L140 94L130 84L118 94L108 84L98 92L92 86C80 92 74 104 70 118Z" fill="#fffaf0" stroke="#fffaf0" stroke-width="10" stroke-linejoin="round"/>
+<g stroke="#2b2433" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M40 300C42 246 76 206 120 200C164 206 198 246 200 300Z" fill="#5d6672"/>
+<path d="M158 210C182 222 196 252 198 300H170Z" fill="#4a525d" stroke="none"/>
+<rect x="104" y="166" width="32" height="40" rx="10" fill="#d39f7a"/>
+<path d="M84 204Q120 230 156 204L162 222Q120 252 78 222Z" fill="#d9a441"/><path d="M134 226L150 290L132 294L122 232Z" fill="#d9a441"/><path d="M138 250L148 248M142 266L150 264" fill="none" stroke="#bd8a2c" stroke-width="2.5"/>
+<path d="M60 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM160 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0Z" fill="#e8bd98"/><path d="M70 125a50 56 0 1 0 100 0a50 56 0 1 0 -100 0Z" fill="#e8bd98"/><path d="M88 168C100 180 140 180 152 168C146 178 134 184 120 184C106 184 94 178 88 168Z" fill="#d39f7a" stroke="none"/>
+<path d="M70 118C62 80 88 60 120 60C152 60 178 80 170 118C166 100 158 90 146 86L140 94L130 84L118 94L108 84L98 92L92 86C80 92 74 104 70 118Z" fill="#7a5232"/>
+<path d="M111 142a9 10 0 1 0 18 0a9 10 0 1 0 -18 0Z" fill="#d39f7a" stroke="none"/>
+<path d="M90 105Q101 100 112 104M128 104Q139 100 150 105" stroke-width="2.5" fill="none"/>
+<path d="M94 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0ZM132 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0Z" fill="#fffdf8" stroke-width="2"/>
+<path d="M97.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0ZM135.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0Z" fill="#2b2433" stroke="none"/>
+<path d="M109 163Q120 170 131 163" fill="none"/>
+</g>
+</svg>

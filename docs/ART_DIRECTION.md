@@ -193,7 +193,7 @@ Device-layer pictures (profile pictures of non-cast personas, the "fictional cel
 
 | Character | Expressions to draw | Extra poses |
 |---|---|---|
-| Teo | calm, warm, laughing, thinking, sheepish, proud | `x-calm-wave` (video call) |
+| Teo | calm, warm, laughing, thinking, sheepish, proud | `x-calm-wave` (video call), **+ `x-warm-postcard`** (Open Evening: he holds up the picked postcard and reads its cue, STORY §1.5, §3.12; blank card, abstract stamp and bars, no lettering; `game-designer` to confirm) |
 | Noor | calm, laughing, focused, thinking, worried, relieved | `x-laughing-wave` (video call, Amsterdam turn) |
 | Adaeze | calm, warm, thinking, laughing, proud | `x-warm-wave` (video call, Home) |
 | Mateus | calm, laughing, focused, sheepish, worried, relieved, **+ thinking** (used in STORY Warsaw turn and Lisbon turn) | — |
@@ -253,8 +253,8 @@ Allowed cues: building typology, roof shapes, window rhythm, materials, plants, 
 | `lisbon-kitchen` | Lisbon arrival (second panel), turn, resolution | family kitchen: a frieze of the same original tile high on the wall (y 34–94, above the head band), stove with a steaming pot and a pan, sage cupboards, a window with herbs, a table with bread and oranges, a fridge, terracotta floor | product packaging, any label |
 | `dublin-hall` | Dublin all scenes | community hall, folding chairs, tea table, blank noticeboard | parish, club or council emblems, flags |
 | `stockholm-courtyard` | Stockholm all scenes | snowy courtyard, warm-red and ochre facades, lit windows with unadorned candle arches (a plain stepped row of lights, no religious symbol, star or figure), bikes under snow | e-ID or bank pictograms, flags |
-| `brussels-office` | Brussels arrival, turn | small office, plain boxes, no mark, projector, plants | **never EU-styled: no blue-and-gold stars**, no institution buildings |
-| `brussels-hall` | I3, Open Evening, resolution part 2 | hall with chairs, a plain video wall (portrait tiles), bunting in game colours | EU or national styling, sponsor boards |
+| `brussels-office` | Brussels arrival, turn | small office: plain stacked boxes of freshly printed covers (no printer's name), a desk with a closed laptop and a small projector, plants, a board of plain colour cards, a window onto generic brick stepped-gable roofs with two warm lit windows | **never EU-styled: no blue-and-gold stars**, no institution buildings |
+| `brussels-hall` | I3, Open Evening, resolution part 2 | hall: bunting along the top in terracotta, mustard, sage and rose (no blue, so no blue-and-gold reading), warm pendant lamps, a large plain screen for the video wall (the portrait tiles are the CSS grid of §7.6, drawn over it), two tall windows, a row of chairs low in the frame, a table with cups and a plant | EU or national styling, sponsor boards |
 
 Interlude I2 (Noor and Adaeze) uses the video-call panel (§7.6) on a plain wall, no new backdrop.
 

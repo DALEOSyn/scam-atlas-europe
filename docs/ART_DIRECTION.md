@@ -166,7 +166,7 @@ Each file carries the same four-rule style block:
 | Davide (19) | 3 | lanky | dark curls | denim jacket | headphones round the neck |
 | Giulia (22, video) | 3 | slim | long wavy dark hair | sage top | — |
 | Beatriz (20) | 5 | medium | long curly hair | mustard top | backpack straps |
-| Declan (52) | 1 | medium | short grey hair, laughter lines | slate fleece | a tea flask in a knitted cosy |
+| Declan (52) | 1 | medium | short grey hair, laughter lines | slate fleece | a tea thermos with a cup lid, in a knitted cosy (never a hip flask) |
 | Róisín (18) | 2 | slim | dark straight hair, fringe, rectangular glasses | forest hoodie | — |
 | Jamal (38) | 4 | medium | short black hair, neat beard | slate cardigan over shirt | — |
 | Lina (12) | 4 | small | two puffs | mustard bobble hat | — |
@@ -323,7 +323,7 @@ Scene header: "Berlin · Arrival" (h2), Help link (labelled "Need to talk? Where
 ### 8.1 Map
 - Inline SVG in the game layer (UI_SPEC §9.3), coloured by tokens so it follows the theme: land `--color-bg` paper tones, sea `--p-sea-100` (dark: `--p-sea-900d` sea, `--p-ink-850` land), coast line `--color-border-subtle`.
 - **Coastline and borders drawn as code, heavily simplified** (≤ 400 points for the whole map), following a single neutral public-domain dataset: Natural Earth, Admin 0 countries at 1:110m scale, used as a factual guide only (accepted as not "tracing", §16.2). The dataset is named here and in the review, never as a URL in the SVG (§12.2).
-- **Dotted internal borders per UI_SPEC §9.3**, all in one style. No disputed-territory styling (no dashed claim lines, hatching or separate colours for any area), no capitals or capital markers.
+- **Dotted internal borders per UI_SPEC §9.3**, all in one style. No disputed-territory styling (no dashed claim lines, hatching or separate colours for any area), no capitals or capital markers. Where control and recognition differ, draw no internal line: Crimea stays within Ukraine, Cyprus is one island, and there are no lines for Transnistria or Kosovo. The map files get their own sceptic review against this rule.
 - No country names, no flags, no EU styling. City names and statuses are HTML labels; the accessible "Chapters" list stays the primary keyboard and screen-reader path.
 - Pins: stamps-in-waiting (UI_SPEC §9.3); locked = outline plus the word "Locked". Route: dotted path (800 ms; reduced motion instant).
 - Invitation postcards (STORY §1.4): HTML cards using the postcard style, one line from the local; **no badges, counts, "new" dots or countdowns.**

@@ -12,7 +12,7 @@
 <g><use href="#bbc-w" x="214" y="70"/><use href="#bbc-w" x="326" y="70"/><use href="#bbc-w" x="438" y="70"/><use href="#bbc-w" x="550" y="70"/><use href="#bbc-w" x="662" y="70"/>
 <use href="#bbc-w" x="214" y="180"/><use href="#bbc-w" x="326" y="180"/><use href="#bbc-w" x="438" y="180"/><use href="#bbc-w" x="550" y="180"/><use href="#bbc-w" x="662" y="180"/>
 <use href="#bbc-w" x="214" y="290"/><use href="#bbc-w" x="662" y="290"/></g>
-<rect x="320" y="146" width="64" height="14" rx="3" fill="#c8714f"/><circle cx="332" cy="144" r="7" fill="#e9a23b"/><circle cx="350" cy="142" r="7" fill="#f3d08a"/><circle cx="370" cy="144" r="7" fill="#e9a23b"/>
+<rect x="320" y="146" width="64" height="14" rx="3" fill="#c8714f"/><circle cx="332" cy="144" r="7" fill="#86a175"/><circle cx="350" cy="142" r="7" fill="#9db58a"/><circle cx="370" cy="144" r="7" fill="#86a175"/>
 <rect x="656" y="146" width="64" height="14" rx="3" fill="#c8714f"/><circle cx="670" cy="143" r="7" fill="#f3d08a"/><circle cx="690" cy="142" r="7" fill="#e9a23b"/><circle cx="708" cy="144" r="7" fill="#f3d08a"/>
 <path d="M418 470V350Q480 296 542 350V470Z" fill="#9c8c76"/><path d="M432 470V356Q480 316 528 356V470Z" fill="#b9a88f"/>
 <path d="M0 540L180 470H780L960 540Z" fill="#c9b28f"/>

@@ -5,7 +5,9 @@ import { tmpdir } from 'node:os';
 import { parse } from 'yaml';
 import { brandHosts, loadBrands, loadHabitCards, validateContent, validateI18n, checkScenario, type ContentReport } from '../../scripts/lib/content.ts';
 import { scenarioRules } from '../../scripts/lib/rules.ts';
+import type { Brand } from '../../src/content/schema.ts';
 import { realRegistries } from './fixtures.ts';
+import { rawTransfer } from '../unit/engine/cr-fixtures.ts';
 import { isAllowedSourceHost } from '../../scripts/lib/source-hosts.ts';
 import {
   balanceSchema,
@@ -192,6 +194,28 @@ describe('scenario cross-checks', () => {
     checkScenario('x.yaml', raw, brands, sources, r);
     return r;
   };
+
+  it('message.bank.brand: a bank-sector brand or its sub-brand only (CR-27)', () => {
+    // Fixture registry: a bank with a sub-brand (main has none yet) and a non-bank brand with one.
+    const reg = new Map<string, Brand>([
+      ...[...brands].map(([k, v]): [string, Brand] => [k, v as Brand]),
+      ['larchwick', { id: 'larchwick', name: 'Larchwick Bank', kind: 'bank' as const, placeholder: false, sector: 'retail bank (player\'s own bank)', domain: 'larchwick-bank.example', sub_brands: [{ id: 'larchwick-business', name: 'Larchwick Business' }] } as Brand],
+      ['waymarker', { id: 'waymarker', name: 'Waymarker Network', kind: 'other' as const, placeholder: false, sector: 'non-profit / player\'s employer', domain: 'waymarker-network.example', sub_brands: [{ id: 'waymarker-desk', name: 'Waymarker Desk' }] } as Brand],
+    ]);
+    const withBank = (brand: string) => {
+      const raw = structuredClone(rawTransfer()) as Record<string, unknown>;
+      const bank = (raw.beats as Record<string, unknown>[]).find((b) => b.id === 'bank') as { message: Record<string, unknown> };
+      bank.message.bank = { brand };
+      const r: ContentReport = { errors: [], warnings: [], scenarios: new Map() };
+      checkScenario('x.yaml', raw, reg, sources, r);
+      return r.errors.filter((e) => e.includes('message.bank.brand'));
+    };
+    expect(withBank('larchwick-business')).toEqual([]);
+    expect(withBank('larchwick')).toEqual([]);
+    expect(withBank('waymarker-desk').join('\n')).toMatch(/"waymarker-desk" is not a bank brand or a bank's sub-brand/);
+    expect(withBank('waymarker').join('\n')).toMatch(/is not a bank brand/);
+    expect(withBank('nope').join('\n')).toMatch(/is not a bank brand/);
+  });
 
   it('accepts the example', () => {
     expect(run(example()).errors).toEqual([]);

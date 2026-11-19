@@ -23,7 +23,7 @@ Reviewers: `sceptic-reviewer` (brand resemblance, Red Lines 1–3), `qa-playtest
 4. **Calm by default.** Pressure effects can be turned down or off and never flash.
 5. **Every simulated form is visibly a training page** (§5) and cannot capture input.
 6. **No information by colour alone.** Every status has an icon *and* text.
-7. **Mobile first, one-handed.** Every decision is reachable in the bottom half of a 360×640 screen.
+7. **Mobile first, one-handed.** Every decision is reachable in the bottom half of a 360×640 screen. Accepted exception (producer ruling R3, 2026-11-19): the "Jump to your options" bar is sticky at the top, under the HUD, because at the bottom it covered targets (CR-27); the options themselves stay where they are.
 
 ---
 
@@ -129,7 +129,7 @@ Common rules:
 - **Every visible element of a message is checkable** (GDD §5): sender, each link, attachment, QR, payee, caller ID, page address, page info, letterhead, reference numbers, phone numbers. They are native `<button>`s in reading order ("Check sender", "Check link"). Elements without an authored reveal show **"Nothing unusual here"** in every chapter (balance v3.2 `checkable_list_by_slot`).
 - **Inspectable-count parity** [sceptic]: the set of checkable elements is generated from what is *visible* in the device template, never from the authored `inspectables[]`. Authored entries only supply reveal text. Therefore two messages that look alike expose the same number and kinds of checkables, whatever their truth. Validator: genuine twins and their fraud counterparts have equal checkable counts ±1 (the ±1 is a visible extra element, such as a link the genuine message doesn't have).
 - Long email bodies (> 80 words) collapse with "Show more" (button).
-- **Foreign-language text** carries `lang` and an inline **Translate** toggle (§4.8). Translation is never a checkable and never inside a Check card [U7].
+- **Foreign-language text** carries `lang` and an inline **Translate** toggle (§4.8). Translation is never a checkable; it is not inside a Check card, with one exception: the verbatim English "Translation" row for non-English messages (§4.8, producer ruling R1) [U7].
 
 ### 3.1 Mail (`email`)
 - **Inbox row** (72 px): avatar (§2.5), display name (bold + visually hidden "Unread" when unread), subject, first line (muted), time.
@@ -271,7 +271,7 @@ Card: avatar, name, "Sponsored" (text), illustration (fictional people only), bo
 - **Owner-part rule (settled)** [sceptic]: the owner part is the **last two labels** of the host (`<name>.<tld>`), where the TLD is one of the reserved single-label TLDs the game uses (`example`, `test`, `invalid`). The game uses no multi-label suffixes, so no public-suffix list is needed. Examples: `trundle.example` → `trundle.example`; `desk.waymarker-network.example-sso.test` → `example-sso.test`; email `it-desk@waymarker-helpdesk.example` → `waymarker-helpdesk.example`. Validator: every host ends in one of the three TLDs and has no label equal to a TLD-like suffix list (`co`, `com`, `org`…) immediately before it.
 - Sender anatomy: "Shown as: Trundle" / "Actually from: +49 ••• ••• 0173". Payee anatomy: "You typed: Trundle GmbH" plus the authored reveal. The Check card never states an account holder; the holder name appears only in the close-match result card (§3.7).
 - Never "red flag", "scam", "safe", "fake", "legit". Reviewers check `reveal` strings for this.
-- The card contains **no translation** [U7].
+- The card contains **no Translate toggle and no translation of its own** [U7]. Exception (producer ruling R1, 2026-11-19): when the message is not in English and the element has an authored translation (`ask.translation`, `claims[].translation`), the card shows a "Translation" row (`lang="en"`) under "You see": a verbatim copy of that translation, for second-language players. It is free and is not a checkable.
 - Close: ✕, Esc, scrim tap, swipe-down (button alternative). Focus returns to the element.
 
 ### 4.5 Coach marks
@@ -298,8 +298,8 @@ Coach bubbles are `role="note"`, skippable, never block the tray. Chapter 0 intr
 
 ### 4.8 Translate toggle [U7]
 - Under every foreign-language bubble, letter block or page block: a text button **"Translate"** / **"Show original"** (`aria-expanded`, controls the translation block). 44 px hit area, `--fs-sm`.
-- The translation appears **inline below the original**, in `--color-text-muted` italics with `lang="en"` and a "Translation" label. Free (0 s), **freezes the timer while expanded** (balance `freeze_while_open: translation`), not a checkable, not counted in Details, never a red flag, never inside a Check card.
-- Setting "Always show translations" (default off) expands all of them.
+- The translation appears **inline below the original**, in `--color-text-muted` italics with `lang="en"` and a "Translation" label. Free (0 s), **freezes the timer while expanded** (balance `freeze_while_open: translation`), not a checkable, not counted in Details, never a red flag, never inside a Check card except the verbatim "Translation" row (§4.4, ruling R1).
+- Setting "Always show translations" (default off) expands all of them. **Freeze (producer ruling R2, 2026-11-19):** a translation opened by hand freezes the timer while it is open; a translation auto-opened by the setting freezes it for reading time only, max(1.5 s, 0.3 s × words), then the timer runs again. A toggle with nothing to translate never freezes.
 
 ---
 
@@ -332,7 +332,7 @@ Accessible names **start with the visible text**; explanations go in `aria-descr
 - Neutral (`--color-text` on `--color-surface-sunken`) until 10 s; then `--color-warn-bg`/`--color-warn-text` **and** a static diagonal stripe on the bar **and** the text adds " left". Never red, never blinking.
 - Cost chip "−2 s" overlaps the pill corner for 1 s (reduced motion: 2 s, no movement).
 - Expiry 1: in-device escalation, "+20 s" chip. Expiry 2: tray locks, scored as dismiss.
-- **Freezes** [U9] while any of these is open: pause menu, Settings, Help, debrief, "Take a breath", any expanded translation (balance `freeze_while_open`), an open coach mark (freeze reason `coach_mark`; the pill text reads "Paused while the tip is open", §4.5). A frozen timer shows a pause glyph and the visually hidden text "paused".
+- **Freezes** [U9] while any of these is open: pause menu, Settings, Help, debrief, "Take a breath", any translation the player expanded by hand (balance `freeze_while_open`; one auto-expanded by "Always show translations" freezes for reading time only, max(1.5 s, 0.3 s × words), §4.8 ruling R2), a scenario `setup` lead-in for its reading time (same rule, every timer mode, CR-27), an open coach mark (freeze reason `coach_mark`; the pill text reads "Paused while the tip is open", §4.5). A frozen timer shows a pause glyph and the visually hidden text "paused".
 - **Modes**: Standard, Extended (×2), Off. Chosen in onboarding **before the first timed scenario** (0-3); **Extended is pre-selected when the device asks for reduced motion**; changeable any time in Settings. No score depends on the mode.
 - **Calm preset** = timers Off + Pushy follow-ups Off + Call lines: Step through. With timers Off the pill becomes a "Timers off" chip (breath icon + text).
 - SR: `role="timer"` with `aria-live="off"`; announcements only at **half time** and at **10 s** (§10.5); a **"Time left"** item in the menu (and `T` shortcut if enabled) announces the remaining time on demand.

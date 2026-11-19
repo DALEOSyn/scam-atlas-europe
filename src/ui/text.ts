@@ -196,6 +196,15 @@ export function words(text: string | undefined): number {
 }
 
 /**
+ * Reading-time hold: how long text the player did not ask for freezes the timer, max(1.5 s, 0.3 s × words),
+ * as for call lines (UI_SPEC §3.4). Used by auto-opened translations (ruling R2) and the scenario `setup`
+ * lead-in (CR-27).
+ */
+export function readingHoldSeconds(text: string): number {
+  return Math.max(1.5, 0.3 * words(text));
+}
+
+/**
  * Checkable targets that appear only in transcript lines the player has not heard yet
  * (line index ≥ `shown`). The Details list hides them until their line is revealed (QA B3).
  */

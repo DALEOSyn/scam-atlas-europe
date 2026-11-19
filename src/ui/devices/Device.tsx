@@ -645,7 +645,7 @@ export function nameCheckText(m: Message, bankName: string): string | undefined 
   }
 }
 
-/** The bank app a banking beat shows (CR-27: `message.bank.brand`, default Larchwick). */
+/** The bank app a banking beat shows (CR-27: `message.bank.brand`, a bank brand or its sub-brand; default Larchwick). */
 export function bankOf(m: Message): BrandMark | undefined {
   return (m.bank ? headerBrand(m.bank.brand) : undefined) ?? brandById('larchwick');
 }

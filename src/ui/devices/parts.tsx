@@ -11,7 +11,7 @@ import { t } from '../../i18n/index.ts';
 import { Checkable } from '../check/Check.tsx';
 import { Icon } from '../Icon.tsx';
 import { Host, RichText, spokenNumber } from '../RichText.tsx';
-import { isMasked, quotedSplit, segmentMessage, words, type Segment } from '../text.ts';
+import { isMasked, quotedSplit, readingHoldSeconds, segmentMessage, words, type Segment } from '../text.ts';
 import styles from './devices.module.css';
 
 export function PhoneFrame({ label, children, brand }: { label: string; children: ComponentChildren; brand?: string }) {
@@ -148,7 +148,7 @@ export function Chips({ items }: { items: { target: string; text: string }[] }) 
  * max(1.5 s, 0.3 s × words), as for call lines (UI_SPEC §3.4). CR-27.
  */
 export function translationHoldSeconds(text: string): number {
-  return Math.max(1.5, 0.3 * words(text));
+  return readingHoldSeconds(text);
 }
 
 /**

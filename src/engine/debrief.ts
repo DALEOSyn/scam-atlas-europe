@@ -47,6 +47,12 @@ export interface DebriefWrongTag {
 export type OverCaution = 'report_genuine' | 'dismiss_genuine' | 'dismiss_started';
 
 /** A line in layer 2 "Your other choices" (ruling L1 item 3): with its beat's stars on a boss. */
+/** The beat a choice line belongs to, for a "{beat}: …" prefix. */
+function beatOfLine(s: Scenario, line: ChoiceLine): { device: Device; message: Message } | null {
+  const def = beatById(s, line.beatId);
+  return def ? { device: def.device, message: def.message } : null;
+}
+
 export interface OtherChoice {
   line: ChoiceLine;
   stars: number;
@@ -140,10 +146,12 @@ export interface DebriefData {
      */
     youChoseOther: OtherChoice[];
     /**
-     * CR-27: beats where an engage was followed by another final choice, in beat order, for "Step by step"
-     * ("You chose: Call back the number he gave, then Leave it there."; choicePathText).
+     * CR-27 (round 2, psych M4): "Step by step", the path of the layer-1 line only, when an engage was
+     * followed by another final choice ("You chose: Call back the number he gave. Then: Leave it there.";
+     * choicePathText). A "Your other choices" row with a path shows the path in its own row instead.
+     * `beat` (for a "{beat}: {line}" prefix) is set when the scenario has more than one scored beat.
      */
-    choicePaths: ChoiceLine[];
+    choicePaths: { line: ChoiceLine; beat: { device: Device; message: Message } | null }[];
     flags: DebriefFlag[];
     wrongTags: DebriefWrongTag[];
     /** "You spotted {marked} of {could} you could mark." */
@@ -293,7 +301,7 @@ export function debriefOf(
       deadline: r.timerExpired ? deadlineLine(s.is_fraud, r.fell) : null,
       honestDeadline: s.pressure.honest_deadline ?? null,
       youChoseOther,
-      choicePaths: lines.map((x) => x.line).filter((l) => (l.kind === 'action' || l.kind === 'what_now') && !!l.path),
+      choicePaths: youChose.filter((l) => (l.kind === 'action' || l.kind === 'what_now') && !!l.path).map((line) => ({ line, beat: lines.length > 1 ? beatOfLine(s, line) : null })),
       flags,
       wrongTags,
       spotted: { marked, could },

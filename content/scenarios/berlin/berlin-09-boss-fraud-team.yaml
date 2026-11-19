@@ -209,6 +209,9 @@ beats:
 interrupts:
   - id: jonas_parcel
     after_beat: fraud_team_call
+    # CR-27: shown after a fall too (after damage control). It only says where the parcel is, and the
+    # Berlin resolution scene relies on it in every branch (STORY: Jonas holds the documents).
+    on_fall: show
     is_fraud: false
     device: messenger
     message:

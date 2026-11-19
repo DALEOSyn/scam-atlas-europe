@@ -25,10 +25,10 @@ export function brandById(id: string): BrandMark | undefined {
  * CR-27: the brand for an app header, by brand id or sub-brand id. A sub-brand keeps its parent's id
  * (palette tokens `--brand-<id>-*`) and mark, with the sub-brand's name as `name` and no short name.
  */
-export function headerBrand(id: string): BrandMark | undefined {
-  const own = brandById(id);
+export function headerBrand(id: string, registry: readonly BrandMark[] = brands): BrandMark | undefined {
+  const own = registry.find((b) => b.id === id);
   if (own) return own;
-  for (const b of brands) {
+  for (const b of registry) {
     const sub = b.sub_brands?.find((x) => x.id === id);
     if (sub) return { id: b.id, name: sub.name, ...(b.mark ? { mark: b.mark } : {}) };
   }

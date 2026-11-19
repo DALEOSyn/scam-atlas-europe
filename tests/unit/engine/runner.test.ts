@@ -45,7 +45,7 @@ describe('runner: actions, beats and outcomes', () => {
     const close = s.beats[0]?.actions.find((a) => a.id === 'close_page')?.label ?? '';
     const path = { engage: 'Open the link', then: { label: close } };
     expect(d.layer1.youChose).toEqual([{ beatId: 'start', kind: 'action', label: close, path }]);
-    expect(d.layer2.choicePaths).toEqual([{ beatId: 'start', kind: 'action', label: close, path }]);
+    expect(d.layer2.choicePaths).toEqual([{ line: { beatId: 'start', kind: 'action', label: close, path }, beat: null }]);
   });
 
   it('a fall runs damage control: ★ and its points when ≥ 6, else 0', () => {

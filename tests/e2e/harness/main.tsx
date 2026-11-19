@@ -1,6 +1,7 @@
 /**
  * E2E harness (test only, never shipped): renders the scene player and the HUD with fixture data, so
- * Playwright can measure layout the production build cannot show yet (it bundles zero scenes).
+ * Playwright can measure layout on stable fixture scenes and the HUD in states that are hard to reach in
+ * play (the authored scenes in content/scenes are played by the production e2e).
  * Review T-S3 items 3 (listener beside the speaker), 4 (Next stays on screen) and 5 (HUD one row).
  *
  * `?view=scene&id=<fixture id>` plays a fixture scene; `?view=hud&coach=1|0` shows the HUD with the

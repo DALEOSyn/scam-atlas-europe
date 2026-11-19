@@ -2,7 +2,7 @@
 # control. True in every branch:
 # - Mateus calls from his saved contact after landing (shown as a short video call, since a "made it"
 #   photo cannot be drawn without a phone screen; STORY gap, decided here). Someone did borrow his photo
-#   in every run (boss beat 2 is scheduled); the recovery step he took is named in the same breath (§5.4).
+#   in every run (boss beat 2 is scheduled; "used", not "borrowed", review round 1); the recovery step he took is named in the same breath (§5.4).
 # - Only Sanne's interview is claimed: the player's own 2-5 interview depends on the branch (reported or
 #   ignored → slots closed), so "we both got interviews" would not be outcome-neutral (STORY §4.2 rule 5).
 # - Teo on his new mobile (2-1), asking, not assuming you saved it.
@@ -16,20 +16,14 @@ panels:
   - video: true
     speaker: mateus
     expression: relieved
-    line: "Made it! Calling from my saved number. Someone borrowed my photo tonight, so I've warned my contacts and locked my profile."
+    line: "Made it! Calling from the number you've got saved. Someone used my photo tonight, so I've warned my contacts and locked my profile."
     alt: "Mateus on a video call, relieved."
   - backdrop: amsterdam-guesthouse
     crop: left
     speaker: sanne
     expression: laughing
-    line: "I got the Thimble & Pine interview! Listen: 'paid monthly into your account'. That's how a real job sounds."
+    line: "I got the Thimble & Pine interview! 'Paid monthly into your account.' And if a 'job' wants money first, I walk."
     alt: "Sanne laughing behind the guesthouse desk."
-  - backdrop: amsterdam-guesthouse
-    crop: left
-    speaker: sanne
-    expression: focused
-    line: "And if a 'job' wants money first, I walk."
-    alt: "Sanne, concentrating, at the guesthouse desk."
   - video: true
     speaker: teo
     expression: calm-wave
@@ -43,4 +37,4 @@ panels:
       cue: "If someone messages me for money I didn't expect,"
       action: "then I call them on the number I already have."
       extra: "A real job pays you."
-    alt: "Sanne by the canal, concentrating, phone to her ear as she calls a number she knows."
+    alt: "Sanne by the canal, concentrating, phone to her ear."

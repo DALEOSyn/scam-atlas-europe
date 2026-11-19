@@ -251,6 +251,17 @@ describe('scene validator (cross-file rules)', () => {
     expect(rep.errors).toEqual([]);
     expect(rep.scenes?.size).toBe(3);
   });
+  it('a repo with zero scenes is valid: an empty content/scenes dir and a chapter without scenes', () => {
+    const contentDir = mkdtempSync(join(tmpdir(), 'sae-empty-scenes-'));
+    mkdirSync(join(contentDir, 'scenes', 'berlin'), { recursive: true });
+    const raw = readYaml(join(CONTENT, 'chapters', 'berlin.yaml')) as Raw;
+    const ch = chapterSchema.parse({ ...raw, scenes: undefined, atlas_cards: undefined });
+    const rep = emptyReport();
+    validateScenes(contentDir, DOCS, rep, { cast, chapters: new Map([['berlin', { file: 'berlin.yaml', chapter: ch }]]), flagsSet: new Set(), habitCards: new Set() }, publicDir);
+    expect(rep.errors).toEqual([]);
+    expect(rep.warnings).toEqual([]);
+    expect(rep.scenes?.size).toBe(0);
+  });
   it('the build emits scenes with schema defaults and the cast as a projection without notes', () => {
     const file = join(ROOT, 'content', 'scenes', 'berlin', 'berlin-arrival.yaml');
     const data = yamlModuleData(file, readFileSync(join(SCENE_FIXTURES, 'berlin', 'berlin-arrival.yaml'), 'utf8'), join(ROOT, 'content', 'scenarios')) as { sensitive: boolean; panels: { crop: string }[] };

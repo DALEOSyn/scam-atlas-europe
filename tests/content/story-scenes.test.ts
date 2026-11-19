@@ -72,6 +72,7 @@ describe('fixed wording (STORY §4.4, §5.6)', () => {
     expect(chapter('amsterdam').content_note).toBe('This chapter includes a family-emergency story. Everyone ends up safe. You can pause or skip any story scene.');
     expect(scene('amsterdam-sanne-story').sensitive).toBe(true);
     expect(scene('amsterdam-turn').sensitive).toBe(true);
+    expect(scene('amsterdam-resolution').sensitive).toBe(true);
     expect(scene('amsterdam-arrival').sensitive).toBe(false);
   });
   it("Sanne's story ends relieved and the player's line puts the blame on the scammers", () => {
@@ -115,7 +116,11 @@ describe('scene rules the generic validator does not see', () => {
     expect(arrival).toMatch(/canal boat/i);
     expect(arrival).toMatch(/breakfast/i);
     expect(arrival).toMatch(/last evening I fly/i);
-    expect(arrival).not.toMatch(/request|€|euro/i);
+    expect(arrival).not.toMatch(/€|euro/i);
+    // The boat panel itself names no payment request, so 2-6's request arrives as the scenario's own content.
+    const boat = scene('amsterdam-arrival').panels.find((p) => /canal boat/i.test(p.line ?? ''));
+    expect(boat?.speaker).toBe('mateus');
+    expect(boat?.line).not.toMatch(/request|pay/i);
   });
   it('Amsterdam resolution claims only outcome-neutral facts (the player\'s own interview depends on 2-5)', () => {
     const all = scene('amsterdam-resolution').panels.map(text).join(' ');

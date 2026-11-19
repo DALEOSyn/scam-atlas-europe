@@ -12,7 +12,7 @@ panels:
     crop: centre
     speaker: sanne
     expression: laughing
-    line: "Here's your key! Fair warning: here you pay your friends back before the coffee's cold."
+    line: "Here's your key! Here everyone settles up by payment request, so expect a few."
     local: { text: "Welkom!", lang: nl, translation: "Welcome!" }
     alt: "Sanne laughing by a small canal bridge full of bikes."
   - backdrop: amsterdam-guesthouse
@@ -29,4 +29,4 @@ panels:
     with: { id: sanne, expression: warm }
     caption: "Next morning, at breakfast."
     line: "Canal boat on Saturday, all of us? I'll book it. Then on our last evening I fly on to the next city."
-    alt: "Mateus laughing at the guesthouse desk; Sanne smiles behind him."
+    alt: "Mateus laughing at breakfast in the guesthouse; Sanne smiles beside him."

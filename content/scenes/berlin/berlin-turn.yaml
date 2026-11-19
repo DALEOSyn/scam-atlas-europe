@@ -10,7 +10,7 @@ panels:
     speaker: jonas
     expression: worried
     line: "Still no present. Every buzz of my phone, I think it's the parcel."
-    alt: "Jonas at his door in the afternoon, looking worried."
+    alt: "Jonas at his door, looking worried."
   - backdrop: berlin-courtyard
     crop: right
     speaker: mateus

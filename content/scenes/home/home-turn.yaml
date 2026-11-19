@@ -11,7 +11,7 @@ panels:
     expression: warm
     caption: "Later that evening."
     line: "If you ever get stuck out there, ask me. And I'll do the same. Deal?"
-    alt: "Teo, smiling, by the teapot in the evening kitchen."
+    alt: "Teo, smiling, by the teapot in the kitchen."
   - backdrop: home-kitchen
     crop: right
     speaker: teo

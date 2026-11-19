@@ -108,7 +108,7 @@ describe('scene rules the generic validator does not see', () => {
         const words = text(p);
         if (p.expression?.endsWith('-phone-ear')) expect(words, s.id).toMatch(/\bcall|number (?:I|you|he|she) (?:already )?(?:have|has|know)|directory number|number in (?:our|your) file/i);
         // Dublin: the regulator's register is a home-screen tool you open yourself (GDD §28.9, CR-38).
-        if (p.expression?.endsWith('-phone-look')) expect(words, s.id).toMatch(/\bapp\b|\bregister (?:myself|yourself)\b/i);
+        if (p.expression?.endsWith('-phone-look')) expect(words, s.id).toMatch(/\bapp\b|\b(?:on|in) the [\w' ]*register (?:myself|yourself)\b/i);
       }
     }
   });

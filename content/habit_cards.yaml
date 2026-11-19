@@ -68,9 +68,9 @@ cards:
   # R19(5) (Brussels, GDD §30.11): the example and already-clicked lines gain Brussels' account-lending case;
   # the habit sentence is unchanged.
 # R27, T-3.13g (psych): already_clicked is one de-duplicated line in MMR §7 order, opening "It's not too late:".
-# Its last sentence is the money-mule case (money arrived in your account), backed by the money-mule sources
-# cited on brussels-04-noor-easy-money ("stop all transfers, tell your bank"); fraud-researcher to confirm it
-# joins this line (T-3.13g).
+# Its last sentence is the money-mule case (money arrived in your account): confirmed by fraud-researcher
+# 2026-11-19 (the two EU police agency money-mule flyers in sources.yaml: stop transferring money, notify your bank);
+# cited on every scenario that shows this card.
   - id: easy-money-costs-you
     lo: LO-12
     title: "Easy money costs you"

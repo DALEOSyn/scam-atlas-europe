@@ -124,6 +124,48 @@
 
 ---
 
+## 9. Amsterdam candidates (phase 3, ch2; searched 2026-11-19)
+Same method and limits as above (web, app-store and company-directory check via web search; **not** trademark clearance). Checked for each name: the brand name, the domain stem and the SMS sender ID (alphanumeric sender IDs allow at most 11 characters).
+
+| Name (role) | Closest hits | Risk | Recommendation |
+|---|---|---|---|
+| Tidewell Staffing (genuine agency whose name scammers borrow) | **Tidewell Hospice** (US, Florida non-profit hospice and palliative care) | **Medium** | **Reject** → **Klaverwerk** |
+| Tasklyn (scam-only task platform) | **Tasklyn** project-planning startup (BetaList 2018); **Tasklyn** task-management app for students and small teams (live web app, Android package) | **High** | **Reject** → **Tallyfern** |
+
+### 9a. Tidewell Staffing: Medium, reject
+- **Searched:** `"Tidewell" company`; `"Tidewell Staffing" OR "Tidewell" recruitment OR staffing OR uitzendbureau`; `"Tidewell Hospice"`.
+- **Hits:**
+  - **Tidewell Hospice, Inc.**: a US non-profit (Sarasota / Manatee, Florida) with many directory listings and a GuideStar profile. https://www.guidestar.org/profile/59-1911861 · https://www.mymanatee.org/connect/resources/external-agencies/external-agency-detail/tidewell-hospice
+  - No staffing agency called Tidewell. Near names: Tidwell (US businesses), Tidewater (US marine services).
+- **Assessment:** this is a different sector, but the exact name belongs to a real organisation. The scenario shows the name *borrowed by scammers* in SMS texts (2-2, 2-9 boss with sender ID `TIDEWELL`). Red Line 1 rules out naming a real organisation as a scam prop, so the name is avoidable risk. Reject.
+- **Alternatives (coined, Dutch-sounding):**
+  - **Klaverwerk** ("clover" + "work"). Queries: `"Klaverwerk"`; `"Klaverwerk" OR "Klaver Werk" uitzendbureau OR staffing OR B.V.`; `"Klaverwerk" app OR company OR platform OR trademark`. **No exact hits.** The only results were unrelated: "Klavierwerke" (piano works), card-game apps for *klaverjassen*, and generic staffing firms. "Klaver" is a common Dutch surname, but no company or agency uses "Klaverwerk". **Low.** Sender ID `KLAVERWERK` (10 characters).
+  - **Vlietwerk** ("Vliet" canal + "work"). Queries: `"Vlietwerk"`; `"Vlietwerk" OR "Vliet Werk" uitzendbureau OR staffing OR recruitment OR B.V.`. No exact hits, only the Vliet canal and place names. However, **Veldwerk Uitzendbureau** (a real Dutch staffing agency, Creditsafe NL05125245) has the same "V…-werk" shape in the same sector. **Low–Medium.** Sender ID `VLIETWERK` (9).
+  - **Polderstaf** ("polder" + "staff"). Queries: `"Polderstaf"`; `"Polderstaf" OR "Polder Staf" uitzendbureau OR werving`. No exact hits. The nearest is **Poldervast B.V.** (Opmeer, company register listing; sector not shown). **Low–Medium.** Sender ID `POLDERSTAF` (10).
+  - *Not proposed:* Kadewerk. The query `"Kadewerk" uitzendbureau OR werk OR bedrijf` found no exact hit, but "kade" is a common street and quay word, and the search showed only generic agencies. It was not researched further.
+- **Recommendation:** **Klaverwerk**, presented as "Klaverwerk Staffing" if the English context needs it. Host `klaverwerk-staffing.example` (the GDD pattern). Sender ID `KLAVERWERK`.
+
+### 9b. Tasklyn: High, reject
+- **Searched:** `"Tasklyn"`; `"Tasklyn" app OR platform OR software`.
+- **Hits:**
+  - **Tasklyn on BetaList**: "Quick Project Plan", a project-planning platform featured 2018-01-09. https://betalist.com/startups/tasklyn
+  - **Tasklyn web app**: task management and collaboration for "students, creators and small teams", with a mobile app (Android package `com.penacode.tasklyn`) and a web dashboard. https://tasklyn.netlify.app/
+  - Many near names: Taskly, Tasklyy, TaskLync.
+- **Assessment:** the exact name belongs to real task apps, one of them aimed at students, which is the game's own audience. The game's Tasklyn is **scam-only**, so using the name would teach players that a real product is a scam. Ruled out.
+- **Alternatives (coined; no real app, company or trademark hits wanted):**
+  - **Tallyfern** ("tally" for counting earnings + "fern"). Queries: `"Tallyfern" OR "Tally Fern"`; `"Tallyfern" app OR platform OR company OR software`. **No exact hits.** Results were only fern plants and unrelated "Tally…" products (Tally forms, Tallyfy, TallyExpress, Tallyfeed). **Low.**
+  - **Ratewisp**. Query: `"Ratewisp" OR "Rate Wisp"`. No exact hits. Near names are "Wisp" (several software products) and "RateWizz" (G2 listing). **Low–Medium**, because of the "rate" sector overlap with RateWizz.
+  - **Rankrally** (GDD alternative). Query: `"Rankrally" OR "Rank Rally" app`. No exact hits. Near names include **Rankly** (iOS app and Google Play developer) and several "Rally" apps. **Low–Medium.**
+  - *Rejected:* **Gleamtask** (GDD alternative). The query `"Gleamtask" OR "Gleam Task"` found only Gleam programming-language task modules, but **Gleam** (gleam.io) is a real competitions and giveaways platform where users complete "entry actions". https://gleam.io/blog/what-is-gleam. That is an adjacent sector (doing small online actions for rewards), so a "Gleam…" scam task platform is too close.
+- **Recommendation:** **Tallyfern**. Hosts `tallyfern-earn.example` (2-7) and `tallyfern-start.example` (boss). Banner payer name `TALLYFERN`.
+
+### 9c. Notes
+- Neither recommendation is a trademark clearance. Add both to the pre-G4 TMview / EUIPO list (classes 35 and 42; also 9 for Tallyfern).
+- `.example` hosts are reserved (RFC 2606), so the recommended hosts need no collision check. The check above is about the *name*.
+- GDD §603–604 and scenarios 2-2, 2-7 and 2-9 said Tidewell / Tasklyn until the producer's rename (2026-11-19: now Klaverwerk / Tallyfern everywhere). ux-artist / game-designer should rename them in `content/brands.yaml` and the GDD; this file makes no edits to either.
+
+---
+
 ## Actions for ux-artist (no edits made to `content/brands.yaml`)
 1. **Rename Nodkey** (High). Suggested: Gatewren or Wardlight.
 2. **Rename Corvelle Bank** (Medium). Suggested: Larchwick Bank or Fennmoor Bank.
@@ -131,3 +173,4 @@
 4. Keep Waymarker Network, Trundle, Thimble & Pine, Kettle, Wordswap. Give Thimble & Pine a non-craft product line.
 5. Add any new names to the red-line denylist logic only as *allowed* fictional names. Re-run this check on every new name.
 6. **Before G4:** a human runs a formal TMview / EUIPO search on all final names. This check is not trademark clearance.
+7. **Amsterdam (2026-11-19):** replace **Tidewell Staffing → Klaverwerk** (sender ID `KLAVERWERK`, `klaverwerk-staffing.example`) and **Tasklyn → Tallyfern** (`tallyfern-earn.example`, `tallyfern-start.example`). See §9.

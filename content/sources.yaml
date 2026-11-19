@@ -28,6 +28,8 @@
 #                help-where-to-report-en   (docs/patterns/where-to-report.draft.en.yaml for now; moves to content/help/ once the linter exemption exists; T-2.5)
 #                campaign-catalogue   (docs/patterns/THREAT_CATALOGUE.md, backlog research T-R.1, 2026-11-18)
 #                berlin-arc-alex-01 | arc   (Alex friendship-manipulation arc beats, GDD §10; added T-2.4b, 2026-11-18)
+#                messenger-family-impersonation | task-job-scam   (chapter 2 Amsterdam briefs; added phase 3, 2026-11-19)
+#                payment-detail-change   (Paris brief, on the Paris branch; kept on ported entries so the branches merge cleanly)
 #              An empty list means provenance only: not cited directly, kept because another entry's
 #              date or content relies on it.
 #   notes      what the source actually supports; caveats
@@ -65,7 +67,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [email-phishing-credential, it-portal-credential-phishing, MAP-ch0, MAP-ch7, MAP-ch8, MAP-ch10, MAP-missing, MAP-crosscutting, campaign-catalogue]
+    used_for: [email-phishing-credential, it-portal-credential-phishing, task-job-scam, MAP-ch0, MAP-ch7, MAP-ch8, MAP-ch10, MAP-missing, MAP-crosscutting, campaign-catalogue]
     notes: "Fraud is 'the fastest-growing area of organised crime'. Investment fraud especially prevalent, increasingly via ads on very large online platforms. Romance and tech-support among most common typologies reported by Member States. AI-assisted impersonation of bank helpdesk and law-enforcement staff. Malvertising for fake accommodation/merchandise listings. Minors drawn into laundering via 'get-rich' social-media schemes. Victims 'relentlessly re-victimised'. Publication date from eu-eucrim-iocta-2026. T-R.1 re-read (catalogue): 'financial sexual extortion continues to surge'; offenders target children on gaming platforms; violent online networks groom children (8-17) with love-bombing; voice chat bots pre-screen victims 'at industrial volume'; infostealers 'a key enabler'; SIM swapping mentioned only in passing (collectives); minors may launder by renting out wallets or receiving crypto 'gifts'. NOT found: ticket or charity scams, 'deepfake' by name."
 
   - id: eu-eucrim-iocta-2026
@@ -131,7 +133,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [email-phishing-credential, it-portal-credential-phishing, MAP-ch2, MAP-ch5, MAP-ch6, MAP-ch10, MAP-missing, MAP-crosscutting, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    used_for: [email-phishing-credential, it-portal-credential-phishing, messenger-family-impersonation, MAP-ch2, MAP-ch5, MAP-ch6, MAP-ch10, MAP-missing, MAP-crosscutting, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "Covers impersonation incl. voice cloning/deepfakes of relatives and banks; celebrity investment ads; dating-to-investment; phishing inserted into existing email threads; marketplace deals moving the victim off-platform to a fake bank login. Advice: pause; verify via known numbers; family safe word; check regulator warning lists (IOSCO I-SCAN); never install remote-access software; contact the bank at once; beware 'recovery' offers. Notes AI removes grammar errors, so polish is not proof."
 
   - id: eu-epc-threats-2025
@@ -142,7 +144,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 3
-    used_for: [email-phishing-credential, messenger-account-takeover-code, it-portal-credential-phishing, multichannel-support-callback, MAP-ch2, MAP-ch4, MAP-ch6, MAP-ch7, MAP-ch9, MAP-ch10, MAP-missing, campaign-catalogue]
+    used_for: [email-phishing-credential, messenger-account-takeover-code, it-portal-credential-phishing, multichannel-support-callback, messenger-family-impersonation, task-job-scam, MAP-ch2, MAP-ch4, MAP-ch6, MAP-ch7, MAP-ch9, MAP-ch10, MAP-missing, campaign-catalogue]
     notes: "Social engineering increasingly targets people rather than technology. Covers: spoofed sender names/numbers; messages that give a phone number instead of a link; 'safe account' scams; call-then-home-visit; fake remote support; task scams with small early payouts; recovery scams; cloned voices in family-emergency scams; QR swaps on letters, invoices and EV chargers; victims asked to approve login QR codes sent via messaging apps; money mules. Read to char 100000 of ~130000."
 
   - id: eu-ec-ipr-vop-2025
@@ -153,7 +155,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [MAP-ch2, MAP-crosscutting]
+    used_for: [messenger-family-impersonation, MAP-ch2, MAP-crosscutting]
     notes: "From 2025-10-09, euro-area payment providers must offer free payee verification (name vs IBAN) before a transfer. Non-euro EU states later (see eu-ecb-ipr)."
 
   - id: eu-ecb-ipr
@@ -164,7 +166,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [MAP-ch2, MAP-ch3, MAP-crosscutting, campaign-catalogue]
+    used_for: [messenger-family-impersonation, MAP-ch2, MAP-ch3, MAP-crosscutting, campaign-catalogue]
     notes: "Verification of Payee results: match / close match / no match / other. Applies to standard and instant credit transfers, free of charge. Deadlines: euro area 2025-10-09; non-euro Member States 2027-07-09."
 
   - id: eu-eba-ecb-fraud-2025
@@ -208,7 +210,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [MAP-ch10, MAP-missing, campaign-catalogue]
+    used_for: [task-job-scam, MAP-ch10, MAP-missing, campaign-catalogue]
     notes: "Unsolicited 'easy money' offers via DM, messaging apps, social media, pop-ups. Online-only 'agent' jobs that use your own bank account; no experience needed. Targets incl. students and under-35s incl. minors. If involved: stop, tell the bank, report to the police."
 
   - id: eu-europol-mule-flyer-ie
@@ -489,7 +491,7 @@ sources:
     accessed: 2026-11-18
     region: NL
     tier: 3
-    used_for: [multichannel-support-callback, MAP-ch2, MAP-missing, campaign-catalogue]
+    used_for: [multichannel-support-callback, messenger-family-impersonation, task-job-scam, MAP-ch2, MAP-missing, campaign-catalogue]
     notes: "101,734 reports (+60%), EUR 68.5m losses. Private-individual reports: helpdesk fraud #1 (17,264), buy/sell fraud #2, advance-fee #3. Losses: investment fraud #1 (EUR 34.1m). Online-to-offline trend (fake bank staff collecting cards at home, fake landlords). Neither friend-in-need nor task/job scams are itemised. Table labels partly garbled in extraction."
 
   - id: nl-politie-hulpvraagfraude-2025
@@ -500,8 +502,8 @@ sources:
     accessed: 2026-11-18
     region: NL
     tier: 3
-    used_for: [messenger-account-takeover-code, MAP-ch2, WHERE_TO_REPORT, campaign-catalogue]
-    notes: "The criminal poses as a friend or relative via a hacked or fake account or a 'new number', asks urgently for money, often with a second request; mostly WhatsApp, also SMS, email, Snapchat, Telegram. Habit: call or speak to the person; ask a question only they'd know; check account details against known ones. A police report-preparation form."
+    used_for: [messenger-account-takeover-code, messenger-family-impersonation, MAP-ch2, WHERE_TO_REPORT, campaign-catalogue]
+    notes: "Re-opened 2026-11-19: form version 20250901; adds excuses (stranded abroad, phone broken so no banking), evidence to gather, bank first, and the bank-data request procedure for non-bank fraud (within 13 months). Does NOT mention voice messages or AI voices. The criminal poses as a friend or relative via a hacked or fake account or a 'new number', asks urgently for money, often with a second request; mostly WhatsApp, also SMS, email, Snapchat, Telegram. Habit: call or speak to the person; ask a question only they'd know; check account details against known ones. A police report-preparation form."
 
   - id: nl-betaalvereniging-friend-in-need-2020
     publisher: Betaalvereniging Nederland (Dutch Payments Association)
@@ -511,7 +513,7 @@ sources:
     accessed: 2026-11-18
     region: NL
     tier: 3
-    used_for: [MAP-ch2]
+    used_for: [messenger-family-impersonation, MAP-ch2]
     notes: "Historic evidence that NL was an early hotspot: reports Jan-Apr 2020 exceeded all of 2019; most victims 50+. Old: pair with nl-politie-hulpvraagfraude-2025."
 
   - id: nl-nos-easy-work-2025
@@ -522,7 +524,7 @@ sources:
     accessed: 2026-11-18
     region: NL
     tier: 4
-    used_for: [MAP-ch2, MAP-missing, campaign-catalogue]
+    used_for: [task-job-scam, MAP-ch2, MAP-missing, campaign-catalogue]
     notes: "News, supporting only. PART-YEAR figures (to Aug 2025): task/job scam reports already 10x all of 2024; 88% started with a call; average loss EUR 6,500; H1 2025 damage EUR 1.52m vs EUR 1.67m for all of 2024. Small early payouts, then deposits to 'unlock' tasks. Generic corroboration: eu-epc-threats-2025."
 
   - id: nl-fraudehelpdesk-police-pilot
@@ -556,7 +558,7 @@ sources:
     accessed: 2026-11-18
     region: PL
     tier: 2
-    used_for: [messenger-account-takeover-code, MAP-ch5, MAP-missing, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    used_for: [messenger-account-takeover-code, messenger-family-impersonation, MAP-ch5, MAP-missing, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "'Na kod' / 'na znajomego': a hijacked friend's social account asks for the 6-digit code from your banking app. Habit: confirm via another channel (call); never share app codes. If your account is hijacked, WARN YOUR CONTACTS and change passwords (supports WHERE_TO_REPORT step 7). Report to incydent.cert.pl. Older (2020)."
 
   - id: pl-polskieradio-fake-shops-2025
@@ -579,7 +581,7 @@ sources:
     accessed: 2026-11-18
     region: IT
     tier: 3
-    used_for: [MAP-ch6, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    used_for: [MAP-ch6, messenger-family-impersonation, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "Fake police, lawyer or doctor calls about a relative's accident or arrest, with a collector sent to the home; fake grandchild calls; fake utility technicians; spoofed bank numbers. Advice: call 112 or the relative on a known number; never hand over money or valuables; police never ask for money."
 
   - id: it-carabinieri-21-arresti-2025
@@ -737,7 +739,7 @@ sources:
     accessed: 2026-11-18
     region: DE
     tier: 2
-    used_for: [MAP-ch6, MAP-missing, campaign-catalogue]
+    used_for: [MAP-ch6, MAP-missing, messenger-family-impersonation, campaign-catalogue]
     notes: "Explains voice cloning (text-to-speech and voice conversion; seconds-to-hours of audio needed). Fake voices used in fraud calls, e.g. CEO fraud triggering a transfer. Audible tells: metallic sound, mispronunciation, monotone or odd emphasis, reply delay. Countermeasure: awareness. Does NOT mention calls impersonating relatives; older (2022) and quality is improving, so tells are not to be taught as reliable."
 
   # ================================================ T-2.5 additions (chapters 0-1 briefs + help screen), all opened 2026-11-18
@@ -751,7 +753,7 @@ sources:
     accessed: 2026-11-18
     region: NL
     tier: 3
-    used_for: [messenger-account-takeover-code, help-where-to-report-en, campaign-catalogue]
+    used_for: [messenger-account-takeover-code, messenger-family-impersonation, help-where-to-report-en, campaign-catalogue]
     notes: "Police report-preparation form for a hijacked messenger account (English gloss: 'form for reporting a taken-over/hacked WhatsApp account'). Victim receives a verification code by SMS; someone says it was sent by mistake and asks for it; the account is then used for friend-in-need fraud. Advice: set a two-step verification PIN; never pass on codes; verify money requests another way; don't publish your number in listings; warn contacts; re-register with your own number to regain access (may need to wait hours). Names a real messenger: game uses Kettle only."
 
   # ---------------------------------------------------------------- Germany (T-2.5)
@@ -1334,6 +1336,310 @@ sources:
     tier: 3
     used_for: [multichannel-support-callback]
     notes: "Fraudsters claim a push-TAN will stop suspicious debits, but it authorises transfers; being asked by phone for passwords or TANs is always a sign of fraud; banks generally don't call unprompted."
+
+  # ================================================ Phase 3, chapter 2 (Amsterdam) briefs: messenger-family-impersonation, task-job-scam
+  # All opened 2026-11-19. Real brand names in titles/URLs/notes (messenger, payment-request app, job site, crypto platform)
+  # are factual references only; the game uses fictional brands (Red Line 1).
+
+  # ---------------------------------------------------------------- Netherlands (phase 3, ch2)
+  - id: nl-fraudehelpdesk-hulpvraag-campaign
+    publisher: Fraudehelpdesk.nl
+    title: "Appt een bekende je om geld? Betaal nooit voor je het oude nummer hebt gebeld"
+    url: https://www.fraudehelpdesk.nl/campagnes/hulpvraagfraude-laat-je-niet-neppen-tijdens-het-appen/
+    published: 2021-12-26 (last modified 2025-10-16, page metadata)
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [messenger-family-impersonation]
+    notes: "English gloss: 'Is someone you know messaging you for money? Never pay before you've called the old number'. A message in the name of someone you know (often family) says they have a new number and you can delete the old one, then asks for money for an urgent problem; sometimes it starts with an SMS asking you to continue on the messenger. New numbers are usually prepaid; the profile photo is often copied from social media; sometimes the real account is hacked. AI VOICE: scammers used to refuse a call; now they can imitate the person's voice with AI (in calls; voice notes NOT mentioned). Red flags: haste, promise to repay quickly, refusal to call or meet (may change with AI). Advice: look up the person's number in your own contacts and call it; agree with family how you reach each other in an emergency; agree a code word or special question for payments; turn on two-step login; share less online. If paid: bank at once, Fraudehelpdesk, police report."
+
+  - id: nl-fraudehelpdesk-takeover-alert-2026
+    publisher: Fraudehelpdesk.nl
+    title: "Let op: Meer meldingen over overgenomen WhatsApp-accounts (alert)"
+    url: https://www.fraudehelpdesk.nl/alert/meer-meldingen-over-overgenomen-whatsapp-accounts/
+    published: 2026-11-18
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [messenger-family-impersonation]
+    notes: "English gloss: 'More reports of taken-over messenger accounts'. Current alert. Victims get verification codes they didn't request, takeover/blocked notices, sometimes a call from a foreign number, then lose access. The hijacked account then messages contacts asking them to pay a bill, advance money, or buy a GIFT CARD for a supposedly sick friend. Advice: never share codes; set a voicemail PIN; enable two-step verification and a passkey. Report: 088 - 7867372 or the online report page. No second request or AI voice mentioned."
+
+  - id: nl-fraudehelpdesk-fraudevormen
+    publisher: Fraudehelpdesk.nl
+    title: "Fraudevormen en -termen (glossary)"
+    url: https://www.fraudehelpdesk.nl/fraudevormen-en-termen/
+    published: n/d (last modified 2024-06-04, page metadata; deepfake entry written around Nov 2022)
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [messenger-family-impersonation, task-job-scam]
+    notes: "English gloss: 'Fraud types and terms'. Hulpvraagfraude: approached by app with a help request from a 'known person' with a new number, pressured to transfer quickly. Vacaturefraude: any false or misleading job offer; victims may be asked to move money, open accounts or forward goods. Geldezel (money mule): someone who knowingly or unknowingly lets their bank account be used to move criminal money; often recruited via social media or schools. Deepfake: AI to create or imitate voice and/or image, linked to CEO fraud, hulpvraagfraude and dating fraud. No 'task scam' entry by name."
+
+  - id: nl-fraudehelpdesk-vacature-alert-2025
+    publisher: Fraudehelpdesk.nl
+    title: "Nieuwe benadering vacaturefraude (alert)"
+    url: https://www.fraudehelpdesk.nl/alert/nieuwe-variant-vacaturefraude/
+    published: 2025-10-14 (first published 2025-05-15; last modified 2026-01-22)
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [task-job-scam]
+    notes: "English gloss: 'New approach in job fraud'. Contact by phone call (often a recorded message) or SMS, claiming to be a staffing agency, a known job site or an HR department; you are told to save the number and continue on the messenger. SMS variant promises EUR 100-300 for 60-90 minutes a day, asks for age 20+ and a yes/no reply. Remote work, no training: rate/write reviews or trade crypto; a 'recruiter' guides you. You must deposit first; small early payouts build trust; then 'not enough tasks done', pay more to avoid a fine or finish; or a large 'balance' released only after fees; amounts keep growing; nothing comes back. Advice: don't respond to unsolicited offers; don't save unknown numbers; 'Betaal niet voor werk waarvoor u juist betaald moet worden'. If any contact/payment/data shared: contact Fraudehelpdesk. Report: 088 - 7867372 or online form. Does NOT mention young people, students or money mules."
+
+  - id: nl-fraudehelpdesk-baan-aangeboden
+    publisher: Fraudehelpdesk.nl
+    title: "Ik krijg een baan aangeboden (fraud advice page)"
+    url: https://www.fraudehelpdesk.nl/fraude/ik-krijg-een-baan-aangeboden/
+    published: n/d (last modified 2025-07-07, page metadata)
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [task-job-scam]
+    notes: "English gloss: 'I'm being offered a job'. Same mechanism as nl-fraudehelpdesk-vacature-alert-2025 (call, move to messenger, review/crypto tasks, pay to access tasks, small payouts, 'not enough tasks', fake balance needing fees). Adds: if you sent a copy of your ID, also report to the Centraal Meldpunt Identiteitsfraude (CMI, rvig.nl). Advice: don't respond to unrequested or remote job offers via email, messenger or social media; don't add unknown numbers; don't pay for work you should be paid for."
+
+  - id: nl-fraudehelpdesk-contact-en
+    publisher: Fraudehelpdesk.nl
+    title: "Fraudhelpdesk, the Dutch national anti-fraud hotline"
+    url: https://www.fraudehelpdesk.nl/fraudhelpdesk-the-dutch-national-anti-fraud-hotline/
+    published: n/d (last modified 2025-12-11, page metadata)
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [messenger-family-impersonation, task-job-scam]
+    notes: "English page. National anti-fraud hotline (part of the SafeCin foundation). Phone 088 - 7867372, from abroad +31 88 7867372. Online report form at fraudehelpdesk.nl/fraude-melden/ (Dutch). Refers victims to the right authorities. Opening hours shown here (afternoons to 15:30) differ from the government contact guide (to 15:00): do NOT show hours on screen."
+
+  - id: nl-rijksoverheid-fraudehelpdesk-contact
+    publisher: Rijksoverheid (Government of the Netherlands), contact guide
+    title: "Fraudehelpdesk (Contactgids)"
+    url: https://www.rijksoverheid.nl/contact/contactgids/fraudehelpdesk
+    published: 2014-05-07 (last modified 2026-03-17)
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [messenger-family-impersonation, task-job-scam]
+    notes: "Government contact guide entry confirming Fraudehelpdesk's phone number (+31 88 786 73 72, local rate) and website; it protects citizens and businesses against fraud, advises victims and refers them to the right organisation. Independent government confirmation of the number."
+
+  - id: nl-politie-aangifte-hulpvraagfraude
+    publisher: Politie (Netherlands Police)
+    title: "Ik wil aangifte doen van hulpvraagfraude"
+    url: https://www.politie.nl/informatie/ik-wil-aangifte-doen-van-hulpvraagfraude.html
+    published: n/d
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [messenger-family-impersonation]
+    notes: "English gloss: 'I want to report help-request fraud'. In many cases you can report online (button to the online form for friend-in-need fraud). Not online if you report for someone else, if your identity was misused to defraud others, or if your own messenger account was taken over and misused: then contact the police. Prepare: export the chat, screenshot profile/photo/number, fill in the help form (nl-politie-hulpvraagfraude-2025). Report the chat to the messenger LAST, because the chat disappears after reporting it there. After reporting you may, under conditions, request the account holder's name and address (links to Betaalvereniging). Lists 0900-8844 (non-emergency) and 112. DigiD and age limits not mentioned."
+
+  - id: nl-politie-ik-ben-opgelicht
+    publisher: Politie (Netherlands Police)
+    title: "Ik ben opgelicht"
+    url: https://www.politie.nl/aangifte-of-melding-doen/aangifte-van-oplichting.html
+    published: n/d
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [task-job-scam]
+    notes: "English gloss: 'I have been scammed'. Index of fraud types with report pages; no dedicated job-fraud or task-scam page. In most cases call 0900-8844 or go to a police station; if unsure whether it counts as fraud, call 0900-8844 (call costs apply)."
+
+  - id: nl-politie-crypto-job-fraud-2025
+    publisher: Politie (Netherlands Police), Oost-Nederland unit
+    title: "Politie informeert honderden gedupeerden beleggingsfraude"
+    url: https://www.politie.nl/nieuws/2025/december/8/02---politie-informeert-honderden-gedupeerden-beleggingsfraude.html
+    published: 2025-12-08 (updated 2025-12-09)
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [task-job-scam]
+    notes: "English gloss: 'Police inform hundreds of investment-fraud victims'. About 300 possible victims of investment AND job fraud who sent crypto to scammers (found with Europol and a crypto platform). Job fraud: victims think they work from home, usually writing online reviews of businesses; income 'nooit of nauwelijks' paid. Most cases were investment fraud, few job fraud. Money spread over hundreds of wallets, hard to trace. Recovery firms later ask for a deposit ('borg'), probably linked to the same criminals. Advice: talk it through with someone you trust; if affected talk to Fraudehelpdesk (088-786 7372), inform the bank, report to the police; Slachtofferhulp Nederland 0900-0101. Notes many victims feel ashamed."
+
+  - id: nl-politie-money-mules
+    publisher: Politie (Netherlands Police)
+    title: "Hoe gaan criminelen te werk als het gaat om money mules?"
+    url: https://www.politie.nl/informatie/hoe-gaan-criminelen-te-werk-als-het-gaat-om-money-mules.html
+    published: n/d
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [task-job-scam]
+    notes: "English gloss: 'How do criminals operate when it comes to money mules?'. Recruitment on the street and school playgrounds, increasingly via social media and ads people respond to; 'vaak jongeren' (often young people); aim is to get the bank card and PIN with promises and excuses. Does not explicitly link to job/task offers. Context for the Brussels money-mule chapter."
+
+  - id: nl-veiligbankieren-hulpvraag
+    publisher: Nederlandse Vereniging van Banken (NVB), Veilig Bankieren platform
+    title: "WhatsApp-fraude: wat moet ik doen? (hulpvraagoplichting)"
+    url: https://veiligbankieren.nl/fraude/hulpvraagoplichting
+    published: n/d (last modified 2023-03-13, page metadata)
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [messenger-family-impersonation]
+    notes: "Banking association's consumer page. Messages, usually via the messenger, from 'someone you know' asking to pay something or lend money; may come from a hacked real number or a 'new number' message (sometimes with the contact's photo); the scam may continue days later. Payment via a PAYMENT-REQUEST LINK or an IBAN. Red flags: payment request by text even from a familiar number; refusal to call or video (lost phone, new number not set up for calls, quiet train carriage); pressure ('vrijwel altijd een teken van bedrog'). Advice: call on a number you already know before paying; ask control questions not answerable from chats or social media; or call another close contact; don't use payment links before speaking to the person; 2FA and a voicemail PIN. If paid: bank first (forward the message with the link/IBAN), online police report, Fraudehelpdesk. No AI voice. Older page (2023) but consistent with 2025-26 sources."
+
+  - id: nl-veiligbankieren-meld-fraude
+    publisher: Nederlandse Vereniging van Banken (NVB), Veilig Bankieren platform
+    title: "Meld fraude"
+    url: https://www.veiligbankieren.nl/meld-fraude/
+    published: n/d (last modified 2026-03-10)
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [messenger-family-impersonation, task-job-scam]
+    notes: "English gloss: 'Report fraud'. Report to your own bank (forward any message with a payment link or IBAN); card-blocking lines 24/7 (real bank numbers listed: reference only, never in game content); online police report at politie.nl even without financial loss; report to Fraudehelpdesk."
+
+  - id: nl-veiligbankieren-voice-cloning-2023
+    publisher: Nederlandse Vereniging van Banken (NVB), Veilig Bankieren platform (republishing a national newspaper report)
+    title: "Politie waarschuwt voor het klonen van stemmen"
+    url: https://www.veiligbankieren.nl/actueel/politie-waarschuwt-voor-het-klonen-van-stemmen-criminelen-worden-steeds-inventiever-en-digitaal-slimmer/
+    published: 2023-08-08
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [messenger-family-impersonation]
+    notes: "English gloss: 'Police warn about voice cloning'. OLDER (2023) and based on a newspaper article, so supporting only. Police and Fraudehelpdesk warn that AI can imitate a relative's (e.g. child's) voice in a PHONE CALL claiming an emergency and urgent need for money; losses cited are abroad, no Dutch case count. Advice: Fraudehelpdesk suggests a family code word; experts note a code word can be forgotten under stress, so be suspicious of any money request and ask detailed questions. Voice notes NOT mentioned."
+
+  - id: nl-veiliginternetten-hulpvraag
+    publisher: Veiliginternetten.nl (Ministry of Economic Affairs, NCSC-NL and ECP)
+    title: "Wat is hulpvraagfraude?"
+    url: https://veiliginternetten.nl/wat-whatsappfraude
+    published: n/d
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [messenger-family-impersonation]
+    notes: "Government awareness platform (footer: ministry, NCSC and ECP); tier 3 kept conservative because the platform is a joint public-private initiative. A 'family member or friend' with a new number and a convincing profile photo; numbers and photos collected online; chats a while, then needs a loan; payment via a PAYMENT-REQUEST LINK or to SOMEONE ELSE'S account. A messenger call that is hung up quickly, then 'I couldn't hear you'. Advice: call the number you already saved; if you call the new number, ask something only the real person knows; 'Niet gebeld = geen geld'. If affected: online police report; Fraudehelpdesk."
+
+  - id: nl-veiliginternetten-voice-cloning
+    publisher: Veiliginternetten.nl (Ministry of Economic Affairs, NCSC-NL and ECP)
+    title: "Wat is voice cloning?"
+    url: https://veiliginternetten.nl/wat-is-voice-cloning/
+    published: n/d
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [messenger-family-impersonation]
+    notes: "AI plus a short recording can make fake audio imitating someone you know or your bank, to ask for money or data; 'Als je een bekende stem hoort, ben je sneller geneigd iemand te vertrouwen'. Advice: hang up and call back on a number you know; ask something only that person can answer; share less personal info online. No code word; no victim steps beyond noting voice cloning without consent is punishable as identity fraud."
+
+  - id: nl-veiliginternetten-thuiswerk-2025
+    publisher: Veiliginternetten.nl (Ministry of Economic Affairs, NCSC-NL and ECP)
+    title: "Thuiswerkvacatures: nieuwe vorm van vacaturefraude"
+    url: https://veiliginternetten.nl/thuiswerkvacatures-nieuwe-vorm-van-vacaturefraude/
+    published: 2025-05-20
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [task-job-scam]
+    notes: "English gloss: 'Work-from-home vacancies: new form of job fraud'. Fake remote jobs promising EUR 100-300 a day for about an hour: writing reviews or trading crypto. Red flags: too good to be true (no training, just computer/internet/phone); you must transfer your own money before any salary; excuses for paying less or nothing. If affected: Fraudehelpdesk and a police report; anyone can fall victim, no need for shame."
+
+  - id: nl-veiligbankieren-geldezels
+    publisher: Nederlandse Vereniging van Banken (NVB), Veilig Bankieren platform
+    title: "Wat is bankrekeningfraude door geldezels?"
+    url: https://www.veiligbankieren.nl/fraude/geldezels/
+    published: n/d (last modified 2024-09-16, page metadata)
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [task-job-scam]
+    notes: "English gloss: 'What is bank-account fraud by money mules?'. Mostly young people (pupils, students). Recruitment includes a FAKE JOB at an 'international company' for a few hours a month with high pay, receiving money and forwarding it for a percentage; also borrowing card and PIN for a fee; via internet, email, chat, phone or at school. Consequences: prosecution, debt, registration that blocks banking services for years. Approached/involved: don't engage; tell police (0900-8844) or anonymously; tell your bank; Slachtofferhulp can help if you want to stop. Brussels owns money mules; cited here only for the job-scam link."
+
+  - id: nl-nvb-geldezels-jongeren-2024
+    publisher: Nederlandse Vereniging van Banken (NVB)
+    title: "NVB: 7 op 10 jongeren onbekend met grote pakkans geldezels"
+    url: https://www.nvb.nl/nieuws-en-verhalen/nvb-7-op-10-jongeren-onbekend-met-grote-pakkans-geldezels/
+    published: 2024-09-19
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [task-job-scam]
+    notes: "Press release. Survey (Verian, Aug 2024) of 258 people aged 18-25: nearly 1 in 10 approached to lend card or account; 7 in 10 unaware of the high chance of being caught; over 2 in 3 have seen social-media ads or messages offering quick money. Designer context only, not for on-screen use (adults 18-25, not teens; mule context, not task scams)."
+
+  - id: nl-rvig-cmi-id-copy
+    publisher: Rijksdienst voor Identiteitsgegevens (RvIG), Centraal Meldpunt Identiteitsfraude (CMI)
+    title: "Meldingsformulier 1: Kopie ID afgegeven"
+    url: https://www.rvig.nl/meldingsformulier-1-kopie-id-afgegeven
+    published: n/d
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [task-job-scam]
+    notes: "English gloss: 'Report form 1: I gave a copy of my ID'. For people who gave an ID copy and don't trust its use or see misuse; reply by email within one day. Government agency under the Ministry of the Interior."
+
+  - id: nl-betaalvereniging-after-whatsapp-fraud
+    publisher: Betaalvereniging Nederland (Dutch Payments Association)
+    title: "What to do after WhatsApp fraud?"
+    url: https://www.betaalvereniging.nl/en/news/what-to-do-after-whatsapp-fraud/
+    published: n/d
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [messenger-family-impersonation]
+    notes: "English page. Contact your own bank as soon as possible with the fraudster's IBAN, phone number and name used; file a police report (online with DigiD); more in Dutch on Veilig Bankieren. No refund information."
+
+  # ---------------------------------------------------------------- Payee-name check (VoP) and ID-copy rules (phase 3 ch2 follow-up, 2026-11-19)
+  # eu-eurlex-ipr-2024-886 and eu-epc-vop-scheme are ported from the Paris branch (same ids and fields; used_for extended).
+  - id: eu-eurlex-ipr-2024-886
+    publisher: European Union (EUR-Lex, Official Journal)
+    title: "Regulation (EU) 2024/886 of the European Parliament and of the Council of 13 March 2024 amending Regulations (EU) No 260/2012 and (EU) 2021/1230 and Directives 98/26/EC and (EU) 2015/2366 as regards instant credit transfers in euro"
+    url: https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32024R0886
+    published: "adopted 2024-03-13; in force 2024-04-08 (EUR-Lex metadata)"
+    accessed: "2026-11-19"
+    region: EU
+    tier: 1
+    used_for: [payment-detail-change, messenger-family-impersonation]
+    notes: "Read to char 100000 of ~133000 (Art. 5c fully covered). Art. 5c (inserted into Reg. 260/2012): payer's PSP must offer payee verification 'regardless of the payment initiation channel', 'immediately after the payer provides relevant information about the payee' and before authorisation. Outcomes: match; 'almost' match (PSP shows the payee name linked to the IBAN); no match (payer told authorising 'might lead to transferring the funds to a payment account not held by the payee indicated by the payer'); check not possible. Service must not prevent the payer from authorising (5c(5)). PSPs must tell users the liability/refund consequences of ignoring a notification (5c(7)). PSP not liable for execution to an unintended payee if it complied (5c(8)); payer's PSP refunds if it failed to offer the check. 'free of charge' wording located in Art. 5b(2) in this reading (the ECB page states the VoP service is free; rely on eu-ecb-ipr for that). Application (5c(9)): euro-area PSPs by 2025-10-09; non-euro Member States by 2027-07-09. Adoption and entry-into-force dates are from EUR-Lex metadata; the OJ publication date was not checked. Amsterdam re-check 2026-11-19: Art. 5c does not say the payee name is shown on a no match (only on a close match)."
+
+  - id: eu-epc-vop-scheme
+    publisher: European Payments Council
+    title: "Verification Of Payee"
+    url: https://www.europeanpaymentscouncil.eu/what-we-do/other-schemes/verification-payee
+    published: n/d (latest dated event 2024-10-10)
+    accessed: "2026-11-19"
+    region: EU
+    tier: 3
+    used_for: [payment-detail-change, messenger-family-impersonation]
+    notes: "Scheme answers 'match', 'no match', 'close match' (with the payee's name) or 'check not possible'; the requesting PSP 'immediately passes on the response to the payer'. Rulebook published 2024-10-10, in force 2025-10-05. Limitation stated: the scheme is a messaging function, not a payment instrument, and 'cannot be relied upon to identify a private or a legal person'. Does not cite the regulation number or the 2025-10-09 date (use eu-eurlex-ipr-2024-886)."
+
+  - id: nl-betaalvereniging-iban-name-check
+    publisher: Betaalvereniging Nederland (Dutch Payments Association)
+    title: "IBAN-Name Check"
+    url: https://www.betaalvereniging.nl/en/?p=3093
+    published: n/d (last modified 2026-10-08; check mandatory since October 2025)
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [messenger-family-impersonation]
+    notes: "Dutch name for Verification of Payee, required for digital SEPA transfers in 41 SEPA countries incl. cross-border. Match: no warning, green check mark. Close match: warning SHOWING the name linked to the IBAN. No match: warning WITHOUT the correct name, withheld to protect account holders' privacy (so people can't use fake names to look up the real one). Cannot be verified (e.g. a very new account): verify name and IBAN another way. The payer can cancel, correct or confirm unchanged; after a warning the bank may not block it. Says the check reduces entry errors and gives some protection against invoice fraud; does NOT say a match makes a request legitimate; does not mention business accounts."
+
+  - id: be-febelfin-vop-faq
+    publisher: Febelfin (Belgian financial sector federation)
+    title: "FAQ: Verification of the beneficiary's name"
+    url: https://febelfin.be/en/themes/fraud-security/faq-verification-of-the-beneficiary-s-name
+    published: n/d (meta date malformed; footer (c) 2026)
+    accessed: 2026-11-19
+    region: BE
+    tier: 3
+    used_for: [messenger-family-impersonation]
+    notes: "BUSINESS-ACCOUNT CAVEAT: the check compares against the legal name registered with the beneficiary's bank (trade names considered where possible); for a legal entity with a Belgian or Dutch account, the registered name is shown to the payer on a no match as well as a close match. So 'no name on a no match' holds for private persons (nl-betaalvereniging-iban-name-check), not always for companies. Close match: 'Did you mean <registered name>?'. Also: the check confirms only that name and account number correspond; contact details on a fraudulent invoice may also be fraudulent; 'you are responsible for the transfers you make'."
+
+  - id: nl-rijksoverheid-identificatieplicht-werkgever
+    publisher: Rijksoverheid (Government of the Netherlands)
+    title: "Wat moet ik als werkgever doen om te voldoen aan de identificatieplicht?"
+    url: https://www.rijksoverheid.nl/onderwerpen/identificatieplicht/vraag-en-antwoord/wat-moet-ik-als-werkgever-doen-om-te-voldoen-aan-de-identificatieplicht
+    published: 2011-06-24 (last modified 2023-05-02)
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [task-job-scam]
+    notes: "English gloss: 'What must I do as an employer to meet the identification duty?'. Before the employee starts ('Voordat de werknemer in dienst komt'), the employer checks the ORIGINAL ID for authenticity and validity and keeps a legible copy in the payroll records (document number, photo, BSN) for 5 years after the year the employee leaves. Agency workers: the hirer checks the original but keeps a copy only for non-EEA nationals. So a genuine employer does ask for ID, at the hiring stage, as part of employment."
+
+  - id: nl-rijksoverheid-kopie-id
+    publisher: Rijksoverheid (Government of the Netherlands)
+    title: "Welke organisaties mogen een kopie van mijn identiteitsbewijs maken?"
+    url: https://www.rijksoverheid.nl/documenten/vraag-en-antwoord/identiteitsfraude/ben-ik-verplicht-om-een-kopie-van-mijn-identiteitsbewijs-te-geven-aan-een-bedrijf
+    published: 2011-04-12 (last modified 2026-09-04)
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [task-job-scam]
+    notes: "English gloss: 'Which organisations may copy my ID?'. 'Slechts enkele organisaties' may ask for a copy: government bodies, banks, notaries, casinos, life insurers and your EMPLOYER; they must tell you the legal obligation. Others may copy only with photo and BSN shielded, or must only note the ID type/number; where there is no legal obligation 'U bent niet verplicht om die aan hen te geven'. Links to the government's safe-copy app Q&A (not opened)."
 
   # ------------------------------------------------ placeholders (example scenario only)
   - id: europol-scam-smishing

@@ -58,7 +58,9 @@ export const WHAT_NOW_KEYS: Record<WhatNowBuiltin, MessageKey> = {
 };
 
 /** The timer-expiry line (consequence caption and layer 2 "What happened"); genuine: with the message's own deadline. */
-export function deadlineText(line: 'fake' | 'fake_fell' | 'genuine', honestDeadline?: string | null): string {
+export function deadlineText(line: 'fake' | 'fake_fell' | 'genuine' | 'genuine_missed', honestDeadline?: string | null): string {
   if (line === 'genuine') return honestDeadline ? t('deadline_genuine', { deadline: honestDeadline }) : t('deadline_genuine_plain');
+  // CR-50 (R26(2)): a 0-star genuine expiry never says "Nothing is lost yet".
+  if (line === 'genuine_missed') return honestDeadline ? t('deadline_genuine_missed', { deadline: honestDeadline }) : t('deadline_genuine_missed_plain');
   return t(line === 'fake' ? 'deadline_fake' : 'deadline_fake_fell');
 }

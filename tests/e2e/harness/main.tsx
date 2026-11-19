@@ -50,6 +50,8 @@ function finaleSeed(which: string): unknown {
     habits: { 'LO-18': { scenarios: ['a', 'b'], hard: true }, 'LO-03': { scenarios: ['a'], hard: false } },
     story: { postcards: ['fxpast'], flips: [], seen: [] },
     arc,
+    // CR-51: the slot 2 ask and the slot 3 report set arc_told_someone (the arc_flags_cr51 load fix would add it too).
+    ...(which === 'A' ? { flags: ['arc_told_someone'] } : {}),
   };
 }
 

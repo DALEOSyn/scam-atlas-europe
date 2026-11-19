@@ -1,13 +1,16 @@
 # Brussels ending R (GDD §30.6, STORY §3.10 part 1; sensitive): the arc closed with "Tell me now".
 # With money in (scene sees alex_invested as a flag in the finale, CR-43(d)) R plays C's damage control and
-# recovery-agency test, so this scene shows C's lines (Adaeze warm, the recovery panel, Teo warm): 4 panels.
+# recovery-agency test, so this scene shows C's recovery panel and Teo (warm), then the R line: 3 panels.
+# Adaeze's warm panel ("…The lie was theirs, not yours.") is dropped, as in C (R25(4), learning-psychologist on
+# T-3.13): the arc damage control has just opened with that line.
 # With nothing in R plays Teo's chat, so it shows A's Teo lines (sheepish, then proud): 3 panels.
 # Teo's R line "Sometimes you just want to know. Asking is never wrong." closes both branches: it is the panel
 # every R player sees (the validator needs one shared panel), and it is true for both, since "Tell me now" was
 # asking (deviation from STORY §3.10, which gives it to R without money only).
-# No "you told someone" line: R players have no arc_told_someone unless Teo's chat set it, and the R line says
-# what they did in other words (R22(2)). No "never too late to start" (psych note, GDD §30.14 item 9).
-# Teo's fixed line "Same picture, different name. Good thing I asked you." is split over two panels, word for
+# No "you told someone" line: R players have arc_told_someone only if Teo's chat or an arc slot decided by
+# asking someone set it (CR-51), and the R line says what they did in other words (R22(2)), true for every R
+# player whatever the flags. No "You stepped back early…" line (that is A′ only; psych note, GDD §30.14 item 9).
+# Teo's fixed line "Same picture, different name. Asking was the smart bit." is split over two panels, word for
 # word, to show "sheepish, then proud" (STORY §3.10).
 id: brussels-ending-r
 chapter: brussels
@@ -28,15 +31,8 @@ panels:
     speaker: teo
     expression: proud
     unless_flag: alex_invested
-    line: "Good thing I asked you."
+    line: "Asking was the smart bit."
     alt: "Teo, proud, by the stacked boxes and the noticeboard."
-  - backdrop: brussels-office
-    crop: centre
-    speaker: adaeze
-    expression: warm
-    if_flag: alex_invested
-    line: "You were kind to someone who turned out not to exist. The lie was theirs, not yours."
-    alt: "Adaeze smiling gently at the desk by the small projector, a high window behind her."
   - backdrop: brussels-office
     crop: left
     speaker: adaeze

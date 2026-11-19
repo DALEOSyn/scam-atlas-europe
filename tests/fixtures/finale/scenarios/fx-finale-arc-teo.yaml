@@ -51,11 +51,11 @@ outcomes:
   same_picture:
     narrative: "Teo: \"Well. That settles it.\""
     reveal: true
-    sets_flags: [arc_told_someone]
+    sets_flags: [arc_told_someone, arc_helped_teo]
   reported:
     narrative: "Teo reports the profile. The photo check runs as part of the report."
     reveal: true
-    sets_flags: [arc_told_someone]
+    sets_flags: [arc_told_someone, arc_helped_teo]
   stopped:
     narrative: "Teo stops replying. Later he runs a photo check anyway."
     reveal: true

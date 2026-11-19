@@ -11,8 +11,9 @@
 # (BX3), claim. Close (the overlay's button) picks the one dismiss action.
 # Beat 2 (call, +45 s, 30 s, covered_by start): "Marrowby" (BR1: always "Marrowby, the card-blocking line").
 # request install: no ask (CR-30), so the install line is claim#2. R: claim (BX1, scoped to the card-blocking
-# line only), claim#2 (BX4). D: caller_id (SK1), reference. The €1,240 "waiting payment" is story text, never
-# a loss. Hang up opens "What now?".
+# line only), claim#2 (BX4). D: caller_id (SK1; reveal per R27, fact note 4, T-3.13e: the screen can't prove
+# who is calling, so judge what the caller says and asks), reference. The €1,240 "waiting payment" is story
+# text, never a loss. Hang up opens "What now?".
 # Beat 3 (call, +45 s, 30 s, covered_by start + card_call): "Larchwick Bank" with a Gatewren banner (display
 # only, §17). R: request (BX5), claim#2 ("switch off your phone"). D: caller_id, claim. Written to read true
 # whatever the player did at beats 1–2.
@@ -128,7 +129,7 @@ beats:
       references: ["your Larchwick card"]
     inspectables:
       - target: caller_id
-        reveal: "Shows Marrowby. A caller can set the name and number on your screen, so it can't prove anything either way."
+        reveal: "Shows Marrowby. A caller can make any name and number show on your screen, so the screen can't prove who is calling. Judge what the caller says and asks."
         red_flag: false
         type: caller_id
       - target: reference
@@ -191,7 +192,7 @@ beats:
         request: none
     inspectables:
       - target: caller_id
-        reveal: "Shows Larchwick Bank. A caller can set the name and number on your screen, so it can't prove anything either way."
+        reveal: "Shows Larchwick Bank. A caller can make any name and number show on your screen, so the screen can't prove who is calling. Judge what the caller says and asks."
         red_flag: false
         type: caller_id
       - target: claim
@@ -281,7 +282,7 @@ outcomes:
       - { step: call_bank_known_number, category: stop }
       - { step: tell_trusted_adult, category: stop }
       - { step: change_password, category: secure }
-      - { step: report_to_police_online, category: report }
+      - { step: report_to_police, category: report }
       - { step: approve_again_to_cancel, category: harmful }
       - { step: wait_and_see, category: harmful }
   it_desk_closing_right:

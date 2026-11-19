@@ -1,10 +1,17 @@
 # Brussels ending A′ (GDD §30.6, STORY §3.10 part 1; sensitive; 3 panels of 4): the arc closed by a second
 # Close at slot 1, with nothing in. Plays after Teo's chat (the reveal inside it) and the timeline.
-# Teo's fixed line "Same picture, different name. Good thing I asked you." is split over two panels, word for
+# Teo's fixed line "Same picture, different name. Asking was the smart bit." is split over two panels, word for
 # word, to show "sheepish, then proud" (STORY §3.10).
-# Psych note (GDD §30.14 item 9): "It's never too late to start" shows only to a player who has told nobody:
-# A′ (no earlier report, no "Tell me now") and unless_flag arc_told_someone. A player who did the photo check
-# with Teo or told him to report gets "Teo asked you, and you helped him. That's what works." instead.
+# Psych note (GDD §30.14 item 9, learning-psychologist on T-3.13): the line without arc_helped_teo shows only to a
+# player who told nobody, and says what they did: "You stepped back early, and you never sent any money. Next
+# time, telling someone too makes it even easier." (both true for every A′ player: two Closes at slot 1, nothing
+# in). It replaces "Telling someone early is what works. It's never too late to start."
+# R28 (T-3.13h): both lines are gated on the story flag arc_helped_teo (set by Teo's chat: the photo check
+# together, or "Tell him to report the profile"), like ending A. With it: "Teo asked you, and you helped him.
+# That's what works." The unless line is still only for a player who told nobody: an A′ player played only the
+# slot-1 beat, closed both times (no report, no asking someone at an arc slot, no "Tell me now"), so
+# arc_told_someone can only come from Teo's chat, from exactly the two outcomes that set arc_helped_teo; the two
+# flags coincide in A′.
 id: brussels-ending-a-prime
 chapter: brussels
 slot: resolution
@@ -22,19 +29,19 @@ panels:
     crop: left
     speaker: teo
     expression: proud
-    line: "Good thing I asked you."
+    line: "Asking was the smart bit."
     alt: "Teo, proud, by the stacked boxes and the noticeboard."
   - backdrop: brussels-office
     crop: centre
     speaker: adaeze
     expression: calm
-    if_flag: arc_told_someone
+    if_flag: arc_helped_teo
     line: "Teo asked you, and you helped him. That's what works."
     alt: "Adaeze, calm, at the desk by the small projector, a high window behind her."
   - backdrop: brussels-office
     crop: centre
     speaker: adaeze
     expression: calm
-    unless_flag: arc_told_someone
-    line: "Telling someone early is what works. It's never too late to start."
+    unless_flag: arc_helped_teo
+    line: "You stepped back early, and you never sent any money. Next time, telling someone too makes it even easier."
     alt: "Adaeze, calm, at the desk by the small projector, a high window behind her."

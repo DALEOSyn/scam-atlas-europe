@@ -25,8 +25,8 @@ import { callDirectionOf } from '../content/callDirection.ts';
 import type { CheckableBeat } from './inspect.ts';
 import { checkablesOf, keyOf } from './inspect.ts';
 import { armBeat, firePusher, planPushers, startPushers, stopPushers, type PusherPlan, type PusherState } from './pushers.ts';
-import { orderOptions, recoveryOptionsOf, scoreRecovery, type RecoveryOption, type RecoveryResult } from './recovery.ts';
-import { classOf, decisionOf, isFall, mergeDecision, truthOf, type Decision, type EngineBalance, type Truth } from './scoring.ts';
+import { orderOptions, READ_ONLY_RECOVERY, recoveryIsReadOnly, recoveryOptionsOf, scoreRecovery, type RecoveryOption, type RecoveryResult } from './recovery.ts';
+import { classOf, decisionOf, isFall, mergeDecision, scoreGroup, truthOf, type Decision, type EngineBalance, type Truth } from './scoring.ts';
 import { clampStress, onArrival, pressureStyled, stressState, type StressState } from './stress.ts';
 import { chargeTimer, modeFactor, startTimer, tickTimer, timerLength, type TimerKind, type TimerMode, type TimerState } from './timer.ts';
 
@@ -286,7 +286,8 @@ export function startScenario(s: Scenario, ctx: RunnerContext): RunnerState {
     real: 0,
     freezes: [],
     stress,
-    timer: newTimer(s, ctx, s.device, true),
+    // CR-54: a boss's opening beat may state its own length (scenario-level timer_seconds).
+    timer: newTimer(s, ctx, s.device, true, s.role === 'boss' ? s.timer_seconds : undefined),
     schedule: scheduleOf(s),
     arrived: ['start'],
     groups: [newGroup(s, 'start')],
@@ -423,7 +424,8 @@ function enterDamageControlOrDone(s: Scenario, ctx: RunnerContext, st: RunnerSta
       : st.groups.slice(-1);
   const options = mergeRecoveryOptions(sources.map((g) => recoveryOptionsOf(g.outcome ? s.outcomes[g.outcome] : undefined)));
   if (options.length === 0) return finish(ctx, st);
-  return { ...st, phase: 'damage_control', recovery: { options: orderOptions(options, s.id), result: null } };
+  // CR-53: the read-only "Your steps" (finale recovery-agency test) keeps the authored order (stop steps first).
+  return { ...st, phase: 'damage_control', recovery: { options: recoveryIsReadOnly(s) ? options : orderOptions(options, s.id), result: null } };
 }
 
 /**
@@ -812,7 +814,9 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
 
     case 'recovery': {
       if (st.phase !== 'damage_control' || !st.recovery) return st;
-      return finish(ctx, { ...st, recovery: { ...st.recovery, result: scoreRecovery(ctx.balance, st.recovery.options, ev.picks) } });
+      // CR-53 (R25(4)): a read-only "Your steps" scores nothing, whatever is sent (arc points 0).
+      const result = recoveryIsReadOnly(s) ? READ_ONLY_RECOVERY : scoreRecovery(ctx.balance, st.recovery.options, ev.picks);
+      return finish(ctx, { ...st, recovery: { ...st.recovery, result } });
     }
   }
 }
@@ -929,7 +933,8 @@ export interface RunnerView {
    * Which caption that expiry gets: `fake` on fraud ("The deadline was fake. Nothing happened."),
    * `fake_fell` on fraud after an earlier fall in the scenario ("The deadline was fake."; QA m1),
    * `genuine` on a genuine scenario ("Time's up in the game, not in real life. The message's own deadline:
-   * {pressure.honest_deadline}…", ruling QA L4).
+   * {pressure.honest_deadline}…", ruling QA L4) when the expiry scores ★ or ★★, `genuine_missed` when it scores 0
+   * ("Time's up in the game, so it counts as leaving it…", CR-50, R26(2)).
    * null when the timer did not end the beat.
    */
   consequenceDeadline: DeadlineLine;
@@ -946,7 +951,8 @@ export interface RunnerView {
    * feedback is voiced by them. CR-41: `forLabel` names someone off-cast ("Noor's friend") in the prompt, and
    * `forCast` is then the cast member who voices the feedback (`voiced_by`).
    */
-  recovery: { options: RecoveryOption[]; pick: number; forCast: string | null; forLabel?: string | null; note?: string | null } | null;
+  /** CR-53: `readOnly`: show the steps, no picks (the finale's recovery-agency test, right after the arc damage control). */
+  recovery: { options: RecoveryOption[]; pick: number; forCast: string | null; forLabel?: string | null; note?: string | null; readOnly?: boolean } | null;
   /**
    * CR-31: the on-call bar over a banking beat reached by start_transfer from a call: "On a call · {caller} ·
    * mm:ss". `seconds` since the call started (scenario clock); `hangUp` lists the banking beat's own
@@ -974,11 +980,53 @@ export function callBehind(s: Scenario, g: Pick<GroupState, 'current' | 'visited
   return undefined;
 }
 
-/** The timer-expiry line (consequence caption and layer 2 "What happened", UI_SPEC §7). */
-export type DeadlineLine = 'fake' | 'fake_fell' | 'genuine' | null;
+/**
+ * The timer-expiry line (consequence caption and layer 2 "What happened", UI_SPEC §7). CR-50 (R26(2)): on a
+ * genuine message `genuine_missed` when the expiry scored 0 stars ("…so it counts as leaving it…", never
+ * "Nothing is lost yet"), `genuine` when it scored ★ or ★★.
+ */
+export type DeadlineLine = 'fake' | 'fake_fell' | 'genuine' | 'genuine_missed' | null;
 
-export function deadlineLine(isFraud: boolean, fell: boolean): Exclude<DeadlineLine, null> {
-  return !isFraud ? 'genuine' : fell ? 'fake_fell' : 'fake';
+export function deadlineLine(isFraud: boolean, fell: boolean, genuineStars?: number | null): Exclude<DeadlineLine, null> {
+  if (!isFraud) return genuineStars === 0 ? 'genuine_missed' : 'genuine';
+  return fell ? 'fake_fell' : 'fake';
+}
+
+/**
+ * Ruling R21 (CR-45): the deliberate dismiss options of the beat the group's timer expired on (its current
+ * beat), else of the beats reachable from it by next_beat, as decisions. A genuine expiry scores like the
+ * lowest of them (scoreGroup `expiryDismiss`); none anywhere → `timer_expiry` as before.
+ */
+export function expiryDismissOf(s: Scenario, b: EngineBalance, g: Pick<GroupState, 'current' | 'timerExpired'>): Decision[] {
+  if (!g.timerExpired) return [];
+  const dismissOf = (id: string): Decision[] => (beatById(s, id)?.actions ?? []).filter((a) => classOf(b, a.kind) === 'dismiss').map((a) => decisionOf(b, a));
+  const own = dismissOf(g.current);
+  if (own.length > 0) return own;
+  // Psych M1 (option a): no dismiss option where the timer ran out (e.g. a one-action opener, "Wait for the
+  // code"): the lowest dismiss option of the beats the group can still reach from here (next_beat chains).
+  const later: Decision[] = [];
+  const seen = new Set([g.current]);
+  const queue = [g.current];
+  while (queue.length > 0) {
+    const id = queue.shift() as string;
+    for (const a of beatById(s, id)?.actions ?? []) {
+      if (a.next_beat === undefined || seen.has(a.next_beat)) continue;
+      seen.add(a.next_beat);
+      queue.push(a.next_beat);
+      later.push(...dismissOf(a.next_beat));
+    }
+  }
+  return later;
+}
+
+/**
+ * CR-50: the stars a group's timer expiry scores (R21: like the lowest deliberate dismiss option). Derived exactly as
+ * `resultOf` derives a beat's stars (`coveredDecision`, then `scoreGroup` with the group's own state), so the caption
+ * and the debrief can never disagree.
+ */
+export function expiryStarsOf(s: Scenario, b: EngineBalance, st: Pick<RunnerState, 'truth' | 'slot' | 'groups'>, g: GroupState): number {
+  const { decision } = coveredDecision(s, st.groups, g);
+  return scoreGroup(b, st.truth, decision, { engagedOnFraud: g.engagedOnFraud, timerExpired: g.timerExpired, slot: st.slot, codeShared: g.codeShared !== undefined, expiryDismiss: expiryDismissOf(s, b, g) }).stars;
 }
 
 function groupFell(g: GroupState, truth: Truth): boolean {
@@ -1070,12 +1118,18 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
         : null,
     consequence: !st.tail && last?.outcome ? (s.outcomes[last.outcome]?.narrative ?? null) : null,
     consequenceTimerExpired: !st.tail && !!last && last.timerExpired && !last.outcome,
-    consequenceDeadline: !st.tail && !!last && last.timerExpired && !last.outcome ? deadlineLine(s.is_fraud, st.groups.some((x) => groupFell(x, st.truth))) : null,
+    consequenceDeadline:
+      !st.tail && !!last && last.timerExpired && !last.outcome
+        ? deadlineLine(s.is_fraud, st.groups.some((x) => groupFell(x, st.truth)), s.is_fraud ? null : expiryStarsOf(s, ctx.balance, st, last))
+        : null,
     consequenceCovered: st.phase === 'consequence' && !st.tail && !!last && coveredDecision(s, st.groups, last).covered,
     consequenceRegister: st.phase === 'consequence' && !st.tail && last?.outcome ? (s.outcomes[last.outcome]?.register ?? null) : null,
     consequenceReveal: st.phase === 'consequence' && !st.tail && !!last?.outcome && s.outcomes[last.outcome]?.reveal === true,
     consequenceAsides: st.phase !== 'consequence' ? [] : st.tail ? interruptNarratives(s, st, st.groups.length) : last ? interruptNarratives(s, st, st.groups.indexOf(last)) : [],
-    recovery: st.phase === 'damage_control' && st.recovery ? { options: st.recovery.options, pick: ctx.balance.recovery.pick, ...recoveryForOf(s, st), note: recoveryNoteOf(s, st) } : null,
+    recovery:
+      st.phase === 'damage_control' && st.recovery
+        ? { options: st.recovery.options, pick: ctx.balance.recovery.pick, ...recoveryForOf(s, st), note: recoveryNoteOf(s, st), ...(recoveryIsReadOnly(s) ? { readOnly: true } : {}) }
+        : null,
     onCall: onCallOf(s, ctx, st, live && st.phase === 'playing' ? g : undefined),
   };
 }

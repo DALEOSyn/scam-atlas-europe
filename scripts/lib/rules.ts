@@ -471,12 +471,15 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
     });
   } else if (s.beats.some((b) => b.covered_by)) errors.push('covered_by is for boss beats only');
 
-  // Producer ruling (T-2.1): a boss beat may state its own timer length, within the balance bounds.
-  for (const b of s.beats) {
-    if (b.timer_seconds === undefined) continue;
+  // Producer ruling (T-2.1): a boss beat may state its own timer length, within the balance bounds; CR-54: so may a
+  // boss's opening beat (scenario-level timer_seconds), same bounds.
+  {
     const lo = Math.min(balance.timers.call_beat, balance.timers.boss_beat);
     const hi = Math.max(balance.timers.call_beat, balance.timers.boss_beat);
-    if (b.timer_seconds < lo || b.timer_seconds > hi) errors.push(`beat "${b.id}": timer_seconds ${b.timer_seconds} is outside ${lo}–${hi} (timers.call_beat … timers.boss_beat)`);
+    for (const b of [{ id: 'start', timer_seconds: s.timer_seconds }, ...s.beats]) {
+      if (b.timer_seconds === undefined) continue;
+      if (b.timer_seconds < lo || b.timer_seconds > hi) errors.push(`beat "${b.id}": timer_seconds ${b.timer_seconds} is outside ${lo}–${hi} (timers.call_beat … timers.boss_beat)`);
+    }
   }
 
   // Actions.
@@ -619,6 +622,26 @@ function ceilShare(expr: string, f: number): number {
 }
 
 /**
+ * R26(1), CR-54: a boss's scheduled call beats (the opening beat and every beat with arrives_after on the call device)
+ * whose timer length differs from balance timers.boss_call_beat_by_slot for the chapter's slot. A boss without a
+ * timer has none to check. Unscheduled sub-beats (reached by next_beat) start no timer of their own; `timer_seconds`
+ * on one is a schema error (src/content/schema.ts, "timer_seconds is for scheduled boss beats").
+ */
+export function bossCallBeatIssues(s: Scenario, slot: number, balance: { timers: Pick<Registries['balance']['timers'], 'call_beat' | 'boss_call_beat_by_slot'> }): string[] {
+  if (s.role !== 'boss' || !s.pressure.timer) return [];
+  const want = balance.timers.boss_call_beat_by_slot[String(slot)];
+  if (want === undefined) return [`balance.yaml timers.boss_call_beat_by_slot has no entry for slot ${slot}`];
+  const beats = [{ id: 'start', device: s.device, timer_seconds: s.timer_seconds }, ...s.beats.filter((b) => b.arrives_after !== undefined)];
+  return beats.flatMap((b) => {
+    if (b.device !== 'call') return [];
+    const len = b.timer_seconds ?? balance.timers.call_beat;
+    if (len === want) return [];
+    const where = b.id === 'start' ? 'opening beat (scenario-level timer_seconds)' : `beat "${b.id}"`;
+    return [`boss "${s.id}" ${where}: a boss call beat in slot ${slot} runs ${want} s (timers.boss_call_beat_by_slot, R26(1)); it runs ${len} s`];
+  });
+}
+
+/**
  * @param scenarios all scenarios whose `chapter` is this chapter's city
  * @param fileBase  the chapter file's base name (must equal city)
  */
@@ -643,6 +666,9 @@ export function chapterRules(c: Chapter, fileBase: string, scenarios: Scenario[]
   const finaleIds = finale ? [finale.close, finale.recovery_offer, finale.teo] : [];
   for (const s of scenarios) if (!order.includes(s.id) && !finaleIds.includes(s.id)) errors.push(`scenario "${s.id}" is missing from scenario_order`);
   if (c.boss && byId.get(c.boss)?.role !== 'boss') errors.push(`boss "${c.boss}" must be a scenario with role: boss`);
+  // R26(1), CR-54 (required): every scheduled call beat of a timed boss runs timers.boss_call_beat_by_slot for the
+  // chapter's slot (the beat's timer_seconds, the opening beat's scenario-level timer_seconds, else timers.call_beat).
+  for (const s of scenarios) for (const e of bossCallBeatIssues(s, c.slot, balance)) errors.push(e);
   if (c.arc_beat && byId.get(c.arc_beat)?.role !== 'arc') errors.push(`arc_beat "${c.arc_beat}" must be a scenario with role: arc`);
   // CR-43(f): arc slot N plays in the Nth chapter played; the slot-N beat is the arc beat of the chapter with map slot N.
   const beat = c.arc_beat ? byId.get(c.arc_beat) : undefined;
@@ -761,8 +787,10 @@ export function chapterRules(c: Chapter, fileBase: string, scenarios: Scenario[]
   }
   if (c.patterns.length > balance.difficulty.max_new_patterns_per_chapter) mixIssues.push(`${c.patterns.length} new patterns; at most ${balance.difficulty.max_new_patterns_per_chapter}`);
   // GDD §30.1, §30.5: the finale (arc_finale) reviews every earlier chapter's habit, one callback per habit family,
-  // so the per-chapter callback cap does not apply to it (T-3.12; open for game-designer to confirm in balance.yaml).
-  if (!c.arc_finale && c.callbacks.length > balance.difficulty.max_callbacks_per_chapter) mixIssues.push(`${c.callbacks.length} callbacks; at most ${balance.difficulty.max_callbacks_per_chapter}`);
+  // so the per-chapter callback cap does not apply to it when balance.yaml lists it (R23(1), R27, CR-52:
+  // `difficulty.callback_cap_exempt`, which the schema restricts to `arc_finale`).
+  const capExempt = balance.difficulty.callback_cap_exempt.includes('arc_finale') && !!c.arc_finale;
+  if (!capExempt && c.callbacks.length > balance.difficulty.max_callbacks_per_chapter) mixIssues.push(`${c.callbacks.length} callbacks; at most ${balance.difficulty.max_callbacks_per_chapter}`);
   for (const s of fraud) {
     if (s.pattern && ![...c.patterns, ...c.callbacks].includes(s.pattern)) mixIssues.push(`fraud "${s.id}" uses pattern "${s.pattern}", which is not in the chapter's patterns or callbacks`);
   }

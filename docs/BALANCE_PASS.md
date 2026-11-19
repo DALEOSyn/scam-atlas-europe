@@ -120,7 +120,7 @@ Every band, boss difficulty and scored count matches `difficulty.chapter_slots`;
 | Fact 4: Marrowby decoy wording | "Shows Marrowby. A caller can make any name and number show on your screen, so the screen can't prove who is calling. Judge what the caller says and asks." Caller ID stays D (SK1); the tell stays on the claim (BX1) | T-3.13e |
 | Fact 5: 10-4 already-clicked | "Already shared it? It's not too late: stop replying, tell someone you trust today and call your bank on the number on your card. Then change your login." | T-3.13f |
 | Ending B "You told someone…" after a photo check only | §4 above (R25(5)) | CR-51, T-3.13h, T-3.13i |
-| 4-6 timer-out at ★0 next to "Nothing is lost yet" | Keep R21's 0 (expiry = "Leave it"); change the copy wherever a genuine expiry scores 0: `deadline_genuine_missed` "Time's up in the game, so it counts like leaving it. The message's real deadline: {deadline}. Checking it your own way works." "Nothing is lost yet" stays for ★/★★ expiries | CR-50 |
+| 4-6 timer-out at ★0 next to "Nothing is lost yet" | Keep R21's 0 (expiry = "Leave it"); change the copy wherever a genuine expiry scores 0: `deadline_genuine_missed` "Time's up in the game, so it counts as leaving it. The message's real deadline: {deadline}. Checking it your own way works." "Nothing is lost yet" stays for ★/★★ expiries | CR-50 |
 
 ---
 
@@ -142,7 +142,7 @@ Every band, boss difficulty and scored count matches `difficulty.chapter_slots`;
 
 1. Ending C keeps Adaeze's recovery panel (the only scene panel with next steps and the help list); her warm panel is dropped instead (T-3.13h).
 2. The gold hint is two keys in the "To reach gold next time:" format: `tier_need_falls_recovery` and `tier_need_falls` (R24, CR-48). Rule line before play (as reworded after the sceptic's round 1, §9): "Gold allows one slip, as long as every step you picked after it helped, starting with one that stops the damage."
-3. `deadline_genuine_missed`: "Time's up in the game, so it counts like leaving it. The message's real deadline: {deadline}. Checking it your own way works." (CR-50).
+3. `deadline_genuine_missed`: "Time's up in the game, so it counts as leaving it. The message's real deadline: {deadline}. Checking it your own way works." (CR-50).
 
 Suggestions taken: `tell_trusted_adult` "(under 18: a parent, carer or another adult you trust)"; Marrowby decoy "can't prove who is calling"; ending B `unless_flag` line "You never sent any money, and the timeline did the rest. Next time, telling someone early makes it even easier."; CR-54 raised to medium; T-3.13j adds one Extended-timer run. Also taken, with final wording now in the tickets (§9): the easy-money line opens "It's not too late:" (T-3.13g), the 10-4 line says "stop replying" and "someone you trust" (T-3.13f), T-3.13b gives a concrete reason instead of "helps". The calm scored scenario in Rome is ticket T-3.13m.
 

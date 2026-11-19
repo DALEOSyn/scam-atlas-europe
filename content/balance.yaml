@@ -193,11 +193,10 @@ timers:
   honest_timer_allowed_on_legit: true   # genuine deadlines ("link valid 15 min") use the same slot length
   boss_beat: 40                   # bosses are always fraud and announced as the boss, so no tell
   call_beat: 30                   # every call beat, genuine or fraud
-  # T-3.13 (proposed R26): a call beat INSIDE a boss runs 40 s up to slot 7 and 30 s from slot 8, so the
-  # curve only tightens. Today content sets this with the beat's `timer_seconds` (Berlin, Paris, Madrid,
-  # Rome b2, Dublin b2 = 30); Home b3 and Rome b1 (an opening beat, which can't carry timer_seconds yet) run
-  # 30 s against the rule: content ticket T-3.13a and CR-54. The validator may check content against this
-  # table once CR-54 lands; nothing reads it before then.
+  # T-3.13 (R26(1)): a call beat INSIDE a boss runs 40 s up to slot 7 and 30 s from slot 8, so the
+  # curve only tightens. Content sets this with the beat's `timer_seconds` (an opening beat: the boss's
+  # scenario-level `timer_seconds`, CR-54), else the beat runs call_beat. The validator checks every
+  # scheduled boss call beat against this table (CR-54, required); Home b3 and Rome b1 run 40 (T-3.13a).
   boss_call_beat_by_slot: { 0: 40, 1: 40, 2: 40, 3: 40, 4: 40, 5: 40, 6: 40, 7: 40, 8: 30, 9: 30, 10: 30 }
   inspect_cost_seconds: 2
   tag_cost_seconds: 0
@@ -258,8 +257,8 @@ difficulty:
   max_new_patterns_per_chapter: 2
   max_callbacks_per_chapter: 2
   # R23(1), confirmed at the balancing pass (T-3.13): the finale reviews every earlier habit (GDD §30.5), so
-  # the callback cap does not apply to a chapter with `arc_finale`. Today the exemption is hard-coded in
-  # scripts/lib/rules.ts; CR-52 makes the validator read this list instead.
+  # the callback cap does not apply to a chapter with `arc_finale`. The validator reads this list (CR-52); the
+  # schema allows only arc_finale here, and without the list the cap applies everywhere.
   callback_cap_exempt: [arc_finale]
   half_day_split: true            # each chapter = morning + afternoon with a stop point; boss in the afternoon
 

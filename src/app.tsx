@@ -8,7 +8,7 @@ import { advanceFinale, arcSlotForRun, bankArcPoints, enterFinale, finaleDone, f
 import { orderOptions, scoreRecovery, type RecoveryOption } from './engine/recovery.ts';
 import type { ChapterSummary } from './engine/chapter.ts';
 import { debriefOf, type DebriefData } from './engine/debrief.ts';
-import { beginChapter, carriedStress, chapterProgress, commitScenario, finishChapter, runFlags, runIndex } from './engine/game.ts';
+import { beginChapter, carriedStress, chapterProgress, commitScenario, finishChapter, runFlags, runIndex, sceneFlags } from './engine/game.ts';
 import { isStopPointAfter, messagesLeft, nextIndex, sequenceOf, unlockedChapters } from './engine/chapter.ts';
 import { useSave } from './engine/hooks.ts';
 import type { ScenarioResult } from './engine/result.ts';
@@ -273,10 +273,8 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
     const current = currentSave();
     // CR-43(d): a finale resolution scene keyed to other arc endings does not play (replays included).
     const ending = current.arc.finale?.ending ?? null;
-    // CR-43(d): in the finale, arc variables that are set (alex_invested above 0) count as flags for `if_flag`.
-    const arcVars = current.arc.finale ? Object.entries(current.arc.vars).filter(([, v]) => v === true || (typeof v === 'number' && v > 0)).map(([k]) => k) : [];
-    const flags = [...(c ? [...runFlags(current, c.city)] : [...current.flags]), ...arcVars];
-    if (!scenePlaysFor(scene, ending, new Set(flags))) return then();
+    const flags = sceneFlags(current, c?.city ?? null);
+    if (!scenePlaysFor(scene, ending, flags)) return then();
     let flip: FlipPick | null = null;
     let flipChoices: FlipPick[] | null = null;
     if (scene.panels.some((p) => p.flip_postcard)) {
@@ -309,7 +307,7 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
       flip,
       flipChoices,
       note,
-      flags,
+      flags: [...flags],
       ending,
       then: () => {
         update((sv) => ({ ...sv, story: markSeen(sv.story, scene.id) }));
@@ -443,8 +441,8 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
         let s = await load(c.city, id);
         if (!s) throw new Error(`scenario ${id} is not bundled`);
         if (s.role === 'arc' && s.arc_slot !== undefined) {
-          // CR-43(f), STORY §1.4: the chapter's arc beat plays the slot of its play position (slot N in the Nth
-          // chapter played), found in the chapter with map slot N. A closed arc ("Tell me now", a report, a second
+          // CR-43(f), CR-49 (R25(1)): the chapter's arc beat plays the lowest arc slot not yet played (slot order,
+          // whatever the chapter order), found in the chapter with map slot N. A closed arc ("Tell me now", a report, a second
           // close, GDD §10.3) or a slot already played plays nothing here, and a replayed (finished) chapter never
           // plays an arc beat (QA B1).
           const slot = arcSlotForRun(started.arc, chapterProgress(started, c.city));
@@ -680,6 +678,7 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
           onCoachMarkSeen={(id) => update((sv) => (sv.coachMarks.includes(id) ? sv : { ...sv, coachMarks: [...sv.coachMarks, id] }))}
           onQuit={toTitle}
           revealNames={screen.progress.finale ? (revealNames() ?? undefined) : undefined}
+          recoveryOffered={screen.progress.finale === 'recovery_offer' ? chapter.arc_finale?.damage_control.map((x) => x.step) : undefined}
           onDone={(st, r) => onDone(screen.scenario, st, r, screen.progress)}
         />
       ) : null}

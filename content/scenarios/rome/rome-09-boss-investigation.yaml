@@ -38,6 +38,8 @@ pressure:
       - { at_seconds: 5, beat: boss_tutela, text: "Type the name as I spell it: Velastri Tutela." }
       - { at_seconds: 18, beat: boss_tutela, text: "It'll suggest our full company name. Accept it and confirm, quickly." }
 
+# R26(1), CR-54, T-3.13a: the opening call beat runs 40 s (boss call beats in slots 0–7).
+timer_seconds: 40
 message:
   sender: { display: "06 •••• ••13", detail: "Not in your contacts" }
   transcript:

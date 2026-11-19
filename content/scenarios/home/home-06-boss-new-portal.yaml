@@ -119,6 +119,7 @@ beats:
   - id: it_call
     device: call
     arrives_after: 45
+    timer_seconds: 40   # R26(1), T-3.13a: boss call beats run 40 s in slots 0–7
     message:
       sender: { display: "Waymarker IT", detail: "Caller ID: Waymarker IT (saved contact)" }
       transcript:

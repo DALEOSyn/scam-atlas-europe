@@ -58,6 +58,27 @@ export function scoreRecovery(b: RecoveryTable, options: readonly RecoveryOption
 }
 
 /**
+ * CR-53 (R25(4)): the finale's recovery-agency test plays straight after the arc damage control, which has just
+ * taught the same stop steps. A fall there shows "Your steps" read-only (no second scored pick): the outcome's
+ * helpful steps in authored order, then feedback on the harmful steps the arc damage control did not offer
+ * (Brussels: `pay_recovery_service`). Arc points for that step are 0.
+ */
+export function recoveryIsReadOnly(s: Pick<Scenario, 'finale'>): boolean {
+  return s.finale === 'recovery_offer';
+}
+
+/** CR-53: the zero result of a read-only "Your steps" screen (nothing picked, nothing banked). */
+export const READ_ONLY_RECOVERY: RecoveryResult = { points: 0, picks: [], lo16: false, stars: 0 };
+
+/** CR-53: what the read-only "Your steps" screen lists. `alreadyOffered`: steps the arc damage control offered. */
+export function readOnlySteps(options: readonly RecoveryOption[], alreadyOffered: readonly string[] = []): { helps: RecoveryOption[]; harmful: RecoveryOption[] } {
+  return {
+    helps: options.filter((o) => o.category !== 'harmful'),
+    harmful: options.filter((o) => o.category === 'harmful' && !alreadyOffered.includes(o.step)),
+  };
+}
+
+/**
  * Which "Already clicked?" situation fits what the player did (UI_SPEC §8.2 item 3). Severity
  * (ruling QA m10): paid > shared_code > entered_details > clicked.
  */

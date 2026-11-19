@@ -62,7 +62,7 @@ steps:
   - id: report_id_copy
     label: "Report the ID copy to the identity-fraud reporting point (see Where to report)"
   - id: tell_trusted_adult
-    label: "Tell a parent or trusted adult now (if you're under 18)"
+    label: "Tell someone you trust now (under 18: a parent, carer or another adult you trust)"
   - id: pay_second_request
     label: "Pay the second request so they leave you alone"
     feedback: "Wanting it to be over is natural, but a second request after the first payment is part of the same scam, and paying it only adds to the loss. Stop paying and call your bank now on the number on your card."
@@ -136,7 +136,7 @@ steps:
   # Stockholm (GDD §29.10). go_offline, get_device_checked and let_caller_finish are reused by the Brussels
   # boss (§29.5). approve_again_to_cancel is the e-ID sibling of send_code_to_cancel and rescan_to_cancel.
   - id: go_offline
-    label: "Turn on airplane mode and stop using the device for banking"
+    label: "Take the device offline: wifi off, cable out or airplane mode"
   - id: get_device_checked
     label: "Get the device checked before you use it for banking again"
   - id: approve_again_to_cancel

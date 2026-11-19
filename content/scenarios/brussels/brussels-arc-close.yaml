@@ -5,8 +5,9 @@
 # body, so the slot-9 message's own last word, "Please?", stays as the body: no new words from Alex. Its amount
 # sentence ("…and I need €300 by tomorrow") is left out so that no amount a player may have sent appears in the
 # finale (§28.5 item 8, "no amounts lost anywhere").
-# Both options open the reveal card (CR-43(b), R22: reveal on every outcome) and set arc_told_someone (a report
-# or a photo check). Reveal: the one Alex portrait under "The same picture Alex used.", names from the
+# Both options open the reveal card (CR-43(b), R22: reveal on every outcome). The report sets arc_told_someone;
+# the solo photo check sets arc_checked instead (R25(5), CR-51, T-3.13i): checking alone is not telling someone.
+# Reveal: the one Alex portrait under "The same picture Alex used.", names from the
 # chapter's arc_finale.reveal_names (Alex, Robin, Sacha), and the engine's fixed line under it.
 id: brussels-arc-close
 chapter: brussels
@@ -48,7 +49,7 @@ outcomes:
   alex_same_picture:
     narrative: "The photo check finds the same picture on other profiles, with other names."
     reveal: true
-    sets_flags: [arc_told_someone]
+    sets_flags: [arc_checked]
   alex_profile_reported:
     narrative: "You report the profile to Wordswap. Its check finds the same picture on other profiles, with other names."
     reveal: true

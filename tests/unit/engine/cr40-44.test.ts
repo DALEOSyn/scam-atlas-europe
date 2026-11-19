@@ -344,14 +344,16 @@ describe('CR-43(c): the red-flag timeline', () => {
   });
 });
 
-describe('CR-43(f): arc slots follow play position (STORY §1.4)', () => {
-  it('slot N plays in the Nth chapter played; Home and the finale have none; a played slot never repeats', () => {
+describe('CR-43(f), CR-49: arc slots play in slot order (STORY §1.4, R25(1))', () => {
+  it('on a straight path slot N plays in the Nth chapter played; Home and the finale have none; a played slot never repeats', () => {
     expect(arcSlotAt(arc(), 0)).toBeNull();
     expect(arcSlotAt(arc(), 1)).toBe(1);
     expect(arcSlotAt(arc({ timeline: [1] }), 2)).toBe(2);
     expect(arcSlotAt(arc({ timeline: [1, 2, 3, 4, 5, 6, 7, 8] }), 9)).toBe(9);
     expect(arcSlotAt(arc({ timeline: [1, 2, 3, 4, 5, 6, 7, 8, 9] }), 10)).toBeNull();
-    expect(arcSlotAt(arc({ timeline: [1, 2] }), 2)).toBeNull();
+    // R25(1), CR-49: re-pinned. Slots play in slot order, so a chapter at position 2 with slots 1 and 2 played plays slot 3 (was null);
+    // reachable: position 2 started and left before its arc beat, position 3 played slot 2.
+    expect(arcSlotAt(arc({ timeline: [1, 2] }), 2)).toBe(3);
     expect(arcSlotAt(arc({ closed: true }), 3)).toBeNull();
     expect(arcSlotAt(arc(), null)).toBeNull();
   });
@@ -360,16 +362,17 @@ describe('CR-43(f): arc slots follow play position (STORY §1.4)', () => {
     expect(arcSlotAt(once, 2)).toBe(1);
     expect(arcSlotAt(applyArcBeat(once, 1, res(), 'reply'), 3)).toBe(3);
   });
-  it('QA B1: the slot-1 repeat is offered once; position 2 plays nothing more; a replayed chapter plays no arc beat', () => {
+  it('QA B1: the slot-1 repeat is offered once, then slot 3 (slot 2 skipped); a replayed chapter plays no arc beat', () => {
     const once = applyArcBeat(arc(), 1, res(), 'ignore');
     const repeated = applyArcBeat(once, 1, res(), 'reply'); // timeline [1, 1], still one close
-    expect(arcSlotAt(repeated, 2)).toBeNull();
+    // R25(1), CR-49: re-pinned. After the repeat the next arc beat is slot 3 (slot 2 skipped), wherever it plays (was null at position 2).
+    expect(arcSlotAt(repeated, 2)).toBe(3);
     expect(arcSlotForRun(once, { finished: false, position: 2 })).toBe(1);
     expect(arcSlotForRun(once, { finished: true, position: 2 }), 'replaying Berlin\'s successor').toBeNull();
     expect(arcSlotForRun(arc({ timeline: [1, 2, 3] }), { finished: true, position: 3 })).toBeNull();
     expect(arcSlotForRun(arc({ timeline: [1, 2] }), { finished: false, position: 3 })).toBe(3);
-    // A slot-2 arc beat is never offered at position 2 after a pause (skipped, R22).
-    expect(arcSlotAt(arc({ closes: 1, timeline: [1, 1] }), 2)).toBeNull();
+    // A slot-2 arc beat is never offered after the slot-1 repeat (skipped, R22); R25(1), CR-49: the next is slot 3 (was null at position 2).
+    expect(arcSlotAt(arc({ closes: 1, timeline: [1, 1] }), 2)).toBe(3);
   });
   it('validator: a chapter\'s arc beat carries the chapter\'s map slot; the finale has none', () => {
     const c = chapterRaw();
@@ -406,16 +409,20 @@ describe('CR-43(d): resolution scenes keyed to the arc ending', () => {
     expect(scenePlaysFor(get('fx-finale-ending-b'), 'B')).toBe(true);
     expect(scenePlaysFor(get('fx-finale-ending-b'), null)).toBe(false);
   });
-  it('panels keyed to an ending (R adds Teo\'s line)', () => {
-    expect(visiblePanels(get('fx-finale-ending-a'), new Set(), 'R')).toHaveLength(3);
+  it('panels keyed to an ending (R adds Teo\'s line; R28: no Adaeze line in R unless Teo was helped)', () => {
+    expect(visiblePanels(get('fx-finale-ending-a'), new Set(), 'R')).toHaveLength(2);
     expect(visiblePanels(get('fx-finale-ending-a'), new Set(), 'A')).toHaveLength(2);
+    expect(visiblePanels(get('fx-finale-ending-a'), new Set(), 'A_prime')).toHaveLength(2);
   });
-  it('R22 (psych M1): a told-someone line only when the player did; a truthful variant otherwise', () => {
-    const told = visiblePanels(get('fx-finale-ending-a'), new Set([ARC_TOLD_SOMEONE]), 'A').map((p) => p.line);
-    const not = visiblePanels(get('fx-finale-ending-a'), new Set(), 'A').map((p) => p.line);
-    expect(told).toContain("And you told someone. That's what works.");
-    expect(not).not.toContain("And you told someone. That's what works.");
-    expect(not).toContain("Telling someone early is what works. It's never too late to start.");
+  it('R22 (psych M1), R28: "you helped him" only when Teo\'s chat set arc_helped_teo; a truthful variant otherwise', () => {
+    const lines = (flags: string[], ending: 'A' | 'A_prime') => visiblePanels(get('fx-finale-ending-a'), new Set(flags), ending).map((p) => p.line);
+    const helped = "Teo asked you, and you helped him. That's what works.";
+    expect(lines([ARC_TOLD_SOMEONE, 'arc_helped_teo'], 'A')).toContain(helped);
+    // CR-51: every A player has arc_told_someone (the early report); without arc_helped_teo, the report is the line.
+    expect(lines([ARC_TOLD_SOMEONE], 'A')).not.toContain(helped);
+    expect(lines([ARC_TOLD_SOMEONE], 'A')).toContain("And you reported yours early. That's what works.");
+    expect(lines([], 'A_prime')).toContain("You stepped back early, and you never sent any money. Next time, telling someone too makes it even easier.");
+    expect(lines([ARC_TOLD_SOMEONE, 'arc_helped_teo'], 'A_prime')).toEqual(["Same picture, different name. Asking was the smart bit.", helped]);
   });
   it('the epigraph is the panel marked epigraph (Adaeze\'s last line)', () => {
     expect(epigraphOf([get('fx-finale-open'), get('fx-finale-evening')])).toEqual({
@@ -461,7 +468,8 @@ describe('R22: round-1 review fixes (finale)', () => {
   });
   it('psych M1: arc_told_someone is set by a report, a photo check or asking someone, never by stepping away', () => {
     const close = clone(rawFinale('fx-finale-arc-close.yaml'));
-    delete (outcomes(close).same_picture as Raw).sets_flags;
+    // R25(5), CR-51: re-pinned on the report (the close beat's photo check now sets arc_checked, see the CR-51 tests).
+    delete (outcomes(close).reported_profile as Raw).sets_flags;
     expect(schemaErrors(close).join('\n')).toMatch(/a report, photo check or asking someone sets arc_told_someone/);
     const teo = clone(rawFinale('fx-finale-arc-teo.yaml'));
     (outcomes(teo).stopped as Raw).sets_flags = [ARC_TOLD_SOMEONE];

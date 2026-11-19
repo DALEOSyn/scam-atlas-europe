@@ -109,5 +109,5 @@ debrief:
   device_tip: "On a real phone, type the company's address yourself or search for it, and use the contact details on its own site, not the ones in the message."
   habit_card: easy-money-costs-you
   already_clicked:
-    entered_details: "Sent your ID? Tell a parent or trusted adult, report the ID copy (see Where to report), keep the chat, and don't reply."
-  sources: [nl-fraudehelpdesk-vacature-alert-2025, nl-fraudehelpdesk-baan-aangeboden, nl-veiliginternetten-thuiswerk-2025, nl-rvig-cmi-id-copy, nl-rijksoverheid-identificatieplicht-werkgever, nl-rijksoverheid-kopie-id]
+    entered_details: "Sent your ID? Tell someone you trust, report the ID copy (see Where to report), keep the chat, and don't reply."
+  sources: [nl-fraudehelpdesk-vacature-alert-2025, nl-fraudehelpdesk-baan-aangeboden, nl-veiliginternetten-thuiswerk-2025, nl-rvig-cmi-id-copy, nl-rijksoverheid-identificatieplicht-werkgever, nl-rijksoverheid-kopie-id, eu-europol-mule-jobs]

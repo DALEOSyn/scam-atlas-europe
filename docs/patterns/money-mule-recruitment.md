@@ -99,7 +99,7 @@ Sources:
 6. **Report the recruiter's account to the app or platform** [eu-europol-mule-flyer-be-fr], [eu-europol-mule-flyer-ie].
 7. **Warn friends** who may have had the same offer [eu-europol-mule-flyer-be-fr], [be-febelfin-money-mules].
 
-**Debrief tone line (GDD §18):** "If you've already shared it, it's not too late: change your login, call your bank on the number on your card, and tell a trusted adult". This is consistent with the sources above.
+**Debrief tone line (GDD §18; R27, T-3.13f):** "Already shared it? It's not too late: stop replying, tell someone you trust today and call your bank on the number on your card. Then change your login." This follows §7 steps 1–4; the police and the platform report are on the Belgium help card. The habit card `easy-money-costs-you` adds "Money arrived in your account? Don't pass it on; tell your bank." [eu-europol-mule-flyer-be-fr, eu-europol-mule-jobs; accessed 2026-11-19]
 
 **MAP wording check:** MAP's draft line includes "you won't be in trouble for asking".
 - No source supports a promise about legal outcomes. The sources say mules can be prosecuted and may have to repay.

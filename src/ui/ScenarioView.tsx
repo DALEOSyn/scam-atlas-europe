@@ -14,7 +14,7 @@ import { firstLang } from '../content/inlineLang.ts';
 import { castMember } from '../content/cast.ts';
 import { recoveryStepFeedback, recoveryStepLabel } from '../content/recoverySteps.ts';
 import { useScenarioRunner } from '../engine/hooks.ts';
-import type { RecoveryOption } from '../engine/recovery.ts';
+import { readOnlySteps, type RecoveryOption } from '../engine/recovery.ts';
 import type { ScenarioResult } from '../engine/result.ts';
 import type { Settings } from '../engine/save.ts';
 import type { TimerMode } from '../engine/timer.ts';
@@ -54,6 +54,8 @@ export interface ScenarioViewProps {
   onCoachMarkSeen?: (id: string) => void;
   /** CR-43(b): the finale's three profile names, for an outcome that opens the reveal card. */
   revealNames?: readonly string[] | undefined;
+  /** CR-53: steps the arc damage control just offered (their harmful-step feedback is not repeated on a read-only "Your steps"). */
+  recoveryOffered?: readonly string[] | undefined;
 }
 
 function useDesk(): boolean {
@@ -146,7 +148,57 @@ export function logAnnouncement(
  * Damage control. `intro`: a line before any steps (R22, psych M3: the arc's "{name} was never real…" when money is
  * in). `view.note`: an authored note on the feedback screen (R22, psych M4).
  */
-export function DamageControl({ view, intro, onDone }: { view: NonNullable<RunnerView['recovery']>; intro?: string | undefined; onDone: (picks: string[]) => void }) {
+export function DamageControl({ view, intro, onDone, offered }: { view: NonNullable<RunnerView['recovery']>; intro?: string | undefined; onDone: (picks: string[]) => void; offered?: readonly string[] | undefined }) {
+  if (view.readOnly) return <ReadOnlySteps view={view} offered={offered} onDone={() => onDone([])} />;
+  return <DamagePicks view={view} intro={intro} onDone={onDone} />;
+}
+
+/**
+ * CR-53 (R25(4)): "Your steps" read-only, right after the arc damage control (the finale's recovery-agency test):
+ * the authored note first, then the outcome's helpful steps, then feedback on the harmful steps the arc damage
+ * control did not offer. No picks, nothing scored.
+ */
+function ReadOnlySteps({ view, offered, onDone }: { view: NonNullable<RunnerView['recovery']>; offered?: readonly string[] | undefined; onDone: () => void }) {
+  const heading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => heading.current?.focus(), []);
+  const { helps, harmful } = readOnlySteps(view.options, offered);
+  return (
+    <section class={styles.panel} aria-labelledby="damage-feedback-heading" data-recovery-readonly="">
+      <h3 id="damage-feedback-heading" ref={heading} tabIndex={-1}>
+        {t('damage_feedback_title')}
+      </h3>
+      {view.note ? <p data-recovery-note="">{view.note}</p> : null}
+      <ol class={styles.feedback}>
+        {helps.map((o) => (
+          <li key={o.step} data-step={o.step}>
+            <span class={styles.feedbackHead}>
+              <Icon name="seal" />
+              <span>
+                <strong>{t('damage_helps')}</strong> {recoveryStepLabel(o.step)}
+              </span>
+            </span>
+          </li>
+        ))}
+        {harmful.map((o) => (
+          <li key={o.step} data-step={o.step}>
+            <span class={styles.feedbackHead}>
+              <Icon name="info" />
+              <span>
+                <strong>{t('damage_doesnt_help')}</strong> {recoveryStepLabel(o.step)}
+              </span>
+            </span>
+            {(o.feedback ?? recoveryStepFeedback(o.step)) ? <p>{o.feedback ?? recoveryStepFeedback(o.step)}</p> : null}
+          </li>
+        ))}
+      </ol>
+      <button type="button" class={styles.primary} onClick={onDone}>
+        {t('app_continue')}
+      </button>
+    </section>
+  );
+}
+
+function DamagePicks({ view, intro, onDone }: { view: NonNullable<RunnerView['recovery']>; intro?: string | undefined; onDone: (picks: string[]) => void }) {
   const [picks, setPicks] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -250,7 +302,7 @@ export function DamageControl({ view, intro, onDone }: { view: NonNullable<Runne
 }
 
 /** One scenario from arrival to the end of damage control. Give it a `key` to restart. */
-export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines = 'auto', onCallLines, alwaysTranslate = false, onQuit, settings, defaultTimer = 'standard', onSettings, coachMarks = [], onCoachMarkSeen, revealNames }: ScenarioViewProps) {
+export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines = 'auto', onCallLines, alwaysTranslate = false, onQuit, settings, defaultTimer = 'standard', onSettings, coachMarks = [], onCoachMarkSeen, revealNames, recoveryOffered }: ScenarioViewProps) {
   const runner = useScenarioRunner(scenario, ctx);
   const { view, state } = runner;
   const announce = useContext(AnnounceContext);
@@ -951,7 +1003,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
             {view.phase === 'interrupt' ? <p class={styles.note}>{t('interrupt_closing')}</p> : null}
             {view.phase === 'damage_control' && view.recovery ? (
               // The outcome was the caption of the consequence step just before; not repeated here (ruling 2026-11-19).
-              <DamageControl view={view.recovery} onDone={runner.submitRecovery} />
+              <DamageControl view={view.recovery} offered={recoveryOffered} onDone={runner.submitRecovery} />
             ) : null}
           </section>
         </CheckContext.Provider>

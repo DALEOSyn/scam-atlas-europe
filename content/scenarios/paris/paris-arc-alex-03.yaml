@@ -6,6 +6,10 @@
 # finale's reveal, "the same picture on profiles with other names", can't play here without closing the
 # arc, so it finds nothing yet and says that proves nothing either way). Flagged for game-designer.
 # Debrief per §10.2 slot 3 (layer 1 words fixed there), with the safeguarding line.
+# R25(2), T-3.13b: after a slot-1 Close, slot 2 ("let's move to another app") is skipped, so layer 2 adds one
+# sentence on moving apps, true for every player and naming no app (de-propk-cybergrooming-2026,
+# de-polizei-lippe-cybergrooming, eu-bik-grooming-2020: moving to a private chat app; be-police-romance-2026: report
+# the profile to the site or app).
 id: paris-arc-alex-03
 chapter: paris
 role: arc
@@ -60,7 +64,7 @@ debrief:
     what_works: "Tell Teo or Adaeze; do a photo check."
   layer2:
     message_flags: []
-    notes: "Most compliments are just kind. But praise followed by \"keep it between us\" cuts you off from the people who could help you check, which is why secrecy is a common step in online scams and grooming. A photo check can catch a copied picture, but finding nothing proves nothing. Telling someone you trust always helps."
+    notes: "Most compliments are just kind. But praise followed by \"keep it between us\" cuts you off from the people who could help you check, which is why secrecy is a common step in online scams and grooming. Being asked to move to another app is a common step too: like a secret, it takes the chat away from the place where you could report the profile. A photo check can catch a copied picture, but finding nothing proves nothing. Telling someone you trust always helps."
   safeguarding_line: "Asked to switch apps or keep secrets? Tell a trusted adult."
   already_clicked:
     clicked: "Promised already? That's fine: a promise like this isn't one you have to keep. Tell someone you trust, and if anyone asks you for money, talk to them first."

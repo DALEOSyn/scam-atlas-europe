@@ -12,7 +12,7 @@
  */
 import { z } from 'zod';
 import { deriveCheckables } from './checkables.ts';
-import { ICU_MESSAGE_RE, SPOTTED_EXPR_RE } from './constants.ts';
+import { ARC_CHECKED, ARC_TOLD_SOMEONE, ICU_MESSAGE_RE, SPOTTED_EXPR_RE } from './constants.ts';
 import { firstLang, langMarkupIssues, strayLangMarkers } from './inlineLang.ts';
 import { DIAL_KINDS, parentKinds } from './callDirection.ts';
 
@@ -675,8 +675,8 @@ export function timelineTextIssues(text: string): string[] {
   return out;
 }
 
-/** R22 (psych M1): the flag the finale's close beat and Teo's chat set when the player told or checked with someone. */
-export const ARC_TOLD_SOMEONE = 'arc_told_someone';
+/** R22 (psych M1), R25(5): the flags the finale's close beat and Teo's chat set (defined Zod-free in constants.ts). */
+export { ARC_CHECKED, ARC_TOLD_SOMEONE };
 const TOLD_KINDS: readonly ActionKind[] = ['report', 'verify_identity', 'ask_someone'];
 
 /** CR-40: what nobody does in an advice scenario (the player advises; the cast member stays safe). */
@@ -877,6 +877,12 @@ export const scenarioSchema = z
     requires_flags: z.array(flagName).default([]),
     arc_branch_on: flagName.optional(),
     pressure: pressureSchema.default({ timer: false, levers: [] }),
+    /**
+     * CR-54 (R26(1)): bosses only, the opening beat's timer length (the opening beat has no beat object, so it is
+     * set here, like a scheduled beat's `timer_seconds`). Bounds (rules.ts): between call_beat and boss_beat; a boss
+     * call beat must match balance timers.boss_call_beat_by_slot for the chapter's slot (chapter rules).
+     */
+    timer_seconds: z.number().int().positive().optional(),
     message: messageSchema,
     inspectables: z.array(inspectableSchema).default([]),
     /** 2–5; CR-45: an opener with `request: none` may offer 1, a setup step (e.g. "Wait for the code"). */
@@ -957,6 +963,7 @@ export const scenarioSchema = z
       if (b.after_what_now && b.after_beat === undefined) issue(['interrupts', i, 'after_what_now'], 'after_what_now needs after_beat');
       if (b.on_fall === 'show' && b.after_beat === undefined) issue(['interrupts', i, 'on_fall'], 'on_fall is for after_beat interrupts (at_seconds interrupts arrive on the clock)');
     });
+    if (s.role !== 'boss' && s.timer_seconds !== undefined) issue(['timer_seconds'], "timer_seconds is for a boss's opening beat (CR-54)");
     const beatIds = new Set<string>(['start']);
     s.beats.forEach((b, i) => {
       if (beatIds.has(b.id)) issue(['beats', i, 'id'], `duplicate beat id "${b.id}"`);
@@ -1073,7 +1080,7 @@ export const scenarioSchema = z
         const reached = referencedBeats.has(b.id);
         if (b.arrives_after === undefined && !reached) issue(['beats', i, 'arrives_after'], 'boss beats arrive on a schedule: set arrives_after (or reach the beat with next_beat)');
         if (b.arrives_after !== undefined && reached) issue(['beats', i, 'arrives_after'], 'a scheduled boss beat cannot also be a next_beat target');
-        if (b.timer_seconds !== undefined && b.arrives_after === undefined) issue(['beats', i, 'timer_seconds'], 'timer_seconds is for scheduled boss beats (arrives_after)');
+        if (b.timer_seconds !== undefined && b.arrives_after === undefined) issue(['beats', i, 'timer_seconds'], 'timer_seconds is for scheduled boss beats (arrives_after): the timer starts only when a scheduled beat arrives, so the engine ignores it on a beat reached by next_beat (CR-54)');
       });
       if (!s.beats.some((b) => b.arrives_after !== undefined)) issue(['beats'], 'a boss needs at least one scheduled beat (arrives_after)');
     }
@@ -1173,14 +1180,23 @@ export const scenarioSchema = z
     }
     for (const [key, o] of Object.entries(s.outcomes)) if (o.recovery_note && !o.recovery?.length) issue(['outcomes', key, 'recovery_note'], 'recovery_note is shown with damage control: this outcome has no recovery (R22)');
     // R22 (psych M1): ending lines that say the player told someone are gated on ARC_TOLD_SOMEONE; it is set exactly
-    // where it is true (a report, a photo check, asking someone) and never by stepping away.
-    if (s.finale === 'close' || s.finale === 'teo') {
-      for (const [key, o] of Object.entries(s.outcomes)) {
-        const via = beats.flatMap((b) => b.actions.filter((a) => a.outcome === key).map((a) => a.kind));
-        const told = o.sets_flags?.includes(ARC_TOLD_SOMEONE) === true;
-        if (via.some((k) => TOLD_KINDS.includes(k)) && !told) issue(['outcomes', key, 'sets_flags'], `a report, photo check or asking someone sets ${ARC_TOLD_SOMEONE} (R22, psych M1)`);
-        if (told && via.length > 0 && via.every((k) => k === 'ignore')) issue(['outcomes', key, 'sets_flags'], `stepping away is not telling someone: no ${ARC_TOLD_SOMEONE} here (R22)`);
+    // where it is true (a report, a photo check with Teo, asking someone) and never by stepping away. R25(5), CR-51:
+    // the close beat's solo photo check (reached only by verify_identity) sets ARC_CHECKED instead, never
+    // ARC_TOLD_SOMEONE; ARC_CHECKED is set nowhere else. Teo's chat is unchanged (that photo check is done together).
+    for (const [key, o] of Object.entries(s.outcomes)) {
+      const via = beats.flatMap((b) => b.actions.filter((a) => a.outcome === key).map((a) => a.kind));
+      const told = o.sets_flags?.includes(ARC_TOLD_SOMEONE) === true;
+      const checked = o.sets_flags?.includes(ARC_CHECKED) === true;
+      const soloCheck = s.finale === 'close' && via.length > 0 && via.every((k) => k === 'verify_identity');
+      if (checked && !soloCheck) issue(['outcomes', key, 'sets_flags'], `${ARC_CHECKED} is set only by the close beat's photo check (outcomes reached by verify_identity only; R25(5), CR-51)`);
+      if (s.finale !== 'close' && s.finale !== 'teo') continue;
+      if (soloCheck) {
+        if (!checked) issue(['outcomes', key, 'sets_flags'], `the close beat's photo check sets ${ARC_CHECKED} (R25(5), CR-51)`);
+        if (told) issue(['outcomes', key, 'sets_flags'], `a solo photo check is not telling someone: ${ARC_CHECKED}, not ${ARC_TOLD_SOMEONE}, here (R25(5), CR-51)`);
+        continue;
       }
+      if (via.some((k) => TOLD_KINDS.includes(k)) && !told) issue(['outcomes', key, 'sets_flags'], `a report, photo check or asking someone sets ${ARC_TOLD_SOMEONE} (R22, psych M1)`);
+      if (told && via.length > 0 && via.every((k) => k === 'ignore')) issue(['outcomes', key, 'sets_flags'], `stepping away is not telling someone: no ${ARC_TOLD_SOMEONE} here (R22)`);
     }
     if (s.role === 'boss') {
       // CR-18(e): a scheduled boss beat chains through start_transfer to exactly one banking sub-beat.
@@ -1829,6 +1845,8 @@ export const balanceSchema = z
         by_slot: z.record(z.string(), z.number().int().positive()),
         boss_beat: z.number().int().positive(),
         call_beat: z.number().int().positive(),
+        /** R26(1), CR-54: a scheduled call beat inside a boss runs this long, by chapter slot (validator). */
+        boss_call_beat_by_slot: z.record(z.string(), z.number().int().positive()),
         inspect_cost_seconds: nonNeg,
         escalation_extra_seconds: nonNeg,
         modes: z.object({ standard: z.number().positive(), extended: z.number().positive(), off: z.null() }).strict(),
@@ -1859,6 +1877,11 @@ export const balanceSchema = z
         ),
         max_new_patterns_per_chapter: z.number().int(),
         max_callbacks_per_chapter: z.number().int(),
+        /**
+         * R23(1), R27, CR-52: chapter kinds the callback cap does not apply to. Only `arc_finale` (the finale reviews
+         * every earlier chapter's habit, GDD §30.1, §30.5); absent = no exemption.
+         */
+        callback_cap_exempt: z.array(z.literal('arc_finale')).default([]),
       })
       .passthrough(),
     mix: z

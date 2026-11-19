@@ -14,6 +14,7 @@
  * habit progress, which one-off callouts were shown, and the story layer (postcards, flips, scenes seen). No personal data
  * beyond the optional in-game nickname (GDD §2), which never leaves the device.
  */
+import { ARC_HELPED_TEO, ARC_TOLD_KINDS, ARC_TOLD_SOMEONE } from '../content/constants.ts';
 import { ARC_ENDING_IDS as ARC_ENDINGS, EMPTY_ARC, type ArcEnding, type ArcState, type FinaleStep } from './arc.ts';
 import type { ScenarioRecord, Stamp } from './chapter.ts';
 import type { HabitProgress } from './habits.ts';
@@ -63,7 +64,15 @@ export interface SaveState {
   coachMarks: string[];
   /** Story layer (S3): postcards collected, flips, scenes seen. Content ids only; additive, no version bump. */
   story: StoryState;
+  /** One-time load fixes already applied to this save (additive, no version bump; see `SAVE_FIXES`). */
+  fixes: string[];
 }
+
+/**
+ * One-time fixes on load, by id. A fresh save has them all; a save without one gets it applied once in `parseSave`.
+ * - `arc_flags_cr51`: arc flags for saves from builds before CR-51 / R28 (`fixArcFlags`).
+ */
+export const SAVE_FIXES: readonly string[] = ['arc_flags_cr51'];
 
 export const DEFAULT_SETTINGS: Settings = {
   timerMode: null,
@@ -85,6 +94,7 @@ export function freshSave(): SaveState {
     callouts: { pressureAny: false, pressureGenuine: false },
     coachMarks: [],
     story: { ...EMPTY_STORY, postcards: [], flips: [], seen: [] },
+    fixes: [...SAVE_FIXES],
   };
 }
 
@@ -254,8 +264,33 @@ export function parseSave(raw: string | null): ParseResult {
     callouts: { pressureAny: bool(callouts.pressureAny, false), pressureGenuine: bool(callouts.pressureGenuine, false) },
     coachMarks: strings(o.coachMarks, SNAKE),
     story: sanitiseStory(o.story),
+    fixes: strings(o.fixes, SNAKE),
   };
-  return { save, status: migrated ? 'migrated' : 'ok' };
+  const fixed = save.fixes.includes('arc_flags_cr51') ? save : { ...save, flags: fixArcFlags(save.flags, save.arc), fixes: [...save.fixes, 'arc_flags_cr51'] };
+  return { save: fixed, status: migrated ? 'migrated' : 'ok' };
+}
+
+/**
+ * One-time fix `arc_flags_cr51` (CR-51, R28) for saves written before those rules. Only what the save proves:
+ * - `arc_told_someone` when a recorded arc slot (`arc.choices`, slots 1–9, the latest kind per slot) was decided by
+ *   `report` or `ask_someone`: CR-51 sets it there now; older builds did not.
+ * - `arc_helped_teo` (R28) when `arc_told_someone` is set, no recorded slot explains it and the finale plays Teo's
+ *   chat (never together with the close beat): its only source is then Teo's photo check or report, the two outcomes
+ *   that set `arc_helped_teo` now. A save already holding a told-kind slot is left alone (ending A always does:
+ *   Teo's "stop replying" and his photo check cannot be told apart there).
+ * Not done: turning a pre-CR-51 close-beat photo check into `arc_checked`. The save keeps no trace of the close
+ * beat's choice (it has no arc slot, so it is not in `arc.choices`; chapter records keep no action kind and are
+ * dropped when Brussels finishes), and its report sets the same `arc_told_someone` in every build, so a photo check
+ * cannot be told apart from a report. Such a player keeps "You told someone" (B) or "You reported it." (C).
+ * Idempotent; never removes a flag.
+ */
+export function fixArcFlags(flags: readonly string[], arc: Pick<ArcState, 'choices' | 'finale'>): string[] {
+  const out = new Set(flags);
+  const toldBySlot = arc.choices.some((c) => ARC_TOLD_KINDS.includes(c.kind));
+  const teoOnly = arc.finale !== null && arc.finale.steps.includes('teo') && !arc.finale.steps.includes('close');
+  if (teoOnly && out.has(ARC_TOLD_SOMEONE) && !toldBySlot) out.add(ARC_HELPED_TEO);
+  if (toldBySlot) out.add(ARC_TOLD_SOMEONE);
+  return [...out];
 }
 
 /** Minimal Storage surface (localStorage, or a fake in tests). */

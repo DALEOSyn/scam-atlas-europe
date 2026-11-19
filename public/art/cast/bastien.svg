@@ -1,0 +1,29 @@
+<!-- Scam Atlas: Europe. Cast portrait: Bastien Morel, bald with a short grey beard, mustard knit, holding a plain mug; expression groups, calm by default. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300" role="img" aria-labelledby="ba-t"><title id="ba-t">Bastien Morel</title>
+<style>.x{display:none}.x-default{display:inline}.x:target{display:inline}.x:target~.x-default{display:none}</style>
+<defs><path id="ba-sil" d="M16 300C18 230 58 196 120 192C182 196 222 230 224 300ZM70 125a50 56 0 1 0 100 0a50 56 0 1 0 -100 0ZM60 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM160 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0Z"/></defs>
+<use href="#ba-sil" fill="#fffaf0" stroke="#fffaf0" stroke-width="10" stroke-linejoin="round"/>
+<g stroke="#2b2433" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M16 300C18 230 58 196 120 192C182 196 222 230 224 300Z" fill="#d9a441"/>
+<path d="M160 204C192 216 214 248 220 300H184Z" fill="#bd8a2c" stroke="none"/>
+<rect x="104" y="166" width="32" height="34" rx="10" fill="#6e4430"/>
+<path d="M94 196Q120 214 146 196L142 192Q120 206 98 192Z" fill="#bd8a2c"/>
+<path d="M60 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM160 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0Z" fill="#86543a"/>
+<path d="M70 125a50 56 0 1 0 100 0a50 56 0 1 0 -100 0Z" fill="#86543a"/>
+<path d="M76 146C80 170 98 186 120 186C142 186 160 170 164 146C158 158 150 166 142 170C134 176 126 177 120 177C114 177 106 176 98 170C90 166 82 158 76 146Z" fill="#b9b4ad"/>
+<path d="M96 82Q108 74 122 74" fill="none" stroke="#dcae8c" stroke-width="3"/>
+<path d="M111 142a9 10 0 1 0 18 0a9 10 0 1 0 -18 0Z" fill="#6e4430" stroke="none"/>
+<path d="M156 300H198C194 278 184 262 168 254L146 262C150 274 152 288 156 300Z" fill="#d9a441"/>
+<path d="M168 220Q182 220 182 231Q182 242 168 242" fill="none" stroke-width="10"/><path d="M168 220Q182 220 182 231Q182 242 168 242" fill="none" stroke="#8fae8b" stroke-width="4"/>
+<rect x="134" y="212" width="36" height="40" rx="6" fill="#8fae8b"/>
+<path d="M134 222H170" stroke="#f1e4c8" stroke-width="4" stroke-linecap="butt"/>
+<path d="M126 250C126 240 136 236 148 238L172 242C178 248 176 260 168 262L136 262C130 262 126 258 126 250Z" fill="#86543a"/>
+<path d="M138 246L156 248M138 254L156 255" stroke="#dcae8c" stroke-width="2"/>
+</g>
+<g id="x-warm" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M90 102Q101 96 112 100M128 100Q139 96 150 102M106 162Q120 174 134 162M94 127Q101 119 108 127M132 127Q139 119 146 127" stroke="#dcae8c" stroke-width="5.5"/><path d="M90 102Q101 96 112 100M128 100Q139 96 150 102" stroke-width="2.5"/><path d="M94 127Q101 119 108 127M132 127Q139 119 146 127" stroke-width="3"/><path d="M106 162Q120 174 134 162" stroke-width="3"/>
+</g>
+<g id="x-calm" class="x x-default" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M90 105Q101 100 112 104M128 104Q139 100 150 105M111 164Q120 168 129 164" stroke="#dcae8c" stroke-width="5.5"/><path d="M90 105Q101 100 112 104M128 104Q139 100 150 105" stroke-width="2.5"/><path d="M94 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0ZM132 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0Z" fill="#fffdf8" stroke-width="2"/><path d="M97.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0ZM135.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0Z" fill="#2b2433" stroke="none"/><path d="M111 164Q120 168 129 164" stroke-width="3"/>
+</g>
+</svg>

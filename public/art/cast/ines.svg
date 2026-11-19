@@ -1,0 +1,37 @@
+<!-- Scam Atlas: Europe. Cast portrait: Inès Roussel, braids in a high bun, denim overalls with pencils in the bib pocket; expression groups, calm by default. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300" role="img" aria-labelledby="in-t"><title id="in-t">Inès Roussel</title>
+<style>.x{display:none}.x-default{display:inline}.x:target{display:inline}.x:target~.x-default{display:none}</style>
+<defs><path id="in-sil" d="M50 300C50 246 76 206 120 200C164 206 190 246 190 300ZM70 125a50 56 0 1 0 100 0a50 56 0 1 0 -100 0ZM60 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM160 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM70 116C66 78 90 60 120 60C150 60 174 78 170 116C164 96 150 84 120 84C90 84 76 96 70 116ZM98 38a22 22 0 1 0 44 0a22 22 0 1 0 -44 0ZM92 46a12 12 0 1 0 24 0a12 12 0 1 0 -24 0ZM124 46a12 12 0 1 0 24 0a12 12 0 1 0 -24 0Z"/></defs>
+<use href="#in-sil" fill="#fffaf0" stroke="#fffaf0" stroke-width="10" stroke-linejoin="round"/>
+<g stroke="#2b2433" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M50 300C50 246 76 206 120 200C164 206 190 246 190 300Z" fill="#f1e4c8"/>
+<path d="M154 210C176 222 186 252 188 300H160Z" fill="#ddcca9" stroke="none"/>
+<rect x="104" y="166" width="32" height="34" rx="10" fill="#472b1d"/>
+<path d="M88 232Q120 226 152 232L158 300H82Z" fill="#4e6a8f"/>
+<path d="M94 234L86 206M146 234L154 206" stroke-width="10"/><path d="M94 234L86 206M146 234L154 206" stroke="#4e6a8f" stroke-width="5"/>
+<path d="M90.5 240a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0 -7 0ZM142.5 240a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0 -7 0Z" fill="#d9a441" stroke-width="1.5"/>
+<path d="M110 250V230l2.5 -5l2.5 5V250ZM122 250V234l2.5 -5l2.5 5V250Z" fill="#c98f2e" stroke-width="1.5"/>
+<path d="M128 250V236l2.5 -5l2.5 5V250Z" fill="#e3a6a0" stroke-width="1.5"/>
+<rect x="102" y="248" width="36" height="24" rx="3" fill="#3f5675"/>
+<path d="M60 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM160 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0Z" fill="#5a3826"/>
+<path d="M98 38a22 22 0 1 0 44 0a22 22 0 1 0 -44 0ZM92 46a12 12 0 1 0 24 0a12 12 0 1 0 -24 0ZM124 46a12 12 0 1 0 24 0a12 12 0 1 0 -24 0Z" fill="#2a2220"/>
+<path d="M104 30Q120 20 136 30M100 42Q120 32 140 42M104 52Q120 44 136 52" fill="none" stroke="#4a3326" stroke-width="2.5"/>
+<path d="M70 125a50 56 0 1 0 100 0a50 56 0 1 0 -100 0Z" fill="#5a3826"/>
+<path d="M88 168C100 180 140 180 152 168C146 178 134 184 120 184C106 184 94 178 88 168Z" fill="#472b1d" stroke="none"/>
+<path d="M70 116C66 78 90 60 120 60C150 60 174 78 170 116C164 96 150 84 120 84C90 84 76 96 70 116Z" fill="#2a2220"/>
+<path d="M84 100Q96 80 112 66M100 92Q108 76 118 64M140 92Q132 76 122 64M156 100Q144 80 128 66" fill="none" stroke="#4a3326" stroke-width="2.5"/>
+<path d="M111 142a9 10 0 1 0 18 0a9 10 0 1 0 -18 0Z" fill="#472b1d" stroke="none"/>
+</g>
+<g id="x-focused" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M90 104Q101 101 112 105M128 105Q139 101 150 104M110 165H130" stroke="#c08a68" stroke-width="6"/><path d="M90 104Q101 101 112 105M128 105Q139 101 150 104" stroke-width="2.5"/><path d="M94 121.5H108a7 6.5 0 0 1 -14 0ZM132 121.5H146a7 6.5 0 0 1 -14 0Z" fill="#fffdf8" stroke-width="2"/><path d="M98 125a3 3 0 1 0 6 0a3 3 0 1 0 -6 0ZM136 125a3 3 0 1 0 6 0a3 3 0 1 0 -6 0Z" fill="#2b2433" stroke="none"/><path d="M92 121.5H110M130 121.5H148" stroke-width="3.5"/><path d="M110 165H130" stroke-width="3.5"/>
+</g>
+<g id="x-worried" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M90 107Q102 105 112 95M128 95Q138 105 150 107M114 165H126" stroke="#c08a68" stroke-width="6"/><path d="M90 107Q102 105 112 95M128 95Q138 105 150 107" stroke-width="2.5"/><path d="M94 123a7 6.5 0 1 0 14 0a7 6.5 0 1 0 -14 0ZM132 123a7 6.5 0 1 0 14 0a7 6.5 0 1 0 -14 0Z" fill="#fffdf8" stroke-width="2"/><path d="M97.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0ZM135.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0Z" fill="#2b2433" stroke="none"/><path d="M114 165H126" stroke-width="3.5"/>
+</g>
+<g id="x-proud" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<g transform="translate(0 -2)"><path d="M90 100Q101 92 112 98M128 98Q139 92 150 100M102 161Q120 177 138 161M94 127Q101 119 108 127M132 127Q139 119 146 127" stroke="#c08a68" stroke-width="6"/><path d="M90 100Q101 92 112 98M128 98Q139 92 150 100" stroke-width="2.5"/><path d="M94 127Q101 119 108 127M132 127Q139 119 146 127" stroke-width="3.5"/><path d="M102 161Q120 177 138 161" stroke-width="3.5"/></g><path d="M54 300C58 274 74 254 100 244L108 264C92 272 86 286 86 300Z" fill="#f1e4c8" stroke-width="3"/><path d="M98 240C108 232 128 236 136 244C140 252 134 262 124 262L106 262C96 258 92 246 98 240Z" fill="#5a3826" stroke-width="3"/><path d="M110 246L130 248M108 254L128 256" stroke="#c08a68" stroke-width="2"/>
+</g>
+<g id="x-calm" class="x x-default" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M90 105Q101 100 112 104M128 104Q139 100 150 105M111 164Q120 168 129 164" stroke="#c08a68" stroke-width="6"/><path d="M90 105Q101 100 112 104M128 104Q139 100 150 105" stroke-width="2.5"/><path d="M94 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0ZM132 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0Z" fill="#fffdf8" stroke-width="2"/><path d="M97.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0ZM135.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0Z" fill="#2b2433" stroke="none"/><path d="M111 164Q120 168 129 164" stroke-width="3.5"/>
+</g>
+</svg>

@@ -1,0 +1,41 @@
+<!-- Scam Atlas: Europe. Cast portrait: Solène Arbogast, dark bob with fringe, forest shirt, bag strap and a pencil behind her ear, drawn the same as the Paris video-call still; expression groups, calm by default. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300" role="img" aria-labelledby="so-t"><title id="so-t">Solène Arbogast</title>
+<style>.x{display:none}.x-default{display:inline}.x:target{display:inline}.x:target~.x-default{display:none}</style>
+<defs><g id="so-sil"><path d="M24 300C24 244 60 204 120 198C180 204 216 244 216 300ZM64 176C56 130 60 64 120 60C180 64 184 130 176 176Q174 186 164 186L76 186Q66 186 64 176Z"/><rect x="104" y="166" width="32" height="40" rx="10"/><rect x="170" y="64" width="8" height="54" rx="3" transform="rotate(16 174 86)"/></g></defs>
+<use href="#so-sil" fill="#fffaf0" stroke="#fffaf0" stroke-width="10" stroke-linejoin="round"/>
+<g stroke="#2b2433" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M24 300C24 244 60 204 120 198C180 204 216 244 216 300Z" fill="#3f6b4f"/>
+<path d="M156 208C186 222 206 260 210 300H176Z" fill="#325640" stroke="none"/>
+<path d="M58 238L72 216L163 300H132Z" fill="#5d6672"/>
+<path d="M64 176C56 130 60 64 120 60C180 64 184 130 176 176Q174 186 164 186L76 186Q66 186 64 176Z" fill="#4a3326"/>
+<rect x="104" y="166" width="32" height="40" rx="10" fill="#b97f58"/>
+<path d="M104 200L120 224L136 200Z" fill="#d39a70" stroke="none"/>
+<path d="M98 198L112 226L120 210L128 226L142 198" fill="#325640"/>
+<path d="M70 125a50 56 0 1 0 100 0a50 56 0 1 0 -100 0Z" fill="#d39a70"/>
+<g transform="rotate(16 174 86)"><rect x="170" y="64" width="8" height="44" rx="3" fill="#c98f2e" stroke-width="2"/><path d="M171 108L178 108L174 116Z" fill="#f1e4c8" stroke-width="2"/></g>
+<path d="M66 172C58 128 62 64 120 60C178 64 182 128 174 172C168 178 162 180 156 180C160 156 160 128 158 99Q140 89 120 95Q100 89 82 99C80 128 80 156 84 180C78 180 72 178 66 172Z" fill="#4a3326"/>
+<path d="M92 76Q106 68 120 68" fill="none" stroke="#7a5232" stroke-width="2"/>
+<path d="M113 143a7 8 0 1 0 14 0a7 8 0 1 0 -14 0Z" fill="#b97f58" stroke="none"/>
+</g>
+<g id="x-worried" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<g transform="translate(0 2)"><path d="M90 107Q102 105 112 95M128 95Q138 105 150 107" stroke-width="2.5"/><path d="M94 123a7 6.5 0 1 0 14 0a7 6.5 0 1 0 -14 0ZM132 123a7 6.5 0 1 0 14 0a7 6.5 0 1 0 -14 0Z" fill="#fffdf8" stroke-width="2"/><path d="M97.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0ZM135.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0Z" fill="#2b2433" stroke="none"/><path d="M114 165H126" stroke-width="3"/></g>
+</g>
+<g id="x-relieved" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<g transform="translate(0 2)"><path d="M90 100Q101 95 112 100M128 100Q139 95 150 100" stroke-width="2.5"/><path d="M94 123Q101 130 108 123M132 123Q139 130 146 123" stroke-width="3"/><path d="M109 163Q120 170 131 163" stroke-width="3"/></g><path d="M40 300C44 272 66 252 100 244L108 264C90 272 80 286 80 300Z" fill="#3f6b4f" stroke-width="3"/><path d="M98 240C108 232 128 236 136 244C140 252 134 262 124 262L106 262C96 258 92 246 98 240Z" fill="#d39a70" stroke-width="3"/><path d="M110 246L130 248M108 254L128 256" stroke="#b97f58" stroke-width="2"/><path d="M114.5 241a3.5 2 0 1 0 7 0a3.5 2 0 1 0 -7 0Z" fill="#2b2433" stroke="none"/>
+</g>
+<g id="x-warm" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<g transform="translate(0 2)"><path d="M90 102Q101 96 112 100M128 100Q139 96 150 102" stroke-width="2.5"/><path d="M94 127Q101 119 108 127M132 127Q139 119 146 127" stroke-width="3"/><path d="M106 162Q120 174 134 162" stroke-width="3"/><path d="M83 148a7 4 0 1 0 14 0a7 4 0 1 0 -14 0ZM143 148a7 4 0 1 0 14 0a7 4 0 1 0 -14 0Z" fill="#c98468" stroke="none" opacity=".6"/></g>
+</g>
+<g id="x-relieved-phone-ear" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<g transform="translate(0 2)"><path d="M90 100Q101 95 112 100M128 100Q139 95 150 100" stroke-width="2.5"/><path d="M94 123Q101 130 108 123M132 123Q139 130 146 123" stroke-width="3"/><path d="M109 163Q120 170 131 163" stroke-width="3"/></g><path d="M40 300C36 254 46 206 70 172L92 180C80 208 76 256 78 300Z" fill="#fffaf0" stroke="#fffaf0" stroke-width="13"/><g transform="translate(8 12) rotate(-15 67 120)"><path d="M57 104a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v32a6 6 0 0 1-6 6h-8a6 6 0 0 1-6-6ZM52 150C48 136 56 126 68 126C78 128 82 140 78 152C74 164 56 164 52 150Z" fill="#fffaf0" stroke="#fffaf0" stroke-width="13"/></g><path d="M40 300C36 254 46 206 70 172L92 180C80 208 76 256 78 300Z" fill="#3f6b4f" stroke-width="3"/><g transform="translate(8 12) rotate(-15 67 120)"><path d="M57 104a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v32a6 6 0 0 1-6 6h-8a6 6 0 0 1-6-6Z" fill="#5d6672" stroke-width="3"/><path d="M52 150C48 136 56 126 68 126C78 128 82 140 78 152C74 164 56 164 52 150Z" fill="#d39a70" stroke-width="3"/><path d="M58.5 146a3.5 2 0 1 0 7 0a3.5 2 0 1 0 -7 0Z" fill="#2b2433" stroke="none"/></g>
+</g>
+<g id="x-calm-phone-ear" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<g transform="translate(0 2)"><path d="M90 105Q101 100 112 104M128 104Q139 100 150 105" stroke-width="2.5"/><path d="M94 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0ZM132 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0Z" fill="#fffdf8" stroke-width="2"/><path d="M97.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0ZM135.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0Z" fill="#2b2433" stroke="none"/><path d="M111 164Q120 168 129 164" stroke-width="3"/></g><path d="M40 300C36 254 46 206 70 172L92 180C80 208 76 256 78 300Z" fill="#fffaf0" stroke="#fffaf0" stroke-width="13"/><g transform="translate(8 12) rotate(-15 67 120)"><path d="M57 104a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v32a6 6 0 0 1-6 6h-8a6 6 0 0 1-6-6ZM52 150C48 136 56 126 68 126C78 128 82 140 78 152C74 164 56 164 52 150Z" fill="#fffaf0" stroke="#fffaf0" stroke-width="13"/></g><path d="M40 300C36 254 46 206 70 172L92 180C80 208 76 256 78 300Z" fill="#3f6b4f" stroke-width="3"/><g transform="translate(8 12) rotate(-15 67 120)"><path d="M57 104a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v32a6 6 0 0 1-6 6h-8a6 6 0 0 1-6-6Z" fill="#5d6672" stroke-width="3"/><path d="M52 150C48 136 56 126 68 126C78 128 82 140 78 152C74 164 56 164 52 150Z" fill="#d39a70" stroke-width="3"/><path d="M58.5 146a3.5 2 0 1 0 7 0a3.5 2 0 1 0 -7 0Z" fill="#2b2433" stroke="none"/></g>
+</g>
+<g id="x-calm" class="x x-default" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M90 109Q101 105 112 108M128 108Q139 105 150 109" fill="none" stroke-width="2.5"/>
+<path d="M94 125a7 6 0 1 0 14 0a7 6 0 1 0 -14 0ZM132 125a7 6 0 1 0 14 0a7 6 0 1 0 -14 0Z" fill="#fffdf8" stroke-width="2"/>
+<path d="M97.6 125a3.4 3.4 0 1 0 6.8 0a3.4 3.4 0 1 0 -6.8 0ZM135.6 125a3.4 3.4 0 1 0 6.8 0a3.4 3.4 0 1 0 -6.8 0Z" fill="#2b2433" stroke="none"/>
+<path d="M110 164Q120 168 130 164" fill="none" stroke-width="3"/>
+</g>
+</svg>

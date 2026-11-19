@@ -107,7 +107,7 @@ outcomes:
     narrative: "\"Paid. Thank you.\" The next morning your Larchwick app shows €12.00, then €198.00 at an online shop."
     recovery:
       - { step: block_card_in_bank_app, category: stop }
-      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
       - { step: report_sticker, category: report }
       - { step: report_to_police, category: report }
       - { step: wait_and_see, category: harmful }

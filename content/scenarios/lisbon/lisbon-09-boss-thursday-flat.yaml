@@ -15,7 +15,7 @@
 #   separately sourced sequence, and no debrief presents it as one.
 # Interrupt after beat 3: the real host Leonor in the Roostwell app chat (genuine, on_fall: show per producer ruling R20).
 # Every fall sets lisbon_acted_fast (story only). Each fall has its own six steps (b1 login: password and
-# two-step; b2 transfer: ask the bank to stop it; b3 card: block it); after several falls the first list wins.
+# trusted adult, two-step in layer 2; b2 transfer: ask the bank to stop it; b3 card: block it); after several falls the first list wins.
 id: lisbon-09-boss-thursday-flat
 chapter: lisbon
 role: boss
@@ -254,7 +254,7 @@ outcomes:
     sets_flags: [lisbon_acted_fast]
     recovery:
       - { step: change_password, category: stop }
-      - { step: turn_on_two_step, category: secure }
+      - { step: tell_trusted_adult, category: stop }
       - { step: call_bank_known_number, category: stop }
       - { step: report_to_police, category: report }
       - { step: keep_chatting_host, category: harmful }
@@ -274,7 +274,7 @@ outcomes:
     sets_flags: [lisbon_acted_fast]
     recovery:
       - { step: block_card_in_bank_app, category: stop }
-      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
       - { step: report_listing_or_host, category: report }
       - { step: report_to_police, category: report }
       - { step: keep_chatting_host, category: harmful }
@@ -320,6 +320,6 @@ debrief:
   device_tip: "On a real phone, open the booking app from your home screen. Your booking, your host's messages and anything you owe are all there."
   habit_card: stay-on-the-platform
   already_clicked:
-    entered_details: "Typed your login? Change the password in the real Roostwell app and turn on two-step. Typed your card? Block it in your banking app now."
+    entered_details: "Typed your login? Change the password in the real Roostwell app and turn on two-step. Typed your card? Block it in your banking app now, then call your bank on the number on your card."
     paid: "Sent a transfer? Call your bank now on the number on your card and ask it to try to stop or recall it."
   sources: [de-evz-rental-fraud, nl-nltimes-booking-phishing-2026, pt-bdp-ficaadica-2023, pt-rtp-gnr-rentals-2026, pt-dn-psp-airbnb-2026, eu-ec-ipr-vop-2025, eu-esas-ai-scams-factsheet-nl, pt-dn-psp-cncs-campaign-2025]

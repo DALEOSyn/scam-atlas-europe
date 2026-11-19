@@ -32,8 +32,8 @@ const T = () => ctx({ slot: 7, timerMode: 'off' });
 const cont: RunnerEvent = { type: 'continue' };
 const recover = (picks: string[]): RunnerEvent => ({ type: 'recovery', picks });
 const BOSS = 'lisbon-09-boss-thursday-flat';
-const DC_PARKING = ['block_card_in_bank_app', 'call_bank_known_number', 'report_sticker'];
-const DC_RENTAL = ['block_card_in_bank_app', 'call_bank_known_number', 'report_listing_or_host'];
+const DC_PARKING = ['block_card_in_bank_app', 'tell_trusted_adult', 'report_sticker'];
+const DC_RENTAL = ['block_card_in_bank_app', 'tell_trusted_adult', 'report_listing_or_host'];
 const PARKING = new Set(['lisbon-02-meter-sticker', 'lisbon-07-parking-slip']);
 const tagAll = (beat: string, ...targets: string[]): RunnerEvent[] => targets.flatMap((t) => [check(t, beat), tag(t, beat)]);
 
@@ -266,24 +266,15 @@ describe('Lisbon: every fall on a money action offers tell_trusted_adult (scepti
       ].sort(),
     );
   });
-  // PENDING: these six lists are already at the six-step cap with every correct step and two harmful
-  // ones. The producer ruling (drop one harmful) conflicts with GDD §9 / content:validate ("exactly 2
-  // harmful"), so they wait for a ruling on that rule. Remove each id here once its list has the step;
-  // the second assertion fails if one gains it without being removed, so this list can't go stale.
-  const PENDING = new Set([
-    'lisbon-02-meter-sticker:card_taken_meter',
-    'lisbon-03-alfama-ad:deposit_taken',
-    'lisbon-06-host-partner-page:securepay_taken',
-    'lisbon-07-parking-slip:card_taken_slip',
-    `${BOSS}:login_typed_b1`,
-    `${BOSS}:card_typed_b3`,
-  ]);
-  it('each includes tell_trusted_adult as a stop step (except the pending lists)', () => {
+  // Option (b), coordinator ruling: both harmful steps kept (GDD §9); card falls drop the bank call
+  // (blocking the card is the bank action; the call stays in already_clicked), b1 drops two-step (layer 2).
+  it('each includes tell_trusted_adult as a stop step, with exactly two harmful steps and at most six', () => {
     for (const s of all.values()) {
       for (const o of moneyFalls(s)) {
-        const step = s.outcomes[o]?.recovery?.find((r) => r.step === 'tell_trusted_adult');
-        if (PENDING.has(`${s.id}:${o}`)) expect([s.id, o, step]).toEqual([s.id, o, undefined]);
-        else expect([s.id, o, step?.category]).toEqual([s.id, o, 'stop']);
+        const list = s.outcomes[o]?.recovery ?? [];
+        expect([s.id, o, list.find((r) => r.step === 'tell_trusted_adult')?.category]).toEqual([s.id, o, 'stop']);
+        expect([s.id, o, list.filter((r) => r.category === 'harmful').length]).toEqual([s.id, o, 2]);
+        expect(list.length).toBeLessThanOrEqual(6);
       }
     }
   });

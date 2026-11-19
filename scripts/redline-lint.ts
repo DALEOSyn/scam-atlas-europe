@@ -31,6 +31,7 @@ import { resolve, relative, basename, sep } from 'node:path';
 import { LineCounter, parse, parseDocument, isMap, isScalar, isSeq, type Node } from 'yaml';
 import { listFiles, loadPatternIds } from './lib/content.ts';
 import { yamlStructureIssues } from './lib/yaml-safety.ts';
+import { svgSafetyIssues } from './lib/svg-safety.ts';
 import { blankSvgGeometry, checkQrPayload, scanText, type Finding, type RuleConfig } from './redline/rules.ts';
 import { compileList } from './redline/lists.ts';
 import { CHECKABLE_TARGETS } from '../src/content/checkables.ts';
@@ -281,6 +282,14 @@ export function lintText(file: string, text: string, cfg: RuleConfig, briefs?: R
   const exempt = new Set<Node>([...exemptSourceIds(file, root), ...exemptInspectableTargets(file, root), ...schemaIds, ...brandNotes]);
   for (const n of exempt) {
     if (n.range) raw = raw.slice(0, n.range[0]) + raw.slice(n.range[0], n.range[1]).replace(/[^\n]/g, ' ') + raw.slice(n.range[1]);
+  }
+
+  // Every SVG under public/: drawn as code only, nothing embedded or loaded from outside (sceptic T-3.3).
+  if (/\.svg$/i.test(file) && resolve(file).startsWith(`${PUBLIC}${sep}`)) {
+    for (const i of svgSafetyIssues(text)) {
+      const line = text.slice(0, i.index).split('\n').length;
+      add({ category: 'markup', severity: 'error', match: i.match, index: i.index, line, message: `${i.message} (Red Lines 1–2, ART_DIRECTION §12.3)` });
+    }
   }
 
   // brands.yaml: decoded-scalar pass only (its comments record real-brand collision checks).

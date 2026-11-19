@@ -229,3 +229,10 @@
 :global([data-motion='reduced']) .circle {
   animation: none;
 }
+
+/* CR-23: the timer is frozen while a coach mark is open; said in words, not only by the icon. */
+.frozenNote {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-regular);
+  white-space: normal;
+}

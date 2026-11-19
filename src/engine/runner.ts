@@ -829,7 +829,8 @@ export interface RunnerView {
    * `lang`/`translation` for in-world foreign text (CR-14). Earlier beats' follow-ups are not shown.
    */
   pusherMessages: PusherMessageView[];
-  timer: { remaining: number; length: number; expiries: number; frozen: boolean } | null;
+  /** `coachMark`: frozen because a coach mark is open (HUD: "Paused while the tip is open", CR-23). */
+  timer: { remaining: number; length: number; expiries: number; frozen: boolean; coachMark: boolean } | null;
   stress: { value: number; state: StressState };
   pause: { open: boolean; available: boolean; cooldownLeft: number };
   whatNow: WhatNowView | null;
@@ -906,7 +907,8 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
     checkables,
     // "k checked" counts the beat on screen only (QA E3).
     checkedCount: checkables.filter((c) => c.checked).length,
-    waitingBeats: st.arrived.filter((id) => !st.groups.some((x) => x.beatId === id)),
+    // CR-18(e): nothing waits on top of the banking card; an already-arrived beat shows again once it closes.
+    waitingBeats: holdingForTransfer(st) ? [] : st.arrived.filter((id) => !st.groups.some((x) => x.beatId === id)),
     // Hidden while a consequence or damage control is on screen (QA E10).
     interrupts: st.interrupts
       .filter((i) => i.arrived && i.actionId === undefined && (st.phase === 'playing' || st.phase === 'what_now' || st.phase === 'interrupt'))
@@ -918,11 +920,14 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
       ? st.pushers.fired.flatMap((f) => {
           const m = messages[f.index];
           const owner = plan[f.index]?.beat;
-          const ob = ownsPusher(g, owner) && owner !== undefined ? storyBeat(s, owner) : undefined;
+          const bound = ownsPusher(g, owner) && owner !== undefined ? storyBeat(s, owner) : undefined;
+          // A follow-up bound to a banking beat or a page (CR-21) still comes from the person who sent the
+          // message: channel and sender of the group's scheduled beat (sceptic T-3.3).
+          const ob = bound && (bound.device === 'banking' || !bound.message.sender) ? storyBeat(s, g.beatId) : bound;
           return m && ob ? [{ index: f.index, text: m.text, at: f.at, lang: m.lang, translation: m.translation, beatId: ob.id, device: ob.device, sender: ob.message.sender?.display ?? '' }] : [];
         })
       : [],
-    timer: st.timer && live ? { remaining: st.timer.remaining, length: st.timer.length, expiries: st.timer.expiries, frozen: frozen(st) } : null,
+    timer: st.timer && live ? { remaining: st.timer.remaining, length: st.timer.length, expiries: st.timer.expiries, frozen: frozen(st), coachMark: st.freezes.includes('coach_mark') } : null,
     stress: { value: st.stress, state },
     pause: {
       open: st.pause.open,

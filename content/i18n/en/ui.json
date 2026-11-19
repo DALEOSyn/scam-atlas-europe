@@ -204,6 +204,9 @@
   "banner_kind_email": "Email",
   "banner_kind_auth": "Sign-in app",
   "banner_kind_banking": "Banking app",
+  "banner_kind_browser": "Web page",
+  "banner_kind_qr": "Camera",
+  "banner_kind_letter": "Letter",
   "call_incoming": "Incoming call",
   "call_in_progress": "In call",
   "call_ended": "Call ended",
@@ -353,5 +356,8 @@
   "call_recorded": "Recorded message",
   "call_video": "Video call",
   "call_video_frame": "Video: {alt}",
-  "heading_bank_request": "Banking app: payment request from {name}"
+  "heading_bank_request": "Banking app: payment request from {name}",
+  "coach_frozen": "Paused while the tip is open",
+  "heading_video_call": "Video call from {from}",
+  "mail_quote_meta": "{from} · {when}"
 }

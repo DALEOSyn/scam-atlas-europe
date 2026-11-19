@@ -76,14 +76,16 @@ function gap(plan: readonly PusherPlan[], i: number): number {
   return Math.max(0, cur.offset - from);
 }
 
-/** Arm the follow-ups of `beat`, whose group starts at `now`. Earlier beats' unfired messages are skipped. */
+/**
+ * Arm the follow-ups of `beat`, whose group starts at `now`: its first unfired message, searched from
+ * the start of the list (not from the cursor), so a beat-bound follow-up armed earlier (CR-21, e.g. on a
+ * boss banking sub-beat) never hides a later scheduled beat's own follow-ups (sceptic T-3.3).
+ */
 export function armBeat(b: PusherTable, plan: readonly PusherPlan[], p: PusherState, beat: string, now: number, state: StressState): PusherState {
   if (!p.enabled) return p;
-  let cursor = p.cursor;
-  const first = plan.findIndex((x, i) => i >= cursor && x.beat === beat);
+  const first = plan.findIndex((x, i) => x.beat === beat && !p.fired.some((f) => f.index === i));
   if (first < 0) return { ...p, nextDue: null };
-  cursor = first;
-  return { ...p, cursor, nextDue: now + gap(plan, cursor) * scaleFor(b, state) };
+  return { ...p, cursor: first, nextDue: now + gap(plan, first) * scaleFor(b, state) };
 }
 
 /** The beat ended: its remaining follow-ups never fire. */

@@ -751,13 +751,6 @@
 }
 /* Payee-name check (CR-23, GDD §23.5). Warning colours only on "doesn't match"; information colours
    (accent rule on a neutral surface) on a close match; no seal, shield or badge on a match. */
-.nameChecking {
-  margin: 0;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-sunken);
-  font-style: italic;
-}
 .checkCard {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -770,14 +763,27 @@
 .checkResult {
   margin: 0;
   display: flex;
+  min-height: var(--tap-min);
   gap: var(--space-2);
   align-items: flex-start;
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-sm);
 }
-.checkMatch .checkResult {
-  background: var(--color-ok-bg);
-  color: var(--color-ok-text);
+.checkResult > svg {
+  flex: none;
+}
+.checkResult:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+/* Match: neutral surface plus a tick (producer ruling T-3.3): a match only says whose account it is. */
+.checkMatch .checkResult,
+.checkChecking .checkResult {
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+}
+.checkChecking .checkResult {
+  font-style: italic;
 }
 .checkClose .checkResult {
   background: var(--color-surface-sunken);
@@ -792,10 +798,10 @@
   background: var(--color-surface-sunken);
   color: var(--color-text);
 }
+/* The footer is part of the lesson: normal text colour and size (producer ruling T-3.3). */
 .checkFooter {
   margin: 0;
-  font-size: var(--fs-sm);
-  color: var(--color-text-muted);
+  color: var(--color-text);
 }
 .cardActions {
   margin: 0;
@@ -896,6 +902,12 @@
   margin: 0;
   overflow-wrap: anywhere;
 }
+/* The IBAN keeps the dotted checkable underline of inline identifiers, in the mono face. */
+.ibanId {
+  font-family: var(--font-mono) !important;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
 
 /* Messenger new-contact banner (CR-19, UI_SPEC §3.3): neutral, not warning colours. */
 .newContact {
@@ -909,7 +921,20 @@
   font-size: var(--fs-sm);
 }
 
-/* Email thread history (CR-25). */
+/* Email thread history (CR-25): muted quoted emails with sender and time, not chat bubbles. */
+.mailQuote {
+  margin: 0;
+  padding: var(--space-1) var(--space-3);
+  border-left: 3px solid var(--color-border);
+  color: var(--color-text-muted);
+}
+.mailQuote p {
+  margin: 0;
+}
+.mailQuoteMeta {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+}
 .mailEarlier {
   display: grid;
   gap: var(--space-2);

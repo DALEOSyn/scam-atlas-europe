@@ -19,7 +19,7 @@ import type { CheckableView, RunnerContext, RunnerLogEntry, RunnerState, RunnerV
 import { t } from '../i18n/index.ts';
 import { AnnounceContext } from './Announcer.tsx';
 import { CheckCard, CheckContext, DetailsList, type CheckApi } from './check/Check.tsx';
-import { actionsInDevice, channelKind, DeviceView, deviceHeading, visibleLines } from './devices/Device.tsx';
+import { actionsInDevice, channelKind, DeviceView, deviceHeading, nameCheckResultId, visibleLines } from './devices/Device.tsx';
 import { Translate } from './devices/parts.tsx';
 import type { CallStage } from './devices/types.ts';
 import { BreathPanel, formatTime, Hud } from './Hud.tsx';
@@ -198,9 +198,12 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
   // ---- coach marks (CR-23): the timer is frozen while one is open; once shown it is recorded for the game.
   const [coachSeen, setCoachSeen] = useState<readonly string[]>(coachMarks);
   const coachSeenRef = useRef<readonly string[]>(coachMarks);
+  /** The coach mark on screen, if any: any action or Check use closes it and lifts the freeze (sceptic T-3.3). */
+  const coachOpen = useRef<string | null>(null);
   const onCoachMark = useCallback(
     (id: string, open: boolean) => {
       runner.freeze('coach_mark', open);
+      coachOpen.current = open ? id : coachOpen.current === id ? null : coachOpen.current;
       if (open || coachSeenRef.current.includes(id)) return;
       coachSeenRef.current = [...coachSeenRef.current, id];
       setCoachSeen(coachSeenRef.current);
@@ -208,6 +211,17 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
     },
     [runner.freeze, onCoachMarkSeen],
   );
+
+  const closeCoach = () => {
+    if (coachOpen.current) onCoachMark(coachOpen.current, false);
+  };
+  const doAct = (id: string) => {
+    closeCoach();
+    runner.act(id);
+  };
+  // CR-23: is the payee-check result on screen (not "Checking…"), per beat.
+  const [nameCheckReady, setNameCheckReady] = useState<Record<string, boolean>>({});
+  const onNameCheck = useCallback((beatId: string, ready: boolean) => setNameCheckReady((x) => (x[beatId] === ready ? x : { ...x, [beatId]: ready })), []);
 
   // ---- result
   const reported = useRef(false);
@@ -376,8 +390,18 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
       root.style.scrollPaddingBottom = '';
     };
   });
+  /**
+   * On a payee-check beat the options sit inside the result card: skip and jump links go to the result
+   * paragraph, so reading runs result → footer → tip → options (learning-psychologist T-3.3).
+   */
+  const focusOptions = (): HTMLElement | null => {
+    const id = beat && actionsInDevice(beat.device, beat.message) ? nameCheckResultId(beat.id) : null;
+    const target = (id ? document.getElementById(id) : null) ?? optionsRef.current;
+    target?.focus();
+    return target;
+  };
   const jumpToOptions = () => {
-    const el = optionsRef.current;
+    const el = beat && actionsInDevice(beat.device, beat.message) ? document.getElementById(nameCheckResultId(beat.id)) ?? optionsRef.current : optionsRef.current;
     if (typeof el?.scrollIntoView === 'function') el.scrollIntoView({ block: 'start', behavior: 'auto' });
     el?.focus();
   };
@@ -425,6 +449,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
       const c = itemMap.get(target);
       if (!c) return;
       returnEl.current = el;
+      closeCoach();
       doCheck(c);
       setToast(null); // the touch hint never sits on top of the sheet (QA B10)
       setOpenTarget(target);
@@ -450,7 +475,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
         class={styles.skip}
         onClick={(e) => {
           e.preventDefault();
-          optionsRef.current?.focus();
+          focusOptions();
         }}
       >
         {t('skip_to_options')}
@@ -509,7 +534,8 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                 pushers={view.pusherMessages}
                 actions={beat.actions}
                 canAct={view.phase === 'playing'}
-                onAct={runner.act}
+                onAct={doAct}
+                onNameCheck={onNameCheck}
                 onTranslation={onTranslation}
                 alwaysTranslate={alwaysTranslate}
                 coachMarks={coachSeen}
@@ -604,21 +630,20 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                 <p class={styles.note}>{t('call_answer_first')}</p>
               ) : actionsInDevice(beat.device, beat.message) ? (
                 // CR-23: the payee-check card holds this beat's actions (in action_order); not repeated here.
-                <p class={styles.note} data-options-in-device="">
-                  {t('bank_options_in_card')}{' '}
-                  <button
-                    type="button"
-                    class={styles.small}
-                    onClick={() => document.querySelector<HTMLElement>(`#bank-options-${beat.id} button`)?.focus()}
-                  >
-                    {t('bank_options_go')}
-                  </button>
-                </p>
+                // The pointer goes to the result first (not the buttons), and waits until the check is done.
+                nameCheckReady[beat.id] ? (
+                  <p class={styles.note} data-options-in-device="">
+                    {t('bank_options_in_card')}{' '}
+                    <button type="button" class={styles.small} onClick={focusOptions}>
+                      {t('bank_options_go')}
+                    </button>
+                  </p>
+                ) : null
               ) : (
                 <ul class={styles.actions}>
                   {beat.actions.map((a) => (
                     <li key={a.id}>
-                      <button type="button" class={a.styled ? `${styles.action} ${styles.pressure}` : styles.action} data-action={a.id} onClick={() => runner.act(a.id)}>
+                      <button type="button" class={a.styled ? `${styles.action} ${styles.pressure}` : styles.action} data-action={a.id} onClick={() => doAct(a.id)}>
                         {a.label}
                       </button>
                     </li>

@@ -150,7 +150,7 @@ export const messageSchema = z
     /**
      * Who gets the money. On a `banking` beat: the transfer form (payee name, IBAN, amount) and the
      * payee-name check result (CR-23), or a payment-request page (`payment_request: true`, CR-18(c):
-     * "Request from <name> · amount · note", no check runs). On email / messenger: the "Bank details"
+     * "Request from <name> · amount · note", no check runs). On email / messenger only: the "Bank details"
      * card (CR-22), IBAN checkable only, no name check outside the bank app.
      */
     payee: z
@@ -177,8 +177,11 @@ export const messageSchema = z
      */
     video: z
       .object({
-        /** A vector illustration in public/illustrations/ (content:validate checks the file exists). */
-        illustration: z.string().regex(/^public\/illustrations\/[a-z0-9-]+\.svg$/, 'video.illustration is an SVG at public/illustrations/<id>.svg'),
+        /**
+         * A vector illustration in public/art/video/ (ux-artist, ART_DIRECTION §12). content:validate checks
+         * the file exists and is drawn as code (no embedded raster, page, script or external reference).
+         */
+        illustration: z.string().regex(/^public\/art\/video\/[a-z0-9-]+\.svg$/, 'video.illustration is an SVG at public/art/video/<id>.svg'),
         alt: z.string().min(1),
       })
       .strict()
@@ -221,6 +224,8 @@ export const messageSchema = z
         z
           .object({
             when: z.string().min(1),
+            /** Email threads (CR-25): who wrote the earlier message, shown in the quoted header. */
+            from: z.string().min(1).optional(),
             body: z.string().min(1),
             lang: z.string().regex(/^[a-z]{2}(?:-[A-Z]{2})?$/, 'lang is a BCP 47 tag such as de or pt-PT').optional(),
             translation: z.string().min(1).optional(),
@@ -285,7 +290,7 @@ export function deviceOnlyIssues(device: Device, m: Message): [(string | number)
   const p = m.payee;
   if (p && device !== 'banking') {
     // CR-22: the "Bank details" card. No name check outside the bank app.
-    if (device !== 'email' && device !== 'messenger' && device !== 'letter') out.push([['payee'], `payee is shown on banking beats, or as a bank-details card on email, messenger or letter, not on ${device} (CR-22)`]);
+    if (device !== 'email' && device !== 'messenger') out.push([['payee'], `payee is shown on banking beats, or as a bank-details card on email or messenger, not on ${device} (CR-22)`]);
     if (!p.iban) out.push([['payee', 'iban'], 'a bank-details card shows the IBAN: payee.iban is required (CR-22)']);
     if (p.name_check || p.holder) out.push([['payee', 'name_check'], 'the payee-name check runs only in the bank app (banking beats), never on a bank-details card (CR-22)']);
     if (p.payment_request || p.note) out.push([['payee', 'payment_request'], 'payment-request pages are banking beats (CR-18(c))']);
@@ -664,6 +669,8 @@ export const scenarioSchema = z
         // CR-17(b), CR-24: claim and video checkables carry their own type.
         if (/^claim(?:#2)?$/.test(ins.target) && ins.type !== undefined && ins.type !== 'claim') issue([...b.path, 'inspectables', i, 'type'], 'a claim checkable has type: claim');
         if (ins.target === 'video' && ins.type !== undefined && ins.type !== 'video') issue([...b.path, 'inspectables', i, 'type'], 'a video checkable has type: video');
+        if (ins.type === 'claim' && !/^claim(?:#2)?$/.test(ins.target)) issue([...b.path, 'inspectables', i, 'type'], 'type: claim is only for the claim / claim#2 checkables');
+        if (ins.type === 'video' && ins.target !== 'video') issue([...b.path, 'inspectables', i, 'type'], 'type: video is only for the video checkable');
       });
       if (b.banner && !b.banner.message.body) issue([...b.path, 'banner', 'message', 'body'], 'a banner needs a body: it is displayed on the beat');
       if (b.what_now) {
@@ -754,6 +761,24 @@ export const scenarioSchema = z
       }
     }
 
+    /** The scheduled beat whose group reaches `id` through next_beat (the opening in a standard scenario). */
+    const groupOwnerOf = (id: string): string | undefined => {
+      for (const start of scheduledIds) {
+        const seen = new Set<string>([start]);
+        const queue = [start];
+        while (queue.length > 0) {
+          const cur = queue.shift() as string;
+          if (cur === id) return start;
+          for (const a of beatOf(cur)?.actions ?? []) {
+            if (a.next_beat !== undefined && !seen.has(a.next_beat) && !scheduledIds.has(a.next_beat)) {
+              seen.add(a.next_beat);
+              queue.push(a.next_beat);
+            }
+          }
+        }
+      }
+      return undefined;
+    };
     // CR-21: beat-bound follow-ups name a follow-up beat; one beat's follow-ups are listed together, in time order.
     const pushers = s.pressure.pusher?.messages ?? [];
     let lastBeat: string | undefined;
@@ -765,6 +790,16 @@ export const scenarioSchema = z
         return;
       }
       if (m.beat === 'start' || !s.beats.some((b) => b.id === m.beat)) issue(path, `"${m.beat}" is not a follow-up beat id (CR-21)`);
+      // A follow-up bound to a banking beat or a page is shown as coming from the group's scheduled beat
+      // (src/engine/runner.ts viewOf): that beat must be a message from a sender (sceptic T-3.3).
+      const bound = beatOf(m.beat);
+      if (bound && (bound.device === 'banking' || !bound.message.sender)) {
+        const owner = groupOwnerOf(m.beat);
+        const ob = owner !== undefined ? beatOf(owner) : undefined;
+        if (!ob || !ob.message.sender || !['sms', 'messenger', 'social', 'email', 'call'].includes(ob.device)) {
+          issue(path, `a follow-up bound to the ${bound.device} beat "${m.beat}" must resolve to a chat sender: its group's scheduled beat${owner ? ` "${owner}"` : ''} is not a message from a sender (CR-21)`);
+        }
+      }
       if (m.beat !== lastBeat) {
         if (closed.has(m.beat)) issue(path, `follow-ups bound to "${m.beat}" must be listed together (CR-21)`);
         if (lastBeat !== undefined) closed.add(lastBeat);

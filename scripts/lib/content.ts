@@ -8,6 +8,7 @@ import { parseDocument } from 'yaml';
 import { yamlStructureIssues } from './yaml-safety.ts';
 import type { z } from 'zod';
 import { isAllowedSourceHost } from './source-hosts.ts';
+import { svgSafetyIssues } from './svg-safety.ts';
 import { chapterRules, padlockRevealIssues, scenarioRules, unregisteredHostIssues, type Registries } from './rules.ts';
 import {
   balanceSchema,
@@ -406,13 +407,22 @@ export function validateContent(contentDir: string, opts: ValidateOptions = {}):
   return report;
 }
 
-/** CR-24: every video-call illustration exists (an SVG drawn for the game; scanned as text by redline:lint). */
+/**
+ * CR-24: every video-call illustration exists and is drawn as SVG code (no embedded photo, page,
+ * script or external reference; ART_DIRECTION §12.3). Also linted by redline:lint.
+ */
 export function videoAssetIssues(s: Scenario, root: string): string[] {
   const out: string[] = [];
   const beats = [{ id: 'start', message: s.message }, ...s.beats.map((b) => ({ id: b.id, message: b.message }))];
   for (const b of beats) {
     const path = b.message.video?.illustration;
-    if (path && !existsSync(join(root, path))) out.push(`beat "${b.id}": video.illustration "${path}" does not exist`);
+    if (!path) continue;
+    const file = join(root, path);
+    if (!existsSync(file)) {
+      out.push(`beat "${b.id}": video.illustration "${path}" does not exist`);
+      continue;
+    }
+    for (const i of svgSafetyIssues(readFileSync(file, 'utf8'))) out.push(`beat "${b.id}": video.illustration "${path}": ${i.message}`);
   }
   return out;
 }

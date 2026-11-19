@@ -4,13 +4,18 @@
  * (CR-18(e)), beat-bound pushers (CR-21) and the new checkables.
  */
 import { describe, expect, it } from 'vitest';
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { lintPaths, lintText, loadConfig } from '../../../scripts/redline-lint.ts';
+import { svgSafetyIssues } from '../../../scripts/lib/svg-safety.ts';
 import { chapterRules, scenarioRules } from '../../../scripts/lib/rules.ts';
 import { videoAssetIssues } from '../../../scripts/lib/content.ts';
 import { deriveCheckables } from '../../../src/content/checkables.ts';
 import { chapterSchema, scenarioSchema, type Scenario } from '../../../src/content/schema.ts';
 import { checkablesOf } from '../../../src/engine/inspect.ts';
 import { resultOf } from '../../../src/engine/result.ts';
-import { holdingForTransfer, startScenario, step, viewOf } from '../../../src/engine/runner.ts';
+import { holdingForTransfer, startScenario, step, transferFloor, viewOf } from '../../../src/engine/runner.ts';
 import { classOf, mergeDecision, scoreGroup, starsFor } from '../../../src/engine/scoring.ts';
 import { ROOT, rawFraud, rawGenuine, realRegistries, scenario } from '../../content/fixtures.ts';
 import { act, B, check, ctx, play, run, tag, tick, type Raw } from './helpers.ts';
@@ -315,18 +320,18 @@ describe('CR-19 … CR-26: device-only parts', () => {
   it('CR-20 recorded and CR-24 video: call beats only; video adds the video checkable', () => {
     const sms = rawFraud();
     (sms.message as Raw).recorded = true;
-    (sms.message as Raw).video = { illustration: 'public/illustrations/solene-gate.svg', alt: 'Solène at an airport gate' };
+    (sms.message as Raw).video = { illustration: 'public/art/video/solene-gate.svg', alt: 'Solène at an airport gate' };
     const errs = schemaErrors(sms).join('\n');
     expect(errs).toMatch(/recorded is for call beats/);
     expect(errs).toMatch(/video is for call beats/);
     const boss = rawBoss();
-    Object.assign(beatOf(boss, 'lawyer_call').message as Raw, { video: { illustration: 'public/illustrations/solene-gate.svg', alt: 'Solène at an airport gate' } });
+    Object.assign(beatOf(boss, 'lawyer_call').message as Raw, { video: { illustration: 'public/art/video/solene-gate.svg', alt: 'Solène at an airport gate' } });
     const b = scenario(boss);
     const call = b.beats.find((x) => x.id === 'lawyer_call');
     expect(call && deriveCheckables(call.device, call.message).slice(0, 2)).toEqual(['caller_id', 'video']);
-    expect(videoAssetIssues(b, ROOT)).toEqual(['beat "lawyer_call": video.illustration "public/illustrations/solene-gate.svg" does not exist']);
+    expect(videoAssetIssues(b, ROOT)).toEqual(['beat "lawyer_call": video.illustration "public/art/video/solene-gate.svg" does not exist']);
     const photo = rawBoss();
-    Object.assign(beatOf(photo, 'lawyer_call').message as Raw, { video: { illustration: 'public/illustrations/solene.png', alt: 'x' } });
+    Object.assign(beatOf(photo, 'lawyer_call').message as Raw, { video: { illustration: 'public/art/video/solene.png', alt: 'x' } });
     expect(schemaErrors(photo).join('\n')).toMatch(/video.illustration is an SVG/);
   });
   it('CR-21: beat-bound pushers fire from when the beat opens, and never if it is not reached', () => {
@@ -381,5 +386,143 @@ describe('scoring stays table-driven', () => {
   it('startScenario on a transfer scenario opens on the chat, not the bank', () => {
     const s: Scenario = scenario(rawTransfer());
     expect(startScenario(s, ctx()).groups[0]?.current).toBe('start');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Review round 1 (sceptic, QA, learning-psychologist; T-3.3)
+
+describe('review fixes: pushers, waiting beats, follow-up channel', () => {
+  it('#1 a follow-up bound to the banking sub-beat never hides a later scheduled beat\'s follow-ups', () => {
+    const raw = rawBoss();
+    raw.pressure = { timer: false, levers: [], pusher: { messages: [{ at_seconds: 60, text: 'BEAT2 unbound' }, { at_seconds: 5, text: 'Did you send it yet?', beat: 'boss_transfer' }] } };
+    expect(schemaErrors(raw)).toEqual([]);
+    const s = scenario(raw);
+    const c = ctx({ timerMode: 'off' });
+    let st = run(s, c, [act('set_up'), tick(6)]);
+    expect(st.pushers.fired.map((f) => f.index)).toEqual([1]);
+    st = step(s, c, st, act('cancel'));
+    st = step(s, c, st, { type: 'continue' });
+    st = step(s, c, st, tick(20));
+    expect(st.pushers.fired.map((f) => f.index)).toEqual([1, 0]);
+    expect(viewOf(s, c, st).pusherMessages.map((p) => p.text)).toEqual(['BEAT2 unbound']);
+  });
+  it('#2 a beat that arrived before start_transfer does not wait on top of the bank card; it shows again after', () => {
+    for (const timerMode of ['off', 'extended'] as const) {
+      const s = scenario(rawBoss());
+      const c = ctx({ timerMode });
+      let st = run(s, c, [tick(50)]);
+      expect(viewOf(s, c, st).waitingBeats).toEqual(['lawyer_call']);
+      st = step(s, c, st, act('set_up'));
+      expect(viewOf(s, c, st).waitingBeats).toEqual([]);
+      st = step(s, c, st, tick(10));
+      expect(viewOf(s, c, st).waitingBeats).toEqual([]);
+      st = step(s, c, st, act('cancel'));
+      expect(st.phase).toBe('consequence');
+      expect(viewOf(s, c, st).waitingBeats).toEqual(['lawyer_call']);
+    }
+  });
+  it('#3 a follow-up bound to a banking beat comes from the group\'s sender and channel', () => {
+    const raw = rawBoss();
+    raw.pressure = { timer: false, levers: [], pusher: { messages: [{ at_seconds: 5, text: 'Did you send it yet??', beat: 'boss_transfer' }] } };
+    const s = scenario(raw);
+    const c = ctx({ timerMode: 'off' });
+    const st = run(s, c, [act('set_up'), tick(6)]);
+    const [p] = viewOf(s, c, st).pusherMessages;
+    expect(p?.device).toBe('email');
+    expect(p?.sender).toBe('Solène Arbogast');
+  });
+  it('#3 the validator: a follow-up bound to a banking beat or a page must resolve to a chat sender', () => {
+    const ok = rawFraud();
+    ok.pressure = { timer: false, levers: [], pusher: { messages: [{ at_seconds: 5, text: 'Still there?', beat: 'fee_page' }] } };
+    expect(schemaErrors(ok)).toEqual([]);
+    const page = rawFraud('p1', {
+      device: 'browser',
+      message: { page: { address: 'trundle-zoll.example/p/1' }, body: 'Your parcel is held.', request: 'pay' },
+      inspectables: [{ target: 'page.address', reveal: 'A look-alike.', red_flag: true }],
+      pressure: { timer: false, levers: [], pusher: { messages: [{ at_seconds: 5, text: 'Still there?', beat: 'fee_page' }] } },
+    });
+    expect(schemaErrors(page).join('\n')).toMatch(/a follow-up bound to the browser beat "fee_page" must resolve to a chat sender/);
+  });
+});
+
+describe('review fixes: timer carry-over above the floor (#13)', () => {
+  it('transferFloor keeps more time than the floor, raises less', () => {
+    const c = ctx();
+    expect(transferFloor(c, { remaining: 55, length: 60, expiries: 0 }).remaining).toBe(55);
+    expect(transferFloor(c, { remaining: 12, length: 60, expiries: 0 })).toEqual({ remaining: 40, length: 60, expiries: 0 });
+  });
+  it('a scheduled beat with its own 60 s timer carries 50 s over to its banking sub-beat', () => {
+    const raw = rawBoss();
+    const sub = { ...clone(beatOf(raw, 'boss_transfer')), id: 'transfer_2', actions: (beatOf(raw, 'boss_transfer').actions as Raw[]).map((a) => ({ ...a, id: `${String(a.id)}_2` })) };
+    const beat2 = {
+      id: 'second_mail',
+      arrives_after: 45,
+      timer_seconds: 60,
+      device: 'email',
+      message: { ...(raw.message as Raw) },
+      inspectables: [{ target: 'request', reveal: 'Skips the sign-off.', red_flag: true, type: 'request' }],
+      actions: (raw.actions as Raw[]).map((a) => ({ ...a, id: `${String(a.id)}_b2`, ...(a.next_beat ? { next_beat: 'transfer_2' } : {}) })),
+    };
+    raw.beats = [beatOf(raw, 'boss_transfer'), sub, beat2];
+    const s = scenario(raw);
+    const c = ctx();
+    let st = run(s, c, [act('leave_it'), { type: 'continue' }]);
+    expect(st.groups.at(-1)?.beatId).toBe('second_mail');
+    expect(st.timer?.remaining).toBe(60);
+    st = step(s, c, st, tick(10));
+    st = step(s, c, st, act('set_up_b2'));
+    expect(st.timer?.remaining).toBe(50);
+  });
+});
+
+describe('review fixes: schema (#5, #17) and SVG safety (#4)', () => {
+  it('#5 no bank-details card on a letter', () => {
+    const raw = rawFraud('l1', {
+      device: 'letter',
+      message: { letterhead: 'Trundle', body: 'Pay at trundle-zoll.example/p/1', request: 'pay', payee: { name: 'X', iban: 'NL00 TEST 0000 0000 00' } },
+    });
+    expect(schemaErrors(raw).join('\n')).toMatch(/bank-details card on email or messenger, not on letter/);
+  });
+  it('#17 type claim / video only on their own targets', () => {
+    const raw = rawTransfer();
+    (raw.inspectables as Raw[])[2] = { target: 'reference', reveal: 'A note.', red_flag: false, type: 'claim' };
+    expect(schemaErrors(raw).join('\n')).toMatch(/type: claim is only for the claim/);
+    (raw.inspectables as Raw[])[2] = { target: 'reference', reveal: 'A note.', red_flag: false, type: 'video' };
+    expect(schemaErrors(raw).join('\n')).toMatch(/type: video is only for the video checkable/);
+  });
+  it('#4 the illustration lives in public/art/video/ and may not embed a photo', () => {
+    const at = (path: string) => {
+      const raw = rawBoss();
+      Object.assign(beatOf(raw, 'lawyer_call').message as Raw, { video: { illustration: path, alt: 'Solène at an airport gate' } });
+      return raw;
+    };
+    expect(schemaErrors(at('public/illustrations/solene.svg')).join('\n')).toMatch(/public\/art\/video\/<id>\.svg/);
+    const root = mkdtempSync(join(tmpdir(), 'sae-video-'));
+    mkdirSync(join(root, 'public', 'art', 'video'), { recursive: true });
+    writeFileSync(join(root, 'public/art/video/clean.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><defs><linearGradient id="g"/></defs><rect fill="url(#g)" width="10" height="10"/><use href="#g"/></svg>');
+    writeFileSync(join(root, 'public/art/video/photo.svg'), '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><image href="data:image/png;base64,iVBORw0KGgo=" width="10" height="10"/></svg>');
+    expect(videoAssetIssues(scenario(at('public/art/video/clean.svg')), root)).toEqual([]);
+    const issues = videoAssetIssues(scenario(at('public/art/video/photo.svg')), root).join('\n');
+    expect(issues).toMatch(/<image>/);
+    expect(issues).toMatch(/data:image\//);
+    expect(issues).toMatch(/links outside the file/);
+  });
+  it('#4 svgSafetyIssues: foreignObject, script, external href, url() outside the file', () => {
+    const bad = '<svg><foreignObject/><script>x</script><a xlink:href="https://evil.example/">x</a><style>.a{fill:url(https://x.example/p.svg#a)}</style><rect style="fill:url(#ok)"/></svg>';
+    const msgs = svgSafetyIssues(bad).map((i) => i.message).join('\n');
+    expect(msgs).toMatch(/foreignObject/);
+    expect(msgs).toMatch(/<script>/);
+    expect(msgs).toMatch(/links outside the file/);
+    expect(msgs).toMatch(/url\(\) outside the file/);
+    expect(svgSafetyIssues(bad).filter((i) => i.match.includes('#ok'))).toEqual([]);
+  });
+  it('#4 redline:lint fails on an embedded raster in any SVG under public/, and the shipped SVGs are clean', () => {
+    const cfg = loadConfig();
+    const file = join(ROOT, 'public', 'art', 'video', 'fake.svg');
+    const found = lintText(file, '<svg xmlns="http://www.w3.org/2000/svg"><image href="data:image/png;base64,AAAA"/></svg>', cfg);
+    expect(found.some((f) => f.category === 'markup' && f.severity === 'error' && /data:image/.test(f.message))).toBe(true);
+    const shipped = lintPaths([join(ROOT, 'public')], cfg).filter((f) => f.severity === 'error');
+    expect(shipped).toEqual([]);
   });
 });

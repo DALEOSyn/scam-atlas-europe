@@ -361,7 +361,7 @@ export function choiceLine(s: Scenario, g: GroupState, beat: BeatResult): Choice
   if (beat.stars >= 3 && !beat.fell) return null;
   if (beat.timerExpired) return { beatId: g.beatId, kind: 'timer' };
   const d = g.decision;
-  // CR-34: a payment code shared, then the confirmation declined: the code is what cost the stars (★), so it is
+  // CR-34: a payment code shared, then the confirmation declined: the code is what cost the third star (★★, ruling R18), so it is
   // named, with the final choice as the path ("You chose: Make a code and send it. Then: Decline.").
   if (!beat.fell && g.codeShared) {
     const code = g.codeShared;

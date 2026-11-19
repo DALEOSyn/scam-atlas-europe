@@ -20,7 +20,7 @@ import { beatById, type CheckableView, type RunnerContext, type RunnerLogEntry, 
 import { t } from '../i18n/index.ts';
 import { AnnounceContext } from './Announcer.tsx';
 import { CheckCard, CheckContext, DetailsList, type CheckApi } from './check/Check.tsx';
-import { actionsInDevice, bankOf, channelKind, DeviceView, deviceHeading, nameCheckResultId, nameCheckText, visibleLines } from './devices/Device.tsx';
+import { actionsInDevice, bankOf, channelKind, DeviceView, deviceHeading, nameCheckResultId, nameCheckText, spokenText, visibleLines } from './devices/Device.tsx';
 import { Translate } from './devices/parts.tsx';
 import type { CallStage } from './devices/types.ts';
 import { BreathPanel, formatTime, Hud } from './Hud.tsx';
@@ -68,13 +68,26 @@ export function linePace(text: string): number {
   return Math.max(1.5, 0.3 * words(text));
 }
 
-function logAnnouncement(s: Scenario, e: RunnerLogEntry): { category: 3 | 4 | 5; text: string; key?: string; foreign?: { text: string; lang: string } } | null {
+/**
+ * What a log entry says in the polite live region (UI_SPEC §10.5). `onCallBeat`: the banking beat under the
+ * CR-31 on-call bar, if any; the caller's follow-ups bound to it are call transcript lines (category 1,
+ * "Caller: …", at once, each in its own slot so never folded into "N new messages"; QA-2, WCAG 4.1.3).
+ */
+export function logAnnouncement(
+  s: Scenario,
+  e: RunnerLogEntry,
+  onCallBeat: string | null = null,
+): { category: 1 | 3 | 4 | 5; text: string; key?: string; foreign?: { text: string; lang: string } } | null {
   switch (e.type) {
     case 'beat_arrived':
       return e.beatId === 'start' ? null : { category: 5, text: t('announce_new_message') };
     case 'pusher': {
       // CR-27 (WCAG 3.1.2): a follow-up in another language is spoken with its own lang.
       const lang = s.pressure.pusher?.messages[e.index]?.lang;
+      if (onCallBeat !== null && s.pressure.pusher?.messages[e.index]?.beat === onCallBeat) {
+        const line = spokenText(e.text);
+        return { category: 1, key: `call-line-${e.index}`, text: t('announce_caller_line', { text: line }), ...(lang && lang !== 'en' ? { foreign: { text: line, lang } } : {}) };
+      }
       return { category: 5, text: t('announce_pusher', { text: e.text }), ...(lang && lang !== 'en' ? { foreign: { text: e.text, lang } } : {}) };
     }
     case 'interrupt': {
@@ -291,11 +304,12 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
     const fresh = state.log.slice(logSeen.current);
     logSeen.current = state.log.length;
     for (const e of fresh) {
-      const a = logAnnouncement(scenario, e);
+      const a = logAnnouncement(scenario, e, view.onCall ? (view.beat?.id ?? null) : null);
       // Once the scenario has ended, timer/stress/message news is stale (QA B6, m5); a closing interrupt still needs its answer.
       if (a && (!endedRef.current || a.key === 'interrupt')) announce.polite(a.category, a.text, a.category === 5 && !a.key ? (n) => t('announce_new_messages', { count: n }) : undefined, a.key, a.foreign);
       if (e.type === 'timer' && e.what === 'escalated') setChip(t('timer_escalated_chip', { seconds: ctx.balance.timers.escalation_extra_seconds }));
     }
+    // view.onCall is read with the log it belongs to (same render); it is not a trigger of its own.
   }, [state.log, announce, ctx.balance.timers.escalation_extra_seconds, scenario]);
   useEffect(() => {
     if (!chip) return undefined;
@@ -755,7 +769,14 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                   </p>
                 ) : null
               ) : (
-                <ul class={styles.actions}>
+                <>
+                {view.onCall ? (
+                  // CR-31 (QA should-fix 4): on the call bar, say that these options are how the call ends.
+                  <p class={styles.note} id="oncall-choose" data-oncall-hint="">
+                    {t('oncall_choose')}
+                  </p>
+                ) : null}
+                <ul class={styles.actions} aria-labelledby={view.onCall ? 'oncall-choose' : undefined}>
                   {beat.actions.map((a) => (
                     <li key={a.id}>
                       <button type="button" class={a.styled ? `${styles.action} ${styles.pressure}` : styles.action} data-action={a.id} onClick={() => doAct(a.id)}>
@@ -764,6 +785,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                     </li>
                   ))}
                 </ul>
+                </>
               )
             ) : null}
             {view.whatNow ? (

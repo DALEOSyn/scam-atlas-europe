@@ -82,12 +82,15 @@ export function Avatar({ name, size = 40 }: { name: string; size?: number }) {
 
 
 /** One checkable inside message text. Masked numbers get a spoken name. */
-function InlineCheck({ seg }: { seg: Extract<Segment, { kind: 'check' }> }) {
+function InlineCheck({ seg, trail }: { seg: Extract<Segment, { kind: 'check' }>; trail?: string }) {
   const base = seg.target.replace(/#\d$/, '');
   const masked = isMasked(seg.text);
   return (
     <Checkable target={seg.target} class={base === 'link' ? styles.link : styles.inlineId} name={masked ? spokenNumber(seg.text) : undefined}>
       {base === 'link' ? <Host text={seg.text} /> : masked ? <span aria-hidden="true">{seg.text}</span> : seg.text}
+      {/* Trailing punctuation drawn inside the box (aria-hidden: not part of the name), so it stays on the
+          last line of a highlight that wraps over several lines (psych nit, CR-33 notice). */}
+      {trail ? <span aria-hidden="true" class={styles.trail} data-trail="">{trail}</span> : null}
     </Checkable>
   );
 }
@@ -116,10 +119,12 @@ export function Segments({ segs }: { segs: Segment[] }) {
       out.push(<InlineCheck key={i} seg={s} />);
       continue;
     }
+    // A button is an atomic inline box: text after it can only start after the whole box, so a "." after a
+    // highlight that wraps over two lines would sit alone at its right edge. The punctuation is drawn inside
+    // the box instead (still one no-wrap unit with it).
     out.push(
       <span key={i} class={styles.keepPunct} data-keep-punct="">
-        <InlineCheck seg={s} />
-        {punct}
+        <InlineCheck seg={s} trail={punct} />
       </span>,
     );
     const rest = next.text.slice(punct.length);

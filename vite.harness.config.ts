@@ -5,7 +5,7 @@
  */
 import { defineConfig, type Plugin } from 'vite';
 import preact from '@preact/preset-vite';
-import { readdirSync, readFileSync } from 'node:fs';
+import { cpSync, readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { parse } from 'yaml';
 import { sceneSchema, scenarioSchema } from './src/content/schema.ts';
@@ -56,10 +56,17 @@ const fixtureScenarios: Scenario[] = readdirSync(FIXTURE_SCENARIOS_DIR)
   .filter((f) => f.endsWith('.yaml'))
   .map((f) => scenarioSchema.parse(parse(readFileSync(join(FIXTURE_SCENARIOS_DIR, f), 'utf8'))));
 
+/** Fixture art plus the game's own brand marks (public/brands), so device headers load their logos. */
+function harnessPublicDir(): string {
+  const dir = fixturePublicDir();
+  cpSync(resolve(import.meta.dirname, 'public', 'brands'), join(dir, 'brands'), { recursive: true });
+  return dir;
+}
+
 export default defineConfig({
   root: resolve(import.meta.dirname, 'tests', 'e2e', 'harness'),
   base: '/',
-  publicDir: fixturePublicDir(),
+  publicDir: harnessPublicDir(),
   define: { __HARNESS_SCENES__: JSON.stringify(scenes), __HARNESS_REAL_SCENES__: JSON.stringify(realScenes), __HARNESS_SCENARIOS__: JSON.stringify(fixtureScenarios) },
   plugins: [yamlPlugin(), preact()],
   build: { outDir: resolve(import.meta.dirname, 'dist-harness'), emptyOutDir: true, target: 'es2022' },

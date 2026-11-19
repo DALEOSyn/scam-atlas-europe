@@ -31,7 +31,7 @@ Maestro | word
 Lydia | word
 Wise | word
 Swish | word
-iDEAL | word
+iDEAL | word | except: would be ideal
 Sofort | word
 Stripe | word
 Kraken | word

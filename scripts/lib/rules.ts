@@ -760,7 +760,9 @@ export function chapterRules(c: Chapter, fileBase: string, scenarios: Scenario[]
     }
   }
   if (c.patterns.length > balance.difficulty.max_new_patterns_per_chapter) mixIssues.push(`${c.patterns.length} new patterns; at most ${balance.difficulty.max_new_patterns_per_chapter}`);
-  if (c.callbacks.length > balance.difficulty.max_callbacks_per_chapter) mixIssues.push(`${c.callbacks.length} callbacks; at most ${balance.difficulty.max_callbacks_per_chapter}`);
+  // GDD §30.1, §30.5: the finale (arc_finale) reviews every earlier chapter's habit, one callback per habit family,
+  // so the per-chapter callback cap does not apply to it (T-3.12; open for game-designer to confirm in balance.yaml).
+  if (!c.arc_finale && c.callbacks.length > balance.difficulty.max_callbacks_per_chapter) mixIssues.push(`${c.callbacks.length} callbacks; at most ${balance.difficulty.max_callbacks_per_chapter}`);
   for (const s of fraud) {
     if (s.pattern && ![...c.patterns, ...c.callbacks].includes(s.pattern)) mixIssues.push(`fraud "${s.id}" uses pattern "${s.pattern}", which is not in the chapter's patterns or callbacks`);
   }

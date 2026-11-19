@@ -2695,7 +2695,7 @@ sources:
     accessed: "2026-11-19"
     region: IE
     tier: 3
-    used_for: [investment-ad-fake-platform, recovery-scam, MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    used_for: [arc, investment-ad-fake-platform, recovery-scam, MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "Scams 'often appear through online ads, social media or fake celebrity promotions', incl. 'deepfake videos of celebrities'; trading platforms 'not regulated or licensed by any authority'; high returns, urgency, secrecy; small early 'trial' returns to build trust. 'Always check if a firm is regulated on the Central Bank of Ireland register'; confirm it's the real firm, not an impostor; check the Central Bank's unauthorised-firm warnings. If scammed: contact your bank or provider and the Gardai immediately. No recovery-scam or withdrawal-fee detail."
 
   - id: ie-ccpc-spot-a-scam-2026
@@ -2753,6 +2753,39 @@ sources:
     tier: 3
     used_for: [investment-ad-fake-platform, recovery-scam, remote-access-support-call, MAP-ch8, MAP-ch10, campaign-catalogue, WHERE_TO_REPORT, help-where-to-report-en, arc]
     notes: "Starts with 'A fake advertisement in which a celebrity is mentioned', fake profiles, unsolicited messages; after a deposit the platform 'manipulates the transactions to give the impression that significant profits have been achieved' and the money is never invested; larger withdrawals are met with excuses (high costs, taxes) and never paid; some offer to take over the device to make transfers; recovery offers for a fee are often another fraud. Victims: stop transactions, cut contact, tell your bank at once, keep records, report to the FSMA and the police. Main source for the dashboard and withdrawal-fee beats."
+
+  - id: be-febelfin-help-request-fraud
+    publisher: Febelfin (Belgian financial sector federation)
+    title: "Help request fraud"
+    url: https://febelfin.be/en/themes/fraud-security/online-fraudevormen/help-request-fraud
+    published: "n/d (footer (c) 2026; metadata date malformed)"
+    accessed: "2026-11-19"
+    region: BE
+    tier: 3
+    used_for: [messenger-family-impersonation, MAP-ch10]
+    notes: "Scammer poses as a relative or friend, often 'Sorry, I lost my smartphone. This is my new number.'; asks for a transfer for an urgent purchase (typically EUR 250-2,000, designer context only). Red flags: unknown number asking for money; excuses not to talk by phone; high pressure; unfamiliar payment link. Golden rule: 'always call the sender of the message' on their known number; control questions; don't replace the old number in contacts until confirmed by voice. If you paid: Card Stop 078 170 170, your bank asap, police complaint."
+
+  - id: be-police-hi-mom-smishing
+    publisher: Belgian Police (police.be, SHAPE section)
+    title: "\"Hi mom\" or undelivered package: don't fall into the trap of \"Smishing\""
+    url: https://www.police.be/shape/en/node/13335
+    published: n/d
+    accessed: "2026-11-19"
+    region: BE
+    tier: 3
+    used_for: [messenger-family-impersonation, smishing-parcel-fee, MAP-ch10]
+    notes: "Unknown number claiming to be your child (lost/broken phone, new SIM), asks to move to a messenger and for money. 'Call them on their usual number to verify'; don't reply; never send money without verifying. If you paid or shared info: notify your bank immediately, Card Stop 078 170 170, complaint to the local police keeping the message, have the device checked if malware suspected, forward the message to suspect@safeonweb.be (French-language Safeonweb address), change reused passwords. Also covers fake undelivered-parcel texts."
+
+  - id: be-fsma-dating-platforms-2026
+    publisher: FSMA (Belgian Financial Services and Markets Authority)
+    title: "Beware of fraud on dating platforms!"
+    url: https://www.fsma.be/en/warnings/beware-fraud-dating-platforms
+    published: "2026-02-13"
+    accessed: "2026-11-19"
+    region: BE
+    tier: 3
+    used_for: [arc, investment-ad-fake-platform, recovery-scam, MAP-ch10]
+    notes: "Contact via dating apps, unknown numbers or social follow requests; 'After having made a match… the scammers continue the discussion via another online app'; once trust is built they talk about wealth and steer to 'a trading platform'. 'Never send money to someone whom you have only met online'; AI can fake profiles and videos; check FSMA authorisation. Victims: stop transactions and contact, inform your bank immediately, report to the FSMA and the police, keep evidence; beware recovery rooms. Does NOT mention flattery or secrecy."
 
   - id: de-evz-online-trading-scam-2026
     publisher: European Consumer Centre Germany (EVZ, national centre of ECC-Net)

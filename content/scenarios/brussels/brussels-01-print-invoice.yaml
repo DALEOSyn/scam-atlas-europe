@@ -1,0 +1,145 @@
+# 10-1 Ruchelune's accounts email: the Atlas print invoice, to the usual account (GDD §30.4 10-1).
+# Genuine, high stakes (pay), difficulty 4, honest timer 35 s, honest deadline "Due within 30 days". Twin of
+# brussels-03-new-bank-details (same thread, same real address). Callback: Paris (verify the change, not the email).
+# Checkables (G, 5): sender, attachment, reference, claim, request.
+# Spec deviation (CONTENT_GUIDE "It fits" test, Paris P1): the sender address and the invoice number look the
+# same on 10-3 (the real mailbox, misused), so their reveals use the neutral wording here too; "It fits" on
+# 10-1 and "can't prove anything" on 10-3 would give the verdict away. The claim (the boxes you can see) and
+# the request (the usual account, from your own list) carry the genuine fit.
+# Banking beat: the payee typed from Waymarker's supplier list, Larchwick Pro (CR-26 "Waymarker events"); the
+# name check matches (CR-23 neutral wording).
+# Layer 1 tell shortened from GDD §30.4 ("…, from the usual address, …") to fit the 40-word budget; the
+# address is not the tell on either twin.
+# French small talk: "Bonjour", "Merci !" with inline translation in brackets (never a red flag; 10-3 has the same).
+id: brussels-01-print-invoice
+chapter: brussels
+role: standard
+pattern: payment-detail-change
+theme: supplier
+twin_of: brussels-03-new-bank-details
+learning_objectives: [LO-06, LO-17]
+difficulty: 4
+is_fraud: false
+stakes: high
+device: email
+setup: "The Atlas print run arrived this morning. Adaeze has asked you to pay Ruchelune's invoice from the events account; she signs off after you."
+brands: [ruchelune, larchwick, waymarker]
+cast: [ines, adaeze]
+pressure:
+  timer: true
+  levers: []
+  honest_deadline: "Due within 30 days"
+
+message:
+  sender: { display: "Ruchelune accounts", detail: "compta@ruchelune.example" }
+  subject: "Atlas print run: invoice R-2611"
+  body: |
+    Bonjour Sam, the Atlas print run is delivered. Invoice R-2611 is attached: €1,180.00. Please pay it to our usual account, as on Waymarker's supplier list. Due within 30 days.
+
+    Merci ! (Thanks!)
+    Ruchelune
+  request: pay
+  ask: { text: "Please pay it to our usual account, as on Waymarker's supplier list." }
+  claims:
+    - text: "the Atlas print run is delivered"
+  attachments: [{ name: "Invoice R-2611.pdf", size: "84 KB" }]
+  references: ["Invoice R-2611"]
+  l10n_note: "Ruchelune writes from Paris: 'Bonjour' and 'Merci !' are small talk, translated inline. Keep a few words of French in every locale."
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows compta@ruchelune.example, Ruchelune's address on the supplier list, as a real email from them would. A real mailbox can be misused, so it can't prove anything either way. Judge the request."
+    red_flag: false
+    type: sender
+  - target: attachment
+    reveal: "Opens invoice R-2611 for the Atlas print run. A real invoice and a fake one look just as tidy, so it can't prove anything either way."
+    red_flag: false
+    type: attachment
+  - target: reference
+    reveal: "Shows invoice R-2611. Invoice numbers can be copied from earlier mail, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "It fits: the boxes are in the office, you saw them arrive. That isn't proof on its own, so weigh it with what it asks."
+    red_flag: false
+    type: claim
+    reassures: true
+  - target: request
+    reveal: "The usual account, from your own supplier list. Nothing changed, no rush."
+    red_flag: false
+    type: request
+
+actions:
+  - id: pay_print_invoice
+    label: "Pay the list's account in Larchwick Pro"
+    kind: start_transfer
+    next_beat: invoice_transfer
+    pressure_target: true
+  - id: call_ruchelune_directory
+    label: "Call Ruchelune on the directory number first"
+    kind: call_back_known
+    outcome: ines_same_account
+  - id: report_print_invoice
+    label: "Report it as a scam"
+    kind: report
+    outcome: print_invoice_reported
+  - id: leave_print_invoice
+    label: "Leave it for now"
+    kind: ignore
+    outcome: print_invoice_left
+
+beats:
+  - id: invoice_transfer
+    device: banking
+    message:
+      bank: { brand: larchwick-pro }
+      account: { nickname: "Waymarker events" }
+      payee: { name: "Ruchelune", iban: "FR•• … 3301", name_check: match, amount: "€1,180.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "Name matches: the account is held by Ruchelune. That shows whose account it is. The supplier list it came from is what makes it the usual one."
+        red_flag: false
+        type: payee
+      - target: payee.iban
+        reveal: "The account on Waymarker's supplier list, typed from the list, not the email. An account number on its own can't prove anything either way."
+        red_flag: false
+        type: payee
+    actions:
+      - id: pay_invoice_list_account
+        label: "Pay €1,180.00"
+        kind: proceed
+        outcome: print_invoice_paid
+        pressure_target: true
+      - id: cancel_call_ruchelune
+        label: "Cancel and call Ruchelune first"
+        kind: call_back_known
+        outcome: ines_same_account
+      - id: cancel_print_invoice
+        label: "Cancel"
+        kind: ignore
+        outcome: print_invoice_cancelled
+
+outcomes:
+  print_invoice_paid:
+    narrative: "Paid. Adaeze signs it off: \"Lovely. Same account as the list.\""
+  ines_same_account:
+    narrative: "Inès, on the number in Ruchelune's staff directory: \"Bonjour ! (Hello!) Yes, that's ours, same account as always.\" You pay it from the list's details, and Adaeze signs it off."
+  print_invoice_reported:
+    narrative: "Reported. Inès rings, puzzled: \"Our invoice went to spam? It's the usual account.\" A call to the directory number would have settled it."
+  print_invoice_left:
+    narrative: "You leave it for now. It's due within 30 days, so there's time, but it's still to pay."
+  print_invoice_cancelled:
+    narrative: "You cancel. Nothing is sent, and the invoice is still to pay within 30 days."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A bill you expected, to the usual account."
+    what_works: "Paying was fine; calling first is never wrong."
+  layer2:
+    message_flags: []
+    notes: "Nothing changed: the account matched your own list. If bank details ever change, call on a number you already have. Where to report and get help (Belgium) is on the help screen."
+  device_tip: "In a real banking app, pay a supplier from the details you already hold, not ones in the email, and type the name yourself."
+  habit_card: check-who-gets-the-money
+  sources: [be-febelfin-vop-faq, eu-epc-vop-scheme, eu-europol-ceo-bec-leaflet, fr-cybermalveillance-fiche-faux-rib]

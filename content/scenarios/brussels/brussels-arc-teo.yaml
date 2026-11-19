@@ -1,0 +1,99 @@
+# Arc finale: Teo's chat (GDD §30.6; CR-40, CR-43; §28.5 item 4). Plays for endings A, A′ and R without money in.
+# Advice scenario: Teo, across the table, forwards a screenshot from his language app (Wordswap, where you met
+# Alex) and asks you. Teo never sends money. The quoted message names no platform (Glimmerfund is never named
+# before Teo asks, and he never does). "Robin" is a scam-side name (BRAND_CHECK BR3), one of the reveal names.
+# R22 (psych M1): every option opens the reveal card; the photo check and the report set arc_told_someone,
+# stepping away and "A little can't hurt" do not. After advise_comply the advice_line shows, without blame.
+# Unscored for the chapter (arc points only); no timer (R22).
+# Fact M1 (round 1): no "praise" claim (unsourced); "secret" is kept with ie-ccpc-investment-scams (secrecy as a red
+# flag); steering to money from someone met online is be-fsma-dating-platforms-2026.
+id: brussels-arc-teo
+chapter: brussels
+role: arc
+finale: teo
+learning_objectives: [LO-14, LO-18]
+is_fraud: true
+device: messenger
+setup: "The Open Evening is tomorrow. Across the table, Teo holds up his phone, then sends you a screenshot."
+brands: [kettle, wordswap]
+cast: [teo]
+advice: { for: teo }
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Grandpa Teo", detail: "Saved contact: Grandpa Teo (home)" }
+  from_cast: teo
+  body: "Nice person from my language app. Wants to show me a trading app. Is this normal?"
+  request: reply
+  forwarded:
+    app: wordswap
+    sender: { display: "Robin", detail: "Wordswap profile · one picture" }
+    body: "Teo, your postcard stories are lovely 😊 I've been making a little extra trading on my phone. Want me to show you? Just between us."
+  ask: { text: "Want me to show you? Just between us." }
+  claims:
+    - text: "I've been making a little extra trading on my phone."
+
+inspectables:
+  - target: forwarded.sender
+    reveal: "In Teo's screenshot: a friendly profile. A picture and a name can be borrowed, so they can't prove anything either way."
+    red_flag: false
+    context: quoted
+  - target: claim
+    reveal: "In Teo's screenshot: an easy-money invitation from someone he met online."
+    red_flag: true
+    type: claim
+    context: quoted
+  - target: request
+    reveal: "In Teo's screenshot: a secret, and an offer to show him how to make money. Someone you've only met online steering you to money is the pattern. Tell someone you trust."
+    red_flag: true
+    type: request
+    context: quoted
+
+actions:
+  - id: advise_little_cant_hurt
+    label: "A little can't hurt"
+    kind: advise_comply
+    outcome: teo_asks_adaeze
+    pressure_target: true
+  - id: photo_check_robin
+    label: "Do a photo check on Robin's picture together"
+    kind: verify_identity
+    outcome: teo_same_picture
+  - id: advise_teo_report
+    label: "Tell him to report the profile"
+    kind: report
+    outcome: teo_reported_profile
+  - id: advise_teo_stop
+    label: "Tell him to stop replying"
+    kind: ignore
+    outcome: teo_stopped_replying
+
+outcomes:
+  teo_asks_adaeze:
+    narrative: "Teo: \"Hmm. I'll ask Adaeze too.\" Adaeze runs a photo check with him, and he sends nothing."
+    reveal: true
+  teo_same_picture:
+    narrative: "You run the photo check together. Teo: \"Well. That settles it.\""
+    reveal: true
+    sets_flags: [arc_told_someone]
+  teo_reported_profile:
+    narrative: "Teo reports the profile on Wordswap. Its check finds the same picture on other profiles, with other names."
+    reveal: true
+    sets_flags: [arc_told_someone]
+  teo_stopped_replying:
+    narrative: "Teo stops replying. That evening he runs a photo check anyway, just to be sure, and sends nothing."
+    reveal: true
+
+debrief:
+  variant: arc
+  layer1:
+    tell: "A secret, and an easy-money invitation from someone met online."
+    what_works: "Do a photo check and tell someone."
+  layer2:
+    message_flags: []
+    notes: "A clean photo check doesn't prove a profile is real: pictures can be made with AI. Telling someone is what works. Where to report and get help (Belgium) is on the help screen."
+  habit_card: a-real-friend-never-needs-your-money
+  advice_line: "Teo asked, and that was the smart bit. With an offer like this, the answer is always no."
+  already_clicked:
+    clicked: "Already chatting with someone like this? Stop replying, keep the chat, and tell someone you trust. Never send money."
+  sources: [be-police-romance-2026, be-fsma-dating-platforms-2026, ie-ccpc-investment-scams, eu-esas-ai-scams-factsheet-nl]

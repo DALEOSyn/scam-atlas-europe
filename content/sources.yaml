@@ -93,7 +93,7 @@ sources:
     title: "Report cybercrime online"
     url: https://www.europol.europa.eu/report-a-crime/report-cybercrime-online
     published: n/d
-    accessed: 2026-11-18
+    accessed: 2026-11-19
     region: EU
     tier: 1
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -192,7 +192,7 @@ sources:
     title: "The European Consumer Centres Network"
     url: https://www.eccnet.eu/node/33
     published: n/d
-    accessed: 2026-11-18
+    accessed: 2026-11-19
     region: EU
     tier: 1
     used_for: [WHERE_TO_REPORT, help-where-to-report-en, rental-offplatform-payment]
@@ -292,7 +292,7 @@ sources:
     title: "Password Theft via Phishing E-mails"
     url: https://bsi.bund.de/dok/password-theft-via-phishing
     published: 2024-03-12
-    accessed: 2026-11-18
+    accessed: 2026-11-19
     region: DE
     tier: 2
     used_for: [email-phishing-credential]
@@ -314,7 +314,7 @@ sources:
     title: "Paketdienst-SMS: Vorsicht, Abzocke!"
     url: https://www.verbraucherzentrale.de/wissen/digitale-welt/mobilfunk-und-festnetz/paketdienstsms-vorsicht-abzocke-58988
     published: 2026-07-22 (last updated)
-    accessed: 2026-11-18
+    accessed: 2026-11-19
     region: DE
     tier: 3
     used_for: [smishing-parcel-fee, it-portal-credential-phishing, multichannel-support-callback, MAP-ch1, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
@@ -347,7 +347,7 @@ sources:
     title: "Aktueller Hinweis: Zollgebühren (SMS)"
     url: https://www.bundesnetzagentur.de/DE/Vportal/TK/Aerger/Aktuelles/Hinweise/AktHinw2023/Zollgebuehren.html?nn=884716
     published: 2023-05-02
-    accessed: 2026-11-18
+    accessed: 2026-11-19
     region: DE
     tier: 3
     used_for: [smishing-parcel-fee, multichannel-support-callback, MAP-ch1, WHERE_TO_REPORT, help-where-to-report-en]
@@ -382,7 +382,7 @@ sources:
     title: "NCSC Quick Guide: Phishing"
     url: https://www.ncsc.gov.ie/pdfs/NCSC_Quick_Guide_Phishing.pdf
     published: n/d
-    accessed: 2026-11-18
+    accessed: 2026-11-19
     region: IE
     tier: 2
     used_for: [email-phishing-credential, messenger-account-takeover-code, it-portal-credential-phishing, MAP-ch0, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
@@ -426,7 +426,7 @@ sources:
     title: "An Garda Síochána Advises the Public to be Extra Vigilant of Fraud When Investing"
     url: https://www.garda.ie/en/about-us/our-departments/office-of-corporate-communications/press-releases/2025/october/gnecb-an-garda-siochana-advises-the-public-to-be-extra-vigilant-of-fraud-when-investing.html
     published: 2025-10-02
-    accessed: 2026-11-18
+    accessed: 2026-11-19
     region: IE
     tier: 3
     used_for: [MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue, investment-ad-fake-platform]
@@ -596,7 +596,7 @@ sources:
     title: "Contro le truffe (pillole di prevenzione)"
     url: https://www.carabinieri.it/in-vostro-aiuto/consigli/pillole-di-prevenzione/contro-le-truffe
     published: n/d
-    accessed: 2026-11-18
+    accessed: 2026-11-19
     region: IT
     tier: 3
     used_for: [MAP-ch6, messenger-family-impersonation, spoofed-authority-call, cloned-voice-family-emergency, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
@@ -619,7 +619,7 @@ sources:
     title: "Cyber fraudes na net - Phishing"
     url: https://www.gnr.pt/cyberFraudesNet.aspx
     published: n/d
-    accessed: 2026-11-18
+    accessed: 2026-11-19
     region: PT
     tier: 3
     used_for: [email-phishing-credential, card-phishing-payment-failed, MAP-crosscutting, WHERE_TO_REPORT, help-where-to-report-en]
@@ -709,7 +709,7 @@ sources:
     title: "Phishing messages surge: Safeonweb receives nearly 10 million suspicious alerts in 2025"
     url: https://ccb.belgium.be/news/phishing-messages-surge-safeonweb-receives-nearly-10-million-suspicious-alerts-2025
     published: 2025-12-23
-    accessed: 2026-11-18
+    accessed: 2026-11-19
     region: BE
     tier: 2
     used_for: [email-phishing-credential, it-portal-credential-phishing, MAP-ch10, MAP-missing, MAP-crosscutting, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
@@ -768,7 +768,7 @@ sources:
     title: "Invulformulier bij aangifte doen als uw WhatsApp-account is overgenomen/gehackt"
     url: https://politie.nl/binaries/content/assets/politie/onderwerpen/whatsapp-account-overgenomen-gehackt/%E2%80%8B%E2%80%8Binvulformulier-bij-aangifte-doen-als-uw-whatsapp-account-is-overgenomen-gehackt.pdf
     published: 2024-09 (version shown on the form)
-    accessed: 2026-11-18
+    accessed: 2026-11-19
     region: NL
     tier: 3
     used_for: [messenger-account-takeover-code, messenger-family-impersonation, hijacked-friend-payment-code, help-where-to-report-en, campaign-catalogue]
@@ -790,7 +790,7 @@ sources:
     title: "Kinder- und Jugendtelefon (flyer DIN A6)"
     url: https://www.nummergegenkummer.de/wp-content/uploads/2026/07/260623_NgK_KJT_Flyer_DINA6_Druck.pdf
     published: 2026-06/07 (file dated 260623, uploaded 2026-07)
-    accessed: 2026-11-18
+    accessed: 2026-11-19
     region: DE
     tier: 4
     used_for: [help-where-to-report-en]
@@ -942,7 +942,7 @@ sources:
     title: "Beware of risks posed by unofficial ETIAS websites"
     url: https://www.frontex.europa.eu/media-centre/news/news-release/beware-of-risks-posed-by-unofficial-etias-websites-eNZniu
     published: 2024-06-22
-    accessed: 2026-11-18
+    accessed: 2026-11-19
     region: EU
     tier: 1
     used_for: [campaign-catalogue]
@@ -1064,7 +1064,7 @@ sources:
     title: "Ping/Lock-Anrufe"
     url: https://www.bundesnetzagentur.de/DE/Vportal/TK/Aerger/Faelle/Ping/artikel.html
     published: n/d (footer (c) 2026)
-    accessed: 2026-11-18
+    accessed: 2026-11-19
     region: DE
     tier: 3
     used_for: [campaign-catalogue]
@@ -1144,7 +1144,7 @@ sources:
     title: "Revenue Scam Warning 9/1/20"
     url: https://www.garda.ie/en/about-us/our-departments/office-of-corporate-communications/news-media/news-archive/revenue-scam-warning-9-1-20-.html
     published: 2020-01-09
-    accessed: 2026-11-18
+    accessed: 2026-11-19
     region: IE
     tier: 3
     used_for: [campaign-catalogue]
@@ -1190,7 +1190,7 @@ sources:
     title: "Week 12: Ticket scammers target buyers and sellers"
     url: https://www.ncsc.admin.ch/ncsc/en/home/aktuell/im-fokus/2025/wochenrueckblick_12.html
     published: 2025-03-25
-    accessed: 2026-11-18
+    accessed: 2026-11-19
     region: CH
     tier: 2
     used_for: [campaign-catalogue]
@@ -1748,6 +1748,17 @@ sources:
     tier: 3
     used_for: [ceo-fraud-bec, payment-detail-change]
     notes: "Re-opened live 2026-11-19: 'Ce téléservice peut être utilisé si vous êtes un particulier de nationalité française ou étrangère'; complaint 'uniquement en votre nom propre'. So it is for individuals only, not firms filing for the company (the page doesn't name companies; their exclusion is read from 'particulier' and 'nom propre'). THESEE online complaint is possible if you received a money request from a contact 'dont la messagerie a été piratée'; you state the sum requested; no payment needs to have been made. Authentication via FranceConnect is mandatory (Service Public account only for those who cannot use it, e.g. foreign tourists). 'Seuls les majeurs peuvent déposer plainte sur le téléservice THESEE'; minors can only make a 'signalement'. Complaint in your own name only. Without a money request: complain in person or write to the procureur. Does NOT cover a look-alike (non-hacked) address explicitly."
+
+  - id: fr-justice-arnaque-escroquerie
+    publisher: Ministère de la Justice (justice.fr)
+    title: "Arnaque, fraude, escroquerie"
+    url: https://www.justice.fr/je-suis-victime/atteintes-biens/arnaque-fraude-escroquerie
+    published: "2025-12-19 (mis à jour)"
+    accessed: "2026-11-19"
+    region: FR
+    tier: 3
+    used_for: [help-where-to-report-en]
+    notes: "G3 re-check (2026-11-19). Info Escroqueries 0 805 805 817, free from France, Monday to Friday 9:00-18:30, information on online scams. Complaint: police or gendarmerie, or by letter to the procureur; some scams can be reported online. Added because the cited fiche réflexe PDF (fr-cybermalveillance-fiche-hameconnage) could not be re-read as text in this session. service-public.gouv.fr (P10100) gives the same number and hours."
 
   - id: fr-bdf-fraude-moyens-paiement
     publisher: Banque de France

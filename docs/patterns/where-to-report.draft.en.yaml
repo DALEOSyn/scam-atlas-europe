@@ -154,14 +154,14 @@ eu:
     name: "Europol: Report cybercrime online"
     body: "Europol does not take reports itself. Its page sends you to your country's official online reporting site."
     url: https://www.europol.europa.eu/report-a-crime/report-cybercrime-online
-    checked: 2026-11-18
+    checked: 2026-11-19
     sources: [eu-europol-report-cybercrime]
 
   - id: ecc-net
     name: "European Consumer Centres Network (ECC-Net)"
     body: "Free advice if you bought something from a trader in another EU country, Norway or Iceland and it went wrong. It is not the police."
     url: https://www.eccnet.eu/node/33
-    checked: 2026-11-18
+    checked: 2026-11-19
     sources: [eu-eccnet-about]
 
 # ---------------------------------------------------------------- 4. Countries (verified entries only)
@@ -173,7 +173,7 @@ countries:
       name: "Safeonweb"
       body: "Forward suspicious messages so the links can be checked."
       email: suspicious@safeonweb.be
-      checked: 2026-11-18
+      checked: 2026-11-19
       sources: [be-ccb-safeonweb-2025]
     - id: be-card-stop
       role: bank
@@ -247,9 +247,9 @@ countries:
         - number: "116 111"
           label: "Children and young people"
       scope: "Open Monday to Saturday, 14:00-20:00."
-      checked: 2026-11-18
+      checked: 2026-11-19
       sources: [de-ngk-116111-flyer-2026, de-bmbfsfj-ngk-poster]
-      review_note: "Opening hours from the operator's flyer published July 2026; re-check at G3."
+      review_note: "Opening hours from the operator's flyer published July 2026. G3 re-check 2026-11-19: flyer and nummergegenkummer.de home page both give 116 111, Mon-Sat 14:00-20:00, call free ('Der Anruf kostet nichts')."
     - id: de-police
       role: police
       name: "Police"
@@ -281,7 +281,7 @@ countries:
       name: "Bundesnetzagentur (telecom regulator)"
       body: "Report unwanted or fake SMS. This page links to its complaint form."
       url: https://www.bundesnetzagentur.de/DE/Vportal/TK/Aerger/Aktuelles/Hinweise/AktHinw2023/Zollgebuehren.html
-      checked: 2026-11-18
+      checked: 2026-11-19
       sources: [de-bnetza-zoll-sms-2023]
       review_note: "Links to the regulator's 2023 warning page, which links on to its SMS-spam complaint form. Site navigation query parameter (?nn=...) removed and the clean URL re-checked 2026-11-18. The form's own URL was not opened directly."
 
@@ -360,8 +360,9 @@ countries:
       phones:
         - number: "0 805 805 817"
           label: "Free advice"
-      checked: 2026-11-18
-      sources: [fr-cybermalveillance-fiche-hameconnage]
+      checked: 2026-11-19
+      sources: [fr-cybermalveillance-fiche-hameconnage, fr-justice-arnaque-escroquerie]
+      review_note: "G3 re-check 2026-11-19 on justice.fr (and service-public.gouv.fr): same number, free from France, Monday to Friday 9:00-18:30. Hours not shown yet: ask the producer whether to add them to the label."
     - id: fr-cybermalveillance
       role: report
       name: "Cybermalveillance.gouv.fr"
@@ -435,7 +436,7 @@ countries:
       role: police
       name: "Local Garda station"
       body: "Report phishing, smishing, scam calls and fraud."
-      checked: 2026-11-18
+      checked: 2026-11-19
       sources: [ie-ncsc-phishing-guide, ie-garda-investment-2025, ie-ccpc-spot-a-scam-2026]
       review_note: "T-3.8r: also IE's national reporting route for the public (NCSC sends the public to the local Garda station; no general public phishing inbox). T-3.10r: CCPC (2026-04-23) also sends people to the local Garda station."
     - id: ie-garda-confidential
@@ -448,7 +449,7 @@ countries:
       scope: "For suspected investment fraud. Other scams: your local Garda station."
       checked: 2026-11-19
       sources: [ie-garda-investment-2025]
-      review_note: "T-3.10r: re-opened 2026-11-19 on the Garda press release (2 Oct 2025): '1800 666 111' for 'further information or to report suspected investment fraud'. Cost and hours not stated: no 'free' claim (the 1800 prefix alone isn't treated as proof). Show on the Dublin / investment help card; keep the scope line."
+      review_note: "T-3.10r: re-opened 2026-11-19 on the Garda press release (2 Oct 2025): '1800 666 111' for 'further information or to report suspected investment fraud'. Cost and hours not stated: no 'free' claim (the 1800 prefix alone isn't treated as proof). Show on the Dublin / investment help card; keep the scope line. G3 re-check (T-3.10f3, 2026-11-19): number and wording unchanged on the press release; 0818 681 681 / +353 (0)1 224 5800 unchanged on the Central Bank 'Avoiding Scams' page; Samaritans 116 123 and Childline 1800 66 66 66 unchanged on the HSE page."
     - id: ie-cbi-report
       role: report
       name: "Central Bank of Ireland: report an unauthorised firm"
@@ -496,7 +497,7 @@ countries:
       phones:
         - number: "112"
           label: "Emergency"
-      checked: 2026-11-18
+      checked: 2026-11-19
       sources: [it-carabinieri-contro-truffe]
     - id: it-polizia-postale
       role: report
@@ -560,7 +561,7 @@ countries:
       name: "Police (aangifte)"
       body: "Report to the police. They publish a form to help you prepare a report if your messenger account was taken over."
       url: https://politie.nl/binaries/content/assets/politie/onderwerpen/whatsapp-account-overgenomen-gehackt/%E2%80%8B%E2%80%8Binvulformulier-bij-aangifte-doen-als-uw-whatsapp-account-is-overgenomen-gehackt.pdf
-      checked: 2026-11-18
+      checked: 2026-11-19
       sources: [nl-politie-whatsapp-takeover-2024]
       review_note: "URL contains two percent-encoded zero-width spaces (%E2%80%8B) in the file name, exactly as published by politie.nl. Fragile: re-check at G3 and prefer a stable landing page on politie.nl if one exists."
     - id: nl-bank

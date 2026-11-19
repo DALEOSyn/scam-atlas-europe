@@ -1,15 +1,15 @@
-<!-- Scam Atlas: Europe. City backdrop: a small Brussels office two days before an open evening, a desk with a closed laptop and a small projector, plain stacked boxes of freshly printed covers, plants, a window onto generic brick and stepped-gable roofs; no lettering, no logo, no flag, no stars, no institution building. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<!-- Scam Atlas: Europe. City backdrop: a small Brussels office two days before an open evening, a desk with a closed laptop and a small projector, plain stacked boxes of freshly printed covers, plants, a high window onto generic brick and stepped-gable roofs above head height; no lettering, no logo, no flag, no stars, no institution building. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="bo-t"><title id="bo-t">A small office with boxes, a desk, a laptop and a projector</title>
 <defs><linearGradient id="bo-air" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfdde6"/><stop offset="1" stop-color="#d9e6f6"/></linearGradient>
 <g id="bo-box"><rect width="84" height="52" rx="3" fill="#d6bf98"/><rect x="66" width="18" height="52" rx="3" fill="#b9a88f"/><path d="M0 8H84" stroke="#b9a88f" stroke-width="3"/></g>
 </defs>
 <rect width="960" height="540" fill="#e7d3b0"/>
 <rect width="960" height="22" fill="#d6bf98"/>
-<rect x="560" y="60" width="260" height="250" rx="6" fill="#f6efe2"/><rect x="574" y="74" width="232" height="222" rx="3" fill="url(#bo-air)"/>
-<path d="M574 296V220H606V196L622 180L638 196V220H660V250H700V206L712 194L724 206L736 194L748 206V250H806V296Z" fill="#c8714f"/>
-<path d="M590 236h10v14h-10ZM616 236h10v14h-10ZM712 222h10v14h-10ZM736 222h10v14h-10Z" fill="#f3d08a"/>
-<rect x="550" y="306" width="280" height="12" rx="4" fill="#d6bf98"/>
-<path d="M600 306h28l-4 -22h-20Z" fill="#c8714f"/><path d="M598 278a9 9 0 1 0 18 0a9 9 0 1 0 -18 0ZM612 274a9 9 0 1 0 18 0a9 9 0 1 0 -18 0ZM606 266a8 8 0 1 0 16 0a8 8 0 1 0 -16 0Z" fill="#86a175"/>
+<rect x="560" y="30" width="260" height="84" rx="6" fill="#f6efe2"/><rect x="574" y="40" width="232" height="66" rx="3" fill="url(#bo-air)"/>
+<path d="M574 106V86H606V76L622 62L638 76V86H660V92H700V78L712 68L724 78L736 68L748 78V92H806V106Z" fill="#c8714f"/>
+<path d="M590 92h8v10h-8ZM616 92h8v10h-8ZM712 82h8v10h-8ZM736 82h8v10h-8Z" fill="#f3d08a"/>
+<rect x="550" y="110" width="280" height="8" rx="3" fill="#d6bf98"/>
+<path d="M262 390h26l-4 -20h-18Z" fill="#c8714f"/><path d="M260 364a8 8 0 1 0 16 0a8 8 0 1 0 -16 0ZM274 362a8 8 0 1 0 16 0a8 8 0 1 0 -16 0ZM268 354a7 7 0 1 0 14 0a7 7 0 1 0 -14 0Z" fill="#86a175"/>
 <rect x="250" y="390" width="330" height="14" rx="4" fill="#8a6a4f"/><rect x="264" y="404" width="12" height="66" rx="4" fill="#8a6a4f"/><rect x="554" y="404" width="12" height="66" rx="4" fill="#8a6a4f"/>
 <path d="M300 390h100l-8 -8h-84Z" fill="#5d6672"/><path d="M308 382L318 330H382L392 382Z" fill="#b8b4a6"/>
 <rect x="470" y="364" width="64" height="26" rx="6" fill="#8fa3b5"/><path d="M483 377a7 7 0 1 0 14 0a7 7 0 1 0 -14 0Z" fill="#7a8c9c"/><path d="M520 372h8M520 380h8" stroke="#7a8c9c" stroke-width="3"/>

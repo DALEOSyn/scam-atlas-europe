@@ -1,0 +1,13 @@
+<!-- Scam Atlas: Europe. Style sample for docs/ART_DIRECTION.md (postcard back with an invented stamp and a wavy-line postmark; message text is live HTML, no lettering in the file). Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200" role="img" aria-labelledby="pcf-t"><title id="pcf-t">Postcard back (sample frame)</title>
+<rect x="6" y="8" width="290" height="188" rx="8" fill="#e3d3b4"/>
+<rect x="2" y="2" width="290" height="188" rx="8" fill="#fffaf0" stroke="#2b2433" stroke-width="2"/>
+<path d="M176 20V172" stroke="#d6bf98" stroke-width="2" stroke-linecap="round"/>
+<g stroke="#d6bf98" stroke-width="2" stroke-linecap="round"><path d="M190 110H274M190 132H274M190 154H274"/></g>
+<rect x="232" y="16" width="46" height="56" fill="#fffaf0" stroke="#fffaf0" stroke-width="6"/>
+<rect x="232" y="16" width="46" height="56" fill="#fffaf0" stroke="#d6bf98" stroke-width="4" stroke-dasharray="0 6" stroke-linecap="round"/>
+<rect x="237" y="21" width="36" height="46" rx="2" fill="#d9e6f6"/>
+<circle cx="262" cy="34" r="6" fill="#e9a23b"/>
+<path d="M237 56Q248 44 257 52Q265 46 273 54V67H237Z" fill="#8fae8b"/>
+<g fill="none" stroke="#7a8c9c" stroke-width="1.5" stroke-linecap="round" opacity=".8"><circle cx="226" cy="58" r="17"/><path d="M196 46Q203 42 210 46T224 46T238 46T252 46M196 54Q203 50 210 54T224 54T238 54T252 54M196 62Q203 58 210 62T224 62T238 62T252 62"/></g>
+</svg>

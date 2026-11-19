@@ -49,7 +49,7 @@
 ## 3. Corvelle Bank: Medium, rename
 - **Searched:** `"Corvelle" bank OR finance OR company`; `"Corvel" OR "Corvelle" company`.
 - **Hits:**
-  - **CorVel Corporation**: US, Nasdaq-listed, workers' compensation / insurance claims and risk-management services. "Corvelle" sounds almost the same, and the sector (insurance / financial services) is adjacent to banking. https://corvel.com/investors · https://en.wikipedia.com/wiki/CorVel_Corporation
+  - **CorVel Corporation**: US, Nasdaq-listed, workers' compensation / insurance claims and risk-management services. "Corvelle" sounds almost the same, and the sector (insurance / financial services) is adjacent to banking. https://corvel.com/investors · https://en.wikipedia.org/wiki/CorVel_Corporation
   - Corville Financial Services Ltd (UK Companies House, 04337342). https://find-and-update.company-information.service.gov.uk/company/04337342
 - **Assessment:**
   - The bank is the brand players will see *spoofed* (Madrid, Stockholm chapters).
@@ -329,7 +329,7 @@ Same method and limits as above (web, app-store and company-directory check via 
   - No Polish music shop trading as "Tremolo" surfaced. The "tremolo.pl" query returned only retailer product pages.
 - **Assessment:** the coined form with the Polish "-ik" ending has no hit. Keep. Show it only as the payee in capitals on the confirmation, as specified.
 - **Alternative:**
-  - **Basovia:** `"Basovia" sklep OR shop OR company`; `"Basovia" OR "Basowia" music OR muzyka OR instrumenty`; `"Basovia" OR "Bassovia" OR "basovia.pl"`. No shop or company, but **Basowiszcza / Basovišča** is a real music festival held in Poland (https://en.wikipedia.com/wiki/Basowiszcza). A music-shop payee named Basovia is too close in sector and sound. Medium. Don't use.
+  - **Basovia:** `"Basovia" sklep OR shop OR company`; `"Basovia" OR "Basowia" music OR muzyka OR instrumenty`; `"Basovia" OR "Bassovia" OR "basovia.pl"`. No shop or company, but **Basowiszcza / Basovišča** is a real music festival held in Poland (https://en.wikipedia.org/wiki/Basowiszcza). A music-shop payee named Basovia is too close in sector and sound. Medium. Don't use.
 
 ## Actions for ux-artist / scenario-writer (Madrid / Warsaw)
 1. **Keep:** Olvarde Custodia SL (4-9 boss holder), Larchwick Reserva (4-5 caller's name), Votelark / `votelark-vote.example` (5-2), TREMOLIK (5-6 payee).

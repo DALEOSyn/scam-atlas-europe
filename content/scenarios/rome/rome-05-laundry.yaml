@@ -1,0 +1,156 @@
+# 6-5 Bruna: "€8 for your laundry, as on the price list" (GDD §26.4 6-5). Genuine, high stakes (pay),
+# difficulty 4, timer 45 s with an honest deadline, interrupt from Davide at 15 s (genuine small talk).
+# Pattern: the family "new number" chat callback (in focus, the callback's genuine neighbour). Checkables (G, 3):
+# sender (neutral on a money request, §22.8 ruling 1), the price list (reference, "It fits"), the request.
+# twin_of is NOT set: the spec pairs it with 6-8, but 6-8 exposes 6 opening checkables and this message 3,
+# and the validator needs parity ±1. 6-2/6-4 is the chapter's twin pair. Spec gap, reported.
+# laundry_transfer: Bruna's name and account from the price list; payee check match (P3, genuine).
+id: rome-05-laundry
+chapter: rome
+role: standard
+pattern: messenger-family-impersonation
+theme: home
+learning_objectives: [LO-17, LO-06, LO-07]
+difficulty: 4
+is_fraud: false
+stakes: high
+device: messenger
+brands: [kettle, larchwick]
+cast: [bruna, davide]
+pressure:
+  timer: true
+  levers: []
+  honest_deadline: "Any time before you leave"
+
+message:
+  sender: { display: "Bruna (B&B)", detail: "Saved contact: Bruna (B&B)" }
+  from_cast: bruna
+  body: "Your laundry's washed and folded on your bed 🙂 €8, to my account as on the price list in your room. Any time before you leave."
+  request: pay
+  ask: { text: "€8, to my account as on the price list in your room." }
+  references: ["the price list in your room"]
+  earlier:
+    - { when: "Monday 16:10", body: "Il limone ti saluta 🍋 Buona permanenza!", lang: it, translation: "The lemon tree says hello 🍋 Enjoy your stay!" }
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows Bruna's saved contact, in your usual chat. An account can be taken over and show the same, so it can't prove anything either way. Judge the request."
+    red_flag: false
+    type: sender
+  - target: reference
+    reveal: "It fits: the price list in your room says laundry €8. That isn't proof on its own, so weigh it with what she asks."
+    red_flag: false
+    type: reference
+    reassures: true
+  - target: request
+    reveal: "€8 to her own account, by a transfer you start yourself, for something you used. No link, no code."
+    red_flag: false
+    type: request
+
+actions:
+  - id: pay_bruna_app
+    label: "Pay her in the Larchwick app"
+    kind: start_transfer
+    next_beat: laundry_transfer
+    pressure_target: true
+  - id: ask_bruna_desk
+    label: "Ask Bruna at the desk first"
+    kind: ask_someone
+    outcome: bruna_at_desk
+  - id: report_laundry
+    label: "Report the message"
+    kind: report
+    outcome: laundry_reported
+  - id: ignore_laundry
+    label: "Ignore it"
+    kind: ignore
+    outcome: laundry_unpaid
+
+beats:
+  - id: laundry_transfer
+    device: banking
+    message:
+      account: { nickname: "Your current account" }
+      payee: { name: "Bruna Esposito", iban: "IT•• … 2207", name_check: match, amount: "€8.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "Name matches: the account is held by Bruna Esposito, the name on the price list. That shows whose account it is; what she asked for, and the list in your room, make the rest fit."
+        red_flag: false
+        type: payee
+        reassures: true
+      - target: payee.iban
+        reveal: "The account from the price list in your room. An account number on its own can't prove anything either way."
+        red_flag: false
+        type: payee
+    actions:
+      - id: send_bruna_eight
+        label: "Send €8"
+        kind: proceed
+        outcome: laundry_paid
+        pressure_target: true
+      - id: cancel_ask_bruna
+        label: "Cancel and ask Bruna first"
+        kind: ask_someone
+        outcome: bruna_at_desk
+      - id: cancel_laundry_transfer
+        label: "Cancel"
+        kind: ignore
+        outcome: laundry_cancelled
+
+interrupts:
+  - id: davide_exam_done
+    at_seconds: 15
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Davide (B&B)", detail: "Saved contact: Davide (B&B)" }
+      from_cast: davide
+      body: "Esame fatto!! 🎉 Pizza stasera?"
+      lang: it
+      translation: "Exam done!! 🎉 Pizza tonight?"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Davide's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what he asks for: pizza."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_pizza
+        label: "Reply: yes, pizza!"
+        kind: proceed
+        outcome: pizza_tonight
+        pressure_target: true
+      - id: report_pizza
+        label: "Report the message"
+        kind: report
+        outcome: pizza_reported
+
+outcomes:
+  laundry_paid:
+    narrative: "Sent. Bruna, a minute later: \"Arrivato, grazie! 🍋\""
+  bruna_at_desk:
+    narrative: "Bruna, at the desk: \"Yes, me. And thank you for asking.\" You pay her the €8 there and then."
+  laundry_reported:
+    narrative: "Reported. Bruna, at breakfast, puzzled: \"My message didn't reach you? It was only the laundry.\""
+  laundry_unpaid:
+    narrative: "You leave it for now. It's on the price list, and Bruna said any time before you leave."
+  laundry_cancelled:
+    narrative: "You cancel. Nothing is sent, and the €8 is still to pay before you leave."
+  pizza_tonight:
+    narrative: "Davide: \"Grande! Eight o'clock, the place with the blue door.\""
+  pizza_reported:
+    narrative: "You reported it. Careful is good; this one really was Davide, celebrating his exam."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Her saved chat and name, for laundry you had."
+    what_works: "Paying was fine; asking is never wrong."
+  layer2:
+    message_flags: []
+    notes: "A real request is for something you know about, to the person's own account, and can wait for a question."
+  device_tip: "On a real phone, check a payment request against something you already have, like the price list in your room, and type the details yourself."
+  habit_card: call-the-number-you-know
+  sources: [nl-politie-hulpvraagfraude-2025, nl-veiliginternetten-hulpvraag, eu-ec-ipr-vop-2025, eu-ecb-ipr]

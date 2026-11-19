@@ -56,7 +56,7 @@ outcomes:
 debrief:
   variant: arc
   layer1:
-    tell: "Bragging about easy profits often comes before an invitation."
+    tell: "Talk of easy profits often comes before an invitation."
     what_works: "Change the subject, and tell someone you trust."
   layer2:
     message_flags: []
@@ -64,4 +64,4 @@ debrief:
   already_clicked:
     clicked: "Asked how to join already? That's fine. Don't sign up or send money; talk to someone you trust first."
     paid: "Sent money already? Stop paying, call your bank on the number on your card, and keep the chat history."
-  sources: [eu-esas-ai-scams-factsheet-nl, be-police-romance-2026, eu-europol-iocta-2026, ie-garda-investment-2025]
+  sources: [eu-esas-ai-scams-factsheet-nl, be-police-romance-2026, eu-europol-iocta-2026, ie-garda-crimecall-investment-2024]

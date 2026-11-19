@@ -50,7 +50,7 @@ inspectables:
     red_flag: true
     type: phone_number
   - target: request
-    reveal: "Asks you to call a number it gives you about a payment you don't recognise. A real alert sends you to your own app or the number on your card."
+    reveal: "Asks you to call a number it gives you about a payment you don't recognise. Don't use a number a text gives you: check in your own app, or call the number on your card."
     red_flag: true
     type: request
 
@@ -129,7 +129,7 @@ outcomes:
       - { step: tell_trusted_adult, category: stop }
       - { step: keep_call_evidence, category: secure }
       - { step: report_police_copy_to_bank, category: report }
-      - { step: call_back_caller_number, category: harmful }
+      - { step: call_back_text_number, category: harmful }
       - { step: wait_and_see, category: harmful }
   app_no_transfer:
     narrative: "You open the Larchwick app yourself. No transfer, nothing pending. Your balance is as it was."

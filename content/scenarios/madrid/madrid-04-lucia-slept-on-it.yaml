@@ -71,8 +71,8 @@ outcomes:
 debrief:
   variant: standard
   layer1:
-    tell: "Her real bank chat, but not her card's number."
-    what_works: "Her rule worked: sleep, then check in the app."
+    tell: "Real bank chat, but not her card's number."
+    what_works: "Her rule worked: pause, then check in the app yourself."
   layer2:
     message_flags: []
     notes: "Pausing is allowed. A real problem still shows when you open the app yourself or call the number on your card."

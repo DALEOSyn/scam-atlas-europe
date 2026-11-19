@@ -131,9 +131,9 @@ outcomes:
   card_blocked_attempt:
     narrative: "Larchwick, on the number on your card: \"We've blocked that payment attempt and your card. Never share a code with anyone who calls.\""
   code_call_reported:
-    narrative: "Reported. Keep a note of the number and the time. The code text is still there: a code you didn't ask for means someone has your card details, so call the number on your card."
+    narrative: "Reported. Keep a note of the number and the time. The code text is still there: a code you didn't ask for probably means someone has your card details, so call the number on your card."
   code_call_left:
-    narrative: "You hang up. The code text is still on your screen: a code you didn't ask for means someone has your card details. Call the number on your card to block it."
+    narrative: "You hang up. The code text is still on your screen: a code you didn't ask for probably means someone has your card details. Call the number on your card to block it."
   lucia_coffee_on:
     narrative: "Lucía: \"Two minutes ☕\""
   lucia_coffee_reported:

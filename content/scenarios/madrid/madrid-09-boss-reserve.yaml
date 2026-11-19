@@ -76,7 +76,7 @@ inspectables:
     red_flag: false
     type: claim
   - target: request
-    reveal: "Asks you to call a number it gives you about a payment you don't recognise. A real alert sends you to your own app or the number on your card."
+    reveal: "Asks you to call a number it gives you about a payment you don't recognise. Don't use a number a text gives you: check in your own app, or call the number on your card."
     red_flag: true
     type: request
 
@@ -260,7 +260,7 @@ interrupts:
     message:
       sender: { display: "Andrés (Madrid)", detail: "Saved contact: Andrés (Madrid)" }
       from_cast: andres
-      body: "¿Sigues en pie? Lucía dice que su turno está tranquilo esta noche 🙂 Buenas noches."
+      body: "¿Aún no te has dormido? Lucía dice que su turno está tranquilo esta noche 🙂 Buenas noches."
       lang: es
       translation: "Still up? Lucía says her shift's quiet tonight 🙂 Good night."
       request: reply
@@ -290,7 +290,7 @@ outcomes:
       - { step: tell_trusted_adult, category: stop }
       - { step: keep_call_evidence, category: secure }
       - { step: report_police_copy_to_bank, category: report }
-      - { step: call_back_caller_number, category: harmful }
+      - { step: call_back_text_number, category: harmful }
       - { step: wait_and_see, category: harmful }
   sent_to_custodia:
     narrative: "Sent: €3,215.28 to Olvarde Custodia SL. \"Perfect. Your money is safe with our reserve partner. Don't use the app tonight.\" The line goes dead."
@@ -310,7 +310,7 @@ outcomes:
       - { step: tell_trusted_adult, category: stop }
       - { step: keep_call_evidence, category: secure }
       - { step: report_police_copy_to_bank, category: report }
-      - { step: call_back_caller_number, category: harmful }
+      - { step: call_back_text_number, category: harmful }
       - { step: wait_and_see, category: harmful }
   app_no_transfer_then_ring:
     narrative: "You open the Larchwick app yourself. No transfer. Balance as it was. Then your phone rings: \"Larchwick Bank\"."
@@ -327,9 +327,9 @@ outcomes:
   boss_call_reported:
     narrative: "Reported. Keep a note of the time and what was said: your bank and the police can use them."
   boss_call_left:
-    narrative: "You hang up and leave it there. The phone goes quiet, for now."
+    narrative: "You hang up and leave it there. Nothing has left your account on this call."
   boss_reserve_cancelled:
-    narrative: "You hang up and cancel. Nothing more leaves your account. The phone goes quiet, for now."
+    narrative: "You hang up and cancel. Nothing more leaves your account."
   card_line_b3:
     narrative: "Larchwick, on the number on your card: \"There's no security reserve, and that isn't our number. Please don't call it. If anything has already left, we'll try to stop it now.\""
   app_b3:

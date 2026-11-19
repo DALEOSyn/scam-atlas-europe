@@ -97,3 +97,6 @@ steps:
   - id: call_back_caller_number
     label: "Call back the number that called you and ask them to send it back"
     feedback: "Wanting to fix it fast is natural, but the number that called you can be faked, so you can't tell whose line you'd reach. Call the number on your card instead."
+  - id: call_back_text_number
+    label: "Call the number from the text again and ask them to send it back"
+    feedback: "Wanting to fix it fast is natural, but that number came with the fake text, so it reaches whoever sent it. Call the number on your card instead."

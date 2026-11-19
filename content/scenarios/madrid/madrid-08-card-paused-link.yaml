@@ -27,6 +27,7 @@ message:
   references: ["your card ending 17"]
   earlier:
     - { when: "Yesterday 18:12", body: "LARCHWICK: Card payment of €18.60 at MERCADO PUESTO 14." }
+    - { when: "Today 10:41", body: "LARCHWICK: A transfer of €2,940.00 to ES•• •••• 0417 is being processed. Not you? Call us now to stop it: 9•• ••• •14." }
     - { when: "Today 15:20", body: "LARCHWICK: Code 4••••• to confirm your payment of €24.90 to THIMBLE & PINE. Enter it on the payment page. Valid 5 minutes. Never share this code with anyone. Not you? Call us on 9•• ••• •00." }
 
 inspectables:

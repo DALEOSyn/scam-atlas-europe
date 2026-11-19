@@ -158,7 +158,7 @@ debrief:
     message_flags:
       - "Not asking for passwords isn't reassurance. They didn't need them: you were going to make the transfer yourself, in your real app. Being guided to move money is the tell."
       - "\"Stay on the line\" is there so you can't check."
-    notes: "Following a caller's steps into your own app is already the risky part, even if you hang up before sending. The call showed your bank's name, maybe even its real number. A number that calls you proves nothing. A number you dial yourself, from your card, does. After a \"doesn't match\" warning, your bank may not have to refund you. Call it at once anyway."
+    notes: "Following a caller's steps into your own app is already the risky part, even if you hang up before sending. The call showed your bank's name, maybe even its real number. A number that calls you proves nothing; one you dial yourself, from your card, does. After a \"doesn't match\" warning, your bank may not have to refund you. Call it at once anyway."
   device_tip: "On a real phone, end the call yourself, then dial the number on the back of your card. Don't use redial or the call log."
   habit_card: hang-up-call-back
   already_clicked:

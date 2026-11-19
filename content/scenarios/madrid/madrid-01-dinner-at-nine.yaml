@@ -23,7 +23,7 @@ message:
   sender: { display: "Andrés (Madrid)", detail: "Saved contact: Andrés (Madrid)" }
   from_cast: andres
   body: |
-    ¡Buenos días! Lucía duerme hasta las tres después de sus noches, así que la cocina es tuya, en silencio 🙂 Esta noche hago lentejas. ¿Cenamos a las nueve, te apuntas?
+    ¡Buenos días! Lucía duerme hasta las tres después de sus noches, así que la cocina es tuya, pero sin hacer ruido 🙂 Esta noche hago lentejas. ¿Cenamos a las nueve, te apuntas?
   lang: es
   translation: "Good morning! Lucía's asleep till three after her nights, so the kitchen's yours, quietly 🙂 I'm cooking lentils tonight. Dinner at nine, are you in?"
   request: reply
@@ -80,4 +80,4 @@ debrief:
     notes: "Most messages are fine. Save your checks for ones that ask for money, codes or a login."
   device_tip: "On a real phone, tap the contact's name at the top of the chat to see the number behind it and check it's the one you saved."
   habit_card: calm-not-paranoid
-  sources: [ie-ncsc-phishing-guide, de-bsi-protect-phishing]
+  sources: [nl-politie-hulpvraagfraude-2025, ie-ncsc-phishing-guide, de-bsi-protect-phishing]

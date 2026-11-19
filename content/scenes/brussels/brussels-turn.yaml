@@ -1,0 +1,20 @@
+# Brussels turn (GDD §30.2 beat 2, STORY §3.10; thinking → warm; 2 panels): the stop point, after 10-3; 10-4
+# (Noor's easy-money DM, she asks you) follows. A human cue only: no DM, offer, app, account or amount; the
+# turn spoils no verdict (STORY §4.2 rules 1–2). Noor's x-thinking art shows her phone with the screen turned
+# away (no screen content, rule 1), so the alt says so (ART_DIRECTION §9.2, §9.6). The player's line is "You",
+# never drawn: the second panel shows the office only.
+id: brussels-turn
+chapter: brussels
+slot: turn
+panels:
+  - backdrop: brussels-office
+    crop: centre
+    speaker: noor
+    expression: thinking
+    line: "Can I ask you something later? It's probably nothing."
+    alt: "Noor, thinking, looking at her phone, screen turned away, at the desk by the projector."
+  - backdrop: brussels-office
+    crop: left
+    speaker: you
+    line: "Any time. I'm here."
+    alt: "The office desk beside the stacked boxes and the noticeboard."

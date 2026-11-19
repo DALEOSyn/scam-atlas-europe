@@ -86,7 +86,7 @@ beats:
       image: { alt: "Profile picture: the Waymarker Network logo" }
     inspectables:
       - target: sender.detail
-        reveal: "A new contact with a private mobile number. The IT desk isn't in your Kettle contacts, and its real contact is in the staff directory."
+        reveal: "A new contact with a private mobile number, not the IT desk's saved number. Its real contact is in the staff directory."
         red_flag: true
         type: sender
       - target: link

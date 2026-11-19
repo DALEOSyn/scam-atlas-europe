@@ -338,3 +338,85 @@ Same method and limits as above (web, app-store and company-directory check via 
 2. **Spares, if a second name is needed:** Corvaldo Custodia SL (Low–Medium), Cheerpoll (Low), Tunepoll (Low–Medium).
 3. **Don't use:** Mirtelo Custodia SL (MIRTILO SL, Bilbao), Basovia (Basowiszcza festival). Smykowo was already dropped.
 4. **Before G4:** OEPM + Registro Mercantil (ES), UPRP + KRS (PL), and TMview for all kept names. This check is not trademark or legal clearance.
+
+---
+
+# Rome and Lisbon names (chapters 6 and 7), checked 2026-11-19
+
+**Owner:** fraud-researcher · **Searched:** 2026-11-19 · **Status:** draft for sceptic review · roles from `docs/GDD.md` §26.10 and §27.10 (branch in /home/user/sae-rlspec).
+
+## Method and limits (Rome / Lisbon)
+- Same method and limits as above: one web search index (US-based), which surfaced UK Companies House pages, app-store listings, Italian company directories and holiday-let listings. One result page was opened (a place page, RL1).
+- **No trademark register, no Italian Registro Imprese / UIBM search, no Portuguese RNPC / INPI-PT search, no WHOIS.** Before G4 a human checks these and TMview for every kept name.
+- **Domains:** `.example` hosts are reserved (RFC 2606), so the check is about the *names*.
+- **People:** same test as Paris (no notable person with the exact name; no real professional in an impersonated or accused role).
+
+## Summary (Rome / Lisbon)
+| # | Name (role) | Closest hits | Risk | Recommendation |
+|---|---|---|---|---|
+| RL1 | **Roostwell** (rental platform; genuine, and impersonated by look-alikes) | no exact hit; **Student Roost** (UK student-accommodation operator with a resident app); "Roost" startups; Rothwell (place) | Low–Medium | **Keep** (watch item) |
+| RL1 | Tilestay (alternative) | no exact hit; **Tiles Apartments** (guest flats, Porto) and "Tiles Apartment" holiday-let listings | Low–Medium | Spare |
+| RL1 | Hearthlane (alternative) | no exact hit; **Hemlane** (US rental-management software), a near sound-alike in the sector | Low–Medium | Spare |
+| RL2 | **Kerbello** (official parking app and operator; genuine, and impersonated by look-alikes) | no exact hit; **Kerb**, a parking app (launched in Dublin, the UK incl. Edinburgh, and Australia): same sector, and "Kerbello" starts with its whole name | **Medium** | **Rename** → **Zonelet** (spare: Lanefare) |
+| RL2 | Zonelet (alternative) | no product; only "Zonelets" (a static-blog template) and code identifiers | Low | **Use** |
+| RL2 | Lanefare (alternative) | no hit at all | Low | Spare |
+| RL3 | **Vellastri Tutela Srl** (holder of the boss's close-match fraud account) / caller's spelling "Velastri Tutela" | no hit for Vellastri or Velastri; "Tutelia Credit Srl" (Rome, credit company) is a different word | Low | **Keep** |
+| RL3 | Corvessa Tutela Srl (alternative) | no exact hit; "Corvino" (person), "Corv-" names | Low (faint CorVel echo, as Corvaldo) | Spare |
+| RL4 | **J. Ashdale** (holder of 6-4's match account) | "Ashdale" is used by many UK companies (Ashdale UK Ltd, Ashdale Investments, Edward Ashdale Ltd); no notable person "J. Ashdale" | Low | **Keep** |
+| RL4 | **casa.alfama** (scam host handle, 7-6) | **"Casa d'Alfama"**: a real Lisbon holiday-let listing and a holiday-flat listing "Casa d'Alfama by Lisbon Village Apartments"; many "Casa … Alfama" lets | **Medium** | **Replace** with a coined handle, e.g. **casa.velarim** |
+| RL4 | **Roostwell Deals** (scam ad page, 7-3) | derived from Roostwell (RL1); no separate hit | Low | **Keep** (follows RL1) |
+| RL4 | **Leonor Brito** (borrowed name on the boss's no-match transfer) | no notable person; the name appears on Portuguese university theses (private individuals); "Leonora Brito" (Welsh writer) is a different name | Low | **Keep** |
+
+## RL1. Roostwell: Low–Medium, keep (watch item)
+- **Searched:** `"Roostwell"`; `"Roost" rental OR "holiday lets" OR "student rooms" app platform`; `"Tilestay" OR "Hearthlane" app OR rental OR company`; `"Tilestay"`; `"Hearthlane"`; `"Tilestay" OR "Tile Stay" rental OR alojamento OR app`.
+- **Hits:**
+  - No "Roostwell" in any sector. Results were Rothwell (place names) and UK companies "Roost Hills", "Roost Inventories", "Rostella".
+  - **Student Roost**: UK student-accommodation operator with a resident app (App Store id6504027653; https://company.studentroost.co.uk/news/student-roost-launches-new-resident-app). Same sector as Beatriz's room hunt, but the name is "Student Roost", not "Roostwell", and "roost" is a common English word.
+  - **Tilestay:** no exact hit. A Wanderlog place page (https://wanderlog.com/place/details/4657969) turned out to be **Tiles Apartments**, Porto, and there is a "Tiles Apartment" holiday-let listing. Same sector and country, but a different name.
+  - **Hearthlane:** no hit (only "Hearthstone" game pages). The earlier combined query surfaced **Hemlane** (US rental-management software, https://linkedin.com/company/hemlane), which sounds close.
+- **Assessment:** all three are Low–Medium, so there is no reason to switch. Keep Roostwell. Roostwell is spoofed by `roostwell-*.example` look-alikes, so re-check it before G4. If the sceptic wants no "roost" overlap with student housing, Tilestay is the spare, but it brings its own Portuguese "Tiles" overlap.
+
+## RL2. Kerbello: Medium, rename → Zonelet
+- **Searched:** `"Kerbello"`; `"Kerb" parking app OR "Kerbi" parking`; `"Lanefare" OR "Zonelet" parking OR app OR company`; `"Zonelet"`; `"Lanefare"`.
+- **Hits:**
+  - No "Kerbello" (only Zerbolò, Cerbali, Bello and other unrelated words).
+  - **Kerb**: a parking app (App Store id1134472576) that launched in Dublin (https://www.completecar.ie/car-news/article/9187/Kerb-launches-parking-app-for-Dublin) and in the UK, incl. Edinburgh (https://www.transportxtra.com/publications/parking-review/news/59647/australian-kerb-parking-rental-app-launched-in-uk). Crunchbase lists it as "kerb-2".
+  - **Zonelet:** only "Zonelets", a static-blog template (https://zonelets.itch.io/), and code identifiers ("ZoneList").
+  - **Lanefare:** no hit at all.
+- **Assessment:**
+  - In 7-2 and 7-7 the game shows **look-alikes of this brand** (`kerbello-pay.example`, `kerbello-multas.example`) on fake parking stickers and slips.
+  - A name that begins with a real European parking app's entire name, in the same sector, risks teaching players to distrust that app's codes. This is the same reasoning as Nodkey and Corvelle. Rename.
+- **Recommendation:** **Zonelet** (fits "Zona 2 / Zona 3" on the meters). Hosts `zonelet.example`, look-alikes `zonelet-pay.example` (7-2) and `zonelet-multas.example` (7-7). Spare: **Lanefare**.
+
+## RL3. Vellastri Tutela Srl: Low, keep
+- **Designer cross-check (GDD §26.10, moved here because the docs brand test forbids real names outside docs/patterns/):** compared against Italian banks and trustee or custody firms Intesa Sanpaolo, UniCredit, Banco BPM, BPER, Monte dei Paschi, Mediobanca, Fineco, Credem, Banca Generali, Unione Fiduciaria, Sirefid and Cordusio Fiduciaria. No resemblance. This list is from general knowledge; I did not search each name.
+- **Searched:** `"Vellastri" OR "Velastri" OR "Vellastri Tutela"`; `"Corvessa" OR "Corvessa Tutela" Srl`; `"Tutela Srl" società fiduciaria OR custodia`; `"Tutela" fiduciaria Srl OR "Tutela Fiduciaria" OR "Tutela Patrimoniale Srl"`.
+- **Hits:**
+  - No company, brand or person called Vellastri or Velastri. Results were unrelated regional gazette PDFs that matched the word "tutela".
+  - "Tutela" queries: only articles on fiduciary companies, the Banca d'Italia's page on *società fiduciarie*, and **Tutelia Credit Srl** (Rome, https://registroaziende.it/azienda/tutelia-credit-srl-roma). That is a different word ("Tutelia"), and the game's name leads with the coined "Vellastri".
+  - Corvessa: no exact hit (a person named Corvino; law-firm pages).
+- **Assessment:** this name is shown on a close match as the holder of a fraud account, so it must not belong to a real company. No hit for the coined stem. Keep "Vellastri Tutela Srl" and the caller's spelling "Velastri Tutela". Don't shorten it to "Tutela Srl" anywhere, because "tutela" is generic and appears in real company names. Corvessa is a spare, with the same faint CorVel echo as Corvaldo (MW1).
+
+## RL4. Person and handle names
+- **J. Ashdale (6-4, match on a stranger's account): Low, keep.**
+  - Searched: `"J. Ashdale" OR "John Ashdale" OR "James Ashdale"`; `"Ashdale" company OR limited OR surname`.
+  - No person "J. Ashdale" was found (only Ashdown and Ash names). "Ashdale" appears in many UK company names (Ashdale UK Ltd, Ashdale Investments, Ashdale Homes, Edward Ashdale Ltd: https://pay.company-information.service.gov.uk/company/07644782), mostly as a place-style name.
+  - The game shows an initial plus a surname, not a company, so it doesn't collide with those firms. Keep. The alternatives "J. Brenmoor" and "J. Callery" were not searched. Callery is a real Irish surname; that alone is fine, but don't switch to it without a check.
+- **casa.alfama (7-6 scam host handle): Medium, replace.**
+  - Searched: `"casa.alfama" OR "casaalfama" OR "Casa Alfama" alojamento Lisboa`; `"Casa Alfama" Lisboa`.
+  - Hits:
+    - **"Casa d'Alfama"**, a real Lisbon holiday-let listing (https://airbnb.com/h/calf);
+    - "Casa d'Alfama by Lisbon Village Apartments" (https://www.gites.fr/gites_casa-d-alfama-by-lisbon-village-apartments_lisbonne_h534491_en.htm);
+    - many "Casa … Alfama" listings.
+  - The handle belongs to the **fraudulent host** in a rental scam set in Alfama, so it would put a real letting's name on a scam prop (Red Line 1). Replace it with a coined handle: **casa.velarim** (`"casa.velarim" OR "Velarim"`: no hit, only "Casa Velar" (architecture, Italy) and "Velaris" (wedding favours)). Update the look-alike path to `roostwell-securepay.example/casa-velarim`.
+- **Roostwell Deals (7-3 scam ad page): Low, keep.** It follows RL1. The scenario's page detail ("page created 3 weeks ago") already marks it as a fake page named after the platform.
+- **Leonor Brito (boss beat 2, borrowed name; VoP doesn't match): Low, keep.**
+  - Searched: `"Leonor Brito"`.
+  - The name appears only on Portuguese university repositories (theses by private individuals: https://run.unl.pt/handle/10362/177972). "Leonora Brito" is a Welsh writer (different first name). No notable person.
+  - Both parts are very common in Portugal. On screen, the check says the account is **not** held by this name, so no real person is labelled as a fraud-account holder.
+
+## Actions for ux-artist / scenario-writer (Rome / Lisbon)
+1. **Rename Kerbello → Zonelet** (Medium): `zonelet.example`, `zonelet-pay.example`, `zonelet-multas.example`. Spare: Lanefare.
+2. **Replace the host handle casa.alfama → casa.velarim** (Medium), including the `/casa-alfama` path.
+3. **Keep:** Roostwell (watch item; spares Tilestay, Hearthlane), Roostwell Deals, Vellastri Tutela Srl / "Velastri Tutela" (spare Corvessa Tutela Srl), J. Ashdale, Leonor Brito.
+4. **Before G4:** Registro Imprese and UIBM (IT), RNPC and INPI-PT (PT), and TMview for all kept names. This check is not trademark or legal clearance.

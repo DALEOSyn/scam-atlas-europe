@@ -46,7 +46,7 @@ A caller from "your bank", "Card Stop", "IT support", "the software maker" or an
 2. A request to turn on the computer, go online and install "a tool" or share the screen. Sometimes they ask you to read out a number the app shows [be-febelfin-helpdesk-fraud], [be-ccb-remote-access-2019].
 
 **After access (as the victim experiences it):**
-1. The pointer moves on its own, or the screen goes dark or "locked", sometimes with a message that work is in progress [be-ccb-remote-access-2019].
+1. The pointer moves on its own, or the screen and computer are blocked ("bloquer vos écrans et votre ordinateur") [be-ccb-remote-access-2019]. Any message on the dark screen, such as "repair in progress", is game design, not a quoted source (corrected 2026-11-19 after re-reading the CCB release).
 2. "Log in to your bank so I can check", or "approve this to secure your account". Then a payment request or approval appears that the victim did not plan [be-febelfin-vishing-2026], [be-febelfin-helpdesk-fraud].
 3. **"Switch off your phone"** (or "ignore any messages from the bank"), so the bank's alerts don't reach you [be-ccb-remote-access-2019], [eu-epc-threats-2025].
 4. A demand to pay for the "repair" or for a "subscription", or to "unlock" the screen [be-police-microsoft-scam-2024], [be-ccb-remote-access-2019].

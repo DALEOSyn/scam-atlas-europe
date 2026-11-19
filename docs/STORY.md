@@ -1,7 +1,7 @@
 # Story bible — Scam Atlas: Europe
 
-Owners: `game-designer` + `learning-psychologist` (psychology sections), `scenario-writer` (voice) · Status: **v1.3 (T-S1; sceptic and learning-psychologist PASS on v1.2, plus final polish; aligned to the reviewed Amsterdam §22.1 and Paris §23.13 story beats and the producer answers; v1.4 draft: Madrid §3.4 and Warsaw §3.5 aligned to the GDD §24.2 and §25.2 specs, review round 2 with rulings R13 and R17; Rome §3.6 and Lisbon §3.7 aligned to the GDD §26.2 and §27.2 specs, in review)** · Last update: 2026-11-19
-Related: `docs/PLAN.md` Phase 3 track S, `docs/DECISIONS.md` D-S1, `docs/GDD.md` §2, §10, §15–§18, §22–§27, `content/cast.yaml`, `content/habit_cards.yaml`, `docs/patterns/MAP.md`, `docs/ART_DIRECTION.md` (S2, to come), `docs/PSYCHOLOGY.md` (sources for the principles named here).
+Owners: `game-designer` + `learning-psychologist` (psychology sections), `scenario-writer` (voice) · Status: **v1.3 (T-S1; sceptic and learning-psychologist PASS on v1.2, plus final polish; aligned to the reviewed Amsterdam §22.1 and Paris §23.13 story beats and the producer answers; v1.4 draft: Madrid §3.4 and Warsaw §3.5 aligned to the GDD §24.2 and §25.2 specs, review round 2 with rulings R13 and R17; Rome §3.6 and Lisbon §3.7 aligned to the GDD §26.2 and §27.2 specs, in review; Dublin §3.8 and Stockholm §3.9 aligned to the GDD §28.2 and §29.2 specs, in review)** · Last update: 2026-11-19
+Related: `docs/PLAN.md` Phase 3 track S, `docs/DECISIONS.md` D-S1, `docs/GDD.md` §2, §10, §15–§18, §22–§29, `content/cast.yaml`, `content/habit_cards.yaml`, `docs/patterns/MAP.md`, `docs/ART_DIRECTION.md` (S2, to come), `docs/PSYCHOLOGY.md` (sources for the principles named here).
 
 > This file states no fraud facts. Patterns per city come from `docs/patterns/MAP.md` and the chapter specs. Every chapter's scams live **only in device scenarios**, which carry the debrief (Red Line 4). Scenes carry people, places and habits. Sample lines are drafts: the `scenario-writer` owns the final wording, within the rules in §4. The If-then lines in §3 are the exception: they are reviewed wording and are reused word for word (§4.4).
 
@@ -210,29 +210,37 @@ Each block lists the patterns from MAP.md or the chapter spec (the scene never s
 - **Safety:** money theme only; no content note proposed (as Madrid). Beatriz is capable and slows down.
 - **Invitation:** Mateus: "Come home with me. My sister's room-hunting and could use a second pair of eyes."
 
-### 3.8 Dublin (map no. 8)
-- **Habit cards / LOs on the Atlas page:** LO-13 "If it's guaranteed, it's not" (card id set by the chapter spec), `stop-the-damage-first` (LO-16; never pay to recover money), `ask-someone` (LO-18).
-- **Patterns:** investment ads with fake endorsements by fictional celebrities, checked against an in-world regulator register; recovery-scam offers.
-- **Locals:** Declan, Róisín.
+### 3.8 Dublin (map no. 8) — scene content per GDD §28.2 (spec in review)
+- **Habit cards / LOs on the Atlas page:** `if-its-guaranteed-its-not` (LO-13, new card, GDD §28.10), `stop-the-damage-first` (LO-16; never pay to recover money), `ask-someone` (LO-18).
+- **Patterns (GDD §28):** investment ads with fake endorsements by a fictional, illustrated celebrity leading to a fake platform; a cold "adviser" call; a clone of a registered firm; recovery-scam offers, including a fake regulator asking a fee; a task-job callback. Each is checked against the in-world regulator Fairmeasure's register (and warning list). Chapter habit: "Before you pay, look the firm up yourself on the regulator's register, and contact it only through the details the register gives. If getting your money out, or back, costs money: stop." Not on the register means don't pay; a clean warning list proves nothing. Fictional brands proposed, pending BRAND_CHECK: Fairmeasure (regulator), Natterly (social network), Cormac Tierlan (presenter), Quorvex (scam platform), Tollmere Invest (genuine firm, cloned in the boss), Backhaven Recovery (scam "recovery agency").
+- **Locals:** Declan, Róisín. Scam-side names (never cast, never in a scene): "Ciarán (Quorvex Wealth)", "Gráinne (Tollmere clone)", "Aisling · Tallyfern".
 - **Human problem:** Declan lost his job when the warehouse closed after 22 years. He has a redundancy lump sum, a daughter starting college and no plan.
-- **Arrival:** a community centre hall set up for Waymarker's "money clinic". Róisín: "Thanks for coming. Dad's been a bit lost since the warehouse closed." Declan: "Twenty-two years. Now I've a lump sum, a daughter in college and no plan."
-- **Turn:** Declan (thinking): "Everyone online seems to be getting rich. Am I the only one being careful?" Optional rehearsal choice: "Where would you start?" (Find out who's behind it / Look it up on the register). Same reply to both: "Both. Register first, and I'll find it myself, not through an ad."
-- **Resolution:** Declan (laughing): "Boring savings account and a course to retrain. Róisín says boring is the new exciting." Declan: "And anyone charging a fee to get lost money back? Same crowd."
-- **If-then panel (Declan):** "If an investment promises guaranteed returns, then I find the firm on the regulator's register myself."
+- **Arrival** (before the arc beat and 8-1; calm): a community-centre hall set up for Waymarker's "money clinic", an urn and a tray of biscuits. Róisín (warm): "Thanks for coming. Dad's been a bit lost since the warehouse closed." Declan (thinking): "Twenty-two years. Now I've a lump sum, a daughter in college and no plan."
+- **Turn** (stop point, after 8-3; thinking → calm): Declan (thinking): "Everyone online seems to be getting rich. Am I the only one being careful?" Optional rehearsal choice: "Where would you start?" (Find out who's behind it / Look it up on the register). Same reply to both, Róisín (calm): "Both. Register first, and I'll find it myself, not through an ad." Drill 8-4 (Declan's two ads; he asks you) follows directly. Declan is tempted and checks; he never falls.
+- **Resolution** (after the boss debrief; relieved):
+  - **Variant `dublin_bank_called`** (story-only flag, set by every boss fall outcome; R17 approach): when set, it is the first panel, Róisín (calm): "The bank was called straight away, the right first step. We'll see what it can do." No refund promise.
+  - Declan (laughing): "Boring savings account and a course to retrain. Róisín says boring is the new exciting."
+  - Declan (calm): "And anyone charging a fee to get lost money back? Same crowd."
+- **If-then panel (Declan):** "If an investment promises guaranteed returns, then I find the firm on the regulator's register myself." (Unchanged.) Extra line under it: "Not on the register? Don't pay. Paying to get money out or back? Stop."
+- **Arc:** arc slot N for the play position (§1.4), placed first in the morning, after the arrival and before 8-1: every other gap neighbours an investment, recovery or easy-money debrief (GDD §28.11 Q1). GDD §28.5 also specifies the arc's slots 4–9 for every city.
 - **Invitation:** Róisín: "My dad lost his job and everyone's selling him a plan. Could you come and talk to him?"
-- **Safety:** job loss and money worry; keep Declan dignified and in charge of his choices.
+- **Safety:** job loss and money worry (§5); keep Declan dignified and in charge of his choices; nobody calls him naive. No panel shows an ad, a celebrity, a platform, a balance, a firm name or an amount. No content note proposed (as Madrid; GDD §28.11 Q5).
 
-### 3.9 Stockholm (map no. 9)
-- **Habit cards / LOs on the Atlas page:** LO-09 "Only approve what you started", LO-15 "Nobody needs your screen" (card ids set by the chapter spec), `hang-up-call-back` (LO-08).
-- **Patterns:** callers who talk you into logging in or signing with your e-ID; QR-login approvals sent by message; one remote-access "support" preview of the finale.
-- **Locals:** Jamal, Lina, Birgitta.
+### 3.9 Stockholm (map no. 9) — scene content per GDD §29.2 (spec in review)
+- **Habit cards / LOs on the Atlas page:** `only-approve-what-you-started` (LO-09, new card), `nobody-needs-your-screen` (LO-15, new card, shared with Brussels; both GDD §29.10), `hang-up-call-back` (LO-08).
+- **Patterns (GDD §29):** callers (a "bank", a "police officer") who talk you into logging in or signing with your e-ID app Gatewren; a text giving a "security" number to call; QR-login codes sent by message; one remote-access "support" call as a preview of the finale (it stops at the request). Chapter habit: "Never approve a sign-in, signature or QR login you didn't start. Whoever is on the phone, hang up and call your bank on the number on your card or in its app." Shown from the victim's side only: no scene or scenario shows how a session is captured or a code relayed. Fictional brand proposed, pending BRAND_CHECK: Kindhand (non-functional "helper" app).
+- **Locals:** Birgitta, Jamal, Lina. Scam-side names (never cast, never in a scene): "Erik (Larchwick security)", "Inspector Holm", "Norrvik Trygg AB".
 - **Human problem:** Jamal and Lina moved for his hospital job three weeks ago: new flat, new bank, new e-ID app, a language he is still learning.
-- **Arrival:** a snowy courtyard, warm windows. Birgitta: "Adaeze's inspector! Fika first, questions after." Jamal: "New flat, new bank, new e-ID app. My head is full." Lina: "I translate. Dad pays me in cinnamon buns."
-- **Turn:** Birgitta (laughing): "My rule: if a caller wants me to log in, I'm rude. I hang up. Rudeness is free." Jamal: "I'm new here. I want to be polite." Birgitta: "Be polite to people. Hang up on requests." Jamal (thinking): "At the lab we never sign for a sample we didn't order. Same idea, I suppose."
-- **Resolution:** Jamal (proud): "Someone called about my e-ID. I hung up like Birgitta and called the bank myself." Lina: "Dad hangs up on requests now. Politely."
-- **If-then panel (Jamal):** "If a login or signing request pops up that I didn't start, then I deny it and call the bank on its own number."
+- **Arrival** (before 9-1; calm): a snowy courtyard, warm windows. Birgitta (laughing): "Adaeze's inspector! Fika first, questions after." Jamal (thinking): "New flat, new bank, new e-ID app. My head is full." Lina (laughing): "I translate. Dad pays me in cinnamon buns."
+- **Turn** (stop point, after 9-3; laughing → thinking): Birgitta (laughing): "My rule: if a caller wants me to log in, I'm rude. I hang up. Rudeness is free." Jamal (worried): "I'm new here. I want to be polite." Birgitta (calm): "Be polite to people. Hang up on requests." Jamal (thinking): "At the lab we never sign for a sample we didn't order. Same idea, I suppose." Drill 9-4 (Jamal's "police" call; he asks you, and hangs up in every branch) follows directly.
+- **Resolution** (after the boss debrief; proud):
+  - **Variant `stockholm_bank_called`** (story-only flag, set by every boss fall outcome): when set, it is the first panel, Birgitta (calm): "The bank was called straight away, the right first step. We'll see what it can do." No refund promise.
+  - Jamal (proud): "A 'police officer' wanted my e-ID. I hung up, like Birgitta." *(Was "…and called the bank myself" in v1.3; now true in every drill branch.)*
+  - Lina (laughing): "Dad hangs up on requests now. Politely."
+- **If-then panel (Jamal):** "If a login or signing request pops up that I didn't start, then I deny it and call the bank on its own number." (Unchanged.) Extra line under it: "Nobody needs your screen, either."
+- **Arc:** arc slot N for the play position (§1.4), placed in the afternoon between 9-6 and 9-7, not next to the drill.
 - **Invitation:** Birgitta: "My new neighbour has a new everything. Come and help, and I'll make fika."
-- **Note:** an older woman teaches a younger man, who brings his own professional know-how; the "rude" framing reflects public guidance (fraud-researcher to confirm the wording in the spec).
+- **Note:** an older woman teaches a younger man, who brings his own professional know-how; being new is the risk, not ability. Lina is 12 and never handles money or e-ID. The "rude, hang up" framing reflects public police campaign guidance (confirmed in the research brief, `docs/patterns/e-id-approval-on-call.md` §4). No panel shows a prompt, a caller, a number, a QR code or a screen.
 
 ### 3.10 Brussels (finale, fixed)
 - **Habit cards / LOs on the Atlas page:** `easy-money-costs-you` (LO-12), LO-15 "Nobody needs your screen", LO-14 "A real friend never needs your money" (card ids set by the chapter spec), `ask-someone` (LO-18).

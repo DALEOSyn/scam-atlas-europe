@@ -50,7 +50,7 @@ inspectables:
     red_flag: false
     type: sender
   - target: attachment
-    reveal: "Opens a bank-details slip (RIB) for Feuillemont. A real RIB and a fake one look just as tidy, so it can't prove anything either way."
+    reveal: "Opens a bank-details slip (RIB) for Feuillemont, with invoice F-2026-118 for €1,960. A real RIB and a fake one look just as tidy, so it can't prove anything either way."
     red_flag: false
     type: attachment
   - target: reference

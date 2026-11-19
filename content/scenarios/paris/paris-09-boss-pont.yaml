@@ -161,7 +161,7 @@ beats:
         red_flag: false
         type: reference
       - target: phone_number
-        reveal: "01 •• •• •• 07: the number he gives you to check him. Calling a number the caller gives you only reaches him again. Use the Ruchelune directory."
+        reveal: "01 •• •• •• 07: the number he gives you to check him. Calling a number the caller gives you just reaches him again. Use the Ruchelune directory."
         red_flag: true
         type: phone_number
       - target: request
@@ -217,7 +217,7 @@ beats:
         red_flag: false
         type: video
       - target: request
-        reveal: "Her word on a call is meant to replace the sign-off, and you're asked to keep it secret. A real request keeps the usual sign-off, whoever is on the screen."
+        reveal: "Her word on a call is meant to replace the sign-off, and you're asked to keep it secret. At Ruchelune, a real request keeps the usual sign-off, whoever is on the screen."
         red_flag: true
         type: request
     actions:

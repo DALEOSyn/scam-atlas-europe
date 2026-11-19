@@ -136,7 +136,7 @@ debrief:
     what_works: "Urgency alone isn't the tell; keep the sign-off."
   layer2:
     message_flags: []
-    notes: "Compare this morning's fake: secret, unplanned, a new account, and \"not even Bastien\". A real urgent request still goes through the sign-off, and a real boss doesn't mind you checking. At home: a real urgent request from someone you know still survives a quick call back on their usual number."
+    notes: "Compare this morning's fake: secret, unplanned, a new account, and \"not even Bastien\". A real urgent request still goes through the sign-off, and a real boss shouldn't mind you checking. At home: a real urgent request from someone you know still survives a quick call back on their usual number."
   device_tip: "In a real banking app, an urgent payment still goes through the usual approval step. If anything feels off, check with a colleague on the directory number."
   habit_card: calm-not-paranoid
   sources: [eu-europol-ceo-bec-leaflet, fr-gendarmerie-fovi, fr-cybermalveillance-fiche-fovi]

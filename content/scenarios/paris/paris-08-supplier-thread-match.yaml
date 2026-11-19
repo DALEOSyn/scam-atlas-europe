@@ -34,7 +34,7 @@ message:
   body: |
     Bonjour,
 
-    Merci pour le règlement de la dernière facture. Pour la facture P-7713 (2 860 €, ci-jointe), nous changeons de banque avant le pont : merci de régler sur le compte ci-dessous, au nom de N. Vardoulec, notre responsable comptable. La vérification du nom par votre banque suffit comme preuve, inutile de nous appeler.
+    Merci pour le règlement de la dernière facture. Pour la facture P-7713 (2 860 €, ci-jointe), nous changeons de banque avant le pont : merci de régler sur le compte ci-dessous, au nom de N. Vardoulec, notre responsable comptable. La vérification du bénéficiaire par votre banque suffit comme preuve, inutile de nous appeler.
 
     Bon week-end !
     Platinoir · Facturation
@@ -42,7 +42,7 @@ message:
   translation: "Hello, thanks for paying the last invoice. For invoice P-7713 (€2,860, attached), we're changing banks before the long weekend: please pay to the account below, in the name of N. Vardoulec, our accounts manager. Your bank's name check is all the proof you need, so no need to call us. Have a good weekend! Platinoir · Billing"
   request: pay
   ask:
-    text: "La vérification du nom par votre banque suffit comme preuve, inutile de nous appeler."
+    text: "La vérification du bénéficiaire par votre banque suffit comme preuve, inutile de nous appeler."
     translation: "Your bank's name check is all the proof you need, so no need to call us."
   payee: { name: "N. Vardoulec", iban: "FR•••••••••••••••••••••••19" }
   attachments: [{ name: "Facture_P-7713.pdf", size: "96 KB" }]
@@ -197,7 +197,7 @@ debrief:
     what_works: "Call the number in your supplier file."
   layer2:
     message_flags:
-      - "New bank details right before the long weekend, on an invoice already due."
+      - "New bank details right before the long weekend, just as the invoice falls due."
       - "Sign-off catches a fake boss, because the real boss sees the request. It can't catch a fake supplier: Solène sees the same email you did."
     notes: "A match only tells you whose account it is. The payee name came from the email, so the bank matched it. Had it been Platinoir, the name in your own file, the check should have flagged that the account isn't Platinoir's. Use names from your own records, and call the number in your file. If it happens for real, keep the emails, the bank details and the transfer record."
   device_tip: "In a real banking app, type the payee name from your own records, not from the email, so the name check can warn you. Then call anyway."

@@ -30,7 +30,7 @@ pressure:
   pusher:
     messages:
       - at_seconds: 25
-        text: "Rappel : la vérification du nom par votre banque peut indiquer que le nom ne correspond pas à notre nouveau compte. C'est normal, il suffit de confirmer."
+        text: "Rappel : la vérification du bénéficiaire par votre banque peut indiquer que le nom ne correspond pas à notre nouveau compte. C'est normal, il suffit de confirmer."
         lang: fr
         translation: "Reminder: your bank's name check may say the name doesn't match our new account. That's normal, just confirm."
 
@@ -112,7 +112,7 @@ beats:
         red_flag: true
         type: payee
       - target: payee.iban
-        reveal: "The account number from the RIB. An account number looks the same whoever holds it, so it can't prove anything either way. The name check tells you more."
+        reveal: "The account number from the RIB. An account number looks the same whoever holds it, so it can't prove anything either way. The number in your lease can."
         red_flag: false
         type: payee
     actions:

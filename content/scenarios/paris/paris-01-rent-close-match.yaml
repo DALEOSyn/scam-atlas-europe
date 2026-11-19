@@ -35,17 +35,17 @@ message:
   body: |
     Bonjour,
 
-    Bienvenue dans votre studio ! Votre premier loyer de 690 € est à régler avant le 5 du mois, sur le compte indiqué dans votre bail (page 4). Merci d'indiquer la référence VB-2291-03 avec votre virement.
+    Bienvenue dans votre studio ! Votre premier loyer de 690 € est à régler au plus tard le 5 du mois, sur le compte indiqué dans votre bail (page 4). Merci d'indiquer la référence VB-2291-03 dans le libellé de votre virement.
 
     L'avis d'échéance est en pièce jointe.
 
     Cordialement,
     Volet Bleu · Gestion locative
   lang: fr
-  translation: "Hello, welcome to your studio! Your first rent of €690 is due by the 5th of the month, to the account in your lease (page 4). Please give the reference VB-2291-03 with your transfer. The rent notice is attached. Kind regards, Volet Bleu · Lettings"
+  translation: "Hello, welcome to your studio! Your first rent of €690 is due by the 5th of the month, to the account in your lease (page 4). Please put the reference VB-2291-03 in your transfer's description. The rent notice is attached. Kind regards, Volet Bleu · Lettings"
   request: pay
   ask:
-    text: "Votre premier loyer de 690 € est à régler avant le 5 du mois, sur le compte indiqué dans votre bail (page 4)."
+    text: "Votre premier loyer de 690 € est à régler au plus tard le 5 du mois, sur le compte indiqué dans votre bail (page 4)."
     translation: "Your first rent of €690 is due by the 5th of the month, to the account in your lease (page 4)."
   attachments: [{ name: "Avis d'échéance VB-2291-03.pdf", size: "84 KB" }]
   references: ["VB-2291-03"]

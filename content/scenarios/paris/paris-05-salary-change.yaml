@@ -109,7 +109,7 @@ outcomes:
       - { step: check_pay_details_with_person, category: stop }
       - { step: tell_management_known_channel, category: warn }
       - { step: tell_it_team, category: secure }
-      - { step: report_to_police_online, category: report }
+      - { step: file_complaint_police, category: report }
       - step: keep_quiet
         category: harmful
         feedback: "Feeling embarrassed is normal; it even had her staff number. Anyone could have been caught. Putting Inès's real details back with her now, before payroll runs, and telling Solène through the directory is what fixes it."

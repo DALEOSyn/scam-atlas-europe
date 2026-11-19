@@ -654,7 +654,10 @@ brands:
       Dublin: a genuine firm on Fairmeasure's register. The boss's clone copies its name and look from a
       look-alike address and a new phone number; the player checks the register's own contact details.
     domain: ellisfen.example
-    known_channels: "The contact details on Fairmeasure's register entry (in-game) and the typed address ellisfen.example. No phone number shown."
+    known_channels: "The contact details on Fairmeasure's register entry (in-game): the typed address ellisfen.example and a masked Dublin landline."
+    # CR-38 (T-3.10): on Fairmeasure's register of authorised firms. 8-5 and boss beat 1 show this card; the
+    # clone (ellisfen-invest.example, a new number) differs from these details. Phone masked (Red Line 3).
+    register: { status: authorised, address: "ellisfen.example", phone: "+353 1 ••• ••60" }
     palette:
       primary: "#5E4A12"       # bronze
       on_primary: "#FFFFFF"    # 8.52:1
@@ -729,6 +732,8 @@ brands:
     role_in_game: >
       Dublin drill 8-4: one of Declan's two ads; the firm appears on Fairmeasure's warning list. Name
       only; no domain, no mark.
+    # CR-38 (T-3.10): on Fairmeasure's warning list (drill 8-4). No contact details (warning list only).
+    register: { status: warning_list }
     rationale:
       name: "Coined. Replaces Harbourline Bonds (BRAND_CHECK DS10: close to real bond sellers in an accused role). Spare Skarvlund Bonds."
       colour_shape: "Not drawn; name only."

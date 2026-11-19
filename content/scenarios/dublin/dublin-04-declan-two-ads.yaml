@@ -1,0 +1,101 @@
+# 8-4 Drill: Declan's two ads (GDD §28.4 8-4; investment-ad-fake-platform). Unscored. Declan, from his saved
+# Kettle contact, quotes two ads: a "state-backed" bond at 7% with a deadline, and Brindlecove Bonds,
+# "guaranteed 9%" (on Fairmeasure's warning list). Every pick gets a Declan reply; no stars.
+# Quoted checkables (should-fix 8: the tags point at the high rate and the deadline, never at a state guarantee
+# alone, since real state-backed savings exist): claim R "7% a year" · request R (the ad's deadline, quoted as
+# its ask) · claim#2 D "Fully guaranteed by the government" (real state-backed savings exist).
+# Spec deviations, flagged: (1) the schema allows two claims and a claim is never a deadline (T-2.4b ruling 2),
+# so "Limited window" is the quoted ad's ask (the request checkable) instead of claim#2; (2) the quoted ad says
+# "Fully guaranteed by the government" (a claim needs 3 words) for "government guaranteed".
+# The story caption "You and Declan report the 'state-backed' bond through Fairmeasure's website" (sets up 8-8,
+# true in every branch) closes every outcome until the scene files exist.
+id: dublin-04-declan-two-ads
+chapter: dublin
+role: drill
+pattern: investment-ad-fake-platform
+learning_objectives: [LO-13, LO-18]
+difficulty: 3
+is_fraud: false
+device: messenger
+brands: [kettle, fairmeasure, brindlecove-bonds]
+cast: [declan, roisin]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Declan (clinic)", detail: "Saved contact: Declan (clinic)" }
+  from_cast: declan
+  body: |
+    Two of these look grand. A 'state-backed' bond at 7%, and Brindlecove Bonds, 'guaranteed 9%'. My lump sum would do well in either. Which one?
+
+    Ad 1: "State-backed savings bond: 7% a year. Fully guaranteed by the government. Limited window: apply this week."
+    Ad 2: "Brindlecove Bonds: guaranteed 9%. Join thousands of happy savers."
+  request: reply
+  ask: { text: "Limited window: apply this week." }
+  claims:
+    - { text: "7% a year" }
+    - { text: "Fully guaranteed by the government." }
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: Declan's saved contact, in your usual chat with him. That isn't proof on its own, so weigh it with what he asks for: your advice, not money."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: claim
+    reveal: "In Declan's quote: a high rate offered as a sure thing. High returns always come with risk, whoever's name is on them."
+    red_flag: true
+    type: claim
+    context: quoted
+  - target: claim#2
+    reveal: "In Declan's quote: real state-backed savings exist, so the label can't prove anything either way. Check who is behind it yourself."
+    red_flag: false
+    type: claim
+    context: quoted
+  - target: request
+    reveal: "In Declan's quote: a deadline, so you don't stop to check."
+    red_flag: true
+    type: request
+    context: quoted
+
+actions:
+  - id: look_both_up
+    label: "Look both up on the Fairmeasure register together."
+    kind: proceed
+    outcome: declan_register_both
+    pressure_target: true
+  - id: check_warning_list_only
+    label: "Check the warning list."
+    kind: proceed
+    outcome: declan_warning_list_trap
+  - id: ask_clinic_adviser
+    label: "Ask the clinic's adviser first."
+    kind: proceed
+    outcome: declan_adviser_says
+  - id: go_for_nine
+    label: "Go for the 9%: it's guaranteed."
+    kind: reply
+    outcome: declan_roisin_look
+
+outcomes:
+  declan_register_both:
+    narrative: "Declan: \"Brindlecove's on the warning list! And the 'state' one isn't on the register at all, or on the warning list. So: not on the register, no money. Got it.\" You and Declan report the 'state-backed' bond through Fairmeasure's website."
+  declan_warning_list_trap:
+    narrative: "Declan: \"Brindlecove's on it. The other one isn't, so it's fine? … Róisín says not on the register means no. Right so.\" You and Declan report the 'state-backed' bond through Fairmeasure's website."
+  declan_adviser_says:
+    narrative: "Declan: \"She says the same: register first, and nothing 'guaranteed'.\" You and Declan report the 'state-backed' bond through Fairmeasure's website."
+  declan_roisin_look:
+    narrative: "Declan: \"Hmm. Róisín's giving me a look. Register first, she says.\" You and Declan report the 'state-backed' bond through Fairmeasure's website."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A high rate, a deadline, and a firm you can't find."
+    what_works: "Not on the register? Don't pay."
+  layer2:
+    message_flags: []
+    notes: "A firm missing from the warning list isn't safe: the list only names firms already warned about. Declan checked the register himself, and reporting the ad helps the next person."
+  device_tip: "On a real phone, open the financial regulator's website yourself, from your own bookmark, and check both its register of authorised firms and its warning list."
+  habit_card: if-its-guaranteed-and-high-its-not
+  already_clicked:
+    paid: "Paid one of them already? Stop paying, call your bank now on the number on your card, keep the ads and receipts, and report the firm to the regulator."
+  sources: [ie-garda-investment-2025, ie-fraudsmart-state-scheme-ads-2026, ie-cbi-avoiding-scams, ie-cbi-unauthorised-firms, se-konsumentverket-investment-fraud]

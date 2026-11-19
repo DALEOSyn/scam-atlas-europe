@@ -1,0 +1,178 @@
+# 8-3 "Backhaven Recovery": lost money? a €150 retainer opens your case (GDD §28.4 8-3; recovery-scam).
+# Fraud, difficulty 4, calm on purpose (no timer: a recovery offer arrives slowly and kindly). Interrupt
+# (Declan, small talk) at 15 s. Levers authority (a borrowed regulator), helpfulness, small amount.
+# Checkables (5; R 2): sender D (its own address, the sender-or-link decoy) · link D · reference D (your name) ·
+# claim R (ruling 6 of §28.8: "works with Fairmeasure", promises success) · request R (a fee first).
+# The cold offer to someone who may not have lost money is fraud-researcher question §28.11 Q6(a).
+# case_page: read-only training page (Red Line 2), not in R. As 8-2, the "fee first" flag sits on the page's
+# request; page info keeps the shared padlock wording (spec deviation, flagged).
+# Damage control: tell_trusted_adult is a stop step in every personal-money fall (§28.4 shared rule, Lisbon
+# sceptic round 3), so keep_evidence moves to layer 2 and already_clicked (max 6, exactly 2 harmful, GDD §9).
+id: dublin-03-recovery-offer
+chapter: dublin
+role: standard
+pattern: recovery-scam
+theme: recovery
+learning_objectives: [LO-13, LO-16]
+difficulty: 4
+is_fraud: true
+device: email
+brands: [backhaven-recovery, fairmeasure, larchwick]
+cast: [declan]
+pressure:
+  timer: false
+  levers: [authority, helpfulness, small_amount]
+
+message:
+  sender: { display: "Backhaven Recovery", detail: "cases@backhaven-recovery.example" }
+  subject: "Lost money online? We can help"
+  body: |
+    Hi Sam, lost money to an online investment or a celebrity ad? Our legal team works with Fairmeasure and recovers most clients' money. A €150 retainer opens your case today: backhaven-recovery.example/case
+
+    Backhaven Recovery · Client Care
+  request: pay
+  ask: { text: "A €150 retainer opens your case today" }
+  references: ["Hi Sam"]
+  claims: [{ text: "Our legal team works with Fairmeasure and recovers most clients' money." }]
+
+inspectables:
+  - target: sender.detail
+    reveal: "A firm's own address. A website and email address can't tell you who runs them, so it can't prove anything either way."
+    red_flag: false
+    type: sender
+  - target: link
+    reveal: "backhaven-recovery.example, its own address. It can't prove anything either way."
+    red_flag: false
+    type: link
+  - target: reference
+    reveal: "Uses your name. It's easy to find, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "Claims to work with the regulator and promises success. Regulators don't team up with fee-charging recovery firms, and nobody can promise your money back."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "A fee first, to get money back. That's the tell of a second scam."
+    red_flag: true
+    type: request
+
+actions:
+  - id: open_case_page
+    label: "Open the case page"
+    kind: open_link
+    next_beat: case_page
+    pressure_target: true
+  - id: check_backhaven_register
+    label: "Look Backhaven up on the Fairmeasure register"
+    kind: check_official_list
+    outcome: backhaven_not_listed
+  - id: report_backhaven
+    label: "Report the email"
+    kind: report
+    outcome: backhaven_reported
+  - id: delete_backhaven
+    label: "Delete it"
+    kind: delete
+    outcome: backhaven_deleted
+
+beats:
+  - id: case_page
+    device: browser
+    message:
+      page: { address: "backhaven-recovery.example/case", title: "Backhaven · Open your case" }
+      body: "Retainer €150. Pay by card to open your case today; our team starts tracing at once."
+      request: enter_details
+      ask: { text: "Pay by card to open your case today" }
+    inspectables:
+      - target: page.address
+        reveal: "Still backhaven-recovery.example, the firm's own address. It can't prove anything either way."
+        red_flag: false
+        type: page_address
+      - target: page.info
+        reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
+        red_flag: false
+        type: padlock
+      - target: request
+        reveal: "A fee before anything comes back."
+        red_flag: true
+        type: request
+    actions:
+      - id: pay_retainer
+        label: "Pay the €150 retainer"
+        kind: enter_details
+        outcome: retainer_paid
+        pressure_target: true
+      - id: close_check_backhaven
+        label: "Close it and check the register"
+        kind: check_official_list
+        outcome: backhaven_not_listed
+      - id: close_case_page
+        label: "Close the page"
+        kind: ignore
+        outcome: backhaven_deleted
+
+interrupts:
+  - id: declan_biscuit_tin
+    at_seconds: 15
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Declan (clinic)", detail: "Saved contact: Declan (clinic)" }
+      from_cast: declan
+      body: "Does a tin of biscuits count as a business expense? Asking for the clinic."
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Declan's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what he asks for: a biscuit ruling."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_biscuits
+        label: "Reply: only if you share them"
+        kind: proceed
+        outcome: declan_biscuits_shared
+        pressure_target: true
+      - id: report_biscuits
+        label: "Report the message"
+        kind: report
+        outcome: declan_biscuits_reported
+
+outcomes:
+  retainer_paid:
+    narrative: "\"Case opened.\" Two days later: \"Good news, we traced funds. A €400 release fee is due.\""
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: report_firm_to_regulator, category: report }
+      - { step: pay_recovery_service, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  backhaven_not_listed:
+    narrative: "You open the Fairmeasure register from your home screen. Backhaven isn't authorised. Fairmeasure's own page says: \"We never work with recovery firms and never charge fees.\""
+    register: { firm: "Backhaven Recovery", result: not_listed }
+  backhaven_reported:
+    narrative: "Reported. Your mail app moves it to junk."
+  backhaven_deleted:
+    narrative: "Gone. If you ever do lose money, you'll go to your bank and the police yourself."
+  declan_biscuits_shared:
+    narrative: "Declan: \"Sharing is a business expense too. Noted 🍪\""
+  declan_biscuits_reported:
+    narrative: "You reported it. Careful is good; this one really was Declan, asking about biscuits."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Contacted out of the blue, with a fee first."
+    what_works: "Never pay to get money back."
+  layer2:
+    message_flags: []
+    notes: "Anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam. If you did lose money, go to your bank and the police yourself. People who've already lost money are often targeted again on purpose, because scammers share victims' details. That says nothing about you. Keep the emails and any receipts."
+  device_tip: "On a real phone, don't reply to a recovery offer. If you lost money, call your bank on the number on your card and report it to the police yourself."
+  habit_card: stop-the-damage-first
+  already_clicked:
+    clicked: "Opened the page but paid nothing? Close it and delete the email."
+    entered_details: "Paid a fee? Stop paying, block your card in your banking app and call your bank on the number on your card."
+    paid: "Paid a fee? Stop paying, block your card in your banking app and call your bank on the number on your card."
+  sources: [ie-bpfi-recovery-2024, ie-cbi-avoiding-scams, ie-cbi-fraud-landscape-2025, ie-garda-crimecall-investment-2024, eu-esas-crypto-factsheet-2025]

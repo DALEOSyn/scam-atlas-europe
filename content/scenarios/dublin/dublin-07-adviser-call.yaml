@@ -1,0 +1,159 @@
+# 8-7 A call from a Dublin number: "Ciarán from Quorvex Wealth" (GDD §28.4 8-7; investment-ad-fake-platform
+# stage A, the "adviser"). Fraud, difficulty 5 (the main tell is the ask), call timer 30 s, pusher at 18 s.
+# Levers authority, greed, secrecy, urgency. Interrupt (Róisín, genuine small talk) after "What now?" is chosen.
+# Checkables (5; R 2): caller_id D (RM1; the sender-or-link decoy) · reference D (lots of people saw the ad) ·
+# claim D (ruling 4 of §28.8: anyone can say "regulated") · claim#2 R ("don't tell your bank") · request R (money today).
+# "hate competition" stays in the transcript only; no reveal, outcome or debrief repeats it (§28.4).
+# Hang up opens "What now?": "Call the number on your card" (verify extra, replaces the built-in call-back) and
+# "Call back this number" (engage note, as 6-3), plus the built-in report and "Leave it there".
+# Damage control: tell_trusted_adult is a stop step (personal-money fall), so keep_evidence moves to layer 2.
+id: dublin-07-adviser-call
+chapter: dublin
+role: standard
+pattern: investment-ad-fake-platform
+theme: investment
+learning_objectives: [LO-13, LO-04, LO-08]
+difficulty: 5
+is_fraud: true
+device: call
+setup: "Late afternoon at the clinic. Your phone rings: a Dublin number you don't know."
+brands: [quorvex, fairmeasure, larchwick]
+cast: [roisin]
+pressure:
+  timer: true
+  levers: [authority, greed, secrecy, urgency]
+  pusher:
+    messages:
+      - { at_seconds: 18, text: "Are you with me? The rate goes at five." }
+
+message:
+  sender: { display: "+353 1 ••• ••42", detail: "Not in your contacts" }
+  transcript:
+    - { speaker: caller, text: "Hi Sam, Ciarán here from Quorvex Wealth. You looked at one of our partner ads this week." }
+    - { speaker: caller, text: "We're fully regulated, and clients are seeing about 2% a week." }
+    - { speaker: you, text: "I'd want to think about it." }
+    - { speaker: caller, text: "Start with €250 today and I'll set it up with you." }
+    - { speaker: caller, text: "One thing: don't mention it to your bank. They block us because they hate competition." }
+  request: pay
+  ask: { text: "Start with €250 today and I'll set it up with you." }
+  references: ["one of our partner ads this week"]
+  claims:
+    - { text: "We're fully regulated, and clients are seeing about 2% a week." }
+    - { text: "don't mention it to your bank" }
+
+inspectables:
+  - target: caller_id
+    reveal: "A Dublin number. A number on screen can be bought or faked, so it can't prove anything either way."
+    red_flag: false
+    type: caller_id
+  - target: reference
+    reveal: "Lots of people saw that ad, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "Anyone can say \"regulated\". Only the register can tell you, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: claim#2
+    reveal: "\"Don't tell your bank\" cuts you off from help."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "Money today, on a call you didn't ask for."
+    red_flag: true
+    type: request
+
+actions:
+  - id: read_card_ciaran
+    label: "Read him your card to start"
+    kind: enter_details
+    outcome: card_read_to_ciaran
+    pressure_target: true
+  - id: hang_up_check_quorvex
+    label: "Hang up and check Quorvex on the register"
+    kind: check_official_list
+    outcome: quorvex_not_on_register
+  - id: hang_up_ciaran
+    label: "Hang up"
+    kind: hang_up
+    outcome: ciaran_left
+
+what_now:
+  outcomes:
+    report: ciaran_reported
+    done: ciaran_left
+  extra:
+    - id: call_card_after_ciaran
+      label: "Call the number on your card"
+      kind: call_back_known
+      outcome: larchwick_tell_us_anything
+    - id: call_back_ciaran_number
+      label: "Call back this number"
+      kind: call_number_in_message
+      note: "That's the number that just called. It reaches whoever rang you, so it can't tell you who they are. Check the firm on the register instead."
+
+interrupts:
+  - id: roisin_chips
+    after_beat: start
+    after_what_now: true
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Róisín (clinic)", detail: "Saved contact: Róisín (clinic)" }
+      from_cast: roisin
+      body: "Clinic's packing up. Chips? 🍟"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Róisín's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what she asks for: chips."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_chips
+        label: "Reply: always"
+        kind: proceed
+        outcome: roisin_chips_yes
+        pressure_target: true
+      - id: report_chips
+        label: "Report the message"
+        kind: report
+        outcome: roisin_chips_reported
+
+outcomes:
+  card_read_to_ciaran:
+    narrative: "He takes the card. €250 goes. An email brings a login: your €250 \"is already €261\"."
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: report_firm_to_regulator, category: report }
+      - { step: add_more_to_test, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  quorvex_not_on_register:
+    narrative: "You hang up and open the Fairmeasure register from your home screen. No firm called Quorvex is authorised, whatever the caller says. The warning list has nothing either, and that proves nothing. Not on the register means don't pay."
+    register: { firm: "Quorvex", result: not_listed }
+  larchwick_tell_us_anything:
+    narrative: "Larchwick, on the number on your card: \"Thanks for checking with us. You can always tell your bank about a payment.\""
+  ciaran_reported:
+    narrative: "Reported. Keep a note of the time and what was said."
+  ciaran_left:
+    narrative: "You hang up and leave it there. Nothing has left your account."
+  roisin_chips_yes:
+    narrative: "Róisín: \"Grand. Dad's buying, he says. Brave man.\""
+  roisin_chips_reported:
+    narrative: "You reported it. Careful is good; this one really was Róisín, offering chips."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A cold call: money today, and 'don't tell your bank'."
+    what_works: "Hang up. Check the register yourself."
+  layer2:
+    message_flags: []
+    notes: "\"Don't tell your bank\" is there to cut you off from help. A friendly, knowledgeable caller and a local number prove nothing; only the register can tell you who a firm is. Keep a note of the call and any emails."
+  device_tip: "On a real phone, end the call yourself. Then open the financial regulator's website from your own bookmark and look the firm up, or call your bank on the number on your card."
+  habit_card: if-its-guaranteed-and-high-its-not
+  already_clicked:
+    entered_details: "Gave your card? Block it in your banking app now and call your bank on the number on your card. A balance that \"grows\" proves nothing: a dashboard shows whatever the website wants it to show."
+  sources: [ie-fraudsmart-investment-2025, ie-garda-crimecall-investment-2024, ie-ccpc-investment-scams, ie-cbi-avoiding-scams, se-konsumentverket-investment-fraud]

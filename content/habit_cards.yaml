@@ -90,3 +90,10 @@ cards:
     habit: "Before you pay for a stay, a room or an offer, find it yourself in the platform's app or site, and pay there, where you're protected. Too cheap, 'many people interested' or 'can't show it' are reasons to slow down."
     example: "A great flat in an ad? Search for it in the Roostwell app yourself. If you can't find it there, don't pay for it."
     already_clicked: "Paid outside the app? Call your bank now on the number on your card; for a card payment, ask about a chargeback. Report the listing in the app."
+  # Dublin (GDD §28.10, LO-13 v3.1). First shown at 8-2; the example uses no scam domain or firm name.
+  - id: if-its-guaranteed-and-high-its-not
+    lo: LO-13
+    title: "If it's guaranteed and high, it's not"
+    habit: "Before you pay, look the firm up yourself on the regulator's register, and contact it only through the details the register gives. Not on the register? Don't pay, even if the warning list is clean. If you're asked to pay to get your money out, or back: stop."
+    example: "A famous face recommends a platform in an ad? Find the firm on the register yourself. Not there? Don't pay."
+    already_clicked: "Paid already? Stop paying, call your bank now on the number on your card, keep the chats, and report the firm. Ignore anyone who offers to get it back for a fee."

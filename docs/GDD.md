@@ -145,7 +145,7 @@ The player sees **stars per scenario** and a **stamp per chapter**. Points and t
 - **Stamps:**
   - **Bronze:** chapter finished.
   - **Silver:** rating ≥ 75%, at most 1 genuine message reported, and spotted ≥ ceil(R/3).
-  - **Gold:** rating ≥ 90%, no genuine message reported, spotted ≥ ceil(2R/3), and **no extra checks on harmless messages outside the chapter's focus patterns.** Checking a genuine Trundle text in the Trundle chapter never counts against you (QA L2).
+  - **Gold:** rating ≥ 90%, no genuine message reported, spotted ≥ ceil(2R/3), and **no extra checks on harmless messages outside the chapter's focus patterns.** Checking a genuine Trundle text in the Trundle chapter never counts against you (QA L2). **Falls (R15, decided at the balancing pass; proposed ruling R24, needs CR-48):** gold allows **at most one fall, and only a recovered one** (its damage control meets LO-16: ≥ 6 points with a `stop` step first). A second fall, or one unrecovered fall, caps the chapter at silver. Definition and numbers: §7.3.
 - **Stamp screen copy:** "Gold: you spotted the red flags, checked when it mattered, and didn't report genuine messages."
 - **Position on always-verify:** verifying everything is a sound real-world habit, so it earns ★★★ on every scenario. But it shows no evidence of spotting anything, so it stays at **bronze**. Silver and gold need spotted red flags; gold also needs calibration.
 
@@ -194,6 +194,27 @@ Row 6a in detail (T-2.4b re-run, checkables as authored):
 - Row 6b is the closest systematic strategy, at 2 of the 4 needed. Its margin depends on the sender-or-link decoy rule and on genuine messages having their own sender and link details. The validator enforces the first; QA re-runs rows 6a and 6b for every chapter at the Phase 3 balancing pass.
 - A high rating alone (up to 94%) never earns silver. Gold needs both spotting and calibration.
 
+### 7.3 Gold and falls; stamps across chapters (balancing pass T-3.13, proposed R24)
+Full working: `docs/BALANCE_PASS.md`. All numbers below are hand-computed from the strategy tables in §7.2, §22.4, §23.7, §24.7, §25.7, §26.7, §27.7, §28.7, §29.7 and §30.8 (Home from the three scored fraud files: max 117, R 8; home-04's `page.address` red flag sits on a sub-beat, so 0-4 is worth 17). Damage control is always exactly 3 picks (+3 per helpful step, −2 per harmful, floor 0), so it scores only 0, 4 or 9; "≥ 6 points" therefore means three helpful picks and no harmful one.
+- **What counts as a fall:** a scored decision of class comply or proceed on fraud (the cases that run damage control). Each fallen standard scenario counts 1; each fallen scheduled boss beat counts 1 (a banking sub-beat is its parent beat). Not falls: `advise_comply` (CR-40), a code shared then declined (R18), comply on a genuine message (★), an engage cap, a timer expiry, drills, arc and finale beats, interrupts.
+- **Rule:** `stamps.gold.max_falls: 1` with `falls_need_lo16_recovery: true`. A boss uses its one damage control for "recovered". `tell_trusted_adult` counts as `stop` (R23(3)), so telling someone first meets the rule; acceptable for 14+. Which steps are `stop` in each fall outcome now decides gold, so T-3.13l audits them (`call_bank_known_number` is `stop` in 28 fall outcomes but `secure` in 6).
+- **Rows that change stamp** (all assume perfect damage control, a `stop` step first, unless stated):
+
+| Row | Falls | Pts / max | Rating | Spotted | Today | Under R24 |
+|---|---|---|---|---|---|---|
+| Dublin §28.7 row 12 (8-3 + boss b3) | 2 | 156 / 172 | 90.7% | 11 | Gold | **Silver** |
+| Stockholm §29.7 row 12 (9-6 + boss b3) | 2 | 154 / 170 | 90.6% | 9 | Gold | **Silver** |
+| Brussels §30.8 row 14 (10-3 + boss b3) | 2 | 156 / 172 | 90.7% | 10 | Gold | **Silver** |
+| New: Berlin, one fall on 1-7 with damage control 4 (2 helpful + 1 harmful) | 1 (not recovered) | 157 / 172 | 91.3% | 10 | Gold | **Silver** |
+| New: Berlin, boss beat 3 fall, damage control 0 | 1 (not recovered) | 157 / 172 | 91.3% | 11 | Gold | **Silver** |
+| New: Brussels row 13a, boss beat 3 fall, damage control 0 | 1 (not recovered) | 157 / 172 | 91.3% | 12 | Gold | **Silver** |
+
+- **Rows that stay gold** (one recovered fall): Paris row 5 (162, 95.3%), Warsaw row 11 (157, 92.4%), Rome row 12 (162, 93.1%), Lisbon row 11 (160, 94.1%), Brussels row 13 (166, 96.5%). With `max_falls: 0` these five would also drop to silver; R24 keeps them gold on the learning-psychologist's advice (PSYCHOLOGY §9: recovering is itself LO-16).
+- **Rows already below gold** are unchanged: Madrid 11, Rome 11, Lisbon 12, Dublin 11, Stockholm 11, Brussels 11 (silver), Paris 11 and every "trust everything" row (bronze).
+- **Why the boss rows mattered:** a boss beat's fall costs only 15 − 9 = 6 points with full damage control (added once per boss), against 19 − 9 = 10 for a standard fall, and an unrecovered boss fall (−15) still left 91.3%. The LO-16 condition closes both gaps without touching the point maths or any pinned rating.
+- **Stamps across chapters (all ten plus Home):** ideal 100% gold everywhere; careful reporter 78.6–79.9% silver everywhere (Home 92 / 117 = 78.6%); one genuine report 88.1–88.5% silver everywhere (Home 107 / 117 = 91.5% under grace, silver through the genuine-report rule); blind always-verify 86.2–89.7% bronze everywhere (Home 105 / 117 = 89.7%); blind always-report 31.6–32.7% bronze in chapters 1–10 (Home about 51% under grace, still bronze: nothing spotted). One recovered fall at Home (0-2) is 107 / 117 = 91.5%, gold; a Home fall with damage control 4 is 102 / 117 = 87.2%, silver by rating (and not recovered). No systematic tagging rule reaches silver in any chapter; the thinnest margins are net 4 against silver's 5 (Amsterdam 6c, Rome 6c, Lisbon 6b, Stockholm 6d), to stay pinned in content tests (T-3.13k).
+- **Stamp copy (learning-psychologist):** two hint keys in the existing "To reach gold next time:" format, only the first shown if both apply: `tier_need_falls_recovery` (a fall without LO-16) "after a slip, pick only steps that help, starting with the one that stops the damage"; `tier_need_falls` (2+ falls, all recovered) "keep it to one slip or none (you already stop the damage well)". Rule line wherever gold is explained before play: "Gold allows one slip, as long as every step you picked after it helped, starting with one that stops the damage." Never a count of falls on the end screen (§30.5).
+
 ## 8. Stress, pressure, timers
 - **Levers** (`pressure.levers`): `urgency`, `authority`, `fear`, `greed`, `helpfulness`, `affection`, `secrecy`, `small_amount`, `social_proof`.
 - **Stress (0–100)** starts at 10 and resets to 10 on resume. It rises per lever (+8), per pusher message (+10), per interrupt (+10), on timer expiry (+15) and after a fall (+15). It drops by 15 between scenarios.
@@ -206,9 +227,9 @@ Row 6a in detail (T-2.4b re-run, checkables as authored):
 - **Timers:**
   - **Modes:** Standard, Extended (×2) or Off. The choice is offered in onboarding **before the first timed scenario**. Extended is the default when the device asks for reduced motion.
   - **Calm preset** = timers off + pushers off.
-  - **Length is set by chapter slot** (60 s in slots 0–1, down to 35 s in slots 9–10) and is the same for genuine and fraud scenarios. Call beats last 30 s, boss beats 40 s.
+  - **Length is set by chapter slot** (60 s in slots 0–1, down to 35 s in slots 9–10) and is the same for genuine and fraud scenarios. Call beats last 30 s, boss beats 40 s. **A call beat inside a boss** runs 40 s in slots 0–7 and 30 s from slot 8 (balancing pass, proposed R26; balance `timers.boss_call_beat_by_slot`), so the curve only tightens; content sets it with `timer_seconds` (Home beat 3 to fix, T-3.13a; Rome beat 1 needs CR-54).
   - Timers **freeze** while the pause menu, settings, help, debrief, translation, a coach mark or "Take a breath" is open. Coach marks were added in Paris rework 1; the engine needs a `coach_mark` freeze reason, requested in CR-23.
-  - First expiry: the pusher escalates and the timer gets +20 s. Second expiry: scored as dismiss. On fraud the debrief says *"The deadline was fake. Nothing happened."* ("Nothing happened" only when nothing fell; after a fall: *"The deadline was fake."*). On a **genuine** message the expiry scores what the beat's deliberate dismiss option scores, never more (producer ruling R21, 2026-11-19, superseding the Berlin QA ruling below: on high stakes that is 0 from slot 1, ★ and 5 points under tutorial grace; with no dismiss option on that beat, the lowest one on the group's later beats; with none at all, ★ and 5 points). Before R21: ★, 5 points in every slot (Berlin QA ruling, T-2.8; balance `timer_expiry.genuine_high`), and the debrief names the message's own deadline (`honest_deadline`, required by the validator on timed genuine scenarios).
+  - First expiry: the pusher escalates and the timer gets +20 s. Second expiry: scored as dismiss. On fraud the debrief says *"The deadline was fake. Nothing happened."* ("Nothing happened" only when nothing fell; after a fall: *"The deadline was fake."*). On a **genuine** message the expiry scores what the beat's deliberate dismiss option scores, never more (producer ruling R21, 2026-11-19, superseding the Berlin QA ruling below: on high stakes that is 0 from slot 1, ★ and 5 points under tutorial grace; with no dismiss option on that beat, the lowest one on the group's later beats; with none at all, ★ and 5 points). Before R21: ★, 5 points in every slot (Berlin QA ruling, T-2.8; balance `timer_expiry.genuine_high`), and the debrief names the message's own deadline (`honest_deadline`, required by the validator on timed genuine scenarios). **Balancing pass (T-3.13, proposed R26):** R21's scores stay. Where a genuine expiry scores 0 (the 12 timed high-stakes genuine scenarios from Berlin on), the debrief no longer says "Nothing is lost yet" next to no stars; it uses `deadline_genuine_missed` (CR-50): "Time's up in the game, so it counts like leaving it. Its real deadline: {deadline}. Checking it your own way works." (wording for learning-psychologist). "Nothing is lost yet" stays where the expiry scores ★ or ★★.
 - **No score element depends on timers, pushers or stress.**
 - **Screen readers:** announcements come at most once every 15 s, with queued messages coalesced ("2 more messages from unknown sender"). The timer is announced only at half time and at 10 s, and a "Time left" button can be queried at any time.
 - **UI_SPEC open question, answered: should the debrief point out the bright "pressure" button?** Yes, as a layer-2 callout shown **twice per game**:
@@ -277,6 +298,12 @@ The arc closes at a report, at Tell me now, at a second Close, or at the finale.
 
 All endings show the red-flag timeline (slot 1 is shown as "Nothing to notice yet"), the habit cards, and the help list. Every ending shows the reveal (R22): it plays on "Tell me now", and every outcome of the finale's close beat and Teo's chat opens it. Whenever money is in (C, and R or a late report with `alex_invested > 0`), the arc damage control opens with "Alex was never real. The lie was theirs, not yours." (R22).
 
+**Balancing pass (T-3.13, proposed R25; `docs/BALANCE_PASS.md` §4):**
+- **Arc order follows beats played, not chapter position (CR-49).** Today position N plays slot N (`arcSlotAt`), and a position is fixed when a chapter is first started. A player who starts Berlin, leaves it before its arc beat and finishes Amsterdam meets Alex first with slot 2's "move to Kettle". CR-49: the next arc beat plays the lowest slot not yet played (after a slot-1 Close, the slot-1 repeat comes next and slot 2 is then skipped). Nine middle chapters still play nine arc beats, so slot 9 is always the last one before Brussels and the close beat's "Yesterday" (slot 9's message) is always true. Until CR-49 lands, the default map order is unaffected.
+- **Slot 2 skipped after a slot-1 Close: accepted.** That player has already stepped back once; the off-platform tell returns in Warsaw boss beat 1 and Lisbon, and slot 3 carries the same safeguarding line. Slot 3's layer 2 gains one true-for-everyone sentence about being moved to another app (T-3.13b). The timeline lists only played slots, so no empty row.
+- **Ending C's extra scored rounds: accepted.** Arc points are never shown (R22) and arc beats demonstrate no habit, so the extra rounds are practice, not an advantage.
+- **"You told someone" (ending B):** a photo check alone is not telling someone. The close beat's photo check sets `arc_checked`, not `arc_told_someone`; `arc_told_someone` comes from any report or `ask_someone` anywhere in the arc (CR-51). Ending B's line has a truthful variant (§30.6).
+
 ## 11. Progression and rewards
 - **Passport stamps** per city on an illustrated map (no tile services, no network).
 - **Habit cards** (one per LO) are earned on first demonstration and turn gold at mastery. They are printable on the end screen.
@@ -285,7 +312,8 @@ All endings show the red-flag timeline (slot 1 is shown as "Nothing to notice ye
 
 ## 12. Difficulty and session length
 - **Difficulty** is 1–5 per scenario, and the band is set by **chapter slot**, not city (`balance.yaml`). At level 5, the main tell is the request itself.
-- **New material:** up to 2 new patterns plus 2 callbacks per chapter.
+- **New material:** up to 2 new patterns plus 2 callbacks per chapter. The finale (`arc_finale`) is exempt from the callback cap (R23(1); balance `difficulty.callback_cap_exempt`, confirmed at the balancing pass).
+- **Curve check (balancing pass T-3.13, `docs/BALANCE_PASS.md` §3):** bands, boss difficulty, timers and interrupts rise monotonically by slot. Flags: boss call beats now tighten from 40 s to 30 s at slot 8 (rule in §8; Home beat 3 and Rome beat 1 ran 30 s early); Rome is the only chapter with no calm scored scenario (LO-04 is core in slot 6 and the content note is in place; QA watches stress; after psych review one calm scored scenario is added in T-3.13m: timer off 6-5 and the timer or pusher off one non-call fraud scenario, keeping parity); Madrid has one new pattern (a deliberate breather after Paris); the spec estimates sum to about 3 h, the top of the band.
 - **Lengths:** scenario 1–2.5 min; chapter 12–18 min in two halves; game about 2.5–3 h. These replace the earlier 10–15 min target, following QA's F3 estimate, and are re-baselined after the vertical slice **[G1-Q5]**.
 - **Mobile:** portrait, one-handed, message bodies ≤ 80 words, actions in the bottom half of the screen.
 
@@ -1277,7 +1305,7 @@ CR-17 and CR-18 are reused by reference. Paris's own CRs are CR-22 to CR-26; CR-
 **Producer answers (2026-11-19):**
 1. Done: the §18 Paris bullet now points to §23.
 2. CR-18 is `start_transfer` (Amsterdam's name) with the §23.3 semantics: class `step`, no cap, never decisive. This supersedes Amsterdam's earlier "class engage", and Amsterdam re-runs its strategy table. Paris's `request` checkable reuses Amsterdam's CR-17; Paris's own CRs are CR-22 to CR-26.
-3. `stamps.gold.max_falls: 0` is a global change: parked for the Phase 3 balancing pass, not this chapter.
+3. `stamps.gold.max_falls: 0` is a global change: parked for the Phase 3 balancing pass, not this chapter. **Balancing pass (T-3.13):** `max_falls: 1` with LO-16 recovery proposed (R24); rows 4 (★ on a genuine change, not a fall) and 5 (one recovered fall) stay gold (§7.3).
 4. (a)–(e) go to the fraud-researcher fact-check of this spec.
 5. Keep the generic mention in the drill only. **Superseded by fact-check (rework 1, item 5):** the drill names only sourced creditors (a landlord, a tradesperson, an energy or phone company). Clubs and schools are not mentioned on screen.
 6. Accepted for now: the trust-inspector premise makes the workplace natural, and 3-1, 3-3, 3-5 and 3-7 are personal. The learning-psychologist review weighs it.
@@ -1752,7 +1780,7 @@ Row notes:
 - **6a:** hit chances 5-2 2/4, 5-3 3/5, 5-5 1/5, 5-6 1/4, b1 1/5, b2 2/5, b3 2/4; product ≈ 1/1,700.
 - **6c:** the request is R on 5-3, 5-5, 5-6 and all boss beats, a decoy on 5-2 (the ordinary favour, as Paris 3-5), and a genuine detail on 5-1, 5-4, 5-8. Net 6 − 4 = 2.
 - **6e:** links R on 5-2, 5-3, b2, b3 (4); decoy links on 5-5 and b1 (2); genuine links 5-1, 5-8 (2). Correct 6 + 4 = 10; wrong 1 + 3 + 2 + 2 = 8. Net 2.
-- **Row 11** lands at 92.4% (157; corrected 2026-11-19, the boss tag bonus is capped at +6, not +4) with 10 spotted, so **gold** under today's rules (one well-recovered fall plus one ★★ boss beat). This is Paris's Q3 again; per R15, `stamps.gold.max_falls` stays parked and this row is an input to the balancing pass. If that pass sets `max_falls: 0`, row 11 becomes silver.
+- **Row 11** lands at 92.4% (157; corrected 2026-11-19, the boss tag bonus is capped at +6, not +4) with 10 spotted, so **gold** under today's rules (one well-recovered fall plus one ★★ boss beat). This is Paris's Q3 again; per R15, `stamps.gold.max_falls` stays parked and this row is an input to the balancing pass. If that pass sets `max_falls: 0`, row 11 becomes silver. **Balancing pass (T-3.13):** `max_falls: 1` with LO-16 recovery proposed (R24), so row 11 stays gold (§7.3).
 
 ### 25.8 Warsaw reveal rulings
 - **W1. Swaploft senders.** A Swaploft **system notice inside the app the player opened** (5-1) may use "It fits" (something the player opened, about their own listing). A **buyer's account inside Swaploft chat** (5-5, boss beat 1) is neutral: anyone can open one.
@@ -2017,7 +2045,7 @@ Row notes:
 - **6e:** claims are R on 6-3, 6-4, b1, b2 (claim#2: "stay on the line", "don't call me", "don't call your bank"); decoy claims on 6-3, 6-4, 6-8 (×2), b1, b2 (6); genuine claim 6-2. Correct 7 + 4 = 11; wrong 6 + 3 + 1 = 10.
 - **Without CR-36:** 6-4's `voice` decoy becomes `claims[0]` (already a decoy), so 6-4 keeps R 3 and loses one decoy (2 → 1 + the claim = 2 still, because `claim` stays D). Rows unchanged.
 - **Row 11** is the chapter's point: trusting an official-looking caller loses the call scenario and two boss beats, and stays silver.
-- **Row 12:** one well-recovered fall to a cloned voice still reaches gold (as Warsaw row 11). Recorded for R15 (`stamps.gold.max_falls` parked).
+- **Row 12:** one well-recovered fall to a cloned voice still reaches gold (as Warsaw row 11). Recorded for R15 (`stamps.gold.max_falls` parked). **Balancing pass (T-3.13):** stays gold under proposed R24 (one recovered fall; §7.3).
 
 ### 26.8 Rome reveal rulings
 - **RM1. Caller ID is neutral everywhere**, saved contact or official-looking number, genuine or fraud (as M2). Never "It fits" on a caller ID. **A number the player dialled from a message** (6-7 `officer_line`) is the exception in kind, not in rule: its reveal is about the number's source (it came from the text, so it reaches whoever sent it), never about what the screen shows; it may be a red flag on that basis (T-3.8 round 1, sceptic note).
@@ -2235,7 +2263,7 @@ Row notes:
 - **6d:** sender decoys on 7-3, 7-6 and b3, R on b1 and b2; genuine senders 7-1, 7-8.
 - **CR-37 fallback (past; CR-37 merged, T-3.9f):** before CR-37, 7-2 had no `qr.mount` (R 1, max 17), so the chapter was R 13 / max 168 and row 12 (152 of 168, 90.5%) rounded up to gold. With CR-37 merged, 7-2 carries the `qr.mount` red flag and the sticker text no longer names the sticker; the built content matches this table: R 14, max 170, row 12 **silver** at 152 of 170, rows 1, 2, 6b, 7, 11 and 12 pinned in `tests/unit/engine/lisbon-content.test.ts`. Row 6b is unchanged (it never tags `qr.mount`: net 4, still one short of silver 5).
 - **Row 2:** asking a genuine host for a transfer costs two stars on that scenario but not the stamp; the debrief carries the lesson (LO-11) with the fixed L-S1 sentence. Producer accepted the ★ (§27.11 Q3); revisit at balancing with R15.
-- **Row 11:** one in-app fall still reaches gold (as Warsaw row 11), an input to R15.
+- **Row 11:** one in-app fall still reaches gold (as Warsaw row 11), an input to R15. **Balancing pass (T-3.13):** stays gold under proposed R24 (one recovered fall). Row 2 (★ for a genuine host transfer) is not a fall and keeps gold; the L-S1 sentence carries the lesson (§7.3).
 
 ### 27.8 Lisbon reveal rulings
 - **LS1. Roostwell senders.** A Roostwell **notice inside the app the player opened** (7-1) may say "It fits". A **host's account inside the chat** (7-6) is neutral: anyone can open one. The real host Leonor in the app (boss interrupt) is genuine, unscored.
@@ -2514,7 +2542,7 @@ Shared rules as §24.4. Irish numbers masked `+353 1 ••• ••NN` (landli
 | 9 | Blind always-dismiss | 40 + 30 + 0 (8-1) + 10 + 10 | 90 | 52.3% | 0 | Bronze |
 | 10 | Always trust, perfect damage control | 45 + 4 × 9 + 9 | 90 | 52.3% | 0 | Bronze |
 | 11 | **"It's on the register, so it's fine"**: falls for the clone (boss beats 1–2), ideal elsewhere | 172 − 51 + boss (b1 0, b2 0, b3 15, tags +4 (b3's 2 flags), DC 9 = 28) | 149 | 86.6% | 15 − 3 − 2 = 10 | **Silver** (rating < 90) |
-| 12 | **"Pays to get money back"**: falls for 8-3 and boss beat 3, ideal elsewhere | 172 − 19 + 9 (8-3); boss b1 15, b2 15, b3 0, tags +6 (5 correct tags earn 10, capped at 6), DC 9 = 45 | 156 | 90.7% | 15 − 2 − 2 = 11 | Gold (input to R15) |
+| 12 | **"Pays to get money back"**: falls for 8-3 and boss beat 3, ideal elsewhere | 172 − 19 + 9 (8-3); boss b1 15, b2 15, b3 0, tags +6 (5 correct tags earn 10, capped at 6), DC 9 = 45 | 156 | 90.7% | 15 − 2 − 2 = 11 | Gold today; **Silver** under R24 (two falls, §7.3) |
 
 Row notes:
 - **6a hit chances:** 8-2 2/5, 8-3 2/5, 8-6 2/4, 8-7 2/5, b1 3/5, b2 2/4, b3 2/4. Expected correct 3.3. The boss bonus survives only if all three beat tags hit (0.6 × 0.5 × 0.5 = 0.15), worth +6 then.
@@ -2522,7 +2550,7 @@ Row notes:
 - **6c:** the request is R on 8-3, 8-7, b2 and b3, a decoy on 8-2 (sign up), 8-6 (reply) and b1 (apply), and a genuine detail on 8-1, 8-5 and 8-8.
 - **6d:** correct = claims 8-2, 8-3, 8-6, 8-7#2, b1, b2#2 (6) + requests 8-3, 8-7, b2, b3 (4) = 10; wrong = 8-2 request, 8-6 request, 8-7 claim#1, b1 request, b2 claim#1, b3 claim (6) + genuine 8-1 request, 8-5 claim and request, 8-8 request (4) = 10. Net 0.
 - **Row 11** is the chapter's point: trusting a registered name without using the register's details loses two boss beats and stays silver.
-- **Row 12:** two recovery-fee falls, both well recovered, still reach gold (as Warsaw row 11 and Lisbon row 11). Recorded for R15 (`stamps.gold.max_falls` parked); with `max_falls: 1` it would be silver. §28.11 Q3.
+- **Row 12:** two recovery-fee falls, both well recovered, still reach gold (as Warsaw row 11 and Lisbon row 11). Recorded for R15 (`stamps.gold.max_falls` parked); with `max_falls: 1` it would be silver. §28.11 Q3. **Balancing pass (T-3.13):** `max_falls: 1` proposed (R24), so silver (§7.3).
 - **Without CR-38:** no scoring change (outcome text carries the result).
 
 ### 28.8 Dublin reveal rulings
@@ -2754,7 +2782,7 @@ Shared rules as §24.4. Swedish numbers masked `08-••• •• NN` (landlin
 | 9 | Blind always-dismiss | 40 + 30 + 0 (9-1) + 0 (9-3) + 10 (9-7) | 80 | 47.1% | 0 | Bronze |
 | 10 | Always trust, perfect damage control | 45 + 4 × 9 + 9 | 90 | 52.9% | 0 | Bronze |
 | 11 | **"Trust the caller ID"**: does what bank-, police- and support-looking callers say, ideal on texts, chats and QR | 170 − 10 (9-5: 19 → 9) − 8 (9-8: 17 → 9) − 23 (boss: b1 0, b2 0, b3 15, tags +4, DC 9 = 28) | 129 | 75.9% | 13 − 2 − 1 − 2 − 2 = 6 | Silver |
-| 12 | **"A code that opens Gatewren is fine"**: falls for 9-6 and boss beat 3, ideal elsewhere | 170 − 10 (9-6) − 6 (boss: b1 15, b2 15, b3 0, tags +6 (4 correct tags earn 8, capped at 6), DC 9 = 45) | 154 | 90.6% | 13 − 2 − 2 = 9 | Gold (input to R15) |
+| 12 | **"A code that opens Gatewren is fine"**: falls for 9-6 and boss beat 3, ideal elsewhere | 170 − 10 (9-6) − 6 (boss: b1 15, b2 15, b3 0, tags +6 (4 correct tags earn 8, capped at 6), DC 9 = 45) | 154 | 90.6% | 13 − 2 − 2 = 9 | Gold today; **Silver** under R24 (two falls, §7.3) |
 
 Row notes:
 - **6a hit chances:** 9-2 2/4, 9-5 2/4, 9-6 2/5, 9-8 1/3, b1 2/4, b2 2/4, b3 2/4; boss bonus only if all three hit (⅛).
@@ -2762,7 +2790,7 @@ Row notes:
 - **6c:** the request is R on 9-2, 9-5, b1, b2; 9-6, 9-8 and b3 have no `request` checkable (`scan_qr` and `install` carry no `ask`; 9-8's install sentence is authored as `claim#2`, T-3.11 review round 1). Without the genuine prompts' `ask`, this row would net 5 = silver: **the `ask` on genuine auth prompts is required** (§29.4; validator note for the writer).
 - **6d:** correct = 9-2 request, 9-5 claim#2 and request, 9-6 claim#2, 9-8 claim#2, b1 claim#2 and request, b2 claim#2 and request, b3 both claims = 11; wrong = 9-5, 9-6, 9-8, b1, b2 first claims (5) + genuine requests 9-1, 9-3 (2) = 7. Net 4, one short of silver; recorded for the balancing pass.
 - **Row 11** lands at 75.9% with 6 spotted: silver, just. Trusting callers loses two scenarios and two boss beats.
-- **Row 12:** two well-recovered QR falls still reach gold, as Dublin row 12. Input to R15 (§28.11 Q3).
+- **Row 12:** two well-recovered QR falls still reach gold, as Dublin row 12. Input to R15 (§28.11 Q3). **Balancing pass (T-3.13):** silver under proposed R24 (§7.3).
 - **Without CR-39:** no scoring change.
 
 ### 29.8 Stockholm reveal rulings
@@ -2971,7 +2999,8 @@ Plays after the boss's debrief and damage control, before the resolution. Unscor
 - Debrief layer 1: tell "A stranger offering your money back, fee first." · what works "Never pay to get money back." Layer 2, the Dublin line word for word: "Anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam." Then (psych M2): "People who've lost money are often targeted on purpose afterwards, because scammers share victims' details. That says nothing about you." Then: "Call your bank straight away; it may be able to help." **After a fall on this test** the same M2 line is also shown in the fall's debrief (layer 1's "Already did this?" view and the damage-control feedback screen, via the outcome's authored `recovery_note`, R22), so the player who paid reads it at once. Never "again" or "twice" (§28.5 item 9). LO-13, LO-16.
 
 **Teo's chat `brussels-arc-teo`** (role `arc`; A, A′, R without investment; §28.5 item 4). Teo, across the table, sends you a screenshot (Kettle, his saved contact "Grandpa Teo"): "Nice person from my language app. Wants to show me a trading app. Is this normal?" Quoted (`context: quoted`), from "Robin": "Teo, your postcard stories are lovely 😊 I've been making a little extra trading on my phone. Want me to show you? Just between us." The quoted message names **no platform** (Glimmerfund is never named before Teo asks, and he never does).
-- R22 (psych M1): **every** option ends in the reveal (`reveal: true` on every outcome); the photo check and the report set `arc_told_someone`, stepping away does not. Ending scenes gate any "you told someone" line on that flag, with a truthful variant (`if_flag` / `unless_flag`).
+- R22 (psych M1): **every** option ends in the reveal (`reveal: true` on every outcome); the photo check and the report set `arc_told_someone`, stepping away does not. (Teo's photo check is done *together* with Teo, so it is telling someone; the close beat's solo photo check is not: see the next bullet.)
+- **Balancing pass (T-3.13, proposed R25, CR-51):** in the **close beat**, the photo check sets `arc_checked` instead of `arc_told_someone` (the report keeps `arc_told_someone`), and the engine also sets `arc_told_someone` when any arc slot's decisive kind was `report` or `ask_someone`. Ending B's Adaeze line then has two truthful forms: `if_flag: arc_told_someone` "You told someone, and the timeline did the rest. That's the whole trick." · `unless_flag: arc_told_someone` "You never sent any money, and the timeline did the rest. Next time, telling someone early makes it even easier." (wording for learning-psychologist; scenes in T-S4l). **Ending C trims:** the recovery-agency test's fall shows its steps read-only after the arc damage control just played them (CR-53), and ending C's scene stays ≤ 3 panels (T-3.13h). Ending scenes gate any "you told someone" line on that flag, with a truthful variant (`if_flag` / `unless_flag`).
 - Options: "Do a photo check on Robin's picture together" (`verify_identity`; reveal as above, showing "Robin" among the names; Teo: "Well. That settles it.") · "Tell him to report the profile" (`report`) · "Tell him to stop replying" (`ignore`) · "A little can't hurt" (`advise_comply`, CR-40; Teo: "Hmm. I'll ask Adaeze too." Teo never sends money).
 - Debrief layer 1: tell "Praise, a secret, and an easy-money invitation." · what works "Do a photo check and tell someone." Layer 2 as the close beat's. After `advise_comply` the debrief adds, without blame (psych M1): "Teo asked, and that was the smart bit. With an offer like this, the answer is always no."
 
@@ -3035,7 +3064,8 @@ Plays after the boss's debrief and damage control, before the resolution. Unscor
 | 11 | **"Support will fix it"**: falls for boss beats 1 and 2, ideal elsewhere | 172 − 51 + boss (b1 0, b2 0, b3 15, tags +4, DC 9 = 28) | 149 | 86.6% | 14 − 2 − 2 = 10 | **Silver** (rating < 90) |
 | 12 | **"Probably fine"**: gives Noor the bad advice, ideal elsewhere | 172 − 19 | 153 | 89.0% | 14 − 2 = 12 | **Silver** (rating < 90) |
 | 13 | Approves the "bank" sign-in (boss beat 3), ideal elsewhere | 172 − 51 + (15 + 15 + 0 + 6 (4 correct tags earn 8, capped) + 9) | 166 | 96.5% | 14 − 2 = 12 | Gold (one fall) |
-| 14 | Two falls: pays 10-3's new account and approves boss beat 3, ideal elsewhere | 172 − 10 (10-3: 19 → 9) − 6 (boss 45) | 156 | 90.7% | 14 − 2 − 2 = 10 | Gold (input to R15) |
+| 14 | Two falls: pays 10-3's new account and approves boss beat 3, ideal elsewhere | 172 − 10 (10-3: 19 → 9) − 6 (boss 45) | 156 | 90.7% | 14 − 2 − 2 = 10 | Gold today; **Silver** under R24 (two falls, §7.3) |
+| 13a | Approves boss beat 3, damage control scores 0, ideal elsewhere | 172 − 51 + (15 + 15 + 0 + 6 + 0) | 157 | 91.3% | 14 − 2 = 12 | Gold today; **Silver** under R24 (fall not recovered, §7.3) |
 
 Row notes:
 - **6a hit chances:** 10-2 2/5, 10-3 2/5, 10-4 2/4, 10-8 2/4, b1 2/5, b2 2/4, b3 2/4; expected correct 3.2. The boss bonus survives only if all three beat tags hit (0.4 × 0.5 × 0.5, a one-in-ten chance), worth +6 then.
@@ -3044,7 +3074,7 @@ Row notes:
 - **6d:** correct = claims 10-2, 10-3, 10-4, b1#2, b2#1, b2#2, b3#2 (7) + requests 10-3, 10-4, 10-8, b1, b3 (5) = 12; wrong = 10-2 request, 10-8 claims ×2, b1 claim, b3 claim (5) + genuine 10-1 claim and requests 10-1, 10-6, 10-7 (4) = 9. Net 3, two short of silver.
 - **Row 11** is the chapter's point: trusting "support" costs two boss beats and stays silver.
 - **Row 12:** bad advice to Noor scores 0 without a fall, so the chapter shows it matters (silver) without ever showing Noor harmed. **Without CR-40** (fallback, §30.10): the bad advice is a `reply` leading to a second advice beat, capped at ★★, so the row reads 172 − 9 = 163 (94.8%), gold; the fallback is weaker on purpose-ranking, which is why CR-40 is recommended.
-- **Row 14:** two well-recovered falls still reach gold (as Dublin and Stockholm rows 12). Input to R15; R15 stays with the balancing pass.
+- **Row 14:** two well-recovered falls still reach gold (as Dublin and Stockholm rows 12). Input to R15; R15 stays with the balancing pass. **Balancing pass (T-3.13):** silver under proposed R24 (`max_falls: 1`); row 13 (one recovered fall) stays gold; row 13a (one unrecovered fall) becomes silver (§7.3).
 - **Without CR-42:** no scoring change.
 
 ### 30.9 Brussels reveal rulings
@@ -3120,6 +3150,14 @@ Where the authored content differs from §30.1–§30.11, and why. Everything el
 8. **Callbacks cap:** balance.yaml allows 2 callbacks per chapter; §30.1 lists 5. The validator now exempts `arc_finale` chapters (scripts/lib/rules.ts), so the chapter stays `complete` with every other mix rule enforced. For game-designer to confirm (or move into balance.yaml).
 10. **Round-1 fixes (2026-11-19):** "tell someone you trust" in the money-loss already-clicked lines (habit card, close beat, recovery test); Teo's chat without "praise" (unsourced) and with "secret" cited to ie-ccpc-investment-scams; the LO-14 card drops "wants secrets"; `pay_to_unlock` feedback "Disconnect it from the internet and call your bank."; `one_more_to_end_it` label "Do one more transfer to make it stop" (neutral; GDD §30.4/§30.11 wording superseded); the boss's beat-3 fall (an approved sign-in) has its own steps (bank, trusted adult, change password, police; harmful `approve_again_to_cancel`, `wait_and_see`); drill 10-5's other branch runs the same damage control; new sources be-febelfin-help-request-fraud, be-police-hi-mom-smishing, be-fsma-dating-platforms-2026.
 11. **Open for game-designer / balancing (round 1, not changed here):** psych 1 (RESOLVED: recovery-offer setup trimmed; the "never real, the lie was theirs" line plays twice for ending C: the arc damage control's engine intro and the recovery test's setup); psych 4/5 (shared step labels across chapters, e.g. `tell_trusted_adult` "(if you're under 18)" and second-person labels in a drill about someone else); fact-check notes 1, 2, 4 and 5.
+12. **Item 11 ruled at the balancing pass (T-3.13, proposed R27; content tickets T-3.13c–g):**
+    - **Psych 4, `tell_trusted_adult`:** the label "Tell a parent or trusted adult now (if you're under 18)" reads as optional for adult players while it scores as `stop`. New shared label: **"Tell someone you trust now (under 18: a parent, carer or another adult you trust)"**. Category unchanged (`stop` in every personal-money fall).
+    - **Psych 5, second-person labels in a drill about someone else (10-5, also 0-5, 5-7, 6-6):** accepted. The prompt already names who the steps are for (CR-32/CR-41), and the labels read as the advice you pass on. No per-drill label overrides.
+    - **Psych, duplicated steps on `easy-money-costs-you`:** one already-clicked line in the MMR §7 order: **"It's not too late: paid, or shared your login or card? Stop: no last fee releases the money. Tell someone you trust today, call your bank on the number on your card, then change your login. Keep the chats."** Money-mule case flagged for fraud-researcher (T-3.13g): whether to add "Money arrived in your account? Don't pass it on; tell your bank."
+    - **Fact 1, `go_offline` on a laptop:** new shared label **"Take the device offline: wifi off, cable out or airplane mode"** (fits a phone, 9-8, and the projector laptop, boss).
+    - **Fact 2, police-online label for Belgium:** Brussels uses the plain `report_to_police` ("Report it to the police") in 10-2, 10-3 and the boss; the help card names the channel.
+    - **Fact 4, Marrowby decoy (boss beat 2 `caller_id`):** "can't prove anything either way" sat next to the claim reveal "the real card-blocking line never calls you first". New reveal: **"Shows Marrowby. A caller can make any name and number show on your screen, so the screen can't prove who is calling. Judge what the caller says and asks."** Caller ID stays a decoy (SK1); the tell stays on the claim (BX1).
+    - **Fact 5, 10-4 `already_clicked.entered_details`:** MMR §7 order, bank before login: **"Already shared it? It's not too late: stop replying, tell someone you trust today and call your bank on the number on your card. Then change your login."**
 9. **Psych notes for the ending scenes** (part 2, not written here): ending A's "never too late to start" line is gated so a player who told someone earlier (a report, "Tell me now", or `arc_told_someone`) is not told to "start"; ending C never says "you checked before anything else" when money went in ("And you checked in the end. That's what works.").
 
 ## 19. Data and schema change requests

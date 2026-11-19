@@ -863,7 +863,7 @@ brands:
         "capital", "courant", "daily", "soir", "times", "news" or broadcaster wording.
       colour_shape: "No mark drawn: the page header is plain text in the browser device's neutral page style."
     checked_against: ["La Capitale / Sudinfo", "Bruzz", "The Brussels Times", "Le Soir", "La Libre Belgique", "DH (La Dernière Heure)", "De Standaard", "HLN (Het Laatste Nieuws)", "Het Nieuwsblad", "Metro (Belgium)", "RTBF", "VRT"]
-    web_check: "Not web-checked: no search tool was available to the scenario-writer in T-3.12 round 1. Compared by name only against the list above (no shared stem or sound). BRAND_CHECK web search requested before merge."
+    web_check: "2026-11-19 producer web search for \"Weekfold\": no company, publication, site or product of that name found (only unrelated hits such as the place name Woolfold). No shared stem or sound with the Belgian news brands listed above."
     lookalike_examples: []
     trademark_search: "pending (BRAND_CHECK web, TMview and KBO/BCE search requested, T-3.12 round 1)"
     status: draft

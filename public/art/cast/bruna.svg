@@ -21,7 +21,7 @@
 <path d="M88 168C100 180 140 180 152 168C146 178 134 184 120 184C106 184 94 178 88 168Z" fill="#b97f58" stroke="none"/>
 <path d="M68 124C60 82 88 62 120 62C152 62 180 82 172 124C168 104 158 92 140 88C128 94 106 96 88 92C78 100 70 110 68 124Z" fill="#ece8e1"/>
 <path d="M96 72Q108 66 120 70M132 70Q144 68 154 76" fill="none" stroke="#b9b4ad" stroke-width="2"/>
-<path d="M92 76h22v12h-22ZM126 76h22v12h-22ZM114 80Q120 76 126 80M92 80L80 86M148 80L160 86" fill="#d9e6f6" stroke-width="2.5"/>
+<path d="M92 76h22v12h-22ZM126 76h22v12h-22ZM114 80Q120 76 126 80M92 80L80 86M148 80L160 86" fill="#a9bccb" stroke-width="2.5"/>
 <path d="M83 118l-6-2M83 126l-6 2M157 118l6-2M157 126l6 2" fill="none" stroke="#b97f58" stroke-width="2"/>
 <path d="M111 142a9 10 0 1 0 18 0a9 10 0 1 0 -18 0Z" fill="#b97f58" stroke="none"/>
 </g>

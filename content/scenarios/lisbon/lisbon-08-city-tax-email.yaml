@@ -1,0 +1,129 @@
+# 7-8 A REAL Roostwell email about a city tax (GDD §27.4; genuine twin of the boss's emails, pattern
+# rental-offplatform-payment). Genuine, high stakes (a payment), difficulty 5, calm (no timer); interrupt
+# (Noor) at 15 s. Option (a), review round 1: no payment link; its one link opens the booking.
+# The tax stays generic (no rate, nothing about how the city collects it).
+# Checkables (G, 4): sender (LS3 It fits), link (LS3 It fits), reference (your booking), request.
+# Not player_started (the right action is pay_protected, not proceed); the spec's "Hi Sam" has no nickname
+# placeholder in the engine, so the email opens "Hi,".
+# Layer 2 never names the boss's domain.
+id: lisbon-08-city-tax-email
+chapter: lisbon
+role: standard
+pattern: rental-offplatform-payment
+theme: email
+twin_of: lisbon-09-boss-thursday-flat
+learning_objectives: [LO-17, LO-03, LO-11]
+difficulty: 5
+is_fraud: false
+stakes: high
+device: email
+brands: [roostwell]
+cast: [noor]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Roostwell", detail: "trips@roostwell.example" }
+  subject: "Your stay Thu–Sun: before check-in"
+  body: |
+    Hi, your stay at the Graça studio starts Thursday. A city tax is due before check-in. Pay it in the Roostwell app under Trips.
+
+    Your booking: roostwell.example/trips/4471
+
+    See you soon!
+    Roostwell
+  request: pay
+  ask: { text: "Pay it in the Roostwell app under Trips." }
+  references: ["your stay at the Graça studio starts Thursday"]
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: trips@roostwell.example, Roostwell's own address. That isn't proof on its own, so weigh it with what it asks: a small tax, paid in the app."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: link
+    reveal: "It fits: roostwell.example, the owner part is Roostwell's own, and it opens your booking, not a payment."
+    red_flag: false
+    type: link
+    reassures: true
+  - target: reference
+    reveal: "It fits: your booking, the studio and dates you chose. That isn't proof on its own."
+    red_flag: false
+    type: reference
+    reassures: true
+  - target: request
+    reveal: "Pay it inside the Roostwell app. No payment link, no login link, no transfer, no card form in the email."
+    red_flag: false
+    type: request
+
+actions:
+  - id: pay_tax_in_app
+    label: "Open the Roostwell app and pay there"
+    kind: pay_protected
+    outcome: tax_paid
+    pressure_target: true
+  - id: check_trips_first
+    label: "Check the booking in the Roostwell app first"
+    kind: verify_in_app
+    outcome: trips_shows_tax
+  - id: report_tax_email
+    label: "Report the email"
+    kind: report
+    outcome: tax_email_reported
+  - id: leave_tax_email
+    label: "Leave it"
+    kind: ignore
+    outcome: tax_reminder
+
+interrupts:
+  - id: noor_pastel
+    at_seconds: 15
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Noor", detail: "Saved contact: Noor" }
+      from_cast: noor
+      body: "inspector, pastel de nata report please. for science"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Noor's saved contact, in your usual chat with her. That isn't proof on its own, so weigh it with what she asks for: a pastry review."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_noor_pastel
+        label: "Reply: ten out of ten"
+        kind: proceed
+        outcome: noor_jealous_pastel
+        pressure_target: true
+      - id: report_noor_pastel
+        label: "Report the message"
+        kind: report
+        outcome: noor_pastel_reported
+
+outcomes:
+  tax_paid:
+    narrative: "You open the Roostwell app yourself. Trips: city tax due. Paid."
+  trips_shows_tax:
+    narrative: "Trips: city tax due. You pay it there."
+  tax_email_reported:
+    narrative: "You report the email. Roostwell replies: \"That one was ours. You'll find the tax under Trips.\""
+  tax_reminder:
+    narrative: "At check-in the app reminds you once; you pay there."
+  noor_jealous_pastel:
+    narrative: "Noor: \"unfair. save me one. (you can't. i know.)\""
+  noor_pastel_reported:
+    narrative: "You reported it. Careful is good; this one really was Noor, asking about pastries."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A booking you made, paid in the app you open."
+    what_works: "Paying in the app was right."
+  layer2:
+    message_flags: []
+    notes: "Why it was safe to act: it's about a booking you made, and it sent you to pay in the app you open yourself, not through a link. Fakes can look just like this, sometimes even the sender's address. Often the address after the @ or in the link gives them away, but what keeps you safe is paying only in the app."
+  device_tip: "On a real phone, press and hold the sender's name to see the full address, and read the part after the @."
+  habit_card: calm-not-paranoid
+  sources: [de-evz-rental-fraud, nl-nltimes-booking-phishing-2026, pt-bdp-ficaadica-2023]

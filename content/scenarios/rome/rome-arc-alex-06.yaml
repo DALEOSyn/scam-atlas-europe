@@ -1,0 +1,71 @@
+# Arc beat, slot 6 (GDD §10.1, §10.2, §28.5 table; STORY §1.4: arc slot N plays by play position, so the line
+# is city-agnostic). Dashboard shows growth. Warning sign: too-good returns. Friendship only; Alex's line is
+# ≤ 25 words, generic, no persuasion copy, no platform walkthrough.
+# Options per §10.1 slot 6: Ask someone → ask_someone · Add more → pay (alex_invested += 50) · Report → report
+# (a report at slot ≤ 6 closes the arc as ending A, GDD §10.3; the engine handles it).
+# Placement (GDD §26.3): in the morning, between 6-2 and 6-3, never next to a family-money debrief.
+# Deviations, flagged:
+# - §28.5 has two lines branched on alex_invested (arc_branch_on). The engine doesn't branch arc lines yet
+#   (the field is in the schema only), so this one line reads true either way: Alex shows their own
+#   dashboard and invites you to add more or to join.
+# - Glimmerfund (§28.5) is not in content/brands.yaml on main yet, so the platform is not named here.
+# Layer 1 is §28.5's slot-6 line word for word.
+id: rome-arc-alex-06
+chapter: rome
+role: arc
+arc_slot: 6
+learning_objectives: [LO-14]
+is_fraud: true
+device: messenger
+brands: [wordswap]
+cast: [alex, teo]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Alex", detail: "Practice partner from Wordswap" }
+  from_cast: alex
+  body: |
+    Look at my dashboard: €300 is now €640 🚀 Imagine yours! Add a bit more, or finally join me?
+  request: pay
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows Alex, your practice partner from Wordswap, as any profile would. A profile name can't prove anything either way."
+    red_flag: false
+    type: sender
+
+actions:
+  - id: add_more_alex
+    label: "Add €50"
+    kind: pay
+    outcome: added_fifty_more
+    pressure_target: true
+  - id: ask_someone_dashboard
+    label: "Ask someone you trust first"
+    kind: ask_someone
+    outcome: teo_on_dashboard
+  - id: report_alex_dashboard
+    label: "Report the profile"
+    kind: report
+    outcome: alex_dashboard_reported
+
+outcomes:
+  added_fifty_more:
+    narrative: "You add €50. The dashboard ticks up almost at once. Alex: \"See? 🚀\""
+    arc_effects: { alex_invested: 50 }
+  teo_on_dashboard:
+    narrative: "Teo: \"Numbers on a screen, from a friend you've never met? A dashboard shows whatever the website wants it to show. Keep your money, kiddo.\""
+  alex_dashboard_reported:
+    narrative: "You report Alex's profile. Big gains from someone you can't check are reason enough."
+
+debrief:
+  variant: arc
+  layer1:
+    tell: "A dashboard shows whatever the website wants it to show."
+    what_works: "Growing numbers prove nothing. Ask someone before adding money."
+  layer2:
+    message_flags: []
+    notes: "Friends share good news, and that's fine. But a balance that only grows, on a platform you can't check, proves nothing: the numbers are whatever the site shows. Real investing carries risk, and nobody can promise profits. Talk to someone you trust before you add money."
+  already_clicked:
+    paid: "If you've already paid, stop paying, call your bank on the number on your card, and keep the chat history."
+  sources: [be-fsma-trading-platforms-2025, ie-garda-crimecall-investment-2024, be-police-romance-2026, eu-esas-ai-scams-factsheet-it]

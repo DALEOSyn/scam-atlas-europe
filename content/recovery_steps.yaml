@@ -103,3 +103,42 @@ steps:
   - id: send_code_to_cancel
     label: "Send another code to cancel the payment"
     feedback: "A code only ever makes a payment; it can't cancel one. Call your bank on the number on your card instead."
+  # Rome (GDD §26.10, T-3.8). keep_call_evidence, call_back_caller_number and call_back_text_number are Madrid's steps (GDD §24.10,
+  # T-3.6), added here word for word because Rome may land first; keep one copy when both branches merge.
+  # Labels stay generic: real bodies are named only on the Italy help card.
+  - id: keep_call_evidence
+    label: "Keep screenshots of the texts, the call log and the times"
+  - id: call_back_caller_number
+    label: "Call back the number that called you and ask them to send it back"
+    feedback: "Wanting to fix it fast is natural, but the number that called you can be faked, so you can't tell whose line you'd reach. Call the number on your card instead."
+  - id: call_back_text_number
+    label: "Call the number from the text again and ask them to send it back"
+    feedback: "Wanting to fix it fast is natural, but that number came with the fake text, so it reaches whoever sent it. Call the number on your card instead."
+  - id: report_number_in_app
+    label: "Block and report the number in Kettle"
+  # Lisbon (GDD §27.10). `report_sticker` is common sense (no PT source, QRP §5.4).
+  - id: report_sticker
+    label: "Photograph the sticker or slip and report it in the parking app or to the city"
+  - id: report_listing_or_host
+    label: "Report the listing or host on the platform"
+  - id: rescan_to_cancel
+    label: "Scan the code again to cancel the payment"
+    feedback: "It feels like undoing it, but the code leads to the same page. Block the card in your banking app first."
+  - id: pay_second_deposit
+    label: "Pay a 'refundable' deposit if they ask for one"
+    feedback: "Wanting your money back is natural, but a second payment only adds to the loss. Call your bank instead."
+  - id: keep_chatting_host
+    label: "Keep chatting to the 'host' on Kettle to sort it out"
+    feedback: "Wanting to sort it out with them feels reasonable, but the 'host' is the scammer and won't fix anything. Report them in the Roostwell app and call your bank."
+  # Stockholm (GDD §29.10). go_offline, get_device_checked and let_caller_finish are reused by the Brussels
+  # boss (§29.5). approve_again_to_cancel is the e-ID sibling of send_code_to_cancel and rescan_to_cancel.
+  - id: go_offline
+    label: "Turn on airplane mode and stop using the device for banking"
+  - id: get_device_checked
+    label: "Get the device checked before you use it for banking again"
+  - id: approve_again_to_cancel
+    label: "Approve another request to cancel the first one"
+    feedback: "It feels like undoing it, but a new approval can let them in again. Call your bank instead."
+  - id: let_caller_finish
+    label: "Call them back so they can finish the 'check'"
+    feedback: "They're the ones who got in. Hang up, go offline and call your bank."

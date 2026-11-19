@@ -15,6 +15,7 @@ import { choiceLineText, nextTimeText, overCautionOf } from '../../src/engine/ch
 import type { ChoiceLine } from '../../src/engine/debrief.ts';
 import { lookup } from '../../src/i18n/index.ts';
 import {
+  ASK_REQUESTS,
   CR17_ASK_REQUESTS,
   CR30_ASK_DEVICES,
   CR30_FROM_SLOT,
@@ -689,12 +690,15 @@ export function chapterRules(c: Chapter, fileBase: string, scenarios: Scenario[]
   // CR-30 (Madrid, Warsaw): from slot 4 on, every scored scheduled beat on a message device quotes what it asks
   // (or, on request: none, what it tells the reader to do) in message.ask, whatever the request, genuine or
   // fraud alike, so the request checkable exists on every one of them. Not banking, interrupts, follow-up beats
-  // reached by next_beat, or `scored: false` boss beats.
+  // reached by next_beat, or `scored: false` boss beats. Requests that cannot carry an ask (scan_qr, install:
+  // not in ASK_REQUESTS) are exempt: a chat QR code (CR-39(b)) or an install request on a call quotes its
+  // sentence as a claim instead (GDD §29.4, 9-6, 9-8, Stockholm boss beat 3).
   if (c.slot >= CR30_FROM_SLOT) {
     for (const s of scenarios) {
       if (!SCORED_ROLES.includes(s.role)) continue;
       for (const b of beatsOf(s)) {
         if (b.interrupt || !b.scheduled || !b.scored || !CR30_ASK_DEVICES.includes(b.device)) continue;
+        if (!ASK_REQUESTS.includes(b.message.request)) continue;
         if (!b.message.ask) {
           errors.push(`scenario "${s.id}" ${b.where}: request ${b.message.request} needs message.ask from slot ${CR30_FROM_SLOT} on (CR-30: every scored scheduled beat on ${CR30_ASK_DEVICES.join(', ')} quotes its ask)`);
         }

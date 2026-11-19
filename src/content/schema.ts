@@ -377,17 +377,17 @@ export const messageSchema = z
   });
 export type Message = z.infer<typeof messageSchema>;
 
+/** "It fits…" opens reassuring reveals; never on details that cannot prove anything (CR-36 RM2, CR-37 LS2). */
+export function startsWithItFits(reveal: string): boolean {
+  return /^\s*it fits\b/iu.test(reveal);
+}
+
 /**
  * The text a beat's inline checkables (claims, ask, references, phone numbers, links) are quoted from:
  * a forwarded message (CR-40), else a page overlay (CR-42), else the body.
  */
 export function checkableText(m: Pick<Message, 'body' | 'forwarded' | 'page'>): string | undefined {
   return m.forwarded?.body ?? m.page?.overlay?.body ?? m.body;
-}
-
-/** "It fits…" opens reassuring reveals; never on details that cannot prove anything (CR-36 RM2, CR-37 LS2). */
-export function startsWithItFits(reveal: string): boolean {
-  return /^\s*it fits\b/iu.test(reveal);
 }
 
 /**

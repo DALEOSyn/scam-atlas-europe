@@ -1,0 +1,360 @@
+# 6-9 Boss: the investigation (GDD §26.6; spoofed-authority-call). Evening, alone on the terrace. Beats are
+# scammer-driven and arrive whatever the player did. Theme authority. Levers authority, fear, secrecy, urgency.
+# Beat 1 (call, start, 40 s): "Police" say not to call your bank and ask for the code Larchwick texts you
+#   (banner: an add-a-new-device code, no actions). R: "don't call your bank" (claim#2, RM4), the request.
+#   D: caller ID (RM1, the sender-or-link decoy), "you're not under suspicion" (claim). No engage on boss
+#   beats (§16 ruling 4).
+# Beat 2 (call, +45 s, 40 s, covered_by start): caller ID "Larchwick Bank" (RM1). R: "don't hang up"
+#   (claim#2), the request. D: caller ID, "the police briefed us" (claim). "Open the app and follow their
+#   steps" is start_transfer with cap: engage (R16, CR-31(b)).
+#   boss_tutela: the player's own Larchwick app with the call on the line (CR-31 bar; caller lines are
+#   beat-bound pushers). Typed "Velastri Tutela"; close match, holder "Vellastri Tutela Srl" (BRAND_CHECK
+#   RL3: always the full name, never shortened), neutral (RM6). scored: false only for the validator's
+#   3-scored-beat count; the engine scores it inside beat 2's group (CR-18(e)), as Madrid 4-9.
+# Beat 3 (sms, +45 s, 40 s, covered_by start + bank_call): "Police Info" (Italian), a link asking for your
+#   Larchwick login. R: link, request. D: sender. A design combination (fraud-researcher, GDD §26.6): no
+#   debrief presents it as a known sequence. Reads true whatever the player did at beats 1–2.
+# Interrupt after beat 3 (genuine, Bruna home from choir), never after a fall (on_fall: skip).
+# Every fall: the same six steps (the engine merges and caps at 6) and the story-only flag rome_bank_called.
+# No refund promise; no depiction of how caller IDs are faked.
+id: rome-09-boss-investigation
+chapter: rome
+role: boss
+pattern: spoofed-authority-call
+theme: authority
+learning_objectives: [LO-08, LO-05, LO-04, LO-06, LO-16]
+difficulty: 4
+is_fraud: true
+device: call
+setup: "Evening. Bruna is at choir and Davide is at the library. You're on the terrace, alone. Your phone rings."
+brands: [larchwick]
+cast: [bruna, davide]
+pressure:
+  timer: true
+  levers: [authority, fear, secrecy, urgency]
+  pusher:
+    messages:
+      - { at_seconds: 20, beat: bank_call, text: "Are you in the app yet? We're running out of time." }
+      - { at_seconds: 5, beat: boss_tutela, text: "Type the name as I spell it: Velastri Tutela." }
+      - { at_seconds: 18, beat: boss_tutela, text: "It'll suggest our full company name. Accept it and confirm, quickly." }
+
+message:
+  sender: { display: "06 •••• ••13", detail: "Not in your contacts" }
+  transcript:
+    - { speaker: caller, text: "Police, fraud unit. Your Larchwick account is part of an investigation into staff at your bank." }
+    - { speaker: caller, text: "You're not under suspicion." }
+    - { speaker: caller, text: "Don't call your bank. We don't know who's involved there." }
+    - { speaker: caller, text: "They'll text you a code now. Read it to me and we freeze the account before it's emptied." }
+  request: share_code
+  ask: { text: "They'll text you a code now. Read it to me and we freeze the account before it's emptied." }
+  claims:
+    - { text: "You're not under suspicion." }
+    - { text: "Don't call your bank. We don't know who's involved there." }
+banner:
+  device: sms
+  message:
+    sender: { display: "LARCHWICK" }
+    body: "LARCHWICK: Code 7••••• to add a new device to your Larchwick app. Never share this code."
+    request: none
+
+inspectables:
+  - target: caller_id
+    reveal: "An official-looking number. A number on screen can be faked, even a real police or bank number, so it can't prove anything either way. Judge what the caller asks."
+    red_flag: false
+    type: caller_id
+  - target: claim
+    reveal: "Says you're not under suspicion. Real calls and fake ones both reassure you, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: claim#2
+    reveal: "Tells you not to call your bank. Anyone who wants to cut you off from your bank is the one to hang up on."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "A code, read out to a caller. Read the text: it adds a new device to your bank app. Nobody needs it to freeze anything."
+    red_flag: true
+    type: request
+
+actions:
+  - id: read_out_code_boss
+    label: "Read out the code"
+    kind: share_code
+    outcome: code_read_out_boss
+    pressure_target: true
+  - id: hang_up_police_boss
+    label: "Hang up"
+    kind: hang_up
+    outcome: police_boss_left
+
+what_now:
+  outcomes:
+    report: police_boss_reported
+    done: police_boss_left
+  extra:
+    - id: call_card_after_police_boss
+      label: "Call the number on your card"
+      kind: call_back_known
+      outcome: card_no_investigation_ring
+    - id: call_police_after_police_boss
+      label: "Call the police yourself"
+      kind: call_back_known
+      outcome: police_no_investigation_ring
+
+beats:
+  - id: bank_call
+    device: call
+    arrives_after: 45
+    timer_seconds: 40
+    covered_by: [start]
+    message:
+      sender: { display: "Larchwick Bank", detail: "Saved contact: Larchwick Bank, the number on your card" }
+      transcript:
+        - { speaker: caller, text: "Larchwick security. The police have briefed us about the investigation." }
+        - { speaker: caller, text: "Please don't hang up; they're listening in to protect you." }
+        - { speaker: caller, text: "Open your app and I'll guide you to move your savings to our protected account until it's over." }
+      request: pay
+      ask: { text: "Open your app and I'll guide you to move your savings to our protected account until it's over." }
+      claims:
+        - { text: "The police have briefed us about the investigation." }
+        - { text: "Please don't hang up; they're listening in to protect you." }
+    inspectables:
+      - target: caller_id
+        reveal: "Shows Larchwick Bank, the number on your card, as a real call would. A number on screen can be faked to show the same, so it can't prove anything either way. Judge what the caller asks."
+        red_flag: false
+        type: caller_id
+      - target: claim
+        reveal: "Says the police briefed them. A fake caller can say it too, so it can't prove anything either way."
+        red_flag: false
+        type: claim
+      - target: claim#2
+        reveal: "Wants you to stay on the line so you can't check."
+        red_flag: true
+        type: claim
+      - target: request
+        reveal: "Move your savings \"to keep them safe\". No real bank or police asks that. That request is the scam."
+        red_flag: true
+        type: request
+    actions:
+      - id: follow_steps_tutela
+        label: "Open the app and follow their steps"
+        kind: start_transfer
+        next_beat: boss_tutela
+        cap: engage
+        pressure_target: true
+      - id: hang_up_bank_boss
+        label: "Hang up"
+        kind: hang_up
+        outcome: bank_boss_left
+    what_now:
+      outcomes:
+        report: bank_boss_reported
+        done: bank_boss_left
+      extra:
+        - id: call_card_after_bank_boss
+          label: "Call the number on your card"
+          kind: call_back_known
+          outcome: card_no_protected_account
+        - id: call_police_after_bank_boss
+          label: "Call the police yourself"
+          kind: call_back_known
+          outcome: police_no_protected_account
+        - id: call_back_this_number_bank_boss
+          label: "Call back this number"
+          kind: call_number_in_message
+          note: "That's the number that just called. It can show the bank's real number, so you can't tell whose line it is. Use the number on your card."
+
+  - id: boss_tutela
+    device: banking
+    scored: false   # see header: inside beat 2's group (CR-18(e)); marked only for the validator's 3-scored-beat count
+    message:
+      account: { nickname: "Your savings" }
+      payee: { name: "Velastri Tutela", iban: "IT•• … 5512", name_check: close_match, holder: "Vellastri Tutela Srl", amount: "€4,120.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "Close match: the account is held by Vellastri Tutela Srl, close to what the caller spelled. That only shows whose account it is. No real bank or police asks you to move money to keep it safe."
+        red_flag: false
+        type: payee
+      - target: payee.iban
+        reveal: "An account you've never paid, typed as the caller read it out. Real new payees look the same here, so it can't prove anything either way."
+        red_flag: false
+        type: payee
+    actions:
+      - id: send_tutela
+        label: "Use the suggested name and send €4,120"
+        kind: pay
+        outcome: sent_to_tutela
+        pressure_target: true
+      - id: hang_up_call_card_tutela
+        label: "Hang up and call your card's number"
+        kind: call_back_known
+        outcome: card_no_protected_account
+      - id: hang_up_report_tutela
+        label: "Hang up and report it"
+        kind: report
+        outcome: bank_boss_reported
+      - id: hang_up_cancel_tutela
+        label: "Hang up and cancel"
+        kind: ignore
+        outcome: tutela_cancelled
+
+  - id: police_text
+    device: sms
+    arrives_after: 45
+    timer_seconds: 40
+    covered_by: [start, bank_call]
+    message:
+      sender: { display: "Police Info", detail: "Sender name: Police Info" }
+      body: "Fascicolo 2026/••••: confermi la sua identità stasera per proteggere il conto. Acceda con i dati Larchwick: caseportal-verify.example/id"
+      lang: it
+      translation: "Case file 2026/••••: confirm your identity tonight to protect your account. Log in with your Larchwick details: caseportal-verify.example/id"
+      request: log_in
+      ask: { text: "Acceda con i dati Larchwick", translation: "Log in with your Larchwick details" }
+      l10n_note: "Italian in-world text is intentional; the translation is shown inline. 'Police Info' is a generic sender label, never a real force's name."
+    inspectables:
+      - target: sender.detail
+        reveal: "An official-sounding sender name. Anyone can set a sender name, so it can't prove anything either way."
+        red_flag: false
+        type: sender
+      - target: link
+        reveal: "caseportal-verify.example: an address you don't know, asking for your bank login."
+        red_flag: true
+        type: link
+      - target: request
+        reveal: "Your bank login, for the \"police\". Nobody needs it but you, in your bank's own app."
+        red_flag: true
+        type: request
+    actions:
+      - id: log_in_case_link
+        label: "Log in through the link"
+        kind: enter_details
+        outcome: logged_in_case_portal
+        pressure_target: true
+      - id: open_app_police_text
+        label: "Open the Larchwick app yourself"
+        kind: verify_in_app
+        outcome: app_no_case
+      - id: call_card_police_text
+        label: "Call the number on your card"
+        kind: call_back_known
+        outcome: card_no_case
+      - id: report_police_text_boss
+        label: "Report the text"
+        kind: report
+        outcome: police_text_boss_reported
+      - id: delete_police_text_boss
+        label: "Delete it"
+        kind: delete
+        outcome: police_text_boss_deleted
+
+interrupts:
+  - id: bruna_home_from_choir
+    after_beat: police_text
+    on_fall: skip   # the default, set explicitly: no cheerful good night right after a loss (CR-27)
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Bruna (B&B)", detail: "Saved contact: Bruna (B&B)" }
+      from_cast: bruna
+      body: "Tornata dal coro 🎶 Abbiamo cantato male e felici. Buonanotte!"
+      lang: it
+      translation: "Home from choir 🎶 We sang badly and happily. Goodnight!"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Bruna's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what she asks for: nothing, she's saying goodnight."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_buonanotte
+        label: "Reply: buonanotte!"
+        kind: proceed
+        outcome: bruna_goodnight
+        pressure_target: true
+      - id: report_buonanotte
+        label: "Report the message"
+        kind: report
+        outcome: bruna_goodnight_reported
+
+outcomes:
+  code_read_out_boss:
+    narrative: "\"Thank you. The account is frozen.\" A minute later Larchwick texts: \"A new device has been added to your Larchwick app.\""
+    sets_flags: [rome_bank_called]
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: change_password_sign_out, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: call_back_caller_number, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  sent_to_tutela:
+    narrative: "Sent: €4,120.00 to Vellastri Tutela Srl. \"Perfect. Your savings are protected now. Don't use the app tonight.\" The line goes dead."
+    sets_flags: [rome_bank_called]
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: change_password_sign_out, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: call_back_caller_number, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  logged_in_case_portal:
+    narrative: "\"Identity confirmed. Thank you.\" A minute later your Larchwick app signs you out: someone else has signed in."
+    sets_flags: [rome_bank_called]
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: change_password_sign_out, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: call_back_caller_number, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  card_no_investigation_ring:
+    narrative: "Larchwick, on the number on your card: \"No investigation, and we'd never ask you not to call us.\" As you hang up, your phone rings: \"Larchwick Bank\"."
+  police_no_investigation_ring:
+    narrative: "You dial 112 yourself. \"We'd never ask for a bank code. Calling us yourself was exactly right.\" As you hang up, your phone rings: \"Larchwick Bank\"."
+  police_boss_reported:
+    narrative: "Reported. Keep a note of the time and what was said. Then your phone rings: \"Larchwick Bank\"."
+  police_boss_left:
+    narrative: "You hang up and leave it there. Then your phone rings: \"Larchwick Bank\"."
+  card_no_protected_account:
+    narrative: "Larchwick, on the number on your card: \"We didn't call you, and there's no protected account. If anything has already left, we'll try to stop it now.\""
+  police_no_protected_account:
+    narrative: "You dial 112 yourself. \"No officer asks you to move money. Call your bank on the number on your card too.\""
+  bank_boss_reported:
+    narrative: "Reported. Keep a note of the time and what was said: your bank and the police can use them."
+  bank_boss_left:
+    narrative: "You hang up and leave it there. Nothing has left your savings on this call."
+  tutela_cancelled:
+    narrative: "You hang up and cancel. Nothing more leaves your savings."
+  app_no_case:
+    narrative: "You open the Larchwick app yourself. No message, no case. Just your account."
+  card_no_case:
+    narrative: "Larchwick, on the number on your card: \"That isn't us, and the police never need your login. Please don't use that link.\""
+  police_text_boss_reported:
+    narrative: "Reported. Your phone files the text under spam."
+  police_text_boss_deleted:
+    narrative: "Deleted. The thread goes quiet."
+  bruna_goodnight:
+    narrative: "Bruna: \"🍋 A domani.\""
+  bruna_goodnight_reported:
+    narrative: "You reported it. Careful is good; this one really was Bruna, home from choir."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "'Police', 'your bank', a link: after your code, login or money."
+    what_works: "Hang up. Dial a known number."
+  layer2:
+    message_flags:
+      - "First call: \"Don't call your bank\" is the tell: they wanted you cut off."
+      - "Second call: same story, now with your bank's name on screen, and a request to move money."
+      - "In the app: a close match shows whose account it is. It can't make the call real."
+      - "The text: a link for your bank login, sent as \"police\"."
+    notes: "Real police and real banks are fine with you hanging up and calling them yourself."
+  device_tip: "On a real phone, end the call yourself, then dial the number you looked up: the emergency number for the police, the number on your card for your bank. Don't use redial or the call log."
+  habit_card: hang-up-call-back
+  already_clicked:
+    entered_details: "Typed your bank login? Call your bank now on the number on your card, then change your password from the real app and sign out devices you don't know."
+    shared_code: "Read out a code? Call your bank now on the number on your card and ask it to block access."
+    paid: "Sent money? Call your bank now on the number on your card and ask it to try to stop or recall the transfer. Don't pay a second request."
+  sources: [it-carabinieri-contro-truffe, it-carabinieri-21-arresti-2025, it-mur-smishing-vishing, it-bdi-educazione-cyber, eu-epc-threats-2025, pl-cert-fake-consultants, de-vzhh-fake-bank-calls-2025, se-polisen-campaign-2026, de-polizei-berlin-falsche-polizei-2025, eu-ec-ipr-vop-2025, eu-ecb-ipr]

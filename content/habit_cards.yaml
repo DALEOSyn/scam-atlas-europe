@@ -84,3 +84,24 @@ cards:
     habit: "Keep the deal and the money inside the marketplace app you opened yourself. If you've been paid, it shows there. Receiving money never needs your card details or bank login."
     example: "A buyer you've never met says they've paid and sends a link to collect it? Open Swaploft yourself: real payments show there."
     already_clicked: "Typed card details? Block the card in your banking app now and call your bank on the number on your card. Typed a bank login? Call the bank and change the password from the real app."
+  - id: check-before-you-pay
+    lo: LO-11
+    title: "Check before you pay"
+    habit: "Before you pay for a stay, a room or an offer, find it yourself in the platform's app or site, and pay there, where you're protected. Too cheap, 'many people interested' or 'can't show it' are reasons to slow down."
+    example: "A great flat in an ad? Search for it in the Roostwell app yourself. If you can't find it there, don't pay for it."
+    already_clicked: "Paid outside the app? Call your bank now on the number on your card; for a card payment, ask about a chargeback. Report the listing in the app."
+  # Stockholm (GDD §29.10). only-approve-what-you-started is first shown on 9-1 (a genuine debrief: the
+  # example names no scam domain); nobody-needs-your-screen is shared with Brussels (first earned in
+  # Stockholm if played).
+  - id: only-approve-what-you-started
+    lo: LO-09
+    title: "Only approve what you started"
+    habit: "Approve a sign-in, signature or QR login only when you opened the app or site yourself, chose what to do, and the request names it. Whoever is on the phone, hang up and call your bank on the number on your card or in its app."
+    example: "You open a site, tap 'Log in with Gatewren', and the request names that site: approve. A caller asks you to open Gatewren: deny and hang up."
+    already_clicked: "Approved one you didn't start? Call your bank now on the number on your card; banks answer day and night. Then report it to the police."
+  - id: nobody-needs-your-screen
+    lo: LO-15
+    title: "Nobody needs your screen"
+    habit: "Never install an app or share your screen for someone who contacted you. Hang up and contact the company yourself, through its own app, card or website."
+    example: "A 'support' caller wants you to install a helper app and read out its code? Hang up and open the company's own app yourself."
+    already_clicked: "Installed something for them? Turn on airplane mode, call your bank from another phone if you can, change your passwords from another device, and get the device checked."

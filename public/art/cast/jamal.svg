@@ -1,0 +1,37 @@
+<!-- Scam Atlas: Europe. Cast portrait: Jamal Haddad, 38, short black hair and a neat beard, slate cardigan over a shirt; expression groups, calm by default. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300" role="img" aria-labelledby="ja-t"><title id="ja-t">Jamal Haddad</title>
+<style>.x{display:none}.x-default{display:inline}.x:target{display:inline}.x:target~.x-default{display:none}</style>
+<defs><path id="ja-sil" d="M34 300C36 244 70 204 120 200C170 204 204 244 206 300ZM70 125a50 56 0 1 0 100 0a50 56 0 1 0 -100 0ZM60 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM160 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM70 114C66 80 90 64 120 64C150 64 174 80 170 114C166 98 154 88 138 86C126 88 112 88 100 86C86 88 74 98 70 114Z"/></defs>
+<use href="#ja-sil" fill="#fffaf0" stroke="#fffaf0" stroke-width="10" stroke-linejoin="round"/>
+<g stroke="#2b2433" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M34 300C36 244 70 204 120 200C170 204 204 244 206 300Z" fill="#5d6672"/>
+<path d="M160 208C186 220 202 250 204 300H174Z" fill="#4a525d" stroke="none"/>
+<rect x="104" y="166" width="32" height="34" rx="10" fill="#93603a"/>
+<path d="M100 200L120 300L140 200Z" fill="#8fa3b5"/>
+<path d="M98 198L112 222L120 206L128 222L142 198L134 194L120 204L106 194Z" fill="#8fa3b5"/>
+<path d="M106 214L120 300L134 214" fill="none"/>
+<path d="M109.5 246a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0ZM112.5 270a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z" fill="#b8b4a6" stroke-width="1.5"/>
+<path d="M60 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM160 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0Z" fill="#b07548"/>
+<path d="M70 125a50 56 0 1 0 100 0a50 56 0 1 0 -100 0Z" fill="#b07548"/>
+<path d="M88 168C100 180 140 180 152 168C146 178 134 184 120 184C106 184 94 178 88 168Z" fill="#93603a" stroke="none"/>
+<path d="M74 140C76 168 96 186 120 186C144 186 164 168 166 140C160 152 154 160 146 168C138 176 128 178 120 178C112 178 102 176 94 168C86 160 80 152 74 140Z" fill="#2a2220"/>
+<path d="M108 157Q120 152 132 157" fill="none" stroke="#2a2220" stroke-width="3"/>
+<path d="M70 114C66 80 90 64 120 64C150 64 174 80 170 114C166 98 154 88 138 86C126 88 112 88 100 86C86 88 74 98 70 114Z" fill="#2a2220"/>
+<path d="M111 142a9 10 0 1 0 18 0a9 10 0 1 0 -18 0Z" fill="#93603a" stroke="none"/>
+</g>
+<g id="x-thinking" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M90 98Q101 89 112 96M128 105Q139 104 150 105" stroke-width="2.5"/><path d="M94 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0ZM132 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0Z" fill="#fffdf8" stroke-width="2"/><path d="M100.8 121a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0ZM138.8 121a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0Z" fill="#2b2433" stroke="none"/><path d="M117 166L131 163" stroke-width="3"/><path d="M146 300H196C188 260 172 224 156 204C150 198 140 196 132 198Z" fill="#5d6672" stroke-width="3"/><path d="M108 192C108 180 118 176 128 178L142 184C148 190 146 200 138 202L118 202C112 202 108 198 108 192Z" fill="#b07548" stroke-width="3"/><path d="M118 186L132 188M118 194L132 195" stroke="#93603a" stroke-width="2"/>
+</g>
+<g id="x-worried" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M90 107Q102 105 112 95M128 95Q138 105 150 107" stroke-width="2.5"/><path d="M94 123a7 6.5 0 1 0 14 0a7 6.5 0 1 0 -14 0ZM132 123a7 6.5 0 1 0 14 0a7 6.5 0 1 0 -14 0Z" fill="#fffdf8" stroke-width="2"/><path d="M97.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0ZM135.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0Z" fill="#2b2433" stroke="none"/><path d="M114 165H126" stroke-width="3"/>
+</g>
+<g id="x-proud" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<g transform="translate(0 -2)"><path d="M90 100Q101 92 112 98M128 98Q139 92 150 100" stroke-width="2.5"/><path d="M94 127Q101 119 108 127M132 127Q139 119 146 127" stroke-width="3"/><path d="M102 161Q120 177 138 161" stroke-width="3"/></g><path d="M40 300C44 272 66 252 100 244L108 264C90 272 80 286 80 300Z" fill="#5d6672" stroke-width="3"/><path d="M98 240C108 232 128 236 136 244C140 252 134 262 124 262L106 262C96 258 92 246 98 240Z" fill="#b07548" stroke-width="3"/><path d="M110 246L130 248M108 254L128 256" stroke="#93603a" stroke-width="2"/>
+</g>
+<g id="x-calm-phone-ear" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M90 105Q101 100 112 104M128 104Q139 100 150 105" stroke-width="2.5"/><path d="M94 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0ZM132 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0Z" fill="#fffdf8" stroke-width="2"/><path d="M97.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0ZM135.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0Z" fill="#2b2433" stroke="none"/><path d="M111 164Q120 168 129 164" stroke-width="3"/><path d="M40 300C36 254 46 206 70 172L92 180C80 208 76 256 78 300Z" fill="#fffaf0" stroke="#fffaf0" stroke-width="13"/><g transform="translate(8 12) rotate(-15 67 120)"><path d="M57 104a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v32a6 6 0 0 1-6 6h-8a6 6 0 0 1-6-6ZM52 150C48 136 56 126 68 126C78 128 82 140 78 152C74 164 56 164 52 150Z" fill="#fffaf0" stroke="#fffaf0" stroke-width="13"/></g><path d="M40 300C36 254 46 206 70 172L92 180C80 208 76 256 78 300Z" fill="#5d6672" stroke-width="3"/><g transform="translate(8 12) rotate(-15 67 120)"><path d="M57 104a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v32a6 6 0 0 1-6 6h-8a6 6 0 0 1-6-6Z" fill="#5d6672" stroke-width="3"/><path d="M52 150C48 136 56 126 68 126C78 128 82 140 78 152C74 164 56 164 52 150Z" fill="#b07548" stroke-width="3"/></g>
+</g>
+<g id="x-calm" class="x x-default" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M90 105Q101 100 112 104M128 104Q139 100 150 105" stroke-width="2.5"/><path d="M94 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0ZM132 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0Z" fill="#fffdf8" stroke-width="2"/><path d="M97.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0ZM135.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0Z" fill="#2b2433" stroke="none"/><path d="M111 164Q120 168 129 164" stroke-width="3"/>
+</g>
+</svg>

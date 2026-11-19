@@ -97,7 +97,7 @@ debrief:
     what_works: "Find it yourself, never through an ad."
   layer2:
     message_flags: []
-    notes: "A firm missing from the warning list isn't safe: the list only names firms already warned about. A real government savings product is listed on the government's own savings website. Find it yourself, never through an ad. Declan checked the register in the end, and reporting the ad helps the next person."
+    notes: "A firm missing from the warning list isn't safe: the list only names firms already warned about. A real government savings product is listed on the government's own savings website. Find it yourself, never through an ad. Checking for yourself, and reporting the ad, helps the next person."
   device_tip: "On a real phone, open the financial regulator's website yourself and check its register and warning list. For a \"state\" product, open the government's own savings website yourself, never through an ad."
   habit_card: if-its-guaranteed-and-high-its-not
   already_clicked:

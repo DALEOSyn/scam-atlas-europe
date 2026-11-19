@@ -141,7 +141,7 @@ steps:
     label: "Block the 'adviser's' number and don't take their calls"
   - id: pay_first_deposit
     label: "Pay a small first deposit to see if it's real"
-    feedback: "Wanting to see if it's real is natural, but that deposit would be the start of the loss. Real firms are on the register; check there first."
+    feedback: "Wanting to see if it's real is natural, but that deposit would be the start of the loss. Look the firm up on the register yourself first."
   - id: add_more_to_test
     label: "Add a bit more to see if the gains are real"
     feedback: "Wanting proof is natural, but more money only adds to the loss. The gains on screen were never real. Call your bank instead."

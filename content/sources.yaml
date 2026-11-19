@@ -946,7 +946,7 @@ sources:
     region: EU
     tier: 1
     used_for: [campaign-catalogue]
-    notes: "Over 100 unofficial websites about the EU travel authorisation; some claim to accept applications before the system exists; risks: identity theft, excessive fees, data protection, misinformation; some copy the official layout or use official-sounding domains. Apply only via the official site. CAUTION: the release's launch timing ('first half of 2025') has passed and the system's current status was NOT verified this session; do not put any launch date in content."
+    notes: "Over 100 unofficial websites about the EU travel authorisation; some claim to accept applications before the system exists; risks: identity theft, excessive fees, data protection, misinformation; some copy the official layout or use official-sounding domains. Apply only via the official site. CAUTION: the release's launch timing ('first half of 2025') has passed and the system's current status was NOT verified this session; do not put any launch date in content. The page does not mention the Central Bank; that the product is not on the register of authorised firms is inferred from it being a State (NTMA) product, not stated."
 
   - id: eu-echo-fake-aid-site-2025
     publisher: European Commission, DG for European Civil Protection and Humanitarian Aid Operations (DG ECHO)

@@ -350,6 +350,7 @@ Applies to all scenes; sources and research in `docs/PSYCHOLOGY.md`.
 6. **Content notes (exact wording, shown on the map before the chapter):**
    - Amsterdam: "This chapter includes a family-emergency story. Everyone ends up safe. You can pause or skip any story scene."
    - Rome: "This chapter includes a family-emergency story and a lost payment. Everyone ends up safe. You can pause or skip any story scene."
+   - Dublin: "This chapter touches on job loss and on losing money to investment scams. You can pause or skip any story scene, and help is one tap away."
    - Brussels: "This chapter ends the trip, including the Alex storyline. It touches on friendship, feeling let down and money. You can pause or skip any story scene, and help is one tap away."
    - Brussels, if the arc already closed with "Tell me now": "This chapter ends the trip and touches on money. You can pause or skip any story scene, and help is one tap away."
 7. **Safe family-emergency framing.** The impersonated person is always shown safe afterwards (Noor, Mateus, Giulia on video; Sanne in person). No injured, crying or endangered characters in art; the emergency exists only as a claim inside a device scenario.

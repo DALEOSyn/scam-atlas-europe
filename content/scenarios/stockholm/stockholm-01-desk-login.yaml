@@ -1,0 +1,96 @@
+# 9-1 A work login you started (GDD §29.4; pattern e-id-approval-on-call, in-focus genuine twin of 9-5).
+# Genuine, high stakes (an approval), difficulty 3, honest timer 35 s with the honest deadline "Gatewren
+# requests expire after 3 minutes". First real use of the `auth` device: a Gatewren prompt the player started.
+# Checkables (G, 5): the four prompt details ("It fits", SK2: the first carries "That isn't proof on its own";
+# `when` is neutral) and the request (the prompt's own line as `ask`, so genuine and fraud prompts both
+# carry a request checkable, GDD §29.7 row 6c).
+# Approve is `proceed` (anything the player started, §6); deny is the dismiss option (0 on genuine high;
+# R21: a timer expiry scores as this dismiss once CR-45 lands).
+id: stockholm-01-desk-login
+chapter: stockholm
+role: standard
+pattern: e-id-approval-on-call
+theme: work
+twin_of: stockholm-05-loan-call
+player_started: true
+learning_objectives: [LO-09, LO-17]
+difficulty: 3
+is_fraud: false
+stakes: high
+device: auth
+setup: "You open Waymarker Desk from your home screen to file your Stockholm travel claim, and tap 'Log in with Gatewren'."
+brands: [gatewren, waymarker]
+pressure:
+  timer: true
+  levers: [urgency]
+  honest_deadline: "Gatewren requests expire after 3 minutes"
+
+message:
+  prompt: { type: sign_in, service: "Waymarker Desk", where: "Stockholm, Sweden", device: "This phone", when: "Just now" }
+  body: "Log in to Waymarker Desk?"
+  request: approve
+  ask: { text: "Log in to Waymarker Desk?" }
+
+inspectables:
+  - target: prompt.service
+    reveal: "It fits: Waymarker Desk, the site you just opened yourself. That isn't proof on its own, so weigh it with what you started."
+    red_flag: false
+    type: prompt
+    reassures: true
+  - target: prompt.where
+    reveal: "It fits: here, in Stockholm."
+    red_flag: false
+    type: prompt
+  - target: prompt.device
+    reveal: "It fits: this phone."
+    red_flag: false
+    type: prompt
+  - target: prompt.when
+    reveal: "'Just now'. Every request says that, so it can't prove anything either way."
+    red_flag: false
+    type: prompt
+  - target: request
+    reveal: "A login you started, to the site you opened. Approving is right."
+    red_flag: false
+    type: request
+
+actions:
+  - id: approve_desk_login
+    label: "Approve"
+    kind: proceed
+    outcome: desk_logged_in
+    pressure_target: true
+  - id: check_desk_page
+    label: "Check the Waymarker Desk page first"
+    kind: verify_in_app
+    outcome: desk_page_waiting
+  - id: report_desk_login
+    label: "Report the request"
+    kind: report
+    outcome: desk_login_reported
+  - id: deny_desk_login
+    label: "Deny it"
+    kind: deny_prompt
+    outcome: desk_claim_waits
+
+outcomes:
+  desk_logged_in:
+    narrative: "Gatewren: \"Logged in.\" Waymarker Desk opens on your travel claim. Two minutes, one receipt photo, done."
+  desk_page_waiting:
+    narrative: "The page says \"Waiting for Gatewren\". You approve, and the claim form opens."
+  desk_login_reported:
+    narrative: "You report it. The Waymarker IT desk writes back: \"That was your own login, so nothing to worry about. Try again whenever you like.\" The claim waits a day."
+  desk_claim_waits:
+    narrative: "You deny it and try again later. The claim waits a day."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "You opened it, you chose to log in, and the request names it."
+    what_works: "Approving was right."
+  layer2:
+    message_flags: []
+    notes: "That's what 'started it yourself' means. Hold on to it: every fake this week starts somewhere else. Where to report and get help (Sweden) is on the help screen."
+  device_tip: "On a real phone, approve a login in your e-ID or sign-in app only right after you opened the site or app yourself and chose to log in."
+  habit_card: only-approve-what-you-started
+  sources: [se-polisen-telefonbedrageri, se-polisen-vishing-2026]

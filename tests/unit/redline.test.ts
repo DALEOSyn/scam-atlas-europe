@@ -78,7 +78,9 @@ describe('redline:lint on real content', () => {
     expect(lintPaths([resolve(ROOT, 'content'), resolve(ROOT, 'public')], cfg)).toEqual([]);
     // Scans all of content/ and public/ with the full rule set; it grows with every chapter and
     // passed 5 s on a loaded CI runner (PR #17), so it gets the same timeout as the docs/ scan.
-  }, 30_000);
+    // At 76 scenarios it takes ~8.5 s alone and passed 30 s in CI while other files ran in parallel
+    // (PR #50), so the budget is 90 s until the linter is sped up (CR-47). The assertion is unchanged.
+  }, 90_000);
 
   it('lists are well-formed and large enough', () => {
     expect(cfg.problems).toEqual([]);

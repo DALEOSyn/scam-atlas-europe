@@ -1,0 +1,300 @@
+# 9-9 Boss: the case file (GDD §29.6; e-id-approval-on-call A and B, spoofed-authority-call callback).
+# Evening; you're in your room (S-M2), the others ice buns in Birgitta's kitchen. Beats are scammer-driven
+# and arrive whatever the player did. Theme authority. Levers authority, fear, urgency, isolation.
+# Beat 1 (call, start, 30 s): "Police" (caller ID masked; SK6: no police number in any scam line) want you
+#   to identify yourself with Gatewren and not to call your bank. R: claim#2 ("don't call your bank"), the
+#   request. D: caller_id (SK1, the sender-or-link decoy), claim (the seized-phone story). No engage on boss
+#   beats. "Hang up, call the police on 114 14" is the player's own call (SK6, player side only).
+# Beat 2 (call, +45 s, 30 s, covered_by start): "Larchwick Bank"; a Gatewren signing banner (display only,
+#   §17 banner rule): 48 000 kr to Skarvlund Trygg AB. R: claim#2 ("it moves nothing out of your name";
+#   read the prompt, not the caller), the request. D: caller_id, claim ("the police asked us to call").
+#   The ask and claim#2 are separate caller lines (a claim must not overlap the ask).
+# Beat 3 (Kettle, +45 s, 40 s, covered_by start + bank_call): "Inspector Holm (Police)" from a new number
+#   with a Gatewren login code in the chat (CR-39(b)). R: both claims (the "statement" scan, the deadline).
+#   D: sender.detail, the QR destination (SK3). No `ask` (scan_qr carries none; CR-30 exempts it). Written to
+#   read true whatever the player did at beats 1–2. A design combination (fraud-researcher): no debrief
+#   presents the sequence as a known one; beat 3 (B) is Medium (EU-level sources).
+# Interrupt after beat 3 (genuine, Birgitta), never after a fall (on_fall: skip).
+# Every fall: the same six steps (call_back_caller_number, not call_back_text_number: the player never
+# dials a number from a text here) and the story-only flag stockholm_bank_called. No refund promise; no
+# mechanism (SK4): only "your approval logs someone in" or "signs their payment".
+id: stockholm-09-boss-case-file
+chapter: stockholm
+role: boss
+pattern: e-id-approval-on-call
+theme: authority
+learning_objectives: [LO-09, LO-08, LO-02, LO-16]
+difficulty: 5
+is_fraud: true
+device: call
+setup: "Evening. Birgitta, Jamal and Lina are in Birgitta's kitchen, icing buns. You're in your room. Your phone rings."
+brands: [larchwick, gatewren, kettle, skarvlund-trygg]
+cast: [birgitta]
+pressure:
+  timer: true
+  levers: [authority, fear, urgency]
+  pusher:
+    messages:
+      - { at_seconds: 16, beat: bank_call, text: "Have you signed? It's only protection." }
+
+message:
+  sender: { display: "Police", detail: "+46 77 ••• •• 14 · Not a saved contact" }
+  transcript:
+    - { speaker: caller, text: "This is Inspector Holm, fraud unit. Your details were found on a seized phone." }
+    - { speaker: caller, text: "We need to confirm it's you. Open Gatewren and identify yourself now." }
+    - { speaker: caller, text: "Don't call your bank: one of their staff is involved." }
+  request: approve
+  ask: { text: "We need to confirm it's you. Open Gatewren and identify yourself now." }
+  claims:
+    - { text: "Your details were found on a seized phone." }
+    - { text: "Don't call your bank: one of their staff is involved." }
+
+inspectables:
+  - target: caller_id
+    reveal: "Shows 'Police'. A caller can set the name and number on your screen, so it can't prove anything either way."
+    red_flag: false
+    type: caller_id
+  - target: claim
+    reveal: "A worrying story. Real and fake calls both start like this, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: claim#2
+    reveal: "'Don't call your bank' is there to cut you off from help."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "Police never call and ask you to identify yourself with your e-ID."
+    red_flag: true
+    type: request
+
+actions:
+  - id: approve_for_police
+    label: "Open Gatewren and approve as he asks"
+    kind: approve_prompt
+    outcome: police_logged_in
+    pressure_target: true
+  - id: call_police_yourself_b1
+    label: "Hang up, call the police on 114 14"
+    kind: call_back_known
+    outcome: police_didnt_call
+  - id: hang_up_police_b1
+    label: "Hang up"
+    kind: hang_up
+    outcome: police_call_left
+
+what_now:
+  outcomes:
+    report: police_call_reported
+    done: police_call_left
+  extra:
+    - id: call_card_after_police_b1
+      label: "Call the number on your card"
+      kind: call_back_known
+      outcome: card_no_case_b1
+
+beats:
+  - id: bank_call
+    device: call
+    arrives_after: 45
+    covered_by: [start]
+    message:
+      sender: { display: "Larchwick Bank", detail: "08-••• •• 00 · Not a saved contact" }
+      transcript:
+        - { speaker: caller, text: "Larchwick security. The police asked us to call you." }
+        - { speaker: caller, text: "Gatewren will ask you to sign a protective transfer. Just tap Sign." }
+        - { speaker: caller, text: "It moves nothing out of your name." }
+      request: approve
+      ask: { text: "Gatewren will ask you to sign a protective transfer. Just tap Sign." }
+      claims:
+        - { text: "The police asked us to call you." }
+        - { text: "It moves nothing out of your name." }
+    banner:
+      device: auth
+      message:
+        sender: { display: "Gatewren" }
+        body: "Sign: pay 48 000 kr to Skarvlund Trygg AB · Windows computer · Just now"
+        request: none
+    inspectables:
+      - target: caller_id
+        reveal: "Shows Larchwick Bank. A caller can set the name and number on your screen, so it can't prove anything either way."
+        red_flag: false
+        type: caller_id
+      - target: claim
+        reveal: "Banks and police do work together, so it can't prove anything either way."
+        red_flag: false
+        type: claim
+      - target: claim#2
+        reveal: "Gatewren shows a payment of 48 000 kr to a company. The caller says it moves nothing. Read the prompt, not the caller."
+        red_flag: true
+        type: claim
+      - target: request
+        reveal: "Sign a payment for a caller."
+        red_flag: true
+        type: request
+    actions:
+      - id: sign_for_bank
+        label: "Tap Sign as they say"
+        kind: approve_prompt
+        outcome: bank_signed
+        pressure_target: true
+      - id: deny_call_card_b2
+        label: "Deny, hang up and call your card's number"
+        kind: call_back_known
+        outcome: card_nothing_moved
+      - id: report_bank_call_b2
+        label: "Report the call"
+        kind: report
+        outcome: bank_call_reported
+      - id: deny_bank_prompt_b2
+        label: "Deny it"
+        kind: deny_prompt
+        outcome: bank_prompt_denied
+
+  - id: case_qr
+    device: messenger
+    arrives_after: 45
+    covered_by: [start, bank_call]
+    message:
+      sender: { display: "Inspector Holm (Police)", detail: "+46 7•• ••• •03", new_contact: true }
+      body: "To close your case file, scan this with Gatewren. It confirms your statement. Please do it within 10 minutes."
+      qr: { payload: /qr/stockholm-case-file, destination: gatewren.example }
+      request: scan_qr
+      claims:
+        - { text: "scan this with Gatewren. It confirms your statement." }
+        - { text: "Please do it within 10 minutes." }
+    inspectables:
+      - target: sender.detail
+        reveal: "A name and title anyone can type, so it can't prove anything either way."
+        red_flag: false
+        type: sender
+      - target: qr.destination
+        reveal: "gatewren.example: it opens Gatewren itself. That's why it's dangerous: a login code made for someone else's login. The address can't help you here."
+        red_flag: false
+        type: qr
+      - target: claim
+        reveal: "Scan with Gatewren to 'confirm a statement'. A login code sent to you starts someone else's login."
+        red_flag: true
+        type: claim
+      - target: claim#2
+        reveal: "A deadline, so you don't stop to check."
+        red_flag: true
+        type: claim
+    actions:
+      - id: scan_case_code
+        label: "Scan it and approve the login"
+        kind: approve_prompt
+        outcome: case_code_scanned
+        pressure_target: true
+      - id: call_police_yourself_b3
+        label: "Call the police yourself on 114 14"
+        kind: call_back_known
+        outcome: police_not_ours
+      - id: block_case_number
+        label: "Block and report the number"
+        kind: block
+        outcome: case_number_blocked
+      - id: ignore_case_message
+        label: "Ignore it"
+        kind: ignore
+        outcome: case_message_ignored
+
+interrupts:
+  - id: birgitta_fika_ready
+    after_beat: case_qr
+    on_fall: skip   # the default, set explicitly: no cheerful fika call right after a loss (CR-27)
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Birgitta (fika host)", detail: "Saved contact: Birgitta (fika host)" }
+      from_cast: birgitta
+      body: "Fika's ready. Lina iced the buns herself, so be kind."
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Birgitta's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what she asks for: nothing, the buns are ready."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_birgitta_coming
+        label: "Reply: coming!"
+        kind: proceed
+        outcome: birgitta_coming
+        pressure_target: true
+      - id: report_birgitta_fika_ready
+        label: "Report the message"
+        kind: report
+        outcome: birgitta_fika_ready_reported
+
+outcomes:
+  police_logged_in:
+    narrative: "Gatewren: \"Logged in.\" \"Thank you, that confirms it's you,\" says Inspector Holm, and hangs up. Your Larchwick app now lists a login from a Windows computer."
+    sets_flags: [stockholm_bank_called]
+    recovery:
+      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: keep_call_evidence, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: approve_again_to_cancel, category: harmful }
+      - { step: call_back_caller_number, category: harmful }
+  bank_signed:
+    narrative: "Gatewren: \"Signed.\" \"Perfect. You're protected now,\" says the caller. The line goes dead. Your Larchwick app shows the payment to Skarvlund Trygg AB."
+    sets_flags: [stockholm_bank_called]
+    recovery:
+      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: keep_call_evidence, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: approve_again_to_cancel, category: harmful }
+      - { step: call_back_caller_number, category: harmful }
+  case_code_scanned:
+    narrative: "Gatewren: \"Logged in.\" \"Statement confirmed,\" Holm writes, and the chat goes quiet. Then Larchwick texts: a new device was added to your internet bank."
+    sets_flags: [stockholm_bank_called]
+    recovery:
+      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: keep_call_evidence, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: approve_again_to_cancel, category: harmful }
+      - { step: call_back_caller_number, category: harmful }
+  police_didnt_call:
+    narrative: "You dial 114 14 yourself. \"Police never call and ask for your e-ID. Hanging up was exactly right.\" As you put the phone down, it rings: \"Larchwick Bank\"."
+  card_no_case_b1:
+    narrative: "Larchwick, on the number on your card: \"No case, and we'd never tell you not to call us.\" As you put the phone down, it rings: \"Larchwick Bank\"."
+  police_call_reported:
+    narrative: "Reported. Keep a note of the time and what was said. Then your phone rings: \"Larchwick Bank\"."
+  police_call_left:
+    narrative: "You hang up and leave it there. Then your phone rings: \"Larchwick Bank\"."
+  card_nothing_moved:
+    narrative: "Larchwick, on the number on your card: \"We'd never call you and ask you to sign anything. Your money's where it was.\""
+  bank_call_reported:
+    narrative: "You deny the request, hang up and report the call. Keep a note of the time and what was said."
+  bank_prompt_denied:
+    narrative: "You deny it. Nothing is signed. You hang up while the caller is still talking."
+  police_not_ours:
+    narrative: "You call the police yourself on 114 14. \"We'd never contact you and ask you to log in or scan with your e-ID. You did right to check.\""
+  case_number_blocked:
+    narrative: "You block and report the number. The chat goes quiet."
+  case_message_ignored:
+    narrative: "You leave it. The 10 minutes pass, and nothing happens."
+  birgitta_coming:
+    narrative: "Birgitta: \"Good. Come hungry, with opinions on icing.\""
+  birgitta_fika_ready_reported:
+    narrative: "You reported it. Careful is good; this one really was Birgitta."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "'Police', 'the bank', then a code: each wanted your Gatewren."
+    what_works: "Approve only what you started. Call your bank yourself."
+  layer2:
+    message_flags:
+      - "First call: police never call to ask for your e-ID, and \"don't call your bank\" cuts you off."
+      - "Second call: the caller said \"nothing moves\". The prompt said 48 000 kr. Believe the prompt."
+      - "The chat: a login code sent to you, dressed as police paperwork."
+    notes: "Real police and real banks are fine with you hanging up and calling them yourself. It's fine to hang up. Rudeness is free. Where to report and get help (Sweden) is on the help screen."
+  device_tip: "On a real phone, end the call yourself, then dial the number you looked up: the police on 114 14, your bank on the number on your card. Don't use redial or the call log."
+  habit_card: only-approve-what-you-started
+  already_clicked:
+    shared_code: "Approved or signed? Call your bank now on the number on your card; banks answer day and night. Then report it to the police."
+  sources: [se-polisen-telefonbedrageri, se-polisen-nord-fake-police-2025, se-polisen-vishing-2026, se-polisen-campaign-2026, de-polizei-berlin-falsche-polizei-2025, eu-epc-threats-2025, eu-esas-ai-scams-factsheet-sv]

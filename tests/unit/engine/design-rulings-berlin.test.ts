@@ -14,7 +14,7 @@ import { resultOf } from '../../../src/engine/result.ts';
 import { step, viewOf, type RunnerEvent, type RunnerState } from '../../../src/engine/runner.ts';
 import { segmentMessage } from '../../../src/ui/text.ts';
 import { rawFraud, rawGenuine, realRegistries, scenario, validChapter } from '../../content/fixtures.ts';
-import { act, B, boss, ctx, run, tick, type Raw } from './helpers.ts';
+import { act, B, boss, ctx, jonasAfter, run, tick, type Raw } from './helpers.ts';
 
 const none = { pressureAny: false, pressureGenuine: false };
 const cont: RunnerEvent = { type: 'continue' };
@@ -45,6 +45,15 @@ describe('1. message.ask is the request checkable (QA L1)', () => {
     const plain = boss().beats.find((b) => b.id === 'support_call');
     if (!plain) throw new Error('fixture');
     expect(deriveCheckables(plain.device, plain.message)).not.toContain('request');
+  });
+
+  it('ask.text is a whole request: at least 4 words (sceptic T-2.8)', () => {
+    const raw = structuredClone(askBoss()) as unknown as Raw;
+    const call = (raw.beats as Raw[]).find((b) => b.id === 'support_call') as Raw;
+    (call.message as Raw).ask = { text: 'the code' };
+    expect(issues(raw).join('\n')).toMatch(/at least 4 words/);
+    (call.message as Raw).ask = { text: 'Read me the code' };
+    expect(issues(raw)).toEqual([]);
   });
 
   it('the quoted span is highlighted in the caller line where it stands', () => {
@@ -103,25 +112,6 @@ describe('3. timer expiry on genuine high stakes (QA L4)', () => {
   });
 });
 
-function jonasAfter(beat: string): Scenario {
-  const b = boss();
-  const raw = structuredClone(b) as unknown as Raw;
-  raw.interrupts = [
-    {
-      id: 'jonas',
-      after_beat: beat,
-      is_fraud: false,
-      device: 'messenger',
-      message: { sender: { display: 'Jonas', detail: 'Saved contact' }, body: 'Your parcel is with me.', request: 'none' },
-      actions: [
-        { id: 'thanks', label: 'Say thanks', kind: 'proceed', outcome: 'jonas_thanked' },
-        { id: 'report_jonas', label: 'Report the message', kind: 'report', outcome: 'jonas_reported' },
-      ],
-    },
-  ];
-  raw.outcomes = { ...(raw.outcomes as Raw), jonas_thanked: { narrative: 'Jonas: see you later.' }, jonas_reported: { narrative: 'Jonas laughs it off.' } };
-  return scenario(raw);
-}
 
 describe('4. after_beat interrupts (QA M6)', () => {
   const c = ctx({ timerMode: 'off', stress: 0 });

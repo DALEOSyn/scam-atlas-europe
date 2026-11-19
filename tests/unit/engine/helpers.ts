@@ -103,3 +103,24 @@ export function boss(over: Raw = {}): Scenario {
     ...over,
   });
 }
+
+/** The fixture boss with an after_beat interrupt (Jonas, genuine) on `beat` (ruling QA M6). */
+export function jonasAfter(beat: string): Scenario {
+  const b = boss();
+  const raw = structuredClone(b) as unknown as Raw;
+  raw.interrupts = [
+    {
+      id: 'jonas',
+      after_beat: beat,
+      is_fraud: false,
+      device: 'messenger',
+      message: { sender: { display: 'Jonas', detail: 'Saved contact' }, body: 'Your parcel is with me.', request: 'none' },
+      actions: [
+        { id: 'thanks', label: 'Say thanks', kind: 'proceed', outcome: 'jonas_thanked' },
+        { id: 'report_jonas', label: 'Report the message', kind: 'report', outcome: 'jonas_reported' },
+      ],
+    },
+  ];
+  raw.outcomes = { ...(raw.outcomes as Raw), jonas_thanked: { narrative: 'Jonas: see you later.' }, jonas_reported: { narrative: 'Jonas laughs it off.' } };
+  return scenario(raw);
+}

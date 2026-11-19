@@ -184,6 +184,8 @@ export const messageSchema = z
       ctx.addIssue({ code: 'custom', path: ['translation'], message: `text in lang "${m.lang}" needs an inline translation` });
     }
     if (m.ask) {
+      // A whole request, not a fragment like "the code" (sceptic T-2.8).
+      if (m.ask.text.trim().split(/\s+/u).filter(Boolean).length < 4) ctx.addIssue({ code: 'custom', path: ['ask', 'text'], message: 'ask.text must be at least 4 words: the sentence that asks, not a fragment' });
       const callerLines = (m.transcript ?? []).filter((l) => l.speaker === 'caller').map((l) => l.text);
       if (!(m.body ?? '').includes(m.ask.text) && !callerLines.some((l) => l.includes(m.ask?.text ?? ''))) {
         ctx.addIssue({ code: 'custom', path: ['ask', 'text'], message: 'ask.text must be copied verbatim from the body or from one caller line of the transcript' });

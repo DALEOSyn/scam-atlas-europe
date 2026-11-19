@@ -15,7 +15,7 @@ import { resultOf } from '../../src/engine/result.ts';
 import { startScenario, step, viewOf, type RunnerEvent, type RunnerState } from '../../src/engine/runner.ts';
 import { DebriefView } from '../../src/ui/DebriefView.tsx';
 import { wordCount } from '../../scripts/lib/rules.ts';
-import { B, ctx } from './engine/helpers.ts';
+import { B, ctx, jonasAfter } from './engine/helpers.ts';
 import { loadBalanceFile, readYaml, ROOT } from './helpers.ts';
 
 afterEach(cleanup);
@@ -43,6 +43,10 @@ function endings(s: Scenario, slot: number): { path: string[]; st: RunnerState }
       }
       case 'what_now':
         for (const ch of v.whatNow?.choices ?? []) next({ type: 'what_now', choice: ch.id }, `what_now:${ch.id}`);
+        return;
+      case 'interrupt':
+        // An after_beat interrupt waits for its answer before the debrief (ruling QA M6): try each action.
+        for (const i of v.interrupts) for (const a of i.actions) next({ type: 'interrupt_act', interruptId: i.id, actionId: a.id }, `interrupt:${i.id}:${a.id}`);
         return;
       case 'playing': {
         for (const a of v.beat?.actions ?? []) {
@@ -97,6 +101,14 @@ function slotOf(chapter: string): number {
 it('finds the tutorial scenarios', () => {
   expect(chapterDirs).toContain('home');
   expect(readdirSync(resolve(scenariosRoot, 'home')).filter((f) => f.endsWith('.yaml')).length).toBeGreaterThanOrEqual(6);
+});
+
+it('walks through a waiting after_beat interrupt with each of its actions to an ending', () => {
+  const s = jonasAfter('support_call');
+  const all = endings(s, 1);
+  const answered = all.filter((e) => e.path.some((p) => p.startsWith('interrupt:jonas:')));
+  expect(new Set(answered.map((e) => e.path.find((p) => p.startsWith('interrupt:'))))).toEqual(new Set(['interrupt:jonas:thanks', 'interrupt:jonas:report_jonas']));
+  for (const e of all) expect(e.st.phase).toBe('done');
 });
 
 it('counts words per block, not across blocks', () => {

@@ -343,7 +343,7 @@ describe('CR-27 round 2: chapter rules card, resume and the way back (psych M1, 
     expect(within(card).getAllByRole('listitem').map((x) => x.textContent)).toEqual(rules.items);
     expect(card.querySelector('ol')).not.toBeNull();
     expect(screen.getByText('Paris, the last working day.').compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Back to the map' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Back to the chapters' }));
     expect(onBack).toHaveBeenCalledOnce();
   });
 
@@ -383,7 +383,7 @@ describe('CR-27 round 2: chapter rules card, resume and the way back (psych M1, 
     fireEvent.click(screen.getByRole('button', { name: 'Back to the chapters' }));
   }
 
-  it('a resumed run of a chapter with rules shows the intro again, with "Continue"; "Back to the map" focuses its button', async () => {
+  it('a resumed run of a chapter with rules shows the intro again, with "Continue"; "Back to the chapters" focuses its button', async () => {
     render(<App store={seeded()} chapters={[ch('home', 'Home', { slot: 0, scenario_order: { am: ['h1'], pm: [] } }), ch('paris', 'Paris', { rules })]} load={async (_c, id) => byId[id as 't1']} />);
     await playMorning('Paris');
     fireEvent.click(await screen.findByRole('button', { name: 'Continue Paris' }));
@@ -391,7 +391,7 @@ describe('CR-27 round 2: chapter rules card, resume and the way back (psych M1, 
     await waitFor(() => expect(document.activeElement).toBe(h1));
     expect(screen.getByRole('region', { name: 'Payments at Ruchelune' })).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Start' })).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: 'Back to the map' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Back to the chapters' }));
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Continue Paris' })));
     fireEvent.click(screen.getByRole('button', { name: 'Continue Paris' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));

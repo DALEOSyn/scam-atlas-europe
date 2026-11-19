@@ -87,7 +87,7 @@
   "you_chose_whatnow_call_back_known": "You hung up and called a number you know.",
   "you_chose_report_genuine": "You reported it. Careful is good; this one was safe.",
   "you_chose_dismiss_genuine": "You left it. This one was safe to act on.",
-  "you_chose_dismiss_started": "You left it. You started this reset; it was safe.",
+  "you_chose_dismiss_started": "You left it. You started this; it was safe.",
   "next_time_after_hang_up": "Next time: call a number you know.",
   "deadline_fake": "The deadline was fake. Nothing happened.",
   "deadline_fake_fell": "The deadline was fake.",
@@ -442,5 +442,14 @@
   "damage_voice": "{name}:",
   "announce_caller_line": "Caller: {text}",
   "oncall_choose": "Choose how to end the call:",
-  "bank_confirm_code": "Payment code used"
+  "bank_confirm_code": "Payment code used",
+  "heading_call_out": "Call to {from}",
+  "call_dialling": "Calling…",
+  "call_connected": "Connected",
+  "call_connecting_note": "Connecting the call…",
+  "announce_call_in": "Incoming call from {caller}.",
+  "announce_call_out": "Calling {number}.",
+  "debrief_called": "Called the number",
+  "debrief_replied": "Replied",
+  "debrief_scanned": "Scanned the code"
 }

@@ -8,12 +8,13 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { habitCard } from '../content/habitCards.ts';
 import type { ChoiceLine, DebriefData, DebriefWrongTag, OtherChoice } from '../engine/debrief.ts';
+import type { AlreadySituation, ClickedVia } from '../engine/recovery.ts';
 import { choiceLineText, choicePathText, nextTimeText } from '../engine/choiceText.ts';
 import { lookup, t, type MessageKey } from '../i18n/index.ts';
 import { deviceHeading } from './devices/Device.tsx';
 import { Icon } from './Icon.tsx';
 import { deadlineText, elementLabel } from './labels.ts';
-import { RichText } from './RichText.tsx';
+import { LangText, RichText } from './RichText.tsx';
 import styles from './DebriefView.module.css';
 
 export interface DebriefViewProps {
@@ -38,6 +39,26 @@ const ARC_SITUATION_KEYS: Record<'clicked' | 'entered_details' | 'shared_code' |
   shared_code: 'debrief_shared_code',
   paid: 'debrief_arc_paid',
 };
+
+/** CR-45: the default `clicked` heading follows what "clicking" was in this scenario. */
+const CLICKED_VIA_KEYS: Record<ClickedVia, MessageKey> = {
+  link: 'debrief_clicked',
+  call: 'debrief_called',
+  reply: 'debrief_replied',
+  qr: 'debrief_scanned',
+};
+
+/**
+ * CR-45: the sub-heading over an "If you already…" situation: the authored heading, else (standard debriefs)
+ * the game's heading, with `clicked` following the scenario's own action, else the arc wording.
+ */
+export function alreadyHeading(k: AlreadySituation, ac: DebriefData['layer2']['alreadyClicked'], arc: boolean, via: ClickedVia | undefined): string {
+  const own = ac?.headings?.[k];
+  if (own) return own;
+  if (arc) return t(ARC_SITUATION_KEYS[k]);
+  if (k === 'clicked' && via) return t(CLICKED_VIA_KEYS[via]);
+  return t(SITUATION_KEYS[k]);
+}
 
 const STATUS_KEYS: Record<DebriefData['layer2']['flags'][number]['status'], MessageKey> = {
   marked: 'debrief_marked',
@@ -130,7 +151,9 @@ export function DebriefView({ data, onContinue, onAgain, onTellMeNow }: DebriefV
           <RichText text={l1.whatWorks} />
         </p>
         {l1.youChose.map((c, i) => (
-          <p key={i}>{choiceText(c)}</p>
+          <p key={i}>
+            <LangText text={choiceText(c)} />
+          </p>
         ))}
         {l1.nextTime ? <p>{nextTimeText(l1.nextTime, lookup)}</p> : null}
         {arc && l2.safeguardingLine ? <p>{l2.safeguardingLine}</p> : null}
@@ -199,7 +222,9 @@ export function DebriefView({ data, onContinue, onAgain, onTellMeNow }: DebriefV
             <h2 id="other-choices-h">{t('debrief_you_chose_more')}</h2>
             <ul>
               {l2.youChoseOther.map((c, i) => (
-                <li key={i}>{otherChoiceText(c)}</li>
+                <li key={i}>
+                  <LangText text={otherChoiceText(c)} />
+                </li>
               ))}
             </ul>
           </section>
@@ -210,7 +235,11 @@ export function DebriefView({ data, onContinue, onAgain, onTellMeNow }: DebriefV
             <h2 id="choice-path-h">{t('debrief_choice_path')}</h2>
             {l2.choicePaths.map((c, i) => {
               const line = choicePathText(c.line, lookup) ?? '';
-              return <p key={i}>{c.beat ? t('debrief_choice_path_beat', { beat: deviceHeading(c.beat.device, c.beat.message), line }) : line}</p>;
+              return (
+                <p key={i}>
+                  <LangText text={c.beat ? t('debrief_choice_path_beat', { beat: deviceHeading(c.beat.device, c.beat.message), line }) : line} />
+                </p>
+              );
             })}
           </section>
         ) : null}
@@ -268,7 +297,9 @@ export function DebriefView({ data, onContinue, onAgain, onTellMeNow }: DebriefV
               {(['clicked', 'entered_details', 'shared_code', 'paid'] as const).map((k) =>
                 ac[k] ? (
                   <div key={k} class={l1.alreadyClicked?.situation === k ? styles.yours : undefined}>
-                    <dt>{t((arc ? ARC_SITUATION_KEYS : SITUATION_KEYS)[k])}</dt>
+                    <dt>
+                      <LangText text={alreadyHeading(k, ac, arc, l2.clickedVia)} />
+                    </dt>
                     <dd>
                       <RichText text={ac[k] ?? ''} />
                     </dd>

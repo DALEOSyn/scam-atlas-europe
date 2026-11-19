@@ -1,4 +1,4 @@
-# Engine fixture scenarios (CR-30 to CR-35)
+# Engine fixture scenarios (CR-30 to CR-35, CR-45)
 
 Test-only scenarios, one per engine change request for Madrid and Warsaw. Not game content: they are in
 no chapter and never ship. `tests/unit/engine/cr30-35.test.ts` validates them (schema, scenario rules,

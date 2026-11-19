@@ -101,7 +101,7 @@ describe('L4 kind lines for over-caution on genuine (game-wide copy)', () => {
     expect(line1(d1)).toBe('You reported it. Careful is good; this one was safe.');
     const s3 = home('home-03-password-reset');
     const p3 = play(s3, ctx({ slot: 0 }), [act('close_forgot_page')]);
-    expect(line1(debriefOf(s3, p3.st, p3.r, none))).toBe('You left it. You started this reset; it was safe.');
+    expect(line1(debriefOf(s3, p3.st, p3.r, none))).toBe('You left it. You started this; it was safe.');
     // Low-stakes "leave it for later" is not over-caution: it keeps its label.
     const p1b = play(s1, ctx({ slot: 0 }), [act('leave_for_later')]);
     expect(line1(debriefOf(s1, p1b.st, p1b.r, none))).toBe('You chose: Leave it for later.');

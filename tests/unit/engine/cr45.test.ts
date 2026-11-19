@@ -1,0 +1,238 @@
+/**
+ * CR-45 (Madrid QA engine fixes): dialled calls, the bank header's account kind, inline language spans,
+ * call announcements, "If you already…" sub-headings, timer expiry on a genuine beat (ruling R21), the
+ * generic `you_chose_dismiss_started` line, and a single setup step on an opener that asks nothing.
+ * Fixtures: tests/fixtures/scenarios/cr45-*.yaml (validated, linted and played in cr30-35.test.ts too).
+ */
+import { describe, expect, it } from 'vitest';
+import { readdirSync, readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { readYaml } from '../../../scripts/lib/content.ts';
+import { callDirectionOf, inferredDirection } from '../../../src/content/callDirection.ts';
+import { firstLang, langMarkupIssues, langPieces, stripLang } from '../../../src/content/inlineLang.ts';
+import { scenarioSchema, type Scenario } from '../../../src/content/schema.ts';
+import { debriefOf } from '../../../src/engine/debrief.ts';
+import { expiryDismissOf } from '../../../src/engine/result.ts';
+import { clickedViaOf } from '../../../src/engine/recovery.ts';
+import { viewOf } from '../../../src/engine/runner.ts';
+import { scoreGroup } from '../../../src/engine/scoring.ts';
+import { logAnnouncement } from '../../../src/ui/ScenarioView.tsx';
+import { ROOT, rawFraud, rawGenuine, scenario } from '../../content/fixtures.ts';
+import { act, B, ctx, play, run, tick, type Raw } from './helpers.ts';
+
+const FIX = resolve(ROOT, 'tests', 'fixtures', 'scenarios');
+const raw = (file: string): Raw => readYaml(join(FIX, file)) as Raw;
+const fixture = (file: string): Scenario => scenarioSchema.parse(raw(file));
+const content = (rel: string): Scenario => scenarioSchema.parse(readYaml(join(ROOT, 'content', 'scenarios', rel)));
+const errors = (r: Raw): string[] => {
+  const res = scenarioSchema.safeParse(r);
+  return res.success ? [] : res.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`);
+};
+const clone = <T>(x: T): T => structuredClone(x);
+const beatOf = (r: Raw, id: string): Raw => (r.beats as Raw[]).find((b) => b.id === id) as Raw;
+const expire = Array.from({ length: 400 }, () => tick(1));
+const none = { pressureAny: false, pressureGenuine: false };
+
+describe('item 1: a call the player dialled is outgoing', () => {
+  const s = fixture('cr45-dialled-call.yaml');
+  it('inferred from the parent action (call_number_in_message); the opening and other devices are incoming', () => {
+    expect(callDirectionOf(s, 'security_line')).toBe('outgoing');
+    expect(callDirectionOf(s, 'start')).toBe('incoming');
+    expect(callDirectionOf(fixture('cr31-reserve-call.yaml'), 'reserve_transfer')).toBe('incoming');
+  });
+  it('the view marks the beat outgoing once the player dials; ringing calls carry no flag', () => {
+    const c = ctx({ timerMode: 'off' });
+    const st = run(s, c, [act('call_text_number')]);
+    expect(viewOf(s, c, st).beat).toMatchObject({ id: 'security_line', device: 'call', outgoing: true });
+    const boss = content('berlin/berlin-09-boss-fraud-team.yaml');
+    expect(callDirectionOf(boss, 'fraud_team_call')).toBe('incoming');
+  });
+  it('shipped content: Rome 6-7 "officer_line" (reached by call_number_in_message) is now a dialled call', () => {
+    expect(callDirectionOf(content('rome/rome-07-police-text.yaml'), 'officer_line')).toBe('outgoing');
+  });
+  it('an explicit direction wins over the inference', () => {
+    const r = clone(raw('cr45-dialled-call.yaml'));
+    beatOf(r, 'security_line').direction = 'outgoing';
+    expect(errors(r)).toEqual([]);
+    expect(callDirectionOf(scenarioSchema.parse(r), 'security_line')).toBe('outgoing');
+  });
+  it('validation: call beats only; outgoing never on a schedule; incoming cannot contradict a dialled call', () => {
+    const notCall = clone(rawFraud());
+    beatOf(notCall, 'fee_page').direction = 'outgoing';
+    expect(errors(notCall).join('\n')).toMatch(/direction is for call beats/);
+    const ringing = clone(raw('cr45-dialled-call.yaml'));
+    beatOf(ringing, 'security_line').direction = 'incoming';
+    expect(errors(ringing).join('\n')).toMatch(/cannot ring as incoming/);
+    const boss = clone(readYaml(join(ROOT, 'content', 'scenarios', 'berlin', 'berlin-09-boss-fraud-team.yaml')) as Raw);
+    beatOf(boss, 'fraud_team_call').direction = 'outgoing';
+    expect(errors(boss).join('\n')).toMatch(/outgoing call is one the player dials/);
+  });
+  it('mixed parents (one dials, one does not) stay incoming by default', () => {
+    const s2 = { actions: [{ kind: 'call_number_in_message', next_beat: 'x' }, { kind: 'open_link', next_beat: 'x' }], beats: [], interrupts: [] } as unknown as Scenario;
+    expect(inferredDirection(s2, 'x')).toBe('incoming');
+  });
+});
+
+describe('item 2: account kind', () => {
+  it('defaults to personal; Paris business accounts say so and still validate', () => {
+    const s = fixture('cr45-personal-account.yaml');
+    expect(s.beats[0]?.message.account).toEqual({ nickname: 'Your current account', kind: 'personal' });
+    const paris = readdirSync(join(ROOT, 'content', 'scenarios', 'paris')).filter((f) => f.endsWith('.yaml'));
+    const withAccount = paris.map((f) => content(`paris/${f}`)).flatMap((x) => x.beats.flatMap((b) => (b.message.account ? [b.message.account] : [])));
+    expect(withAccount.length).toBe(4);
+    for (const a of withAccount) expect(a.kind).toBe('business');
+  });
+  it('rejects an unknown kind', () => {
+    const r = clone(raw('cr45-personal-account.yaml'));
+    ((beatOf(r, 'cleaning_transfer').message as Raw).account as Raw).kind = 'shared';
+    expect(errors(r).join('\n')).toMatch(/account\.kind/);
+  });
+});
+
+describe('item 3: inline language spans', () => {
+  it('splits, strips and finds the language', () => {
+    const label = 'Reply: {lang:es}¡sí, gracias!{/lang}';
+    expect(langPieces(label)).toEqual([{ text: 'Reply: ' }, { text: '¡sí, gracias!', lang: 'es' }]);
+    expect(stripLang(label)).toBe('Reply: ¡sí, gracias!');
+    expect(firstLang(label)).toBe('es');
+    expect(langPieces('plain')).toEqual([{ text: 'plain' }]);
+    expect(langMarkupIssues(label)).toEqual([]);
+  });
+  it('rejects bad markup: unclosed, bad tag, English, empty', () => {
+    expect(langMarkupIssues('Reply: {lang:es}¡sí!')).toHaveLength(1);
+    expect(langMarkupIssues('{lang:Spanish}hola{/lang}').join()).toMatch(/BCP 47/);
+    expect(langMarkupIssues('{lang:en}hi{/lang}').join()).toMatch(/English/);
+    expect(langMarkupIssues('{lang:es} {/lang}').join()).toMatch(/empty/);
+  });
+  it('schema: labels and narratives are checked; a translation needs a span to translate', () => {
+    const r = clone(raw('cr45-personal-account.yaml'));
+    const interrupt = (r.interrupts as Raw[])[0] as Raw;
+    ((interrupt.actions as Raw[])[0] as Raw).label = 'Reply: {lang:es}¡sí, gracias!';
+    expect(errors(r).join('\n')).toMatch(/interrupts\.0\.actions\.0\.label: an inline language marker is not closed/);
+    const r2 = clone(raw('cr45-personal-account.yaml'));
+    (r2.outcomes as Record<string, Raw>).lucia_kitchen = { narrative: 'Plain English.', translation: 'Nothing to translate.' };
+    expect(errors(r2).join('\n')).toMatch(/outcomes\.lucia_kitchen\.translation: a translation needs an inline language span/);
+  });
+  it('the view carries the label translation; the debrief "You chose" keeps the span (rendered with lang)', () => {
+    const s = fixture('cr45-personal-account.yaml');
+    const c = ctx({ timerMode: 'off', slot: 4 });
+    const st = run(s, c, [tick(6)]);
+    const i = viewOf(s, c, st).interrupts[0];
+    expect(i?.actions[0]).toMatchObject({ label: 'Reply: {lang:es}¡sí, gracias!{/lang}', translation: 'yes, thanks!' });
+  });
+});
+
+describe('item 4: call announcements', () => {
+  it('a dialled call: "Calling {number}" (player feedback, own slot); a ringing call: "Incoming call from {caller}"', () => {
+    const s = fixture('cr45-dialled-call.yaml');
+    expect(logAnnouncement(s, { type: 'beat_arrived', beatId: 'security_line', at: 1 } as never)).toEqual({ category: 2, key: 'call', text: 'Calling 9 … 14, masked number.' });
+    const boss = content('berlin/berlin-09-boss-fraud-team.yaml');
+    const a = logAnnouncement(boss, { type: 'beat_arrived', beatId: 'fraud_team_call', at: 1 } as never);
+    expect(a).toMatchObject({ category: 5, key: 'call' });
+    expect(a?.text).toMatch(/^Incoming call from /);
+    expect(logAnnouncement(fixture('cr45-personal-account.yaml'), { type: 'beat_arrived', beatId: 'cleaning_transfer', at: 1 } as never)).toEqual({ category: 5, text: 'New message.' });
+  });
+});
+
+describe('item 5: "If you already…" sub-headings', () => {
+  it('clickedVia follows the scenario\'s own "click": call, link, mixed → link', () => {
+    expect(clickedViaOf(fixture('cr45-dialled-call.yaml'))).toBe('call');
+    expect(clickedViaOf(scenario(rawFraud()))).toBe('link');
+    const mixed = clone(raw('cr45-dialled-call.yaml'));
+    (mixed.actions as Raw[]).push({ id: 'open_l', label: 'Open the link', kind: 'reply', outcome: 'text_reported' });
+    expect(clickedViaOf(scenarioSchema.parse(mixed))).toBe('link');
+  });
+  it('the debrief carries authored headings and clickedVia', () => {
+    const s = fixture('cr45-dialled-call.yaml');
+    const { st, r } = play(s, ctx({ timerMode: 'off' }), [act('open_app')]);
+    const d = debriefOf(s, st, r, none);
+    expect(d.layer2.alreadyClicked?.headings).toEqual({ paid: 'Moved money' });
+    expect(d.layer2.clickedVia).toBe('call');
+  });
+  it('a heading needs its text; existing already_clicked without headings still parses', () => {
+    const r = clone(raw('cr45-dialled-call.yaml'));
+    ((r.debrief as Raw).already_clicked as Raw).headings = { shared_code: 'Read out a code' };
+    expect(errors(r).join('\n')).toMatch(/a heading for "shared_code" needs already_clicked.shared_code/);
+    expect(errors(rawFraud())).toEqual([]);
+  });
+});
+
+describe('item 6: timer expiry on a genuine beat (ruling R21)', () => {
+  const s = fixture('cr45-personal-account.yaml');
+  it('expiry on the message scores what "Leave it for now" scores (0 from slot 1; never ★ above it)', () => {
+    const c = ctx({ slot: 4 });
+    const left = play(s, c, [act('leave_cleaning')]).r;
+    const expired = play(s, c, expire).r;
+    expect(expired.beats[0]).toMatchObject({ timerExpired: true, stars: left.beats[0]?.stars, points: left.beats[0]?.points });
+    expect(expired.beats[0]).toMatchObject({ stars: 0, points: 0 });
+  });
+  it('expiry on the bank card scores like its Cancel', () => {
+    const c = ctx({ slot: 4 });
+    const cancelled = play(s, c, [act('pay_lucia_app'), act('cancel_cleaning')]).r;
+    const expired = play(s, c, [act('pay_lucia_app'), ...expire]).r;
+    expect(expired.beats[0]).toMatchObject({ timerExpired: true, stars: cancelled.beats[0]?.stars, points: cancelled.beats[0]?.points });
+  });
+  it('tutorial grace (slot 0): the dismiss scores ★, 5 points, and so does the expiry', () => {
+    expect(play(s, ctx({ slot: 0 }), expire).r.beats[0]).toMatchObject({ stars: 1, points: 5, timerExpired: true });
+  });
+  it('no dismiss option on the beat: ★, 5 points as before', () => {
+    const r = clone(raw('cr45-personal-account.yaml'));
+    r.actions = (r.actions as Raw[]).filter((a) => a.id !== 'leave_cleaning');
+    delete (r.outcomes as Record<string, Raw>).cleaning_unpaid;
+    const s2 = scenarioSchema.parse(r);
+    expect(play(s2, ctx({ slot: 4 }), expire).r.beats[0]).toMatchObject({ stars: 1, points: 5, timerExpired: true });
+  });
+  it('low stakes: an authored score override on the dismiss caps the expiry too; fraud is untouched', () => {
+    const low = rawGenuine('g-low', { pressure: { timer: true, levers: [] } });
+    (low.actions as Raw[]).push({ id: 'leave', label: 'Leave it', kind: 'ignore', outcome: 'done', score: 0, score_reason: 'test' });
+    const s3 = scenario(low);
+    expect(play(s3, ctx({ slot: 4 }), expire).r.beats[0]).toMatchObject({ stars: 2, points: 0, timerExpired: true });
+    const f = scenario(rawFraud());
+    const fraudExpired = scoreGroup(B, 'fraud', undefined, { engagedOnFraud: false, timerExpired: true, expiryDismiss: expiryDismissOf(f, B, { current: 'start', timerExpired: true }) });
+    expect(fraudExpired).toMatchObject({ stars: 2, points: 10 });
+  });
+  it('the lowest of several dismiss options counts; a decision before the deadline is never replaced', () => {
+    const ds = [
+      { cls: 'dismiss' as const, kind: 'ignore' as const, actionId: 'a', override: 3 },
+      { cls: 'dismiss' as const, kind: 'ignore' as const, actionId: 'b' },
+    ];
+    expect(scoreGroup(B, 'legit_low', undefined, { engagedOnFraud: false, timerExpired: true, expiryDismiss: ds })).toMatchObject({ stars: 2, points: 3, timerExpired: true });
+    const verify = { cls: 'verify' as const, kind: 'ask_someone' as const, actionId: 'v' };
+    expect(scoreGroup(B, 'legit_high', verify, { engagedOnFraud: false, timerExpired: true, expiryDismiss: ds })).toMatchObject({ stars: 3, points: 15 });
+  });
+});
+
+describe('item 7: you_chose_dismiss_started is generic', () => {
+  it('no longer names a reset', () => {
+    const ui = JSON.parse(readFileSync(join(ROOT, 'content', 'i18n', 'en', 'ui.json'), 'utf8')) as Record<string, string>;
+    expect(ui.you_chose_dismiss_started).toBe('You left it. You started this; it was safe.');
+  });
+});
+
+describe('extra (coordinator): a single setup step on an opener that asks nothing', () => {
+  const opener = (request: string, actions: Raw[]): Raw =>
+    rawGenuine('g-open', {
+      message: { sender: { display: 'Trundle', detail: 'TRUNDLE' }, body: 'Your parcel is on its way.', request, references: ['TR-2'], phone_numbers: ['0800 ••• 4410'] },
+      actions,
+      beats: [
+        {
+          id: 'next',
+          device: 'sms',
+          message: { sender: { display: 'Trundle', detail: 'TRUNDLE' }, body: 'It is in the locker.', request: 'none' },
+          actions: [
+            { id: 'pick_up', label: 'Pick it up', kind: 'proceed', outcome: 'done' },
+            { id: 'report_it', label: 'Report it', kind: 'report', outcome: 'reported' },
+          ],
+        },
+      ],
+    });
+  const wait = { id: 'wait', label: 'Wait for the text', kind: 'proceed', next_beat: 'next' };
+  it('request: none with one setup step (next_beat) is valid', () => {
+    expect(errors(opener('none', [wait]))).toEqual([]);
+  });
+  it('one action anywhere else is still rejected (2–5)', () => {
+    expect(errors(opener('pay', [wait])).join('\n')).toMatch(/a scenario offers 2–5 actions/);
+    expect(errors(opener('none', [{ id: 'go', label: 'Pick it up', kind: 'proceed', outcome: 'done' }])).join('\n')).toMatch(/single opening action is a setup step/);
+    expect(errors(opener('none', [])).join('\n')).toMatch(/2–5 actions/);
+  });
+});

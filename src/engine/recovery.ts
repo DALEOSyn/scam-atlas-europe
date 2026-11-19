@@ -67,6 +67,20 @@ const SHARED: readonly ActionKind[] = ['share_code', 'approve_prompt'];
 const ENTERED: readonly ActionKind[] = ['enter_details', 'install_or_remote'];
 const CLICKED: readonly ActionKind[] = ['open_link', 'scan_qr_and_open', 'call_number_in_message', 'reply'];
 
+/** CR-45: what the scenario's "clicked" situation is: opening a link, calling the number, replying or scanning a code. */
+export type ClickedVia = 'link' | 'call' | 'reply' | 'qr';
+const VIA: Partial<Record<ActionKind, ClickedVia>> = { open_link: 'link', call_number_in_message: 'call', reply: 'reply', scan_qr_and_open: 'qr' };
+
+/**
+ * The one way the player could "click" in this scenario (every CLICKED-class action of the opening, beats,
+ * What-now extras and interrupts the same kind), else `link` (the generic heading, unchanged).
+ */
+export function clickedViaOf(s: Pick<Scenario, 'actions' | 'beats' | 'what_now'>): ClickedVia {
+  const kinds = [...s.actions, ...s.beats.flatMap((b) => b.actions), ...(s.what_now?.extra ?? []), ...s.beats.flatMap((b) => b.what_now?.extra ?? [])].map((a) => a.kind);
+  const vias = new Set(kinds.flatMap((k) => (VIA[k] ? [VIA[k]] : [])));
+  return vias.size === 1 ? ([...vias][0] ?? 'link') : 'link';
+}
+
 /** The most serious situation among the actions taken; undefined if the player never engaged. */
 export function situationOf(kinds: readonly ActionKind[]): AlreadySituation | undefined {
   if (kinds.some((k) => PAID.includes(k))) return 'paid';

@@ -18,7 +18,7 @@ import type { ActionKind, Scenario } from '../content/schema.ts';
 import { tallyTags, redFlagsOf } from './inspect.ts';
 import { situationOf, type AlreadySituation, type RecoveryResult } from './recovery.ts';
 import { beatById, coveredDecision, type GroupState, type RunnerState } from './runner.ts';
-import { classOf, groupEarnsTagBonus, maxPointsOf, scoreGroup, tagBonus, type EngineBalance, type GroupScore, type Truth } from './scoring.ts';
+import { classOf, decisionOf, groupEarnsTagBonus, maxPointsOf, scoreGroup, tagBonus, type Decision, type EngineBalance, type GroupScore, type Truth } from './scoring.ts';
 
 export interface BeatResult extends GroupScore {
   beatId: string;
@@ -83,6 +83,16 @@ function groupTags(s: Scenario, st: RunnerState, g: GroupState): { correct: numb
   return { correct, wrong };
 }
 
+/**
+ * Ruling R21 (CR-45): the deliberate dismiss options of the beat the group's timer expired on (its current
+ * beat), as decisions. A genuine expiry scores like the lowest of them (scoreGroup `expiryDismiss`).
+ */
+export function expiryDismissOf(s: Scenario, b: EngineBalance, g: Pick<GroupState, 'current' | 'timerExpired'>): Decision[] {
+  if (!g.timerExpired) return [];
+  const beat = beatById(s, g.current);
+  return (beat?.actions ?? []).filter((a) => classOf(b, a.kind) === 'dismiss').map((a) => decisionOf(b, a));
+}
+
 /** Red flags on the scheduled, scored beats of a scenario (R for stamps and max points). */
 export function redFlagCount(s: Scenario): number {
   const ids = ['start', ...(s.role === 'boss' ? s.beats.filter((b) => b.arrives_after !== undefined && b.scored).map((b) => b.id) : [])];
@@ -106,7 +116,7 @@ export function resultOf(s: Scenario, b: EngineBalance, st: RunnerState): Scenar
   const truth = st.truth;
   const beats: BeatResult[] = st.groups.map((g) => {
     const { decision, covered } = coveredDecision(s, st.groups, g);
-    const score = scoreGroup(b, truth, decision, { engagedOnFraud: g.engagedOnFraud, timerExpired: g.timerExpired, slot: st.slot, codeShared: g.codeShared !== undefined });
+    const score = scoreGroup(b, truth, decision, { engagedOnFraud: g.engagedOnFraud, timerExpired: g.timerExpired, slot: st.slot, codeShared: g.codeShared !== undefined, expiryDismiss: expiryDismissOf(s, b, g) });
     const tags = groupTags(s, st, g);
     return { ...score, beatId: g.beatId, covered, scored: g.scored, outcome: g.outcome, correctTags: tags.correct, wrongTags: tags.wrong, kinds: g.kinds };
   });

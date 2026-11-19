@@ -4,7 +4,7 @@
 # word, to show "sheepish, then proud" (STORY §3.10).
 # Psych note (GDD §30.14 item 9): "It's never too late to start" shows only to a player who has told nobody:
 # A′ (no earlier report, no "Tell me now") and unless_flag arc_told_someone. A player who did the photo check
-# with Teo or told him to report gets "Teo asked you, and you helped him check. That's what works." instead.
+# with Teo or told him to report gets "Teo asked you, and you helped him. That's what works." instead.
 id: brussels-ending-a-prime
 chapter: brussels
 slot: resolution
@@ -29,12 +29,12 @@ panels:
     speaker: adaeze
     expression: calm
     if_flag: arc_told_someone
-    line: "Teo asked you, and you helped him check. That's what works."
-    alt: "Adaeze, calm, at the desk with the laptop and the small projector."
+    line: "Teo asked you, and you helped him. That's what works."
+    alt: "Adaeze, calm, at the desk by the small projector, a high window behind her."
   - backdrop: brussels-office
     crop: centre
     speaker: adaeze
     expression: calm
     unless_flag: arc_told_someone
     line: "Telling someone early is what works. It's never too late to start."
-    alt: "Adaeze, calm, at the desk with the laptop and the small projector."
+    alt: "Adaeze, calm, at the desk by the small projector, a high window behind her."

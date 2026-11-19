@@ -26,11 +26,11 @@ panels:
     expression: calm
     if_flag: arc_told_someone
     line: "You told someone, and the timeline did the rest. That's the whole trick."
-    alt: "Adaeze, calm, at the desk with the laptop and the small projector."
+    alt: "Adaeze, calm, at the desk by the small projector, a high window behind her."
   - backdrop: brussels-office
     crop: centre
     speaker: adaeze
     expression: calm
     unless_flag: arc_told_someone
     line: "You reported it, and the timeline did the rest. That's the whole trick."
-    alt: "Adaeze, calm, at the desk with the laptop and the small projector."
+    alt: "Adaeze, calm, at the desk by the small projector, a high window behind her."

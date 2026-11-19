@@ -21,21 +21,21 @@ panels:
     speaker: adaeze
     expression: warm
     line: "You were kind to someone who turned out not to exist. The lie was theirs, not yours."
-    alt: "Adaeze smiling gently at the desk with the laptop, under the high window."
+    alt: "Adaeze smiling gently at the desk by the small projector, a high window behind her."
   - backdrop: brussels-office
     crop: centre
     speaker: adaeze
     expression: calm
     if_flag: arc_told_someone
     line: "And you checked in the end. That's what works."
-    alt: "Adaeze, calm, at the desk with the laptop and the small projector."
+    alt: "Adaeze, calm, at the desk by the small projector, a high window behind her."
   - backdrop: brussels-office
     crop: centre
     speaker: adaeze
     expression: calm
     unless_flag: arc_told_someone
     line: "And you reported it. That's what works."
-    alt: "Adaeze, calm, at the desk with the laptop and the small projector."
+    alt: "Adaeze, calm, at the desk by the small projector, a high window behind her."
   - backdrop: brussels-office
     crop: left
     speaker: adaeze

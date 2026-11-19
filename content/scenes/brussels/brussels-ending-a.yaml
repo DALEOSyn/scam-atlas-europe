@@ -5,7 +5,7 @@
 # Psych note (GDD §30.14 item 9): every A player already reported earlier, so the "never too late to start"
 # line is not in this scene (it is in A′ only, and gated there). Adaeze's line, one of two (R22(2)):
 # - arc_told_someone (Teo's chat: the photo check together, or "Tell him to report the profile"): "Teo asked
-#   you, and you helped him check. That's what works."
+#   you, and you helped him. That's what works."
 # - otherwise (Teo's chat: "stop replying" or "A little can't hurt"): the player's own early report, in plain
 #   words, "And you reported yours early. That's what works." (no "told someone" without the flag).
 id: brussels-ending-a
@@ -32,12 +32,12 @@ panels:
     speaker: adaeze
     expression: calm
     if_flag: arc_told_someone
-    line: "Teo asked you, and you helped him check. That's what works."
-    alt: "Adaeze, calm, at the desk with the laptop and the small projector."
+    line: "Teo asked you, and you helped him. That's what works."
+    alt: "Adaeze, calm, at the desk by the small projector, a high window behind her."
   - backdrop: brussels-office
     crop: centre
     speaker: adaeze
     expression: calm
     unless_flag: arc_told_someone
     line: "And you reported yours early. That's what works."
-    alt: "Adaeze, calm, at the desk with the laptop and the small projector."
+    alt: "Adaeze, calm, at the desk by the small projector, a high window behind her."

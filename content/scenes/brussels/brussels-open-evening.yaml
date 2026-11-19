@@ -7,7 +7,8 @@
 # Adaeze (proud): her last line, word for word, the panel just before Noor's If-then (R19(3)) and the end
 # screen's epigraph (CR-44(b)), shown to everyone.
 # If-then (Noor; Brussels exception, STORY §4.4), word for word, with the extra line under it (GDD §30.2).
-# Noor has no proud expression in her SVG; calm, not a phone pose (her action is to say no and ask someone).
+# Noor has no proud expression in her SVG; calm. Her calm and relieved art hold her phone, screen turned away
+# (not the phone-look habit pose), so the alts say so (ART_DIRECTION §9.2, §9.6).
 id: brussels-open-evening
 chapter: brussels
 slot: resolution
@@ -19,11 +20,11 @@ panels:
     expression: relieved
     caption: "The next evening. The hall fills up."
     line: "I nearly said yes. Then I asked you, and I told Mum too. Asking was the smart bit."
-    alt: "Noor, relieved, under the bunting by a tall window, rows of chairs behind her."
+    alt: "Noor, relieved, holding her phone, screen turned away, under the bunting by a tall window, a row of chairs behind her."
   - backdrop: brussels-hall
     crop: centre
     caption: "Everyone you met, on one wall."
-    alt: "The hall's big screen above rows of chairs, bunting overhead."
+    alt: "The hall's big screen above a row of chairs, bunting overhead."
   - backdrop: brussels-hall
     crop: right
     speaker: teo
@@ -37,7 +38,7 @@ panels:
     expression: proud
     epigraph: true
     line: "Pause. Check on a number or app you already know. Ask someone. Then be the someone for the next person."
-    alt: "Adaeze, proud, in front of the big screen, chairs in rows below the bunting."
+    alt: "Adaeze, proud, in front of the big screen, a row of chairs below the bunting."
   - backdrop: brussels-hall
     crop: right
     speaker: noor
@@ -47,4 +48,4 @@ panels:
       cue: "If an easy-money offer wants my bank login or card,"
       action: "then I say no and ask someone first."
       extra: "Nobody needs your screen, either."
-    alt: "Noor, calm, by the table with cups and a plant, under the bunting."
+    alt: "Noor, calm, holding her phone, screen turned away, by the table with cups and a plant, under the bunting."

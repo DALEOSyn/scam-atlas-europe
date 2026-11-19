@@ -36,7 +36,7 @@ panels:
     expression: warm
     if_flag: alex_invested
     line: "You were kind to someone who turned out not to exist. The lie was theirs, not yours."
-    alt: "Adaeze smiling gently at the desk with the laptop, under the high window."
+    alt: "Adaeze smiling gently at the desk by the small projector, a high window behind her."
   - backdrop: brussels-office
     crop: left
     speaker: adaeze
@@ -58,4 +58,4 @@ panels:
     speaker: teo
     expression: warm
     line: "Sometimes you just want to know. Asking is never wrong."
-    alt: "Teo smiling at the desk with the laptop and the small projector."
+    alt: "Teo smiling at the desk by the small projector, a high window behind him."

@@ -72,7 +72,7 @@ const C_RECOVERY = 'Stop paying, call the bank on the number on your card, and k
 const C_TEO = "I typed my card into a prize page, remember? It happens. What counts is what you do next, and you're doing it.";
 const C_CHECKED = "And you checked in the end. That's what works.";
 const C_REPORTED = "And you reported it. That's what works.";
-const A_HELPED = "Teo asked you, and you helped him check. That's what works.";
+const A_HELPED = "Teo asked you, and you helped him. That's what works.";
 const A_REPORTED = "And you reported yours early. That's what works.";
 const A_START = "Telling someone early is what works. It's never too late to start.";
 const B_TOLD = "You told someone, and the timeline did the rest. That's the whole trick.";
@@ -293,7 +293,7 @@ describe('ending wording: R22 and the psych notes (GDD §30.14 item 9)', () => {
     for (const st of STATES) {
       const lines = runLines(st).join(' ');
       if (st.ending === 'A_prime' || st.ending === 'R') expect(lines, label(st)).not.toMatch(/\breported\b/i);
-      if (!st.told) expect(lines, label(st)).not.toMatch(/\byou checked\b|helped him check/i);
+      if (!st.told) expect(lines, label(st)).not.toMatch(/\byou checked\b|helped him/i);
     }
   });
   it('the recovery panel is in every money-in ending, promises nothing and names no amount; never in a no-money ending', () => {
@@ -363,13 +363,25 @@ describe('Brussels scene rules the generic validator does not see', () => {
           // Boxes and the noticeboard stand at the left edge (x 20–192); the big plant at the right edge (x 858–932).
           if (p.crop === 'right') expect(p.alt, s.id).not.toMatch(/boxes|noticeboard/i);
           if (p.crop !== 'right') expect(p.alt, s.id).not.toMatch(/big plant/i);
+          // Sceptic M1: an unflipped speaker in the centre crop stands in front of the laptop (x 300–400).
+          if (p.crop === 'centre' && p.speaker && p.speaker !== 'you') expect(p.alt, s.id).not.toMatch(/laptop/i);
         }
         if (p.backdrop === 'brussels-hall') {
           // The table with cups and a plant stands at the right edge (x 800–940).
           if (p.crop !== 'right') expect(p.alt, s.id).not.toMatch(/table|cups|plant/i);
           expect(p.alt, s.id).not.toMatch(/portrait|faces|grid/i);
         }
-        expect(p.alt, s.id).not.toMatch(/door|suitcase|phone|screen turned/i);
+        expect(p.alt, s.id).not.toMatch(/door|suitcase/i);
+        // ART_DIRECTION §9.2, §9.6: a drawn phone is always described with its screen turned away (STORY §4.2 rule 1).
+        if (/phone/i.test(p.alt)) expect(p.alt, s.id).toMatch(/screen turned away/i);
+      }
+    }
+  });
+  it("Noor's thinking, calm and relieved art hold her phone, screen turned away: her alts say so (sceptic M2)", () => {
+    for (const s of scenes.values()) {
+      for (const p of s.panels) {
+        const noor = p.speaker === 'noor' || p.with?.id === 'noor';
+        if (noor) expect(p.alt, s.id).toMatch(/phone, screen turned away/);
       }
     }
   });

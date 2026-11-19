@@ -63,7 +63,7 @@ function Harness() {
         <ScenarioView
           scenario={s}
           ctx={ctx}
-          coachMarks={q.get('coach') === '1' ? [] : ['payee_check']}
+          coachMarks={q.get('coach') === '1' ? [] : ['payee_check', 'fairmeasure']}
           onDone={(st) => {
             const r = resultOf(s, balance, st);
             document.body.setAttribute('data-done', JSON.stringify({ stars: r.stars, points: r.points, beats: r.beats.map((b) => b.stars) }));

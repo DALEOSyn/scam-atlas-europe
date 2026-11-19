@@ -1,0 +1,79 @@
+# CR-37: how a QR code is attached. A sticker over the locker's printed code (mount: sticker); the
+# destination stays the lesson, the sticker is a supporting clue.
+id: fx-cr37-qr-sticker
+chapter: fixtures
+role: standard
+pattern: qr-sticker-parking
+theme: qr-sticker
+learning_objectives: [LO-02, LO-03]
+difficulty: 4
+is_fraud: true
+device: qr
+brands: [trundle]
+pressure: { timer: true, levers: [urgency] }
+
+message:
+  body: "Trundle locker 14. Pay the storage fee by phone, no app needed. Scan here."
+  references: ["Trundle locker 14"]
+  claims: [{ text: "no app needed" }]
+  qr: { payload: /qr/fx-cr37-locker-sticker, destination: trundle-redelivery.example, caption: "Trundle locker 14", mount: sticker }
+  request: scan_qr
+
+inspectables:
+  - target: qr.destination
+    reveal: "trundle-redelivery.example. Read the end: Trundle's own address is trundle.example."
+    red_flag: true
+    type: qr
+  - target: qr.mount
+    reveal: "A sticker stuck over the locker's printed code. A sticker is a reason not to scan; open the Trundle app yourself."
+    red_flag: true
+    type: qr_mount
+  - target: reference
+    reveal: "The locker number matches the locker. A sticker can copy it, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "'No app needed.' Real lockers also let you pay by phone, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+
+actions:
+  - { id: scan, label: "Scan the code", kind: scan_qr_and_open, next_beat: fee_page, pressure_target: true }
+  - { id: open_app, label: "Open the Trundle app yourself", kind: verify_in_app, outcome: no_fee }
+  - { id: walk_on, label: "Leave it", kind: ignore, outcome: left }
+
+beats:
+  - id: fee_page
+    device: browser
+    message:
+      page: { address: trundle-redelivery.example/locker-14, title: "Locker storage fee" }
+      request: pay
+    inspectables:
+      - target: page.address
+        reveal: "Still trundle-redelivery.example, not trundle.example."
+        red_flag: true
+    actions:
+      - { id: pay_fee, label: "Pay €2.50", kind: pay, outcome: paid_fee, pressure_target: true }
+      - { id: close_page, label: "Close the page", kind: ignore, outcome: left }
+
+outcomes:
+  paid_fee:
+    narrative: "The page takes your card details. Trundle never charged a storage fee."
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: keep_evidence, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: wait_and_see, category: harmful }
+      - { step: pay_recovery_service, category: harmful }
+  no_fee: { narrative: "The Trundle app shows your parcel waiting. No fee." }
+  left: { narrative: "You leave it. Nothing happens." }
+
+debrief:
+  layer1: { tell: "A sticker over the code, and an address that isn't Trundle's.", what_works: "Open the Trundle app yourself." }
+  device_tip: "Before you open a scanned code, read the address it shows. Better still, open the app yourself."
+  habit_card: read-the-link
+  already_clicked:
+    clicked: "Opened it? Close the page and open the Trundle app yourself."
+    paid: "Paid? Block your card in your bank app and call your bank."
+  sources: [ie-ncsc-qr-guide]

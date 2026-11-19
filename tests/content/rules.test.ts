@@ -385,7 +385,9 @@ describe('schema-level checks', () => {
     expect(page('trundle.example.com/x')).toMatch(/page\.address must be a lowercase host/);
     expect(page('Trundle-zoll.example')).toMatch(/page\.address must be a lowercase host/);
     const qr = (destination: string) => {
+      // CR-39(b): a QR code is shown on qr, letter and messenger beats.
       const r = rawFraud();
+      r.device = 'messenger';
       r.message = { ...msg(r), qr: { payload: '/qr/x', destination } };
       return schemaErrors(r).join('\n');
     };

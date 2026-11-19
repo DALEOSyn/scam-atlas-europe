@@ -1,0 +1,80 @@
+# CR-39(b): a QR code inside a chat message. The stylised code (no finder patterns), the destination chip
+# as text, the destination checkable after the body; scanning opens a Gatewren QR-login prompt.
+id: fx-cr39b-chat-qr
+chapter: fixtures
+role: standard
+pattern: e-id-approval-on-call
+theme: e-id-qr
+learning_objectives: [LO-02, LO-09]
+difficulty: 4
+is_fraud: true
+device: messenger
+brands: [kettle, swaploft, gatewren]
+pressure: { timer: false, levers: [helpfulness] }
+
+message:
+  sender: { display: "+46 7•• ••• •03", detail: "+46 7•• ••• •03", new_contact: true }
+  body: "Is your bike lamp still for sale? Before I pay, please confirm you're the seller: scan this with Gatewren."
+  qr: { payload: /qr/fx-cr39-buyer-check, destination: gatewren.example }
+  request: scan_qr
+  claims: [{ text: "Before I pay, please confirm you're the seller" }]
+
+inspectables:
+  - target: sender.detail
+    reveal: "A number you don't know. Buyers do write from new numbers, so it can't prove anything either way."
+    red_flag: false
+  - target: qr.destination
+    reveal: "gatewren.example: a real Gatewren login. Scanning it logs someone in as you."
+    red_flag: true
+    type: qr
+  - target: claim
+    reveal: "No marketplace asks sellers to prove who they are with an e-ID code."
+    red_flag: true
+    type: claim
+
+actions:
+  - { id: scan, label: "Scan it with Gatewren", kind: scan_qr_and_open, next_beat: buyer_prompt, pressure_target: true }
+  - { id: open_swaploft, label: "Open your Swaploft listing yourself", kind: check_with_platform, outcome: listing_fine }
+  - { id: block, label: "Block and report the number", kind: block, outcome: blocked }
+  - { id: ignore, label: "Ignore it", kind: ignore, outcome: ignored }
+
+beats:
+  - id: buyer_prompt
+    device: auth
+    message:
+      prompt: { type: qr_login, service: "Larchwick internet bank", where: "Uppsala, Sweden", device: "Windows computer", when: "Just now" }
+      request: approve
+    inspectables:
+      - target: prompt.service
+        reveal: "Log in to your bank, not 'confirm the seller'."
+        red_flag: true
+      - target: prompt.where
+        reveal: "Uppsala, a real place. Where a login comes from can be anywhere, so it can't prove anything either way."
+        red_flag: false
+    actions:
+      - { id: approve, label: "Approve", kind: approve_prompt, outcome: approved, pressure_target: true }
+      - { id: deny_check, label: "Deny and open Swaploft yourself", kind: check_with_platform, outcome: listing_fine }
+      - { id: deny, label: "Deny", kind: deny_prompt, outcome: denied }
+
+outcomes:
+  approved:
+    narrative: "Someone in Uppsala is now logged in to your bank as you."
+    recovery:
+      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: change_password, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: wait_and_see, category: harmful }
+      - { step: pay_recovery_service, category: harmful }
+  denied: { narrative: "You deny it. Nobody gets in." }
+  listing_fine: { narrative: "Your lamp is still listed. No buyer message in Swaploft, and Swaploft never asks sellers to scan anything." }
+  blocked: { narrative: "You block and report the number." }
+  ignored: { narrative: "The chat goes quiet." }
+
+debrief:
+  layer1: { tell: "A 'seller check' that was a bank login.", what_works: "Open Swaploft yourself. Approve only what you started." }
+  device_tip: "Scan a login code only on a site you opened yourself."
+  habit_card: read-the-link
+  already_clicked:
+    shared_code: "Approved it? Call your bank now on the number on your card."
+  sources: [eu-ebf-cyberscams]

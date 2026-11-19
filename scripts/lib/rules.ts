@@ -18,9 +18,11 @@ import {
   CR17_ASK_REQUESTS,
   CR30_ASK_DEVICES,
   CR30_FROM_SLOT,
+  CR37_FROM_SLOT,
   HIGH_STAKES_REQUESTS,
   LANGUAGE_TYPES,
   NEVER_PROOF_TYPES,
+  QR_MOUNT_DEVICES,
   SCORED_ROLES,
   type Action,
   type ActionClass,
@@ -318,6 +320,11 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
     if (m.from_cast !== undefined) {
       if (!reg.cast.has(m.from_cast)) errors.push(`${b.where}: from_cast "${m.from_cast}" is not in content/cast.yaml`);
       else if (!s.cast.includes(m.from_cast)) errors.push(`${b.where}: from_cast "${m.from_cast}" is missing from the scenario's cast list`);
+    }
+    // CR-36: the voice belongs to someone the story knows: a cast member of this scenario.
+    if (m.voice) {
+      if (!reg.cast.has(m.voice.sounds_like)) errors.push(`${b.where}: voice.sounds_like "${m.voice.sounds_like}" is not in content/cast.yaml (CR-36)`);
+      else if (!s.cast.includes(m.voice.sounds_like)) errors.push(`${b.where}: voice.sounds_like "${m.voice.sounds_like}" is missing from the scenario's cast list (CR-36)`);
     }
     const arcLine = s.role === 'arc' || (m.from_cast !== undefined && reg.cast.get(m.from_cast)?.arc_character === true);
     if (arcLine && wordCount(m.body) > arcLimit) errors.push(`${b.where}: arc lines are at most ${arcLimit} words (has ${wordCount(m.body)})`);
@@ -650,6 +657,18 @@ export function chapterRules(c: Chapter, fileBase: string, scenarios: Scenario[]
         if (b.interrupt || !b.scheduled || !b.scored || !CR30_ASK_DEVICES.includes(b.device)) continue;
         if (!b.message.ask) {
           errors.push(`scenario "${s.id}" ${b.where}: request ${b.message.request} needs message.ask from slot ${CR30_FROM_SLOT} on (CR-30: every scored scheduled beat on ${CR30_ASK_DEVICES.join(', ')} quotes its ask)`);
+        }
+      }
+    }
+  }
+
+  // CR-37 (Lisbon on): every QR code on a physical surface says how it is attached, genuine and fraud alike,
+  // so the `qr.mount` checkable is never itself a hint (parity). Interrupts included.
+  if (c.slot >= CR37_FROM_SLOT) {
+    for (const s of scenarios) {
+      for (const b of beatsOf(s)) {
+        if (b.message.qr && QR_MOUNT_DEVICES.includes(b.device) && !b.message.qr.mount) {
+          errors.push(`scenario "${s.id}" ${b.where}: a QR code on a ${b.device} beat sets qr.mount (printed | sticker) from slot ${CR37_FROM_SLOT} on (CR-37, parity)`);
         }
       }
     }

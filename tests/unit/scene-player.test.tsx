@@ -227,6 +227,12 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     scroll.mockClear();
     revealPanel(make(100, 400), footer, 'auto');
     expect(scroll).not.toHaveBeenCalled();
+    // CR-29 round 2, side by side: the caption clears the footer but the picture ends 40 px lower; the
+    // panel fits, so its whole end (the picture's) goes above the footer: 440 − 492 + … = scroll 28.
+    const side = make(100, 480);
+    side.getBoundingClientRect = () => box(100, 520);
+    revealPanel(side, footer, 'auto');
+    expect(scroll).toHaveBeenLastCalledWith({ top: 28, behavior: 'auto' });
     scroll.mockRestore();
   });
 });
@@ -303,7 +309,7 @@ describe('CR-29: art caps and the open path (geometry stubbed)', () => {
     expect(side.style.getPropertyValue('--art-max-h')).toBe('');
   });
 
-  it('the player lifts the cap from a panel once the next one is revealed, and from every panel on resize or rotation', () => {
+  it('the player lifts the cap from a panel once the next one is revealed, and from every panel on a width change or rotation, then reveals the newest again', () => {
     vi.spyOn(window, 'scrollBy').mockImplementation(() => undefined);
     // Every panel is taller than the room (footer at 300): each newest panel gets a cap.
     vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
@@ -324,8 +330,25 @@ describe('CR-29: art caps and the open path (geometry stubbed)', () => {
     expect(capped()).toEqual([false, true]);
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     expect(capped()).toEqual([false, false, true]);
+    // A height-only resize (the address bar collapsing) keeps the caps.
     act(() => {
       window.dispatchEvent(new Event('resize'));
+    });
+    expect(capped()).toEqual([false, false, true]);
+    // A width change lifts every cap at once; the newest panel is then revealed again for the new
+    // viewport (here still too tall, so capped again) on the next frame.
+    const raf = vi.spyOn(window, 'requestAnimationFrame').mockImplementation(() => 0);
+    vi.spyOn(window, 'innerWidth', 'get').mockReturnValue(window.innerWidth + 100);
+    act(() => {
+      window.dispatchEvent(new Event('resize'));
+    });
+    expect(capped()).toEqual([false, false, false]);
+    const frame = raf.mock.calls.at(-1)?.[0];
+    act(() => frame?.(0));
+    expect(capped()).toEqual([false, false, true]);
+    // A rotation does the same.
+    act(() => {
+      window.dispatchEvent(new Event('orientationchange'));
     });
     expect(capped()).toEqual([false, false, false]);
   });

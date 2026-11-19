@@ -166,16 +166,42 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
     }
   }, [view, shown, picked]);
 
-  // CR-29: a rotation or resize lifts every inline art cap (it was measured for the old viewport); the CSS
-  // cap for the new viewport applies at once, and the next reveal measures again.
+  // CR-29: a rotation (or any width change) lifts every inline art cap, which was measured for the old
+  // viewport, and reveals the newest panel again for the new one (on open: the heading row first). A
+  // height-only resize (a mobile address bar collapsing) keeps the caps: nothing was measured wrongly.
+  const shownRef = useRef(shown);
+  shownRef.current = shown;
   useEffect(() => {
     if (typeof window === 'undefined') return undefined;
-    const reset = () => items.current.forEach((li) => li && liftArtCap(li));
-    window.addEventListener('resize', reset);
-    window.addEventListener('orientationchange', reset);
+    let width = window.innerWidth;
+    let frame = 0;
+    const relayout = () => {
+      items.current.forEach((li) => li && liftArtCap(li));
+      cancelAnimationFrame(frame);
+      // After the new layout (and the footer's new measured height) is in place.
+      frame = requestAnimationFrame(() => {
+        const n = shownRef.current;
+        const li = items.current[n - 1];
+        if (!li) return;
+        if (n === 1) revealOnOpen(headRef.current, li, footerRef.current);
+        else revealPanel(li, footerRef.current, 'auto');
+      });
+    };
+    const onResize = () => {
+      if (window.innerWidth === width) return;
+      width = window.innerWidth;
+      relayout();
+    };
+    const onRotate = () => {
+      width = window.innerWidth;
+      relayout();
+    };
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onRotate);
     return () => {
-      window.removeEventListener('resize', reset);
-      window.removeEventListener('orientationchange', reset);
+      cancelAnimationFrame(frame);
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onRotate);
     };
   }, []);
 
@@ -337,9 +363,10 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
 const REVEAL_MARGIN = 8;
 
 /**
- * CR-28 (T-S4b QA M1): scroll so the panel's figcaption (its text, postcard or flip card) ends above the
- * sticky footer's top edge. When the whole panel fits between the viewport top and the footer, it is shown
- * whole; when it is taller than that room, the caption end wins over the top of the art. Before this,
+ * CR-28 (T-S4b QA M1), CR-29 round 2: when the whole panel fits between the viewport top and the sticky
+ * footer, scroll so all of it (picture and caption, whichever ends lower) is above the footer's top edge;
+ * when it is taller than that room, the figcaption's end (its text, postcard or flip card) wins over the
+ * top of the art. Before this,
  * `scrollIntoView({ block: 'nearest' })` showed the art and left the caption under the footer.
  */
 export function revealPanel(li: HTMLElement, footer: HTMLElement | null, behavior: ScrollBehavior): void {
@@ -348,14 +375,18 @@ export function revealPanel(li: HTMLElement, footer: HTMLElement | null, behavio
   const bottomEdge = (footer ? footer.getBoundingClientRect().top : window.innerHeight) - REVEAL_MARGIN;
   // CR-28 round 2: a panel taller than the room between the viewport top and the footer gets a tighter
   // art cap (down to 88 px), so the focused panel is fully on screen with its caption.
+  const room = bottomEdge - REVEAL_MARGIN;
   const li0 = li.getBoundingClientRect();
-  shrinkArt(li, li0.bottom - li0.top - (bottomEdge - REVEAL_MARGIN));
-  const top = li.getBoundingClientRect().top;
-  const capEnd = cap.getBoundingClientRect().bottom;
-  // Down by what the caption runs under the footer; else up to show the panel's top, as long as the
-  // caption end still clears the footer.
-  let dy = capEnd > bottomEdge ? capEnd - bottomEdge : 0;
-  if (dy === 0 && top < REVEAL_MARGIN) dy = Math.max(top - REVEAL_MARGIN, capEnd - bottomEdge);
+  shrinkArt(li, li0.bottom - li0.top - room);
+  const r = li.getBoundingClientRect();
+  // CR-29 round 2: the end to bring above the footer is the whole panel's (picture or caption, whichever
+  // ends lower: side by side, the picture can be the taller one) when the panel fits; only when it does
+  // not does the caption end win.
+  const end = r.bottom - r.top <= room ? r.bottom : cap.getBoundingClientRect().bottom;
+  // Down by what that end runs under the footer; else up to show the panel's top, as long as the end
+  // still clears the footer.
+  let dy = end > bottomEdge ? end - bottomEdge : 0;
+  if (dy === 0 && r.top < REVEAL_MARGIN) dy = Math.max(r.top - REVEAL_MARGIN, end - bottomEdge);
   if (Math.abs(dy) >= 1) window.scrollBy({ top: dy, behavior });
 }
 

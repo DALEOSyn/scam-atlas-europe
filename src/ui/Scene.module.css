@@ -461,15 +461,23 @@
   .postcard {
     margin-top: var(--space-1);
   }
-  /* Short rehearsal options side by side (each still a 44 px target). */
+  /* Rehearsal options in one row of equal columns (each still a 44 px target), so every answer looks
+     equal; a label that wraps makes the whole row taller, never one button. */
   .options {
-    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+  }
+  .options > li {
+    display: grid;
   }
   .postcardFace {
     min-height: 0;
     padding: var(--space-3) calc(var(--space-3) + 48px) var(--space-3) var(--space-3);
   }
+  /* The picture keeps 4:3 beside the caption: its column sets the width, the height follows (no 160 px
+     minimum here, which squashed the box and cropped the backdrop at the sides). */
   .figure > .art {
     width: 100%;
+    min-height: 0;
   }
 }

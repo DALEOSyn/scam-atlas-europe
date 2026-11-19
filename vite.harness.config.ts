@@ -27,8 +27,11 @@ function yamlPlugin(): Plugin {
     transform(code, id) {
       if (!/\.ya?ml$/.test(id)) return null;
       if (resolve(id) === brandsFile) {
-        const doc = parse(code) as { brands: unknown[] };
-        return { code: yamlModuleSource(id, stringify({ ...doc, brands: [...doc.brands, ...extraBrands] }), scenarios), map: null };
+        const doc = parse(code) as { brands: { id?: unknown }[] };
+        // Same id: the test-only entry replaces the shipped one (as tests/unit/engine/fixture-brands.ts), so a
+        // firm the shipped register lists (Dublin, T-3.10) is never shown twice.
+        const extraIds = new Set((extraBrands as { id?: unknown }[]).map((b) => b.id));
+        return { code: yamlModuleSource(id, stringify({ ...doc, brands: [...doc.brands.filter((b) => !extraIds.has(b.id)), ...extraBrands] }), scenarios), map: null };
       }
       return { code: yamlModuleSource(id, code, scenarios), map: null };
     },

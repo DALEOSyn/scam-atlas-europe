@@ -1,0 +1,159 @@
+# 5-4 The real Kasia, leaving for rehearsal: "Can you send me the €12 for the tape and boxes?" (GDD §25.4
+# 5-4; hijacked-friend-payment-code, genuine twin of 5-6).
+# Genuine, high stakes (a payment), difficulty 4, timer (slot length) + honest pusher at 30 s (Kasia);
+# interrupt at 15 s (Mateus, small talk). Kasia writes English (she and Mateus use English with the player).
+# Checkables (3, parity with 5-6's 4): sender neutral (W2: saved contact on a money request), reference
+# neutral (agreed in person), request ("Asks for…": a transfer you start yourself, no code, no link).
+# Banking beat (start_transfer, class step, no cap: genuine): payee typed from her contact. The payee-name
+# check returns "couldn't check" (researcher M-C: Verification of Payee isn't mandatory for non-euro member
+# states such as Poland until 2027-07-09), with the review-mandated neutral reveal. Cancelling a genuine
+# agreed payment is dismiss on genuine high stakes (0).
+id: warsaw-04-kasia-twelve-euros
+chapter: warsaw
+role: standard
+pattern: hijacked-friend-payment-code
+theme: friend
+twin_of: warsaw-06-kasia-payment-code
+learning_objectives: [LO-07, LO-17, LO-06]
+difficulty: 4
+is_fraud: false
+stakes: high
+device: messenger
+brands: [kettle, larchwick]
+cast: [kasia, mateus]
+pressure:
+  timer: true
+  levers: [urgency]
+  honest_deadline: "Tonight's fine"
+  pusher:
+    messages:
+      - { at_seconds: 30, text: "Off now! Tonight's fine 🎻" }
+
+message:
+  sender: { display: "Kasia (Warsaw)", detail: "Saved contact: Kasia (Warsaw)" }
+  from_cast: kasia
+  earlier:
+    - { when: "This morning", body: "Tape's in the hall if you need it 📦" }
+  body: "Leaving for rehearsal! Can you send me the €12 for the tape and boxes from this morning? To my account as usual, in your Larchwick app. Tonight's fine 🙂"
+  request: pay
+  ask: { text: "Can you send me the €12 for the tape and boxes from this morning?" }
+  references: ["the tape and boxes from this morning"]
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows Kasia's saved contact, in your usual chat with her, as a real message from her would. An account can be taken over and show the same contact, so it can't prove anything either way. Judge the request."
+    red_flag: false
+    type: sender
+  - target: reference
+    reveal: "The tape and boxes you agreed this morning, in person. Anyone in the chat could mention them, so on its own it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: request
+    reveal: "Asks for the €12 you agreed in person, to her own account, by a transfer you start yourself. No code, no link."
+    red_flag: false
+    type: request
+    reassures: true
+
+actions:
+  - id: pay_kasia_app
+    label: "Pay her in the Larchwick app"
+    kind: start_transfer
+    next_beat: kasia_transfer
+    pressure_target: true
+  - id: call_kasia_first
+    label: "Call Kasia's saved number first"
+    kind: call_back_known
+    outcome: kasia_on_stairs
+  - id: report_kasia_real
+    label: "Report the message"
+    kind: report
+    outcome: kasia_real_reported
+  - id: ignore_kasia_real
+    label: "Ignore it"
+    kind: ignore
+    outcome: kasia_unpaid
+
+beats:
+  - id: kasia_transfer
+    device: banking
+    message:
+      payee: { name: "Kasia Wójcik", iban: "PL•• •••• •••• •••• •••• •••• 3308", name_check: unavailable, amount: "€12.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "The name couldn't be checked for this account. That proves nothing either way; you agreed the €12 with Kasia in person."
+        red_flag: false
+        type: payee
+      - target: payee.iban
+        reveal: "Kasia's account from her saved contact, the one you've paid before. An account number on its own can't prove anything either way; what you agreed in person can."
+        red_flag: false
+        type: payee
+    actions:
+      - id: send_kasia_twelve
+        label: "Send €12"
+        kind: proceed
+        outcome: kasia_paid
+        pressure_target: true
+      - id: cancel_call_kasia
+        label: "Cancel and call Kasia first"
+        kind: call_back_known
+        outcome: kasia_on_stairs
+      - id: cancel_kasia_transfer
+        label: "Cancel"
+        kind: ignore
+        outcome: kasia_cancelled
+
+interrupts:
+  - id: mateus_lamp_sold
+    at_seconds: 15
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Mateus (work phone)", detail: "Saved contact: Mateus (work phone)" }
+      from_cast: mateus
+      body: "Lamp's sold. Twenty minutes. I'm framing the photo."
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Mateus's saved contact, in your usual chat with him. That isn't proof on its own, so weigh it with what he asks for: nothing, he's showing off."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_mateus_lamp
+        label: "Reply: the photo did it!"
+        kind: proceed
+        outcome: mateus_lamp_thanks
+        pressure_target: true
+      - id: report_mateus_lamp
+        label: "Report the message"
+        kind: report
+        outcome: mateus_lamp_reported
+
+outcomes:
+  kasia_paid:
+    narrative: "Sent: €12.00 to Kasia Wójcik. A minute later: \"Got it, thanks! 🎻\""
+  kasia_on_stairs:
+    narrative: "Kasia, on the stairs: \"Yes, me! Tonight's fine.\" You send the €12 from your Larchwick app."
+  kasia_real_reported:
+    narrative: "You reported it. Careful is good; this one really was Kasia, and she's still waiting for her €12."
+  kasia_unpaid:
+    narrative: "You didn't send the €12 you'd agreed. Kasia was real; she reminds you, kindly, the next morning."
+  kasia_cancelled:
+    narrative: "You didn't send the €12 you'd agreed. Kasia was real; she reminds you, kindly, the next morning."
+  mateus_lamp_thanks:
+    narrative: "Mateus: \"Professional, I told you.\""
+  mateus_lamp_reported:
+    narrative: "You reported it. Careful is good; this one really was Mateus, proud of a lamp."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Agreed in person, her own account, a normal transfer."
+    what_works: "Paying was fine; a call never hurts."
+  layer2:
+    message_flags: []
+    notes: "A real friend asks for a transfer you start yourself, to their own account, and is happy to take a call. Remember that shape. The bank couldn't check the name here, which proves nothing either way: what you agreed in person did the work."
+  device_tip: "In a real banking app, type the payee from your own contacts or earlier payments, not from a message. If the app can't check the name, a call to the number you already have is the check."
+  habit_card: call-the-number-you-know
+  sources: [eu-ecb-ipr, eu-ec-ipr-vop-2025, eu-eurlex-ipr-2024-886]

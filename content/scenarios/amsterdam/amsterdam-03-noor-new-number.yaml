@@ -1,0 +1,146 @@
+# 2-3 "Noor", new number (GDD §22.3; family-impersonation brief variant A, §3.1–3.5, §4, §5).
+# Fraud, difficulty 2, timer (slot length) + pushers at 25 s and 45 s. Levers: affection, urgency.
+# Red flags: sender.detail (a known person on an unknown number; same opening words as 2-1's reveal,
+# design ruling 3 §22.8) and request (money by message, today). Decoys: the profile photo (copied) and
+# the claim "I'll pay you back tomorrow" (a promise, neutral). Text flags in layer 2: the "can't call"
+# excuse and the deadline.
+# Banking beat (CR-18, start_transfer = class step, not in R): the player types Noor's saved name and
+# the IBAN from the chat (the payee name is Noor's saved name, masked like 2-8's "K. ••••"). Payee check: no match, a warning and never a name (producer answer 3, CR-23).
+# the name check is a red flag (FI §3.5), the IBAN a decoy.
+# Deviation from GDD §22.3: the phone "went in the bath", not "in the canal". Noor is back home, not in
+# Amsterdam, and the scammer can't know where the player is; a canal would be an unteachable location
+# tell. Water is the sourced excuse (FI §6). Flagged for game-designer.
+# Fall -> damage control (6, 2 harmful). The fall narrative shows a second request (FI §3.6).
+id: amsterdam-03-noor-new-number
+chapter: amsterdam
+role: standard
+pattern: messenger-family-impersonation
+theme: new-number
+twin_of: amsterdam-01-teo-new-number
+learning_objectives: [LO-07, LO-06, LO-04, LO-01]
+difficulty: 2
+is_fraud: true
+device: messenger
+brands: [kettle, larchwick]
+cast: [noor]
+pressure:
+  timer: true
+  levers: [affection, urgency]
+  pusher:
+    messages:
+      - { at_seconds: 25, text: "??" }
+      - { at_seconds: 45, text: "please it has to be today 😭" }
+
+message:
+  sender: { display: "Noor", detail: "Mobile number •••• ••41", new_contact: true }
+  body: |
+    Hiii it's Noor!! My phone went in the bath 😭 this is my new number. My banking app isn't set up on the new phone yet. Can you pay €84 for the repair into my new account today? NL•• •••• •••• •••• 29. I'll pay you back tomorrow, promise. Can't call yet, the new phone isn't set up for calls.
+  request: pay
+  ask: { text: "Can you pay €84 for the repair into my new account today?" }
+  claims:
+    - { text: "I'll pay you back tomorrow, promise" }
+  image: { alt: "Profile photo: Noor laughing, in her school hoodie" }
+
+inspectables:
+  - target: sender.detail
+    reveal: "Not in your contacts: a new number, not Noor's saved one. Someone you know, on a number you don't have, asking for money: that's the moment to call the number you already had."
+    red_flag: true
+    type: sender
+  - target: image
+    reveal: "Shows Noor's photo, as a real message from her would. Photos are easy to copy from a public profile, so it can't prove anything either way."
+    red_flag: false
+    type: image
+  - target: claim
+    reveal: "A promise to pay you back tomorrow, as a real cousin might say. Anyone can promise, so it can't prove anything either way. Judge the request."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "Money by message, to an account you've never seen, today, from a number you don't know. That is the request to check with a call before you pay."
+    red_flag: true
+    type: request
+
+actions:
+  - id: start_noor_transfer
+    label: "Pay her in the Larchwick app"
+    kind: start_transfer
+    next_beat: noor_transfer
+    pressure_target: true
+  - id: call_noor_saved
+    label: "Call Noor's saved number"
+    kind: call_back_known
+    outcome: real_noor_picks_up
+  - id: report_noor_chat
+    label: "Report the chat"
+    kind: report
+    outcome: noor_chat_reported
+  - id: ignore_noor_chat
+    label: "Ignore it"
+    kind: ignore
+    outcome: noor_chat_ignored
+
+beats:
+  - id: noor_transfer
+    device: banking
+    message:
+      payee: { name: "Noor ••••", iban: "NL••••••••••••••29", name_check: mismatch, amount: "€84.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "No match: the name you typed doesn't match the account holder, and the bank doesn't say whose it is. Money for a cousin, going to an account that may not be hers, is the moment to stop and call."
+        red_flag: true
+        type: payee
+      - target: payee.iban
+        reveal: "The account number from the chat. An IBAN looks the same whoever holds it, so it can't prove anything either way. The name check tells you more."
+        red_flag: false
+        type: payee
+    actions:
+      - id: send_84_anyway
+        label: "Send €84 anyway"
+        kind: pay
+        outcome: paid_new_number
+        pressure_target: true
+      - id: cancel_call_noor
+        label: "Cancel and call Noor's saved number"
+        kind: call_back_known
+        outcome: name_check_then_call
+      - id: cancel_noor_transfer
+        label: "Cancel"
+        kind: ignore
+        outcome: noor_transfer_cancelled
+
+outcomes:
+  paid_new_number:
+    narrative: "\"Thank you!! 😘\" Ten minutes later: \"So sorry, the shop says the screen is extra. Can you do €120 more?\" When you ring Noor's saved number, she's in a lesson break, her phone in her hand. She never sent any of it."
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: report_to_police_online, category: report }
+      - { step: tell_real_person, category: warn }
+      - { step: pay_second_request, category: harmful }
+      - { step: reply_ask_money_back, category: harmful }
+  real_noor_picks_up:
+    narrative: "Noor picks up in a lesson break: \"Bath?? My phone's right here. Someone's pretending to be me? Ugh. Thanks for calling, inspector.\""
+  name_check_then_call:
+    narrative: "The name check caught it. Good stop. You cancel and ring Noor's saved number. She picks up in a lesson break: \"Bath?? My phone's right here.\""
+  noor_chat_reported:
+    narrative: "Reported. Now tell the real Noor, with a call to her saved number, so she can warn the family."
+  noor_chat_ignored:
+    narrative: "You leave it. The new number keeps pinging for a while, then goes quiet."
+  noor_transfer_cancelled:
+    narrative: "You cancel the payment. The new number keeps pinging: \"??\""
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Noor's name, a new number, money today, no call."
+    what_works: "A call from you, on Noor's saved number."
+  layer2:
+    message_flags:
+      - "\"Can't call yet\": an excuse not to talk is part of the script. A real cousin would want you to ring."
+      - "It has to be today: urgency leaves no time for a call."
+    notes: "If it happens for real: save the chat and take screenshots first, then report it to your bank and the police, and report the chat in Kettle last, because it disappears once you do. Then tell Noor and the family, with a call. These messages are built to hit people who care, at any age."
+  device_tip: "On a real phone, open your contacts and call the number you already have for the person, not the new one in the chat."
+  habit_card: call-the-number-you-know
+  already_clicked:
+    paid: "Call your bank now on the number on your card (with a parent or trusted adult if you're under 18). Save the chat, then report it. Don't pay a second request."
+  sources: [nl-politie-hulpvraagfraude-2025, nl-fraudehelpdesk-hulpvraag-campaign, nl-veiligbankieren-hulpvraag, nl-veiliginternetten-hulpvraag, eu-ec-ipr-vop-2025, eu-ecb-ipr, eu-eurlex-ipr-2024-886, eu-epc-vop-scheme, nl-betaalvereniging-iban-name-check, nl-politie-aangifte-hulpvraagfraude, nl-betaalvereniging-after-whatsapp-fraud]

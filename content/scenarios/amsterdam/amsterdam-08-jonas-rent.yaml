@@ -1,0 +1,146 @@
+# 2-8 Jonas's real account (GDD §22.3; family-impersonation brief variant B, §3.2–3.5, §4,
+# §5.7). Fraud, difficulty 3, timer (slot length) + pusher at 30 s. Twin of amsterdam-06-boat-tour-share.
+# Jonas's real Kettle account, taken over (not his fault). Earlier thread shows his real message.
+# Red flags: request (money by message, to someone else's account, today) and claim #1 "on a quiet
+# train, can't talk" (avoids a call, FI §3.4). Decoys: sender.detail (saved contact, neutral per design
+# ruling 1 §22.8, same wording as 2-6) and claim #2 "I'll send it back tomorrow".
+# Banking beat (start_transfer, class step): the payee name is prefilled from the chat and masked
+# (K. ••••); the full name never appears. The typed name is exactly the account name, so the check says
+# "Name matches": the chapter's misleading-match moment (LO-06). name_check and IBAN are decoys.
+# Habit: a normal phone call to Jonas's saved number, not a Kettle call (FI §4 variant B).
+# The IBAN is masked and German-format (Jonas lives in Berlin); no country is taught as a tell.
+id: amsterdam-08-jonas-rent
+chapter: amsterdam
+role: standard
+pattern: messenger-family-impersonation
+theme: friend-money
+twin_of: amsterdam-06-boat-tour-share
+learning_objectives: [LO-07, LO-06, LO-01, LO-16]
+difficulty: 3
+is_fraud: true
+device: messenger
+brands: [kettle, larchwick]
+cast: [jonas]
+pressure:
+  timer: true
+  levers: [helpfulness, urgency]
+  pusher:
+    messages:
+      - { at_seconds: 30, text: "You there? Landlord's waiting 😬" }
+
+message:
+  sender: { display: "Jonas (neighbour)", detail: "Saved contact: Jonas (neighbour)" }
+  body: |
+    Hey, awkward one 😬 My banking app's been blocked since an update and my rent share is due today. Could you pay €350 straight to my landlord? DE•• •••• •••• •••• •••• 63, K. ••••. I'll send it back tomorrow. On a quiet train, can't talk.
+  request: pay
+  ask: { text: "Could you pay €350 straight to my landlord?" }
+  claims:
+    - { text: "On a quiet train, can't talk." }
+    - { text: "I'll send it back tomorrow." }
+  earlier:
+    - { when: "Last week", body: "Have a good trip to Amsterdam! 🚲" }
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows Jonas's saved contact, in your usual chat with him, as a real message from him would. An account can be taken over and show the same contact, so it can't prove anything either way. Judge the request."
+    red_flag: false
+    type: sender
+  - target: claim
+    reveal: "A reason not to talk. A real neighbour asking for €350 would expect you to want a quick call; an excuse that rules out a call is part of the script."
+    red_flag: true
+    type: claim
+  - target: claim#2
+    reveal: "A promise to pay you back tomorrow, as a real friend might say. Anyone can promise, so it can't prove anything either way. Judge the request."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "Money by message, today, to someone else's account: the landlord's, not Jonas's. That is the request to check with a normal phone call before you pay."
+    red_flag: true
+    type: request
+
+actions:
+  - id: start_landlord_transfer
+    label: "Pay the landlord in the Larchwick app"
+    kind: start_transfer
+    next_beat: landlord_transfer
+    pressure_target: true
+  - id: phone_jonas
+    label: "Phone Jonas (a normal call, not in Kettle)"
+    kind: call_back_known
+    outcome: jonas_logged_out
+  - id: report_jonas_chat
+    label: "Report the chat"
+    kind: report
+    outcome: jonas_chat_reported
+  - id: ignore_jonas_chat
+    label: "Ignore it"
+    kind: ignore
+    outcome: jonas_chat_ignored
+
+beats:
+  - id: landlord_transfer
+    device: banking
+    message:
+      payee: { name: "K. ••••", iban: "DE••••••••••••••••••63", name_check: match, amount: "€350.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "Name matches: the account is held by the name entered. That shows whose account it is, not whether the story is true, so it can't prove anything either way."
+        red_flag: false
+        type: payee
+      - target: payee.iban
+        reveal: "The account number from the chat. An IBAN looks the same whoever holds it, so it can't prove anything either way. The name check tells you whose it is."
+        red_flag: false
+        type: payee
+    actions:
+      - id: send_350
+        label: "Send €350"
+        kind: pay
+        outcome: paid_landlord
+        pressure_target: true
+      - id: cancel_phone_jonas
+        label: "Cancel and phone Jonas (a normal call)"
+        kind: call_back_known
+        outcome: match_then_call
+      - id: cancel_landlord_transfer
+        label: "Cancel"
+        kind: ignore
+        outcome: landlord_transfer_cancelled
+
+outcomes:
+  paid_landlord:
+    narrative: "\"Thanks, you're a lifesaver!\" Twenty minutes later: \"Landlord says the deposit top-up is due too, €200. Could you?\" That evening Jonas rings from his own phone: his Kettle was taken over this morning. He never asked."
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: tell_real_person, category: warn }
+      - { step: report_to_police_online, category: report }
+      - { step: pay_second_request, category: harmful }
+      - step: reply_to_sender
+        category: harmful
+        feedback: "Replying feels like a way to sort it out, but the chat is in the scammer's hands right now, not Jonas's. Call your bank, then phone Jonas on his saved number, a normal call."
+  jonas_logged_out:
+    narrative: "Jonas picks up at work: \"My Kettle logged me out this morning and I can't get back in. I didn't send anything! Thanks for ringing.\""
+  match_then_call:
+    narrative: "A match only shows whose account it is. Your call settled it. Good stop. Jonas, at work: \"My Kettle logged me out this morning. That wasn't me.\""
+  jonas_chat_reported:
+    narrative: "Reported. Now phone Jonas, a normal call, so he can get his account back."
+  jonas_chat_ignored:
+    narrative: "You leave it. A few more \"You there?\" messages arrive, then the chat goes quiet."
+  landlord_transfer_cancelled:
+    narrative: "You cancel. The chat pings again: \"You there? Landlord's waiting 😬\""
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "His real chat, but money to someone else today, and no call."
+    what_works: "A call from you, on Jonas's saved number."
+  layer2:
+    message_flags:
+      - "Due today: urgency leaves no time for a call."
+    notes: "A Kettle call goes to whoever holds the Kettle account, and right now that may not be Jonas. A normal phone call goes to his SIM. A passed-on code (like the one in Berlin) is a common way accounts like this get taken over: turn on the two-step PIN. And a matching name shows whose account it is, not that the story is true."
+  device_tip: "On a real phone, call the person from your phone's contacts as a normal call, not from inside the chat app."
+  habit_card: check-who-gets-the-money
+  already_clicked:
+    paid: "Call your bank now on the number on your card (with a parent or trusted adult if you're under 18). Don't pay a second request. Then phone Jonas so he can recover his account."
+  sources: [nl-fraudehelpdesk-takeover-alert-2026, nl-politie-whatsapp-takeover-2024, nl-veiligbankieren-hulpvraag, nl-veiliginternetten-hulpvraag, nl-politie-hulpvraagfraude-2025, eu-ec-ipr-vop-2025, eu-ecb-ipr, eu-eurlex-ipr-2024-886, eu-epc-vop-scheme, nl-betaalvereniging-iban-name-check, be-febelfin-vop-faq]

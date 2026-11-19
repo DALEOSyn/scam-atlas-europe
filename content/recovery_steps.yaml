@@ -14,7 +14,7 @@ steps:
   - id: turn_on_two_step
     label: "Turn on two-step sign-in"
   - id: report_to_police_online
-    label: "Report it to the police online"
+    label: "Report it to the police (online in many cases)"
   - id: warn_contacts
     label: "Warn your contacts that messages from you may be fake"
   - id: reply_ask_money_back
@@ -47,4 +47,25 @@ steps:
   - id: change_password_sign_out
     label: "Change the password and sign out other sessions"
   - id: call_bank_stop_payment
-    label: "Call your bank on the number on your card and ask it to stop or reverse the payment"
+    label: "Call your bank on the number on your card and ask it to try to stop or recall the payment"
+  # Amsterdam (GDD §22.6, T-3.4). Real reporting bodies are named only on the "Where to report" screen.
+  - id: stop_paying
+    label: "Stop paying: no last fee ever releases the money"
+  - id: keep_evidence
+    label: "Keep the chats, the site address and any payment records"
+  - id: report_to_police
+    label: "Report it to the police"
+  - id: contact_fraud_helpline
+    label: "Contact a fraud helpline for advice (see Where to report)"
+  - id: tell_real_person
+    label: "Call the real person on their saved number and tell them"
+  - id: report_id_copy
+    label: "Report the ID copy to the identity-fraud reporting point (see Where to report)"
+  - id: tell_trusted_adult
+    label: "Tell a parent or trusted adult now (if you're under 18)"
+  - id: pay_second_request
+    label: "Pay the second request so they leave you alone"
+    feedback: "Wanting it to be over is natural, but a second request after the first payment is part of the same scam, and paying it only adds to the loss. Stop paying and call your bank now on the number on your card."
+  - id: pay_last_fee
+    label: "Pay the last fee to unlock your balance"
+    feedback: "It feels like one more payment will get your money back, and that is exactly how the trap works: no fee ever releases it, and the amounts keep growing. Stop paying and call your bank on the number on your card."

@@ -1641,6 +1641,16 @@ sources:
     used_for: [task-job-scam]
     notes: "English gloss: 'Which organisations may copy my ID?'. 'Slechts enkele organisaties' may ask for a copy: government bodies, banks, notaries, casinos, life insurers and your EMPLOYER; they must tell you the legal obligation. Others may copy only with photo and BSN shielded, or must only note the ID type/number; where there is no legal obligation 'U bent niet verplicht om die aan hen te geven'. Links to the government's safe-copy app Q&A (not opened)."
 
+  - id: nl-rijksoverheid-minimumloon-2026
+    publisher: Rijksoverheid (Government of the Netherlands)
+    title: "Bedragen minimumloon 2026"
+    url: https://www.rijksoverheid.nl/themas/werk/minimumloon/bedragen-minimumloon/bedragen-minimumloon-2026
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [task-job-scam]
+    notes: "adults 21+ €14.71/h from 1 Jan 2026, €14.99/h from 1 Jul 2026; designer context only"
+
   # ================================================ Phase 3, chapter 3 (Paris) additions, all opened 2026-11-19
   # Briefs: docs/patterns/ceo-fraud-bec.md, docs/patterns/payment-detail-change.md
   - id: eu-epc-vop-faq

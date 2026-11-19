@@ -1,0 +1,95 @@
+# 2-1 Teo's new mobile (GDD §22.3; family-impersonation brief §7 genuine twin). Genuine, low
+# stakes, difficulty 2, calm. Twin of amsterdam-03-noor-new-number: the same shape (a known person on a
+# number you don't have, with their photo), but it asks for nothing. The tell is never "new number"
+# alone; it is new number + money + no call (FI §7).
+# Checkables (G, design ruling 3 §22.8): sender.detail opens with the same words as 2-3 and boss beat 2
+# ("Not in your contacts: a new number, not X's saved one.") and is a wrong tag here; the photo is
+# neutral; the claim points at the home line the player already has; the request asks for nothing
+# high-stakes (CR-17: every scored beat in this chapter has a request checkable, genuine or fraud).
+# Layer 1: H in full is 21 words and cannot fit the 40-word budget (fixed copy 14 + the report line 10),
+# so layer 1 uses the short form (GDD §22 "every shortened form says who dials and which number") and
+# layer 2 opens with H in full. Flagged for game-designer.
+# Actions: proceed ★★★ (target), call the home line ★★★, report 0 and −5, ignore ★★.
+id: amsterdam-01-teo-new-number
+chapter: amsterdam
+role: standard
+pattern: messenger-family-impersonation
+theme: new-number
+twin_of: amsterdam-03-noor-new-number
+learning_objectives: [LO-07, LO-17]
+difficulty: 2
+is_fraud: false
+stakes: low
+device: messenger
+brands: [kettle]
+cast: [teo]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Teo", detail: "Mobile number •••• ••58", new_contact: true }
+  body: |
+    Hello, it's Grandad. New mobile, the shop moved my contacts over. This is my number now; the home phone stays the same. Save it before you forget! T.
+  request: reply
+  ask: { text: "Save it before you forget!" }
+  claims:
+    - { text: "the home phone stays the same" }
+  image: { alt: "Profile photo: Teo in his reading glasses, grinning at the camera" }
+
+inspectables:
+  - target: sender.detail
+    reveal: "Not in your contacts: a new number, not Teo's saved one. People do change numbers, and on its own that isn't a warning sign. What matters is what the message asks for."
+    red_flag: false
+    type: sender
+  - target: image
+    reveal: "Shows Teo's photo, as a real message from him would. Photos are easy to copy, so it can't prove anything either way."
+    red_flag: false
+    type: image
+  - target: claim
+    reveal: "He says the home phone stays the same: a number you already have, so you can check with it if you like."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "It asks you to save a new number. No money, no code, no link."
+    red_flag: false
+    type: request
+
+actions:
+  - id: save_and_reply
+    label: "Save the number and reply"
+    kind: proceed
+    outcome: number_saved
+    pressure_target: true
+  - id: call_teo_home
+    label: "Call Teo's home number first"
+    kind: call_back_known
+    outcome: teo_confirms_on_home_line
+  - id: report_teo_number
+    label: "Report the message"
+    kind: report
+    outcome: teo_number_reported
+  - id: ignore_teo_number
+    label: "Ignore it"
+    kind: ignore
+    outcome: teo_number_ignored
+
+outcomes:
+  number_saved:
+    narrative: "You save \"Grandpa Teo (mobile)\" and reply with a thumbs up. Teo: \"Marvellous. Now I can send you photos of my tomatoes from anywhere.\""
+  teo_confirms_on_home_line:
+    narrative: "Teo picks up the home phone on the second ring and laughs: \"That's exactly what I'd have done. Yes, it's me. Save it, kiddo.\""
+  teo_number_reported:
+    narrative: "Reported. That evening Teo rings from his home line: \"Did my new number get lost? The shop said it went through.\" It really was him."
+  teo_number_ignored:
+    narrative: "You leave it. Two days later Teo rings from his home line: \"Did you save my new number yet?\""
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Asks for nothing."
+    what_works: "Asked for money by message? Call a number you already had."
+  layer2:
+    message_flags: []
+    notes: "The habit in full: asked by message for money you didn't expect, or to an account that isn't theirs? Call a number you already had. Why it was safe to act here: it asked only to save a number, and the home line you already had still works if you want to check. The tell is never a new number alone; it is new number + money + no call. Scam chats can start like this too and ask for money days later. That's when you call."
+  device_tip: "On a real phone, before you save a new number for someone you know, you can ring the number you already have for them. It takes a minute."
+  habit_card: calm-not-paranoid
+  sources: [nl-fraudehelpdesk-hulpvraag-campaign, nl-veiliginternetten-hulpvraag]

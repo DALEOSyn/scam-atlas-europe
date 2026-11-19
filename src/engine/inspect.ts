@@ -10,6 +10,8 @@
 import { deriveCheckables, linksIn, referencesOf, type BannerLike } from '../content/checkables.ts';
 import type { Device, Inspectable, Message } from '../content/schema.ts';
 import { tagIsCorrect, type TagTally } from './scoring.ts';
+import { castMember } from '../content/cast.ts';
+import { t } from '../i18n/index.ts';
 
 /** A beat-like thing that can be checked: opening message, beat or interrupt. */
 export interface CheckableBeat {
@@ -112,9 +114,22 @@ export function shownText(device: Device, m: Message, target: string, links: rea
       return nth(m.claims, target)?.text;
     case 'video':
       return m.video?.alt;
+    case 'voice':
+      // CR-36: "Sounds like Grandpa Teo" (cast display name).
+      return m.voice ? t('call_sounds_like', { name: castMember(m.voice.sounds_like)?.name ?? m.voice.sounds_like }) : undefined;
+    case 'qr.mount':
+      return m.qr?.mount ? qrMountText(device, m.qr.mount, m.qr.surface) : undefined;
     default:
       return device === 'call' ? m.sender?.detail : undefined;
   }
+}
+
+/** CR-37: the text alternative for how a code is attached (A6). */
+export function qrMountText(device: Device, mount: 'printed' | 'sticker', surface?: string): string {
+  if (mount === 'sticker') return t('qr_mount_sticker');
+  // S1: a qr beat may name what the code is printed on ("panel" on a parking meter); else a neutral "it".
+  if (surface) return t('qr_mount_printed_on', { surface });
+  return device === 'letter' ? t('qr_mount_printed_letter') : t('qr_mount_printed');
 }
 
 /** All checkables of a beat in reading order, each with its reveal (or the neutral filler). */

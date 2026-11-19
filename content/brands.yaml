@@ -588,8 +588,31 @@ brands:
     status: draft
 
   # -------------------------------------------------------------------------------------------
+  # Dublin (GDD §28.10, BRAND_CHECK DS1): the in-world financial regulator. Engine CR-38 shows its register
+  # and warning list from the `register` entries of other brands. Registered by frontend-engineer at the
+  # sceptic's request (CR-38 review); ux-artist to add a mark, palette and rationale details if one is drawn.
+  - id: fairmeasure
+    name: "Fairmeasure"
+    kind: government
+    sector: in-world financial regulator (genuine)
+    role_in_game: >
+      The in-world financial regulator: the "Fairmeasure register" tool (register of authorised firms and
+      warning list) in every chapter, and the genuine sender in Dublin. Never styled like any real regulator
+      or EU body: no crest, seal, flag, star ring or scales; plain wordmark in the game's own surface colours.
+    domain: fairmeasure.example
+    rationale:
+      name: "Coined ('fair measure'); alternatives Truebalance, Steadweight (GDD §28.10)."
+      colour_shape: "No mark: a plain text wordmark on the game's neutral surface."
+    lookalike_examples:
+      - "fairmeasure-claims.example"    # boss beat 3 fake regulator fee (scam-only, GDD §28.10)
+    web_check: "Keep (BRAND_CHECK DS1)."
+    trademark_search: "web-checked 2026-11-19; formal TMview/EUIPO pending before G4"
+    status: draft
+
+# Not yet registered (request ux-artist before writing these scenarios): streaming service (0-4 now
+# uses Kettle, so possibly not needed), utility company (Rome), remote-support tool (finale).
   # Dublin (GDD §28.10, BRAND_CHECK DS2-DS7, DS10, DS12). Fairmeasure (the in-world regulator) is
-  # registered by frontend-engineer with the `register` field (engine branch), not here.
+  # registered just above by frontend-engineer (CR-38, engine branch).
   - id: postwick
     name: "Postwick"
     kind: other

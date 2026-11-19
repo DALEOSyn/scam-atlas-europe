@@ -1,0 +1,45 @@
+# CR-38: an authorised firm. The result card shows the register's own address and phone (masked) from
+# content/brands.yaml (here the test registry tests/fixtures/brands-register.yaml): contact it only there.
+id: fx-cr38-register-authorised
+chapter: fixtures
+role: standard
+pattern: investment-ad-fake-platform
+theme: investment
+learning_objectives: [LO-13, LO-17]
+difficulty: 4
+is_fraud: false
+stakes: low
+device: email
+brands: [ellisfen]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Ellisfen Invest", detail: "info@ellisfen.example" }
+  subject: "The information sheet you asked for"
+  body: "Thanks for calling us. Attached is the information sheet for our savings plan, with every charge set out. Take your time."
+  request: none
+  attachments: [{ name: "savings-plan-sheet.pdf", size: "220 KB" }]
+
+inspectables:
+  - target: sender.detail
+    reveal: "Ellisfen's own address, the one you called them on."
+    red_flag: false
+    reassures: true
+
+actions:
+  - { id: reply_thanks, label: "Reply: thanks, I'll read it", kind: proceed, outcome: replied }
+  - { id: look_up, label: "Look Ellisfen up on the Fairmeasure register yourself", kind: check_official_list, outcome: on_register }
+  - { id: delete_mail, label: "Delete it", kind: delete, outcome: deleted }
+
+outcomes:
+  on_register:
+    narrative: "Ellisfen Invest is on the register. Its details there match the ones you used."
+    register: { firm: "Ellisfen Invest", result: authorised, address: "3 Quillon Street, Dublin", phone: "+353 1 ••• ••42" }
+  replied: { narrative: "You thank them and read the sheet in your own time." }
+  deleted: { narrative: "You delete the email." }
+
+debrief:
+  layer1: { tell: "A firm you found yourself, on its own details.", what_works: "Check the register, then take your time." }
+  device_tip: "The register lists a firm's own contact details: use those."
+  habit_card: calm-not-paranoid
+  sources: [ie-fraudsmart-investment-2025]

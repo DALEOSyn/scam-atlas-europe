@@ -28,6 +28,8 @@ import { Icon } from './Icon.tsx';
 import { deadlineText, WHAT_NOW_KEYS } from './labels.ts';
 import { RichText } from './RichText.tsx';
 import { SettingsPanel } from './Settings.tsx';
+import { COACH_FAIRMEASURE, FairmeasurePanel, RegisterResult, regulatorName } from './Fairmeasure.tsx';
+import { registerAvailable, registerEntries } from '../content/brands.ts';
 import { linePace, readingHoldSeconds, unrevealedTargets } from './text.ts';
 import styles from './ScenarioView.module.css';
 
@@ -417,6 +419,33 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
     }, 0);
   }, [runner.freeze]);
 
+  // ---- CR-38: the Fairmeasure regulator view, a home-screen tool (HUD menu); the timer is frozen while open.
+  const [registerOpen, setRegisterOpen] = useState(false);
+  const registerReturn = useRef<HTMLElement | null>(null);
+  const openRegister = () => {
+    registerReturn.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    runner.freeze('register', true);
+    setRegisterOpen(true);
+  };
+  const closeRegister = useCallback(() => {
+    setRegisterOpen(false);
+    runner.freeze('register', false);
+    const el = registerReturn.current;
+    setTimeout(() => {
+      const menu = document.querySelector<HTMLElement>('[data-hud="menu"]');
+      const usable = !!el && el.isConnected && !el.closest('[hidden], [inert]');
+      (usable ? el : (menu ?? deviceHeadingRef.current))?.focus();
+    }, 0);
+  }, [runner.freeze]);
+  /** One-time coach mark for the register, wherever it is first used (GDD §28.5). */
+  const registerCoach = !coachSeen.includes(COACH_FAIRMEASURE);
+  const registerCoachSeen = useCallback(() => {
+    if (coachSeenRef.current.includes(COACH_FAIRMEASURE)) return;
+    coachSeenRef.current = [...coachSeenRef.current, COACH_FAIRMEASURE];
+    setCoachSeen(coachSeenRef.current);
+    onCoachMarkSeen?.(COACH_FAIRMEASURE);
+  }, [onCoachMarkSeen]);
+
   // ---- "Jump to your options" (QA M6): a sticky bar at the bottom of the screen on phones while the
   // tray is out of view; it moves focus to the tray. Hidden on the desk (the rail is always in view).
   const [trayInView, setTrayInView] = useState(true);
@@ -577,7 +606,8 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
 
   const card = openItem ? <CheckCard item={openItem} visibleText={visible(openItem)} sender={sender} modal={modal} onTag={doTag} onClose={closeCard} /> : null;
   const live = view.phase === 'playing' || view.phase === 'what_now';
-  const blocked = modal || settingsOpen;
+  // CR-38 (sceptic B1): the Fairmeasure dialog is modal too: the scenario and the HUD go inert under it.
+  const blocked = modal || settingsOpen || registerOpen;
   const showJump = jumpShown;
   // The bar's place is kept for the rest of the beat once it has shown (CR-27).
   const [jumpBeat, setJumpBeat] = useState<string | null>(null);
@@ -616,6 +646,9 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
               onQuit: () => onQuit?.(),
               onOpen: (open) => runner.freeze('pause_menu', open),
               onSettings: settings && onSettings ? openSettings : undefined,
+              // CR-38 (psych M1): only when the register lists at least one authorised firm.
+              onRegister: registerAvailable() ? openRegister : undefined,
+              registerName: regulatorName(),
             }}
           />
         </div>
@@ -818,6 +851,8 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                   <Icon name="info" />
                   <span>{view.consequenceDeadline ? deadlineText(view.consequenceDeadline, scenario.pressure.honest_deadline) : <RichText text={view.consequence ?? ''} />}</span>
                 </p>
+                {/* CR-38: what the register showed when you looked the firm up yourself. */}
+                {view.consequenceRegister ? <RegisterResult card={view.consequenceRegister} coach={registerCoach} onCoachSeen={registerCoachSeen} /> : null}
                 {/* Boss "already checked" (ruling QA fun note a), after the beat's narrative. */}
                 {view.consequenceCovered ? (
                   <p class={styles.caption} data-covered="">
@@ -851,6 +886,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
       {settingsOpen && settings && onSettings ? (
         <SettingsPanel settings={settings} defaultTimer={defaultTimer} onChange={onSettings} onClose={closeSettings} modal inScenario />
       ) : null}
+      {registerOpen ? <FairmeasurePanel entries={registerEntries()} onClose={closeRegister} coach={registerCoach} onCoachSeen={registerCoachSeen} /> : null}
       <p id="check-hint" class={styles.vh}>
         {t('check_hint')}
       </p>

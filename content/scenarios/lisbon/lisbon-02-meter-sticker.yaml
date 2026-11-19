@@ -24,7 +24,7 @@ pressure:
       - { at_seconds: 20, text: "Beatriz: Viewing in 5 min! 🙈" }
 
 message:
-  qr: { payload: /qr/lisbon-meter-sticker, destination: zonelet-pay.example, caption: "A sticker stuck over the meter's printed code" }
+  qr: { payload: /qr/lisbon-meter-sticker, destination: zonelet-pay.example, caption: "A sticker stuck over the meter's printed code", mount: sticker }
   body: |
     Zonelet · ZONA 3 · €1,60/h
     Autocolante: Pague pelo telemóvel, sem app. Digitalize aqui.

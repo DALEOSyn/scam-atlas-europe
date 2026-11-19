@@ -239,6 +239,8 @@ describe('scenario cross-checks', () => {
     it('sender addresses, qr.destination and page.address in beats are checked', () => {
       const s = example();
       msgOf(s).sender = { display: 'Trundle', detail: 'service@trundle-mail.test' };
+      // CR-39(b): a QR code is shown on qr, letter and messenger beats.
+      s.device = 'messenger';
       msgOf(s).qr = { payload: '/qr/x', destination: 'trundle-qr.example' };
       const [beat] = s.beats as Raw[];
       if (beat) (beat.message as Raw).page = { address: 'https://trundle-pay.invalid/x' };
@@ -345,7 +347,7 @@ describe('brand registry (T-1.8)', () => {
     const r = report();
     const brands = loadBrands(CONTENT, r);
     expect(r.errors).toEqual([]);
-    expect(brands.size).toBe(29); // 8 + Amsterdam (T-3.4): klaverwerk, tallyfern + Paris (T-3.5): ruchelune, volet-bleu, feuillemont, platinoir, cuivrelin, ostrelle + Madrid/Warsaw story art (T-S6a): votelark, tremolik + Lisbon (T-S6b): roostwell, zonelet + Dublin/Stockholm (T-S6c): postwick, ellisfen, quorvex, glimmerfund, backhaven-recovery, brindlecove-bonds, orla-fennick, kindhand, skarvlund-trygg
+    expect(brands.size).toBe(30); // 8 + Amsterdam (T-3.4): klaverwerk, tallyfern + Paris (T-3.5): ruchelune, volet-bleu, feuillemont, platinoir, cuivrelin, ostrelle + Madrid/Warsaw story art (T-S6a): votelark, tremolik + Lisbon (T-S6b): roostwell, zonelet + Dublin/Stockholm (T-S6c): postwick, ellisfen, quorvex, glimmerfund, backhaven-recovery, brindlecove-bonds, orla-fennick, kindhand, skarvlund-trygg + Dublin regulator (CR-38, sceptic): fairmeasure
   });
 
   it('collects domain, sub-brand domains, email hosts and look-alikes incl. {host} objects', () => {

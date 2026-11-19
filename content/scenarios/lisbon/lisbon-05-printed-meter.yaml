@@ -23,7 +23,7 @@ pressure:
   honest_deadline: "Maximum stay 2 hours"
 
 message:
-  qr: { payload: /qr/lisbon-meter-printed, destination: zonelet.example, caption: "Printed on the meter's panel" }
+  qr: { payload: /qr/lisbon-meter-printed, destination: zonelet.example, caption: "Printed on the meter's panel", mount: printed, surface: panel }
   body: "Zonelet · ZONA 2 · €1,20/h · Digitalize para pagar na app."
   lang: pt-PT
   translation: "Zonelet · ZONE 2 · €1.20/h · Scan to pay in the app."

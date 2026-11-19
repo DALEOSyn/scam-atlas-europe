@@ -18,6 +18,8 @@ import { Icon } from '../Icon.tsx';
 import { Host, RichText } from '../RichText.tsx';
 import { DemoField, SimPill, SimulatedForm } from '../SimulatedForm.tsx';
 import { hostParts, segmentMessage } from '../text.ts';
+import { qrMountText } from '../../engine/inspect.ts';
+import { castMember } from '../../content/cast.ts';
 import { Avatar, BrandBar, ChatBody, Chips, LaptopFrame, MessageBody, PhoneFrame, Segments, Translate } from './parts.tsx';
 import { QrGraphic } from './QrGraphic.tsx';
 import type { DeviceProps } from './types.ts';
@@ -371,6 +373,8 @@ function Chat(p: DeviceProps) {
               <Chips items={segs.leftover} />
               {m.image && p.device !== 'messenger' ? <ImageBox alt={m.image.alt} /> : null}
               {m.payee ? <BankDetails m={m} /> : null}
+              {/* CR-39(b): a QR code sent in the chat, after the body; its destination chip is checkable. */}
+              {m.qr && p.device === 'messenger' ? <QrView m={m} device={p.device} inChat /> : null}
             </div>
             <Translate message={m} onFreeze={p.onTranslation} alwaysOpen={p.alwaysTranslate} />
             {/* Pusher follow-ups are ordinary bubbles with no "follow-up" label (UI_SPEC §3.2). */}
@@ -579,6 +583,12 @@ function Call(p: DeviceProps) {
           <span class={styles.callerSub}>{ended ? t('call_ended') : answered ? t('call_in_progress') : t('call_incoming')}</span>
           {/* Known only once the call is answered (sceptic T-3.3). */}
           {m.recorded && answered ? <span class={styles.callKind} data-recorded="">{t('call_recorded')}</span> : null}
+          {/* CR-36: who the voice sounds like, once answered. A label only: no audio is ever played. */}
+          {m.voice && answered ? (
+            <span class={styles.callerSub} data-voice-label="">
+              <Checkable target="voice">{t('call_sounds_like', { name: castMember(m.voice.sounds_like)?.name ?? m.voice.sounds_like })}</Checkable>
+            </span>
+          ) : null}
         </div>
         {/* CR-24: a stylised illustration of a fictional person, never photoreal; no audio, no glitch effects. */}
         {m.video && answered ? (
@@ -716,24 +726,37 @@ function prefersReducedMotion(): boolean {
   return typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-/** QR camera: the code resolves only to an in-game route; nothing opens unless an authored action is chosen. */
-function QrView({ m, chip = true }: { m: Message; chip?: boolean }) {
+/**
+ * QR camera: the code resolves only to an in-game route; nothing opens unless an authored action is chosen.
+ * CR-37: on a physical surface (`qr`, `letter`), a sticker over the printed code gets a visible sticker edge
+ * and the "How the code is attached" line (checkable `qr.mount`, after the destination). CR-39(b): `inChat`
+ * draws the same stylised code inside a chat bubble, with the destination chip shown at once (no camera).
+ */
+function QrView({ m, device, chip = true, inChat = false }: { m: Message; device: Device; chip?: boolean; inChat?: boolean }) {
   const qr = m.qr;
-  const [found, setFound] = useState(prefersReducedMotion());
+  const [found, setFound] = useState(inChat || prefersReducedMotion());
   useEffect(() => {
     if (found) return undefined;
     const id = setTimeout(() => setFound(true), 600);
     return () => clearTimeout(id);
   }, [found]);
   if (!qr) return null;
+  const mount = qr.mount && !inChat ? qrMountText(device, qr.mount, qr.surface) : undefined;
+  const sticker = qr.mount === 'sticker' && !inChat;
+  const alt = inChat
+    ? t('qr_alt_chat', { host: qr.destination })
+    : `${t('qr_alt', { caption: qr.caption ?? t('qr_caption_default'), host: qr.destination })}${mount ? ` ${mount}.` : ''}`;
   return (
-    <div class={styles.qr}>
-      <div class={styles.viewfinder} role="img" aria-label={t('qr_alt', { caption: qr.caption ?? t('qr_caption_default'), host: qr.destination })}>
-        {qr.caption ? <p class={styles.qrCaption}>{qr.caption}</p> : null}
-        <QrGraphic route={qr.payload} />
+    <div class={inChat ? `${styles.qr} ${styles.qrInChat}` : styles.qr} data-qr={inChat ? 'chat' : 'camera'}>
+      <div class={inChat ? styles.qrChatCode : styles.viewfinder} role="img" aria-label={alt}>
+        {qr.caption && !inChat ? <p class={styles.qrCaption}>{qr.caption}</p> : null}
+        {/* CR-37: a sticker is drawn as a raised label with a lifted corner over the printed code. */}
+        <span class={sticker ? styles.qrSticker : styles.qrPrinted} data-mount={qr.mount ?? undefined}>
+          <QrGraphic route={qr.payload} size={inChat ? 144 : 168} />
+        </span>
       </div>
       {chip ? (
-        <p class={styles.qrChip} aria-live="polite">
+        <p class={styles.qrChip} aria-live={inChat ? undefined : 'polite'}>
           {found ? (
             <>
               <span>{t('qr_opens')} </span>
@@ -746,6 +769,12 @@ function QrView({ m, chip = true }: { m: Message; chip?: boolean }) {
           )}
         </p>
       ) : null}
+      {mount && found ? (
+        <p class={styles.qrMount} data-qr-mount="">
+          <span>{t('qr_mount_label')} </span>
+          <Checkable target="qr.mount">{mount}</Checkable>
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -754,7 +783,7 @@ function Qr(p: DeviceProps) {
   return (
     <PhoneFrame label={t('region_qr')}>
       <div class={styles.camera}>
-        <QrView m={p.message} />
+        <QrView m={p.message} device={p.device} />
         <MessageBody message={p.message} />
       </div>
     </PhoneFrame>
@@ -1050,6 +1079,10 @@ function Auth(p: DeviceProps) {
   ];
   return (
     <PhoneFrame label={t('region_auth', { app: app?.name ?? '' })} brand="gatewren">
+      {/* CR-39(a): the caller who asked for this prompt is still on the line. */}
+      {p.onCall ? (
+        <OnCallBar onCall={p.onCall} beatId={p.beatId} lines={p.pushers.filter((x) => x.boundTo === p.beatId)} onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} />
+      ) : null}
       <BrandBar brand={app} title={app?.name ?? ''} />
       <div class={styles.prompt}>
         <h3 class={styles.promptTitle}>{title}</h3>
@@ -1093,7 +1126,7 @@ function Letter(p: DeviceProps) {
         </p>
         <MessageBody message={m} />
         <Chips items={segs.leftover} />
-        {m.qr ? <QrView m={m} /> : null}
+        {m.qr ? <QrView m={m} device={p.device} /> : null}
         <Translate message={m} onFreeze={p.onTranslation} alwaysOpen={p.alwaysTranslate} />
       </article>
     </section>

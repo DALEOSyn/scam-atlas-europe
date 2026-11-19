@@ -1,6 +1,6 @@
 # Story bible — Scam Atlas: Europe
 
-Owners: `game-designer` + `learning-psychologist` (psychology sections), `scenario-writer` (voice) · Status: **v1 draft for review (T-S1)** · Last update: 2026-11-19
+Owners: `game-designer` + `learning-psychologist` (psychology sections), `scenario-writer` (voice) · Status: **v1.1 draft for review (T-S1; aligned to the reviewed Amsterdam §22.1 and Paris §23.13 story beats, plus producer answers)** · Last update: 2026-11-19
 Related: `docs/PLAN.md` Phase 3 track S, `docs/DECISIONS.md` D-S1, `docs/GDD.md` §2, §10, §15–§18, `content/cast.yaml`, `docs/patterns/MAP.md`, `docs/ART_DIRECTION.md` (S2, to come), `docs/PSYCHOLOGY.md` (sources for the principles named here).
 
 > This file states no fraud facts. Patterns per city come from `docs/patterns/MAP.md`. Every chapter's scams live **only in device scenarios**, which carry the debrief (Red Line 4). Scenes carry people, places and habits. Sample lines are drafts: the `scenario-writer` owns the final wording, within the rules in §4.
@@ -23,13 +23,14 @@ A newly hired trust inspector crosses Europe with a borrowed phone, a grandfathe
 ### 1.4 Why you keep travelling
 - Every city has **asked Waymarker for an inspector**, and someone there has a human problem (§3). After Berlin, each unvisited city shows an **invitation postcard** on the illustrated map: one line from its local, ≤ 20 words. You pick where to go. These invitations are the chapter hooks.
 - **Free city order (G1-Q3, approved):** Home → Berlin → any order of the eight middle cities → Brussels (ENGINE.md, unlocking). So no chapter may depend on another middle chapter. Cross-chapter progress is carried by **travel interludes** keyed to play position, not city (§3.12).
+- **Alex arc beats follow play position (producer ruling, 2026-11-19).** Arc slot N plays in the Nth chapter the player plays (Berlin is always position 1, so slot 1), never in a fixed city. A chapter spec decides *where in its afternoon* the arc beat sits (e.g. Amsterdam places it just before 2-7); the engine decides *which slot* plays there. Arc beat lines are therefore city-agnostic, or carry a small per-city flavour variant. GDD §18's "Alex's dashboard beat lands here too" (Dublin) now reads "arc slot N, wherever it lands". The engine ticket (S3) implements this.
 - **No countdowns.** The Open Evening has a date in the story, but it is never shown as a timer, never nags, and nothing is lost by taking a break (no dark patterns, PSYCHOLOGY principle 6).
 
 ### 1.5 Payoff in Brussels
 The Open Evening: Teo and Noor arrive, the locals appear on a video wall, Teo reads the first postcard aloud, and the Atlas is launched. Before that, the finale's device scenarios close the three threads: Noor's easy-money DM (she asks you first), the tech-support boss (the projector laptop "needs support"), and the Alex ending. The last line belongs to Adaeze: *"Pause. Check on a channel you know. Ask someone. Then be the someone for the next person."*
 
 ### 1.6 The player's own arc
-From "I'm the inspector, I'd never fall for that" to "anyone can be caught, and I know what to do next and who to tell". The game never says the first part out loud; it shows capable people (Teo, Mateus, Davide, Adaeze in her anecdote) being caught and recovering, so the player's own falls and the Alex reveal land in a world where that is normal.
+From "I'm the inspector, I'd never fall for that" to "anyone can be caught, and I know what to do next and who to tell". The game never says the first part out loud; it shows capable people (Teo, Mateus, Davide, Sanne's mum and Inès as near-misses, Adaeze in her anecdote) being caught or targeted and recovering, so the player's own falls and the Alex reveal land in a world where that is normal.
 
 ---
 
@@ -43,32 +44,35 @@ From "I'm the inspector, I'd never fall for that" to "anyone can be caught, and 
 
 | Character | Role | Habit modelled | Fallible moment | Voice | Expressions |
 |---|---|---|---|---|---|
-| **Grandpa Teo** (74) | Your grandfather; runs a Thursday phone café at the library | **Ask someone, and be the someone** (LO-18). Reads sender and link slowly (Berlin drill). Hangs up and calls back (Rome). | Home 0-5: types his card into a prize page, then tells you straight away. Finale endings A/A′: a similar friendly profile approaches him and he asks you. | Warm, dry, short sentences. Calls you "kiddo". Jokes at himself, never at others. | warm, laughing, thinking, sheepish, proud |
-| **Noor** (15) | Your cousin, messenger-native | Calm, not paranoid (LO-17): uses her phone confidently, checks what matters. Asks before acting (finale). | Finale: nearly says yes to an easy-money DM; asks you first. Amsterdam: her identity is borrowed by a "new number" (not her fault; she is the one impersonated). | Quick, teasing, kind underneath. Calls you "inspector". | laughing, focused, thinking, worried, relieved |
-| **Adaeze Okafor-Lind** (50s) | Coordinator, Brussels; Atlas editor | The known channel (staff directory). Never asks for money or secrecy, and says so. Four-eyes rule. | Paris: tells how, early in her career, she nearly paid an invoice to the wrong account until a colleague asked one question. | Calm, dry, brief. Praises the habit, not the person. | calm, warm, thinking, laughing, proud |
-| **Mateus Ferreira** (late 20s) | Field partner, gadget fan, from Lisbon | Practical tech habits: open the app yourself, type the address. | Warsaw: shares a code with a hijacked friend's account; you guide his damage control. Shows expertise doesn't protect anyone. | Upbeat, fast, a bit boastful about chargers. Owns his slip with humour. | laughing, focused, sheepish, worried, relieved |
+| **Grandpa Teo** (74) | Your grandfather; runs a Thursday phone café at the library | **Ask someone, and be the someone** (LO-18). Reads sender and link slowly (Berlin drill). Announces his new mobile and keeps his home line as the known channel (Amsterdam 2-1). Hangs up and calls back (Rome). | Home 0-5: types his card into a prize page, then tells you straight away. Finale endings A/A′: a similar friendly profile approaches him and he asks you. | Warm, dry, short sentences. Calls you "kiddo". Jokes at himself, never at others. | warm, laughing, thinking, sheepish, proud |
+| **Noor** (15) | Your cousin (Teo is her "Grandad" too), messenger-native | Calm, not paranoid (LO-17): uses her phone confidently, checks what matters. Locks her account down and warns the family (Amsterdam drill 2-4). Asks before acting (finale). | Finale: nearly says yes to an easy-money DM; asks you first. Amsterdam 2-3: her photo and name are borrowed by a "new number" (not her fault; she is the one impersonated). Her 2-4 line "also I'm looking for a summer job" seeds the finale. | Quick, teasing, kind underneath. Calls you "inspector". | laughing, focused, thinking, worried, relieved |
+| **Adaeze Okafor-Lind** (50s) | Coordinator, Brussels; Atlas editor | The known channel (staff directory). Never asks for money or secrecy, and says so. Four-eyes rule. | Interlude I2 (any order): tells how, early in her career, she nearly paid an invoice to the wrong account until a colleague asked one question. (Moved out of Paris, whose reviewed turn belongs to Inès and Solène.) | Calm, dry, brief. Praises the habit, not the person. | calm, warm, thinking, laughing, proud |
+| **Mateus Ferreira** (late 20s) | Field partner, gadget fan, from Lisbon | Practical tech habits: open the app yourself, type the address. Settles shared costs openly, to his own name (Amsterdam 2-6). | Warsaw: shares a code with a hijacked friend's account; you guide his damage control. Shows expertise doesn't protect anyone. Amsterdam boss: his photo and a voice like his are borrowed (not his fault). | Upbeat, fast, a bit boastful about chargers. Owns his slip with humour. | laughing, focused, sheepish, worried, relieved |
 | **Alex** | Friend met on Wordswap (arc) | None; the arc character (GDD §10). | n/a | Arc beats only: ≤ 25 words, generic small talk and plain requests, no polished persuasion copy (GDD §10.1). | **One fixed portrait, no expressions** (see §2.2) |
 
 ### 2.2 Alex: special rules
 - **One portrait only.** The reveal shows the same illustration on profiles with other names (GDD §10.2), so Alex is one image that `ux-artist` can place on several profile cards. A set of expressions would undermine that. Illustrated, never photo-realistic, never romance-coded (PLAN S2).
-- **No scene lines by default.** Alex never appears in a panel and has no scene lines. Arc content lives only in arc beats, which have debriefs. If a future spec adds an Alex line to a scene, it is ≤ 25 words, small talk, contains no request and no persuasion copy, and passes `sceptic-reviewer` (open question 1).
+- **No scene lines (producer, 2026-11-19).** Alex never appears in a panel and has no scene lines. Arc content lives only in arc beats, which have debriefs and are keyed to play position (§1.4). Should a later spec ever propose one, it needs a producer ruling first and stays within GDD §10.1 (≤ 25 words, small talk, no request, no persuasion copy).
+- **Check-ins stay unscored (producer, 2026-11-19).** Teo's interlude check-ins never count as `ask_someone` and give the same reply to every answer.
 - **Other characters never hint.** No scene comments on Alex, Wordswap or "online friends" in a way that suggests a verdict. Teo's two neutral check-ins (interludes I1, I3) ask about *friends in general* and give the same reply to every answer.
 
 ### 2.3 Locals (one or two per chapter; add to `content/cast.yaml` with a `known_channel` when they message you)
 
 | City | Local(s) | Capable / fallible | Expressions |
 |---|---|---|---|
-| Berlin | **Jonas** (mid-30s), night-shift baker next door; daughter Mia (8, background only) | Capable once he opens the app himself | warm, worried, thinking, relieved, proud |
-| Amsterdam | **Saskia de Waal** (46), runs a bike-repair workshop, wheelchair user; son **Milo** (17) | Saskia capable; Milo eager, learns | Saskia: warm, worried, calm, proud · Milo: focused, thinking, sheepish, relieved |
-| Paris | **Camille Roux** (26), three weeks into running a small print studio's office; **Yves Marchand** (61), owner | Both capable; Camille nervous, not naive | Camille: focused, worried, thinking, relieved · Yves: laughing, warm, calm |
+| Berlin | **Jonas** (mid-30s), night-shift baker next door; daughter Mia (8, background only). Recurs in Amsterdam 2-8, where his real Kettle account is taken over (not his fault; messages only, he is not drawn in Amsterdam scenes) | Capable once he opens the app himself | warm, worried, thinking, relieved, proud |
+| Amsterdam | **Sanne** (19), student, works the desk at your guesthouse, job hunting after a rent rise; her mum and little brother off screen. Known channel "Guesthouse desk"; story scenes only (GDD §22.1) | Capable; worries a scam on her mum was her fault, learns it wasn't; her mum is a capable parent who rang the real number | Sanne: warm, laughing, worried, relieved, focused (for "determined") |
+| Paris | **Solène Arbogast**, director of Ruchelune (print-and-design cooperative); **Bastien Morel**, accounts officer, on leave; **Inès Roussel** (17), apprentice designer. Margaux (front desk) is a directory entry, not cast (GDD §23.10) | Inès capable (spots the plumber fake in drill 3-3), then targeted (3-5); Solène stretched thin, firm on the procedure | Solène: worried, calm, relieved, warm · Inès: focused, worried, calm, proud · Bastien: warm, calm |
 | Madrid | **Lucía Herrera** (34), night-shift nurse, your host; partner **Andrés** (36), teacher | Both capable; tiredness is the risk, not ability | Lucía: warm, calm, thinking, relieved · Andrés: worried, laughing, proud |
 | Warsaw | **Kasia Wójcik** (23), music student, Waymarker volunteer (Mateus is the fallible one) | Capable seller | warm, focused, laughing, calm |
 | Rome | **Signora Bruna Esposito** (72), B&B owner, Teo's postcard pen-pal of 40 years; grandson **Davide** (19); granddaughter **Giulia** (22, abroad, video only) | Bruna capable and leads; Davide falls (GDD §15) | Bruna: warm, calm, thinking, proud · Davide: sheepish, worried, relieved · Giulia: laughing, relieved |
-| Lisbon | **Inês Ferreira** (20), Mateus's sister, room-hunting before her master's | Capable once she slows down | excited→`laughing`, worried, thinking, relieved |
+| Lisbon | **Beatriz Ferreira** (20), Mateus's sister, room-hunting before her master's (renamed from "Inês" to avoid a clash with Paris's Inès Roussel) | Capable once she slows down | laughing, worried, thinking, relieved |
 | Dublin | **Declan Byrne** (52), made redundant after 22 years at a warehouse; daughter **Róisín** (18), starting college | Declan tempted, checks; Róisín supportive | Declan: worried, thinking, sheepish, laughing · Róisín: worried, warm, proud |
 | Stockholm | **Jamal Haddad** (38), hospital lab technician, three weeks in Sweden; daughter **Lina** (12); upstairs neighbour **Birgitta Lind** (70), retired teacher, Adaeze's aunt | Birgitta capable and teaches; Jamal learns | Jamal: thinking, worried, proud · Lina: laughing · Birgitta: laughing, calm, proud |
 
-Any shop, studio or workshop name visible in art must be registered in `brands.yaml` first; until then, scenes describe them without names.
+Any shop, studio or workshop name visible in art must be registered in `brands.yaml` first; until then, scenes describe them without names (Ruchelune is requested in GDD §23.10).
+
+**Name register (no name used twice for different people):** Teo, Noor, Adaeze, Mateus, Alex, Jonas, Mia, Sanne, Solène, Bastien, Inès (Roussel, Paris), Margaux (directory only), Lucía, Andrés, Kasia, Bruna, Davide, Giulia, Beatriz, Declan, Róisín, Jamal, Lina, Birgitta. Scam-side names (e.g. "Maître Lenoir", "N. Ferrand", "R. ••••", "K. ••••") are never cast and must not reuse a cast first name. New locals check this list first.
 
 ---
 
@@ -79,7 +83,9 @@ Any shop, studio or workshop name visible in art must be registered in `brands.y
 - **Turn** (3–4 panels): at the half-day stop point, after the "Good place to take a break" screen, when the player continues.
 - **Resolution** (4–6 panels): after the boss debrief and damage control, before the chapter summary and stamp. Its last panel is the postcard to Teo; the hook is the map's invitation postcards (§1.4).
 
-Each block lists the patterns from MAP.md so specs can align; the scene never shows them.
+**Reviewed chapter specs win.** Where a chapter spec already has reviewed story beats (Amsterdam GDD §22.1, Paris GDD §23.13), the spec's beats, placement and panel counts stand, including a separate "local problem" beat and a turn placed elsewhere than the stop point. The bible adds only its glue: the If-then line (§4.4), the postcard to Teo, the Atlas page and the map invitation. Chapters without a spec use the defaults above.
+
+Each block lists the patterns from MAP.md or the chapter spec; the scene never shows them.
 
 ### 3.0 Home (fixed, tutorial) — see §6 for placement
 - **Locals:** Teo, Noor; Adaeze by video call.
@@ -99,24 +105,37 @@ Each block lists the patterns from MAP.md so specs can align; the scene never sh
 - **Postcard:** "Track parcels in the app you open yourself."
 - **Note:** Mateus is mentioned in berlin-05's outcome, so he must be introduced in the arrival scene.
 
-### 3.2 Amsterdam (slot 2)
-- **Patterns:** "Hi Mum / new number" messenger scam (Noor impersonated); task / "easy work" job scam; payee-name mismatch.
-- **Locals:** Saskia, Milo; Noor on video at the end.
-- **Human problem:** a slow winter at the workshop. Milo wants to earn his own money for a school trip so his mum doesn't have to pay, and won't let her help.
-- **Arrival:** a canal-side workshop full of bikes; the Waymarker desk is "behind the tyres". Milo: "I've sent my CV everywhere. Something has to come back."
-- **Turn:** Saskia (worried): "He wants to do it all himself. I get it. I was the same." Milo (thinking): "If something sounds great, I'll show you first. Deal?" (No job offer is shown or named.)
-- **Resolution:** Milo has real weekend shifts from a family friend's café, a job that asked for nothing but his Saturdays (aligns with the genuine twin, GDD §18). Noor on video: "Someone pretended to be me? Rude. Same number as always." If-then (Saskia): "If a 'new number' asks for money, then I call the old number first." Milo: "If a job wants me to pay in, it isn't a job."
-- **Invitation (map):** Saskia: "Come and help at the workshop. Milo's job-hunting and could use a sensible friend."
-- **Safety:** family-emergency theme (see §5); Noor's video call shows she is fine.
+### 3.2 Amsterdam (slot 2) — scene content per GDD §22.1
+- **Patterns (GDD §22):** messenger family impersonation ("new number" 2-3, taken-over real account 2-8 with Jonas, cloned voice in the boss with Mateus); task / "easy work" job scam (2-2, 2-7, boss beat 1); payee-name check (no match 2-3, misleading match 2-8).
+- **Cast in scenes:** Sanne; Noor (video, turn); Mateus and Teo (resolution). Jonas appears only in device scenario 2-8.
+- **Human problem:** Sanne's rent went up, so she is job hunting, like you (you both applied to the Thimble & Pine warehouse). Someone messaged her mum "as Sanne" from a new number, using her photo.
+- **Beats (spec, unchanged):**
+  1. *Arrival* (calm): canal bridge, bikes; Sanne hands over your key; rent and job hunting.
+  2. *Local problem* (stop point, after 2-3 and 2-4; worried → relieved): Sanne tells her mum's story in her own words; she fears her public photo made it her fault; you: "…this is on them, not you."
+  3. *Turn* (start of afternoon; worried → determined): her mum rang Sanne's real number first; Sanne will do the same with her little brother. Noor waves on video.
+  4. *Resolution* (relieved): the real Mateus's "made it" photo; Sanne's and your interviews; Teo on his new mobile; habit cards "Call the number you already know" and "Easy money costs you".
+- **Bible glue (added to beat 4, one panel each):**
+  - If-then (Sanne): "If a 'job' wants money first, then I walk." (the spec's own line in if-then form).
+  - Postcard to Teo / Atlas page: the chapter habit H, "Asked by message for money you didn't expect, or to an account that isn't theirs? Call a number you already had." plus "A real job pays you."
+  - Map invitation (Sanne): "Your room at the guesthouse is ready. Fair warning: everyone here settles up by payment request."
+- **Order note:** Mateus flies "to the next city" in the boss; keep it unnamed (free order).
+- **Safety:** family-emergency theme (§5). Sanne's mum is a capable parent and her near-miss is off screen; Noor and Mateus are shown fine afterwards.
 
-### 3.3 Paris (slot 3)
-- **Patterns:** CEO fraud and supplier bank-detail change by email at a partner office; spoofed-caller-ID follow-up; payee-name check, once mismatching and once matching on a fake request.
-- **Locals:** Camille, Yves (by phone); Adaeze (video).
-- **Human problem:** Yves is away all week at his daughter's wedding. Camille, three weeks into the job, runs the office alone during the studio's biggest order: the Atlas covers.
-- **Arrival:** paper stacks, a humming printer. Camille: "Yves is at his daughter's wedding all week. It's me, the printers and a very big order."
-- **Turn (Adaeze's fallible moment):** Adaeze on video: "Early on, I nearly paid an invoice to the wrong account. A colleague asked one question. Now I always ask." Camille and you agree a rule: any payment change, two of you look, and you call on a number you already have.
-- **Resolution:** Yves calls from the wedding, laughing: "I'd never ask you to rush a payment in secret. Not even from a dance floor." If-then (Camille): "If someone changes bank details or says 'urgent and confidential', then two of us check by phone, on a number we already have." Camille: "And a matching name only tells you whose account it is."
-- **Invitation:** Camille: "The Atlas covers are printing here. Come and check our work? I'm new and I'd like a second pair of eyes."
+### 3.3 Paris (slot 3) — scene content per GDD §23.13
+- **Patterns (GDD §23):** CEO fraud / BEC and payment-detail change, all four payee-check results; deepfake video call in the boss (illustration plus transcript, no audio).
+- **Cast in scenes:** Inès, Solène, Bastien (resolution). The real Solène and the boss's video-call "Solène" are drawn the same: a familiar face proves nothing.
+- **Human problem:** Ruchelune, a small cooperative, faces the last working day before a long weekend: the school-festival order is late, Bastien is on leave, and a payment to the wrong place would hurt. Inès (17) is an apprentice whose name is later used to try to move her pay.
+- **Beats (spec, unchanged):**
+  1. *Arrival* (calm): your studio, then Ruchelune's workshop; Inès shows the procedure card ("Solène wrote it. She means it.").
+  2. *Whose problem it is* (in the intro, worried): Solène between meetings explains why she asked for an inspector.
+  3. *Turn* (after 3-5, before 3-6; worried → calm): Inès learns someone used her name; Solène: "This is why the card says no exceptions." Variant on `paris_pay_redirected`.
+  4. *Resolution* (relieved): the real Solène calls you on the directory number; on Tuesday the three add "A call or video call never replaces the sign-off" to the card; Inès has shown her mum. Variant on `paris_boss_sent` (acted fast, no refund promise).
+- **Bible glue (added to beat 4, one panel each):**
+  - If-then (Solène): "If a payment is new, changed, urgent or secret, then we call the number in our file, and two of us sign off."
+  - Postcard to Teo / Atlas page: "Check it on a number you already had. A matching name only tells you whose account it is."
+  - Map invitation (Solène): "Our accounts officer is on leave before a long weekend. Could an inspector sit with us for a day?"
+- **Adaeze's anecdote** (nearly paying the wrong account) moved to interlude I2, so it stays order-free and Paris's turn stays with Inès and Solène.
+- **Safety:** Inès is shaken, then supported; the variants never blame and never promise money back (GDD §23.9).
 
 ### 3.4 Madrid (slot 4)
 - **Patterns:** spoofed bank SMS inside the genuine thread; fake bank-employee call, "move money to safety".
@@ -150,11 +169,11 @@ Each block lists the patterns from MAP.md so specs can align; the scene never sh
 
 ### 3.7 Lisbon (slot 7)
 - **Patterns:** holiday and student rental scams (fake listing site, off-platform payment links, platform-login phishing); tampered parking-meter QR; fake shop. Needs a fictional rental-platform brand in `brands.yaml`.
-- **Locals:** Inês; Mateus (home city).
-- **Human problem:** rooms near the university are scarce and expensive; Inês has hunted for six weeks and fears losing the next good one.
-- **Arrival:** a tiled street, Mateus's family kitchen. Mateus: "Mum's cooking, so you're staying for dinner. No arguments." Inês: "Six weeks of room-hunting. Everything good goes in an hour."
-- **Turn:** Inês (laughing): "I think I've found one! Near the faculty, with a balcony." Mateus (thinking): "Great. Let's look at it properly before anyone pays anything." (Order-safe: Mateus does not mention Warsaw.)
-- **Resolution:** Inês (relieved): "Booked through the app, viewing on Saturday. Nothing paid outside it." If-then (Inês): "If a host wants to chat, pay or log in somewhere else, then I stay in the app I opened myself." Mateus: "And I type the parking address myself now. No stickers for me."
+- **Locals:** Beatriz; Mateus (home city).
+- **Human problem:** rooms near the university are scarce and expensive; Beatriz has hunted for six weeks and fears losing the next good one.
+- **Arrival:** a tiled street, Mateus's family kitchen. Mateus: "Mum's cooking, so you're staying for dinner. No arguments." Beatriz: "Six weeks of room-hunting. Everything good goes in an hour."
+- **Turn:** Beatriz (laughing): "I think I've found one! Near the faculty, with a balcony." Mateus (thinking): "Great. Let's look at it properly before anyone pays anything." (Order-safe: Mateus does not mention Warsaw.)
+- **Resolution:** Beatriz (relieved): "Booked through the app, viewing on Saturday. Nothing paid outside it." If-then (Beatriz): "If a host wants to chat, pay or log in somewhere else, then I stay in the app I opened myself." Mateus: "And I type the parking address myself now. No stickers for me."
 - **Invitation:** Mateus: "Come home with me. My sister needs a room-hunting bodyguard, and my mum needs someone to feed."
 
 ### 3.8 Dublin (slot 8)
@@ -181,7 +200,7 @@ Each block lists the patterns from MAP.md so specs can align; the scene never sh
 - **Patterns:** tech-support remote access (boss), money-mule recruitment (Noor's DM), callbacks, Alex resolution (GDD §10.3).
 - **Locals:** Adaeze; Teo, Noor and Mateus arrive; all locals on the video wall at the end.
 - **Human problem:** the Open Evening is in two days; the projector laptop won't behave; Noor is quieter than usual.
-- **Arrival:** Waymarker's office, boxes of Atlas covers from Paris (no shop name visible). Adaeze: "Two days to the Open Evening. The laptop and I are not friends." Teo and Noor arrive with one suitcase too many.
+- **Arrival:** Waymarker's office, boxes of freshly printed Atlas covers (no printer's name visible; order-free). Adaeze: "Two days to the Open Evening. The laptop and I are not friends." Teo and Noor arrive with one suitcase too many.
 - **Turn:** Noor (thinking), scrolling: "Can I ask you something later? It's probably nothing." (A human cue; the DM is only in the device scenario.)
 - **Resolution, part 1 (after the Alex ending, varies by GDD §10.3; each 3–4 panels):**
   - **A / A′:** after Teo's guided scenario, Teo (sheepish, then proud): "Same picture, different name. Good thing I asked you."
@@ -192,12 +211,12 @@ Each block lists the patterns from MAP.md so specs can align; the scene never sh
 - **Resolution, part 2 (all players):** Noor (relieved): "I nearly said yes. Then I asked you. Asking was the smart bit." The Open Evening: the video wall of locals (reused portraits), Teo reads the first postcard aloud, Adaeze's last line (§1.5). Then the end screen (Atlas = habit cards, help list).
 
 ### 3.11 What a chapter block must give its spec
-Each chapter spec (`docs/chapters/<city>.md` or GDD §18 successor) names its three scenes and confirms: (1) the local's problem is the soil, not the scam; (2) no scene shows a message, link, number, QR or amount from a scam; (3) the resolution is true whatever the player did in the boss; (4) the if-then line matches the chapter's habit card; (5) any new local is in `cast.yaml`.
+Each chapter spec (`docs/chapters/<city>.md` or GDD §18 successor) names its three scenes and confirms: (1) the local's problem is the soil, not the scam; (2) no scene shows a message, link, number, QR or amount from a scam; (3) the resolution is true whatever the player did in the boss (or names its story-only variant flags, §4.2 rule 5); (4) the if-then line matches the chapter's habit card; (5) any new local is in `cast.yaml`.
 
 ### 3.12 Travel interludes (play position, not city)
 Shown on the map after the 2nd, 4th, 6th and 8th middle city, whatever the cities were. ≤ 3 panels, ≤ 20 s. They may use `{count}` (cities done) and `{lastCity}`; they never name another specific city.
 - **I1 — Teo's café:** Teo: "Your postcards are a hit. Eight neighbours on Thursday, and someone brought cake." Neutral check-in: "Made any friends on your travels?" (A few / Mostly work so far) → same reply to both: "Good. Same rule for old friends and new: if anyone asks for money or secrets, tell me."
-- **I2 — Noor:** "I showed my class your postcards. Now everyone checks links. You're welcome." Adaeze: "The Atlas has {count} pages now. Halfway."
+- **I2 — Noor and Adaeze:** Noor: "I showed my class your postcards. Now everyone checks links. You're welcome." Adaeze: "The Atlas has {count} pages now. Halfway." Adaeze (Adaeze's fallible moment, told): "Early on, I nearly paid an invoice to the wrong account. A colleague asked one question. Now I always ask."
 - **I3 — Open Evening set:** Adaeze names the date (no countdown). Teo's second neutral check-in: "Anyone new in your life? Old Teo likes gossip." (Not really / Tell you later) → same reply: "Whoever they are, the rule stands: money or secrets, tell me first."
 - **I4 — Packing, mirrored:** Teo packs your old suitcase: "Your suitcase, my adventure. Noor's checking the train times. In the official app." Then: "Brussels is open."
 
@@ -206,7 +225,8 @@ Shown on the map after the 2nd, 4th, 6th and 8th middle city, whatever the citie
 ## 4. Scene format guidance (for writers and illustrators)
 
 ### 4.1 Shape
-- A scene is **3–6 panels**. Arrival ≤ 5, turn 3–4, resolution 4–6, interlude ≤ 3.
+- A scene is **1–6 panels**. Defaults: arrival ≤ 5, turn 3–4, resolution 4–6 (plus the glue panels), interlude ≤ 3. A reviewed chapter spec may use shorter beats (Amsterdam: 1–3 panels per beat) and an extra "local problem" beat.
+- **The player** may have a line (as in Amsterdam beat 2), shown as "You" without a portrait.
 - **One speaker per panel** (or one caption). Each panel has: backdrop, speaker, portrait + expression, one line, alt text.
 - **Lines ≤ 25 words**; aim for 8–15. Plain English around B1. At most one local-language phrase per scene, with `lang` and the same inline translation as devices; never a joke about accent or language.
 - **Reading budget:** arrival ≤ 30 s, turn ≤ 20 s, resolution ≤ 40 s, interlude ≤ 20 s; about 90 s per chapter. Re-measure at playtest against GDD §12 lengths.
@@ -218,7 +238,7 @@ Shown on the map after the 2nd, 4th, 6th and 8th middle city, whatever the citie
 2. **No verdict spoilers.** A scene before a scenario never reveals its verdict or its tell. After that scenario's debrief, a scene may refer to it in plain words ("a friend's account asked for my code"), with no message text.
 3. **Soil, not scam.** The local's problem is human (a job, a flat, a birthday, a family member far away). The scam only grows out of it in device scenarios.
 4. **Red Line 8:** no offline fraud as a lesson: no doorstep visits, couriers collecting cash, ATM scenes, street tricks. No police, bank or courier staff in uniform; no real signage, liveries or landmarks with logos (PLAN S2 art guard).
-5. **Outcome-neutral.** Scenes don't branch on score or outcomes (only the finale's ending variants, GDD §10.3). Every line is true whether the player fell or not. Never "thanks to you, nothing was lost"; never "because you clicked, Mia had no present".
+5. **Outcome-neutral by default.** Scenes don't branch on score. Every line is true whether the player fell or not. Never "thanks to you, nothing was lost"; never "because you clicked, Mia had no present". **Allowed exceptions:** the finale's ending variants (GDD §10.3), and **story-only variant flags** that a chapter spec names and a fall outcome sets (Paris: `paris_pay_redirected`, `paris_boss_sent`). A variant only keeps the scene truthful: it names the recovery step already taken, never blames, never promises money back, and changes no score, stamp or arc flag.
 6. **Order-neutral.** Middle chapters never refer to each other. Cross-chapter progress goes in interludes (§3.12).
 7. **Scammers are never drawn or voiced.** Characters may describe a scam only after its debrief, in one plain sentence.
 8. **Alex:** no scene lines by default (§2.2). If one is ever specced: ≤ 25 words, small talk, no request, no polished persuasion copy (GDD §10.1).
@@ -307,4 +327,5 @@ Check: the Alex arc beat sits between berlin-07 and berlin-08; no scene is place
 - **ux-artist (S2):** portraits per §2 (shared expression set; Alex as one image), backdrops: Teo's kitchen, Berlin courtyard, Amsterdam workshop, Paris print studio, Madrid kitchen, Warsaw flat with boxes, Rome B&B, Lisbon tiled street and kitchen, Dublin community hall, Stockholm snowy courtyard, Brussels office and Open Evening hall; the illustrated map with invitation postcards; postcard frame.
 - **frontend-engineer (S3):** scene type per §4.5; `scenes` in chapter YAML; interludes keyed to play position (§3.12); map invitations; content notes; Help link in scene chrome; `if_then` lines feeding the Atlas and end screen.
 - **scenario-writer:** final lines per chapter within §4; new locals into `cast.yaml`.
-- **Chapter spec authors (Amsterdam, Paris in progress):** align the genuine twins and soil to §3.2 and §3.3; report conflicts to `game-designer`.
+- **Chapter spec authors:** Amsterdam (GDD §22.1) and Paris (GDD §23.13) are reviewed and the bible follows them; their scenario-writer adds only the glue panels listed in §3.2 and §3.3. Later chapter specs start from §3.4–§3.10 and report conflicts to `game-designer`.
+- **Engine (S3):** arc beats keyed to play position (§1.4 ruling), story-only variant flags (§4.2 rule 5).

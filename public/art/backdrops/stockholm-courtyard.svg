@@ -1,0 +1,20 @@
+<!-- Scam Atlas: Europe. City backdrop: a snowy Stockholm inner courtyard on a bright winter afternoon, warm-red and ochre plaster facades, warm lit windows, plain stepped candle arches in the top-floor windows only, a door with a lit fanlight, bikes under snow at the right, snow on the ground; no lettering, no flag, no star, no figure, no religious symbol, no e-ID or bank pictogram. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="sc-t"><title id="sc-t">A snowy courtyard with warm-red and ochre houses and warmly lit windows</title>
+<defs><linearGradient id="sc-air" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfdde6"/><stop offset="1" stop-color="#d9e6f6"/></linearGradient>
+<g id="sc-w"><rect width="58" height="88" rx="3" fill="#f6efe2"/><rect x="6" y="6" width="46" height="76" rx="2" fill="#f3d08a"/><rect x="-4" y="86" width="66" height="8" rx="2" fill="#d9e6f6"/></g>
+<g id="sc-d"><rect width="58" height="88" rx="3" fill="#f6efe2"/><rect x="6" y="6" width="46" height="76" rx="2" fill="#a9bccb"/><rect x="-4" y="86" width="66" height="8" rx="2" fill="#d9e6f6"/></g>
+<g id="sc-arch"><use href="#sc-w"/><path d="M10 74H48V70H10Z" fill="#8a6a4f"/><path d="M13 70V62M19 70V56M25 70V52M29 70V48M33 70V52M39 70V56M45 70V62" stroke="#8a6a4f" stroke-width="2"/><path d="M11 60a2 2 0 1 0 4 0a2 2 0 1 0 -4 0ZM17 54a2 2 0 1 0 4 0a2 2 0 1 0 -4 0ZM23 50a2 2 0 1 0 4 0a2 2 0 1 0 -4 0ZM27 46a2 2 0 1 0 4 0a2 2 0 1 0 -4 0ZM31 50a2 2 0 1 0 4 0a2 2 0 1 0 -4 0ZM37 54a2 2 0 1 0 4 0a2 2 0 1 0 -4 0ZM43 60a2 2 0 1 0 4 0a2 2 0 1 0 -4 0Z" fill="#fffaf0"/></g>
+<g id="sc-bike"><path d="M-22 0a22 22 0 1 0 44 0a22 22 0 1 0 -44 0ZM42 0a22 22 0 1 0 44 0a22 22 0 1 0 -44 0Z" fill="none" stroke="#9c978a" stroke-width="4"/><path d="M0 0L24 -30H52L64 0M24 -30L32 0L52 -30M20 -38H32M52 -30L50 -42H60" fill="none" stroke="#9c978a" stroke-width="4" stroke-linejoin="round"/><path d="M14 -36h24v-6h-24ZM44 -38h18v-6h-18Z" fill="#fffaf0"/></g>
+</defs>
+<rect width="960" height="540" fill="url(#sc-air)"/>
+<rect x="0" y="30" width="500" height="440" fill="#c8714f"/><rect x="500" y="50" width="460" height="420" fill="#d9a441"/>
+<path d="M0 30H500V16H0Z" fill="#fffaf0"/><path d="M500 50H960V36H500Z" fill="#fffaf0"/>
+<use href="#sc-arch" x="60" y="50"/><use href="#sc-arch" x="200" y="50"/><use href="#sc-arch" x="340" y="50"/><use href="#sc-arch" x="580" y="70"/><use href="#sc-arch" x="720" y="70"/><use href="#sc-arch" x="860" y="70"/>
+<use href="#sc-w" x="60" y="190"/><use href="#sc-d" x="200" y="190"/><use href="#sc-w" x="340" y="190"/>
+<use href="#sc-d" x="580" y="200"/><use href="#sc-w" x="720" y="200"/><use href="#sc-d" x="860" y="200"/>
+<path d="M640 470V372Q640 346 672 346Q704 346 704 372V470Z" fill="#a95c3e"/><path d="M650 372Q650 356 672 356Q694 356 694 372Z" fill="#f3d08a"/><path d="M650 470V380H694V470Z" fill="#3f6b4f"/>
+<rect x="120" y="360" width="58" height="80" rx="3" fill="#f6efe2"/><rect x="126" y="366" width="46" height="68" rx="2" fill="#f3d08a"/>
+<rect y="460" width="960" height="80" fill="#d9e6f6"/><path d="M0 470Q240 452 480 468Q720 484 960 462V540H0Z" fill="#cfdde6"/>
+<use href="#sc-bike" x="790" y="452"/><use href="#sc-bike" x="850" y="460"/>
+<path d="M30 470V330" stroke="#8a6a4f" stroke-width="10"/><path d="M30 360L10 340M30 350L52 326M30 390L54 372" stroke="#8a6a4f" stroke-width="5" stroke-linecap="round"/><path d="M4 340h14v-5h-14ZM44 326h16v-5h-16Z" fill="#fffaf0"/>
+</svg>

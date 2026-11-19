@@ -1,0 +1,32 @@
+<!-- Scam Atlas: Europe. Cast portrait: Birgitta Lind, 70, white bob, chunky cream knit, her walking stick in hand; expression groups, calm by default. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300" role="img" aria-labelledby="bi-t"><title id="bi-t">Birgitta Lind</title>
+<style>.x{display:none}.x-default{display:inline}.x:target{display:inline}.x:target~.x-default{display:none}</style>
+<defs><path id="bi-sil" d="M36 300C38 242 70 204 120 200C170 204 202 242 204 300ZM70 125a50 56 0 1 0 100 0a50 56 0 1 0 -100 0ZM60 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM160 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM66 132C58 84 86 58 120 58C154 58 182 84 174 132C178 150 176 166 168 172C162 168 160 150 160 140C158 112 146 96 128 92C110 98 92 100 80 98C78 112 80 140 80 150C80 160 78 168 72 172C64 166 62 150 66 132ZM14 300V230Q14 212 34 212Q60 214 66 250L70 300Z"/></defs>
+<use href="#bi-sil" fill="#fffaf0" stroke="#fffaf0" stroke-width="10" stroke-linejoin="round"/>
+<g stroke="#2b2433" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M36 300C38 242 70 204 120 200C170 204 202 242 204 300Z" fill="#f1e4c8"/>
+<path d="M160 208C186 220 200 250 202 300H172Z" fill="#ddcca9" stroke="none"/>
+<path d="M78 230q6 12 0 24q-6 12 0 24M162 230q-6 12 0 24q-6 12 0 24M100 214V300M140 214V300" fill="none" stroke="#ddcca9" stroke-width="4"/>
+<rect x="104" y="166" width="32" height="38" rx="10" fill="#e6b9a0"/>
+<path d="M96 200Q120 220 144 200L148 212Q120 234 92 212Z" fill="#ddcca9"/>
+<path d="M46 300V238Q46 222 32 222Q20 222 20 236" fill="none" stroke-width="11"/><path d="M46 300V238Q46 222 32 222Q20 222 20 236" fill="none" stroke="#8a6a4f" stroke-width="6"/>
+<path d="M44 300C44 288 50 274 62 266L70 282C64 288 62 294 62 300Z" fill="#f1e4c8"/>
+<path d="M34 252C32 240 42 234 52 236C62 238 64 250 60 258C56 266 38 266 34 252Z" fill="#f6d7c3"/><path d="M40 246h16M40 254h14" fill="none" stroke="#e6b9a0" stroke-width="2"/>
+<path d="M60 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM160 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0Z" fill="#f6d7c3"/>
+<path d="M70 125a50 56 0 1 0 100 0a50 56 0 1 0 -100 0Z" fill="#f6d7c3"/>
+<path d="M88 168C100 180 140 180 152 168C146 178 134 184 120 184C106 184 94 178 88 168Z" fill="#e6b9a0" stroke="none"/>
+<path d="M66 132C58 84 86 58 120 58C154 58 182 84 174 132C178 150 176 166 168 172C162 168 160 150 160 140C158 112 146 96 128 92C110 98 92 100 80 98C78 112 80 140 80 150C80 160 78 168 72 172C64 166 62 150 66 132Z" fill="#ece8e1"/>
+<path d="M100 72Q116 66 132 70M138 74Q152 80 160 94" fill="none" stroke="#b9b4ad" stroke-width="2"/>
+<path d="M83 118l-6-2M83 126l-6 2M157 118l6-2M157 126l6 2" fill="none" stroke="#e6b9a0" stroke-width="2.5"/>
+<path d="M111 142a9 10 0 1 0 18 0a9 10 0 1 0 -18 0Z" fill="#e6b9a0" stroke="none"/>
+</g>
+<g id="x-laughing" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M90 99Q101 92 112 97M128 97Q139 92 150 99" stroke-width="2.5"/><path d="M94 127Q101 119 108 127M132 127Q139 119 146 127" stroke-width="3"/><path d="M104 161Q120 165 136 161Q134 182 120 182Q106 182 104 161Z" fill="#2b2433" stroke-width="3"/><path d="M112 176Q120 170 128 176Q125 181 120 181Q115 181 112 176Z" fill="#e3a6a0" stroke="none"/><path d="M83 148a7 4 0 1 0 14 0a7 4 0 1 0 -14 0ZM143 148a7 4 0 1 0 14 0a7 4 0 1 0 -14 0Z" fill="#c98468" stroke="none" opacity=".6"/>
+</g>
+<g id="x-proud" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<g transform="translate(0 -2)"><path d="M90 100Q101 92 112 98M128 98Q139 92 150 100" stroke-width="2.5"/><path d="M94 127Q101 119 108 127M132 127Q139 119 146 127" stroke-width="3"/><path d="M102 161Q120 177 138 161" stroke-width="3"/></g><g transform="matrix(-1 0 0 1 240 0)"><path d="M40 300C44 272 66 252 100 244L108 264C90 272 80 286 80 300Z" fill="#f1e4c8" stroke-width="3"/><path d="M98 240C108 232 128 236 136 244C140 252 134 262 124 262L106 262C96 258 92 246 98 240Z" fill="#f6d7c3" stroke-width="3"/><path d="M110 246L130 248M108 254L128 256" stroke="#e6b9a0" stroke-width="2"/></g>
+</g>
+<g id="x-calm" class="x x-default" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M90 105Q101 100 112 104M128 104Q139 100 150 105" stroke-width="2.5"/><path d="M94 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0ZM132 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0Z" fill="#fffdf8" stroke-width="2"/><path d="M97.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0ZM135.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0Z" fill="#2b2433" stroke="none"/><path d="M111 164Q120 168 129 164" stroke-width="3"/>
+</g>
+</svg>

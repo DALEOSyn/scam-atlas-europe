@@ -70,8 +70,10 @@ timer_expiry:
 
 tutorial_grace:
   slots: [0]
-  report_on_legit: { stars: 1, points: 0 }       # report on genuine, high or low stakes
-  dismiss_on_legit_high: { stars: 1, points: 0 } # dismiss on genuine high stakes
+  # ★ = 5 points everywhere (producer ruling, T-2.8): a deliberate pause never scores below waiting out
+  # the timer (timer_expiry.genuine_high).
+  report_on_legit: { stars: 1, points: 5 }       # report on genuine, high or low stakes
+  dismiss_on_legit_high: { stars: 1, points: 5 } # dismiss on genuine high stakes
 
 tags:
   # Player may mark a checked detail "suspicious". Only fraud scenarios (and quoted examples) pay.

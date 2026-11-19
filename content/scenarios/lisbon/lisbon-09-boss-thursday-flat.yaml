@@ -1,0 +1,324 @@
+# 7-9 Boss: Thursday's flat (GDD §27.6; rental-offplatform-payment shapes B and C). The player's own
+# booking (producer ruling): the Graça studio, booked and paid in the app (7-1). Wednesday evening.
+# Beat 1 (email, start, 40 s): "Roostwell" <support@roostwell-bookings.example>: payment not verified,
+#   log in within 12 hours. R: sender, link, request. D: the real booking (LS5), the claim.
+#   No engage on boss beats (§16 ruling 4): "Log in through the link" is the fall.
+# Beat 2 (Kettle, +45 s, 40 s, covered_by start): a new number (CR-19) "Leonor (host) 🙂" asks for the
+#   €246 directly, with a bank-details card (CR-22, "Leonor Brito", a borrowed name: never the real host's
+#   fault). R: sender, request. D: claim, IBAN. "Pay it in the Larchwick app" is start_transfer
+#   (Kettle chat source, no cap) → host_transfer (banking sub-beat, CR-18(e)): doesn't match (no holder).
+#   host_transfer carries scored: false only for the validator's 3-scored-beat count (the engine scores it
+#   in beat 2's group), as Paris 3-9 and Madrid 4-9.
+# Beat 3 (SMS "ROOSTWELL", +45 s, 40 s, covered_by start + host_kettle): re-confirm your card or the
+#   booking is cancelled at 20:00. R: link, request. D: sender (the sender-or-link decoy), the booking
+#   number (LS5). Reads true whatever happened at beats 1–2. Design combination (fraud-researcher): not a
+#   separately sourced sequence, and no debrief presents it as one.
+# Interrupt after beat 3: the real host Leonor in the Roostwell app chat (genuine, on_fall: skip).
+# Every fall sets lisbon_acted_fast (story only) and offers the same six steps (first fall's list kept).
+id: lisbon-09-boss-thursday-flat
+chapter: lisbon
+role: boss
+pattern: rental-offplatform-payment
+theme: rental
+learning_objectives: [LO-05, LO-10, LO-06, LO-02, LO-16]
+difficulty: 5
+is_fraud: true
+device: email
+setup: "Wednesday evening. Your Graça studio is booked and paid in the app. Beatriz is at the faculty; Mateus is cooking."
+brands: [roostwell, kettle, larchwick]
+cast: [leonor, beatriz, mateus]
+pressure:
+  timer: true
+  levers: [fear, urgency, authority]
+  pusher:
+    messages:
+      - { at_seconds: 20, beat: host_kettle, text: "Please today, I have other guests asking 🙏" }
+
+message:
+  sender: { display: "Roostwell", detail: "support@roostwell-bookings.example" }
+  subject: "Action needed: your booking Thu–Sun"
+  body: |
+    Hi, your payment for the Graça studio (Thu–Sun) could not be verified. Log in within 12 hours to keep your booking: roostwell-bookings.example/login
+
+    Roostwell Support
+  request: log_in
+  ask: { text: "Log in within 12 hours to keep your booking" }
+  references: ["the Graça studio (Thu–Sun)"]
+  claims: [{ text: "your payment for the Graça studio (Thu–Sun) could not be verified" }]
+
+inspectables:
+  - target: sender.detail
+    reveal: "support@roostwell-bookings.example: the owner part isn't roostwell.example."
+    red_flag: true
+    type: sender
+  - target: link
+    reveal: "roostwell-bookings.example, a look-alike. Roostwell's own address is roostwell.example."
+    red_flag: true
+    type: link
+  - target: reference
+    reveal: "Your real booking. Details like these can leak or be guessed, so they can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "Payments do fail sometimes, so it can't prove anything either way. Your app would show it."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "Log in through a link in an email. Open the app yourself instead."
+    red_flag: true
+    type: request
+
+actions:
+  - id: log_in_link_b1
+    label: "Log in through the link"
+    kind: enter_details
+    outcome: login_typed_b1
+    pressure_target: true
+  - id: open_roostwell_b1
+    label: "Open the Roostwell app yourself"
+    kind: verify_in_app
+    outcome: booking_fine_b1
+  - id: report_b1
+    label: "Report the email as phishing"
+    kind: report
+    outcome: b1_reported
+  - id: delete_b1
+    label: "Delete the email"
+    kind: delete
+    outcome: b1_deleted
+
+beats:
+  - id: host_kettle
+    device: messenger
+    arrives_after: 45
+    timer_seconds: 40
+    covered_by: [start]
+    message:
+      sender: { display: "Leonor (host) 🙂", detail: "+351 9•• ••• •27", new_contact: true }
+      body: "Olá! It's Leonor, your host for Thursday. Roostwell had a problem with your payment. To keep the flat, please send the €246 to us directly; details below."
+      request: pay
+      ask: { text: "please send the €246 to us directly" }
+      claims: [{ text: "Roostwell had a problem with your payment." }]
+      payee: { name: "Leonor Brito", iban: "PT•• •••• •••• •••• •••• •••• 3390", amount: "€246.00" }
+    inspectables:
+      - target: sender.detail
+        reveal: "Not in your contacts, and not in the Roostwell chat where your real host writes."
+        red_flag: true
+        type: sender
+      - target: payee.iban
+        reveal: "An account you've never paid. Real and fake bank details look the same here, so it can't prove anything either way."
+        red_flag: false
+        type: payee
+      - target: claim
+        reveal: "Payments do fail sometimes, so it can't prove anything either way. Your app would show it."
+        red_flag: false
+        type: claim
+      - target: request
+        reveal: "Pay the host directly, outside the app. A booking paid in the app never needs paying again by transfer."
+        red_flag: true
+        type: request
+    actions:
+      - id: pay_in_larchwick_b2
+        label: "Pay it in the Larchwick app"
+        kind: start_transfer
+        next_beat: host_transfer
+        pressure_target: true
+      - id: check_booking_b2
+        label: "Check your booking in the Roostwell app"
+        kind: check_with_platform
+        outcome: booking_paid_leonor_app
+      - id: block_number_b2
+        label: "Block and report the number"
+        kind: block
+        outcome: b2_blocked
+      - id: ignore_b2
+        label: "Ignore it"
+        kind: ignore
+        outcome: b2_ignored
+
+  - id: host_transfer
+    device: banking
+    scored: false   # see header: inside beat 2's group (CR-18(e)); marked only for the validator's 3-scored-beat count
+    message:
+      account: { nickname: "Your current account" }
+      payee: { name: "Leonor Brito", iban: "PT•• •••• •••• •••• •••• •••• 3390", name_check: mismatch, amount: "€246.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "Doesn't match: this account isn't held by Leonor Brito."
+        red_flag: true
+        type: payee
+      - target: payee.iban
+        reveal: "An account you've never paid, typed from the message. Real new payees look the same here, so it can't prove anything either way."
+        red_flag: false
+        type: payee
+    actions:
+      - id: confirm_send_b2
+        label: "Confirm and send €246"
+        kind: pay
+        outcome: transfer_sent_b2
+        pressure_target: true
+      - id: cancel_check_roostwell
+        label: "Cancel and check the Roostwell app"
+        kind: check_with_platform
+        outcome: booking_paid_leonor_app
+      - id: cancel_report_b2
+        label: "Cancel and report it"
+        kind: report
+        outcome: b2_transfer_reported
+      - id: cancel_b2
+        label: "Cancel"
+        kind: ignore
+        outcome: b2_transfer_cancelled
+
+  - id: final_sms
+    device: sms
+    arrives_after: 45
+    timer_seconds: 40
+    covered_by: [start, host_kettle]
+    message:
+      sender: { display: "ROOSTWELL", detail: "Sender name: ROOSTWELL (no earlier texts)" }
+      body: "ROOSTWELL: Final notice. Booking 4471 is cancelled at 20:00 unless your card is re-confirmed: roostwell-bookings.example/card"
+      request: enter_details
+      ask: { text: "unless your card is re-confirmed" }
+      references: ["Booking 4471"]
+    inspectables:
+      - target: sender.detail
+        reveal: "ROOSTWELL as the sender name. Anyone can set a sender name, so it can't prove anything either way."
+        red_flag: false
+        type: sender
+      - target: link
+        reveal: "roostwell-bookings.example, the same look-alike as the email. Roostwell's own address is roostwell.example."
+        red_flag: true
+        type: link
+      - target: reference
+        reveal: "Your real booking number. Details like these can leak or be guessed, so they can't prove anything either way."
+        red_flag: false
+        type: reference
+      - target: request
+        reveal: "Your card details through a link, to \"keep\" a booking that's already paid."
+        red_flag: true
+        type: request
+    actions:
+      - id: reconfirm_card_b3
+        label: "Re-confirm your card through the link"
+        kind: enter_details
+        outcome: card_typed_b3
+        pressure_target: true
+      - id: open_roostwell_b3
+        label: "Open the Roostwell app yourself"
+        kind: verify_in_app
+        outcome: booking_fine_b3
+      - id: report_b3
+        label: "Report the text"
+        kind: report
+        outcome: b3_reported
+      - id: delete_b3
+        label: "Delete it"
+        kind: delete
+        outcome: b3_deleted
+
+interrupts:
+  - id: leonor_see_you
+    after_beat: final_sms
+    on_fall: skip   # the default, set explicitly: no cheerful "See you Thursday" right after a loss (CR-27)
+    is_fraud: false
+    device: marketplace
+    message:
+      app: { brand: roostwell }
+      sender: { display: "Leonor (host)", detail: "Your host, in the Roostwell chat" }
+      from_cast: leonor
+      body: "Olá! See you Thursday 🙂 The key-box code comes here in the app on the day."
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: your host Leonor, in the Roostwell chat where she has always written. That isn't proof on its own, so weigh it with what she asks for: nothing."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_leonor_obrigado
+        label: "Reply: obrigado, see you!"
+        kind: proceed
+        outcome: leonor_ate_quinta
+        pressure_target: true
+      - id: report_leonor
+        label: "Report the message"
+        kind: report
+        outcome: leonor_reported
+
+outcomes:
+  login_typed_b1:
+    narrative: "You log in on the page. \"Thank you, your booking is safe.\" Nothing changes in your real Roostwell app."
+    sets_flags: [lisbon_acted_fast]
+    recovery:
+      - { step: change_password, category: stop }
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: report_listing_or_host, category: report }
+      - { step: keep_chatting_host, category: harmful }
+      - { step: pay_second_deposit, category: harmful }
+  transfer_sent_b2:
+    narrative: "Sent: €246.00 to \"Leonor Brito\". \"Obrigada! All sorted.\" The Kettle number stops answering."
+    sets_flags: [lisbon_acted_fast]
+    recovery:
+      - { step: call_bank_known_number, category: stop }
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: change_password, category: stop }
+      - { step: report_listing_or_host, category: report }
+      - { step: keep_chatting_host, category: harmful }
+      - { step: pay_second_deposit, category: harmful }
+  card_typed_b3:
+    narrative: "You type your card on the page. \"Card re-confirmed.\" An hour later your Larchwick app shows €246.00 at a shop you've never heard of."
+    sets_flags: [lisbon_acted_fast]
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: change_password, category: stop }
+      - { step: report_listing_or_host, category: report }
+      - { step: keep_chatting_host, category: harmful }
+      - { step: pay_second_deposit, category: harmful }
+  booking_fine_b1:
+    narrative: "You open the Roostwell app yourself. Booking confirmed, paid. Nothing to do. Then Kettle pings: a number you don't know."
+  b1_reported:
+    narrative: "Reported. Your mail app moves it to junk. Then Kettle pings: a number you don't know."
+  b1_deleted:
+    narrative: "Deleted. Then Kettle pings: a number you don't know."
+  booking_paid_leonor_app:
+    narrative: "Paid and confirmed. Leonor's last message in the app: \"See you Thursday!\""
+  b2_blocked:
+    narrative: "You block and report the number. Kettle goes quiet."
+  b2_ignored:
+    narrative: "You leave it unanswered."
+  b2_transfer_reported:
+    narrative: "You cancel and report it. Nothing leaves your account."
+  b2_transfer_cancelled:
+    narrative: "You cancel. Nothing leaves your account."
+  booking_fine_b3:
+    narrative: "You open the Roostwell app yourself. Booking 4471: confirmed, paid. Nothing is cancelled."
+  b3_reported:
+    narrative: "Reported. Your phone files the text under spam."
+  b3_deleted:
+    narrative: "Deleted. Your booking stays as it was, in the app."
+  leonor_ate_quinta:
+    narrative: "Leonor: \"Até quinta! 🙂\" (See you Thursday!)"
+  leonor_reported:
+    narrative: "You reported it. Careful is good; this one really was your host, in the app."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Email, \"host\", text: three ways out of the app."
+    what_works: "Open the Roostwell app yourself. It's all there."
+  layer2:
+    message_flags:
+      - "The email: a login link with your real booking in it. The address after the @ gave it away."
+      - "The Kettle message: a new number, and a transfer for a stay already paid. The name didn't match."
+      - "The text: your card, to \"keep\" a booking. Paid is paid, in the app."
+    notes: "If you typed your login, change the password in the real Roostwell app, then turn on two-step sign-in there."
+  device_tip: "On a real phone, open the booking app from your home screen. Your booking, your host's messages and anything you owe are all there."
+  habit_card: stay-on-the-platform
+  already_clicked:
+    entered_details: "Typed your login? Change the password in the real Roostwell app and turn on two-step. Typed your card? Block it in your banking app now."
+    paid: "Sent a transfer? Call your bank now on the number on your card and ask it to try to stop or recall it."
+  sources: [de-evz-rental-fraud, nl-nltimes-booking-phishing-2026, pt-bdp-ficaadica-2023, pt-rtp-gnr-rentals-2026, pt-dn-psp-airbnb-2026, eu-ec-ipr-vop-2025, eu-esas-ai-scams-factsheet-nl]

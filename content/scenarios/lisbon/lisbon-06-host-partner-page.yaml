@@ -1,0 +1,173 @@
+# 7-6 A host INSIDE Roostwell's chat sends a "secure partner page" (GDD §27.4; rental-offplatform-payment
+# shape B). Fraud, difficulty 4, timer 40 s; follow-up in the same chat at 22 s; interrupt (Beatriz) at
+# 12 s. Levers greed (save 15%), social proof ("another guest"), helpfulness. Look-alike
+# roostwell-securepay.example (registered). Host handle "casa_velarim" (scam-side name).
+# Checkables (5; R 2): sender D (LS1: a host account inside the chat, the sender-or-link decoy), link R,
+# listing card D, claim D (fees are real), request R (book and pay outside the app).
+# securepay_page: a read-only training page (Red Line 2). Not in R.
+id: lisbon-06-host-partner-page
+chapter: lisbon
+role: standard
+pattern: rental-offplatform-payment
+theme: rental
+learning_objectives: [LO-10, LO-02]
+difficulty: 4
+is_fraud: true
+device: marketplace
+brands: [roostwell, kettle, larchwick]
+cast: [beatriz]
+pressure:
+  timer: true
+  levers: [greed, social_proof, helpfulness]
+  pusher:
+    messages:
+      - { at_seconds: 22, text: "Another guest is asking 🙂" }
+
+message:
+  app: { brand: roostwell }
+  listing: { title: "Two-room flat, Alfama · Thu–Sun", price: "€310.00" }
+  sender: { display: "casa_velarim", detail: "Host account in the Roostwell chat" }
+  body: "Olá! It's free Thursday. Roostwell's fees are high: book through our secure partner page and save 15%, same protection. roostwell-securepay.example/casa-velarim"
+  request: open_link
+  ask: { text: "book through our secure partner page and save 15%" }
+  claims: [{ text: "Roostwell's fees are high" }]
+
+inspectables:
+  - target: sender.detail
+    reveal: "A host's account inside Roostwell's chat, as a real host's would be. Anyone can open an account, so it can't prove anything either way."
+    red_flag: false
+    type: sender
+  - target: link
+    reveal: "roostwell-securepay.example: not roostwell.example. A \"partner page\" is outside the app."
+    red_flag: true
+    type: link
+  - target: reference
+    reveal: "A listing card for the flat, as a real one would show. Listings can be copied, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "Fees are a real cost, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "Asks you to book and pay outside Roostwell. Inside the app is where you're protected; a host asking you to leave it is the tell."
+    red_flag: true
+    type: request
+
+actions:
+  - id: open_partner_page
+    label: "Open the partner page"
+    kind: open_link
+    next_beat: securepay_page
+    pressure_target: true
+  - id: check_listing_app
+    label: "Check the listing in the Roostwell app"
+    kind: check_with_platform
+    outcome: roostwell_help_pay_in_app
+  - id: report_host
+    label: "Report the host in Roostwell"
+    kind: report
+    outcome: host_reported
+  - id: ignore_host
+    label: "Ignore it"
+    kind: ignore
+    outcome: host_ignored
+
+beats:
+  - id: securepay_page
+    device: browser
+    message:
+      page: { address: "roostwell-securepay.example/casa-velarim", title: "Roostwell Secure Pay" }
+      body: "Two-room flat, Alfama · Thu–Sun. Partner price €263.50 (save 15%). Pay now to confirm your stay."
+      request: enter_details
+      ask: { text: "Pay now to confirm your stay." }
+    inspectables:
+      - target: page.address
+        reveal: "The address bar still ends in roostwell-securepay.example. Roostwell's own address is roostwell.example, and it takes payments only in the app."
+        red_flag: true
+        type: page_address
+      - target: page.info
+        reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
+        red_flag: false
+        type: padlock
+      - target: request
+        reveal: "Your card details on a page the host sent, outside the Roostwell app. Paying there leaves Roostwell's protection behind."
+        red_flag: true
+        type: request
+    actions:
+      - id: pay_securepay
+        label: "Pay €263.50"
+        kind: enter_details
+        outcome: securepay_taken
+        pressure_target: true
+      - id: close_book_in_app
+        label: "Close it and book in the app"
+        kind: check_with_platform
+        outcome: roostwell_help_pay_in_app
+      - id: close_securepay
+        label: "Close the page"
+        kind: ignore
+        outcome: host_ignored
+
+interrupts:
+  - id: beatriz_mum_asks
+    at_seconds: 12
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Beatriz (Lisbon)", detail: "Saved contact: Beatriz (Lisbon)" }
+      from_cast: beatriz
+      body: "Mum's asking if you've found a place yet 😅"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Beatriz's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what she asks for: just news."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_beatriz_soon
+        label: "Reply: working on it!"
+        kind: proceed
+        outcome: beatriz_good_luck
+        pressure_target: true
+      - id: report_beatriz_mum
+        label: "Report the message"
+        kind: report
+        outcome: beatriz_mum_reported
+
+outcomes:
+  securepay_taken:
+    narrative: "\"Payment received! Roostwell will confirm shortly.\" Nothing appears in your Roostwell trips, and casa_velarim's chat goes quiet."
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: keep_evidence, category: secure }
+      - { step: report_listing_or_host, category: report }
+      - { step: wait_and_see, category: harmful }
+      - { step: pay_second_deposit, category: harmful }
+  roostwell_help_pay_in_app:
+    narrative: "Roostwell's Help: \"Pay only in the app. Report hosts who ask otherwise.\" You report the message."
+  host_reported:
+    narrative: "You report casa_velarim in the Roostwell chat. The chat closes: \"This account is under review.\""
+  host_ignored:
+    narrative: "You ignore it. \"Another guest is asking\" never turns into anything."
+  beatriz_good_luck:
+    narrative: "Beatriz: \"Good luck! Stay in the app 😉\""
+  beatriz_mum_reported:
+    narrative: "You reported it. Careful is good; this one really was Beatriz, passing on her mum's question."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Inside Roostwell, but asked to pay outside it."
+    what_works: "Book and pay only in the app."
+  layer2:
+    message_flags: []
+    notes: "Being in the app helps, but it isn't proof. What the host asks for is."
+  device_tip: "On a real phone, real bookings and payments show on the listing inside the app. A link in the chat that leaves the app is the moment to stop."
+  habit_card: stay-on-the-platform
+  already_clicked:
+    clicked: "Opened the page but typed nothing? Close it, and report the host in the app."
+    entered_details: "Typed your card? Block it in your banking app now and call your bank on the number on your card; ask about a chargeback. Report the host in the app."
+  sources: [pt-dn-psp-airbnb-2026, de-evz-rental-fraud, pt-dn-psp-cncs-campaign-2025, eu-esas-ai-scams-factsheet-nl]

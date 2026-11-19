@@ -1,0 +1,61 @@
+# Arc beat, slot 7 (GDD §10.1, §10.2; STORY §1.4: arc slot N plays by play position, so the line is
+# city-agnostic). Withdrawing needs a "fee". Warning sign: pay to withdraw. Friendship only; Alex's line is
+# ≤ 25 words, generic, no platform name, no persuasion copy, no how-to.
+# Written as Alex's own withdrawal, so it reads true whether or not the player invested at slots 5–6
+# (the engine has no arc branch on alex_invested yet). Sending the fee adds to alex_invested (ending C).
+# Options per §10.1 slot 7: Refuse and report → report (a report at slots 7–9 closes the arc as ending B)
+# · Pay → pay. No damage control here (it would unmask the arc, §10.2); layer 1 links to the steps.
+# Placed between 7-6 and 7-7 (GDD §27.3). Layer-1 wording is the writer's (no slot-7 example in §10.2).
+id: lisbon-arc-alex-07
+chapter: lisbon
+role: arc
+arc_slot: 7
+learning_objectives: [LO-14]
+is_fraud: true
+device: messenger
+brands: [wordswap]
+cast: [alex]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Alex", detail: "Practice partner from Wordswap" }
+  from_cast: alex
+  body: |
+    Ugh, my withdrawal is stuck. They want a €150 release fee first. Could you send it? I'll pay you back the second it clears 🙏
+  request: pay
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows Alex, your practice partner from Wordswap, as any profile would. A profile name can't prove anything either way."
+    red_flag: false
+    type: sender
+
+actions:
+  - id: send_release_fee
+    label: "Send Alex the €150"
+    kind: pay
+    outcome: fee_sent_alex
+    pressure_target: true
+  - id: refuse_and_report_alex
+    label: "Refuse, and report the profile"
+    kind: report
+    outcome: alex_refused_reported
+
+outcomes:
+  fee_sent_alex:
+    narrative: "You send the €150. Alex: \"You're the best!! It should clear tomorrow.\""
+    arc_effects: { alex_invested: 150 }
+  alex_refused_reported:
+    narrative: "You say no and report Alex's profile to Wordswap. A fee to get your own money out is reason enough."
+
+debrief:
+  variant: arc
+  layer1:
+    tell: "Paying a fee to get money out is a common scam step."
+    what_works: "Don't pay. Tell someone you trust."
+  layer2:
+    message_flags: []
+    notes: "Real withdrawals don't need a fee paid first from someone else's pocket. Once a \"release fee\" appears, more fees usually follow, and the money never comes out. Talk to someone you trust before you send anything."
+  already_clicked:
+    paid: "Already paid a \"withdrawal fee\"? Stop paying, call your bank on the number on your card, and keep the chat history."
+  sources: [ie-garda-crimecall-investment-2024, be-fsma-trading-platforms-2025, de-evz-online-trading-scam-2026, be-police-romance-2026]

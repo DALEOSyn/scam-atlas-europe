@@ -1,0 +1,87 @@
+# 7-4 Drill: Beatriz's two rooms (GDD §27.4; rental-offplatform-payment). Unscored. Beatriz, from her
+# saved Kettle contact, compares room A (in Roostwell, viewing Saturday, pay in the app after) with room B
+# (cheaper, owner abroad, deposit and ID today). The owner's message is quoted (context: quoted).
+# Quoted red flags: the claim ("many students") and the request (deposit and ID before a viewing).
+# Every pick gets a Beatriz reply; no stars. The last pick is gentle: Beatriz decides well anyway.
+id: lisbon-04-beatriz-two-rooms
+chapter: lisbon
+role: drill
+pattern: rental-offplatform-payment
+learning_objectives: [LO-18, LO-11]
+difficulty: 3
+is_fraud: false
+device: messenger
+brands: [kettle, roostwell]
+cast: [beatriz, mateus]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Beatriz (Lisbon)", detail: "Saved contact: Beatriz (Lisbon)" }
+  from_cast: beatriz
+  body: |
+    Two rooms!! A: in Roostwell, €420, balcony, viewing Saturday, pay in the app after. B: €290, right by the faculty, owner's abroad so no viewing. B's a steal, right?? What would you check?
+
+    B's owner: "Many students are interested. Send a €300 deposit and a copy of your ID today and the room is yours."
+  request: reply
+  ask: { text: "Send a €300 deposit and a copy of your ID today" }
+  claims: [{ text: "Many students are interested." }]
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: Beatriz's saved contact, in your usual chat with her. That isn't proof on its own, so weigh it with what she asks for: your advice, not money."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: claim
+    reveal: "In Beatriz's quote: \"many students\" and \"today\". A rush on a room you can't see is a reason to slow down."
+    red_flag: true
+    type: claim
+    context: quoted
+  - target: request
+    reveal: "In Beatriz's quote: a €300 deposit and a copy of her ID, today, for a room nobody can show her. Paying before a viewing, outside the platform, is the tell."
+    red_flag: true
+    type: request
+    context: quoted
+
+actions:
+  - id: pick_room_a
+    label: "Go with A and pay in the app."
+    kind: proceed
+    outcome: beatriz_room_a
+    pressure_target: true
+  - id: ask_to_see_b
+    label: "Ask to see B first, or send someone."
+    kind: proceed
+    outcome: beatriz_b_no_viewing
+  - id: check_b_photos
+    label: "Check whether B's photos appear elsewhere."
+    kind: proceed
+    outcome: beatriz_b_photos
+  - id: pay_b_deposit
+    label: "Pay B's deposit before someone else does."
+    kind: reply
+    outcome: beatriz_waits
+
+outcomes:
+  beatriz_room_a:
+    narrative: "Beatriz: \"A it is. Viewing Saturday. B can stay a steal for someone else.\""
+  beatriz_b_no_viewing:
+    narrative: "Beatriz: \"Asked. 'Not possible, I'm abroad.' Hmm. That's my answer, then.\""
+  beatriz_b_photos:
+    narrative: "Beatriz: \"Same photos, another city, another name. Wow. A it is.\""
+  beatriz_waits:
+    narrative: "Beatriz: \"Hmm. Mateus says not before I've seen it. I'll wait for A on Saturday.\""
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Too cheap, can't be seen, deposit and ID today."
+    what_works: "See it first, and pay inside the platform."
+  layer2:
+    message_flags: []
+    notes: "Check whether the same photos appear elsewhere. And never send a copy of your ID before anything is signed."
+  device_tip: "On a real phone, keep the whole conversation and the payment inside the platform's app, and pay only after a viewing."
+  habit_card: check-before-you-pay
+  already_clicked:
+    paid: "Sent a deposit already? Call your bank now on the number on your card, and report the listing on the platform."
+  sources: [pt-rtp-gnr-rentals-2026, de-evz-rental-fraud, eu-esas-ai-scams-factsheet-nl, pt-dn-psp-cncs-campaign-2025]

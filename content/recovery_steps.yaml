@@ -89,3 +89,17 @@ steps:
   - id: wait_until_after_long_weekend
     label: "Wait until the office reopens after the long weekend"
     feedback: "Waiting for the office to reopen feels sensible, but the sooner you call, the better the chance of getting a transfer back. Call the bank now."
+  # Lisbon (GDD §27.10). `report_sticker` is common sense (no PT source, QRP §5.4).
+  - id: report_sticker
+    label: "Photograph the sticker or slip and report it in the parking app or to the city"
+  - id: report_listing_or_host
+    label: "Report the listing or host on the platform"
+  - id: rescan_to_cancel
+    label: "Scan the code again to cancel the payment"
+    feedback: "It feels like undoing it, but the code leads to the same page. Block the card in your banking app first."
+  - id: pay_second_deposit
+    label: "Pay the 'refundable' second deposit they ask for"
+    feedback: "Wanting your money back is natural, but a second payment only adds to the loss. Call your bank instead."
+  - id: keep_chatting_host
+    label: "Keep chatting to the 'host' on Kettle to sort it out"
+    feedback: "They're the ones who'll never sort it out. Report them in the app and call your bank."

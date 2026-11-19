@@ -1,0 +1,171 @@
+# 7-3 A social ad, "Roostwell Deals" (GDD §27.4; rental-offplatform-payment shape A). Fraud, difficulty 4,
+# timer 40 s; follow-up from the same ad account at 22 s; interrupt (Mateus, small talk) at 14 s.
+# Levers greed (bargain), social proof ("5 people viewing"), urgency. Look-alike roostwell-stays.example.
+# Checkables (5; R 2): sender D (a page named after Roostwell, the sender-or-link decoy), link R, image D
+# (LS4), claim R (too cheap plus a rush), request D (ads ask you to book).
+# stays_page: a read-only training page (Red Line 2). Not in R.
+id: lisbon-03-alfama-ad
+chapter: lisbon
+role: standard
+pattern: rental-offplatform-payment
+theme: rental
+learning_objectives: [LO-11, LO-02]
+difficulty: 4
+is_fraud: true
+device: social
+brands: [roostwell, larchwick]
+cast: [mateus]
+pressure:
+  timer: true
+  levers: [greed, social_proof, urgency]
+  pusher:
+    messages:
+      - { at_seconds: 22, text: "Only 1 date left!" }
+
+message:
+  sender: { display: "Roostwell Deals", detail: "Sponsored · page created 3 weeks ago" }
+  body: "Sunny studio in Alfama, €29 a night 🌞 5 people viewing now. Book now before it's gone: roostwell-stays.example/alfama-studio"
+  image: { alt: "A bright studio with a balcony over red rooftops" }
+  request: open_link
+  ask: { text: "Book now before it's gone" }
+  claims: [{ text: "€29 a night 🌞 5 people viewing now" }]
+
+inspectables:
+  - target: sender.detail
+    reveal: "A page named after Roostwell. Anyone can name a page or ad like that, so it can't prove anything either way."
+    red_flag: false
+    type: sender
+  - target: link
+    reveal: "roostwell-stays.example. Read the end: the owner part is roostwell-stays.example, not roostwell.example."
+    red_flag: true
+    type: link
+  - target: image
+    reveal: "Lovely photos. Photos are easy to copy from a real home, so they can't prove anything either way."
+    red_flag: false
+    type: image
+  - target: claim
+    reveal: "Far below the usual price, and \"5 people viewing now\". Too cheap plus a rush is a reason to slow down."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "Asks you to book. Ads do that, so it can't prove anything either way. Where the link goes matters."
+    red_flag: false
+    type: request
+
+actions:
+  - id: open_stays_page
+    label: "Open the booking page"
+    kind: open_link
+    next_beat: stays_page
+    pressure_target: true
+  - id: search_roostwell_ad
+    label: "Search for it in the Roostwell app yourself"
+    kind: check_with_platform
+    outcome: no_such_studio
+  - id: report_ad
+    label: "Report the ad"
+    kind: report
+    outcome: ad_reported
+  - id: scroll_past
+    label: "Scroll past"
+    kind: ignore
+    outcome: scrolled_past
+
+beats:
+  - id: stays_page
+    device: browser
+    message:
+      page: { address: "roostwell-stays.example/alfama-studio", title: "Roostwell · Sunny studio, Alfama" }
+      body: "Hold it now with a €90 deposit. 5 people are viewing this studio."
+      request: enter_details
+      ask: { text: "Hold it now with a €90 deposit." }
+    inspectables:
+      - target: page.address
+        reveal: "The address bar still ends in roostwell-stays.example. Roostwell's own address is roostwell.example."
+        red_flag: true
+        type: page_address
+      - target: page.info
+        reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
+        red_flag: false
+        type: padlock
+      - target: request
+        reveal: "A deposit by card on a page an ad sent you to. Roostwell takes payment in its own app, for listings you find there."
+        red_flag: true
+        type: request
+    actions:
+      - id: pay_stays_deposit
+        label: "Pay the €90 deposit"
+        kind: enter_details
+        outcome: deposit_taken
+        pressure_target: true
+      - id: close_search_app
+        label: "Close it and search in the app"
+        kind: check_with_platform
+        outcome: no_such_studio
+      - id: close_stays_page
+        label: "Close the page"
+        kind: ignore
+        outcome: scrolled_past
+
+interrupts:
+  - id: mateus_octopus
+    at_seconds: 14
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Mateus", detail: "Saved contact: Mateus (work phone)" }
+      from_cast: mateus
+      body: "Mum asks: do you eat octopus? Be honest."
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Mateus's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what he asks for: a dinner question."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_octopus
+        label: "Reply: yes, happily!"
+        kind: proceed
+        outcome: mateus_octopus_yes
+        pressure_target: true
+      - id: report_octopus
+        label: "Report the message"
+        kind: report
+        outcome: mateus_octopus_reported
+
+outcomes:
+  deposit_taken:
+    narrative: "\"Deposit received! Your host will send the address.\" Nothing comes. That evening your Larchwick app shows €90.00, then €240.00 at a shop you've never heard of."
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: keep_evidence, category: secure }
+      - { step: report_listing_or_host, category: report }
+      - { step: wait_and_see, category: harmful }
+      - { step: pay_second_deposit, category: harmful }
+  no_such_studio:
+    narrative: "No studio like it in Alfama at €29. Similar ones: €85–€110 a night."
+  ad_reported:
+    narrative: "You report the ad. It's still there an hour later, but you've moved on."
+  scrolled_past:
+    narrative: "You scroll past. The \"5 people viewing\" counter never changes."
+  mateus_octopus_yes:
+    narrative: "Mateus: \"Good answer. Mum approves.\""
+  mateus_octopus_reported:
+    narrative: "You reported it. Careful is good; this one really was Mateus, asking about dinner."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Too cheap, in a rush, on a look-alike address."
+    what_works: "Find it in the Roostwell app yourself."
+  layer2:
+    message_flags: []
+    notes: "Great photos prove nothing; they can be copied from a real home. Check before you pay: if you can't find it in the app, don't pay for it."
+  device_tip: "On a real phone, don't book from an ad. Open the booking app from your home screen and search for the place there."
+  habit_card: check-before-you-pay
+  already_clicked:
+    clicked: "Opened the page but typed nothing? Close it, and search in the app yourself."
+    entered_details: "Typed your card? Block it in your banking app now and call your bank on the number on your card; ask about a chargeback. Report the ad."
+  sources: [pt-rtp-gnr-rentals-2026, de-evz-rental-fraud, eu-europol-iocta-2026, pt-dn-psp-cncs-campaign-2025]

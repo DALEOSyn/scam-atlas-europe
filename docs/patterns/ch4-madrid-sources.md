@@ -18,6 +18,22 @@ Companion to GDD §18 (Madrid summary) until the full chapter spec exists. Owner
 | Fall → damage control | Bank on the card's number (try to stop or recall); screenshots and call log; police report with a copy for the bank; 017 for advice; complaint to the bank, then the Banco de España | es-incibe-smishing-bank-callback-2025, es-incibe-017-faq, es-bde-reclamacion, es-bde-vishing-2020, es-bde-msr2025-fraude | "May not have to refund you" (authorised payment): es-bde-msr2025-fraude. EU refund rule only provisional: eu-ep-psr-deal-2025 (designer context, not on screen). |
 | Debrief context line on Spain's sender register (optional) | "Since September 2026, Spanish phone companies must block texts under sender names that aren't registered. Even so, a text in your bank's real thread is no proof." | es-boe-orden-tdf-149-2025, es-boe-cnmc-circular-1-2026, es-boe-cnmc-circular-2-2026, es-boe-cnmc-circular-3-2026, es-cnmc-alias-callout-2026, es-bde-medidas-fraude-telefono-2025 | Only this wording or weaker. No effectiveness claim. |
 
+## Per scenario (GDD §24, fact-checked 2026-11-19 against commit 470bc31)
+Fixes M-A (feedback for `call_back_caller_number`) and M-B (4-8 login-only, option 1) are assumed applied.
+
+| Scenario | Source ids | Notes |
+|---|---|---|
+| 4-1 dinner | (none) | Genuine, no fraud claim. |
+| 4-2 real card call | es-bde-sms-callerid-spoofing-2022, es-incibe-smishing-bank-callback-2025 | Genuine-twin tells: no request to move money or for codes; you can hang up and call the card's number. |
+| 4-3 text in thread → security_line | es-incibe-smishing-bank-callback-2025, es-bde-sms-callerid-spoofing-2022, es-incibe-sms-banks-2022, eu-epc-threats-2025, es-boe-orden-tdf-149-2025, es-boe-cnmc-circular-3-2026, es-cnmc-alias-callout-2026, es-bde-msr2025-fraude | M5 sender-register line: only the GDD wording or weaker, no claim that it works. |
+| 4-4 drill (Lucía) | es-incibe-smishing-bank-callback-2025, es-bde-sms-callerid-spoofing-2022 | |
+| 4-5 reserve-account call | es-incibe-smishing-bank-callback-2025, es-bde-vishing-2020, ch-ncsc-double-phishing-2026 (supporting), it-carabinieri-21-arresti-2025, pl-cert-fake-consultants, fr-bdf-osmp-2024, eu-eba-ecb-fraud-2025, eu-epc-threats-2025, fr-inc-vop-2025 (supporting), eu-ec-ipr-vop-2025, eu-eurlex-ipr-2024-886, eu-ecb-ipr, es-bde-msr2025-fraude | **The "stay on the line" lever is sourced outside Spain** (ch-ncsc-double-phishing-2026, it-carabinieri-21-arresti-2025, pl-cert-fake-consultants). The Spanish ids support the habit (hang up, call the number on the card). The "Doesn't match" name check is valid for a euro-area (ES) account; caller coaching past a mismatch: eu-epc-threats-2025. |
+| 4-6 real code | es-bde-sms-callerid-spoofing-2022 | Genuine: a code the player requested for their own action. |
+| 4-7 cancellation code | es-bde-sms-callerid-spoofing-2022, es-bde-vishing-2020, ch-ncsc-double-phishing-2026 (supporting), pl-cert-fake-consultants | "A code to cancel is a code to make a payment." |
+| 4-8 card-paused link (older in-thread link chain) | es-incibe-sms-banks-2022 | Login fields only (user ID, password), per M-B option 1; no card or one-time-code fields. Fall stop: `call_bank_known_number`; secure: `change_password`. |
+| 4-9 boss | the 4-3 and 4-5 sets; eu-ecb-ipr, eu-epc-threats-2025 (beat 2 "Name matches" reveal: shows whose account, not that the call is real) | Beat 3 ("move your balance to the security reserve tonight") is a **design combination** of brief §2 elements (an SMS with a number to call, then a guided transfer), not a single sourced case. |
+| Recovery (all falls) | es-incibe-smishing-bank-callback-2025 (`call_bank_stop_payment`, `keep_call_evidence`, `report_police_copy_to_bank`), es-bde-vishing-2020, es-incibe-017-faq, es-bde-reclamacion, es-bde-msr2025-fraude, eu-europol-phishing-leaflet and es-bde-sms-callerid-spoofing-2022 (harmful `call_back_caller_number`: caller ID can be faked) | Refunds "may", never "will". Feedback for `call_back_caller_number` per M-A: the number can be faked, so you can't tell whose line you'd reach. |
+
 ## Spain help card (draft wording; real bodies only here and on the help screen)
 1. **Call your bank now** on the number on your card or in its app; ask it to try to stop or recall the transfer. (es-incibe-smishing-bank-callback-2025)
 2. **017, INCIBE's free and confidential cybersecurity helpline** (WhatsApp 900 116 117), 8:00–23:00 every day. Advice on what to do and where to report; it doesn't take police reports. (es-incibe-017-faq)

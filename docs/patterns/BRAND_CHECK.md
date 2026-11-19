@@ -260,3 +260,79 @@ Same method and limits as above (web, app-store and company-directory check via 
 4. **Keep:** Ruchelune, Larchwick Pro, Volet Bleu (human checks SIREN 978118412's activity before G4), Feuillemont, Cuivrelin, Cabinet Ostrelle, Solène Arbogast, Bastien Morel, Inès Roussel.
 5. **Don't use** Clef d'Ocre Locations as the fallback.
 6. **Before G4:** INPI + company-directory check (annuaire-entreprises.data.gouv.fr) + TMview for all Paris names. This check is not legal clearance.
+
+---
+
+# Madrid and Warsaw names (chapters 4 and 5), checked 2026-11-19
+
+**Owner:** fraud-researcher · **Searched:** 2026-11-19 · **Status:** draft for sceptic review · roles from `docs/GDD.md` §24 and §25 (commit 470bc31).
+
+## Method and limits (Madrid / Warsaw)
+- Same method and limits as above: one web search index (US-based). It surfaced Spanish company-directory pages (BORME PDFs, eInforma, Infonif, Empresite, Iberinform, Eulerpool), Polish marketplace seller pages and app-store listings.
+- **No trademark register, no Spanish Registro Mercantil / OEPM search, no Polish KRS / CEIDG / UPRP search, no WHOIS.** BORME PDFs that came up in results were **not opened one by one**, so an exact name inside a gazette PDF could be missed.
+- Before G4 a human checks OEPM and the Registro Mercantil for the Spanish names, UPRP and KRS for the Polish ones, and TMview for all of them.
+- **Domains:** the game uses `.example` hosts (Red Line 3), so `votelark-vote.example` needs no collision check; the check is about the *name*.
+- **Not checked:** "MERCADO PUESTO 14" (generic card descriptor, per coordinator). Smykowo is dropped (it evokes a real retailer) and was not researched.
+
+## Summary (Madrid / Warsaw)
+| Slot | Name | Closest hits | Risk | Recommendation |
+|---|---|---|---|---|
+| Madrid: holder of the "safe" account (4-9 boss, VoP **match**) | **Olvarde Custodia SL** | none for "Olvarde"; only Olivares / Olave / Olvera-type names; "Custodia" is a generic word in many Spanish company names | Low | **Keep** |
+| same slot, alternative | Corvaldo Custodia SL | no exact hit; Corvina (corvina.io, IoT), Corvari / Corvaglia (Italian sole traders); faint echo of **CorVel** (the reason Corvelle was renamed in T-1.7) | Low–Medium | Spare only |
+| same slot, alternative | Mirtelo Custodia SL | **MIRTILO SL** (registered Spanish company, Bilbao), one letter away; also Mirtel, Mirtexo | Medium | **Don't use** |
+| Madrid: name the caller gives (4-5) | **Larchwick Reserva** | no "Larchwick" anywhere; **Larchago Reserva** (Rioja wine, Bodegas Larchago); **Banreservas** (Dominican state bank with a Madrid office) uses "Reservas" | Low | **Keep** (built on the game's own bank brand) |
+| Warsaw: vote page (5-2) | **Votelark** (`votelark-vote.example`) | no exact hit; Vote Owl, VOTEism, Votemar, ActiVote (US/other voting apps); "Lark" is an unrelated office suite | Low | **Keep** |
+| same slot, alternative | Cheerpoll | no app or company; "Cheerleaders' Choice" fan votes (US cheer sites) | Low | Spare |
+| same slot, alternative | Tunepoll | no exact hit; **TinyPoll** (live poll app, App Store and Product Hunt), a near sound-alike in the same sector | Low–Medium | Spare only |
+| Warsaw: shop that receives the code payment (5-6, payee "TREMOLIK") | **TREMOLIK** | no exact hit; only "tremolo" (generic music term, guitar-effect listings); Tremach Sp. z o.o. (PL, different word and sector) | Low | **Keep** |
+| same slot, alternative | Basovia | no shop or company; **Basowiszcza / Basovišča**, a real Belarusian-minority rock festival held in Poland (Wikipedia) | Medium (music sector, Polish context) | **Don't use** |
+
+## MW1. Olvarde Custodia SL: Low, keep
+- **Searched:** `"Olvarde" company OR empresa`; `"Olvarde Custodia" OR "Custodia SL" sociedad`; `"Olvarde" OR "Olvarde SL" OR "Olvarde Custodia"`.
+- **Hits:**
+  - No company, brand or person called "Olvarde".
+  - Results were unrelated near-names: Olivar Haza del Conde SL (eInforma), Olave Capital Investments SL (trademarks on Justia), Olivarte, Olva Courier (Peru).
+  - "Custodia" query: generic company names such as Archivos Custodia, Custodium Lapis SL, Custodians Levante SL, plus BORME PDFs (not opened).
+- **Assessment:**
+  - The name is shown on a VoP **match** as the holder of a fraud account, so it must not belong to a real company.
+  - No hit for the coined stem. "Custodia" is a common Spanish word, and the full name "Olvarde Custodia SL" did not appear.
+  - A human should still check the Registro Mercantil before G4.
+- **Alternatives:**
+  - **Corvaldo Custodia SL:** `"Corvaldo" empresa OR company OR custodia`; `"Corvaldo" OR "Corvaldo SL"`. No exact hit. Low–Medium: the "Corv-" start echoes CorVel (US insurance services), which T-1.7 avoided for the bank. Acceptable as a spare.
+  - **Mirtelo Custodia SL:** `"Mirtelo" empresa OR company OR SL`; `"Mirtelo" OR "Mirtelo SL" OR "Mirtelo Custodia"`. Closest hit: **MIRTILO SL**, Bilbao (Eulerpool company listing, https://eulerpool.com/da/virksomheder/ES/MIRTILO%20SL,Bilbao,BI-3627-8), one letter away and also an SL. Also Mirtel (dateas), Mirtil (Iberinform). Don't use: on a fraud-account match this is too close to a real Spanish company.
+
+## MW2. Larchwick Reserva: Low, keep
+- **Searched:** `"Larchwick Reserva" OR "Larchwick" bank`; `"Larchwick" company OR bank OR reserva OR app`; `banco "Reserva" España banco OR "cuenta reserva" entidad Banreservas España`.
+- **Hits:**
+  - No "Larchwick" in any sector (this confirms T-1.7). The bank-app searches returned only unrelated banks (Barwick Banking Company, Banca March).
+  - **Larchago Reserva**: a Rioja wine (Bodegas Larchago / Familia Chávarri). It shares "Larch-" + "Reserva", but it is a wine, not a financial business.
+  - **Banreservas** (Banco de Reservas de la República Dominicana) has had a representative office in Madrid since 2022–23 (Diario Libre, Revista Mercado). Its name is "Banreservas", not "Reserva", and the game name leads with Larchwick.
+  - The Banco de España customer site notes that "banco" is a reserved term. The game name doesn't use "Banco", so this doesn't apply.
+- **Assessment:** this is the false name a scam caller gives, built on the game's own fictional bank. No real "Larchwick" exists, and "Reserva" is a generic word. Keep. Don't change it to "Banco Larchwick Reservas" or anything close to "Banreservas".
+
+## MW3. Votelark (`votelark-vote.example`): Low, keep
+- **Searched:** `"Votelark" app OR vote OR poll`; `"Vote Lark" OR "Votelark" OR "VoteLark.com"`; `"Votelark" OR "Vote-lark" Poland OR głosowanie OR konkurs`.
+- **Hits:**
+  - No exact hit.
+  - Voting apps with different names: Vote Owl, VOTEism, Votemar, ActiVote, VoteMeApp (App Store).
+  - The Polish query returned only real public votes (gov.pl WSIS instructions; a bank's online vote; a tourism-blogger vote), none named Votelark.
+- **Assessment:** the coined name has no collision. **Note for writers:** real Polish institutions run legitimate online votes, which is why the scenario must keep the tell on the *code banner* ("registers your Kettle account on a new device"), not on "online votes are fake".
+- **Alternatives:**
+  - **Cheerpoll:** `"Cheerpoll" app OR poll OR voting`; `"Cheer Poll" OR "CheerPoll" OR "cheerpoll.com"`. No app. Only cheerleading fan-vote pages (Varsity) and generic poll apps (Pollie, PollBooth, Expoll). Low.
+  - **Tunepoll:** `"Tunepoll" app OR poll OR music vote`; `"Tune Poll" OR "TunePoll" OR "tunepoll.com"`. No exact hit. **TinyPoll** (live poll app, https://apps.apple.com/us/app/id1337251012, also on Product Hunt) is a near sound-alike in the same sector. Low–Medium.
+
+## MW4. TREMOLIK (payee on the code confirmation): Low, keep
+- **Searched:** `"Tremolik" OR "Tremolik sp. z o.o." sklep`; `"Tremolik" OR "Tremolík"`; `"Tremolik" sklep OR shop OR company OR "Tremolik.pl"`; `"Tremolo" sklep muzyczny OR "tremolo.pl"`.
+- **Hits:**
+  - No company, shop or seller named Tremolik.
+  - Results: generic "tremolo" (music term; guitar-effect product pages at large music retailers), Polish marketplace seller pages with unrelated names, and Tremach Sp. z o.o. (EMIS profile, different word).
+  - No Polish music shop trading as "Tremolo" surfaced. The "tremolo.pl" query returned only retailer product pages.
+- **Assessment:** the coined form with the Polish "-ik" ending has no hit. Keep. Show it only as the payee in capitals on the confirmation, as specified.
+- **Alternative:**
+  - **Basovia:** `"Basovia" sklep OR shop OR company`; `"Basovia" OR "Basowia" music OR muzyka OR instrumenty`; `"Basovia" OR "Bassovia" OR "basovia.pl"`. No shop or company, but **Basowiszcza / Basovišča** is a real music festival held in Poland (https://en.wikipedia.com/wiki/Basowiszcza). A music-shop payee named Basovia is too close in sector and sound. Medium. Don't use.
+
+## Actions for ux-artist / scenario-writer (Madrid / Warsaw)
+1. **Keep:** Olvarde Custodia SL (4-9 boss holder), Larchwick Reserva (4-5 caller's name), Votelark / `votelark-vote.example` (5-2), TREMOLIK (5-6 payee).
+2. **Spares, if a second name is needed:** Corvaldo Custodia SL (Low–Medium), Cheerpoll (Low), Tunepoll (Low–Medium).
+3. **Don't use:** Mirtelo Custodia SL (MIRTILO SL, Bilbao), Basovia (Basowiszcza festival). Smykowo was already dropped.
+4. **Before G4:** OEPM + Registro Mercantil (ES), UPRP + KRS (PL), and TMview for all kept names. This check is not trademark or legal clearance.

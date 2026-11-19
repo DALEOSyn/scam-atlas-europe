@@ -88,6 +88,7 @@ Source ids refer to `content/sources.research.yaml` (to be merged into `content/
   - the EPC confirms spoofed sender IDs and messages that give a phone number instead of a link [eu-epc-threats-2025];
   - France's figures show this manipulation type is big elsewhere too [fr-bdf-osmp-2024].
 - **Habit:** hang up and call the number on your card or in your app; no bank asks you to move money to a "safe" account [es-incibe-smishing-bank-callback-2025], [eu-europol-phishing-leaflet].
+- **Update 2026-11-19 (T-3.6r):** brief `bank-safe-account-call.md`, per-beat list `ch4-madrid-sources.md`. Added Banco de España pages on SMS and caller-ID spoofing [es-bde-sms-callerid-spoofing-2022], [es-bde-vishing-2020]. Spain's SMS sender register: operators must block SMS under unregistered sender names from **15 Sept 2026** [es-boe-orden-tdf-149-2025], [es-boe-cnmc-circular-3-2026], [es-cnmc-alias-callout-2026]. No source measures its effect, so the lesson stays "the real thread is no proof".
 
 ### Ch 5 — Warsaw → **Confirm (High for marketplace; Medium for payment-code)**
 - **Marketplace "collect your payment" link:**
@@ -96,6 +97,7 @@ Source ids refer to `content/sources.research.yaml` (to be merged into `content/
 - **Code request from a hijacked friend:**
   - NASK guide describes a friend's social account taken over to ask for the 6-digit banking-app code [pl-nask-metoda-na-2020]. Official but from 2020; current prevalence comes only from news (not cited).
 - **Habit:** keep the deal and the payment on the platform; never share a payment or login code; confirm "friends" by calling [pl-nask-metoda-na-2020], [eu-esas-ai-scams-factsheet-nl].
+- **Update 2026-11-19 (T-3.6r):** briefs `marketplace-collect-payment-link.md` and `hijacked-friend-payment-code.md`, per-beat list `ch5-warsaw-sources.md`. Marketplace pay-out pages confirmed again in CERT Polska's Jan and Mar 2026 summaries [pl-cert-monthly-2026-01], [pl-cert-monthly-2026-03] and NASK's 2025 seller checklist [pl-nask-okazja-czy-pulapka-2025]. Payment code: a police-hosted warning (undated) describes the code-and-confirm flow [pl-policja-psp-na-znajomego]; CERT Polska 2026 confirms friend-account takeovers used for loan requests [pl-cert-monthly-2026-07]. Confidence for the code pattern raised to **Medium-high**; no 2026 official source names the code itself.
 
 ### Ch 6 — Rome: fake police / bank and family-emergency calls (digital vectors) → **Adjust (High for call scripts; Medium for voice cloning)**
 - **Scope change (Red Line 8):**

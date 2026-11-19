@@ -1,0 +1,8 @@
+<!-- Fictional brand for Scam Atlas: Europe (educational game). Original artwork, CC BY-SA 4.0. Not affiliated with, and not modelled on, any real organisation. Registry: content/brands.yaml -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 64" width="200" height="64" role="img" aria-labelledby="t" style="color:#333847"><title id="t">Zonelet (fictional brand)</title>
+<g><rect width="64" height="64" rx="14" fill="#333847"/>
+<path d="M14 18V46M50 18V46" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-dasharray="6 5"/>
+<circle cx="32" cy="32" r="11" fill="#C9B6F2"/>
+<path d="M32 25V32L37 35" fill="none" stroke="#333847" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="76" y="41" font-family="system-ui, sans-serif" font-size="26" font-weight="700" letter-spacing="0.5" fill="currentColor">zonelet</text>
+</svg>

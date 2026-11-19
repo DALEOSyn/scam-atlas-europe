@@ -1,0 +1,26 @@
+<!-- Scam Atlas: Europe. City backdrop: a steep Lisbon side street in warm sun, one facade with an original simple geometric tile pattern on its top floor and ground floor only, a rose plaster house, laundry on a line at the top, iron balconies outside the face band, stepped pavement; no tram, no funicular, no lettering, no sign, no copy of a historic tile design. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="ls-t"><title id="ls-t">A steep street of tiled and rose houses with laundry and steps</title>
+<defs><linearGradient id="ls-air" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfdde6"/><stop offset="1" stop-color="#d9e6f6"/></linearGradient>
+<g id="ls-tl"><rect width="30" height="30" fill="#9fb39b"/><path d="M15 5L25 15L15 25L5 15Z" fill="#c4cab9"/><path d="M15 11L19 15L15 19L11 15Z" fill="#879d83"/></g><g id="ls-r"><use href="#ls-tl" x="0"/><use href="#ls-tl" x="30"/><use href="#ls-tl" x="60"/><use href="#ls-tl" x="90"/><use href="#ls-tl" x="120"/><use href="#ls-tl" x="150"/><use href="#ls-tl" x="180"/><use href="#ls-tl" x="210"/><use href="#ls-tl" x="240"/><use href="#ls-tl" x="270"/><use href="#ls-tl" x="300"/><use href="#ls-tl" x="330"/><use href="#ls-tl" x="360"/><use href="#ls-tl" x="390"/><use href="#ls-tl" x="420"/><use href="#ls-tl" x="450"/><use href="#ls-tl" x="480"/><use href="#ls-tl" x="510"/></g>
+<g id="ls-w"><rect width="56" height="96" rx="3" fill="#f6efe2"/><rect x="6" y="6" width="44" height="84" rx="2" fill="#a9bccb"/><path d="M28 6V90" stroke="#f6efe2" stroke-width="4"/></g>
+</defs>
+<rect width="960" height="540" fill="url(#ls-air)"/>
+<path d="M0 60H520V470H0Z" fill="#e7d3b0"/>
+<use href="#ls-r" y="60"/><use href="#ls-r" y="90"/><use href="#ls-r" y="344"/><use href="#ls-r" y="374"/><use href="#ls-r" y="404"/><use href="#ls-r" y="434"/><use href="#ls-r" y="464"/>
+<path d="M0 116H520M0 344H520" stroke="#d6bf98" stroke-width="6"/>
+<path d="M0 60H520V48H0Z" fill="#c8714f"/>
+<path d="M520 30H960V470H520Z" fill="#e3a6a0"/><path d="M520 30H960V18H520Z" fill="#a95c3e"/>
+<use href="#ls-w" x="90" y="170"/><use href="#ls-w" x="250" y="170"/><use href="#ls-w" x="410" y="170"/>
+<use href="#ls-w" x="610" y="60"/><use href="#ls-w" x="780" y="60"/><use href="#ls-w" x="610" y="200"/><use href="#ls-w" x="780" y="200"/>
+<path d="M600 156H676M770 156H846" stroke="#5d6672" stroke-width="3"/><path d="M604 156V138M622 156V138M640 156V138M658 156V138M676 156V138M774 156V138M792 156V138M810 156V138M828 156V138M846 156V138M600 138H676M770 138H846" stroke="#5d6672" stroke-width="2"/>
+<path d="M140 92Q330 112 520 92" fill="none" stroke="#9c978a" stroke-width="2"/>
+<path d="M196 98h30v26h-30ZM290 102h22l4 30h-30ZM380 101h34v20h-34Z" fill="#f1e4c8"/><path d="M240 100h24v22h-24ZM336 102h26l-2 24h-22Z" fill="#8fa3b5"/><path d="M430 98h22v28h-22Z" fill="#e3a6a0"/>
+<path d="M170 470V392Q170 360 200 360Q230 360 230 392V470Z" fill="#a95c3e"/>
+<path d="M640 470V380h90V470Z" fill="#8a6a4f"/><path d="M650 470V390h70V470Z" fill="#4e6a8f"/>
+<path d="M0 470H960V540H0Z" fill="#c9b28f"/>
+<path d="M560 540V500H660V470H760V440H960V540Z" fill="#c4cab9"/>
+<path d="M560 500H660M660 470H760M760 440H960" stroke="#9c978a" stroke-width="4"/>
+<path d="M0 500H560" stroke="#b49c7a" stroke-width="3"/>
+<path d="M880 440V380" stroke="#5d6672" stroke-width="5"/><path d="M864 380h32" stroke="#5d6672" stroke-width="5" stroke-linecap="round"/>
+<path d="M40 470h40l-6 -34h-28Z" fill="#c8714f"/><path d="M42 418a18 18 0 1 0 36 0a18 18 0 1 0 -36 0Z" fill="#86a175"/><path d="M50 410a4 4 0 1 0 8 0a4 4 0 1 0 -8 0ZM64 418a4 4 0 1 0 8 0a4 4 0 1 0 -8 0Z" fill="#e3a6a0"/>
+</svg>

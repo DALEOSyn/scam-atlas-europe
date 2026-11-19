@@ -452,6 +452,16 @@
   --brand-wordswap-primary: #6e4430;
   --brand-wordswap-on-primary: #fff3e6;    /* 7.59 */
   --brand-wordswap-accent: #f4b183;        /* non-text on primary: 4.53 */
+
+  /* Roostwell (rental platform, Lisbon) */
+  --brand-roostwell-primary: #46521a;
+  --brand-roostwell-on-primary: #ffffff;   /* 8.46 */
+  --brand-roostwell-accent: #f1e2a8;       /* 6.52 on primary */
+
+  /* Zonelet (city parking app and operator, Lisbon; renamed from Kerbello) */
+  --brand-zonelet-primary: #333847;
+  --brand-zonelet-on-primary: #ffffff;     /* 11.68 */
+  --brand-zonelet-accent: #c9b6f2;         /* 6.37 on primary */
 }
 
 /* ------------------------------------------------------------------------- */

@@ -1,0 +1,9 @@
+<!-- Fictional brand for Scam Atlas: Europe (educational game). Original artwork, CC BY-SA 4.0. Not affiliated with, and not modelled on, any real organisation. Registry: content/brands.yaml -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-labelledby="t"><title id="t">Roostwell logo (fictional)</title>
+<rect width="64" height="64" rx="14" fill="#46521A"/>
+<path d="M19 50V31a13 13 0 0 1 26 0V50" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/>
+<path d="M27 50V36a5 5 0 0 1 10 0V50Z" fill="#F1E2A8"/>
+<path d="M26 16a6 6 0 0 1 12 0v2H26Z" fill="#F1E2A8"/>
+<circle cx="35" cy="13.5" r="1.4" fill="#46521A"/>
+<path d="M38 15.5l4 1.5l-4 1Z" fill="#F1E2A8"/>
+</svg>

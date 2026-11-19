@@ -76,11 +76,11 @@ describe('redline:lint fixtures', () => {
 describe('redline:lint on real content', () => {
   it('content/ and public/ (incl. the example scenario) have no errors or warnings', () => {
     expect(lintPaths([resolve(ROOT, 'content'), resolve(ROOT, 'public')], cfg)).toEqual([]);
-    // Scans all of content/ and public/ with the full rule set; it grows with every chapter and
-    // passed 5 s on a loaded CI runner (PR #17), so it gets the same timeout as the docs/ scan.
-    // At 76 scenarios it takes ~8.5 s alone and passed 30 s in CI while other files ran in parallel
-    // (PR #50), so the budget is 90 s until the linter is sped up (CR-47). The assertion is unchanged.
-  }, 90_000);
+    // Scans all of content/ and public/ with the full rule set. Before CR-47 this took ~17 s locally
+    // and needed a 90 s budget; with the brand pre-filter and fold cache it takes ~1.5 s, so it runs
+    // under the project default (testTimeout in vitest.config.ts). If it nears that again, profile
+    // the linter (CR-47) rather than raising the budget.
+  });
 
   it('lists are well-formed and large enough', () => {
     expect(cfg.problems).toEqual([]);
@@ -331,8 +331,8 @@ describe('re-review 1: separators only at the name\'s own boundaries or between 
     expect(docs.length).toBeGreaterThan(0);
     const found = docs.flatMap((f) => scanText(readFileSync(f, 'utf8'), cfg).filter((x) => x.category === 'brand' && x.severity === 'error').map((x) => `${f}:${x.line} ${x.match}`));
     expect(found).toEqual([]);
-    // Scans every docs/*.md with the full rule set (≈1.5 s locally); generous timeout for loaded CI runners.
-  }, 30_000);
+    // Scans every docs/*.md with the full rule set (~13 s locally before CR-47, ~1 s after); project default timeout.
+  });
 });
 
 describe('re-review 3: typographic dashes and more IBAN separators', () => {
@@ -393,9 +393,9 @@ describe('T-1.8: brand registry and balance tables are linted', () => {
     expect(lintPaths(files, cfg)).toEqual([]);
     const scanned = lintPaths([resolve(ROOT, 'content')], cfg);
     expect(scanned).toEqual([]);
-    // Scans the whole content folder, like the real-content test above: 90 s budget until CR-47 speeds the linter up.
-    // The assertion is unchanged.
-  }, 90_000);
+    // Lints all of content/ (~1.5 s alone after CR-47, ~17 s before; lintText results are cached per
+    // file and text, so after the test above it is near-instant). Project default timeout.
+  });
 
   it('review-only fields may name real brands', () => {
     expect(lintBrands('')).toEqual([]);

@@ -84,8 +84,54 @@ export interface Folded {
   origin: number[];
 }
 
+const FOLD_ROUNDS = 6;
+
+/**
+ * The skeleton of one source character: strip marks, then apply step() to
+ * every resulting character until none changes, at most FOLD_ROUNDS rounds.
+ * Characters fold independently (step() looks at one character, and a
+ * character that maps to itself stays put), so folding each source character
+ * on its own gives the same skeleton as folding the whole text in lock-step.
+ */
+function foldChar(c: string): string {
+  let chars = [...c.normalize('NFD').replace(MARKS, '')];
+  for (let round = 0; round < FOLD_ROUNDS; round++) {
+    let changed = false;
+    const next: string[] = [];
+    for (const ch of chars) {
+      const mapped = step(ch);
+      if (mapped !== ch) changed = true;
+      for (const m of mapped.normalize('NFD').replace(MARKS, '')) next.push(m);
+    }
+    chars = next;
+    if (!changed) break;
+  }
+  return chars.join('');
+}
+
+/** foldChar() results by source character (CR-47: the fold ran per character of every scanned string). */
+const FOLD_CACHE = new Map<string, string>();
+
 /** Fold already-normalised text into its brand skeleton, tracking source offsets. */
 export function foldWithOrigin(normalised: string): Folded {
+  let text = '';
+  const origin: number[] = [];
+  let i = 0;
+  for (const c of normalised) {
+    let folded = FOLD_CACHE.get(c);
+    if (folded === undefined) {
+      folded = foldChar(c);
+      FOLD_CACHE.set(c, folded);
+    }
+    text += folded;
+    for (let k = 0; k < folded.length; k++) origin.push(i);
+    i += c.length;
+  }
+  return { text, origin };
+}
+
+/** Reference for tests: the pre-CR-47 fold, all characters in lock-step rounds and no cache. */
+export function foldWithOriginLockstep(normalised: string): Folded {
   let chars: { ch: string; at: number }[] = [];
   let i = 0;
   for (const c of normalised) {
@@ -93,7 +139,7 @@ export function foldWithOrigin(normalised: string): Folded {
     for (const b of base) chars.push({ ch: b, at: i });
     i += c.length;
   }
-  for (let round = 0; round < 6; round++) {
+  for (let round = 0; round < FOLD_ROUNDS; round++) {
     let changed = false;
     const next: { ch: string; at: number }[] = [];
     for (const { ch, at } of chars) {

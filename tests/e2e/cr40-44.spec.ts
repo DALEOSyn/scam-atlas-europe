@@ -237,6 +237,9 @@ test('R22, "Tell me now" with money in: arc damage control first, then the recov
   await expect(steps.locator('[data-step]')).toHaveCount(4);
   await expect(steps.locator('[data-step="pay_recovery_service"]')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Done' })).toHaveCount(0);
+  // CR-55 (QA P3 minor 2): no leftover "Your options" heading above the read-only steps; the tray is labelled by "Your steps".
+  await expect(page.locator('#actions-h')).toHaveCount(0);
+  await expect(page.locator('#options')).toHaveAttribute('aria-labelledby', 'damage-feedback-heading');
   await axeClean(page);
   await press(page, 'Continue');
   // The debrief still carries the already-clicked advice (Red Line 4).

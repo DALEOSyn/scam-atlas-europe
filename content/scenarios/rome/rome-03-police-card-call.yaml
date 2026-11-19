@@ -1,0 +1,119 @@
+# 6-3 "Police, fraud unit" asks for your card details (GDD §26.4 6-3; spoofed-authority-call core).
+# Fraud, difficulty 3, call timer 30 s, pusher at 18 s. Levers authority, fear, urgency. Larchwick named only.
+# R 2: "stay on the line" (claim#2, RM4) and the request. D 2: caller ID (RM1, the sender-or-link decoy)
+# and "you're not in any trouble" (claim, RM4 reassurance).
+# Hang up opens "What now?": call the police yourself (112, player side only, producer ruling Q3) and call
+# your bank on the number on your card (both extras of kind call_back_known with outcomes: verify),
+# plus "Call back this number" (engage note). The RM5 spoofing line appears here only, word for word.
+# The caller's number is masked; no real force, badge or number is shown (Red Line 1).
+id: rome-03-police-card-call
+chapter: rome
+role: standard
+pattern: spoofed-authority-call
+theme: authority
+learning_objectives: [LO-08, LO-05, LO-04]
+difficulty: 3
+is_fraud: true
+device: call
+setup: "Late morning. Your phone rings: a number you don't know."
+brands: [larchwick]
+pressure:
+  timer: true
+  levers: [authority, fear, urgency]
+  pusher:
+    messages:
+      - { at_seconds: 18, text: "Are you still there? Don't hang up." }
+
+message:
+  sender: { display: "06 •••• ••13", detail: "Not in your contacts" }
+  transcript:
+    - { speaker: caller, text: "Police, fraud unit. Your bank card has been copied and used in a crime here in Rome." }
+    - { speaker: caller, text: "You're not in any trouble. I just need to confirm the card is yours." }
+    - { speaker: you, text: "Can I call you back?" }
+    - { speaker: caller, text: "Please stay on the line. If we hang up, the case goes forward without you." }
+    - { speaker: caller, text: "Read me the card number, the expiry and the three digits on the back." }
+  request: enter_details
+  ask: { text: "Read me the card number, the expiry and the three digits on the back." }
+  claims:
+    - { text: "You're not in any trouble." }
+    - { text: "Please stay on the line. If we hang up, the case goes forward without you." }
+
+inspectables:
+  - target: caller_id
+    reveal: "An official-looking number. A number on screen can be faked, even a real police or bank number, so it can't prove anything either way. Judge what the caller asks."
+    red_flag: false
+    type: caller_id
+  - target: claim
+    reveal: "Says you're not in trouble. Real calls and fake ones both reassure you, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: claim#2
+    reveal: "Wants you to stay on the line so you can't check. A real officer is fine with you hanging up and calling back."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "Real police never ask for money, and nobody needs your card details read out on a call."
+    red_flag: true
+    type: request
+
+actions:
+  - id: read_out_card
+    label: "Read out your card details"
+    kind: enter_details
+    outcome: card_read_out
+    pressure_target: true
+  - id: hang_up_police_card
+    label: "Hang up"
+    kind: hang_up
+    outcome: police_call_left
+
+what_now:
+  outcomes:
+    report: police_call_reported
+    done: police_call_left
+  extra:
+    - id: call_police_yourself_card
+      label: "Call the police yourself"
+      kind: call_back_known
+      outcome: police_didnt_call
+    - id: call_bank_card_number_police
+      label: "Call the number on your card"
+      kind: call_back_known
+      outcome: bank_card_fine
+    - id: call_back_this_number_police
+      label: "Call back this number"
+      kind: call_number_in_message
+      note: "That's the number that just called. It can be faked, so you can't tell whose line it is. Dial a number you looked up yourself."
+
+outcomes:
+  card_read_out:
+    narrative: "\"Thank you. We'll be in touch.\" An hour later your Larchwick app shows two online payments you didn't make."
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: keep_call_evidence, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: call_back_caller_number, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  police_didnt_call:
+    narrative: "You dial 112 yourself. \"We didn't call you. Calling us yourself was exactly right.\""
+  bank_card_fine:
+    narrative: "Larchwick, on the number on your card: \"Your card's fine. Nobody from the police needs its details.\""
+  police_call_reported:
+    narrative: "Reported. Keep a note of the time and what was said: your bank and the police can use them."
+  police_call_left:
+    narrative: "You hang up and leave it there. Your card details stay with you."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "'Police' asking for card details, and to stay on the line."
+    what_works: "Hang up. Dial a number you looked up."
+  layer2:
+    message_flags: []
+    notes: "The number on your screen is the caller's choice. The number you dial is yours. Since 2025, phone companies must block calls from abroad that show an Italian number. Even so, a number on your screen proves nothing. Professional callers sound calm and credible; an accent or background noise is never the tell. The ask is."
+  device_tip: "On a real phone, end the call yourself, then dial the number you looked up: the emergency number for the police, the number on your card for your bank. Don't use redial or the call log."
+  habit_card: hang-up-call-back
+  already_clicked:
+    entered_details: "Read out your card? Block it in your banking app now and call your bank on the number on your card."
+  sources: [it-carabinieri-contro-truffe, it-carabinieri-21-arresti-2025, it-mur-smishing-vishing, eu-esas-ai-scams-factsheet-it, it-open-roma-finti-poliziotti-2026, it-agcom-antispoofing-2025]

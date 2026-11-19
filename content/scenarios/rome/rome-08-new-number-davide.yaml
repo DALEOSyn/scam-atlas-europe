@@ -1,0 +1,189 @@
+# 6-8 "Davide", new number: lend me €60 for the gas bill (GDD §26.4 6-8; the family "new number" chat
+# callback). Fraud, difficulty 4, timer 45 s, pusher at 20 s (same chat), interrupt from Teo at 12 s
+# (genuine small talk). Levers helpfulness, urgency, affection. Davide is impersonated; never his fault.
+# Kettle new contact (CR-19), his copied profile photo, a bank-details card (CR-22: IBAN only, no name check
+# outside the bank app).
+# R 2: the sender (RM3: a number you don't have saved, claiming to be Davide, asking for money) and the
+# request. D 4: the photo, the dead-phone excuse, "Nonna's phone is off", the IBAN.
+# Language: the whole message is in Italian with the spec's English as the inline translation (the engine
+# marks a whole message's language). The ask is "Mi puoi prestare 60 €?" ("Can you lend me €60?").
+# gas_transfer: the start_transfer comes from a chat, so no cap (R16 is for call sources). Payee check:
+# doesn't match, no holder shown (CR-23): a red flag (RM6). Not in R.
+id: rome-08-new-number-davide
+chapter: rome
+role: standard
+pattern: messenger-family-impersonation
+theme: family
+learning_objectives: [LO-07, LO-06]
+difficulty: 4
+is_fraud: true
+device: messenger
+brands: [kettle, larchwick]
+cast: [davide, teo]
+pressure:
+  timer: true
+  levers: [helpfulness, urgency, affection]
+  pusher:
+    messages:
+      - { at_seconds: 20, text: "Per favore, scade alle sei 😬", lang: it, translation: "Please, it's due at six 😬" }
+
+message:
+  sender: { display: "Davide", detail: "Mobile number +39 3•• ••• ••08", new_contact: true }
+  body: "Ciao! Sono Davide, numero nuovo, il mio vecchio telefono è morto 🙃 Mi puoi prestare 60 €? La bolletta del gas del B&B scade oggi e il telefono di Nonna è spento. Ti ridò tutto stasera!"
+  lang: it
+  translation: "Hi! It's Davide, new number, my old phone died 🙃 Can you lend me €60? The B&B's gas bill is due today and Nonna's phone is off. I'll pay you back tonight!"
+  request: pay
+  ask: { text: "Mi puoi prestare 60 €?", translation: "Can you lend me €60?" }
+  claims:
+    - { text: "il mio vecchio telefono è morto", translation: "my old phone died" }
+    - { text: "il telefono di Nonna è spento", translation: "Nonna's phone is off" }
+  image: { alt: "Profile photo: Davide grinning, a stack of textbooks under one arm" }
+  payee: { name: "Davide Esposito", iban: "IT•• … 9134", amount: "€60.00" }
+  l10n_note: "Italian in-world text is intentional (Rome chapter); the translation is shown inline. 'Nonna' (grandma) stays untranslated as a family word."
+
+inspectables:
+  - target: sender.detail
+    reveal: "Not in your contacts: a new number saying it's Davide. Davide's saved number is the one to call."
+    red_flag: true
+    type: sender
+  - target: image
+    reveal: "His photo. Photos are easy to copy, so it can't prove anything either way."
+    red_flag: false
+    type: image
+  - target: payee.iban
+    reveal: "An account number in the chat. An IBAN looks the same whoever holds it, so it can't prove anything either way."
+    red_flag: false
+    type: payee
+  - target: claim
+    reveal: "An excuse for the new number. Phones do die, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: claim#2
+    reveal: "Says Bruna can't be reached. It can't prove anything either way, but you can ask her yourself."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "Money today, from a new number, to an account you can't check with him. Call his saved number first."
+    red_flag: true
+    type: request
+
+actions:
+  - id: pay_gas_app
+    label: "Pay it in the Larchwick app"
+    kind: start_transfer
+    next_beat: gas_transfer
+    pressure_target: true
+  - id: call_davide_saved
+    label: "Call Davide's saved number"
+    kind: call_back_known
+    outcome: davide_at_library
+  - id: block_report_new_number
+    label: "Block and report the number"
+    kind: block
+    outcome: new_number_blocked
+  - id: ignore_new_number
+    label: "Ignore it"
+    kind: ignore
+    outcome: new_number_ignored
+
+beats:
+  - id: gas_transfer
+    device: banking
+    message:
+      account: { nickname: "Your current account" }
+      payee: { name: "Davide Esposito", iban: "IT•• … 9134", name_check: mismatch, amount: "€60.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "Doesn't match: this account isn't held by Davide Esposito."
+        red_flag: true
+        type: payee
+      - target: payee.iban
+        reveal: "The account number from the chat. An IBAN looks the same whoever holds it, so it can't prove anything either way. The name check tells you more."
+        red_flag: false
+        type: payee
+    actions:
+      - id: send_60_anyway
+        label: "Confirm and send €60"
+        kind: pay
+        outcome: sent_gas_money
+        pressure_target: true
+      - id: cancel_call_davide
+        label: "Cancel and call Davide's saved number"
+        kind: call_back_known
+        outcome: davide_at_library
+      - id: cancel_report_gas
+        label: "Cancel and report it"
+        kind: report
+        outcome: new_number_reported
+      - id: cancel_gas_transfer
+        label: "Cancel"
+        kind: ignore
+        outcome: gas_cancelled
+
+interrupts:
+  - id: teo_cannoli
+    at_seconds: 12
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Grandpa Teo", detail: "Saved contact: Grandpa Teo (home)" }
+      from_cast: teo
+      body: "Café's packed today. Someone turned up with cannoli 🙂"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Teo's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what he asks for: nothing, he's sharing his day."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_teo_cannoli
+        label: "Reply: save me one!"
+        kind: proceed
+        outcome: teo_saves_one
+        pressure_target: true
+      - id: report_teo_cannoli
+        label: "Report the message"
+        kind: report
+        outcome: teo_cannoli_reported
+
+outcomes:
+  sent_gas_money:
+    narrative: "\"Grazie!! 🙏\" Ten minutes later: \"So sorry, there's a late fee too. Can you do €90 more?\" When you ring Davide's saved number, he's at the library: \"New number? Same old phone.\""
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: tell_real_person, category: warn }
+      - { step: report_number_in_app, category: report }
+      - { step: pay_second_request, category: harmful }
+      - { step: reply_ask_money_back, category: harmful }
+  davide_at_library:
+    narrative: "Davide, at the library: \"New number? Same old phone. Don't send anything.\""
+  new_number_blocked:
+    narrative: "Blocked and reported in Kettle. Now tell the real Davide, with a call to his saved number."
+  new_number_reported:
+    narrative: "You cancel and report it. Then you ring Davide's saved number: \"New number? Same old phone. Thanks for checking.\""
+  new_number_ignored:
+    narrative: "You leave it. The new number pings once more, then goes quiet."
+  gas_cancelled:
+    narrative: "You cancel the payment. The new number pings: \"??\""
+  teo_saves_one:
+    narrative: "Teo: \"Too late. Eight neighbours, kiddo. Eight.\""
+  teo_cannoli_reported:
+    narrative: "You reported it. Careful is good; this one really was Teo, talking about cannoli."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A new number, money today, and nobody you can call."
+    what_works: "Call his saved number first."
+  layer2:
+    message_flags:
+      - "\"Please, it's due at six\": a deadline leaves no time for a call."
+    notes: "A \"doesn't match\" warning means the account isn't his. Stop there."
+  device_tip: "On a real phone, open your contacts and call the number you already have for the person, not the new one in the chat."
+  habit_card: call-the-number-you-know
+  already_clicked:
+    paid: "Sent money? Call your bank now on the number on your card and ask it to try to stop or recall the transfer. Don't pay a second request."
+  sources: [nl-politie-hulpvraagfraude-2025, nl-fraudehelpdesk-hulpvraag-campaign, nl-veiliginternetten-hulpvraag, it-bdi-truffe-cyber, eu-ec-ipr-vop-2025, eu-ecb-ipr]

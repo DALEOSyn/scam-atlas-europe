@@ -89,3 +89,16 @@ steps:
   - id: wait_until_after_long_weekend
     label: "Wait until the office reopens after the long weekend"
     feedback: "Waiting for the office to reopen feels sensible, but the sooner you call, the better the chance of getting a transfer back. Call the bank now."
+  # Rome (GDD §26.10, T-3.8). keep_call_evidence, call_back_caller_number and call_back_text_number are Madrid's steps (GDD §24.10,
+  # T-3.6), added here word for word because Rome may land first; keep one copy when both branches merge.
+  # Labels stay generic: real bodies are named only on the Italy help card.
+  - id: keep_call_evidence
+    label: "Keep screenshots of the texts, the call log and the times"
+  - id: call_back_caller_number
+    label: "Call back the number that called you and ask them to send it back"
+    feedback: "Wanting to fix it fast is natural, but the number that called you can be faked, so you can't tell whose line you'd reach. Call the number on your card instead."
+  - id: call_back_text_number
+    label: "Call the number from the text again and ask them to send it back"
+    feedback: "Wanting to fix it fast is natural, but that number came with the fake text, so it reaches whoever sent it. Call the number on your card instead."
+  - id: report_number_in_app
+    label: "Block and report the number in Kettle"

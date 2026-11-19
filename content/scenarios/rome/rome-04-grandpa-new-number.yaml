@@ -1,0 +1,159 @@
+# 6-4 A new number with Teo's voice: "send €480 to the owner's account" (GDD §26.4 6-4; CVF core).
+# Fraud, difficulty 4. Call timer 30 s, then the banking beat on the slot timer (45 s, fresh after the call).
+# Levers affection, fear, urgency. Teo is impersonated; it is never his fault, and he is shown safe.
+# R 3: the caller ID (RM3: a number you don't have saved, claiming to be Teo, asking for money), "don't ring
+# my phone" (claim#2, RM4) and the request. D: Teo's voice and the dead-phone excuse (claim, neutral).
+# CR-36 fallback (GDD §26.9 and §26.7 row note): the voice label is not in the engine yet, so the first
+# transcript line is claims[0] with the RM2 wording plus the excuse; R stays 3, max 21.
+# "Open the app and send it" is start_transfer with cap: engage (R16, CR-31(b)). owner_transfer is the
+# player's own Larchwick app with the call on the line (CR-31 bar; caller lines are beat-bound pushers).
+# Payee check: match on a stranger, J. Ashdale (BRAND_CHECK RL4), neutral (RM6, P3). Not in R.
+# The spec's closing line after damage control (Teo safe at the café, R-M2) has no engine slot yet; it is
+# the first sentence of layer 2, and every non-fall outcome ends with Teo safe (engine need, reported).
+id: rome-04-grandpa-new-number
+chapter: rome
+role: standard
+pattern: cloned-voice-family-emergency
+theme: family
+learning_objectives: [LO-07, LO-06, LO-04]
+difficulty: 4
+is_fraud: true
+device: call
+setup: "After lunch. Your phone rings: a number you don't know."
+brands: [larchwick]
+cast: [teo]
+pressure:
+  timer: true
+  levers: [affection, fear, urgency]
+  pusher:
+    messages:
+      - { at_seconds: 5, beat: owner_transfer, text: "Type it exactly: J. Ashdale." }
+      - { at_seconds: 20, beat: owner_transfer, text: "See? It matches. Quick, before he calls the police." }
+
+message:
+  sender: { display: "+•• ••• ••• ••52", detail: "Not in your contacts" }
+  transcript:
+    - { speaker: caller, text: "Kiddo? It's Grandpa. I'm on a neighbour's phone; mine's dead." }
+    - { speaker: caller, text: "I bumped a parked car. The owner says he'll call the police unless I pay €480 today." }
+    - { speaker: caller, text: "My card's at home. Can you send it to his account? I'll pay you back tonight." }
+    - { speaker: caller, text: "Don't ring my phone, it's dead. Just send it, please." }
+  request: pay
+  ask: { text: "Can you send it to his account?" }
+  claims:
+    - { text: "Kiddo? It's Grandpa. I'm on a neighbour's phone; mine's dead." }
+    - { text: "Don't ring my phone, it's dead." }
+
+inspectables:
+  - target: caller_id
+    reveal: "A number you don't have saved, saying it's Teo. Teo's saved number is the one to call."
+    red_flag: true
+    type: caller_id
+  - target: claim
+    reveal: "Sounds like Grandpa Teo, with an excuse for the new number. A voice can be copied from a short recording, and phones do die, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: claim#2
+    reveal: "Tells you not to call his own number. A real Teo would be glad you checked."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "Money to a stranger's account, today. Teo's own rule: call his saved number first."
+    red_flag: true
+    type: request
+
+actions:
+  - id: send_owner_app
+    label: "Open the app and send it"
+    kind: start_transfer
+    next_beat: owner_transfer
+    cap: engage
+    pressure_target: true
+  - id: hang_up_grandpa
+    label: "Hang up"
+    kind: hang_up
+    outcome: grandpa_call_left
+
+what_now:
+  outcomes:
+    report: grandpa_call_reported
+    done: grandpa_call_left
+  extra:
+    - id: call_teo_saved_grandpa
+      label: "Call Teo's saved number"
+      kind: call_back_known
+      outcome: teo_at_cafe
+    - id: call_back_this_number_grandpa
+      label: "Call back this number"
+      kind: call_number_in_message
+      note: "That's the number that just called. Calling it back reaches whoever called, not Teo. Dial his saved number."
+
+beats:
+  - id: owner_transfer
+    device: banking
+    message:
+      account: { nickname: "Your current account" }
+      payee: { name: "J. Ashdale", iban: "IT•• … 6618", name_check: match, amount: "€480.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "Name matches: the account is held by J. Ashdale, the name the caller gave you. That shows whose account it is. It doesn't show who's calling, and it isn't Teo's."
+        red_flag: false
+        type: payee
+      - target: payee.iban
+        reveal: "An account you've never paid, typed as the caller read it out. Real new payees look the same here, so it can't prove anything either way."
+        red_flag: false
+        type: payee
+    actions:
+      - id: send_480
+        label: "Confirm and send €480"
+        kind: pay
+        outcome: sent_to_ashdale
+        pressure_target: true
+      - id: hang_up_call_teo_transfer
+        label: "Hang up and call Teo's saved number"
+        kind: call_back_known
+        outcome: teo_at_cafe
+      - id: hang_up_report_owner
+        label: "Hang up and report it"
+        kind: report
+        outcome: grandpa_call_reported
+      - id: hang_up_cancel_owner
+        label: "Hang up and cancel"
+        kind: ignore
+        outcome: owner_cancelled
+
+outcomes:
+  sent_to_ashdale:
+    narrative: "Sent. \"Thanks, kiddo.\" The line goes dead. A minute later the same number rings again."
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - step: tell_real_person
+        category: warn
+      - { step: keep_call_evidence, category: secure }
+      - { step: pay_second_request, category: harmful }
+      - { step: call_back_caller_number, category: harmful }
+  teo_at_cafe:
+    narrative: "Teo, at his library café: \"Dead phone? It's in my hand. Whoever that was, it wasn't me. Eight neighbours and a cake can vouch.\""
+  grandpa_call_reported:
+    narrative: "Reported. Then you ring Teo's saved number. He picks up at the café: \"I'm fine, kiddo. Good call.\""
+  grandpa_call_left:
+    narrative: "You hang up and leave it there. Later you ring Teo's saved number: he's at the café, phone in hand, and fine."
+  owner_cancelled:
+    narrative: "You hang up and cancel. Nothing has left your account. Then you ring Teo's saved number: he's fine."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Teo's voice, but a new number, money, and 'don't call me'."
+    what_works: "Hang up. Call his saved number."
+  layer2:
+    message_flags:
+      - "The name matched because you typed what the caller said. It shows whose account it is, not who's asking."
+    notes: "Whatever you chose, Teo is fine: \"I'm fine, kiddo. That wasn't me, and it isn't on you.\" A voice can be copied from a short recording. Calling the number you already have reaches the real person. A family code word helps too, as an extra. If you can't remember it, hang up and call the saved number anyway."
+  device_tip: "On a real phone, end the call yourself, then open your contacts and call the saved number, not the one that rang you."
+  habit_card: call-the-number-you-know
+  already_clicked:
+    clicked: "Followed a caller's steps in your app? Hang up, then call the person's saved number."
+    paid: "Sent money? Call your bank now on the number on your card and ask it to try to stop or recall the transfer. Don't pay a second request."
+  sources: [eu-esas-ai-scams-factsheet-it, nl-veiliginternetten-voice-cloning, nl-fraudehelpdesk-hulpvraag-campaign, nl-veiligbankieren-voice-cloning-2023, it-mur-smishing-vishing, eu-ec-ipr-vop-2025, eu-ecb-ipr]

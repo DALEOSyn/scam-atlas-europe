@@ -1,0 +1,85 @@
+# 6-6 Drill: Davide paid (GDD §26.4 6-6; cloned-voice-family-emergency). Unscored, like Warsaw 5-7.
+# A call from a new number with Giulia's voice; the bank said the name didn't match; he sent €350 anyway.
+# Bruna is with him. The player guides his damage control (CR-32 recovery_for: davide). Never mocked;
+# Giulia's voice was borrowed, never her fault. Amount and story stay in the device, never in a scene.
+# Whatever the player picks, Davide calls his bank first (the placed beat rome-giulia-safe and the
+# resolution depend on it). The engine has no outcome narrative after damage control, so the spec's
+# closing line ("Davide calls Larchwick on the number on his card, with Nonna beside him…") opens layer 2
+# (engine need, as Warsaw 5-7); the "wait and see" branch says it in its own outcome.
+# tell_real_person keeps its shared label ("Call the real person on their saved number and tell them");
+# the spec's R-S1 wording ("Tell Giulia on her saved number that her voice is being used") would need a
+# per-scenario label, which the schema doesn't have (feedback is for harmful steps only). Reported.
+id: rome-06-davide-paid
+chapter: rome
+role: drill
+pattern: cloned-voice-family-emergency
+learning_objectives: [LO-16, LO-18]
+difficulty: 3
+is_fraud: false
+device: messenger
+brands: [kettle, larchwick]
+cast: [davide, bruna, giulia]
+pressure:
+  timer: false
+  levers: []
+
+message:
+  sender: { display: "Davide (B&B)", detail: "Saved contact: Davide (B&B)" }
+  from_cast: davide
+  body: "Can you come down? A call from a new number. It was Giulia's voice: lost her bag on the train, needed €350 for a hostel tonight, to a friend's account. The bank said the name didn't match. She said it was her friend's, so I sent it. Then Giulia texted from her normal number: she's in a lecture. Nonna's here. What do I do first?"
+  request: reply
+  ask: { text: "Nonna's here. What do I do first?" }
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: Davide's saved contact, in your usual chat with him. He asks for advice, not money or a code."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: request
+    reveal: "He asks what to do first. That's a question you can help with."
+    red_flag: false
+    type: request
+
+actions:
+  - id: go_down_help_davide
+    label: "Go down and talk him through it"
+    kind: proceed
+    outcome: helping_davide
+    pressure_target: true
+  - id: wait_see_davide
+    label: "Say wait and see if she calls"
+    kind: reply
+    outcome: bruna_bank_first
+
+outcomes:
+  helping_davide:
+    narrative: "Davide is at the kitchen table, phone in hand, Bruna beside him. \"Okay. What first?\""
+    recovery_for: davide
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: keep_call_evidence, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: tell_real_person, category: warn }
+      - step: pay_second_request
+        category: harmful
+        feedback: "If they ring again, I'm not sending more. Bank first."
+      - step: call_back_caller_number
+        category: harmful
+        feedback: "Calling that number back reaches them, not Giulia. Bank first."
+  bruna_bank_first:
+    narrative: "Bruna: \"No waiting. Bank first, Davide.\" He calls Larchwick on the number on his card, with Nonna beside him. \"Done. They're trying to stop it.\""
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A familiar voice, a new number, money to a stranger."
+    what_works: "Bank first, then the real person."
+  layer2:
+    message_flags: []
+    notes: "Davide calls Larchwick on the number on his card, with Nonna beside him. \"Done. They're trying to stop it.\" This works on people who care, at any age. Calling the bank fast was the right first move. A \"doesn't match\" warning is worth stopping for, even when the caller has an explanation ready."
+  device_tip: "Find the number on the back of your card, or the bank's number inside its app, before you ever need it."
+  habit_card: stop-the-damage-first
+  already_clicked:
+    paid: "Sent money after a call like this? Call your bank now on the number on your card and ask it to try to stop or recall the transfer. Then call the real person on their saved number."
+  sources: [it-bdi-truffe-cyber, eu-esas-ai-scams-factsheet-it, nl-politie-hulpvraagfraude-2025, nl-politie-aangifte-hulpvraagfraude, nl-veiliginternetten-voice-cloning, eu-ec-ipr-vop-2025]

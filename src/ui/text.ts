@@ -140,7 +140,7 @@ function toSegments(text: string, cands: Candidate[]): Segment[] {
  * body then transcript (engine order). References and phone numbers become inline checkables at
  * their first appearance; the ones not in the text are returned as leftovers.
  */
-export function segmentMessage(m: Pick<Message, 'body' | 'transcript' | 'references' | 'phone_numbers' | 'ask' | 'claims'>): MessageSegments {
+export function segmentMessage(m: Pick<Message, 'body' | 'transcript' | 'references' | 'phone_numbers' | 'ask' | 'claims'> & Partial<Pick<Message, 'listing'>>): MessageSegments {
   const texts = [m.body ?? '', ...(m.transcript ?? []).map((l) => l.text)];
   const cands: Candidate[][] = [];
   let links = 0;
@@ -150,9 +150,9 @@ export function segmentMessage(m: Pick<Message, 'body' | 'transcript' | 'referen
     cands.push(c);
   }
   const leftover: { target: string; text: string }[] = [];
-  const place = (base: string, values: readonly string[] | undefined) => {
+  const place = (base: string, values: readonly string[] | undefined, first = 0) => {
     (values ?? []).forEach((value, i) => {
-      const target = numberedTarget(base, i);
+      const target = numberedTarget(base, first + i);
       for (let k = 0; k < texts.length; k++) {
         const text = texts[k] ?? '';
         let from = 0;
@@ -171,7 +171,8 @@ export function segmentMessage(m: Pick<Message, 'body' | 'transcript' | 'referen
     });
   };
   place('phone_number', m.phone_numbers);
-  place('reference', m.references);
+  // CR-33: a marketplace listing card is the first reference (shown as its own card), so these follow it.
+  place('reference', m.references, m.listing ? 1 : 0);
   // The ask (ruling QA L1) and the claims (CR-17(b)) are highlighted where they stand, unless they
   // overlap another inline checkable (no nesting); they are always in the Details list either way.
   const quote = (text: string, target: string) => {

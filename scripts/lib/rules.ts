@@ -16,6 +16,8 @@ import type { ChoiceLine } from '../../src/engine/debrief.ts';
 import { lookup } from '../../src/i18n/index.ts';
 import {
   CR17_ASK_REQUESTS,
+  CR30_ASK_DEVICES,
+  CR30_FROM_SLOT,
   HIGH_STAKES_REQUESTS,
   LANGUAGE_TYPES,
   NEVER_PROOF_TYPES,
@@ -77,6 +79,8 @@ export function wordCount(text: string | undefined): number {
 }
 
 interface BeatView {
+  /** Beat id ('start' for the opening message). */
+  id: string;
   where: string;
   device: Device;
   message: Message;
@@ -89,10 +93,27 @@ interface BeatView {
   scored: boolean;
 }
 
+/**
+ * CR-35: a later scheduled boss beat continues the conversation of scheduled beat `id`: it names `id` in
+ * covered_by, or it comes from the same sender (display and detail) on the same device.
+ */
+export function continuesConversation(s: Scenario, id: string): boolean {
+  const scheduled = beatsOf(s).filter((b) => !b.interrupt && b.scheduled);
+  const at = scheduled.findIndex((b) => b.id === id);
+  const own = scheduled[at];
+  if (!own) return false;
+  return scheduled.slice(at + 1).some((later) => {
+    const covers = s.beats.find((x) => x.id === later.id)?.covered_by ?? [];
+    const sameThread = later.device === own.device && !!own.message.sender && later.message.sender?.display === own.message.sender.display && later.message.sender.detail === own.message.sender.detail;
+    return covers.includes(id) || sameThread;
+  });
+}
+
 export function beatsOf(s: Scenario): BeatView[] {
   return [
-    { where: 'opening message', device: s.device, message: s.message, inspectables: s.inspectables, actions: s.actions, what_now: s.what_now, scheduled: true, scored: true },
+    { id: 'start', where: 'opening message', device: s.device, message: s.message, inspectables: s.inspectables, actions: s.actions, what_now: s.what_now, scheduled: true, scored: true },
     ...s.beats.map((b) => ({
+      id: b.id,
       where: `beat "${b.id}"`,
       device: b.device,
       message: b.message,
@@ -103,6 +124,7 @@ export function beatsOf(s: Scenario): BeatView[] {
       scored: b.scored,
     })),
     ...s.interrupts.map((i) => ({
+      id: i.id,
       where: `interrupt "${i.id}"`,
       device: i.device,
       message: i.message,
@@ -198,8 +220,11 @@ export function choiceLines(s: Scenario, balance: Registries['balance']): string
   for (const b of beatsOf(s).filter((x) => !x.interrupt)) {
     for (const a of b.actions) {
       const cls = classOf(balance, a.kind);
-      if (below3(cls)) {
-        lines.push(lineFor(b.where, cls, { beatId: b.where, kind: 'action', label: a.label }));
+      // CR-31(b): a capped start_transfer is named like an engage; CR-34: a shared payment code before the
+      // confirmation is named when the player then declines (★).
+      const named = (a.kind === 'start_transfer' && a.cap === 'engage') || (a.kind === 'share_code' && a.next_beat !== undefined);
+      if (below3(cls) || named) {
+        lines.push(named ? { beatId: b.where, kind: 'action', label: a.label } : lineFor(b.where, cls, { beatId: b.where, kind: 'action', label: a.label }));
         classes.add(cls);
       }
     }
@@ -302,7 +327,9 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
     if (m.request !== 'none' && targets.length !== 1) {
       errors.push(`${b.where}: the message asks for something (request: ${m.request}), so exactly one action needs pressure_target: true (has ${targets.length})`);
     }
-    if (m.request === 'none' && targets.length > 0) errors.push(`${b.where}: pressure_target is set but the message asks for nothing (request: none)`);
+    // CR-30: a `none` message with an ask ("Print your label…") tells the reader what to do: that action may be its target.
+    if (m.request === 'none' && !m.ask && targets.length > 0) errors.push(`${b.where}: pressure_target is set but the message asks for nothing (request: none)`);
+    if (m.request === 'none' && m.ask && targets.length > 1) errors.push(`${b.where}: at most one action has pressure_target: true (has ${targets.length})`);
 
     // Inspectable rules.
     for (const ins of b.inspectables) {
@@ -373,6 +400,17 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
       if (!target.actions.some((x) => cls(x) === 'dismiss')) errors.push(`beat "${target.id}": the banking beat opened by start_transfer needs at least one dismiss action, e.g. "Cancel" (CR-18(b))`);
     }
   }
+  // CR-34: the code confirmation offers Confirm (pay, the fall), a dismiss ("Decline") and may offer a verify.
+  for (const b of story) {
+    if (!b.message.payee?.code_confirm) continue;
+    if (!b.actions.some((x) => x.kind === 'pay')) errors.push(`${b.where}: the code confirmation needs a pay action ("Confirm"), the fall (CR-34)`);
+    if (!b.actions.some((x) => cls(x) === 'dismiss')) errors.push(`${b.where}: the code confirmation needs a dismiss action ("Decline") (CR-34)`);
+    if (b.actions.some((x) => x.kind !== 'pay' && !['verify', 'dismiss', 'report'].includes(cls(x)))) errors.push(`${b.where}: the code confirmation offers only Confirm (pay), Decline (dismiss), a verify or a report (CR-34)`);
+  }
+  // CR-32: recovery_for names a cast member from content/cast.yaml.
+  for (const [key, o] of Object.entries(s.outcomes)) {
+    if (o.recovery_for !== undefined && !reg.cast.has(o.recovery_for)) errors.push(`outcomes.${key}.recovery_for: "${o.recovery_for}" is not in content/cast.yaml (CR-32)`);
+  }
   // CR-23: "Matches" only says whose account it is, on genuine and fraud alike; its reveal never opens like a genuine fit.
   for (const b of beats) {
     if (b.device !== 'banking' || b.message.payee?.name_check !== 'match') continue;
@@ -420,7 +458,13 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
         errors.push(`${b.where}: action "${a.id}": a proceed with next_beat from a fraud message with request: none is ambiguous; use kind open_link (engage), or give the message a request`);
       }
       if (!b.interrupt && s.is_fraud && s.role !== 'arc' && cls(a) === 'engage' && !balance.points.engage_on_fraud.terminal && !a.next_beat) {
-        errors.push(`${b.where}: action "${a.id}": engage on fraud is never terminal; it needs next_beat`);
+        // CR-35 (ruling R14): on a scheduled boss beat, an engage may end the beat's group (★★) when a later
+        // scheduled beat continues the same conversation (names it in covered_by, or shares its sender thread).
+        const own = b.scheduled && s.role === 'boss' ? b.id : undefined;
+        if (own === undefined) errors.push(`${b.where}: action "${a.id}": engage on fraud is never terminal; it needs next_beat (CR-35: only a scheduled boss beat may end on an engage)`);
+        else if (!continuesConversation(s, own)) {
+          errors.push(`${b.where}: action "${a.id}": an engage that ends a boss beat needs a later scheduled beat that continues the conversation: one that names "${own}" in covered_by, or comes from the same sender on the same device (CR-35)`);
+        }
       }
     }
   }
@@ -590,6 +634,22 @@ export function chapterRules(c: Chapter, fileBase: string, scenarios: Scenario[]
         if (b.interrupt || !b.scored || b.device === 'banking') continue;
         if (CR17_ASK_REQUESTS.includes(b.message.request) && !b.message.ask) {
           errors.push(`scenario "${s.id}" ${b.where}: request ${b.message.request} needs message.ask from slot 2 on (CR-17: the sentence that asks, genuine or fraud)`);
+        }
+      }
+    }
+  }
+
+  // CR-30 (Madrid, Warsaw): from slot 4 on, every scored scheduled beat on a message device quotes what it asks
+  // (or, on request: none, what it tells the reader to do) in message.ask, whatever the request, genuine or
+  // fraud alike, so the request checkable exists on every one of them. Not banking, interrupts, follow-up beats
+  // reached by next_beat, or `scored: false` boss beats.
+  if (c.slot >= CR30_FROM_SLOT) {
+    for (const s of scenarios) {
+      if (!SCORED_ROLES.includes(s.role)) continue;
+      for (const b of beatsOf(s)) {
+        if (b.interrupt || !b.scheduled || !b.scored || !CR30_ASK_DEVICES.includes(b.device)) continue;
+        if (!b.message.ask) {
+          errors.push(`scenario "${s.id}" ${b.where}: request ${b.message.request} needs message.ask from slot ${CR30_FROM_SLOT} on (CR-30: every scored scheduled beat on ${CR30_ASK_DEVICES.join(', ')} quotes its ask)`);
         }
       }
     }

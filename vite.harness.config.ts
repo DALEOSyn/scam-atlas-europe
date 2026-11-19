@@ -8,9 +8,9 @@ import preact from '@preact/preset-vite';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { parse } from 'yaml';
-import { sceneSchema } from './src/content/schema.ts';
+import { sceneSchema, scenarioSchema } from './src/content/schema.ts';
 import { fixturePublicDir, fixtureScene } from './tests/content/scene-fixtures.ts';
-import type { Scene } from './src/content/schema.ts';
+import type { Scenario, Scene } from './src/content/schema.ts';
 import { yamlModuleSource } from './scripts/lib/yaml-module.ts';
 
 /** content/*.yaml as data, exactly as the game build emits it (cast.yaml for speaker labels). */
@@ -47,11 +47,20 @@ const realScenes: Scene[] = readdirSync(SCENES_DIR, { withFileTypes: true })
   .filter((d) => d.isDirectory())
   .flatMap((d) => readdirSync(join(SCENES_DIR, d.name)).filter((f) => f.endsWith('.yaml')).map((f) => sceneSchema.parse(parse(readFileSync(join(SCENES_DIR, d.name, f), 'utf8')))));
 
+/**
+ * CR-30 … CR-35: the engine fixture scenarios (tests/fixtures/scenarios), played in the real ScenarioView
+ * (`?view=scenario&id=<scenario id>`).
+ */
+const FIXTURE_SCENARIOS_DIR = resolve(import.meta.dirname, 'tests', 'fixtures', 'scenarios');
+const fixtureScenarios: Scenario[] = readdirSync(FIXTURE_SCENARIOS_DIR)
+  .filter((f) => f.endsWith('.yaml'))
+  .map((f) => scenarioSchema.parse(parse(readFileSync(join(FIXTURE_SCENARIOS_DIR, f), 'utf8'))));
+
 export default defineConfig({
   root: resolve(import.meta.dirname, 'tests', 'e2e', 'harness'),
   base: '/',
   publicDir: fixturePublicDir(),
-  define: { __HARNESS_SCENES__: JSON.stringify(scenes), __HARNESS_REAL_SCENES__: JSON.stringify(realScenes) },
+  define: { __HARNESS_SCENES__: JSON.stringify(scenes), __HARNESS_REAL_SCENES__: JSON.stringify(realScenes), __HARNESS_SCENARIOS__: JSON.stringify(fixtureScenarios) },
   plugins: [yamlPlugin(), preact()],
   build: { outDir: resolve(import.meta.dirname, 'dist-harness'), emptyOutDir: true, target: 'es2022' },
 });

@@ -9,6 +9,7 @@
  */
 import { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { Scenario } from '../content/schema.ts';
+import { castMember } from '../content/cast.ts';
 import { recoveryStepFeedback, recoveryStepLabel } from '../content/recoverySteps.ts';
 import { useScenarioRunner } from '../engine/hooks.ts';
 import type { RecoveryOption } from '../engine/recovery.ts';
@@ -108,6 +109,10 @@ function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recover
       return next;
     });
   const byStep = new Map<string, RecoveryOption>(view.options.map((o) => [o.step, o]));
+  // CR-32: damage control for a cast member (a drill): the prompt names them, and this scenario's own
+  // harmful-step feedback is theirs to say ("Mateus: Another code? …"). Generic feedback stays unattributed.
+  // The first name, as a friend says it ("Mateus", not "Mateus Ferreira").
+  const forName = view.forCast ? (castMember(view.forCast)?.name.split(/\s+/u)[0] ?? null) : null;
   if (submitted) {
     return (
       <section class={styles.panel} aria-labelledby="damage-feedback-heading">
@@ -125,7 +130,13 @@ function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recover
                     <strong>{harmful ? t('damage_doesnt_help') : t('damage_helps')}</strong> {recoveryStepLabel(step)}
                   </span>
                 </span>
-                {harmful && (byStep.get(step)?.feedback ?? recoveryStepFeedback(step)) ? <p>{byStep.get(step)?.feedback ?? recoveryStepFeedback(step)}</p> : null}
+                {harmful && forName && byStep.get(step)?.feedback ? (
+                  <p data-voice="">
+                    <strong>{t('damage_voice', { name: forName })}</strong> {byStep.get(step)?.feedback}
+                  </p>
+                ) : harmful && (byStep.get(step)?.feedback ?? recoveryStepFeedback(step)) ? (
+                  <p>{byStep.get(step)?.feedback ?? recoveryStepFeedback(step)}</p>
+                ) : null}
               </li>
             );
           })}
@@ -142,7 +153,7 @@ function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recover
         {t('damage_title')}
       </h3>
       <p>{t('damage_sub')}</p>
-      <p>{t('damage_prompt')}</p>
+      <p data-damage-prompt="">{forName ? t('damage_prompt_for', { name: forName }) : t('damage_prompt')}</p>
       <ul class={styles.actions}>
         {view.options.map((o) => {
           const i = picks.indexOf(o.step);
@@ -639,6 +650,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                 scenario={scenario}
                 thread={view.thread}
                 pushers={view.pusherMessages}
+                onCall={view.onCall}
                 actions={beat.actions}
                 canAct={view.phase === 'playing'}
                 onAct={doAct}

@@ -196,6 +196,8 @@ Common rules:
   - After the check: result → footer → coach mark on first use (§4.5) → the beat's actions as full-width buttons **inside the card**, in authored `action_order`. "Pay anyway" stays available after every result (the check never blocks). The tray shows "Your options are in the bank app, under the name check." with "Go to the options"; that button and the "Skip/Jump to your options" links focus the result paragraph.
   - Checkables: the payee name (`payee.name_check`, its reveal is authored) and the IBAN. Validator: `holder` exactly when `close_match`; a `match` reveal never starts with "It fits".
 - **Payment-request page** (`payee.payment_request`, CR-18c): header sub-label "Payment request"; "Request from {name}" (checkable `payee.name`), amount, optional "Note". **No name check runs and there are no card or form fields** (no TrainingForm).
+- **Code confirmation** (`payee.code_confirm`, CR-34): header sub-label "Confirm payment"; a card "Confirm payment", the amount (`--fs-2xl`) and "to {name}" (checkable `payee.name`). No name check, no IBAN, no form fields; Confirm / Decline / "Decline and call {friend}" are in the tray. Heading "Banking app: confirm payment to {name}".
+- **On-call bar** (CR-31, GDD §24.5): on a banking beat the player reached by following a call into the app (`start_transfer` from a `call` beat), a slim persistent bar at the top of the phone, above the bank header: phone icon, "On a call · {caller}" and the running time "· mm:ss" (scenario clock; the time is `aria-hidden` so it is never read out every second), and a **Hang up** button (44 px, neutral, phone-end icon, described as "Goes to this screen's options for ending the call."). Hang up adds no path: it scrolls to and focuses the beat's own first verify / report / dismiss action ("Hang up and call…"). The caller's follow-ups bound to that beat are listed inside the bar as "Caller: …" lines with Translate, not as notifications. Region `aria-label` "On a call with {caller}". Neutral call styling (`--color-surface-sunken`, no red, no warning, no animation, so nothing changes with reduced motion). Wraps at 320 px.
 - **Business account** (`message.account`, CR-26): bank header sub-label "Business account" and a "From account" row with the nickname (e.g. "Ruchelune · current account") above the payee, so the player sees whose money it is.
 - Consequence playback: a new debit row appears with `--color-warn-bg` for 1 s (reduced motion: static for 3 s).
 
@@ -226,6 +228,13 @@ When:   Just now
 
 ### 3.10 Social feed (`social`)
 Card: avatar, name, "Sponsored" (text), illustration (fictional people only), body, in-ad CTA (inert unless authored), counts as text. Checkables: advertiser, link, image ("This image appears in many unrelated ads").
+
+### 3.11 Marketplace app (`marketplace`, e.g. Swaploft; CR-33)
+A phone frame in the marketplace brand (`message.app.brand`: header with the brand mark and name, sub-label "Notices" or "Messages"; region "Phone: {app}"). Never a real marketplace's layout.
+- **Listing card** (`message.listing`), under the header: small caps label "Listing", then one bordered checkable (≥ 44 px) with the title (bold) and the price; it is the first `reference` checkable. Other `references` follow as reference 2, 3.
+- **System notice** (`message.notice: true`): a card in the thread with a sender row (brand mark, "{app name}" as the checkable sender, "Notice" muted), the body and the Translate toggle. Heading "{app}: notice".
+- **Buyer chat** (no `notice`): a chat head with avatar, the buyer's handle as the checkable sender ("user 2208"; never a name pointing to an ethnicity) and "Chat in the app"; the message and follow-ups are bubbles as in Kettle. Heading "{app}: chat with {handle}".
+- Thread history ("Earlier"), Check, tags, the Translate toggle, timers and follow-ups behave exactly as in the messenger (§3.3). No "Not in your contacts" banner (in-app accounts). Notifications from a marketplace beat elsewhere are labelled "App message".
 
 ---
 
@@ -380,7 +389,7 @@ Reduced motion is on when the OS asks **or** `data-motion="reduced"`; `data-moti
 
 ## 7. Consequence and damage control
 - **Consequence** plays in-device (≤ 15 s) with a game-layer caption: info icon, `outcomes.*.narrative`, "Continue". No red screens, no alarms. It follows **every** resolved scenario (and every boss beat) that has a narrative or an expired timer (then the caption is "The deadline was fake. Nothing happened." on fraud, and "Time ran out. This one was genuine, and its deadline was real." on a genuine scenario; layer 2 "What happened" uses the same line), including the last beat, before damage control or the debrief (layer-1 ruling 2026-11-19). Focus moves to its heading ("What happened", `h3`); the caption comes straight after it. Damage control does not repeat the caption.
-- **Damage control** (GDD §9): heading "Limit the damage", sub "This happens to careful people every day." Prompt: "Pick the step you'd do first, then 2 more." 5–6 options as toggle buttons (`aria-pressed`), 56 px; selected items show their order number ("1st", "2nd", "3rd") as text. "Move up / Move down" buttons on selected items (no drag). Counter "2 of 3 chosen". Sticky "Done" bar (scroll-padding §1.3; static under 500 px height). Feedback lists each pick with check-seal "Helps" or info "Doesn't help: …".
+- **Damage control** (GDD §9): heading "Limit the damage", sub "This happens to careful people every day." Prompt: "Pick the step you'd do first, then 2 more." For a cast member's damage control in a drill (`recovery_for`, CR-32): "Pick the step {first name} should take first, then 2 more."; a scenario's own feedback on a harmful pick is shown in that person's voice ("Mateus: Another code? …"), generic feedback is not attributed. 5–6 options as toggle buttons (`aria-pressed`), 56 px; selected items show their order number ("1st", "2nd", "3rd") as text. "Move up / Move down" buttons on selected items (no drag). Counter "2 of 3 chosen". Sticky "Done" bar (scroll-padding §1.3; static under 500 px height). Feedback lists each pick with check-seal "Helps" or info "Doesn't help: …".
 
 ---
 

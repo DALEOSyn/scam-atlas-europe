@@ -42,6 +42,13 @@ describe('Host rendering never wraps at hyphens', () => {
     expect(owner?.className).toMatch(/ownerScroll/);
     expect(owner?.hasAttribute('tabindex')).toBe(false);
   });
+  it('only the owner part is nowrap; other labels may break so they never widen a 188 px page (QA T-2.8 m4)', () => {
+    const { container } = render(<Host text="desk.waymarker-network.example-sso.test" />);
+    const nowrap = [...container.querySelectorAll('[class*="nowrap"]')].map((e) => e.textContent);
+    expect(nowrap).toEqual(['example-sso.test']);
+    const labels = [...container.querySelectorAll('[class*="label"]')].map((e) => e.textContent);
+    expect(labels).toEqual(['desk.', 'waymarker-network.']);
+  });
   it('inside a control the owner part is plain text (no nested focusable box)', () => {
     const { container } = render(
       <button type="button">

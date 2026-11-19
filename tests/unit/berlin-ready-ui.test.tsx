@@ -98,6 +98,8 @@ describe('ruling QA L5: earlier texts in the thread', () => {
     expect(container.textContent).toContain('Earlier');
     expect(earlier?.textContent).toContain('Yesterday');
     expect(earlier?.querySelector('button, a')).toBeNull();
+    // Hosts follow UI_SPEC §1.5 (sceptic T-2.8): the owner part is one nowrap piece, still plain text.
+    expect(earlier?.querySelector('[data-owner]')?.textContent).toBe('trundle.example');
   });
 });
 
@@ -267,6 +269,22 @@ describe('B1: chapters, Start continues the next unfinished unlocked chapter', (
     expect(screen.getByText('Morning done: 1 of 2')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Keep going' }));
     await waitFor(() => screen.getByRole('img', { name: /2 of 2/ }));
+  });
+});
+
+describe('QA T-2.8 m1/m2: start-screen pages', () => {
+  it('Settings is a page with an h1; Done and Back return focus to the button that opened the page', async () => {
+    const chapters: Chapter[] = [{ slot: 0, city: 'home', name: 'Home', status: 'draft', patterns: ['smishing-parcel-fee'], callbacks: [], lo_focus: ['LO-01'], scenario_order: { am: ['h1'], pm: [] }, intro: 'x' }];
+    render(<App store={createStore(memory())} chapters={chapters} load={async () => scenario(rawGenuine('h1', { chapter: 'home' }))} />);
+    const settings = screen.getByRole('button', { name: 'Settings' });
+    settings.focus();
+    fireEvent.click(settings);
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('heading', { level: 1, name: 'Settings' })));
+    fireEvent.click(screen.getByRole('button', { name: 'Done' }));
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Settings' })));
+    fireEvent.click(screen.getByRole('button', { name: 'Chapters' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Back to the start' }));
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Chapters' })));
   });
 });
 

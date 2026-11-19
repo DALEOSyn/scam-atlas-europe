@@ -4,6 +4,10 @@
 .nowrap {
   white-space: nowrap;
 }
+/* Non-owner host labels: may break, never widen the page (UI_SPEC §1.5). */
+.label {
+  overflow-wrap: anywhere;
+}
 .owner {
   font-weight: var(--fw-bold);
   color: var(--address-strong);

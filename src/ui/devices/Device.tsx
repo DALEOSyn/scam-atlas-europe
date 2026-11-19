@@ -182,8 +182,9 @@ function Earlier({ items, onTranslation, alwaysTranslate }: { items: NonNullable
       {items.map((e, i) => (
         <div key={i} class={styles.earlier} data-earlier="">
           <span class={styles.earlierWhen}>{e.when}</span>
+          {/* RichText: hosts follow §1.5 (sceptic T-2.8); still plain text, never a link or a checkable. */}
           <div class={styles.bubbleIn} lang={e.lang}>
-            {e.body}
+            <RichText text={e.body} />
           </div>
           <Translate message={e} id={`earlier-translation-${i}`} onFreeze={onTranslation} alwaysOpen={alwaysTranslate} />
         </div>

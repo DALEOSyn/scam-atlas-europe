@@ -27,7 +27,8 @@ import styles from './app.module.css';
 type Progress = { index: number; total: number };
 
 type Screen =
-  | { kind: 'title' }
+  /** `from`: the screen we came back from, so focus returns to its button (QA T-2.8 m1), never to <body>. */
+  | { kind: 'title'; from?: 'chapters' | 'settings' | 'elsewhere' }
   | { kind: 'chapters' }
   | { kind: 'settings' }
   | { kind: 'loading' }
@@ -158,6 +159,14 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario 
   // The chapter being played: picked on the chapter list or by Start (B1), never just the first one.
   const chapter: Chapter = loadFirst ? soloCh : (chapters.find((c) => c.city === city) ?? resumeChapter(chapters, save) ?? chapters[0] ?? soloCh);
   const [stress, setStress] = useState<number | null>(null);
+  // Back on the start screen: focus the button that opened the page we left, else the title (QA T-2.8 m1).
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const titleFrom = screen.kind === 'title' ? screen.from : undefined;
+  useEffect(() => {
+    if (!titleFrom) return;
+    const btn = titleFrom === 'elsewhere' ? null : document.querySelector<HTMLElement>(`[data-title-button="${titleFrom}"]`);
+    (btn ?? titleRef.current)?.focus();
+  }, [screen]);
 
   const reduced = prefersReducedMotion();
   const timerMode: TimerMode = save.settings.timerMode ?? defaultTimerMode(reduced);
@@ -267,11 +276,11 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario 
   const toTitle = () => {
     // Resuming later starts calm (UI_SPEC §8.3: on resume, stress resets to 10).
     setStress(null);
-    setScreen({ kind: 'title' });
+    setScreen({ kind: 'title', from: 'elsewhere' });
   };
   const toChapters = () => {
     setStress(null);
-    setScreen(loadFirst ? { kind: 'title' } : { kind: 'chapters' });
+    setScreen(loadFirst ? { kind: 'title', from: 'elsewhere' } : { kind: 'chapters' });
   };
 
   const onStart = () => {
@@ -284,7 +293,9 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario 
     <AnnouncerProvider minInterval={SR_MIN_INTERVAL}>
       {screen.kind === 'title' || screen.kind === 'loading' || screen.kind === 'error' ? (
         <main class={styles.shell}>
-          <h1 class={styles.title}>{t('app_title')}</h1>
+          <h1 class={styles.title} ref={titleRef} tabIndex={-1}>
+            {t('app_title')}
+          </h1>
           {screen.kind === 'title' ? (
             <>
               <p class={styles.tagline}>{t('app_tagline')}</p>
@@ -293,11 +304,11 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario 
                   {resumable ? t('app_continue') : t('app_start')}
                 </button>
                 {!loadFirst && chapters.length > 0 ? (
-                  <button type="button" class={styles.secondary} onClick={() => setScreen({ kind: 'chapters' })}>
+                  <button type="button" class={styles.secondary} data-title-button="chapters" onClick={() => setScreen({ kind: 'chapters' })}>
                     {t('chapters_title')}
                   </button>
                 ) : null}
-                <button type="button" class={styles.secondary} onClick={() => setScreen({ kind: 'settings' })}>
+                <button type="button" class={styles.secondary} data-title-button="settings" onClick={() => setScreen({ kind: 'settings' })}>
                   {t('app_settings')}
                 </button>
               </div>
@@ -317,10 +328,10 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario 
       {screen.kind === 'chapters' ? <ChapterList rows={chapterRows(chapters, save)} onPlay={(c) => {
         const ch = chapters.find((x) => x.city === c);
         if (ch) startChapter(ch);
-      }} onBack={() => setScreen({ kind: 'title' })} /> : null}
+      }} onBack={() => setScreen({ kind: 'title', from: 'chapters' })} /> : null}
       {screen.kind === 'settings' ? (
         <main class={styles.shell}>
-          <SettingsPanel settings={save.settings} defaultTimer={defaultTimerMode(reduced)} onChange={saveSettings} onClose={() => setScreen({ kind: 'title' })} />
+          <SettingsPanel settings={save.settings} defaultTimer={defaultTimerMode(reduced)} onChange={saveSettings} onClose={() => setScreen({ kind: 'title', from: 'settings' })} />
         </main>
       ) : null}
       {screen.kind === 'timing' ? <TimingScreen preselect={defaultTimerMode(reduced)} onChoose={(m) => chooseTiming(m, screen.scenario, screen.progress)} /> : null}

@@ -54,6 +54,7 @@ export function SettingsPanel({ settings, defaultTimer, onChange, onClose, modal
     document.addEventListener('keydown', onKey, true);
     return () => document.removeEventListener('keydown', onKey, true);
   }, [onClose, modal]);
+  const Heading = modal ? 'h2' : 'h1';
   const timer = settings.timerMode ?? defaultTimer;
   const set = (patch: Partial<Settings>) => onChange({ ...settings, ...patch });
   const panel = (
@@ -65,9 +66,10 @@ export function SettingsPanel({ settings, defaultTimer, onChange, onClose, modal
       aria-labelledby="settings-h"
       data-settings=""
     >
-      <h2 id="settings-h" ref={heading} tabIndex={-1} class={styles.title}>
+      {/* The start-screen page has its own h1; in a scenario it is a dialog over the page's h1 (QA T-2.8 m2). */}
+      <Heading id="settings-h" ref={heading} tabIndex={-1} class={styles.title}>
         {t('settings_title')}
-      </h2>
+      </Heading>
       {inScenario ? <p class={styles.note}>{t('settings_next_message')}</p> : null}
       <fieldset class={styles.group}>
         <legend>{t('settings_timing')}</legend>

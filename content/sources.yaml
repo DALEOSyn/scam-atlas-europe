@@ -36,6 +36,7 @@
 #                  (chapters 4 Madrid and 5 Warsaw briefs; added T-3.6r, 2026-11-19)
 #                investment-ad-fake-platform | recovery-scam   (chapter 8 Dublin briefs; T-3.10r, 2026-11-19)
 #                e-id-approval-on-call | remote-access-support-call   (chapter 9 Stockholm briefs; T-3.10r, 2026-11-19)
+#                money-mule-recruitment   (chapter 10 Brussels brief; T-3.12r, 2026-11-19; remote-access-support-call extended)
 #              An empty list means provenance only: not cited directly, kept because another entry's
 #              date or content relies on it.
 #   notes      what the source actually supports; caveats
@@ -2198,7 +2199,7 @@ sources:
     accessed: 2026-11-19
     region: BE
     tier: 3
-    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en, remote-access-support-call, money-mule-recruitment, MAP-ch10]
     notes: "Fraudstop on 078 170 170 (the number already known for Card Stop), 24/7: potential victims of online fraud can have their digital banking applications blocked via their bank; depending on the bank, via an automated message or a transfer to the bank's fraud department. Cost not stated. Some local police pages still show Card Stop's old 070 344 344 (police.be zone 5329, opened 2026-11-19): do not use the old number."
 
   - id: be-police-autres-numeros
@@ -2244,6 +2245,152 @@ sources:
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
     notes: "Awel listens to all children and young people; 'via het gratis nummer 102'; phone daily 16:00-22:00 except Sundays and public holidays; chat daily 18:00-22:00 (same exception); 'Awel werkt volledig anoniem'. No age range given."
+
+  # ---------------------------------------------------------------- Belgium (T-3.12r, Brussels finale: remote access, money mules, help list)
+  # All opened 2026-11-19. Real product names (remote-access software, a software maker, social networks) appear in some
+  # pages: research only, never in game content (Red Line 1).
+  - id: be-febelfin-helpdesk-fraud
+    publisher: Febelfin (Belgian financial sector federation)
+    title: "Computer helpdesk fraud"
+    url: https://febelfin.be/en/themes/fraud-security/online-fraudevormen/computer-helpdesk-fraud
+    published: "n/d (footer (c) 2026; metadata date malformed)"
+    accessed: "2026-11-19"
+    region: BE
+    tier: 3
+    used_for: [remote-access-support-call, MAP-ch10]
+    notes: "Callers pose as a computer company's helpdesk and ask you to turn on the computer, go online and install software that lets them 'look into, control and manipulate your computer', then 'loot your accounts'. Red flags: a helpdesk caller who 'suddenly asks you to follow steps via your computer'; 'very aggressive and efficient'. Advice: don't follow instructions, don't let the caller finish, don't turn on the computer. If software was installed: disconnect, change all passwords, run an antivirus scan. If money was lost: notify your bank, Cardstop 078 170 170, police complaint; report fake helpdesk calls to the CCB."
+
+  - id: be-febelfin-vishing-2026
+    publisher: Febelfin (Belgian financial sector federation)
+    title: "Vishing: telephone fraud on the rise"
+    url: https://febelfin.be/en/press-room/fraude-veiligheid/vishing-telephone-fraud-on-the-rise
+    published: "2026-02-27"
+    accessed: "2026-11-19"
+    region: BE
+    tier: 3
+    used_for: [remote-access-support-call, MAP-ch10]
+    notes: "Callers pose as bank employees, Card Stop staff or other trusted organisations; may try to get you to 'install software that gives them remote access to your device'; a genuine bank employee never asks you to install remote-access software. A Belgian number on screen or knowing part of your account number proves nothing. 'Never share codes or passwords'; 'Do not approve any transaction under pressure following an unexpected call'; 'Hang up immediately'; call your bank yourself on the official number. Card Stop never contacts customers first. Victims: bank's 24/7 fraud department, police report."
+
+  - id: be-police-microsoft-scam-2024
+    publisher: Police fédérale (police.be)
+    title: "Les arnaques utilisant Microsoft continuent"
+    url: https://www.police.be/5998/fr/node/26905
+    published: "2024-08-09"
+    accessed: "2026-11-19"
+    region: BE
+    tier: 3
+    used_for: [remote-access-support-call, MAP-ch10]
+    notes: "English gloss: 'Scams using [a software maker's name] continue'. A fake alert window while browsing says an infection was found and to call 'support' within 5 minutes; also via call centres; a link 'for a security test' gives the scammer control of the computer, then a fake paid subscription. Red flags: a phone number in a pop-up; unsolicited contact; urgency. Advice: download only from official sources; after being caught, run a full antivirus scan, look for remote-access programs, ideally have a professional check or reset the computer; contact your bank to block transactions; report to the police. The real company name is reference only."
+
+  - id: be-ccb-remote-access-2019
+    publisher: Centre pour la Cybersécurité Belgique (CCB / CERT.be), via news.belgium.be
+    title: "Warning on remote-access / fake support scams (press release)"
+    url: https://news.belgium.be/fr/node/22898/pdf
+    published: "2019-03-29"
+    accessed: "2026-11-19"
+    region: BE
+    tier: 2
+    used_for: [remote-access-support-call]
+    notes: "OLDER (2019); supporting the victim's view after access. Unsolicited calls about a computer problem or a fake virus alert that blocks the screen and gives a number to call; the caller asks you to start the computer, visit a site or download an app. Once in: screen locked; victims told to switch OFF their phone so bank alerts don't arrive; asked to pay; data stolen; accounts emptied; some asked to open a crypto account. Advice: never let a stranger control your computer; never pay; uninstall what you installed; full antivirus scan; change shared passwords. Notes that many victims feel ashamed and don't report. Accent remark in the source is NOT used (not a reliable tell)."
+
+  - id: be-febelfin-money-mules
+    publisher: Febelfin (Belgian financial sector federation)
+    title: "What are money mules?"
+    url: https://febelfin.be/en/themes/fraud-security/money-mules/what-are-money-mules
+    published: "n/d (footer (c) 2026; metadata date malformed)"
+    accessed: "2026-11-19"
+    region: BE
+    tier: 3
+    used_for: [money-mule-recruitment, MAP-ch10]
+    notes: "Recruitment online via social media and messaging apps (named), and offline near stations, nightlife and schools. The ask: 'lend you your bank account and/or bank card and pin code in exchange for a payment' (no app login mentioned). Red flags: presented as 'perfectly safe' or 'a favour'; talk of what others earned; quick money. Consequences: punishable, prosecution, fine or community service; may have to 'pay back all the money that has been channelled through his account to the victim'; bank 'may also refuse to give you a bank account, bank card and/or loan'; for minors parents 'can be held liable'; threats and violence; account blocked or closed. If involved: contact your bank asap, block the card, go to the police. Prevention: never share account, card or PIN; talk to someone you trust; warn friends. Lists Card Stop as +32 (0)70 344 344, which is OUTDATED (use 078 170 170, be-febelfin-fraudstop-2026)."
+
+  - id: be-febelfin-money-mules-2023
+    publisher: Febelfin (Belgian financial sector federation)
+    title: "Money mules: young Belgians particularly targeted by recruiters"
+    url: https://febelfin.be/en/press-room/fraude-veiligheid/money-mules-young-belgians-particularly-targeted-by-recruiters
+    published: "2023-10-13"
+    accessed: "2026-11-19"
+    region: BE
+    tier: 3
+    used_for: [money-mule-recruitment]
+    notes: "Recruiters use social networks and physical places; ask for a bank card with PIN in exchange for money. The mule 'can be held accountable and prosecuted'; the bank may refuse an account, card or loan; the mule 'may risk having their account emptied by the fraudster'; danger can come from close friends. Survey (IndiVille 2023, 16-79): 17% of 16-30s willing to hand over card + PIN; 22% of young people know what a money mule is. Designer context only, figures never on screen."
+
+  - id: be-febelfin-games-campaign-2025
+    publisher: Febelfin (Belgian financial sector federation)
+    title: "How many coins is your name worth?"
+    url: https://febelfin.be/en/press-room/fraude-veiligheid/how-many-coins-is-your-name-worth
+    published: "2025-06-19"
+    accessed: "2026-11-19"
+    region: BE
+    tier: 3
+    used_for: [money-mule-recruitment]
+    notes: "Campaign on scams aimed at young people in games and chat groups (fake coin offers, fake game logins, requests for login details, codes or bank cards). Advice: never share login details or codes; call your bank at once (reachable 24/7); keep information; police complaint and give it to the bank; talk with young people. Survey figure '60% of young people approached as money mules accepted' (IndiVille Jan 2025): designer context only, never on screen."
+
+  - id: be-police-money-mules-2020
+    publisher: Police fédérale (police.be)
+    title: "Gagner de l'argent rapidement est une illusion"
+    url: https://www.police.be/5998/fr/node/18175
+    published: "2020-12-08"
+    accessed: "2026-11-19"
+    region: BE
+    tier: 3
+    used_for: [money-mule-recruitment]
+    notes: "OLDER (2020). English gloss: 'Making money fast is an illusion'. Recruitment via social media and messaging apps (named) and in person; the ask: lend 'son compte bancaire et/ou sa carte bancaire et son code PIN en échange d'une rémunération'; framed as a favour between friends. Consequences: 'passible de poursuites'; must 'rembourser intégralement à la victime'; parents of minors can be liable; bank may refuse a new account, card or loan; risk of violence; own account often emptied. 'Ne prêtez jamais votre compte bancaire'. No step-by-step for people already involved."
+
+  - id: eu-europol-mule-flyer-be-fr
+    publisher: Europol (EMMA campaign, Belgium French edition)
+    title: "Mules financières (flyer)"
+    url: https://www.europol.europa.eu/sites/default/files/documents/be_flyers_fr.pdf
+    published: n/d
+    accessed: "2026-11-19"
+    region: EU
+    tier: 1
+    used_for: [money-mule-recruitment, MAP-ch10]
+    notes: "Recruitment via social media, messaging apps, fake job offers, pop-up ads, email or in person; targets incl. students and under-35s incl. minors. Red flags: unsolicited 'easy money' ('Trop beau pour être vrai!'), everything online, the job needs your own bank account, no experience needed, asks for account number, card or PIN, extra commission for recruiting others. Consequences: threats or assault if you try to stop, prison, fine or community service, account closed and difficulty getting accounts, credit or loans. What to do: stop all transfers, tell your bank, report to the police, report the social-media account to the platform, warn others involved. Names no Belgian contact points."
+
+  - id: be-fsma-recovery-room
+    publisher: FSMA (Belgian Financial Services and Markets Authority)
+    title: "Victim of an investment scam? Beware of recovery room fraud"
+    url: https://www.fsma.be/en/warnings/victim-investment-scam-beware-recovery-room-fraud
+    published: n/d
+    accessed: "2026-11-19"
+    region: BE
+    tier: 3
+    used_for: [recovery-scam, MAP-ch10]
+    notes: "Unsolicited calls or emails offering to recover money lost to investment fraud; 'very aggressive'; misuse authorised firms' identities; 'falsely claim to work with the police or with financial supervisors'; 'always ask for a fee' in advance (fictitious admin, legal or tax costs), then disappear. Advice: complaint to the local police; ask how they knew you'd lost money; refuse and end contact; supervisors 'will never contact victims of investment fraud for such purposes'."
+
+  - id: be-fsma-warnings-list
+    publisher: FSMA (Belgian Financial Services and Markets Authority)
+    title: "Warnings list: companies operating unlawfully in Belgium"
+    url: https://www.fsma.be/en/warnings-list-companies-operating-unlawfully-belgium
+    published: "n/d (footer (c) 2026)"
+    accessed: "2026-11-19"
+    region: BE
+    tier: 3
+    used_for: [recovery-scam, MAP-ch10, WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Lists firms warned about in the past four years (unlawful offers, recovery-room fraud, serious evidence of investment fraud); 'the list cannot be considered as exhaustive', so check authorisation with the FSMA search too; warns about clone firms and recovery rooms; victims can almost never recover sums invested. Consumers can use the FSMA consumer contact form and report suspicious companies not yet warned about."
+
+  - id: be-police-plainte-arnaque-en-ligne
+    publisher: Police fédérale (police.be, SCAM campaign)
+    title: "Porter plainte pour une arnaque en ligne"
+    url: https://www.police.be/5998/fr/a-propos/campagnes-de-communication/campagne-scam/porter-plainte-pour-une-arnaque-en-ligne
+    published: "n/d (campaign flyer dated 2026-02-06)"
+    accessed: "2026-11-19"
+    region: BE
+    tier: 3
+    used_for: [money-mule-recruitment, remote-access-support-call, WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "English gloss: 'Filing a complaint for an online scam'. Two routes: Police on Web, 'un guichet électronique qui permet de déclarer certains faits non urgents' (needs a Belgian identity card), or a local police station, which is 'préférable' so first measures can be taken quickly. Prepare a timeline, screenshots of messages, and identifiers (email addresses, account numbers, phone numbers); bring your ID card. Says nothing about minors filing online or about calling the bank first."
+
+  - id: be-zelfmoord1813
+    publisher: Zelfmoordlijn 1813 (Centrum ter Preventie van Zelfdoding; operator site)
+    title: "Zelfmoord1813.be (home page)"
+    url: https://www.zelfmoord1813.be
+    published: "n/d (latest news item 2026-10-21)"
+    accessed: "2026-11-19"
+    region: BE
+    tier: 4
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "'Bel 1813'; 'Elk gesprek is anoniem en gratis'; phone '24/7 bereikbaar'; chat daily 17:00-00:00, Wednesday 12:00-00:00. Dutch-language line. Free and anonymous also confirmed on a Flemish government page (vlaanderen.be, intern, undated). 112 not mentioned on the page."
 
   # ---------------------------------------------------------------- Luxembourg (T-3.8r, supporting for Lisbon QR)
   - id: lu-vdl-parking-qr
@@ -2593,7 +2740,7 @@ sources:
     accessed: "2026-11-19"
     region: BE
     tier: 3
-    used_for: [investment-ad-fake-platform, recovery-scam, remote-access-support-call, MAP-ch8, campaign-catalogue]
+    used_for: [investment-ad-fake-platform, recovery-scam, remote-access-support-call, MAP-ch8, MAP-ch10, campaign-catalogue, WHERE_TO_REPORT, help-where-to-report-en]
     notes: "Starts with 'A fake advertisement in which a celebrity is mentioned', fake profiles, unsolicited messages; after a deposit the platform 'manipulates the transactions to give the impression that significant profits have been achieved' and the money is never invested; larger withdrawals are met with excuses (high costs, taxes) and never paid; some offer to take over the device to make transfers; recovery offers for a fee are often another fraud. Victims: stop transactions, cut contact, tell your bank at once, keep records, report to the FSMA and the police. Main source for the dashboard and withdrawal-fee beats."
 
   - id: de-evz-online-trading-scam-2026

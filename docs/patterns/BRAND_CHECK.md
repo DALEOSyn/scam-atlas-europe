@@ -418,6 +418,7 @@ Same method and limits as above (web, app-store and company-directory check via 
 ## Actions for ux-artist / scenario-writer (Rome / Lisbon)
 1. **Rename Kerbello → Zonelet** (Medium): `zonelet.example`, `zonelet-pay.example`, `zonelet-multas.example`. Spare: Lanefare.
 2. **Replace the host handle casa.alfama → casa.velarim** (Medium), including the `/casa-alfama` path.
+   - *Note (T-3.9, producer-accepted 2026-11-19):* in game content the handle is written **casa_velarim** (underscore), because the red-line linter reads "casa.velarim" as a domain. Same coined name, same search result; the page path stays `/casa-velarim`.
 3. **Keep:** Roostwell (watch item; spares Tilestay, Hearthlane), Roostwell Deals, Vellastri Tutela Srl / "Velastri Tutela" (spare Corvessa Tutela Srl), J. Ashdale, Leonor Brito.
 4. **Before G4:** Registro Imprese and UIBM (IT), RNPC and INPI-PT (PT), and TMview for all kept names. This check is not trademark or legal clearance.
 
@@ -559,3 +560,85 @@ Same method and limits as above (web, app-store and company-directory check via 
 4. **Replace Harbourline Bonds → Brindlecove Bonds** (Medium). Optional: Norrvik Trygg AB → Skarvlund Trygg AB. Keep Fairmeasure Claims Ltd (spare Fairmeasure Restitution Ltd). The ad page becomes "Money Today with Orla" (spare "The Savings Hour with Orla").
 5. **Keep:** Fairmeasure, Quorvex, Glimmerfund, Backhaven Recovery, Kindhand, and the cast names Declan Byrne, Róisín Byrne, Birgitta Lind, Jamal Haddad, Lina Haddad.
 6. **Before G4:** CRO and the Central Bank register (IE), Bolagsverket and Finansinspektionen (SE), and TMview for all kept names. This check is not trademark or legal clearance.
+
+---
+
+# Brussels names and the Dublin / Stockholm marks (T-3.12b)
+
+**Owner:** fraud-researcher · **Searched:** 2026-11-19 · **Status:** draft for sceptic review · roles from `docs/GDD.md` §30.11 (Brussels) and the ux-artist's mark sheet (scratchpad render `s6c/brands.png`, 2026-11-19).
+
+## Method and limits (Brussels / marks)
+- **Names:** one web search index (US-based), as above. One product page opened (Capterra, BR2).
+- **Marks:** a visual comparison of the render against what the searches surfaced (app-store listings and product pages by name). **No reverse image search and no logo database** were available, so the mark verdicts rest on product listings and general knowledge of well-known icons. A human checks the marks against the EUIPO design register and TMview before G4.
+- **No trademark register, no Belgian KBO/BCE company search, no WHOIS.**
+- **Real line not named here.** The real Belgian card-blocking service is named only on the help card. Its name means "stop the card", so the test for BR1 is "no word or sound meaning stop, halt, block or card".
+
+## Summary (Brussels / marks)
+| # | Name or mark (role) | Closest hits | Risk | Recommendation |
+|---|---|---|---|---|
+| BR1 | **Marrowby** (genuine in-world card-blocking line; impersonated on boss beat 2) | no exact hit; English place names one letter away (Garrowby, Barrowby, Harrowby, Borrowby); no bank, card, fraud-line or Belgian service | Low | **Keep** |
+| BR2 | **Easy Euro Club** / `@easy_euro_club` (scam-only money-mule recruiter, 10-4) | **EasyEuro**: a real white-label neobanking platform that opens euro and GBP accounts (Capterra, SourceForge listings) | **Medium** (a recruiter who asks for your account, named like a real account provider) | **Rename** → **Summer Euro Club** (`@summer_euro_club`) |
+| BR2 | Summer Euro Club (alternative) | no exact hit (only unrelated "Summer Cup" pages) | Low | **Use** |
+| BR2 | Quick Cash Crew (alternative) | no exact hit; "Quick Cash" is a common payday-lender phrase and a game item; "Cash Crew" (a music act) | Low–Medium | Spare only |
+| BR3 | **Robin**, **Sacha** (alias names on the Alex reveal cards) | generic first names | Low | **Keep** |
+| BR4 | **Kindhand** mark: a jade and peach life ring | the life ring is a common "help/support" symbol; real remote-support products include "Rescue"-named tools (an app-store listing surfaced); icon colours not verified | Low–Medium (watch item) | **Keep, with conditions** |
+| BR5 | **Postwick** mark: wine and sand, a fan of three post cards | no social network, messenger or post service found with a wine square and stacked cards; national post brands use other colours (general knowledge) | Low | **Keep** |
+| BR6 | **Ellisfen Invest** mark: bronze and cream, three reeds | the reeds read as a small bar chart, a common finance motif; no investment firm found with this mark | Low | **Keep** |
+| BR7 | **Fairmeasure** (kind government, plain wordmark), re-check of DS1 | no hit | Low | **Keep** (DS1 confirmed) |
+
+## BR1. Marrowby: Low, keep
+- **Searched:** `"Marrowby"`.
+- **Hits:** none as a brand, bank, card product, fraud line or Belgian service. The search returned English place names a letter away: Garrowby, Barrowby, Harrowby, Borrowby, Moorby (Wikipedia).
+- **Assessment:**
+  - **No meaning echo.** It has no word or sound for stop, halt, block or card, so it avoids the problem that sank Stillcard, Cardhalt and Haltwell.
+  - **No real name.** It is a coined, place-like name and copies no real service.
+  - It reads as a plausible service name in English. In French or Dutch it has no meaning.
+- **Conditions:**
+  - **Colours and number:** never the real line's colours. The number mask must not resemble the real line's number (GDD §30.4 rule).
+  - **On screen:** "Marrowby, the card-blocking line", not "Marrowby Card Stop" or any wording that borrows the real line's name.
+
+## BR2. Easy Euro Club: Medium, rename → Summer Euro Club
+- **Searched:** `"Easy Euro Club" OR "easyeuroclub" OR "easy_euro_club"`; `"EasyEuro" money transfer OR app OR payments`; `"Summer Euro Club" OR "Quick Cash Crew" OR "Side Cash Squad"`. Opened https://www.capterra.com.au/software/212605/easyeuro.
+- **Hits:**
+  - **Exact phrase:** no club, app or service named "Easy Euro Club".
+  - **EasyEuro** (https://www.capterra.com.au/software/212605/easyeuro, https://www.sourceforge.net/software/product/EasyEuro) is a real **white-label neobanking platform that opens euro and GBP accounts**; France is listed as its available country.
+  - Other "Easy…" payment apps exist (EasySend, Easy-EP), but under different names.
+  - **"Summer Euro Club":** no hit.
+  - **"Quick Cash Crew":** no exact hit. "Quick Cash" is a common payday-lending phrase and a game item; "Cash Crew" is a music act.
+- **Assessment:** the 10-4 recruiter asks a teenager for her account and login. A scam profile whose name is the real account provider's name plus "Club" puts a real fintech's name next to money-mule recruitment. That is the risk Red Line 1 is meant to avoid. **Rename to Summer Euro Club**, with the handle `@summer_euro_club` (no dot, as before). It also fits Noor's "summer job money" line.
+- **Spare:** Quick Cash Crew (`@quick_cash_crew`). Use it only if the sceptic prefers no "Euro"; it is close to generic payday-loan wording.
+
+## BR3. Robin and Sacha: Low, keep
+- **Not searched separately.** Both are common, gender-neutral first names in English and French with no surname, so no single real person is identifiable.
+- **Assessment:** keep. They appear only as names on the reveal cards and on Teo's chat profile, never with a surname, photo of a real person, or platform. They are not cast first names (GDD §30.11).
+
+## BR4. Kindhand mark (jade and peach life ring): Low–Medium, keep with conditions
+- **Searched:** `remote support app logo lifebuoy life ring icon`; `remote desktop support app with lifebuoy logo`. The results were product pages and app-store listings for real remote-support tools, including a "Rescue"-named product family and several "SOS"/"Assist" apps. The icons were not viewable in the search results.
+- **Assessment:**
+  - A life ring is a generic "help / support" symbol, also used for help menus in software generally, so the motif alone is not a copy.
+  - At least one real remote-support product family uses a rescue name, and I could not verify its icon. So treat this as a **watch item**.
+  - The render is distinct in colour (jade ground, peach ring, four dark-green bands) and shape (a rounded-square app tile). It has no arrows, monitor or cursor, which are the usual remote-desktop cues.
+- **Conditions:**
+  - **Colours:** never red-and-white, orange-and-white or blue-and-white ring colours.
+  - **Wording and cues:** no "Rescue", "SOS" or "Assist" wording, and no arrow or screen motif added later.
+  - **Spare mark if the G4 design check finds a clash:** an open palm (Kindhand's own name), same jade and peach.
+
+## BR5. Postwick mark (wine and sand, a fan of three post cards): Low, keep
+- **Searched:** none beyond DS3 (the name). Comparison from general knowledge: major messengers and social networks use green, blue, gradient or black marks, and national post services in the game's countries use red, orange, yellow or blue. None uses a wine square with stacked sand cards.
+- **Assessment:** keep. The card fan with a "contact" glyph reads as "posts" or "profiles". Avoid adding a speech bubble or a paper-plane, which are strongly associated with real messengers.
+
+## BR6. Ellisfen Invest mark (bronze and cream, three reeds): Low, keep
+- **Searched:** none beyond DS6 (the name). The reeds read as a small bar chart, which is a generic finance motif.
+- **Assessment:** keep. The serif wordmark and bronze-olive tile have no echo of an investment firm found in the DS6 searches (Tollymore, Breakwater). Because a scam clones Ellisfen, the mark must stay simple enough that the clone `ellisfen-invest.example` copies it exactly. That is the point of the beat.
+
+## BR7. Fairmeasure (government, plain wordmark): Low, keep (DS1 confirmed)
+- **Re-checked:** DS1's search (`"Fairmeasure"`, no hit) stands. Registering it as `kind: government` with a plain wordmark adds no risk: a plain wordmark has no crest, flag, star circle or colours of a real regulator or government.
+- **Conditions:**
+  - **Visual identity:** keep it plain; no EU stars, no national colours, no seal.
+  - **Name:** the in-world "register" page is called "the Fairmeasure register", never a real regulator's term.
+
+## Actions for ux-artist / scenario-writer (Brussels / marks)
+1. **Rename Easy Euro Club → Summer Euro Club**, `@summer_euro_club` (Medium). Spare: Quick Cash Crew.
+2. **Keep:** Marrowby, Robin, Sacha, Fairmeasure, and the Postwick and Ellisfen marks.
+3. **Kindhand mark:** keep, with BR4's conditions (no red, orange or blue rings with white; no "Rescue/SOS/Assist" wording; no arrows or screens). Spare mark: an open palm.
+4. **Before G4:** EUIPO design register and TMview for the marks; TMview and the Belgian KBO/BCE for Marrowby and the recruiter name. This check is not trademark or legal clearance.

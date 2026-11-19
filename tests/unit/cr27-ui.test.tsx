@@ -82,7 +82,7 @@ function frenchEmail(over: Raw = {}): Raw {
 }
 
 describe('CR-27 item 1: chapter intro and scenario setup', () => {
-  it('the intro screen: h1 = chapter title (focused), the intro text, one Start button', async () => {
+  it('the intro screen: h1 = chapter title (focused), the intro text, one primary Start button (plus the stamps disclosure)', async () => {
     const onStart = vi.fn();
     render(<ChapterIntro name="Paris" intro={'Paris, the last working day.\n\nPinned by the screen: "Payments at Ruchelune."'} onStart={onStart} />);
     const h1 = screen.getByRole('heading', { level: 1, name: 'Paris' });

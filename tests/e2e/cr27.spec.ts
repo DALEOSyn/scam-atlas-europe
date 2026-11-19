@@ -199,7 +199,7 @@ for (const size of [
     await expect(toggle).toBeFocused();
     const items = page.locator('#stamps-help-panel li');
     await expect(items).toHaveCount(5);
-    await expect(items.nth(3)).toHaveText('Gold allows one slip, as long as every step you picked after it helped, starting with one that stops the damage.');
+    await expect(items.nth(3)).toHaveText('Gold still allows one slip (doing what a scam asks). After it, every step you pick to limit the damage must help, and your first step must stop the damage.');
     await items.nth(4).scrollIntoViewIfNeeded();
     await expect(items.nth(4)).toBeInViewport();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);

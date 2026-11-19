@@ -8,8 +8,8 @@
 # "Open the app and send it" is start_transfer with cap: engage (R16, CR-31(b)). owner_transfer is the
 # player's own Larchwick app with the call on the line (CR-31 bar; caller lines are beat-bound pushers).
 # Payee check: match on a stranger, J. Ashdale (BRAND_CHECK RL4), neutral (RM6, P3). Not in R.
-# The spec's closing line after damage control (Teo safe at the café, R-M2) has no engine slot yet; it is
-# the first sentence of layer 2, and every non-fall outcome ends with Teo safe (engine need, reported).
+# Teo safe (R-M2): the fall consequence (always shown, before damage control) has you ring Teo's saved
+# number and hear he's fine (psych round 2), every other outcome ends with Teo safe, and layer 2 repeats it.
 id: rome-04-grandpa-new-number
 chapter: rome
 role: standard
@@ -49,7 +49,7 @@ inspectables:
     red_flag: true
     type: caller_id
   - target: claim
-    reveal: "Sounds like Grandpa Teo, with an excuse for the new number. A voice can be copied from a short recording, and phones do die, so it can't prove anything either way. Judge what he asks."
+    reveal: "Sounds like Grandpa Teo, with an excuse for the new number. A voice can be copied from a short recording, and phones do die, so it can't prove anything either way. Judge what the caller asks."
     red_flag: false
     type: claim
   - target: claim#2
@@ -124,7 +124,7 @@ beats:
 
 outcomes:
   sent_to_ashdale:
-    narrative: "Sent. \"Thanks, kiddo.\" The line goes dead. A minute later the same number rings again."
+    narrative: "Sent. \"Thanks, kiddo.\" The line goes dead. You ring Teo's saved number. He picks up at the café: \"I'm fine, kiddo. That wasn't me, and it isn't on you.\" Then the unknown number rings again."
     recovery:
       - { step: call_bank_stop_payment, category: stop }
       - { step: tell_trusted_adult, category: stop }

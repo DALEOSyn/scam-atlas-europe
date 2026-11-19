@@ -342,8 +342,8 @@ outcomes:
 debrief:
   variant: standard
   layer1:
-    tell: "'Police', 'your bank', a link: after keys or money."
-    what_works: "Hang up. Dial a number you looked up."
+    tell: "'Police', 'your bank', a link: after your code, login or money."
+    what_works: "Hang up. Dial a known number."
   layer2:
     message_flags:
       - "First call: \"Don't call your bank\" is the tell: they wanted you cut off."

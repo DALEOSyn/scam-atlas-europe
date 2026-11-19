@@ -68,7 +68,7 @@ outcomes:
         category: harmful
         feedback: "Calling that number back reaches them, not Giulia. Bank first."
   bruna_bank_first:
-    narrative: "Bruna: \"No waiting. Bank first, Davide.\" He calls Larchwick on the number on his card, with Nonna beside him. \"Done. They're trying to stop it.\""
+    narrative: "Bruna: \"Asking was right, Davide. But no waiting: bank first.\" He calls Larchwick on the number on his card, with Nonna beside him. \"Done. They're trying to stop it.\""
 
 debrief:
   variant: standard
@@ -77,7 +77,7 @@ debrief:
     what_works: "Bank first, then the real person."
   layer2:
     message_flags: []
-    notes: "Davide calls Larchwick on the number on his card, with Nonna beside him. \"Done. They're trying to stop it.\" This works on people who care, at any age. Calling the bank fast was the right first move. A \"doesn't match\" warning is worth stopping for, even when the caller has an explanation ready."
+    notes: "Davide calls Larchwick on the number on his card, with Nonna beside him. \"Done. They're trying to stop it.\" This works on people who care, at any age. Calling the bank fast was the right first move. Scammers prepare an explanation for a 'doesn't match' warning. That's the moment to stop."
   device_tip: "Find the number on the back of your card, or the bank's number inside its app, before you ever need it."
   habit_card: stop-the-damage-first
   already_clicked:

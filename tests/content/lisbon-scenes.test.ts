@@ -104,7 +104,7 @@ describe('Lisbon fixed wording (STORY §3.7, §4.4)', () => {
     expect(shown('lisbon-resolution', []).map((p) => [p.speaker, p.expression])).toEqual([
       ['beatriz', 'relieved'],
       ['mateus', 'laughing'],
-      ['beatriz', 'calm'],
+      ['beatriz', 'calm-phone-look'],
     ]);
     const withVariant = shown('lisbon-resolution', ['lisbon_acted_fast']);
     expect(withVariant[0]).toMatchObject({ speaker: 'mateus', expression: 'calm', line: "You acted straight away, the right first step. We'll see what can still be stopped." });
@@ -155,6 +155,9 @@ describe('Lisbon scene rules the generic validator does not see', () => {
     expect(v?.line).not.toMatch(/should|fault|careless|will get|guarantee/i);
     expect(scene('lisbon-resolution').panels.filter((p) => p.if_flag || p.unless_flag)).toHaveLength(1);
   });
+  it('every crop: right panel is flipped so the speaker faces into the frame', () => {
+    for (const s of scenes.values()) for (const p of s.panels) if (p.crop === 'right') expect(p.flip, s.id).toBe(true);
+  });
   it('the turn spoils no verdict: no host, link, transfer or deposit, and ends on Mateus thinking', () => {
     expect(all(scene('lisbon-turn'))).not.toMatch(/host|link|transfer|deposit|fake|scam/i);
     expect(scene('lisbon-turn').panels.at(-1)).toMatchObject({ speaker: 'mateus', expression: 'thinking' });
@@ -166,6 +169,8 @@ describe('Lisbon scene rules the generic validator does not see', () => {
         if (p.expression?.endsWith('-phone-look')) expect(text(p), s.id).toMatch(/\bapp\b.*\b(?:opened|open) (?:myself|yourself)|open(?:ed)? the app/i);
       }
     }
+    // The If-then panel models the habit (ART_DIRECTION §1.2.2): Beatriz, phone in hand, screen turned away.
+    expect(scene('lisbon-resolution').panels.at(-1)?.expression).toBe('calm-phone-look');
     // Lisbon has no calls: the phone-ear pose never appears.
     for (const s of scenes.values()) for (const p of s.panels) expect(p.expression ?? '', s.id).not.toMatch(/-phone-ear$/);
   });

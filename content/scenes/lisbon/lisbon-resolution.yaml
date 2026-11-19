@@ -4,8 +4,9 @@
 # refund promise (STORY §4.2 rule 5, §5.4). Leonor (the real host) is never drawn and never in a scene; the
 # boss shows her in-app follow-up after a fall too (R20).
 # Beatriz never falls; her real room is booked through the app in every branch (GDD §27.2).
-# If-then (Beatriz), word for word from STORY §3.7, with the extra line under it (L-M2). Beatriz has no
-# phone poses, so the panel uses calm (the phone poses mean one habit each: none fits her cast sheet).
+# If-then (Beatriz), word for word from STORY §3.7, with the extra line under it (L-M2). The panel models the
+# habit with the shared pose calm-phone-look (ART_DIRECTION §1.2.2, §4.4): phone in hand, screen turned away,
+# staying in the app she opened herself.
 # Map invitation (Mateus, STORY §3.7) is not built yet (ENGINE "Not in S3").
 # Not sensitive: money theme only, no content note proposed (STORY §3.7, as Madrid).
 id: lisbon-resolution
@@ -38,9 +39,9 @@ panels:
   - backdrop: lisbon-kitchen
     crop: centre
     speaker: beatriz
-    expression: calm
+    expression: calm-phone-look
     if_then:
       cue: "If a host wants me to chat, pay or log in outside the app,"
       action: "then I stay in the app I opened myself."
       extra: "Parking too: pay in the app you installed, and read where a code goes."
-    alt: "Beatriz, calm, in the kitchen under the tile frieze."
+    alt: "Beatriz, calm, phone in hand, screen turned away, in the kitchen under the tile frieze."

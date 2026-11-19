@@ -1,0 +1,30 @@
+<!-- Scam Atlas: Europe. City backdrop: a generic Paris street of cream stone apartment buildings with grey zinc mansard roofs, chimney pots, one high balcony, a carriage door, a blank shopfront and plane trees; no lettering, no sign, no landmark, no brand mark. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="pa-t"><title id="pa-t">A street of cream stone buildings with grey roofs, plane trees and a carriage door</title>
+<defs><linearGradient id="pa-air" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfdde6"/><stop offset="1" stop-color="#d9e6f6"/></linearGradient>
+<g id="pa-w"><rect width="44" height="84" rx="4" fill="#f6efe2"/><rect x="5" y="5" width="34" height="74" rx="2" fill="#cfdde6"/><path d="M22 5V79" stroke="#f6efe2" stroke-width="3"/></g>
+<g id="pa-d"><path d="M0 40V14Q0 0 14 0Q28 0 28 14V40Z" fill="#b8b4a6"/><path d="M5 40V16Q5 6 14 6Q23 6 23 16V40Z" fill="#cfdde6"/></g>
+</defs>
+<rect width="960" height="540" fill="url(#pa-air)"/>
+<path d="M40 40h36v-20h-36ZM360 40h30v-24h-30ZM560 40h36v-20h-36ZM860 40h30v-24h-30Z" fill="#d6bf98"/>
+<path d="M46 20h8v-10h-8ZM60 20h8v-12h-8ZM366 16h8v-10h-8ZM566 20h8v-12h-8ZM580 20h8v-10h-8ZM866 16h8v-10h-8Z" fill="#c8714f"/>
+<path d="M0 104L18 40H462L478 104ZM482 104L498 40H942L960 104Z" fill="#9c978a"/>
+<use href="#pa-d" x="70" y="58"/><use href="#pa-d" x="190" y="58"/><use href="#pa-d" x="310" y="58"/><use href="#pa-d" x="560" y="58"/><use href="#pa-d" x="680" y="58"/><use href="#pa-d" x="800" y="58"/>
+<rect x="0" y="104" width="470" height="366" fill="#f1e4c8"/><rect x="480" y="104" width="480" height="366" fill="#e7d3b0"/>
+<rect x="470" y="104" width="10" height="366" fill="#d6bf98"/>
+<path d="M0 102H478M482 102H960" stroke="#5d6672" stroke-width="3"/>
+<path d="M0 110H470M480 110H960" stroke="#ddcca9" stroke-width="8"/>
+<use href="#pa-w" x="40" y="136"/><use href="#pa-w" x="40" y="244"/><use href="#pa-w" x="150" y="136"/><use href="#pa-w" x="150" y="244"/><use href="#pa-w" x="260" y="136"/><use href="#pa-w" x="260" y="244"/><use href="#pa-w" x="370" y="136"/><use href="#pa-w" x="370" y="244"/>
+<use href="#pa-w" x="520" y="136"/><use href="#pa-w" x="520" y="244"/><use href="#pa-w" x="630" y="136"/><use href="#pa-w" x="630" y="244"/><use href="#pa-w" x="740" y="136"/><use href="#pa-w" x="740" y="244"/><use href="#pa-w" x="850" y="136"/><use href="#pa-w" x="850" y="244"/>
+<path d="M0 346H470M480 346H960" stroke="#ddcca9" stroke-width="10"/>
+<path d="M150 470V396Q150 352 196 352Q242 352 242 396V470Z" fill="#8fae8b"/><path d="M196 360V470" stroke="#76966f" stroke-width="3"/><path d="M183 420a3 3 0 1 0 6 0a3 3 0 1 0 -6 0ZM203 420a3 3 0 1 0 6 0a3 3 0 1 0 -6 0Z" fill="#d9a441"/>
+<rect x="540" y="362" width="240" height="108" rx="4" fill="#f6efe2"/><rect x="552" y="374" width="216" height="84" rx="2" fill="#cfdde6"/>
+<path d="M530 362L548 340H772L790 362Z" fill="#c8714f"/>
+<path d="M600 458h20l-2 -26h-16ZM700 458h20l-2 -26h-16Z" fill="#c8714f"/><path d="M600 426a10 10 0 1 0 20 0a10 10 0 1 0 -20 0ZM700 426a10 10 0 1 0 20 0a10 10 0 1 0 -20 0Z" fill="#86a175"/>
+<rect y="470" width="960" height="40" fill="#c9cfbf"/><rect y="506" width="960" height="34" fill="#b8b4a6"/>
+<path d="M0 508H960" stroke="#9c978a" stroke-width="4"/>
+<path d="M682 486a18 4 0 1 0 36 0a18 4 0 1 0 -36 0ZM762 486a18 4 0 1 0 36 0a18 4 0 1 0 -36 0Z" fill="#9c978a"/><path d="M700 486V500M780 486V500" stroke="#5d6672" stroke-width="3"/>
+<path d="M686 472h28v4h-28ZM766 472h28v4h-28Z" fill="#5d6672"/>
+<rect x="74" y="250" width="16" height="230" rx="6" fill="#8a6a4f"/><rect x="884" y="250" width="16" height="230" rx="6" fill="#8a6a4f"/>
+<path d="M18 190a64 64 0 1 0 128 0a64 64 0 1 0 -128 0ZM-6 250a40 40 0 1 0 80 0a40 40 0 1 0 -80 0ZM86 250a44 44 0 1 0 88 0a44 44 0 1 0 -88 0Z" fill="#9db58a"/><path d="M74 230a26 26 0 1 0 52 0a26 26 0 1 0 -52 0ZM30 214a20 20 0 1 0 40 0a20 20 0 1 0 -40 0Z" fill="#86a175"/>
+<path d="M828 190a64 64 0 1 0 128 0a64 64 0 1 0 -128 0ZM900 250a40 40 0 1 0 80 0a40 40 0 1 0 -80 0ZM800 250a44 44 0 1 0 88 0a44 44 0 1 0 -88 0Z" fill="#9db58a"/><path d="M848 230a26 26 0 1 0 52 0a26 26 0 1 0 -52 0ZM904 214a20 20 0 1 0 40 0a20 20 0 1 0 -40 0Z" fill="#86a175"/>
+</svg>

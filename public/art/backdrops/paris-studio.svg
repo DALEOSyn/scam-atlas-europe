@@ -1,0 +1,31 @@
+<!-- Scam Atlas: Europe. City backdrop: your small top-floor studio in Paris, a sloped ceiling, a dormer window onto grey zinc roofs and chimney pots, a bed, a table and your suitcase; no lettering, no brand mark, no famous skyline. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="ps-t"><title id="ps-t">A small top-floor studio with a window onto grey roofs and chimney pots</title>
+<defs><linearGradient id="ps-air" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfdde6"/><stop offset="1" stop-color="#d9e6f6"/></linearGradient></defs>
+<rect width="960" height="540" fill="#e7d3b0"/>
+<path d="M0 0H300L130 108H0ZM960 0H680L840 100H960Z" fill="#d6bf98"/>
+<rect x="376" y="52" width="208" height="282" rx="10" fill="#f6efe2"/>
+<rect x="390" y="66" width="180" height="254" rx="4" fill="url(#ps-air)"/>
+<path d="M390 238L430 206H520L570 238V320H390Z" fill="#b8b4a6"/>
+<path d="M390 270L414 252H496L520 270V320H390Z" fill="#9c978a"/>
+<rect x="452" y="176" width="46" height="34" rx="3" fill="#d6bf98"/>
+<path d="M458 176h10v-14h-10ZM474 176h10v-16h-10ZM488 176h8v-12h-8Z" fill="#c8714f"/>
+<rect x="536" y="214" width="22" height="22" rx="3" fill="#d6bf98"/><path d="M540 214h6v-10h-6ZM550 214h6v-8h-6Z" fill="#c8714f"/>
+<path d="M480 66V320" stroke="#f6efe2" stroke-width="5"/>
+<rect x="366" y="326" width="228" height="14" rx="4" fill="#d6bf98"/>
+<path d="M528 326h26l-3 -18h-20Z" fill="#c8714f"/><path d="M525 300a9 9 0 1 0 18 0a9 9 0 1 0 -18 0ZM539 296a9 9 0 1 0 18 0a9 9 0 1 0 -18 0Z" fill="#86a175"/>
+<rect y="470" width="960" height="70" fill="#c9b28f"/>
+<path d="M0 498H960M0 522H960M200 470V498M520 470V498M800 470V498M90 498V522M420 498V522M700 498V522" stroke="#b49c7a" stroke-width="3"/>
+<path d="M280 500a190 20 0 1 0 380 0a190 20 0 1 0 -380 0Z" fill="#e3a6a0"/>
+<rect x="110" y="378" width="200" height="16" rx="5" fill="#d6bf98"/>
+<rect x="124" y="394" width="12" height="76" rx="4" fill="#8a6a4f"/><rect x="284" y="394" width="12" height="76" rx="4" fill="#8a6a4f"/>
+<rect x="150" y="372" width="12" height="8" rx="2" fill="#5d6672"/><path d="M156 372V344" stroke="#5d6672" stroke-width="3"/>
+<path d="M134 348Q134 322 156 322Q178 322 178 348Z" fill="#d9a441"/><path d="M150 350a6 6 0 1 0 12 0a6 6 0 1 0 -12 0Z" fill="#f3d08a"/>
+<rect x="220" y="366" width="46" height="12" rx="3" fill="#f1e4c8"/><rect x="226" y="358" width="40" height="8" rx="3" fill="#e3a6a0"/>
+<rect x="318" y="384" width="62" height="86" rx="10" fill="#8fa3b5"/><rect x="318" y="430" width="62" height="6" fill="#7a8c9c"/>
+<path d="M336 384V372Q336 366 342 366H356Q362 366 362 372V384" fill="none" stroke="#7a8c9c" stroke-width="5"/>
+<rect x="620" y="392" width="300" height="70" rx="10" fill="#8a6a4f"/>
+<rect x="628" y="380" width="284" height="40" rx="12" fill="#f1e4c8"/>
+<path d="M700 382H912V444Q806 452 700 444Z" fill="#8fae8b"/>
+<rect x="636" y="364" width="62" height="28" rx="12" fill="#fffaf0"/>
+<rect x="896" y="330" width="22" height="132" rx="8" fill="#8a6a4f"/>
+</svg>

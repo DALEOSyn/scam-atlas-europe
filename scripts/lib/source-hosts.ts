@@ -7,6 +7,8 @@
 export const SOURCE_HOST_ALLOWLIST: readonly string[] = [
   // EU institutions and agencies (europol.europa.eu, enisa.europa.eu, ec.europa.eu, ...)
   'europa.eu',
+  // EU payment-industry bodies
+  'europeanpaymentscouncil.eu',
   // United Kingdom
   'gov.uk',
   'police.uk',
@@ -30,6 +32,7 @@ export const SOURCE_HOST_ALLOWLIST: readonly string[] = [
   'nvb.nl',
   'betaalvereniging.nl',
   'safeonweb.be',
+  'febelfin.be',
   // Ireland
   'garda.ie',
   'ncsc.gov.ie',

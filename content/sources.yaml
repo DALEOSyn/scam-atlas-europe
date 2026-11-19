@@ -29,6 +29,7 @@
 #                campaign-catalogue   (docs/patterns/THREAT_CATALOGUE.md, backlog research T-R.1, 2026-11-18)
 #                berlin-arc-alex-01 | arc   (Alex friendship-manipulation arc beats, GDD §10; added T-2.4b, 2026-11-18)
 #                messenger-family-impersonation | task-job-scam   (chapter 2 Amsterdam briefs; added phase 3, 2026-11-19)
+#                payment-detail-change   (Paris brief, on the Paris branch; kept on ported entries so the branches merge cleanly)
 #              An empty list means provenance only: not cited directly, kept because another entry's
 #              date or content relies on it.
 #   notes      what the source actually supports; caveats
@@ -1571,6 +1572,74 @@ sources:
     tier: 3
     used_for: [messenger-family-impersonation]
     notes: "English page. Contact your own bank as soon as possible with the fraudster's IBAN, phone number and name used; file a police report (online with DigiD); more in Dutch on Veilig Bankieren. No refund information."
+
+  # ---------------------------------------------------------------- Payee-name check (VoP) and ID-copy rules (phase 3 ch2 follow-up, 2026-11-19)
+  # eu-eurlex-ipr-2024-886 and eu-epc-vop-scheme are ported from the Paris branch (same ids and fields; used_for extended).
+  - id: eu-eurlex-ipr-2024-886
+    publisher: European Union (EUR-Lex, Official Journal)
+    title: "Regulation (EU) 2024/886 of the European Parliament and of the Council of 13 March 2024 amending Regulations (EU) No 260/2012 and (EU) 2021/1230 and Directives 98/26/EC and (EU) 2015/2366 as regards instant credit transfers in euro"
+    url: https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32024R0886
+    published: "adopted 2024-03-13; in force 2024-04-08 (EUR-Lex metadata)"
+    accessed: "2026-11-19"
+    region: EU
+    tier: 1
+    used_for: [payment-detail-change, messenger-family-impersonation]
+    notes: "Read to char 100000 of ~133000 (Art. 5c fully covered). Art. 5c (inserted into Reg. 260/2012): payer's PSP must offer payee verification 'regardless of the payment initiation channel', 'immediately after the payer provides relevant information about the payee' and before authorisation. Outcomes: match; 'almost' match (PSP shows the payee name linked to the IBAN); no match (payer told authorising 'might lead to transferring the funds to a payment account not held by the payee indicated by the payer'); check not possible. Service must not prevent the payer from authorising (5c(5)). PSPs must tell users the liability/refund consequences of ignoring a notification (5c(7)). PSP not liable for execution to an unintended payee if it complied (5c(8)); payer's PSP refunds if it failed to offer the check. 'free of charge' wording located in Art. 5b(2) in this reading (the ECB page states the VoP service is free; rely on eu-ecb-ipr for that). Application (5c(9)): euro-area PSPs by 2025-10-09; non-euro Member States by 2027-07-09. Adoption and entry-into-force dates are from EUR-Lex metadata; the OJ publication date was not checked. Amsterdam re-check 2026-11-19: Art. 5c does not say the payee name is shown on a no match (only on a close match)."
+
+  - id: eu-epc-vop-scheme
+    publisher: European Payments Council
+    title: "Verification Of Payee"
+    url: https://www.europeanpaymentscouncil.eu/what-we-do/other-schemes/verification-payee
+    published: n/d (latest dated event 2024-10-10)
+    accessed: "2026-11-19"
+    region: EU
+    tier: 3
+    used_for: [payment-detail-change, messenger-family-impersonation]
+    notes: "Scheme answers 'match', 'no match', 'close match' (with the payee's name) or 'check not possible'; the requesting PSP 'immediately passes on the response to the payer'. Rulebook published 2024-10-10, in force 2025-10-05. Limitation stated: the scheme is a messaging function, not a payment instrument, and 'cannot be relied upon to identify a private or a legal person'. Does not cite the regulation number or the 2025-10-09 date (use eu-eurlex-ipr-2024-886)."
+
+  - id: nl-betaalvereniging-iban-name-check
+    publisher: Betaalvereniging Nederland (Dutch Payments Association)
+    title: "IBAN-Name Check"
+    url: https://www.betaalvereniging.nl/en/?p=3093
+    published: n/d (last modified 2026-10-08; check mandatory since October 2025)
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [messenger-family-impersonation]
+    notes: "Dutch name for Verification of Payee, required for digital SEPA transfers in 41 SEPA countries incl. cross-border. Match: no warning, green check mark. Close match: warning SHOWING the name linked to the IBAN. No match: warning WITHOUT the correct name, withheld to protect account holders' privacy (so people can't use fake names to look up the real one). Cannot be verified (e.g. a very new account): verify name and IBAN another way. The payer can cancel, correct or confirm unchanged; after a warning the bank may not block it. Says the check reduces entry errors and gives some protection against invoice fraud; does NOT say a match makes a request legitimate; does not mention business accounts."
+
+  - id: be-febelfin-vop-faq
+    publisher: Febelfin (Belgian financial sector federation)
+    title: "FAQ: Verification of the beneficiary's name"
+    url: https://febelfin.be/en/themes/fraud-security/faq-verification-of-the-beneficiary-s-name
+    published: n/d (meta date malformed; footer (c) 2026)
+    accessed: 2026-11-19
+    region: BE
+    tier: 3
+    used_for: [messenger-family-impersonation]
+    notes: "BUSINESS-ACCOUNT CAVEAT: the check compares against the legal name registered with the beneficiary's bank (trade names considered where possible); for a legal entity with a Belgian or Dutch account, the registered name is shown to the payer on a no match as well as a close match. So 'no name on a no match' holds for private persons (nl-betaalvereniging-iban-name-check), not always for companies. Close match: 'Did you mean <registered name>?'. Also: the check confirms only that name and account number correspond; contact details on a fraudulent invoice may also be fraudulent; 'you are responsible for the transfers you make'."
+
+  - id: nl-rijksoverheid-identificatieplicht-werkgever
+    publisher: Rijksoverheid (Government of the Netherlands)
+    title: "Wat moet ik als werkgever doen om te voldoen aan de identificatieplicht?"
+    url: https://www.rijksoverheid.nl/onderwerpen/identificatieplicht/vraag-en-antwoord/wat-moet-ik-als-werkgever-doen-om-te-voldoen-aan-de-identificatieplicht
+    published: 2011-06-24 (last modified 2023-05-02)
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [task-job-scam]
+    notes: "English gloss: 'What must I do as an employer to meet the identification duty?'. Before the employee starts ('Voordat de werknemer in dienst komt'), the employer checks the ORIGINAL ID for authenticity and validity and keeps a legible copy in the payroll records (document number, photo, BSN) for 5 years after the year the employee leaves. Agency workers: the hirer checks the original but keeps a copy only for non-EEA nationals. So a genuine employer does ask for ID, at the hiring stage, as part of employment."
+
+  - id: nl-rijksoverheid-kopie-id
+    publisher: Rijksoverheid (Government of the Netherlands)
+    title: "Welke organisaties mogen een kopie van mijn identiteitsbewijs maken?"
+    url: https://www.rijksoverheid.nl/documenten/vraag-en-antwoord/identiteitsfraude/ben-ik-verplicht-om-een-kopie-van-mijn-identiteitsbewijs-te-geven-aan-een-bedrijf
+    published: 2011-04-12 (last modified 2026-09-04)
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [task-job-scam]
+    notes: "English gloss: 'Which organisations may copy my ID?'. 'Slechts enkele organisaties' may ask for a copy: government bodies, banks, notaries, casinos, life insurers and your EMPLOYER; they must tell you the legal obligation. Others may copy only with photo and BSN shielded, or must only note the ID type/number; where there is no legal obligation 'U bent niet verplicht om die aan hen te geven'. Links to the government's safe-copy app Q&A (not opened)."
 
   # ------------------------------------------------ placeholders (example scenario only)
   - id: europol-scam-smishing

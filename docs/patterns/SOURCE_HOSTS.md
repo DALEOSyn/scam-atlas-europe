@@ -124,16 +124,24 @@ www.polizei-beratung.de | Police crime prevention (ProPK), www host (the host wi
 
 T-2.4b also cites a new page on www.europol.europa.eu (already listed).
 
-## New hosts from phase 3, chapter 2 (Amsterdam briefs, 2026-11-19): all marked **new**, not yet in `scripts/lib/source-hosts.ts`
+## Hosts from phase 3, chapter 2 (Amsterdam briefs, 2026-11-19)
 
-veiligbankieren.nl | Veilig Bankieren (Dutch Banking Association, NVB), host without www as opened | 3 | **new**
-www.veiligbankieren.nl | Veilig Bankieren (Dutch Banking Association, NVB) | 3 | **new**
-www.nvb.nl | Nederlandse Vereniging van Banken (Dutch Banking Association) | 3 | **new**
-veiliginternetten.nl | Veiliginternetten.nl (Ministry of Economic Affairs, NCSC-NL and ECP) | 3 | **new**
-www.rijksoverheid.nl | Rijksoverheid (Government of the Netherlands) | 3 | **new**
-www.rvig.nl | Rijksdienst voor Identiteitsgegevens (RvIG), incl. Centraal Meldpunt Identiteitsfraude | 3 | **new**
+The six hosts below are now in `scripts/lib/source-hosts.ts`. That allow-list matches suffixes, so its entries `veiligbankieren.nl`, `nvb.nl`, `veiliginternetten.nl`, `rijksoverheid.nl` and `rvig.nl` cover the www hosts too. `betaalvereniging.nl` was also added on this branch.
+
+veiligbankieren.nl | Veilig Bankieren (Dutch Banking Association, NVB), host without www as opened | 3
+www.veiligbankieren.nl | Veilig Bankieren (Dutch Banking Association, NVB) | 3
+www.nvb.nl | Nederlandse Vereniging van Banken (Dutch Banking Association) | 3
+veiliginternetten.nl | Veiliginternetten.nl (Ministry of Economic Affairs, NCSC-NL and ECP) | 3
+www.rijksoverheid.nl | Rijksoverheid (Government of the Netherlands) | 3
+www.rvig.nl | Rijksdienst voor Identiteitsgegevens (RvIG), incl. Centraal Meldpunt Identiteitsfraude | 3
 
 The chapter-2 briefs also cite new pages on hosts already listed: www.politie.nl, www.fraudehelpdesk.nl, www.betaalvereniging.nl.
+
+**Follow-up (payee-name check sources, 2026-11-19):**
+- eur-lex.europa.eu | EUR-Lex (Official Journal of the EU) | 1 | covered by the `europa.eu` suffix entry.
+- www.europeanpaymentscouncil.eu | European Payments Council | 3 | listed above under EU level, but **not in `scripts/lib/source-hosts.ts`**, so it gives a warning.
+- febelfin.be | Febelfin (Belgian banking federation) | 3 | listed above under Belgium, but **not in `scripts/lib/source-hosts.ts`**, so it gives a warning.
+- business.gov.nl is not used (`nl-business-gov-minimum-wage-2026` was not added).
 
 ## Notes for the engineer
 - **New to `scripts/lib/source-hosts.ts`** (not in the allow-list yet, per sceptic review 2026-11-18): `politie.nl` (no www), `moje.cert.pl`, `wiedza.cert.pl`, `www.nummergegenkummer.de`, `www.bmbfsfj.bund.de`, `www.bacs.admin.ch`, `www.verbraucherzentrale-niedersachsen.de`, and `incydent.cert.pl` (help file only). The last two were already used in `content/sources.yaml` before T-2.5 but never added to the allow-list.

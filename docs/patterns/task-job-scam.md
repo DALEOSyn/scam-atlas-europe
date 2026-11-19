@@ -30,7 +30,7 @@
 5. **A balance you can see but can't withdraw** without paying more first [nl-fraudehelpdesk-vacature-alert-2025], [nl-fraudehelpdesk-baan-aangeboden].
 6. **Reasons why you get less, or nothing** ("not enough tasks done", "pay a fine first") [nl-veiliginternetten-thuiswerk-2025], [nl-fraudehelpdesk-vacature-alert-2025].
 7. **"Tasks" that involve crypto trading**, or paying in crypto [nl-fraudehelpdesk-vacature-alert-2025], [nl-politie-crypto-job-fraud-2025].
-8. **A request for an ID copy** before any real contract or interview [nl-fraudehelpdesk-baan-aangeboden].
+8. **An ID photo requested by chat or SMS by a "recruiter" for a job you never applied to**, to "register" before any interview, contract or meeting [nl-fraudehelpdesk-baan-aangeboden]. A genuine employer *is* allowed, and in NL obliged, to see your ID. It checks the **original** document when you are actually hired, before your first working day, and keeps a copy for payroll [nl-rijksoverheid-identificatieplicht-werkgever], [nl-rijksoverheid-kopie-id]. The tell is therefore the context (unsolicited offer, chat photo, no hiring step), not the ID request itself.
 
 *Note for writers:* a small early payout is **not** a sign the job is real. It is part of the trick [nl-fraudehelpdesk-vacature-alert-2025], [eu-epc-threats-2025].
 
@@ -40,7 +40,7 @@
 Supporting habits:
 - **Don't answer unsolicited job offers** and don't save unknown numbers or move to a chat app because a stranger asks [nl-fraudehelpdesk-vacature-alert-2025].
 - **Look the company up yourself** (its own site and contact details, not the links in the chat) and **talk it through with someone you trust** before paying anything [nl-politie-crypto-job-fraud-2025]. For teens: a parent, teacher or other trusted adult.
-- Never send an ID copy or your bank login to a "recruiter" [nl-fraudehelpdesk-baan-aangeboden].
+- Don't send an ID photo to a "recruiter" you can't verify, and never share your bank login. Your ID is shown to an employer you have checked, as part of being hired [nl-fraudehelpdesk-baan-aangeboden], [nl-rijksoverheid-identificatieplicht-werkgever].
 
 ## 5. Already caught? (generic + NL specifics verified 2026-11-19)
 1. **Stop paying.** No "last fee" will release the money; the amounts keep growing [nl-fraudehelpdesk-vacature-alert-2025].
@@ -65,7 +65,7 @@ Supporting habits:
 
 ## 7. Genuine-twin notes
 - Real jobs and side gigs do exist and some recruit through messages. A genuine twin: an offer that asks for an interview or a contract and **never asks you to pay**; pay goes *to* you, from the employer.
-- A real employer may ask for ID at the contract stage for payroll; the scam tell is a **payment request** (or ID copy demanded by an unverified chat "recruiter" before any contract). Don't make "they asked for ID" the sole tell.
+- A real employer in NL must check your original ID before you start and keep a copy for payroll; the employer is one of the few organisations allowed to copy it [nl-rijksoverheid-identificatieplicht-werkgever], [nl-rijksoverheid-kopie-id]. So the scam tell is a **payment request**, or an ID photo demanded by an unverified chat "recruiter" with no hiring step. Don't make "they asked for ID" the sole tell. For 2-2, the genuine agency's site should say it checks ID when you are hired (not "only after a contract is signed", which is stricter than the NL rule).
 - Per CONTENT_GUIDE: the recruiter's display name, logo and "company" page are decoys (neutral wording). The deciding detail is the pay-in request.
 
 ## 8. Game-design notes (non-binding)
@@ -75,7 +75,7 @@ Supporting habits:
 - No figures on screen.
 
 ## 9. Sources (accessed 2026-11-19 unless marked)
-nl-fraudehelpdesk-vacature-alert-2025 · nl-fraudehelpdesk-baan-aangeboden · nl-fraudehelpdesk-fraudevormen · nl-fraudehelpdesk-contact-en · nl-rijksoverheid-fraudehelpdesk-contact · nl-veiliginternetten-thuiswerk-2025 · nl-politie-crypto-job-fraud-2025 · nl-politie-ik-ben-opgelicht · nl-politie-money-mules · nl-veiligbankieren-meld-fraude · nl-veiligbankieren-geldezels · nl-nvb-geldezels-jongeren-2024 · nl-rvig-cmi-id-copy · nl-nos-easy-work-2025 (news, 2026-11-18) · nl-fraudehelpdesk-2025 (2026-11-18) · eu-epc-threats-2025 (2026-11-18) · eu-europol-mule-jobs (2026-11-18) · eu-europol-iocta-2026 (2026-11-18)
+nl-fraudehelpdesk-vacature-alert-2025 · nl-fraudehelpdesk-baan-aangeboden · nl-fraudehelpdesk-fraudevormen · nl-fraudehelpdesk-contact-en · nl-rijksoverheid-fraudehelpdesk-contact · nl-veiliginternetten-thuiswerk-2025 · nl-politie-crypto-job-fraud-2025 · nl-politie-ik-ben-opgelicht · nl-politie-money-mules · nl-veiligbankieren-meld-fraude · nl-veiligbankieren-geldezels · nl-nvb-geldezels-jongeren-2024 · nl-rvig-cmi-id-copy · nl-rijksoverheid-identificatieplicht-werkgever · nl-rijksoverheid-kopie-id · nl-nos-easy-work-2025 (news, 2026-11-18) · nl-fraudehelpdesk-2025 (2026-11-18) · eu-epc-threats-2025 (2026-11-18) · eu-europol-mule-jobs (2026-11-18) · eu-europol-iocta-2026 (2026-11-18)
 
 ## 10. Confidence
 - **Medium-High** (raised from MAP's Medium): the mechanism, red flags, habit and reporting steps are now backed by three official Dutch sources (Fraudehelpdesk alert and advice page, the government awareness platform, a 2025 police release) plus the EPC.

@@ -8,6 +8,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { parse } from 'yaml';
 import { listFiles } from '../../scripts/lib/content.ts';
+import { visiblePanels } from '../../src/engine/story.ts';
 import { castMemberSchema, chapterSchema, sceneSchema, type Chapter, type Scene, type ScenePanel } from '../../src/content/schema.ts';
 import { CONTENT } from './fixtures.ts';
 
@@ -133,5 +134,120 @@ describe('scene rules the generic validator does not see', () => {
     // Noor after 2-3 (turn) and Mateus after the boss (resolution) appear on video, fine (STORY §5.7).
     expect(scene('amsterdam-turn').panels.some((p) => p.speaker === 'noor' && p.video)).toBe(true);
     expect(scene('amsterdam-resolution').panels.some((p) => p.speaker === 'mateus' && p.video && p.expression === 'relieved')).toBe(true);
+  });
+});
+
+describe('Madrid and Warsaw scenes (T-S4e; STORY §3.4, §3.5; GDD §24.2, §25.2)', () => {
+  const shown = (id: string, flags: string[] = []) => visiblePanels(scene(id), new Set(flags));
+  const words = (id: string, flags: string[] = []) => shown(id, flags).map(text).join(' ');
+  const refund = /refund|money back|get it back|you'll get|we'll get/i;
+
+  it('both chapters name an arrival, a turn and a resolution; Warsaw places Kasia\'s beat after drill 5-7', () => {
+    for (const city of ['madrid', 'warsaw']) {
+      const c = chapter(city);
+      for (const slot of ['arrival', 'turn', 'resolution'] as const) {
+        expect(c.scenes?.[slot], city).toBe(`${city}-${slot}`);
+        expect(scene(`${city}-${slot}`).slot).toBe(slot);
+      }
+    }
+    expect(chapter('madrid').scenes?.placed).toEqual([]);
+    expect(chapter('warsaw').scenes?.placed).toEqual([{ scene: 'warsaw-kasia-back', after: 'warsaw-07-mateus-asks' }]);
+    expect(scene('warsaw-kasia-back').slot).toBe('beat');
+    // No content note (Madrid ruling R11; Warsaw has none in STORY §5.6): nothing is marked sensitive.
+    for (const id of [...scenes.keys()].filter((k) => /^(madrid|warsaw)-/.test(k))) expect(scene(id).sensitive, id).toBe(false);
+    expect(chapter('madrid').content_note).toBeUndefined();
+    expect(chapter('warsaw').content_note).toBeUndefined();
+  });
+  it('If-then lines are word for word, with their extra lines; the speakers are Lucía and Mateus (Warsaw exception)', () => {
+    expect(scene('madrid-resolution').panels.at(-1)).toMatchObject({
+      speaker: 'lucia',
+      expression: 'calm-phone-ear',
+      if_then: { cue: 'If someone says my money isn\'t safe,', action: 'then I hang up and call the number on my card.', extra: 'No real bank asks you to move your money to keep it safe.' },
+    });
+    expect(scene('warsaw-resolution').panels.at(-1)).toMatchObject({
+      speaker: 'mateus',
+      expression: 'calm-phone-ear',
+      if_then: { cue: 'If anyone asks for a code, even a friend,', action: "then I don't send it, and I call them on the number I know.", extra: 'Money comes to you inside the app.' },
+    });
+  });
+  it('fixed lines from the spec', () => {
+    expect(words('madrid-arrival')).toContain("Coffee's there. I'm going to sleep for a year.");
+    expect(words('madrid-arrival')).toContain('Every euro is saved for the flat. Even this coffee is in a spreadsheet.');
+    expect(words('madrid-turn')).toContain('After nights, my rule: no big decisions until I\'ve slept. Not one.');
+    expect(words('madrid-resolution')).toContain('Signed. And I checked every step in the app myself.');
+    expect(words('madrid-resolution')).toContain('Sleepy or not, same rule.');
+    expect(words('warsaw-arrival')).toContain('Everything must go, except the cello.');
+    expect(words('warsaw-turn')).toContain('the deal and the money stay inside Swaploft.');
+    expect(words('warsaw-resolution')).toContain("Kasia's account asked for my code and I sent it. Me. The gadget guy.");
+    expect(words('warsaw-resolution')).toContain('It wasn\'t really me. And you fixed it fast.');
+    expect(words('warsaw-kasia-back')).toContain("Someone got into my Kettle while I was playing. I've got it back in the app and turned on two-step.");
+    expect(words('madrid-turn')).toContain('So I\'ll make the decisions. Kidding.');
+    expect(words('warsaw-kasia-back')).toContain('Not your fault, Kasia. And the bank\'s on it: I called them first.');
+  });
+  it('Madrid boss-fall variant: the bank-step line plays first, then the keys; no refund promise', () => {
+    const line = "The bank was called straight away, the right first step. We'll see what it can recall.";
+    const fell = shown('madrid-resolution', ['madrid_money_moved']);
+    expect(fell[0]).toMatchObject({ speaker: 'lucia', expression: 'calm', line });
+    expect(fell[1]?.line).toBe('Signed. And I checked every step in the app myself.');
+    expect(words('madrid-resolution')).not.toContain(line);
+    expect(words('madrid-resolution', ['madrid_money_moved'])).not.toMatch(refund);
+  });
+  it('every boss-fall variant opens its resolution (STORY §4.2 rule 5)', () => {
+    for (const [id, flag] of [['madrid-resolution', 'madrid_money_moved'], ['warsaw-resolution', 'warsaw_bank_called']] as const) {
+      const panels = scene(id).panels;
+      expect(panels[0]?.if_flag, id).toBe(flag);
+      expect(panels.slice(1).some((p) => p.if_flag === flag), id).toBe(false);
+    }
+  });
+  it('Madrid keys panel uses crop right with Andrés flipped (in the left crop the keys sit under his shoulder)', () => {
+    const keys = scene('madrid-resolution').panels.find((p) => /keys/i.test(p.caption ?? ''));
+    expect(keys).toBeDefined();
+    expect(keys?.crop).toBe('right');
+    expect(keys?.flip).toBe(true);
+  });
+  it('Warsaw boss-fall variant (R17): the merged line opens the resolution (STORY §4.2 rule 5); no refund promise', () => {
+    const line = "The bank was called straight away, the right first step. We'll see what it can do.";
+    const fell = shown('warsaw-resolution', ['warsaw_bank_called']);
+    expect(fell[0]).toMatchObject({ speaker: 'kasia', expression: 'calm', line });
+    expect(fell[1]?.line).toBe("Kasia's account asked for my code and I sent it. Me. The gadget guy.");
+    expect(words('warsaw-resolution')).not.toContain(line);
+    expect(words('warsaw-resolution', ['warsaw_bank_called'])).not.toMatch(refund);
+  });
+  it('Kasia is never at fault (R13) and never falls; Ola is a contact only, never drawn or named', () => {
+    for (const id of [...scenes.keys()].filter((k) => k.startsWith('warsaw-'))) {
+      for (const p of scene(id).panels) {
+        if (p.speaker === 'kasia') expect(p.expression, id).not.toMatch(/^sheepish/);
+        expect(p.speaker, id).not.toBe('ola');
+        expect(p.with?.id, id).not.toBe('ola');
+        expect(text(p), id).not.toMatch(/\bOla\b/);
+      }
+    }
+    // The only sheepish panel is Mateus's own fall.
+    expect(scene('warsaw-resolution').panels.filter((p) => p.expression?.startsWith('sheepish')).map((p) => p.speaker)).toEqual(['mateus']);
+  });
+  it('no scene before a scenario names its props: no safe account, security department or code (Madrid), no code, link or buyer (Warsaw)', () => {
+    for (const id of ['madrid-arrival', 'madrid-turn']) expect(words(id), id).not.toMatch(/safe account|security|\bcode\b|text(ed|ing)? about/i);
+    for (const id of ['warsaw-arrival', 'warsaw-turn']) expect(words(id), id).not.toMatch(/\bcode\b|\blink\b|buyer|collect/i);
+    // Andrés's worry is the deposit itself, never a bank message (STORY §3.4, §4.2 rule 2).
+    expect(words('madrid-turn')).not.toMatch(/bank/i);
+  });
+  it('alt texts describe only what is drawn: no time of day, light or "behind"', () => {
+    for (const id of [...scenes.keys()].filter((k) => /^(madrid|warsaw)-/.test(k))) {
+      for (const p of scene(id).panels) expect(p.alt, id).not.toMatch(/\b(behind|morning|evening|afternoon|night|light|sunny|sunset|dusk)\b/i);
+    }
+  });
+  it('about 12 panels per chapter, 1–3 visible per non-resolution scene in every variant', () => {
+    const total = (city: string, flags: string[]) => [...scenes.keys()].filter((k) => k.startsWith(`${city}-`)).reduce((n, id) => n + shown(id, flags).length, 0);
+    expect(total('madrid', [])).toBeLessThanOrEqual(12);
+    expect(total('madrid', ['madrid_money_moved'])).toBeLessThanOrEqual(12);
+    expect(total('warsaw', [])).toBeLessThanOrEqual(12);
+    expect(total('warsaw', ['warsaw_bank_called'])).toBeLessThanOrEqual(12);
+    for (const id of ['madrid-arrival', 'madrid-turn', 'warsaw-arrival', 'warsaw-turn', 'warsaw-kasia-back']) expect(shown(id).length, id).toBeLessThanOrEqual(3);
+  });
+  it('every crop: right panel in Madrid and Warsaw is flipped (sceptic re-review)', () => {
+    for (const s of scenes.values()) {
+      if (!/^(madrid|warsaw)-/.test(s.id)) continue;
+      for (const p of s.panels) if (p.crop === 'right') expect(p.flip, `${s.id}: ${p.alt}`).toBe(true);
+    }
   });
 });

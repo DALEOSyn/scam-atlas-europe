@@ -1,0 +1,45 @@
+# Warsaw resolution (GDD §25.2 beat 4, STORY §3.5; Mateus's fallible moment): after the boss debrief.
+# Right crop (emptied shelves; ART_DIRECTION warsaw-flat). Recovery in the same breath (STORY §5.4):
+# Kasia's "you fixed it fast" is true in every branch (drill 5-7 always ends with Mateus's bank called).
+# Variant warsaw_bank_called (story-only, set by every boss fall outcome; ruling R17): the first panel of
+# the resolution (a boss-fall variant always opens the resolution, STORY §4.2 rule 5), merged line, no
+# refund promise. The "Late evening" caption stays on Mateus's panel. If-then: Mateus (Warsaw exception,
+# STORY §4.4), phone at the ear (the number he knows).
+id: warsaw-resolution
+chapter: warsaw
+slot: resolution
+panels:
+  - backdrop: warsaw-flat
+    crop: right
+    speaker: kasia
+    expression: calm
+    flip: true
+    if_flag: warsaw_bank_called
+    line: "The bank was called straight away, the right first step. We'll see what it can do."
+    alt: "Kasia, calm, by the emptied shelves."
+  - backdrop: warsaw-flat
+    crop: right
+    flip: true
+    speaker: mateus
+    expression: sheepish
+    caption: "Late evening. The shelves are empty."
+    line: "Kasia's account asked for my code and I sent it. Me. The gadget guy."
+    alt: "Mateus with a sheepish smile by the emptied shelves."
+  - backdrop: warsaw-flat
+    crop: right
+    speaker: kasia
+    expression: warm
+    flip: true
+    with: { id: mateus, expression: calm }
+    line: "It wasn't really me. And you fixed it fast."
+    alt: "Kasia smiling, her cello case on her shoulder; Mateus listens, calm."
+  - backdrop: warsaw-flat
+    crop: right
+    flip: true
+    speaker: mateus
+    expression: calm-phone-ear
+    if_then:
+      cue: "If anyone asks for a code, even a friend,"
+      action: "then I don't send it, and I call them on the number I know."
+      extra: "Money comes to you inside the app."
+    alt: "Mateus, calm, phone to his ear, by the emptied shelves."

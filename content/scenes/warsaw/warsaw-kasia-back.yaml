@@ -1,0 +1,23 @@
+# Warsaw placed beat (GDD §25.2 beat 3, STORY §3.5; worried → relieved): after drill 5-7. Kasia's real
+# Kettle was taken over while she played (ruling R13: never her fault, never shown how). Phone in hand
+# (the shared phone-look pose: she got her account back in the app herself). Mateus's line is true in
+# every branch: the drill always ends with him having called his bank. Ends relieved.
+id: warsaw-kasia-back
+chapter: warsaw
+slot: beat
+title: "Kasia's back"
+panels:
+  - backdrop: warsaw-flat
+    crop: centre
+    speaker: kasia
+    expression: worried-phone-look
+    line: "Someone got into my Kettle while I was playing. I've got it back in the app and turned on two-step."
+    alt: "Kasia, looking worried, her cello case on her shoulder, eyes on her phone; the screen is turned away."
+  - backdrop: warsaw-flat
+    crop: left
+    speaker: mateus
+    expression: relieved
+    flip: true
+    with: { id: kasia, expression: calm }
+    line: "Not your fault, Kasia. And the bank's on it: I called them first."
+    alt: "Mateus, relieved; Kasia listens, calm."

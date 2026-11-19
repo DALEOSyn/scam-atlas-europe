@@ -21,7 +21,7 @@ message:
   sender: { display: "Lucía (Madrid)", detail: "Saved contact: Lucía (Madrid)" }
   from_cast: lucia
   body: |
-    Just woke up. This came in overnight, in my real Larchwick chat. My rule: nothing big till I've slept. Slept now 😄 What would you check?
+    This came in during my shift, in my real Larchwick chat. My rule: nothing big till I've slept. Slept now 😄 What would you check?
 
     LARCHWICK: New sign-in to your account from a new device. Not you? Call us immediately on 9•• ••• •52.
   request: reply

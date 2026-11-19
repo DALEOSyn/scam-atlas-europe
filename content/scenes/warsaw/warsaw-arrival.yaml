@@ -13,7 +13,7 @@ panels:
     speaker: kasia
     expression: warm
     line: "Everything must go, except the cello."
-    alt: "Kasia smiling with her cello case among taped moving boxes."
+    alt: "Kasia smiling with her cello case in the half-packed flat."
   - backdrop: warsaw-flat
     crop: left
     speaker: mateus
@@ -21,7 +21,7 @@ panels:
     flip: true
     with: { id: kasia, expression: warm }
     line: "Good photos sell. Trust me, I'm a professional."
-    alt: "Mateus laughing by the boxes and the lamp; Kasia listens, smiling."
+    alt: "Mateus laughing in the half-packed flat; Kasia listens, smiling."
   - backdrop: warsaw-flat
     crop: left
     speaker: kasia

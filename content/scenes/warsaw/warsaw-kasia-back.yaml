@@ -20,4 +20,4 @@ panels:
     flip: true
     with: { id: kasia, expression: calm }
     line: "Not your fault, Kasia. And the bank's on it: I called them first."
-    alt: "Mateus, relieved, by the boxes; Kasia listens, calm."
+    alt: "Mateus, relieved; Kasia listens, calm."

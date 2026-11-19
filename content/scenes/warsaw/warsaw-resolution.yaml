@@ -19,6 +19,7 @@ panels:
     alt: "Kasia, calm, by the emptied shelves."
   - backdrop: warsaw-flat
     crop: right
+    flip: true
     speaker: mateus
     expression: sheepish
     caption: "Late evening. The shelves are empty."
@@ -34,6 +35,7 @@ panels:
     alt: "Kasia smiling, her cello case on her shoulder; Mateus listens, calm."
   - backdrop: warsaw-flat
     crop: right
+    flip: true
     speaker: mateus
     expression: calm-phone-ear
     if_then:

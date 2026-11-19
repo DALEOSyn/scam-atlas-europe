@@ -1334,7 +1334,7 @@ Scenes follow STORY §3.4 (updated with this spec) and §4. No panel shows a mes
    - **Variant `madrid_money_moved`** (story-only flag, set by the boss's fall outcomes; STORY §4.2 rule 5). One extra panel, Lucía (calm): "The bank was called straight away, the right first step. We'll see what it can recall." Same merged wording as Paris R6 (true for every first pick, no refund promise). **Order with the variant (psych S1):** Lucía's bank-step panel first → the keys and Andrés's "Signed" → Lucía's "Sleepy or not" → If-then, so the player's loss is acknowledged before the hosts' good news. Andrés's "Signed" panel still plays: their flat is never at stake in any branch.
 - **Truth in every branch:** the locals' money is never in a scored scenario, so "they got the flat" is true whatever the player did. Lucía's rule is shown working in drill 4-4 (her own phone), which is unscored and ends the same way for every pick.
 - **Map invitation (Lucía):** "Our spare room is yours whenever you come. Bring an appetite." (STORY §3.4.)
-- **Panels:** 3 + 3 + 4 = 10 (+1 with the variant), inside the budget of about 12.
+- **Panels:** As written: 9 (+1 with the variant), because the keys caption shares Andrés's panel; inside the budget of about 12.
 - **Safety:** money-fear theme, calm pacing (STORY §5.3). `worried` never escalates; the turn resolves its own worry. No content note (ruling R11).
 - **Art (psych S4):** Lucía's If-then panel uses a phone-at-the-ear pose (she is calling the number on her card), flat on the ear as in ART_DIRECTION's phone-ear rule.
 
@@ -1610,7 +1610,7 @@ STORY §3.5, updated with this spec. The hijacked account is **Kasia's** (her re
 4. **Resolution** (after the boss debrief; 3 panels + If-then). Late evening, empty shelves. Mateus (sheepish): "Kasia's account asked for my code and I sent it. Me. The gadget guy." Kasia (warm): "It wasn't really me. And you fixed it fast." *(Was "It wasn't really your friend" in STORY v1.3; the friend is now Kasia herself.)* Then the **If-then panel (Mateus; Warsaw exception), word for word from STORY §3.5:** "If anyone asks for a code, even a friend, then I don't send it, and I call them on the number I know." Extra line under it: "Money comes to you inside the app."
    - **Variant `warsaw_bank_called`** (story-only, set by every boss fall outcome, beat 2 or beat 3; ruling R17): the first panel of the resolution (STORY §4.2 rule 5), Kasia (calm): "The bank was called straight away, the right first step. We'll see what it can do." True for a card typed on the collect page and for a bank login typed on the "release" step. Same merged-line approach as Paris R6; no refund promise.
 - **Map invitation (Kasia):** "I'm selling half my flat before I move. Want to see how to do it safely?" (STORY §3.5.)
-- **Panels:** 3 + 3 + 2 + 4 = 12 (+1 with the variant).
+- **Panels:** As written: 11 (+1 with the variant).
 - **Safety:** a confident expert falls and recovers; nobody teases him; Kasia's account takeover is not her fault (STORY §5; ruling R13).
 - **Art (psych S4):** Mateus's If-then panel uses a phone-at-the-ear pose (he is calling the number he knows); Kasia needs `worried` for the placed beat.
 

@@ -11,6 +11,7 @@ slot: resolution
 panels:
   - backdrop: madrid-kitchen
     crop: right
+    flip: true
     speaker: lucia
     expression: calm
     if_flag: madrid_money_moved

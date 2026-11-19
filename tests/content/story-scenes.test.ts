@@ -244,4 +244,10 @@ describe('Madrid and Warsaw scenes (T-S4e; STORY §3.4, §3.5; GDD §24.2, §25.
     expect(total('warsaw', ['warsaw_bank_called'])).toBeLessThanOrEqual(12);
     for (const id of ['madrid-arrival', 'madrid-turn', 'warsaw-arrival', 'warsaw-turn', 'warsaw-kasia-back']) expect(shown(id).length, id).toBeLessThanOrEqual(3);
   });
+  it('every crop: right panel in Madrid and Warsaw is flipped (sceptic re-review)', () => {
+    for (const s of scenes.values()) {
+      if (!/^(madrid|warsaw)-/.test(s.id)) continue;
+      for (const p of s.panels) if (p.crop === 'right') expect(p.flip, `${s.id}: ${p.alt}`).toBe(true);
+    }
+  });
 });

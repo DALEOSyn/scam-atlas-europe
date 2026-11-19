@@ -20,7 +20,7 @@ panels:
     flip: true
     if_flag: lisbon_acted_fast
     line: "You acted straight away, the right first step. We'll see what can still be stopped."
-    alt: "Mateus, calm, by the stove in the family kitchen."
+    alt: "Mateus, calm, in the family kitchen."
   - backdrop: lisbon-kitchen
     crop: left
     speaker: beatriz
@@ -35,7 +35,7 @@ panels:
     flip: true
     with: { id: beatriz, expression: calm }
     line: "And I pay parking in the app now. No stickers for me."
-    alt: "Mateus laughing by the stove; Beatriz listens, calm."
+    alt: "Mateus laughing in the kitchen; Beatriz listens, calm."
   - backdrop: lisbon-kitchen
     crop: centre
     speaker: beatriz

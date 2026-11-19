@@ -20,4 +20,4 @@ panels:
     flip: true
     with: { id: beatriz, expression: calm }
     line: "Great. Let's look at it properly before anyone pays anything."
-    alt: "Mateus, thinking, by the stove; Beatriz listens, calm."
+    alt: "Mateus, thinking, in the kitchen; Beatriz listens, calm."

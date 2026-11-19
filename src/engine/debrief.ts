@@ -361,6 +361,13 @@ export function choiceLine(s: Scenario, g: GroupState, beat: BeatResult): Choice
   if (beat.stars >= 3 && !beat.fell) return null;
   if (beat.timerExpired) return { beatId: g.beatId, kind: 'timer' };
   const d = g.decision;
+  // CR-34: a payment code shared, then the confirmation declined: the code is what cost the third star (★★, ruling R18), so it is
+  // named, with the final choice as the path ("You chose: Make a code and send it. Then: Decline.").
+  if (!beat.fell && g.codeShared) {
+    const code = g.codeShared;
+    const then = d ? finalChoice(s, g, d.actionId, d.via) : undefined;
+    return { beatId: g.beatId, kind: 'action', label: code.label, ...(then ? { path: { engage: code.label, then } } : {}) };
+  }
   // A fall always names the decisive action. Otherwise an engage cap names the first engage action, even
   // when the later choice was a dismiss or report (producer ruling, T-2.1: it teaches more).
   if (!beat.fell && beat.capped && g.firstEngage) {

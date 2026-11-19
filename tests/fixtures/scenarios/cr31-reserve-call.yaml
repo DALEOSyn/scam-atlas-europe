@@ -1,0 +1,92 @@
+# CR-31 and CR-31(b) (ruling R16): a fraud call leads into the player's own bank app (start_transfer with
+# cap: engage). The banking beat shows the on-call bar; the caller's lines are beat-bound follow-ups.
+id: fx-cr31-reserve-call
+chapter: fixtures
+role: standard
+pattern: multichannel-support-callback
+theme: bank-call
+learning_objectives: [LO-07, LO-08]
+difficulty: 3
+is_fraud: true
+device: call
+brands: [larchwick]
+pressure:
+  timer: true
+  levers: [authority, fear, urgency]
+  pusher:
+    messages:
+      - { at_seconds: 6, beat: reserve_transfer, text: "Type the name exactly: Larchwick Reserva." }
+      - { at_seconds: 20, beat: reserve_transfer, text: "It'll say the name doesn't match. That's normal for our reserve. Just confirm." }
+
+message:
+  sender: { display: "Larchwick Bank", detail: "Caller ID: Larchwick Bank · 9•• ••• •00" }
+  transcript:
+    - { speaker: caller, text: "Larchwick Bank security. Someone is trying to empty your account." }
+    - { speaker: caller, text: "I won't ask for your passwords." }
+    - { speaker: caller, text: "Open your Larchwick app and I'll guide you to move your balance to a safe reserve account." }
+  request: pay
+  ask: { text: "Open your Larchwick app and I'll guide you to move your balance to a safe reserve account." }
+  claims: [{ text: "I won't ask for your passwords." }]
+
+inspectables:
+  - target: caller_id
+    reveal: "Shows Larchwick Bank, as a real call would. A number on screen can be faked, so it can't prove anything either way."
+    red_flag: false
+    type: caller_id
+  - target: claim
+    reveal: "No passwords. That sounds safe, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "Asks you to move your money to keep it safe. A real bank never asks that."
+    red_flag: true
+    type: request
+
+actions:
+  - { id: follow_steps, label: "Open the app and follow their steps", kind: start_transfer, next_beat: reserve_transfer, cap: engage, pressure_target: true }
+  - { id: hang_up, label: "Hang up", kind: hang_up, outcome: hung_up }
+
+what_now:
+  call_back_label: "Call the number on your card"
+  outcomes: { call_back_known: bank_never_called, report: call_reported, done: hung_up }
+  extra:
+    - { id: call_back_this_number, label: "Call back this number", kind: call_number_in_message, note: "That's the number that just called. Use the number on your card." }
+
+beats:
+  - id: reserve_transfer
+    device: banking
+    message:
+      payee: { name: "Larchwick Reserva", iban: "ES•• •••• •••• •••• •••• 7731", name_check: mismatch, amount: "€3,240.18" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "The bank says the name doesn't match the account. The caller said it would."
+        red_flag: true
+    actions:
+      - { id: confirm_send, label: "Confirm and send €3,240.18", kind: pay, outcome: money_moved, pressure_target: true }
+      - { id: hang_up_call_card, label: "Hang up and call your card's number", kind: call_back_known, outcome: bank_never_called }
+      - { id: hang_up_report, label: "Hang up and report it", kind: report, outcome: call_reported }
+      - { id: hang_up_cancel, label: "Hang up and cancel", kind: ignore, outcome: hung_up }
+
+outcomes:
+  money_moved:
+    narrative: "The money leaves. The line goes dead."
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: keep_evidence, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: wait_and_see, category: harmful }
+      - { step: pay_recovery_service, category: harmful }
+  bank_never_called: { narrative: "Larchwick: 'We'd never ask you to move money. Thank you for calling.'" }
+  call_reported: { narrative: "You report the call to Larchwick." }
+  hung_up: { narrative: "You hang up. Nothing leaves your account." }
+
+debrief:
+  layer1: { tell: "'No passwords needed', just move your money.", what_works: "Hang up. Call the number on your card." }
+  device_tip: "The number on the back of your card is the one to call."
+  habit_card: hang-up-call-back
+  already_clicked:
+    clicked: "Followed their steps? Hang up, then call the number on your card."
+    paid: "Moved money? Call your bank now on the number on your card."
+  sources: [eu-ebf-cyberscams]

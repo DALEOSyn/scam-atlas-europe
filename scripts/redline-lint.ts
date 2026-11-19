@@ -89,10 +89,13 @@ const QR_CHILD_KEYS = new Set(['payload', 'url', 'href', 'link', 'target', 'data
 
 /** Walk a YAML document, yielding decoded string scalars and QR payload findings. */
 const SCENARIOS_DIR = resolve(CONTENT, 'scenarios');
+/** Engine fixture scenarios (CR-30 … CR-35): scenario-shaped test data, linted with the same exemptions. */
+const FIXTURE_SCENARIOS_DIR = resolve(ROOT, 'tests', 'fixtures', 'scenarios');
 const SOURCE_ID_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export function isScenarioFile(file: string): boolean {
-  return resolve(file).startsWith(`${SCENARIOS_DIR}${sep}`);
+  const f = resolve(file);
+  return f.startsWith(`${SCENARIOS_DIR}${sep}`) || f.startsWith(`${FIXTURE_SCENARIOS_DIR}${sep}`);
 }
 
 /**

@@ -1,5 +1,5 @@
 import type { Device, Message, Scenario } from '../../content/schema.ts';
-import type { ActionView, PusherMessageView } from '../../engine/runner.ts';
+import type { ActionView, PusherMessageView, RunnerView } from '../../engine/runner.ts';
 
 export interface CallStage {
   beatId: string;
@@ -42,6 +42,8 @@ export interface DeviceProps {
   quoted?: readonly string[];
   /** The payee-check result is on screen (true) or still "Checking…" (false), per beat (CR-23). */
   onNameCheck?: (beatId: string, ready: boolean) => void;
+  /** CR-31: the on-call bar over a banking beat reached by following a call into the bank app. */
+  onCall?: RunnerView['onCall'] | undefined;
   /** Heading text and ref (focus target on arrival). */
   heading: string;
   headingRef: { current: HTMLHeadingElement | null };

@@ -106,7 +106,7 @@ export function resultOf(s: Scenario, b: EngineBalance, st: RunnerState): Scenar
   const truth = st.truth;
   const beats: BeatResult[] = st.groups.map((g) => {
     const { decision, covered } = coveredDecision(s, st.groups, g);
-    const score = scoreGroup(b, truth, decision, { engagedOnFraud: g.engagedOnFraud, timerExpired: g.timerExpired, slot: st.slot });
+    const score = scoreGroup(b, truth, decision, { engagedOnFraud: g.engagedOnFraud, timerExpired: g.timerExpired, slot: st.slot, codeShared: g.codeShared !== undefined });
     const tags = groupTags(s, st, g);
     return { ...score, beatId: g.beatId, covered, scored: g.scored, outcome: g.outcome, correctTags: tags.correct, wrongTags: tags.wrong, kinds: g.kinds };
   });

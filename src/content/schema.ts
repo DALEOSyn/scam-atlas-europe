@@ -27,7 +27,8 @@ export const snakeId = z
 // ---------------------------------------------------------------------------
 // Enumerations shared with balance.yaml and the GDD.
 
-export const DEVICES = ['email', 'sms', 'messenger', 'call', 'browser', 'qr', 'banking', 'social', 'auth', 'letter'] as const;
+/** `marketplace` (CR-33): a second-hand marketplace app (listing card, system notices, buyer chats). */
+export const DEVICES = ['email', 'sms', 'messenger', 'marketplace', 'call', 'browser', 'qr', 'banking', 'social', 'auth', 'letter'] as const;
 export const deviceSchema = z.enum(DEVICES);
 export type Device = z.infer<typeof deviceSchema>;
 
@@ -126,8 +127,18 @@ export const NAME_CHECK_RESULTS = ['match', 'close_match', 'mismatch', 'unavaila
 /** A verbatim quote from the message: the `ask` (request checkable) or a `claim` (CR-17). */
 const quoteSchema = z.object({ text: z.string().min(1), translation: z.string().min(1).optional() }).strict();
 
-/** Requests whose message may carry `ask` (share_code / approve since T-2.8; pay / enter_details / reply since CR-17). */
-export const ASK_REQUESTS: readonly (typeof REQUESTS)[number][] = ['share_code', 'approve', 'pay', 'enter_details', 'reply'];
+/**
+ * Requests whose message may carry `ask` (share_code / approve since T-2.8; pay / enter_details / reply since CR-17;
+ * CR-30: call, log_in, open_link and none, where the ask is the sentence telling the reader what to do).
+ */
+export const ASK_REQUESTS: readonly (typeof REQUESTS)[number][] = ['share_code', 'approve', 'pay', 'enter_details', 'reply', 'call', 'log_in', 'open_link', 'none'];
+/**
+ * CR-30: from slot 4 on, every scored scheduled beat on these devices needs `message.ask`, whatever its request
+ * (never banking, interrupts or `scored: false` beats), genuine and fraud alike.
+ */
+export const CR30_ASK_DEVICES: readonly Device[] = ['sms', 'messenger', 'marketplace', 'email', 'social', 'call'];
+/** CR-30: the chapter slot from which CR30_ASK_DEVICES need an ask on every scored scheduled beat. */
+export const CR30_FROM_SLOT = 4;
 /** CR-17: from slot 2 on, these requests need `message.ask` on every scored non-banking beat, genuine or fraud. */
 export const CR17_ASK_REQUESTS: readonly (typeof REQUESTS)[number][] = ['pay', 'enter_details', 'reply'];
 
@@ -148,6 +159,18 @@ export const messageSchema = z
     qr: qrSchema.optional(),
     page: z.object({ address: fictionalAddress('page.address'), title: z.string().min(1).optional() }).strict().optional(),
     /**
+     * CR-33: the marketplace app the beat is shown in (its header): a brand id from content/brands.yaml,
+     * listed in the scenario's brands. Marketplace only, required there.
+     */
+    app: z.object({ brand: slug }).strict().optional(),
+    /** CR-33: the listing card ("Rucksack · €35.00"). Marketplace only. Checkable as the first `reference`. */
+    listing: z.object({ title: z.string().min(1), price: z.string().min(1) }).strict().optional(),
+    /**
+     * CR-33: a system notice from the marketplace itself (sender row "Swaploft · Notice"), not a buyer's chat.
+     * Marketplace only; sender.display is then the app's own name.
+     */
+    notice: z.boolean().optional(),
+    /**
      * Who gets the money. On a `banking` beat: the transfer form (payee name, IBAN, amount) and the
      * payee-name check result (CR-23), or a payment-request page (`payment_request: true`, CR-18(c):
      * "Request from <name> · amount · note", no check runs). On email / messenger only: the "Bank details"
@@ -165,6 +188,11 @@ export const messageSchema = z
         /** Payment-request note ("Canal boat, Saturday"). Request pages only. */
         note: z.string().min(1).optional(),
         payment_request: z.boolean().optional(),
+        /**
+         * CR-34: the bank app's confirmation after a payment code was shared: "Confirm payment · amount · to
+         * {name}". Banking only, reached by a share_code; no name check, no IBAN; `payee.name` is checkable.
+         */
+        code_confirm: z.boolean().optional(),
       })
       .strict()
       .optional(),
@@ -278,7 +306,13 @@ export const messageSchema = z
       if (p.name_check !== 'close_match' && p.holder) ctx.addIssue({ code: 'custom', path: ['payee', 'holder'], message: 'payee.holder is shown only on a close match (never on match, no match or couldn\'t check)' });
       if (p.payment_request && p.name_check) ctx.addIssue({ code: 'custom', path: ['payee', 'name_check'], message: 'no payee-name check runs on a payment-request page (CR-18(c))' });
       if (p.note && !p.payment_request) ctx.addIssue({ code: 'custom', path: ['payee', 'note'], message: 'payee.note is for payment-request pages (payment_request: true)' });
+      if (p.code_confirm) {
+        if (p.name_check || p.holder || p.payment_request || p.note) ctx.addIssue({ code: 'custom', path: ['payee', 'code_confirm'], message: 'a code confirmation shows the payee name and amount only: no name_check, holder, payment_request or note (CR-34)' });
+        if (p.iban) ctx.addIssue({ code: 'custom', path: ['payee', 'iban'], message: 'a code confirmation shows no IBAN (CR-34): "Confirm payment · amount · to {name}"' });
+        if (!p.amount) ctx.addIssue({ code: 'custom', path: ['payee', 'amount'], message: 'a code confirmation shows the amount: payee.amount is required (CR-34)' });
+      }
     }
+    if (m.notice && !m.sender) ctx.addIssue({ code: 'custom', path: ['notice'], message: 'a notice shows the app as its sender: sender is required (CR-33)' });
   });
 export type Message = z.infer<typeof messageSchema>;
 
@@ -294,6 +328,10 @@ export function deviceOnlyIssues(device: Device, m: Message): [(string | number)
   if (m.video && device !== 'call') out.push([['video'], 'video is for call beats (CR-24)']);
   if (m.account && device !== 'banking') out.push([['account'], 'account (whose money it is) is for banking beats (CR-26)']);
   if (m.bank && device !== 'banking') out.push([['bank'], 'bank (the bank app header) is for banking beats (CR-27)']);
+  if (m.app && device !== 'marketplace') out.push([['app'], 'app (the marketplace header) is for marketplace beats (CR-33)']);
+  if (m.listing && device !== 'marketplace') out.push([['listing'], 'listing (the listing card) is for marketplace beats (CR-33)']);
+  if (m.notice && device !== 'marketplace') out.push([['notice'], 'notice (a system notice from the app) is for marketplace beats (CR-33)']);
+  if (m.payee?.code_confirm && device !== 'banking') out.push([['payee', 'code_confirm'], 'code_confirm is the bank app\'s confirmation: banking beats only (CR-34)']);
   const p = m.payee;
   if (p && device !== 'banking') {
     // CR-22: the "Bank details" card. No name check outside the bank app.
@@ -310,6 +348,7 @@ export const DEVICE_PARTS: Record<Device, readonly (keyof Message)[]> = {
   email: ['sender', 'subject', 'body'],
   sms: ['sender', 'body'],
   messenger: ['sender', 'body'],
+  marketplace: ['app', 'sender', 'body'],
   call: ['sender', 'transcript'],
   browser: ['page'],
   qr: ['qr'],
@@ -385,9 +424,16 @@ export const actionSchema = z
     score_reason: z.string().min(1).optional(),
     /** The action the message is pushing (UI_SPEC §6.3). */
     pressure_target: z.boolean().default(false),
+    /**
+     * CR-31(b), ruling R16: on a `start_transfer`, `engage` caps every outcome of its group at ★★, like an
+     * engage (the banking beat's call-back, report and cancel included); a fall stays a fall. Required when
+     * the source beat is a call on a fraud scenario (rules.ts), forbidden on genuine scenarios.
+     */
+    cap: z.literal('engage').optional(),
   })
   .strict()
   .superRefine((a, ctx) => {
+    if (a.cap !== undefined && a.kind !== 'start_transfer') ctx.addIssue({ code: 'custom', path: ['cap'], message: 'cap: engage is for start_transfer actions (CR-31(b))' });
     if ((a.outcome === undefined) === (a.next_beat === undefined)) {
       ctx.addIssue({ code: 'custom', path: ['outcome'], message: 'an action has exactly one of outcome or next_beat' });
     }
@@ -525,6 +571,11 @@ export const outcomeSchema = z
       )
       .optional(),
     sets_flags: z.array(flagName).optional(),
+    /**
+     * CR-32: damage control for a cast member (a drill): "Pick the step {name} should take first, then 2 more."
+     * Scenario `feedback` on harmful steps is then shown in that person's voice. Needs `recovery`.
+     */
+    recovery_for: slug.optional(),
     /** Arc scenarios only, e.g. { alex_invested: 50 }. */
     arc_effects: z.record(flagName, z.union([z.number(), z.boolean()])).optional(),
   })
@@ -674,7 +725,7 @@ export const scenarioSchema = z
       }
       const visible = new Set(deriveCheckables(b.device, b.message));
       // CR-25: thread history on email too.
-      if (b.message.earlier && b.device !== 'sms' && b.device !== 'messenger' && b.device !== 'email') issue([...b.path, 'message', 'earlier'], 'earlier (thread history) is for sms, messenger and email messages only');
+      if (b.message.earlier && !['sms', 'messenger', 'marketplace', 'email'].includes(b.device)) issue([...b.path, 'message', 'earlier'], 'earlier (thread history) is for sms, messenger, marketplace and email messages only');
       deviceOnlyIssues(b.device, b.message).forEach(([part, message]) => issue([...b.path, 'message', ...part], message));
       // An ask is the tell itself: it always has an authored reveal (no neutral filler; ruling QA L1).
       if (b.message.ask && !b.inspectables.some((ins) => ins.target === 'request' && ins.type === 'request')) {
@@ -689,8 +740,9 @@ export const scenarioSchema = z
         if (ins.target === 'request' && ins.type !== undefined && ins.type !== 'request') {
           issue([...b.path, 'inspectables', i, 'type'], 'a request checkable has type: request');
         }
-        if (ins.target === 'request' && b.message.request === 'none') {
-          issue([...b.path, 'inspectables', i, 'target'], 'a request checkable needs message.request on the same beat (e.g. share_code or approve), not none');
+        // CR-30: a `none` message may quote what it tells the reader to do ("Print your label…") as its ask.
+        if (ins.target === 'request' && b.message.request === 'none' && !b.message.ask) {
+          issue([...b.path, 'inspectables', i, 'target'], 'a request checkable needs message.request on the same beat (e.g. share_code or approve), or message.ask on a request: none message (CR-30)');
         }
         // CR-17(b), CR-24: claim and video checkables carry their own type.
         if (/^claim(?:#2)?$/.test(ins.target) && ins.type !== undefined && ins.type !== 'claim') issue([...b.path, 'inspectables', i, 'type'], 'a claim checkable has type: claim');
@@ -766,7 +818,35 @@ export const scenarioSchema = z
         if (target && (target.device !== 'banking' || !target.message.payee)) issue([...at, 'next_beat'], `start_transfer leads to a banking beat with a payee; "${a.next_beat}" is ${target.device === 'banking' ? 'missing message.payee' : `a ${target.device} beat`} (CR-18(b))`);
         if (s.role === 'boss' && !scheduledIds.has(b.id)) issue(at, 'in a boss, start_transfer is offered on a scheduled beat only (start or arrives_after): one banking sub-beat per scheduled beat (CR-18(e))');
         if (target?.device === 'banking' && target.actions.some((x) => x.kind === 'start_transfer')) issue([...at, 'next_beat'], `the banking beat "${target.id}" cannot chain another start_transfer (CR-18(e))`);
+        if (target?.message.payee?.code_confirm) issue([...at, 'next_beat'], `"${a.next_beat}" is a code confirmation: only a share_code leads there (CR-34)`);
+        // CR-31(b), ruling R16: following a fraud caller's steps into your own bank app caps the group at ★★.
+        if (a.cap === 'engage' && !s.is_fraud) issue([...at, 'cap'], 'cap: engage is for fraud scenarios; a genuine start_transfer stays a step (CR-31(b), CR-18)');
+        if (a.cap === undefined && s.is_fraud && b.device === 'call') issue([...at, 'cap'], 'a start_transfer from a call on a fraud scenario needs cap: engage: following the caller\'s steps caps the beat at ★★ (ruling R16, CR-31(b))');
       });
+      // CR-34: a share_code may lead (next_beat) to the bank app's confirmation, on fraud only.
+      b.actions.forEach((a, i) => {
+        if (a.kind !== 'share_code' || a.next_beat === undefined) return;
+        const at = [...b.path, 'actions', i, 'next_beat'];
+        if (b.path[0] === 'interrupts') return issue(at, 'a share_code on an interrupt is single-step: no next_beat (CR-34)');
+        if (!s.is_fraud) issue(at, 'a share_code leads to a code confirmation on fraud scenarios only (CR-34)');
+        const target = beatOf(a.next_beat);
+        if (target && (target.device !== 'banking' || !target.message.payee?.code_confirm)) issue(at, `a share_code with next_beat leads to a banking beat with payee.code_confirm: true; "${a.next_beat}" is not one (CR-34)`);
+      });
+    }
+    // CR-34: the code confirmation is reached by a share_code only.
+    for (const b of storyBeats) {
+      if (!b.message.payee?.code_confirm || b.device !== 'banking') continue;
+      if (b.id === 'start') issue([...b.path, 'message', 'payee', 'code_confirm'], 'a code confirmation follows a share_code: it cannot be the opening message (CR-34)');
+      const via = storyBeats.flatMap((x) => x.actions.filter((a) => a.next_beat === b.id).map((a) => a.kind));
+      if (via.some((k) => k !== 'share_code')) issue([...b.path, 'message', 'payee', 'code_confirm'], `the code confirmation "${b.id}" is reached only by share_code actions (CR-34)`);
+      if (b.actions.some((a) => a.next_beat !== undefined)) issue([...b.path, 'actions'], `the code confirmation "${b.id}" ends the beat: its actions have outcomes, not next_beat (CR-34)`);
+    }
+    // CR-32: damage control for a cast member, in a drill.
+    for (const [key, o] of Object.entries(s.outcomes)) {
+      if (o.recovery_for === undefined) continue;
+      if (!o.recovery?.length) issue(['outcomes', key, 'recovery_for'], 'recovery_for names whose damage control it is: the outcome needs recovery steps (CR-32)');
+      if (s.role !== 'drill') issue(['outcomes', key, 'recovery_for'], 'recovery_for is for drills (damage control for a cast member, CR-32)');
+      if (!s.cast.includes(o.recovery_for)) issue(['outcomes', key, 'recovery_for'], `recovery_for "${o.recovery_for}" must be in the scenario's cast list (CR-32)`);
     }
     if (s.role === 'boss') {
       // CR-18(e): a scheduled boss beat chains through start_transfer to exactly one banking sub-beat.
@@ -822,7 +902,7 @@ export const scenarioSchema = z
       if (bound && (bound.device === 'banking' || !bound.message.sender)) {
         const owner = groupOwnerOf(m.beat);
         const ob = owner !== undefined ? beatOf(owner) : undefined;
-        if (!ob || !ob.message.sender || !['sms', 'messenger', 'social', 'email', 'call'].includes(ob.device)) {
+        if (!ob || !ob.message.sender || !['sms', 'messenger', 'marketplace', 'social', 'email', 'call'].includes(ob.device)) {
           issue(path, `a follow-up bound to the ${bound.device} beat "${m.beat}" must resolve to a chat sender: its group's scheduled beat${owner ? ` "${owner}"` : ''} is not a message from a sender (CR-21)`);
         }
       }
@@ -1269,6 +1349,8 @@ export const balanceSchema = z
         per_star: z.number().int().positive(),
         exceptions: z.object({ report_on_legit: z.number().int() }).passthrough(),
         engage_on_fraud: z.object({ terminal: z.boolean(), star_cap: z.number().int().min(0).max(3) }).strict(),
+        /** CR-34: a payment code shared, then the bank app's confirmation declined: the group's star cap. */
+        code_then_confirm: z.object({ star_cap: z.number().int().min(0).max(3) }).strict(),
       })
       .passthrough(),
     /**

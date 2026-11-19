@@ -1,0 +1,56 @@
+# CR-32: damage control for a cast member in a drill (recovery_for). Unscored, like Home 0-5.
+id: fx-cr32-friend-drill
+chapter: fixtures
+role: drill
+pattern: messenger-account-takeover-code
+theme: payment-code
+learning_objectives: [LO-16, LO-18]
+difficulty: 1
+is_fraud: false
+device: messenger
+brands: [kettle, larchwick]
+cast: [mateus]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Mateus (work phone)", detail: "Saved contact: Mateus (work phone)" }
+  from_cast: mateus
+  body: "A friend's account asked me for a payment code. I sent it and confirmed in my app. €249 to a shop. What do I do first?"
+  request: reply
+  ask: { text: "What do I do first?" }
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: Mateus's saved contact. He asks for advice, not money or a code."
+    red_flag: false
+    reassures: true
+  - target: request
+    reveal: "He asks what to do first. That's a question you can help with."
+    red_flag: false
+    type: request
+
+actions:
+  - { id: help_mateus, label: "Talk Mateus through it, step by step", kind: proceed, outcome: helping_mateus, pressure_target: true }
+  - { id: let_it_go, label: "Tell him to let it go", kind: reply, outcome: mateus_calls_anyway }
+
+outcomes:
+  helping_mateus:
+    narrative: "Mateus puts you on speaker. \"Okay. What first?\""
+    recovery_for: mateus
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: keep_evidence, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: tell_trusted_adult, category: warn }
+      - { step: keep_quiet, category: harmful, feedback: "Feeling embarrassed is normal. Calling the bank straight away matters more. I'm calling." }
+      - { step: reply_ask_money_back, category: harmful }
+  mateus_calls_anyway:
+    narrative: "Mateus: 'I'll still call the bank, it's free.' He does."
+
+debrief:
+  layer1: { tell: "He told someone fast, and the bank came first.", what_works: "Stop the damage first: call the bank." }
+  device_tip: "Find your bank's card number in your app before you need it."
+  habit_card: stop-the-damage-first
+  already_clicked:
+    shared_code: "Sent a code and confirmed? Call your bank now on the number on your card."
+  sources: [eu-ebf-cyberscams]

@@ -7,7 +7,7 @@
  * Authored inspectables only supply reveal text; every other checkable reveals
  * the neutral filler ("Nothing unusual here"). The list never shows a count.
  */
-import { deriveCheckables, linksIn, type BannerLike } from '../content/checkables.ts';
+import { deriveCheckables, linksIn, referencesOf, type BannerLike } from '../content/checkables.ts';
 import type { Device, Inspectable, Message } from '../content/schema.ts';
 import { tagIsCorrect, type TagTally } from './scoring.ts';
 
@@ -77,7 +77,8 @@ export function shownText(device: Device, m: Message, target: string, links: rea
     case 'attachment':
       return nth(m.attachments, target)?.name;
     case 'reference':
-      return nth(m.references, target);
+      // CR-33: a marketplace listing card is the first reference.
+      return nth(referencesOf(m), target);
     case 'phone_number':
       return nth(m.phone_numbers, target);
     case 'qr.destination':

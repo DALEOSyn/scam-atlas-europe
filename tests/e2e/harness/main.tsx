@@ -8,8 +8,12 @@
  * coach-mark freeze on or off. Data comes from vite.harness.config.ts (fixtures parsed by sceneSchema).
  */
 import { render } from 'preact';
-import type { Scene } from '../../../src/content/schema.ts';
-import type { RunnerView } from '../../../src/engine/runner.ts';
+import { balance } from '../../../src/content/balance.ts';
+import type { Scenario, Scene } from '../../../src/content/schema.ts';
+import { resultOf } from '../../../src/engine/result.ts';
+import type { RunnerContext, RunnerView } from '../../../src/engine/runner.ts';
+import { AnnouncerProvider } from '../../../src/ui/Announcer.tsx';
+import { ScenarioView } from '../../../src/ui/ScenarioView.tsx';
 import { Hud } from '../../../src/ui/Hud.tsx';
 import { ScenePlayer } from '../../../src/ui/ScenePlayer.tsx';
 import '../../../src/styles/tokens.css';
@@ -17,6 +21,7 @@ import '../../../src/global.css';
 
 declare const __HARNESS_SCENES__: Scene[];
 declare const __HARNESS_REAL_SCENES__: Scene[];
+declare const __HARNESS_SCENARIOS__: Scenario[];
 
 /** A fixed postcard for flip panels, so every authored panel is laid out (CR-28). */
 const FLIP = { city: 'home', cityName: 'Home', ifThen: { cue: 'If a message rushes you to act,', action: 'then I stop and check it another way.' } };
@@ -44,6 +49,27 @@ function Harness() {
         onPause={noop}
         menu={{ checkMode: false, onCheckMode: noop, callLines: 'auto', onCallLines: noop, onTimeLeft: noop, onQuit: noop, onOpen: noop }}
       />
+    );
+  }
+  if (q.get('view') === 'scenario') {
+    // CR-30 … CR-35 fixture scenarios in the real ScenarioView. Timers off unless ?timer=standard; slot 4.
+    // On done, the result lands on <body data-done='{"stars":…,"points":…}'> for the e2e to read.
+    const s = __HARNESS_SCENARIOS__.find((x) => x.id === q.get('id'));
+    if (!s) return <p>No such scenario.</p>;
+    const timerMode = q.get('timer') === 'standard' ? 'standard' : 'off';
+    const ctx: RunnerContext = { balance, slot: 4, settings: { timerMode, pushers: true }, stress: 10 };
+    return (
+      <AnnouncerProvider minInterval={15}>
+        <ScenarioView
+          scenario={s}
+          ctx={ctx}
+          coachMarks={q.get('coach') === '1' ? [] : ['payee_check']}
+          onDone={(st) => {
+            const r = resultOf(s, balance, st);
+            document.body.setAttribute('data-done', JSON.stringify({ stars: r.stars, points: r.points, beats: r.beats.map((b) => b.stars) }));
+          }}
+        />
+      </AnnouncerProvider>
     );
   }
   if (q.get('view') === 'real') {

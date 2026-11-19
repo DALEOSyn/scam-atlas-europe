@@ -33,6 +33,9 @@ export function deviceHeading(device: Device, m: Message): string {
       return t('heading_sms', { from });
     case 'messenger':
       return t('heading_chat', { from });
+    case 'marketplace':
+      // CR-33: a system notice from the app, or a chat inside it.
+      return m.notice ? t('heading_market_notice', { app: marketOf(m)?.name ?? from }) : t('heading_market_chat', { app: marketOf(m)?.name ?? '', from });
     case 'social':
       return t('heading_social', { from });
     case 'call':
@@ -42,6 +45,7 @@ export function deviceHeading(device: Device, m: Message): string {
     case 'qr':
       return t('heading_qr');
     case 'banking':
+      if (m.payee?.code_confirm) return t('heading_bank_confirm', { name: m.payee.name });
       return m.payee?.payment_request ? t('heading_bank_request', { name: m.payee.name }) : t('heading_banking', { payee: m.payee?.name ?? '' });
     case 'auth':
       return t('heading_auth', { service: m.prompt?.service ?? '' });
@@ -117,6 +121,8 @@ export function channelKind(device: Device): string {
     case 'messenger':
     case 'social':
       return t('banner_kind_chat');
+    case 'marketplace':
+      return t('banner_kind_market');
     case 'call':
       return t('banner_kind_call');
     // Never the SMS fallback for a page, camera or letter (sceptic T-3.3).
@@ -382,6 +388,149 @@ function Chat(p: DeviceProps) {
         )}
       </div>
     </PhoneFrame>
+  );
+}
+
+/** CR-33: the marketplace app a beat is shown in (message.app.brand). */
+export function marketOf(m: Message): BrandMark | undefined {
+  return m.app ? brandById(m.app.brand) : undefined;
+}
+
+/**
+ * CR-33: the marketplace app (UI_SPEC §3.10). Brand header, the listing card (checkable as the first
+ * `reference`), then a system notice with the app as its sender row, or a buyer's chat with their handle.
+ * Check, tag, translation, thread history and follow-ups behave as in the messenger.
+ */
+function Market(p: DeviceProps) {
+  const m = p.message;
+  const app = marketOf(m);
+  const display = m.sender?.display ?? '';
+  const segs = segmentMessage(m);
+  const notice = !!m.notice;
+  return (
+    <PhoneFrame label={t('region_market', { app: app?.name ?? '' })} brand={app?.id}>
+      <BrandBar brand={app} title={app?.name ?? ''} sub={notice ? t('market_notices') : t('market_chat')} />
+      {m.listing ? (
+        <div class={styles.listing} data-listing="">
+          <span class={styles.listingLabel}>{t('market_listing')}</span>
+          <Checkable target="reference" class={styles.listingCard}>
+            <span class={styles.listingTitle}>{m.listing.title}</span>
+            <span class={styles.listingPrice}>{m.listing.price}</span>
+          </Checkable>
+        </div>
+      ) : null}
+      {notice ? null : (
+        <div class={styles.chatHead}>
+          <Avatar name={display} />
+          <span class={styles.chatTitle}>
+            <Checkable target="sender.detail">
+              <strong>{display}</strong>
+            </Checkable>
+            <span class={styles.muted}>{t('market_chat_sub')}</span>
+          </span>
+        </div>
+      )}
+      {p.banner ? <Banner banner={p.banner} beatId={p.beatId} onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} /> : null}
+      <div class={styles.chat}>
+        {m.earlier?.length ? <Earlier items={m.earlier} onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} /> : null}
+        <p class={styles.daySep}>{t('chat_today')}</p>
+        {notice ? (
+          // The app's own header ("Swaploft · Notice") is UI text in English; only the notice body has the message's lang.
+          <article class={styles.notice} data-notice="">
+            <p class={styles.noticeFrom}>
+              {app?.mark ? <img class={styles.brandMark} src={assetUrl(app.mark)} alt="" width={24} height={24} /> : null}
+              <Checkable target="sender.detail">
+                <strong>{display}</strong>
+              </Checkable>
+              <span class={styles.muted}>{t('market_notice')}</span>
+            </p>
+            <div lang={m.lang}>
+              <MessageBody message={m} />
+              <Chips items={segs.leftover} />
+            </div>
+          </article>
+        ) : (
+          <>
+            {p.thread
+              .filter((x) => x.device === p.device)
+              .map((x) => (
+                <div key={x.id} class={styles.bubbleIn}>
+                  <RichText text={x.message.body ?? ''} />
+                </div>
+              ))}
+            <div class={styles.bubbleIn} lang={m.lang}>
+              <ChatBody message={m} quoted={new Set(p.quoted ?? [])} />
+              <Chips items={segs.leftover} />
+              {m.image ? <ImageBox alt={m.image.alt} /> : null}
+            </div>
+          </>
+        )}
+        <Translate message={m} onFreeze={p.onTranslation} alwaysOpen={p.alwaysTranslate} />
+        {p.pushers
+          .filter((x) => x.device === p.device)
+          .map((x) => (
+            <div key={`p${x.index}`} class={styles.bubbleWrap}>
+              <div class={styles.bubbleIn} lang={x.lang}>
+                <RichText text={x.text} />
+              </div>
+              <Translate message={x} id={`pusher-translation-${x.index}`} onFreeze={p.onTranslation} alwaysOpen={p.alwaysTranslate} />
+            </div>
+          ))}
+      </div>
+    </PhoneFrame>
+  );
+}
+
+/** mm:ss for the on-call bar (CR-31); minutes keep counting past 59. */
+export function callClock(seconds: number): string {
+  const s = Math.max(0, Math.floor(seconds));
+  return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+}
+
+/**
+ * CR-31: "On a call · {caller} · mm:ss" over a banking beat the player reached by following a call into
+ * the bank app. Neutral call styling (no red, no warning). Hang up adds no path: it moves focus to the
+ * beat's own verify / report / dismiss actions. The caller's follow-ups bound to this beat are its lines.
+ */
+function OnCallBar({ onCall, beatId, lines, onTranslation, alwaysTranslate }: { onCall: NonNullable<DeviceProps['onCall']>; beatId: string; lines: DeviceProps['pushers']; onTranslation: (open: boolean) => void; alwaysTranslate: boolean }) {
+  const hangUp = () => {
+    const target =
+      onCall.hangUp.map((id) => document.querySelector<HTMLElement>(`[data-action="${id}"]`)).find((el): el is HTMLElement => !!el) ?? document.getElementById(nameCheckResultId(beatId));
+    if (!target) return;
+    if (typeof target.scrollIntoView === 'function') target.scrollIntoView({ block: 'center', behavior: 'auto' });
+    target.focus();
+  };
+  return (
+    <section class={styles.onCall} aria-label={t('oncall_region', { caller: onCall.caller })} data-on-call="">
+      <div class={styles.onCallRow}>
+        <Icon name="phone-answer" class={styles.onCallIcon} />
+        <p class={styles.onCallText}>
+          <span>{t('oncall_label', { caller: onCall.caller })}</span>
+          {/* The running time is visual only: a ticking live value would be read out every second. */}
+          <span aria-hidden="true" class={styles.onCallTime} data-call-time="">
+            {' · '}
+            {callClock(onCall.seconds)}
+          </span>
+        </p>
+        <button type="button" class={styles.onCallHangUp} onClick={hangUp} aria-describedby={`oncall-hint-${beatId}`} data-hang-up="">
+          <Icon name="phone-end" />
+          <span>{t('oncall_hang_up')}</span>
+        </button>
+        <span class={styles.vh} id={`oncall-hint-${beatId}`}>
+          {t('oncall_hang_up_hint')}
+        </span>
+      </div>
+      {lines.length > 0 ? (
+        <ul class={styles.onCallLines} aria-label={t('oncall_lines', { caller: onCall.caller })}>
+          {lines.map((x) => (
+            <li key={x.index} data-call-line="">
+              <span class={styles.speaker}>{t('call_caller')}</span> <span lang={x.lang}>{spokenText(x.text)}</span>
+              <Translate message={{ lang: x.lang, translation: x.translation ? spokenText(x.translation) : undefined }} id={`pusher-translation-${x.index}`} onFreeze={onTranslation} alwaysOpen={alwaysTranslate} />
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
   );
 }
 
@@ -730,7 +879,13 @@ function NameCheckCard(p: DeviceProps & { bankName: string }) {
         <>
           <p class={styles.checkFooter}>{t('bank_check_footer', { bank: p.bankName })}</p>
           {seen ? null : <CoachMark id={COACH_PAYEE_CHECK} text={t('coach_payee_check')} onCoachMark={p.onCoachMark} returnTo={() => resultRef.current?.focus()} />}
-          <ul class={styles.cardActions} id={`bank-options-${p.beatId}`}>
+          {p.onCall ? (
+            // CR-31 (QA should-fix 4): under the on-call bar, these options are how the call ends.
+            <p class={styles.checkFooter} id={`oncall-choose-${p.beatId}`} data-oncall-hint="">
+              {t('oncall_choose')}
+            </p>
+          ) : null}
+          <ul class={styles.cardActions} id={`bank-options-${p.beatId}`} aria-labelledby={p.onCall ? `oncall-choose-${p.beatId}` : undefined}>
             {p.actions.map((a) => (
               <li key={a.id}>
                 <button
@@ -768,8 +923,22 @@ function Bank(p: DeviceProps) {
   const bankName = bank?.short_name ?? bank?.name ?? '';
   const segs = segmentMessage(m);
   const request = !!payee?.payment_request;
+  const confirm = !!payee?.code_confirm;
   const inCard = actionsInDevice('banking', m);
-  const transfer = payee ? (
+  const transfer = confirm && payee ? (
+    // CR-34: the confirmation after a payment code: "Confirm payment · amount · to {name}". No name check, no IBAN.
+    <div class={styles.confirmCard} data-code-confirm="">
+      <p class={styles.confirmTitle}>{t('bank_confirm_title')}</p>
+      {payee.amount ? <p class={styles.requestAmount}>{payee.amount}</p> : null}
+      <p class={styles.requestFrom}>
+        <Checkable target="payee.name">{t('bank_confirm_to', { name: payee.name })}</Checkable>
+      </p>
+      {/* QA nit 6: says what the code the player typed is doing here. */}
+      <p class={styles.confirmCode} data-code-used="">
+        {t('bank_confirm_code')}
+      </p>
+    </div>
+  ) : payee ? (
     <div class={styles.transfer}>
       {m.account ? (
         // CR-26: whose money it is.
@@ -812,7 +981,10 @@ function Bank(p: DeviceProps) {
   ) : null;
   return (
     <PhoneFrame label={t('region_banking', { app: bank?.name ?? '' })} brand="larchwick">
-      <BrandBar brand={bank} title={bank?.name ?? ''} sub={m.account ? t('bank_business') : request ? t('bank_request_title') : t('bank_payments')} />
+      {p.onCall ? (
+        <OnCallBar onCall={p.onCall} beatId={p.beatId} lines={p.pushers.filter((x) => x.boundTo === p.beatId)} onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} />
+      ) : null}
+      <BrandBar brand={bank} title={bank?.name ?? ''} sub={m.account ? t('bank_business') : request ? t('bank_request_title') : confirm ? t('bank_confirm_sub') : t('bank_payments')} />
       <div class={styles.bank}>
         <SimPill />
         <MessageBody message={m} />
@@ -827,7 +999,7 @@ function Bank(p: DeviceProps) {
         )}
         <Chips items={segs.leftover} />
         {/* A payment-request page has no card fields: its own actions are in the tray (sceptic T-3.3). */}
-        {!inCard && !request && m.request !== 'none' ? <TrainingForm m={{ ...m, request: 'pay' }} actions={p.actions} canAct={p.canAct} onAct={p.onAct} idPrefix="bank" /> : null}
+        {!inCard && !request && !confirm && m.request !== 'none' ? <TrainingForm m={{ ...m, request: 'pay' }} actions={p.actions} canAct={p.canAct} onAct={p.onAct} idPrefix="bank" /> : null}
       </div>
     </PhoneFrame>
   );
@@ -930,7 +1102,7 @@ function Letter(p: DeviceProps) {
 
 /** Is a follow-up from `from` shown inside the `on` device (chat bubble or call line)? */
 function inDevice(on: Device, from: Device): boolean {
-  return on === from && (on === 'sms' || on === 'messenger' || on === 'call');
+  return on === from && (on === 'sms' || on === 'messenger' || on === 'marketplace' || on === 'call');
 }
 
 export function DeviceView(p: DeviceProps) {
@@ -942,6 +1114,8 @@ export function DeviceView(p: DeviceProps) {
       case 'messenger':
       case 'social':
         return <Chat {...p} />;
+      case 'marketplace':
+        return <Market {...p} />;
       case 'call':
         return <Call {...p} />;
       case 'browser':
@@ -956,7 +1130,7 @@ export function DeviceView(p: DeviceProps) {
         return <Letter {...p} />;
     }
   })();
-  const chat = p.device === 'sms' || p.device === 'messenger';
+  const chat = p.device === 'sms' || p.device === 'messenger' || p.device === 'marketplace';
   return (
     <div class={styles.stageInner} data-device={p.device}>
       <h2 class={styles.deviceHeading} id="device-heading" ref={p.headingRef} tabIndex={-1}>
@@ -964,7 +1138,8 @@ export function DeviceView(p: DeviceProps) {
       </h2>
       {/* Follow-ups from another channel arrive as notifications above the device; a chat's own follow-ups
           are bubbles, a caller's are call lines (QA M2). */}
-      <Notifications onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} pushers={p.pushers.filter((x) => !inDevice(p.device, x.device))} />
+      {/* CR-31: on the bank app reached from a call, the caller's lines for this beat are in the on-call bar. */}
+      <Notifications onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} pushers={p.pushers.filter((x) => !inDevice(p.device, x.device) && !(p.onCall && x.boundTo === p.beatId))} />
       {p.device !== 'call' && !chat && p.banner ? <Banner banner={p.banner} beatId={p.beatId} onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} /> : null}
       {body}
     </div>

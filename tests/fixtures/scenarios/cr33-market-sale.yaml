@@ -1,0 +1,66 @@
+# CR-33: the marketplace device. A system notice inside the app (sender row = the app), with the
+# listing card (checkable as the first reference) and an ask on request: none (CR-30).
+id: fx-cr33-market-sale
+chapter: fixtures
+role: standard
+pattern: smishing-parcel-fee
+theme: marketplace-sale
+learning_objectives: [LO-03, LO-17]
+difficulty: 3
+is_fraud: false
+stakes: low
+player_started: true
+device: marketplace
+brands: [swaploft, trundle]
+pressure: { timer: true, levers: [], honest_deadline: "Drop it off by Friday" }
+
+message:
+  app: { brand: swaploft }
+  notice: true
+  listing: { title: "Rucksack", price: "€35.00" }
+  sender: { display: "Swaploft", detail: "Notice in the Swaploft app" }
+  body: "Sprzedane! Swaploft przechowuje płatność, dopóki kupujący nie odbierze paczki. Wydrukuj etykietę i nadaj paczkę w automacie Trundle do piątku. swaploft.example/sales/4471"
+  lang: pl
+  translation: "Sold! Swaploft holds the payment until the buyer picks up the parcel. Print your label and drop the parcel at a Trundle locker by Friday. swaploft.example/sales/4471"
+  request: none
+  ask: { text: "Wydrukuj etykietę i nadaj paczkę w automacie Trundle do piątku.", translation: "Print your label and drop the parcel at a Trundle locker by Friday." }
+  claims: [{ text: "Swaploft przechowuje płatność, dopóki kupujący nie odbierze paczki", translation: "Swaploft holds the payment until the buyer picks up the parcel" }]
+  references: ["SW-•••• 4471"]
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: a notice inside the Swaploft app you opened yourself. Weigh it with what it asks: to post the parcel."
+    red_flag: false
+    reassures: true
+  - target: link
+    reveal: "It fits: swaploft.example, Swaploft's own address."
+    red_flag: false
+    reassures: true
+  - target: reference
+    reveal: "Your own listing, as you put it up."
+    red_flag: false
+  - target: claim
+    reveal: "Says the money is held until delivery. That's how a real sale shows, inside the app."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "Asks you to post the parcel. No card, no login, nothing to collect."
+    red_flag: false
+    type: request
+
+actions:
+  - { id: print_label, label: "Print the label", kind: proceed, outcome: posted, pressure_target: true }
+  - { id: check_sales, label: "Check the sale in your Swaploft sales", kind: check_with_platform, outcome: posted }
+  - { id: report_it, label: "Report the notice", kind: report, outcome: reported }
+  - { id: ignore_it, label: "Ignore it for now", kind: ignore, outcome: later }
+
+outcomes:
+  posted: { narrative: "The locker takes the rucksack. The sale shows 'on its way'." }
+  reported: { narrative: "You reported a real sale notice." }
+  later: { narrative: "Friday comes; the app reminds you once, then the sale is cancelled." }
+
+debrief:
+  layer1: { tell: "In the app you opened: sold, money held, post it.", what_works: "Posting it was right." }
+  device_tip: "Real sales show in your sales list inside the app."
+  habit_card: calm-not-paranoid
+  sources: [eu-europol-phishing-leaflet]

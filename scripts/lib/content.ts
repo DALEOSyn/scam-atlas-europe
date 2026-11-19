@@ -204,6 +204,15 @@ export function checkScenario(
     const id = b.message.bank?.brand;
     if (id && !bankIds.has(id)) report.errors.push(`${file}: ${b.where}: message.bank.brand "${id}" is not a bank brand or a bank's sub-brand in content/brands.yaml`);
   }
+  // CR-33: the marketplace header is a registered brand the scenario lists; a system notice speaks as that app.
+  for (const b of beatsOf(s)) {
+    const id = b.message.app?.brand;
+    if (!id) continue;
+    const brand = brands.get(id);
+    if (!brand) report.errors.push(`${file}: ${b.where}: message.app.brand "${id}" is not a brand in content/brands.yaml (CR-33)`);
+    else if (!s.brands.includes(id)) report.errors.push(`${file}: ${b.where}: message.app.brand "${id}" must be in the scenario's brands (CR-33)`);
+    if (brand && b.message.notice && b.message.sender?.display !== brand.name) report.errors.push(`${file}: ${b.where}: a notice comes from the app itself: sender.display must be "${brand.name}" (CR-33)`);
+  }
   report.errors.push(...unregisteredHostIssues(s, registeredHosts(brands)).map((e) => `${file}: ${e}`));
   return s;
 }

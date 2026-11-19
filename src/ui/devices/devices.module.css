@@ -219,6 +219,11 @@
 .keepPunct > * {
   white-space: normal;
 }
+/* Punctuation drawn inside a highlight's box: not underlined with it (decorations skip inline-blocks). */
+.trail {
+  display: inline-block;
+  text-decoration: none;
+}
 .chips {
   list-style: none;
   margin: 0;
@@ -1054,4 +1059,136 @@
 .chatQuote > ul {
   margin-top: var(--space-2);
   white-space: normal;
+}
+
+/* Marketplace app (CR-33, UI_SPEC §3.10): the listing card, system notices and buyer chats. */
+.listing {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--border-w) solid var(--color-border-subtle);
+  background: var(--color-surface);
+}
+.listingLabel {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.listingCard {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-w) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.listingTitle {
+  font-weight: var(--fw-bold);
+  min-width: 0;
+}
+.listingPrice {
+  font-variant-numeric: tabular-nums;
+}
+.notice {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: var(--border-w) solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+.noticeFrom {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+}
+
+/* Code confirmation in the bank app (CR-34): "Confirm payment · amount · to {name}". */
+.confirmCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: var(--border-w) solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+.confirmTitle {
+  margin: 0;
+  font-weight: var(--fw-bold);
+}
+.confirmCode {
+  margin: 0;
+  font-size: var(--fs-sm);
+}
+
+/* On-call bar (CR-31, GDD §24.5): slim, persistent, neutral call styling (no red, no warning). */
+.onCall {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3) var(--space-2);
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+  border-bottom: var(--border-w) solid var(--color-border-subtle);
+}
+.onCallRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+}
+.onCallIcon {
+  flex: none;
+}
+.onCallText {
+  flex: 1 1 10rem;
+  min-width: 0;
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  overflow-wrap: anywhere;
+}
+.onCallTime {
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--fw-regular);
+}
+.onCallHangUp {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--tap-min);
+  min-width: var(--tap-min);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-sm);
+  border: var(--border-w) solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+}
+.onCallHangUp:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+.onCallLines {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: var(--space-1);
+  font-size: var(--fs-sm);
+  overflow-wrap: break-word;
 }

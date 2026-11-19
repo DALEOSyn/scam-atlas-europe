@@ -69,6 +69,40 @@ async function chooseStandard(page: Page) {
   await page.getByRole('button', { name: 'Continue' }).click();
 }
 
+/**
+ * Story scenes (S4): Home now has an arrival before 0-1, a turn after "Keep going" and a resolution
+ * before the chapter summary. Tests that are about devices skip them with the scene's Skip button.
+ */
+async function skipScene(page: Page, id?: string) {
+  const scene = page.locator(id ? `main[data-scene-id="${id}"]` : 'main[data-scene-id]');
+  await expect(scene).toBeVisible();
+  await scene.locator('[data-scene="skip"]').click();
+  await expect(scene).toHaveCount(0);
+}
+
+/** Read a scene panel by panel with Next, then Continue; every portrait and backdrop must load. */
+async function playScene(page: Page, id: string, axe = false, choose?: string) {
+  const scene = page.locator(`main[data-scene-id="${id}"]`);
+  await expect(scene).toBeVisible();
+  const next = scene.getByRole('button', { name: 'Next' });
+  while (await next.isVisible()) {
+    await next.click();
+    await expect(scene.locator('li[tabindex="-1"]').last()).toBeFocused();
+  }
+  if (choose) {
+    // The optional rehearsal choice: one shared reply whatever the option (STORY §4.1).
+    await scene.getByRole('button', { name: choose }).click();
+    await expect(scene.locator('[data-reply]')).toBeFocused();
+  }
+  const broken = await scene.locator('img').evaluateAll((imgs) => (imgs as HTMLImageElement[]).filter((i) => !i.complete || i.naturalWidth === 0).map((i) => i.getAttribute('src')));
+  expect(broken).toEqual([]);
+  // Let the last panel's fade-in finish, so contrast is measured on the end state.
+  await scene.page().waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running'));
+  if (axe) await axeClean(page);
+  await scene.getByRole('button', { name: 'Continue' }).click();
+  await expect(scene).toHaveCount(0);
+}
+
 /** The half-day stop screen after the morning (QA M8). */
 async function keepGoing(page: Page) {
   await expect(page.getByRole('heading', { level: 1, name: 'Good place to take a break' })).toBeFocused();
@@ -98,6 +132,8 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
   await expect(page.getByRole('heading', { level: 1, name: 'Scam Atlas: Europe' })).toBeVisible();
   await axeClean(page);
   await page.getByRole('button', { name: 'Start' }).click();
+  // Home arrival (S4): read every panel; art loads from the game's own origin (checked below).
+  await playScene(page, 'home-arrival', true);
 
   // 0-1 genuine welcome email on the laptop mail device: Check card + tag, then the verify habit.
   await expect(page.getByRole('region', { name: 'Laptop: Mail' })).toBeVisible();
@@ -147,6 +183,7 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
   await expect(page.getByText('3 messages left today. Your progress is saved.')).toBeVisible();
   await axeClean(page);
   await keepGoing(page);
+  await playScene(page, 'home-turn', false, 'Pause');
 
   // 0-4 SMS with a timer and pushers: Take a breath, then open Kettle yourself.
   await expect(page.getByRole('region', { name: 'Phone: Messages' })).toBeVisible();
@@ -197,7 +234,10 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
   await axeClean(page);
   await continueToNext(page);
 
+  // Home resolution (S4): Adaeze, Noor and Teo, then Teo's If-then panel; the postcard carries it word for word.
+  await playScene(page, 'home-resolution', true);
   await expect(page.getByRole('heading', { level: 1, name: 'Chapter complete' })).toBeFocused();
+  await expect(page.getByText("then I block it in the bank app and tell someone.", { exact: false }).first()).toBeVisible();
   await expect(page.getByText(/^Passport stamp: Home, (bronze|silver|gold)$/)).toBeVisible();
   await expect(page.getByText(/Red flags you spotted: 0 of \d+ · Marks on safe details: \d+ · Genuine messages you reported: 0/)).toBeVisible();
   await expect(page.getByText(/To reach silver next time:/)).toBeVisible();
@@ -219,6 +259,7 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
 test('tutorial 0-2: fall on the training page, damage control feedback, blame-free debrief', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
+  await skipScene(page, 'home-arrival');
   await page.getByRole('button', { name: /Report the email as phishing/ }).click();
   await passConsequence(page);
   // Tutorial grace (ruling L4): reporting a genuine message in Home scores ★ with a kind line, never a bare label.
@@ -284,6 +325,7 @@ for (const vp of [
     await page.goto('/');
     const noHScroll = async () => expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
     await page.getByRole('button', { name: 'Start' }).click();
+  await skipScene(page, 'home-arrival');
     const firstAction = page.getByRole('button', { name: /Find the pack/ });
     await page.getByRole('button', { name: /Details you can check/ }).click();
     await page.locator('[data-check="link"]').click();
@@ -346,6 +388,7 @@ async function reachBossCall(page: Page) {
   await page.goto('/');
   // Reach 0-6 beat 3 quickly with timers on (Standard).
   await page.getByRole('button', { name: 'Start' }).click();
+  await skipScene(page, 'home-arrival');
   await page.getByRole('button', { name: /Find the pack in Waymarker Desk yourself/ }).click();
   await continueToNext(page);
   await page.getByRole('button', { name: /Open Waymarker mail yourself/ }).click();
@@ -355,6 +398,7 @@ async function reachBossCall(page: Page) {
   await page.getByRole('button', { name: /Use the link and set a new password/ }).click();
   await continueToNext(page);
   await keepGoing(page);
+  await skipScene(page, 'home-turn');
   await page.getByRole('button', { name: /Open Kettle yourself/ }).click();
   await continueToNext(page);
   await page.getByRole('button', { name: /Talk Teo through/ }).click();
@@ -424,6 +468,7 @@ test('1440x900: with every detail checked, hidden text stays inside the scrollin
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
+  await skipScene(page, 'home-arrival');
   await page.getByRole('button', { name: /Details you can check/ }).click();
   const rows = page.locator('[data-check-row]');
   const n = await rows.count();
@@ -440,6 +485,12 @@ test('keyboard only: skip link, Check from the Details list, tag, act, debrief (
   await page.goto('/');
   await page.keyboard.press('Tab');
   await expect(page.getByRole('button', { name: 'Start' })).toBeFocused();
+  await page.keyboard.press('Enter');
+  // The Home arrival scene (S4) opens with focus on its heading; Tab reaches "Skip story" by keyboard.
+  const skipStory = page.locator('main[data-scene-id="home-arrival"] [data-scene="skip"]');
+  await expect(page.locator('main[data-scene-id="home-arrival"]')).toBeVisible();
+  for (let i = 0; i < 6 && !(await skipStory.evaluate((el) => el === document.activeElement)); i++) await page.keyboard.press('Tab');
+  await expect(skipStory).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('heading', { name: 'Email from Adaeze Okafor-Lind' })).toBeFocused();
   // The skip link is the first stop on the page (before the HUD) and moves focus to "Your options".
@@ -484,6 +535,7 @@ test('keyboard only: skip link, Check from the Details list, tag, act, debrief (
 test('reload mid-chapter offers Continue and resumes at the next scenario', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
+  await skipScene(page, 'home-arrival');
   await page.getByRole('button', { name: /Find the pack in Waymarker Desk yourself/ }).click();
   await passConsequence(page);
   await expect(debriefHeading(page)).toBeVisible();
@@ -521,6 +573,7 @@ test('start screen: Chapters list, Settings page; Start continues the next unfin
   const saved = await page.evaluate(() => localStorage.getItem('scam-atlas-europe:save'));
   expect(JSON.parse(saved ?? '{}')).toMatchObject({ settings: { alwaysTranslate: true } });
   await page.getByRole('button', { name: 'Start' }).click();
+  await skipScene(page, 'home-arrival');
   await expect(page.getByRole('heading', { name: 'Email from Adaeze Okafor-Lind' })).toBeFocused();
 });
 
@@ -528,6 +581,7 @@ test('in a scenario: sticky HUD, Settings dialog from the menu, Jump to your opt
   await page.setViewportSize({ width: 375, height: 560 });
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
+  await skipScene(page, 'home-arrival');
   await expect(page.getByRole('heading', { name: 'Email from Adaeze Okafor-Lind' })).toBeFocused();
   await page.evaluate(() => window.scrollTo(0, 0));
 
@@ -563,6 +617,7 @@ test('0-3: "Go to your inbox", then the reset email\'s timer runs out twice → 
   await page.clock.install();
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
+  await skipScene(page, 'home-arrival');
   await page.getByRole('button', { name: /Find the pack in Waymarker Desk yourself/ }).click();
   await continueToNext(page);
   await page.getByRole('button', { name: /Open Waymarker mail yourself/ }).click();

@@ -1,0 +1,28 @@
+# Amsterdam beat 2, the local problem (GDD §22.1, STORY §3.2; worried → relieved). Placed after
+# amsterdam-04-noor-lock-down (the stop point follows 2-4), so it plays after the 2-3 and 2-4 debriefs:
+# a past-tense story told only after the matching debrief (STORY §4.2 rule 7). Sanne tells it in her own
+# words; no message bubble, phone screen, number, IBAN or amount. Her mum is a capable parent and her
+# near-miss is off screen. Sensitive: the chapter content note (STORY §5.6) opens before it.
+id: amsterdam-sanne-story
+chapter: amsterdam
+slot: beat
+title: "Sanne's story"
+sensitive: true
+panels:
+  - backdrop: amsterdam-guesthouse
+    crop: left
+    speaker: sanne
+    expression: worried
+    line: "Someone messaged Mum pretending to be me. New number, my photo, money for a broken phone. Is it my fault my photo's public?"
+    alt: "Sanne at the guesthouse desk, looking worried."
+  - backdrop: amsterdam-guesthouse
+    crop: left
+    speaker: you
+    line: "Scammers copy photos from anywhere. Locking your profile helps, but this is on them, not you."
+    alt: "The quiet guesthouse reception, plants on the desk."
+  - backdrop: amsterdam-guesthouse
+    crop: left
+    speaker: sanne
+    expression: relieved
+    line: "On them, not me. Okay. I needed to hear that."
+    alt: "Sanne, relieved, at the guesthouse desk."

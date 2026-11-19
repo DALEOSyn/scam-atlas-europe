@@ -36,6 +36,8 @@ test('Amsterdam 2-3: open the transfer, the name check says no match, cancel and
   await page.goto('/');
   await page.getByRole('button', { name: 'Chapters' }).click();
   await page.getByRole('button', { name: 'Play Amsterdam' }).click();
+  // Amsterdam arrival (S4) plays before 2-1; this test is about the bank device, so it skips the story.
+  await page.locator('main[data-scene-id="amsterdam-arrival"] [data-scene="skip"]').click();
 
   // 2-1: Teo's new mobile (genuine): save and reply.
   await page.getByRole('button', { name: /Save the number and reply/ }).click();

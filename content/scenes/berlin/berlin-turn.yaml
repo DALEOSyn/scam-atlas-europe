@@ -1,0 +1,28 @@
+# Berlin turn (STORY §3.1, §6.2): stop point, between berlin-04-teo-customs and berlin-05-kettle-code.
+# Mateus's "open the Trundle app yourself" (phone-look pose = opening the app yourself) and Jonas's nap
+# joke. Never mentions Kettle, codes or fees.
+id: berlin-turn
+chapter: berlin
+slot: turn
+panels:
+  - backdrop: berlin-courtyard
+    crop: left
+    speaker: jonas
+    expression: worried
+    line: "Still no present. Every buzz of my phone, I think it's the parcel."
+    alt: "Jonas at his door in the afternoon, looking worried."
+  - backdrop: berlin-courtyard
+    crop: right
+    speaker: mateus
+    expression: calm-phone-look
+    flip: true
+    with: { id: jonas, expression: calm }
+    line: "Parcel worries make everyone jumpy. Track it in the Trundle app you open yourself."
+    alt: "Mateus, calm, looks down at his own phone, screen turned away; Jonas listens."
+  - backdrop: berlin-courtyard
+    crop: left
+    speaker: jonas
+    expression: thinking
+    line: "In the app, not the messages. After my nap."
+    local: { text: "Erst mal schlafen.", lang: de, translation: "Sleep first." }
+    alt: "Jonas, thinking, at his door."

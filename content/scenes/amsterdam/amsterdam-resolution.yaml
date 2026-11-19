@@ -1,0 +1,46 @@
+# Amsterdam beat 4, the resolution (GDD §22.1, STORY §3.2; relieved): after the 2-9 boss debrief and damage
+# control. True in every branch:
+# - Mateus calls from his saved contact after landing (shown as a short video call, since a "made it"
+#   photo cannot be drawn without a phone screen; STORY gap, decided here). Someone did borrow his photo
+#   in every run (boss beat 2 is scheduled); the recovery step he took is named in the same breath (§5.4).
+# - Only Sanne's interview is claimed: the player's own 2-5 interview depends on the branch (reported or
+#   ignored → slots closed), so "we both got interviews" would not be outcome-neutral (STORY §4.2 rule 5).
+# - Teo on his new mobile (2-1), asking, not assuming you saved it.
+# The If-then panel uses the phone-ear pose (calling on a number you already know). Atlas cards are in the
+# chapter file (call-the-number-you-know, easy-money-costs-you, check-who-gets-the-money).
+id: amsterdam-resolution
+chapter: amsterdam
+slot: resolution
+sensitive: true
+panels:
+  - video: true
+    speaker: mateus
+    expression: relieved
+    line: "Made it! Calling from my saved number. Someone borrowed my photo tonight, so I've warned my contacts and locked my profile."
+    alt: "Mateus on a video call, relieved."
+  - backdrop: amsterdam-guesthouse
+    crop: left
+    speaker: sanne
+    expression: laughing
+    line: "I got the Thimble & Pine interview! Listen: 'paid monthly into your account'. That's how a real job sounds."
+    alt: "Sanne laughing behind the guesthouse desk."
+  - backdrop: amsterdam-guesthouse
+    crop: left
+    speaker: sanne
+    expression: focused
+    line: "And if a 'job' wants money first, I walk."
+    alt: "Sanne, concentrating, at the guesthouse desk."
+  - video: true
+    speaker: teo
+    expression: calm-wave
+    line: "New mobile, me again. Saved it yet? The home line still works too, kiddo."
+    alt: "Teo on a video call, calm, waving."
+  - backdrop: amsterdam-canal
+    crop: left
+    speaker: sanne
+    expression: focused-phone-ear
+    if_then:
+      cue: "If someone messages me for money I didn't expect,"
+      action: "then I call them on the number I already have."
+      extra: "A real job pays you."
+    alt: "Sanne by the canal, concentrating, phone to her ear as she calls a number she knows."

@@ -22,3 +22,11 @@ scenario_order:
 boss: amsterdam-09-boss-last-evening
 arc_beat: amsterdam-arc-alex-02
 intro: "Amsterdam: everyone settles up by payment request, and your travel allowance doesn't go far. You've applied for a weekend shift at the Thimble & Pine warehouse."
+scenes:
+  arrival: amsterdam-arrival
+  turn: amsterdam-turn
+  resolution: amsterdam-resolution
+  placed:
+    - { scene: amsterdam-sanne-story, after: amsterdam-04-noor-lock-down }
+content_note: "This chapter includes a family-emergency story. Everyone ends up safe. You can pause or skip any story scene."
+atlas_cards: [call-the-number-you-know, easy-money-costs-you, check-who-gets-the-money]

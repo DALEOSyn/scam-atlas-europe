@@ -1,0 +1,33 @@
+# Berlin arrival (STORY §3.1, §6.2): before berlin-01-locker-code. Introduces Jonas and Mia's present,
+# Mateus (named in berlin-05's outcome), and your documents coming by Trundle, consistent with berlin-02
+# ("tomorrow's briefing"). Mia is background only and not drawn (no art; T-S4a).
+id: berlin-arrival
+chapter: berlin
+slot: arrival
+panels:
+  - backdrop: berlin-courtyard
+    crop: left
+    speaker: jonas
+    expression: warm
+    line: "I take in everyone's parcels. Night shift at the bakery, so I'm home all day. Mostly asleep."
+    local: { text: "Hallo, Nachbar!", lang: de, translation: "Hello, neighbour!" }
+    alt: "Jonas in the courtyard, smiling, flour on his apron, by the parcel locker."
+  - backdrop: berlin-courtyard
+    crop: left
+    speaker: jonas
+    expression: worried
+    line: "Mia turns eight on Saturday, and her present still hasn't come. I keep checking my phone."
+    alt: "Jonas looking worried in the courtyard."
+  - backdrop: berlin-courtyard
+    crop: right
+    speaker: mateus
+    expression: laughing
+    flip: true
+    with: { id: jonas, expression: calm }
+    line: "Mateus, your field partner. Questions? I have answers and cables."
+    alt: "Mateus laughing in the courtyard; Jonas listens, calm."
+  - backdrop: berlin-courtyard
+    crop: centre
+    speaker: you
+    line: "My inspector documents are coming by Trundle too. Fingers crossed for tomorrow's briefing."
+    alt: "The courtyard in morning light, bikes by the parcel locker."

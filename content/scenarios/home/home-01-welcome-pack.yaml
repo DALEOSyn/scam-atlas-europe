@@ -33,12 +33,12 @@ message:
 
 inspectables:
   - target: sender.detail
-    reveal: "adaeze.okafor-lind@waymarker-network.example: Waymarker's own domain, and the name in your staff directory. It fits, but a sender address alone proves nothing."
+    reveal: "It fits: Waymarker's own domain and the name in your staff directory. That isn't proof on its own, so weigh it with what the email asks for."
     red_flag: false
     type: sender
     reassures: true
   - target: link
-    reveal: "desk.waymarker-network.example: the owner part is waymarker-network.example, Waymarker's own site. Waymarker Desk is where you'd find the pack anyway."
+    reveal: "It fits: the owner part is waymarker-network.example, Waymarker's own site, where you'd find the pack anyway. That isn't proof on its own, so weigh it with what the email asks for."
     red_flag: false
     type: link
     reassures: true
@@ -72,7 +72,7 @@ outcomes:
   pack_found_in_desk:
     narrative: "Same pack, same place. Good habit, though this time the link was fine too."
   welcome_reported:
-    narrative: "IT replies: \"Thanks for being careful! This one is really from Adaeze.\" Your travel pack is still waiting."
+    narrative: "IT replies: \"Thanks for checking! This one really is from Adaeze, so go ahead and open your pack.\""
   left_for_later:
     narrative: "The pack waits in your inbox. Nothing is lost, but you start the trip without your route."
 

@@ -61,7 +61,7 @@ describe('#3 "You chose" on a fall after an engage names the fall', () => {
     expect(r.fell).toBe(true);
     const d = debriefOf(s, st, r, none);
     expect(d.layer1.youChose).toEqual([]); // after a fall the kind line takes the slot
-    expect(d.layer2.youChoseOther).toEqual([{ beatId: 'start', kind: 'action', label: 'Continue to pay' }]);
+    expect(d.layer2.youChoseOther).toEqual([{ line: { beatId: 'start', kind: 'action', label: 'Continue to pay' }, stars: 0, beat: null }]);
   });
 });
 
@@ -178,7 +178,9 @@ describe('producer rulings', () => {
 
   it('0-3: the opener\'s proceed is not decisive once the next beat is reached', () => {
     const s = home('home-03-password-reset');
-    expect(play(s, ctx({ slot: 0 }), [act('go_to_inbox'), act('report_reset')]).r).toMatchObject({ stars: 0, points: -5, genuineReported: 1 });
+    // Tutorial grace (ruling L4): slot 0 scores a report on genuine ★, 0 points; it still counts as reported.
+    expect(play(s, ctx({ slot: 0 }), [act('go_to_inbox'), act('report_reset')]).r).toMatchObject({ stars: 1, points: 0, genuineReported: 1 });
+    expect(play(s, ctx({ slot: 1 }), [act('go_to_inbox'), act('report_reset')]).r).toMatchObject({ stars: 0, points: -5, genuineReported: 1 });
     expect(play(s, ctx({ slot: 0 }), [act('go_to_inbox'), act('use_reset_link')]).r).toMatchObject({ stars: 3, points: 15 });
   });
 });

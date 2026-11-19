@@ -19,7 +19,7 @@ describe('debrief data (UI_SPEC §8)', () => {
     // After a fall the kind line takes the layer-1 slot; the line opens "Your other choices" (ruling 2026-11-19).
     expect(d.fell).toBe(true);
     expect(d.layer1.youChose).toEqual([]);
-    expect(d.layer2.youChoseOther).toEqual([{ beatId: 'start', kind: 'action', label: 'Enter card details' }]);
+    expect(d.layer2.youChoseOther).toEqual([{ line: { beatId: 'start', kind: 'action', label: 'Enter card details' }, stars: 0, beat: null }]);
     expect(d.layer2.points).toMatchObject({ recovery: 9, total: 9, max: 19 });
     expect(d.layer2.narratives).toEqual(['Unknown payments appear.']);
   });
@@ -32,7 +32,7 @@ describe('debrief data (UI_SPEC §8)', () => {
       ['sender.detail', 'not_marked', true],
       ['link', 'marked', false],
     ]);
-    expect(d.layer2.wrongTags).toEqual([{ beatId: 'start', target: 'reference', reveal: 'Looks like a tracking number.' }]);
+    expect(d.layer2.wrongTags).toEqual([{ beatId: 'start', target: 'reference', reveal: 'Looks like a tracking number.', type: undefined, fairInstinct: false }]);
     expect(d.layer2.spotted).toEqual({ marked: 1, could: 2 });
     expect(d.layer1.youChose).toEqual([]);
   });

@@ -180,7 +180,7 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
 
   await expect(page.getByRole('heading', { level: 1, name: 'Chapter complete' })).toBeFocused();
   await expect(page.getByText(/Passport stamp:/)).toBeVisible();
-  await expect(page.getByText(/Red flags you spotted: 0 of \d+ · Genuine messages you reported: 0/)).toBeVisible();
+  await expect(page.getByText(/Red flags you spotted: 0 of \d+ · Marks on safe details: \d+ · Genuine messages you reported: 0/)).toBeVisible();
   await expect(page.getByText(/To reach silver next time:/)).toBeVisible();
   await axeClean(page);
 
@@ -196,8 +196,10 @@ test('tutorial 0-2: fall on the training page, damage control feedback, blame-fr
   await page.getByRole('button', { name: 'Start' }).click();
   await page.getByRole('button', { name: /Report the email as phishing/ }).click();
   await passConsequence(page);
-  await expect(page.getByRole('img', { name: '0 of 3 stars' })).toBeVisible();
-  await expect(page.getByText(/You chose: Report the email as phishing/)).toBeVisible();
+  // Tutorial grace (ruling L4): reporting a genuine message in Home scores ★ with a kind line, never a bare label.
+  await expect(page.getByRole('img', { name: '1 of 3 stars' })).toBeVisible();
+  await expect(page.getByText('You reported it. Careful is good; this one was safe.')).toBeVisible();
+  await expect(page.getByText(/You chose: Report the email as phishing/)).toHaveCount(0);
   await expect(page.getByText(/could happen to anyone/)).toHaveCount(0);
   await axeClean(page);
   await continueToNext(page);

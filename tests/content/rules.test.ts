@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { anyFall, BEST_LINE_WORDS, chapterRules, choiceLines, choiceWorst, layer1Slot, scenarioRules, LAYER1_OVERHEAD, wordCount } from '../../scripts/lib/rules.ts';
 import { deriveCheckables, linksIn } from '../../src/content/checkables.ts';
 import { scenarioSchema, type Scenario } from '../../src/content/schema.ts';
+import { lookup } from '../../src/i18n/index.ts';
 import { rawFraud, rawGenuine, realRegistries, ROOT, scenario, validChapter } from './fixtures.ts';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -174,7 +175,9 @@ describe('per-scenario rules (scenarioRules)', () => {
     it('slot without any fall: no kind line; the exact rendered "You chose" text is counted', () => {
       const g = rawGenuine();
       expect(anyFall(scenario(g), reg.balance)).toBe(false);
-      for (const line of choiceLines(scenario(g), reg.balance)) expect(line).toMatch(/^You chose: .+\.$|^You let the timer run out\.$/);
+      // Over-caution on genuine renders its kind line (ruling L4), never "You chose: <label>.".
+      for (const line of choiceLines(scenario(g), reg.balance)) expect(line).toMatch(/^You chose: .+\.$|^You let the timer run out\.$|^You reported it\. Careful is good; this one was safe\.$/);
+      expect(choiceLines(scenario(g), reg.balance)).toContain(lookup('you_chose_report_genuine'));
       expect(layer1Slot(scenario(g), reg.balance).words).toBeGreaterThanOrEqual(BEST_LINE_WORDS);
     });
     it('choice_worst counts the timer line, engage labels and "What now?" extras', () => {

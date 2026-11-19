@@ -2,7 +2,8 @@
  * Score a finished run (GDD §7.1, balance `stars`, `points`, `tags`,
  * `multi_step.boss`, `recovery`). Pure.
  *
- * - Standard: the decisive action's stars × per_star (report on genuine: −5),
+ * - Standard: the decisive action's stars × per_star (report on genuine: −5;
+ *   tutorial grace in slot 0: ★ and 0 points, balance `tutorial_grace`),
  *   plus the tag bonus on verify/report/dismiss endings. A fall scores its
  *   damage-control points instead (★ if ≥ 6).
  * - Boss: each scored beat group scores on its own decisive action and the
@@ -100,7 +101,7 @@ export function maxPointsOfScenario(b: EngineBalance, s: Scenario): number {
 export function resultOf(s: Scenario, b: EngineBalance, st: RunnerState): ScenarioResult {
   const truth = st.truth;
   const beats: BeatResult[] = st.groups.map((g) => {
-    const score = scoreGroup(b, truth, g.decision, { engagedOnFraud: g.engagedOnFraud, timerExpired: g.timerExpired });
+    const score = scoreGroup(b, truth, g.decision, { engagedOnFraud: g.engagedOnFraud, timerExpired: g.timerExpired, slot: st.slot });
     const tags = groupTags(s, st, g);
     return { ...score, beatId: g.beatId, scored: g.scored, outcome: g.outcome, correctTags: tags.correct, wrongTags: tags.wrong, kinds: g.kinds };
   });

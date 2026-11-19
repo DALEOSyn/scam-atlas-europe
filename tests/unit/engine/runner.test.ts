@@ -325,7 +325,7 @@ describe('runner: bosses (scammer-driven beats, summed scores)', () => {
     expect(r).toMatchObject({ tagBonus: 0, tagBonusVoided: true, correctTags: 2, wrongTags: 1, points: 15 + 15 + 10, stars: 3 });
   });
 
-  it('"What now?" extra returns to the step with a note, caps the beat at ★★ and is the "You chose" line', () => {
+  it('"What now?" extra returns to the step with a note, caps the beat at ★★; with ★★★ displayed its line moves to layer 2', () => {
     const s = boss();
     let st = run(s, ctx(), [act('open_app'), { type: 'continue' }, act('check_app_2'), { type: 'continue' }, act('hang_up')]);
     expect(st.phase).toBe('what_now');
@@ -342,14 +342,21 @@ describe('runner: bosses (scammer-driven beats, summed scores)', () => {
     expect(r.beats[2]).toMatchObject({ stars: 2, capped: true, cls: 'verify' });
     expect(r.genuineReported).toBe(0);
     const d = debriefOf(s, st, r, seen);
-    expect(d.layer1.youChose).toEqual([{ beatId: 'support_call', kind: 'action', label: 'Call back this number' }]);
+    // Beats 3, 3, 2 → ★★★ displayed (rounded mean): no "You chose" line in layer 1 (ruling L1). An engage
+    // cap is not a dismiss, so no "Next time" pointer and no ★★★ line either.
+    expect(r.stars).toBe(3);
+    expect(d.layer1).toMatchObject({ youChose: [], nextTime: null, allBest: false });
+    expect(d.layer2.youChoseOther).toMatchObject([{ line: { beatId: 'support_call', kind: 'action', label: 'Call back this number' }, stars: 2 }]);
   });
 
-  it('"Done" in What now? scores dismiss and is named as a built-in choice', () => {
+  it('"Leave it there" in What now? scores dismiss; with ★★★ displayed, "Next time" takes the slot (ruling L1)', () => {
     const s = boss();
     const { st, r } = play(s, ctx(), [act('open_app'), { type: 'continue' }, act('check_app_2'), { type: 'continue' }, act('hang_up'), { type: 'what_now', choice: 'done' }]);
     expect(r.beats[2]).toMatchObject({ cls: 'dismiss', stars: 2 });
-    expect(debriefOf(s, st, r, seen).layer1.youChose).toEqual([{ beatId: 'support_call', kind: 'what_now', choice: 'done' }]);
+    expect(r.stars).toBe(3);
+    const d = debriefOf(s, st, r, seen);
+    expect(d.layer1).toMatchObject({ youChose: [], nextTime: 'after_hang_up', allBest: false });
+    expect(d.layer2.youChoseOther).toMatchObject([{ line: { beatId: 'support_call', kind: 'what_now', choice: 'done' }, stars: 2, beat: { device: 'call' } }]);
   });
 
   it('boss stars are the rounded mean of beat stars', () => {

@@ -108,6 +108,8 @@ export type RunnerLogEntry =
 export interface RunnerState {
   scenarioId: string;
   truth: Truth;
+  /** Chapter slot the scenario is played in (tutorial grace in scoring). */
+  slot: number;
   phase: Phase;
   /** Scenario clock (seconds); stops while frozen and outside play. */
   clock: number;
@@ -225,6 +227,7 @@ export function startScenario(s: Scenario, ctx: RunnerContext): RunnerState {
   const state: RunnerState = {
     scenarioId: s.id,
     truth: truthOf(s),
+    slot: ctx.slot,
     phase: 'playing',
     clock: 0,
     real: 0,

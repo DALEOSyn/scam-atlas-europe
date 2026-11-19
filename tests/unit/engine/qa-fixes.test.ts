@@ -179,17 +179,17 @@ describe('CR-15: a boss debrief shows one "You chose" line in layer 1', () => {
     const d = debriefOf(s, st, r, none);
     // Paying was a fall: the kind line holds the layer-1 slot and the lead line opens layer 2.
     expect(d.layer1.youChose).toEqual([]);
-    expect(d.layer2.youChoseOther).toEqual([
-      { beatId: 'invoice', kind: 'action', label: 'Pay the invoice' },
-      { beatId: 'start', kind: 'action', label: 'Report it' },
-      { beatId: 'support_call', kind: 'what_now', choice: 'done' },
+    expect(d.layer2.youChoseOther.map((o) => [o.line, o.stars, o.beat?.device])).toEqual([
+      [{ beatId: 'invoice', kind: 'action', label: 'Pay the invoice' }, 0, 'email'],
+      [{ beatId: 'start', kind: 'action', label: 'Report it' }, 2, 'sms'],
+      [{ beatId: 'support_call', kind: 'what_now', choice: 'done' }, 2, 'call'],
     ]);
   });
   it('on a tie the latest beat leads', () => {
     const { st, r } = play(s, ctx(), [act('report_it'), { type: 'continue' }, act('report_2'), { type: 'continue' }, act('hang_up'), { type: 'what_now', choice: 'done' }]);
     const d = debriefOf(s, st, r, none);
     expect(d.layer1.youChose.map((c) => c.beatId)).toEqual(['support_call']);
-    expect(d.layer2.youChoseOther.map((c) => c.beatId)).toEqual(['start', 'invoice']);
+    expect(d.layer2.youChoseOther.map((c) => c.line.beatId)).toEqual(['start', 'invoice']);
   });
   it('no line when every beat scored three stars', () => {
     const { st, r } = play(s, ctx(), [act('open_app'), { type: 'continue' }, act('check_app_2'), { type: 'continue' }, act('hang_up'), { type: 'what_now', choice: 'call_back_known' }]);
@@ -206,7 +206,10 @@ describe('CR-15: the layer-1 validator counts one "You chose" line for a boss', 
     const s = boss();
     const labels = [...s.actions, ...s.beats.flatMap((b) => b.actions)].map((a) => a.label.split(/\s+/).length);
     const worst = choiceWorst(s, loadBalanceFile());
-    expect(worst).toBeLessThanOrEqual(2 + Math.max(...labels, 4));
+    // The longest single line: a label line, or the boss "Next time" pointer (ruling L1, 8 words).
+    const { lookup } = await import('../../../src/i18n/index.ts');
+    const nextTime = (lookup('next_time_after_hang_up') ?? '').split(/\s+/).length;
+    expect(worst).toBeLessThanOrEqual(Math.max(2 + Math.max(...labels, 4), nextTime));
     expect(worst).toBeLessThan(labels.reduce((a, b) => a + b, 0));
   });
 });

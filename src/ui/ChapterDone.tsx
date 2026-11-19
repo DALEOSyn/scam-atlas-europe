@@ -33,15 +33,16 @@ export function ChapterDone({ summary, onBack }: { summary: ChapterSummary; onBa
             <p>{t(next.tier === 'gold' ? 'tier_next_gold' : 'tier_next_silver')}</p>
             <ul>
               {next.needs.map((n) => (
-                <li key={n}>{t(NEED_KEYS[n], { n: next.spottedNeeded })}</li>
+                <li key={n}>{t(NEED_KEYS[n], { n: next.spottedNeeded, net: Math.max(0, summary.spotted) })}</li>
               ))}
             </ul>
           </div>
         ) : null}
         <p>
           {t('chapter_summary', {
-            spotted: summary.spottedShown,
+            correct: summary.correctShown,
             total: summary.redFlags,
+            wrong: summary.wrongTags,
             reported: summary.genuineReported,
             doubles: summary.doubleChecks,
           })}

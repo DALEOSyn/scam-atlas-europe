@@ -25,7 +25,7 @@ const none = { pressureAny: false, pressureGenuine: false };
 
 /** Every ending reachable by a player (depth-limited; meta actions are not repeated). */
 function endings(s: Scenario): { path: string[]; st: RunnerState }[] {
-  const c = ctx();
+  const c = ctx({ slot: 0 }); // Home is slot 0 (tutorial grace)
   const out: { path: string[]; st: RunnerState }[] = [];
   const go = (st: RunnerState, path: string[], depth: number): void => {
     if (depth > 14) return;

@@ -17,7 +17,7 @@ import { Checkable } from '../check/Check.tsx';
 import { Icon } from '../Icon.tsx';
 import { Host, RichText } from '../RichText.tsx';
 import { DemoField, SimPill, SimulatedForm } from '../SimulatedForm.tsx';
-import { hostParts, segmentMessage } from '../text.ts';
+import { forwardedSegments, hostParts, outerLeftover, segmentMessage } from '../text.ts';
 import { qrMountText } from '../../engine/inspect.ts';
 import { castMember } from '../../content/cast.ts';
 import { balance } from '../../content/balance.ts';
@@ -376,7 +376,8 @@ function Chat(p: DeviceProps) {
               ))}
             <div class={styles.bubbleIn}>
               {m.forwarded ? <Forwarded m={m} /> : <ChatBody message={m} quoted={new Set(p.quoted ?? [])} />}
-              <Chips items={segs.leftover} />
+              {/* QA B1 (10-4): checkables the forwarded card draws are never repeated as chips in the forwarder's bubble. */}
+              <Chips items={outerLeftover(m, segs)} />
               {m.image && p.device !== 'messenger' ? <ImageBox alt={m.image.alt} /> : null}
               {m.payee ? <BankDetails m={m} /> : null}
               {/* CR-39(b): a QR code sent in the chat, after the body; its destination chip is checkable. */}
@@ -410,8 +411,8 @@ function Forwarded({ m }: { m: Message }) {
   const f = m.forwarded;
   if (!f) return null;
   const app = brandById(f.app);
-  const inner: Message = { ...m, body: f.body, transcript: undefined, lang: undefined, translation: undefined, forwarded: undefined };
-  const segs = segmentMessage(inner);
+  const segs = forwardedSegments(m);
+  if (!segs) return null;
   return (
     <>
       {m.body ? (

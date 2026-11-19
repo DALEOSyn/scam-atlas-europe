@@ -48,7 +48,7 @@ inspectables:
     red_flag: false
     type: prompt
   - target: request
-    reveal: "A login you started, to the site you opened. Approving is right."
+    reveal: "A login you started, to the site you opened, naming that site."
     red_flag: false
     type: request
 

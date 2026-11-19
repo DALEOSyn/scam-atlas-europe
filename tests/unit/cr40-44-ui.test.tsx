@@ -8,14 +8,15 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/preact';
 import { join } from 'node:path';
 import { readYaml } from '../../scripts/lib/content.ts';
 import { balance } from '../../src/content/balance.ts';
-import { sceneSchema, scenarioSchema, timelineTextIssues, type Message } from '../../src/content/schema.ts';
+import { sceneSchema, scenarioSchema, timelineTextIssues, type Message, type Scenario } from '../../src/content/schema.ts';
 import { debriefOf } from '../../src/engine/debrief.ts';
 import { resultOf } from '../../src/engine/result.ts';
-import { startScenario, step } from '../../src/engine/runner.ts';
+import { startScenario, step, type CheckableView } from '../../src/engine/runner.ts';
 import { lookup, t } from '../../src/i18n/index.ts';
 import { ArcReveal } from '../../src/ui/ArcReveal.tsx';
 import { RedFlagTimeline, RevealCard, RevealScreen, TIMELINE_CHOICE_KEYS, TimelineScreen } from '../../src/ui/ArcFinale.tsx';
 import { DebriefView } from '../../src/ui/DebriefView.tsx';
+import { CheckContext, type CheckApi } from '../../src/ui/check/Check.tsx';
 import { DeviceView } from '../../src/ui/devices/Device.tsx';
 import type { DeviceProps } from '../../src/ui/devices/types.ts';
 import { EndScreen, earnedCards } from '../../src/ui/EndScreen.tsx';
@@ -86,6 +87,60 @@ describe('CR-40: the forwarded card and the advice line', () => {
     expect(stars.compareDocumentPosition(line) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(container.textContent).toContain('You chose: A few transfers? Probably fine.');
     expect(container.textContent).not.toContain(t('debrief_no_shame'));
+  });
+});
+
+describe('CR-40/41 (QA B1, Brussels 10-4): a forwarded checkable is drawn once, inside the card', () => {
+  const s = fixture('cr40-advice.yaml');
+  const targets = (root: ParentNode) => [...root.querySelectorAll('[data-check]')].map((b) => b.getAttribute('data-check') ?? '');
+  /** Every checkable the device may draw is live (as on the beat on screen), so each renders as a button. */
+  const live = ['sender.detail', 'forwarded.sender', 'reference', 'reference#2', 'request', 'claim', 'claim#2', 'phone_number'];
+  const api: CheckApi = {
+    items: new Map(live.map((target) => [target, { target, beatId: 'start', device: 'messenger', checked: false, tagged: false } as unknown as CheckableView])),
+    checkMode: false,
+    visible: () => '',
+    open: () => undefined,
+    hint: () => undefined,
+  };
+  const draw = (m: Message) =>
+    render(
+      <CheckContext.Provider value={api}>
+        <DeviceView {...props('messenger', m)} />
+      </CheckContext.Provider>,
+    );
+  const brussels = (file: string) => scenarioSchema.parse(readYaml(join(ROOT, 'content', 'scenarios', 'brussels', file)));
+  const cases: [string, () => Scenario][] = [
+    ['fixture fx-cr40-advice', () => s],
+    ['Brussels 10-4 (brussels-04-noor-easy-money)', () => brussels('brussels-04-noor-easy-money.yaml')],
+    ['Brussels arc Teo (brussels-arc-teo)', () => brussels('brussels-arc-teo.yaml')],
+  ];
+  for (const [name, load] of cases) {
+    it(`${name}: every data-check target appears exactly once, and none is drawn outside the forwarded card`, () => {
+      const sc = load();
+      expect(sc.message.forwarded).toBeDefined();
+      const { container } = render(<ScenarioView scenario={sc} ctx={CTX} onDone={() => undefined} />);
+      const card = container.querySelector('[data-forwarded]') as HTMLElement;
+      expect(card).not.toBeNull();
+      const all = targets(container);
+      expect(all).toContain('forwarded.sender');
+      if (sc.message.references?.length) expect(all).toContain('reference');
+      expect(new Set(all).size, `duplicated targets: ${all.join(', ')}`).toBe(all.length);
+      // CR-40: the forwarder's own bubble is never checkable, so every checkable sits inside the card.
+      for (const b of container.querySelectorAll('[data-check]')) {
+        expect(card.contains(b), `${b.getAttribute('data-check') ?? ''} is drawn outside the forwarded card`).toBe(true);
+      }
+    });
+  }
+  it('a reference that is not quoted in forwarded.body is still drawn once, as a chip inside the card', () => {
+    const { container } = draw({ ...s.message, references: ['Ref QC-2291'] });
+    const card = container.querySelector('[data-forwarded]') as HTMLElement;
+    expect(container.querySelectorAll('[data-check="reference"]')).toHaveLength(1);
+    expect(card.querySelectorAll('[data-check="reference"]')).toHaveLength(1);
+  });
+  it('a messenger beat without a forwarded card still shows its leftover reference once, in the bubble', () => {
+    const { container } = draw({ ...s.message, forwarded: undefined, body: 'Hey, a quick one.', ask: undefined, claims: undefined, references: ['Ref QC-2291'] });
+    expect(container.querySelector('[data-forwarded]')).toBeNull();
+    expect(container.querySelectorAll('[data-check="reference"]')).toHaveLength(1);
   });
 });
 

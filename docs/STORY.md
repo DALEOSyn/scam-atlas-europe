@@ -157,7 +157,7 @@ Each block lists the patterns from MAP.md or the chapter spec (the scene never s
 - **Resolution** (after the boss debrief; relieved): two days later, keys on the table: they got the flat. Andrés (proud): "Signed. And I checked every step in the app myself." Lucía (warm): "Sleepy or not, same rule."
   - **Variant `madrid_money_moved`** (story-only flag, set by the boss's fall outcomes): one extra panel, Lucía (calm): "The bank was called straight away, the right first step. We'll see what it can recall." No refund promise. It plays **first**, before the keys and Andrés's "Signed" (which still plays), so the player's loss is acknowledged before the hosts' good news.
 - **If-then panel (Lucía, phone at the ear):** "If someone says my money isn't safe, then I hang up and call the number on my card." Extra line under it: "No real bank asks you to move your money to keep it safe."
-- **Drill 4-4 (her near-miss) wording to keep:** Lucía's card-line reply ends "…only ever the number on my card."
+- **Drill 4-4 (her near-miss) wording to keep:** Lucía's card-line reply ends "…the number on my card or the one in the app, never one a text gives me."
 - **Invitation:** Lucía: "Our spare room is yours whenever you come. Bring an appetite."
 - **Arc:** arc slot N for the play position (§1.4), placed between 4-7 and 4-8.
 - **Safety:** money-fear theme; calm pacing (§5). The turn resolves its own worry.

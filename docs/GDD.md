@@ -1395,7 +1395,7 @@ Shared rules: action order follows the validator (`action_order`); labels ≤ 8 
 - Habit card `hang-up-call-back` (producer ruling, Madrid QA round, 2026-11-19: its already-clicked line fits a call that led to a transfer; was `who-really-sent`, whose "change that password" line doesn't). `who-really-sent` is no longer shown in a Madrid debrief; it stays on the atlas page.
 
 **4-4 `madrid-04-lucia-slept-on-it`** (drill, unscored) · messenger with a quoted sms · cast Lucía · `pattern: bank-safe-account-call`
-- **Message:** Lucía's saved contact "Lucía (Madrid)". "Just woke up. This came in overnight, in my real Larchwick chat. My rule: nothing big till I've slept. Slept now 😄 What would you check?" Quoted text (`context: quoted`): "LARCHWICK: New sign-in to your account from a new device. Not you? Call us immediately on 9•• ••• •52."
+- **Message:** Lucía's saved contact "Lucía (Madrid)". "This came in during my shift, in my real Larchwick chat. My rule: nothing big till I've slept. Slept now 😄 What would you check?" Quoted text (`context: quoted`): "LARCHWICK: New sign-in to your account from a new device. Not you? Call us immediately on 9•• ••• •52."
 - **Quoted checkables:** `sender.detail` D (quoted; M1 wording, "in her real Larchwick thread") · `phone_number` **R** (quoted; "a number in a text, not the one on her card"). Drill tags never count.
 - **Picks** (each gets a Lucía reply; no stars):
   - "Don't call it. Open your Larchwick app yourself." (`proceed`) → "App says no new sign-in. Phew. Deleting it."

@@ -7,7 +7,7 @@ slot: arrival
 panels:
   - backdrop: madrid-street
     crop: centre
-    caption: "Madrid. Your host's spare room, and the Atlas page to write."
+    caption: "Madrid. Your hosts' spare room, and the Atlas page to write."
     alt: "Ochre and cream apartment buildings with shutters, balconies and geraniums."
   - backdrop: madrid-kitchen
     crop: left

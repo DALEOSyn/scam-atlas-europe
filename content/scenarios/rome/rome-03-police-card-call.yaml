@@ -52,7 +52,7 @@ inspectables:
     red_flag: true
     type: claim
   - target: request
-    reveal: "Real police never ask for money, and nobody needs your card details read out on a call."
+    reveal: "Real police never ask for money or your card details, and a caller who rang you has no reason to hear them."
     red_flag: true
     type: request
 
@@ -96,7 +96,7 @@ outcomes:
       - { step: call_back_caller_number, category: harmful }
       - { step: wait_and_see, category: harmful }
   police_didnt_call:
-    narrative: "You dial 112 yourself. \"We didn't call you. Calling us yourself was exactly right.\""
+    narrative: "You dial 112 yourself. \"Police never ask for your card details on the phone. Calling us yourself was exactly right.\""
   bank_card_fine:
     narrative: "Larchwick, on the number on your card: \"Your card's fine. Nobody from the police needs its details.\""
   police_call_reported:

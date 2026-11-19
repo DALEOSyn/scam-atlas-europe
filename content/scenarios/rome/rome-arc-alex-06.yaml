@@ -18,7 +18,7 @@ learning_objectives: [LO-14]
 is_fraud: true
 device: messenger
 brands: [wordswap]
-cast: [alex]
+cast: [alex, teo]
 pressure: { timer: false, levers: [] }
 
 message:
@@ -68,4 +68,4 @@ debrief:
     notes: "Friends share good news, and that's fine. But a balance that only grows, on a platform you can't check, proves nothing: the numbers are whatever the site shows. Real investing carries risk, and nobody can promise profits. Talk to someone you trust before you add money."
   already_clicked:
     paid: "If you've already paid, stop paying, call your bank on the number on your card, and keep the chat history."
-  sources: [ie-garda-investment-2025, ie-fraudsmart-investment-2025, be-police-romance-2026, eu-esas-ai-scams-factsheet-it]
+  sources: [be-fsma-trading-platforms-2025, ie-garda-crimecall-investment-2024, be-police-romance-2026, eu-esas-ai-scams-factsheet-it]

@@ -7,8 +7,9 @@
 import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { scenarioSchema, type Scenario } from '../../../src/content/schema.ts';
-import { maxPointsOfScenario, redFlagCount, resultOf } from '../../../src/engine/result.ts';
+import { chapterSchema, scenarioSchema, type Scenario } from '../../../src/content/schema.ts';
+import { recordOf, summarise } from '../../../src/engine/chapter.ts';
+import { maxPointsOfScenario, redFlagCount, resultOf, type ScenarioResult } from '../../../src/engine/result.ts';
 import { step, type RunnerContext, type RunnerEvent, type RunnerState } from '../../../src/engine/runner.ts';
 import { readYaml, ROOT } from '../helpers.ts';
 import { act, B, check, ctx, play, run, tag } from './helpers.ts';
@@ -56,11 +57,13 @@ function finish(s: Scenario, cx: RunnerContext, st0: RunnerState, picks?: string
   }
   return st;
 }
-const points = (id: string, events: RunnerEvent[], picks?: string[]) => {
+const points = (id: string, events: RunnerEvent[], picks?: string[]): ScenarioResult => {
   const s = get(id);
   const cx = ctx({ slot: 6, timerMode: 'off' });
   return resultOf(s, B, finish(s, cx, run(s, cx, events), picks));
 };
+const rome = chapterSchema.parse(readYaml('content/chapters/rome.yaml'));
+const stampOf = (results: ScenarioResult[]) => summarise(B, rome, results.map((r) => recordOf(r, get(r.scenarioId).pattern)), true);
 
 const BOSS_IDEAL: RunnerEvent[] = [
   ...tagBoth('claim#2'),
@@ -125,6 +128,15 @@ describe('Rome: chapter totals (GDD §26.7)', () => {
     for (const s of all.values()) {
       const messages = JSON.stringify([s.message, s.banner, s.beats.map((b) => [b.message, b.banner]), s.interrupts.map((i) => i.message), s.pressure]);
       expect([s.id, messages.includes('112')]).toEqual([s.id, false]);
+    }
+  });
+
+  it('RM2: the voice claims in 6-2 and 6-4 (CR-36 fallback) stay neutral', () => {
+    for (const id of ['rome-02-teo-calls-you', 'rome-04-grandpa-new-number']) {
+      const voice = get(id).inspectables.find((i) => i.target === 'claim');
+      expect([id, voice?.red_flag]).toEqual([id, false]);
+      expect(voice?.reveal).toContain('A voice can be copied from a short recording');
+      expect(voice?.reveal.startsWith('It fits')).toBe(false);
     }
   });
 
@@ -201,6 +213,15 @@ describe('Rome drill 6-6 (CR-32)', () => {
     expect(st2.recovery?.options).toHaveLength(6);
     expect(s.outcomes.helping_davide?.recovery_for).toBe('davide');
   });
+
+  it('"wait and see": no damage control, Bruna sends him to the bank anyway, no score', () => {
+    const s = get('rome-06-davide-paid');
+    const { st, r } = play(s, c(), [act('wait_see_davide')]);
+    expect(st.phase).toBe('done');
+    expect(st.recovery).toBeFalsy();
+    expect(r.scored).toBe(false);
+    expect(s.outcomes.bruna_bank_first?.narrative).toContain('number on his card');
+  });
 });
 
 describe('Rome boss (call → call + banking → sms, covered_by)', () => {
@@ -235,8 +256,26 @@ describe('Rome boss (call → call + banking → sms, covered_by)', () => {
 });
 
 describe('Rome strategy rows (GDD §26.7)', () => {
-  it('row 1 ideal: 174 of 174', () => {
+  const idealResults = (over: Record<string, RunnerEvent[]> = {}) => [
+    ...Object.entries({ ...IDEAL, ...over }).map(([id, ev]) => points(id, ev)),
+    points(BOSS, BOSS_IDEAL),
+  ];
+
+  it('row 1 ideal: 174 of 174, spotted 15, gold', () => {
     expect(sumIdeal() + points(BOSS, BOSS_IDEAL).points).toBe(174);
+    const summary = stampOf(idealResults());
+    expect(summary.spotted).toBe(15);
+    expect(summary.stamp).toBe('gold');
+  });
+
+  it('row 2: calling Davide about breakfast (off-focus) blocks gold; calling Teo back (in focus) does not', () => {
+    const davide = stampOf(idealResults({ 'rome-01-breakfast-till-ten': [act('call_davide_check')] }));
+    expect(davide.points).toBe(174);
+    expect(davide.offFocusDoubleChecks).toBe(1);
+    expect(davide.stamp).toBe('silver');
+    const teo = stampOf(idealResults({ 'rome-02-teo-calls-you': [act('hang_up_teo'), wn('call_teo_saved_after')] }));
+    expect(teo.offFocusDoubleChecks).toBe(0);
+    expect(teo.stamp).toBe('gold');
   });
 
   it('row 11 "trust an official-looking caller": 141, spotted net 9', () => {
@@ -249,6 +288,12 @@ describe('Rome strategy rows (GDD §26.7)', () => {
     );
     expect(boss.points).toBe(28);
     expect(sumIdeal(['rome-03-police-card-call']) + p63.points + boss.points).toBe(141);
+    const others = Object.entries(IDEAL)
+      .filter(([id]) => id !== 'rome-03-police-card-call')
+      .map(([id, ev]) => points(id, ev));
+    const summary = stampOf([...others, p63, boss]);
+    expect(summary.spotted).toBe(9);
+    expect(summary.stamp).toBe('silver');
   });
 
   it('row 12 "a familiar voice is enough": 162', () => {

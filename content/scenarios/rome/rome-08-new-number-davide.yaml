@@ -181,9 +181,9 @@ debrief:
   layer2:
     message_flags:
       - "\"Please, it's due at six\": a deadline leaves no time for a call."
-    notes: "A \"doesn't match\" warning means the account isn't his. Stop there."
+    notes: "A \"doesn't match\" warning means the account isn't in his name. Stop there and call his saved number."
   device_tip: "On a real phone, open your contacts and call the number you already have for the person, not the new one in the chat."
   habit_card: call-the-number-you-know
   already_clicked:
     paid: "Sent money? Call your bank now on the number on your card and ask it to try to stop or recall the transfer. Don't pay a second request."
-  sources: [nl-politie-hulpvraagfraude-2025, nl-fraudehelpdesk-hulpvraag-campaign, nl-veiliginternetten-hulpvraag, it-bdi-truffe-cyber, eu-ec-ipr-vop-2025, eu-ecb-ipr]
+  sources: [it-carabinieri-contro-truffe, nl-politie-hulpvraagfraude-2025, nl-fraudehelpdesk-hulpvraag-campaign, nl-veiliginternetten-hulpvraag, it-bdi-truffe-cyber, eu-ec-ipr-vop-2025, eu-ecb-ipr]

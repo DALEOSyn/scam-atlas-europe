@@ -82,6 +82,6 @@ debrief:
   layer2:
     message_flags: []
     notes: "Most messages are fine. Save your checks for ones that ask for money, codes or a login."
-  device_tip: "On a real phone, tap the contact's name at the top of the chat to see the number behind it and check it's the one you saved."
+  device_tip: "On a real phone, most messages from saved contacts are fine. If one asks for money or a code, call the person first, even if it's their saved number: accounts can be taken over."
   habit_card: calm-not-paranoid
   sources: [nl-politie-hulpvraagfraude-2025, nl-veiliginternetten-hulpvraag]

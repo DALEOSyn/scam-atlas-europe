@@ -49,7 +49,7 @@ inspectables:
     red_flag: true
     type: caller_id
   - target: claim
-    reveal: "Sounds like Grandpa Teo, with an excuse for the new number. A voice can be copied from a short recording, and phones do die, so it can't prove anything either way."
+    reveal: "Sounds like Grandpa Teo, with an excuse for the new number. A voice can be copied from a short recording, and phones do die, so it can't prove anything either way. Judge what he asks."
     red_flag: false
     type: claim
   - target: claim#2

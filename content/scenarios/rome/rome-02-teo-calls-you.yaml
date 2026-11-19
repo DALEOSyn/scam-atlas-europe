@@ -46,7 +46,7 @@ inspectables:
     red_flag: false
     type: caller_id
   - target: claim
-    reveal: "Sounds like Grandpa Teo. A voice can be copied from a short recording, so it can't prove anything either way."
+    reveal: "Sounds like Grandpa Teo. A voice can be copied from a short recording, so it can't prove anything either way. Judge what he asks."
     red_flag: false
     type: claim
   - target: claim#2
@@ -99,4 +99,4 @@ debrief:
     notes: "A real relative with a scare still asks for nothing you'd regret, and is happy for you to call back. Teo's rule is on your card: the number he dialled was his own choice."
   device_tip: "On a real phone, end the call yourself, then open your contacts and call the saved number. Don't use redial or the call log."
   habit_card: hang-up-call-back
-  sources: [it-carabinieri-contro-truffe, it-mur-smishing-vishing, eu-esas-ai-scams-factsheet-it]
+  sources: [it-carabinieri-contro-truffe, it-mur-smishing-vishing, eu-esas-ai-scams-factsheet-it, nl-veiliginternetten-voice-cloning]

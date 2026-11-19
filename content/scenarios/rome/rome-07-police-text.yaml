@@ -102,7 +102,7 @@ beats:
         request: none
     inspectables:
       - target: caller_id
-        reveal: "The number from the text, which you dialled. It reaches whoever sent the text, so it can't show you're talking to the police."
+        reveal: "You dialled this number, but it came from the text, not from a source you looked up. A number on screen proves nothing either way; this one's source is the problem: it reaches whoever sent the text."
         red_flag: true
         type: caller_id
       - target: claim
@@ -175,7 +175,7 @@ outcomes:
       - { step: call_back_text_number, category: harmful }
       - { step: wait_and_see, category: harmful }
   police_didnt_text:
-    narrative: "You dial 112 yourself. \"We didn't call you. Calling us yourself was exactly right.\""
+    narrative: "You dial 112 yourself. \"Police don't send texts like that, and never ask you to approve anything in your bank app. Calling us yourself was exactly right.\""
   card_active_nothing_pending:
     narrative: "You open the Larchwick app yourself. Your card is active. Nothing is pending."
   bank_no_request:

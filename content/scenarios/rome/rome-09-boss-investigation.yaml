@@ -311,7 +311,7 @@ outcomes:
   card_no_investigation_ring:
     narrative: "Larchwick, on the number on your card: \"No investigation, and we'd never ask you not to call us.\" As you hang up, your phone rings: \"Larchwick Bank\"."
   police_no_investigation_ring:
-    narrative: "You dial 112 yourself. \"We didn't call you, and we'd never ask for a bank code. Calling us yourself was exactly right.\" As you hang up, your phone rings: \"Larchwick Bank\"."
+    narrative: "You dial 112 yourself. \"We'd never ask for a bank code. Calling us yourself was exactly right.\" As you hang up, your phone rings: \"Larchwick Bank\"."
   police_boss_reported:
     narrative: "Reported. Keep a note of the time and what was said. Then your phone rings: \"Larchwick Bank\"."
   police_boss_left:
@@ -319,7 +319,7 @@ outcomes:
   card_no_protected_account:
     narrative: "Larchwick, on the number on your card: \"We didn't call you, and there's no protected account. If anything has already left, we'll try to stop it now.\""
   police_no_protected_account:
-    narrative: "You dial 112 yourself. \"No investigation, and no officer asks you to move money. Call your bank on the number on your card too.\""
+    narrative: "You dial 112 yourself. \"No officer asks you to move money. Call your bank on the number on your card too.\""
   bank_boss_reported:
     narrative: "Reported. Keep a note of the time and what was said: your bank and the police can use them."
   bank_boss_left:
@@ -342,7 +342,7 @@ outcomes:
 debrief:
   variant: standard
   layer1:
-    tell: "'Police', 'your bank', a link: all after your money."
+    tell: "'Police', 'your bank', a link: after keys or money."
     what_works: "Hang up. Dial a number you looked up."
   layer2:
     message_flags:

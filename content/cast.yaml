@@ -89,7 +89,7 @@ cast:
     notes: "19; falls in drill 6-6 (a voice like Giulia's from a new number), never mocked. Speaks the Rome If-then line (phone at the ear)."
   - id: giulia
     name: "Giulia Esposito"
-    role: "Bruna's granddaughter, studying abroad (video only)"
+    role: "Bruna's granddaughter, studying abroad"
     known_channel: { label: "Saved contact", detail: "Giulia (family)" }
     notes: "Drawn only inside a video frame (rome-giulia-safe). Her voice is borrowed in 6-6 (never her fault). The known_channel detail is the ux-artist's placeholder; game-designer to confirm."
   # Lisbon (GDD §27.10, story bible §3.7). Mateus is recurring.

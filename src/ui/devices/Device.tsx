@@ -15,16 +15,19 @@ import type { ActionView } from '../../engine/runner.ts';
 import { t } from '../../i18n/index.ts';
 import { Checkable } from '../check/Check.tsx';
 import { Icon } from '../Icon.tsx';
-import { Host, RichText } from '../RichText.tsx';
+import { Host, LangText, RichText } from '../RichText.tsx';
 import { DemoField, SimPill, SimulatedForm } from '../SimulatedForm.tsx';
 import { hostParts, segmentMessage } from '../text.ts';
+import { qrMountText } from '../../engine/inspect.ts';
+import { castMember } from '../../content/cast.ts';
+import { balance } from '../../content/balance.ts';
 import { Avatar, BrandBar, ChatBody, Chips, LaptopFrame, MessageBody, PhoneFrame, Segments, Translate } from './parts.tsx';
 import { QrGraphic } from './QrGraphic.tsx';
 import type { DeviceProps } from './types.ts';
 import styles from './devices.module.css';
 
-/** Descriptive heading of a beat (focus target on arrival, UI_SPEC §10.3). */
-export function deviceHeading(device: Device, m: Message): string {
+/** Descriptive heading of a beat (focus target on arrival, UI_SPEC §10.3). `outgoing`: a call the player dialled (CR-45). */
+export function deviceHeading(device: Device, m: Message, outgoing = false): string {
   const from = m.sender?.display ?? '';
   switch (device) {
     case 'email':
@@ -39,6 +42,7 @@ export function deviceHeading(device: Device, m: Message): string {
     case 'social':
       return t('heading_social', { from });
     case 'call':
+      if (outgoing) return t('heading_call_out', { from });
       return m.video ? t('heading_video_call', { from }) : t('heading_call', { from });
     case 'browser':
       return t('heading_browser', { page: m.page?.title ?? m.page?.address ?? '' });
@@ -319,9 +323,14 @@ function Chat(p: DeviceProps) {
           <Avatar name={display} />
         )}
         <span class={styles.chatTitle}>
-          <Checkable target="sender.detail">
+          {/* CR-40: the forwarder (a cast member) is never checkable; the forwarded sender is. */}
+          {m.forwarded ? (
             <strong>{display}</strong>
-          </Checkable>
+          ) : (
+            <Checkable target="sender.detail">
+              <strong>{display}</strong>
+            </Checkable>
+          )}
           <span class={styles.muted}>{p.device === 'sms' ? t('sms_sub') : t('chat_sub')}</span>
         </span>
       </div>
@@ -367,10 +376,12 @@ function Chat(p: DeviceProps) {
                 </div>
               ))}
             <div class={styles.bubbleIn}>
-              <ChatBody message={m} quoted={new Set(p.quoted ?? [])} />
+              {m.forwarded ? <Forwarded m={m} /> : <ChatBody message={m} quoted={new Set(p.quoted ?? [])} />}
               <Chips items={segs.leftover} />
               {m.image && p.device !== 'messenger' ? <ImageBox alt={m.image.alt} /> : null}
               {m.payee ? <BankDetails m={m} /> : null}
+              {/* CR-39(b): a QR code sent in the chat, after the body; its destination chip is checkable. */}
+              {m.qr && p.device === 'messenger' ? <QrView m={m} device={p.device} inChat /> : null}
             </div>
             <Translate message={m} onFreeze={p.onTranslation} alwaysOpen={p.alwaysTranslate} />
             {/* Pusher follow-ups are ordinary bubbles with no "follow-up" label (UI_SPEC §3.2). */}
@@ -388,6 +399,41 @@ function Chat(p: DeviceProps) {
         )}
       </div>
     </PhoneFrame>
+  );
+}
+
+/**
+ * CR-40: a message a cast member forwards (advice scenarios): their own words as plain text (never checkable), then
+ * the forwarded message as a quoted card: "Forwarded from {app}", its sender (checkable `forwarded.sender`) and its
+ * body, where claims, the ask and references are highlighted as in any message.
+ */
+function Forwarded({ m }: { m: Message }) {
+  const f = m.forwarded;
+  if (!f) return null;
+  const app = brandById(f.app);
+  const inner: Message = { ...m, body: f.body, transcript: undefined, lang: undefined, translation: undefined, forwarded: undefined };
+  const segs = segmentMessage(inner);
+  return (
+    <>
+      {m.body ? (
+        <div class={styles.body}>
+          <RichText text={m.body} />
+        </div>
+      ) : null}
+      <figure class={styles.forwarded} data-forwarded="">
+        <figcaption class={styles.forwardedHead}>
+          <span class={styles.muted}>{t('forwarded_from', { app: app?.name ?? f.app })}</span>
+          <Checkable target="forwarded.sender" name={f.sender.detail ? `${f.sender.display} · ${f.sender.detail}` : f.sender.display}>
+            <strong>{f.sender.display}</strong>
+            {f.sender.detail ? <span class={styles.muted}> · {f.sender.detail}</span> : null}
+          </Checkable>
+        </figcaption>
+        <blockquote class={styles.forwardedBody}>
+          <Segments segs={segs.body} />
+        </blockquote>
+        <Chips items={segs.leftover} />
+      </figure>
+    </>
   );
 }
 
@@ -544,6 +590,7 @@ function Call(p: DeviceProps) {
   const shown = stage?.shown ?? lines.length;
   const answered = stage?.answered ?? true;
   const ended = stage?.ended ?? false;
+  const outgoing = stage?.outgoing ?? false;
   // After Answer the Answer button is gone: focus moves to the transcript heading (QA B2).
   const transcriptRef = useRef<HTMLHeadingElement>(null);
   const wasAnswered = useRef(answered);
@@ -576,9 +623,24 @@ function Call(p: DeviceProps) {
           <Checkable target="caller_id" class={styles.callerName}>
             {display}
           </Checkable>
-          <span class={styles.callerSub}>{ended ? t('call_ended') : answered ? t('call_in_progress') : t('call_incoming')}</span>
+          {/* CR-45: a call the player dialled: "Calling…", then "Connected"; never "Incoming call". */}
+          <span class={styles.callerSub} data-call-state={ended ? 'ended' : answered ? 'connected' : outgoing ? 'dialling' : 'ringing'}>
+            {ended ? t('call_ended') : answered ? (outgoing ? t('call_connected') : t('call_in_progress')) : outgoing ? t('call_dialling') : t('call_incoming')}
+          </span>
+          {/* CR-45 (QA): while dialling, where the number came from ("The number from the text"). */}
+          {outgoing && !answered && !ended && m.sender?.detail ? (
+            <span class={styles.callerSub} data-dialled-detail="">
+              {m.sender.detail}
+            </span>
+          ) : null}
           {/* Known only once the call is answered (sceptic T-3.3). */}
           {m.recorded && answered ? <span class={styles.callKind} data-recorded="">{t('call_recorded')}</span> : null}
+          {/* CR-36: who the voice sounds like, once answered. A label only: no audio is ever played. */}
+          {m.voice && answered ? (
+            <span class={styles.callerSub} data-voice-label="">
+              <Checkable target="voice">{t('call_sounds_like', { name: castMember(m.voice.sounds_like)?.name ?? m.voice.sounds_like })}</Checkable>
+            </span>
+          ) : null}
         </div>
         {/* CR-24: a stylised illustration of a fictional person, never photoreal; no audio, no glitch effects. */}
         {m.video && answered ? (
@@ -593,7 +655,7 @@ function Call(p: DeviceProps) {
           </figure>
         ) : null}
         {p.banner && answered ? <Banner banner={p.banner} beatId={p.beatId} onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} /> : null}
-        {!answered && !ended ? (
+        {!answered && !ended && outgoing ? null : !answered && !ended ? (
           <div class={styles.callButtons}>
             <button type="button" class={styles.round} onClick={p.onAnswer}>
               <Icon name="phone-answer" size={28} />
@@ -676,12 +738,50 @@ function AddressText({ address }: { address: string }) {
   );
 }
 
+/** Kinds whose class is dismiss (balance action_kinds): the overlay's "Close" picks the beat's one dismiss action (CR-42). */
+const DISMISS_KINDS = new Set(Object.entries(balance.action_kinds).filter(([, v]) => v.class === 'dismiss').map(([k]) => k));
+
+/**
+ * CR-42: a browser warning drawn over the page as a game-styled panel (the Waymarker training frame, the game's own
+ * tokens): no operating-system, browser or security-product look, no real icons, no sound, no fullscreen, no
+ * leave-page prompt, no countdown of its own (the beat timer is the only clock). Its text is the beat's message text
+ * (phone numbers and claims are checkable); "Close" picks the beat's dismiss action. Not a dialog: the page, the
+ * Details list and the action tray stay reachable.
+ */
+function BrowserOverlay({ m, actions, canAct, onAct }: { m: Message; actions: readonly ActionView[]; canAct: boolean; onAct: (id: string) => void }) {
+  const o = m.page?.overlay;
+  if (!o) return null;
+  const segs = segmentMessage({ ...m, body: o.body, transcript: undefined });
+  const close = actions.find((a) => DISMISS_KINDS.has(a.kind));
+  return (
+    <section class={styles.overlay} aria-labelledby="page-overlay-h" data-page-overlay="">
+      <div class={styles.overlayPanel}>
+        <SimPill />
+        <h3 id="page-overlay-h" class={styles.overlayTitle}>
+          {o.title}
+        </h3>
+        <div class={styles.body}>
+          <Segments segs={segs.body} />
+        </div>
+        <Chips items={segs.leftover} />
+        {close ? (
+          <button type="button" class={styles.overlayClose} data-overlay-close="" aria-disabled={!canAct} onClick={() => canAct && onAct(close.id)}>
+            {t('overlay_close')}
+          </button>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
 function Browser(p: DeviceProps) {
   const m = p.message;
   const page = m.page;
   const form = !!FORM_KINDS[m.request];
   const brand = brandForName(page?.title);
   const segs = segmentMessage(m);
+  // CR-42: under a warning overlay the page's own text is backdrop, not message text (never checkable).
+  const overlay = !!page?.overlay;
   return (
     <LaptopFrame label={form ? t('region_browser_training') : t('region_browser')}>
       <div class={styles.browser}>
@@ -699,12 +799,29 @@ function Browser(p: DeviceProps) {
           {brand ? <BrandBar brand={brand} title={page?.title ?? brand.name} /> : null}
           <div class={styles.pageBody}>
             {!brand && page?.title ? <h3 class={styles.pageTitle}>{page.title}</h3> : null}
-            <MessageBody message={m} />
-            <Chips items={segs.leftover} />
+            {overlay ? (
+              m.body ? (
+                <>
+                  {/* Sceptic nb7: screen readers get the backdrop as one labelled note, never as checkable text. */}
+                  <p class={styles.vh} data-overlay-behind="">
+                    {t('overlay_page_behind')} <RichText text={m.body} />
+                  </p>
+                  <div class={styles.body} aria-hidden="true">
+                    <RichText text={m.body} />
+                  </div>
+                </>
+              ) : null
+            ) : (
+              <>
+                <MessageBody message={m} />
+                <Chips items={segs.leftover} />
+              </>
+            )}
             {m.image ? <ImageBox alt={m.image.alt} /> : null}
             <Translate message={m} onFreeze={p.onTranslation} alwaysOpen={p.alwaysTranslate} />
             {form ? <TrainingForm m={m} actions={p.actions} canAct={p.canAct} onAct={p.onAct} idPrefix="page" /> : null}
           </div>
+          {overlay ? <BrowserOverlay m={m} actions={p.actions} canAct={p.canAct} onAct={p.onAct} /> : null}
         </div>
       </div>
     </LaptopFrame>
@@ -716,24 +833,37 @@ function prefersReducedMotion(): boolean {
   return typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-/** QR camera: the code resolves only to an in-game route; nothing opens unless an authored action is chosen. */
-function QrView({ m, chip = true }: { m: Message; chip?: boolean }) {
+/**
+ * QR camera: the code resolves only to an in-game route; nothing opens unless an authored action is chosen.
+ * CR-37: on a physical surface (`qr`, `letter`), a sticker over the printed code gets a visible sticker edge
+ * and the "How the code is attached" line (checkable `qr.mount`, after the destination). CR-39(b): `inChat`
+ * draws the same stylised code inside a chat bubble, with the destination chip shown at once (no camera).
+ */
+function QrView({ m, device, chip = true, inChat = false }: { m: Message; device: Device; chip?: boolean; inChat?: boolean }) {
   const qr = m.qr;
-  const [found, setFound] = useState(prefersReducedMotion());
+  const [found, setFound] = useState(inChat || prefersReducedMotion());
   useEffect(() => {
     if (found) return undefined;
     const id = setTimeout(() => setFound(true), 600);
     return () => clearTimeout(id);
   }, [found]);
   if (!qr) return null;
+  const mount = qr.mount && !inChat ? qrMountText(device, qr.mount, qr.surface) : undefined;
+  const sticker = qr.mount === 'sticker' && !inChat;
+  const alt = inChat
+    ? t('qr_alt_chat', { host: qr.destination })
+    : `${t('qr_alt', { caption: qr.caption ?? t('qr_caption_default'), host: qr.destination })}${mount ? ` ${mount}.` : ''}`;
   return (
-    <div class={styles.qr}>
-      <div class={styles.viewfinder} role="img" aria-label={t('qr_alt', { caption: qr.caption ?? t('qr_caption_default'), host: qr.destination })}>
-        {qr.caption ? <p class={styles.qrCaption}>{qr.caption}</p> : null}
-        <QrGraphic route={qr.payload} />
+    <div class={inChat ? `${styles.qr} ${styles.qrInChat}` : styles.qr} data-qr={inChat ? 'chat' : 'camera'}>
+      <div class={inChat ? styles.qrChatCode : styles.viewfinder} role="img" aria-label={alt}>
+        {qr.caption && !inChat ? <p class={styles.qrCaption}>{qr.caption}</p> : null}
+        {/* CR-37: a sticker is drawn as a raised label with a lifted corner over the printed code. */}
+        <span class={sticker ? styles.qrSticker : styles.qrPrinted} data-mount={qr.mount ?? undefined}>
+          <QrGraphic route={qr.payload} size={inChat ? 144 : 168} />
+        </span>
       </div>
       {chip ? (
-        <p class={styles.qrChip} aria-live="polite">
+        <p class={styles.qrChip} aria-live={inChat ? undefined : 'polite'}>
           {found ? (
             <>
               <span>{t('qr_opens')} </span>
@@ -746,6 +876,12 @@ function QrView({ m, chip = true }: { m: Message; chip?: boolean }) {
           )}
         </p>
       ) : null}
+      {mount && found ? (
+        <p class={styles.qrMount} data-qr-mount="">
+          <span>{t('qr_mount_label')} </span>
+          <Checkable target="qr.mount">{mount}</Checkable>
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -754,7 +890,7 @@ function Qr(p: DeviceProps) {
   return (
     <PhoneFrame label={t('region_qr')}>
       <div class={styles.camera}>
-        <QrView m={p.message} />
+        <QrView m={p.message} device={p.device} />
         <MessageBody message={p.message} />
       </div>
     </PhoneFrame>
@@ -895,7 +1031,7 @@ function NameCheckCard(p: DeviceProps & { bankName: string }) {
                   aria-disabled={!p.canAct}
                   onClick={() => p.canAct && p.onAct(a.id)}
                 >
-                  {a.label}
+                  <LangText text={a.label} />
                 </button>
               </li>
             ))}
@@ -984,7 +1120,8 @@ function Bank(p: DeviceProps) {
       {p.onCall ? (
         <OnCallBar onCall={p.onCall} beatId={p.beatId} lines={p.pushers.filter((x) => x.boundTo === p.beatId)} onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} />
       ) : null}
-      <BrandBar brand={bank} title={bank?.name ?? ''} sub={m.account ? t('bank_business') : request ? t('bank_request_title') : confirm ? t('bank_confirm_sub') : t('bank_payments')} />
+      {/* CR-45: "Business account" only for a business account; a personal one keeps the screen's own sub-label. */}
+      <BrandBar brand={bank} title={bank?.name ?? ''} sub={m.account?.kind === 'business' ? t('bank_business') : request ? t('bank_request_title') : confirm ? t('bank_confirm_sub') : t('bank_payments')} />
       <div class={styles.bank}>
         <SimPill />
         <MessageBody message={m} />
@@ -1050,6 +1187,10 @@ function Auth(p: DeviceProps) {
   ];
   return (
     <PhoneFrame label={t('region_auth', { app: app?.name ?? '' })} brand="gatewren">
+      {/* CR-39(a): the caller who asked for this prompt is still on the line. */}
+      {p.onCall ? (
+        <OnCallBar onCall={p.onCall} beatId={p.beatId} lines={p.pushers.filter((x) => x.boundTo === p.beatId)} onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} />
+      ) : null}
       <BrandBar brand={app} title={app?.name ?? ''} />
       <div class={styles.prompt}>
         <h3 class={styles.promptTitle}>{title}</h3>
@@ -1093,7 +1234,7 @@ function Letter(p: DeviceProps) {
         </p>
         <MessageBody message={m} />
         <Chips items={segs.leftover} />
-        {m.qr ? <QrView m={m} /> : null}
+        {m.qr ? <QrView m={m} device={p.device} /> : null}
         <Translate message={m} onFreeze={p.onTranslation} alwaysOpen={p.alwaysTranslate} />
       </article>
     </section>

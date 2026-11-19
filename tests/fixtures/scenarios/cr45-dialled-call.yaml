@@ -1,0 +1,99 @@
+# CR-45 items 1, 4 and 5: a text gives a number; "Call the number in the text" leads to a call the player
+# dialled (direction inferred from call_number_in_message): "Calling…", then connected, no Answer or
+# Decline. Debrief sub-headings: "Called the number" (inferred) and an authored "Moved money".
+id: fx-cr45-dialled-call
+chapter: fixtures
+role: standard
+pattern: bank-safe-account-call
+theme: bank-text
+learning_objectives: [LO-01, LO-08]
+difficulty: 2
+is_fraud: true
+device: sms
+brands: [larchwick]
+pressure:
+  timer: true
+  levers: [fear, urgency]
+
+message:
+  sender: { display: "LARCHWICK", detail: "Sender name: LARCHWICK" }
+  body: "LARCHWICK: A transfer of €2,940.00 is being processed. Not you? Call us now to stop it: 9•• ••• •14."
+  request: call
+  ask: { text: "Not you? Call us now to stop it" }
+  references: ["€2,940.00"]
+  phone_numbers: ["9•• ••• •14"]
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows LARCHWICK, as a real text would. A sender name can be faked, so it can't prove anything either way."
+    red_flag: false
+    type: sender
+  - target: reference
+    reveal: "An amount. Real and fake alerts both show one, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: phone_number
+    reveal: "A number given in the text. It isn't the number on your card, which ends 00."
+    red_flag: true
+    type: phone_number
+  - target: request
+    reveal: "Asks you to call a number it gives you. Check in your own app, or call the number on your card."
+    red_flag: true
+    type: request
+
+actions:
+  - { id: call_text_number, label: "Call the number in the text", kind: call_number_in_message, next_beat: security_line, pressure_target: true }
+  - { id: open_app, label: "Open the Larchwick app yourself", kind: verify_in_app, outcome: app_fine }
+  - { id: report_text, label: "Report the text", kind: report, outcome: text_reported }
+  - { id: delete_text, label: "Delete the {lang:es}aviso de seguridad{/lang} text unread", translation: "security notice", kind: delete, outcome: text_deleted }
+
+beats:
+  - id: security_line
+    device: call
+    message:
+      sender: { display: "9•• ••• •14", detail: "The number from the text" }
+      transcript:
+        - { speaker: caller, text: "Security department. We've paused the transfer, but your account is exposed." }
+        - { speaker: caller, text: "Open your Larchwick app and I'll guide you to move your balance to a safe reserve account." }
+      request: pay
+      ask: { text: "Open your Larchwick app and I'll guide you to move your balance to a safe reserve account." }
+    inspectables:
+      - target: request
+        reveal: "Asks you to move your money to keep it safe. No real bank does that."
+        red_flag: true
+        type: request
+    actions:
+      - { id: follow_steps, label: "Follow their steps in your app", kind: pay, outcome: moved_money, pressure_target: true }
+      - { id: hang_up, label: "Hang up", kind: hang_up, outcome: hung_up }
+    what_now:
+      call_back_label: "Call the number on your card"
+      outcomes: { call_back_known: card_line, report: call_reported, done: hung_up }
+
+outcomes:
+  moved_money:
+    narrative: "You move your balance as the voice guides you. The line goes quiet."
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: keep_evidence, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: wait_and_see, category: harmful }
+      - { step: pay_recovery_service, category: harmful }
+  app_fine: { narrative: "You open the app yourself. No transfer, nothing pending." }
+  card_line: { narrative: "Larchwick, on the number on your card: \"No such transfer. Thanks for checking.\"" }
+  text_reported: { narrative: "Reported. Your balance hasn't moved." }
+  text_deleted: { narrative: "Deleted. Your balance hasn't moved." }
+  call_reported: { narrative: "Reported. Keep a note of the number and the time." }
+  hung_up: { narrative: "You hang up and leave it there. Nothing has left your account." }
+
+debrief:
+  layer1:
+    tell: "A number that isn't your card's."
+    what_works: "Open your app, or call your card's number."
+  device_tip: "Check in the app you open yourself."
+  habit_card: hang-up-call-back
+  already_clicked:
+    clicked: "Hang up, then call the number on your card and tell your bank what happened."
+    paid: "Call your bank now on the number on your card and ask it to try to recall the transfer."
+    headings: { paid: "Moved money" }
+  sources: [eu-ebf-cyberscams]

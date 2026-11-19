@@ -1,0 +1,140 @@
+# 7-2 A sticker over a parking meter's code (GDD §27.4; qr-sticker-parking core). Fraud, difficulty 3,
+# timer 40 s; follow-up from Beatriz (genuine) at 20 s. Look-alike zonelet-pay.example (registered).
+# CR-37: the code is a sticker over the printed one (mount: sticker), a supporting red flag; the destination stays the lesson (LS2).
+# Checkables (4; R 2): QR destination R (LS2), QR mount R (sticker), reference D (zone and price), claim D ("sem app").
+# The meter and the code are only the carrier of the QR code (Red Line 8); the lesson is the destination.
+id: lisbon-02-meter-sticker
+chapter: lisbon
+role: standard
+pattern: qr-sticker-parking
+theme: parking
+learning_objectives: [LO-02, LO-05, LO-03]
+difficulty: 3
+is_fraud: true
+device: qr
+setup: "You've parked Mateus's mum's car by the faculty for Beatriz's viewing. The meter's screen is off; there's a code to pay by phone."
+brands: [zonelet]
+cast: [beatriz, mateus]
+pressure:
+  timer: true
+  levers: [urgency, small_amount]
+  pusher:
+    messages:
+      - { at_seconds: 20, text: "Beatriz: Viewing in 5 min! 🙈" }
+
+message:
+  qr: { payload: /qr/lisbon-meter-sticker, destination: zonelet-pay.example, caption: "A sticker stuck over the meter's printed code", mount: sticker }
+  body: |
+    Zonelet · ZONA 3 · €1,60/h
+    Pague pelo telemóvel, sem app. Digitalize aqui.
+  lang: pt-PT
+  translation: "Zonelet · ZONE 3 · €1.60/h. Pay by phone, no app needed. Scan here."
+  request: scan_qr
+  references: ["ZONA 3 · €1,60/h"]
+  claims: [{ text: "Pague pelo telemóvel, sem app.", translation: "Pay by phone, no app needed." }]
+  l10n_note: "Portuguese in-world text on the meter is intentional (Lisbon chapter); the English translation is shown inline."
+
+inspectables:
+  - target: qr.destination
+    reveal: "zonelet-pay.example. Read the end: the owner part is zonelet-pay.example, not zonelet.example, where the parking app lives."
+    red_flag: true
+    type: qr
+  - target: qr.mount
+    reveal: "A sticker stuck over the meter's printed code. A sticker is a reason not to scan; open the parking app yourself."
+    red_flag: true
+    type: qr_mount
+  - target: reference
+    reveal: "The zone and price match the meter. A sticker can copy them, so they can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "\"No app needed.\" Real meters also let you pay by phone, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+
+actions:
+  - id: scan_sticker
+    label: "Scan and open zonelet-pay.example"
+    kind: scan_qr_and_open
+    next_beat: meter_page
+    pressure_target: true
+  - id: open_zonelet_sticker
+    label: "Open the Zonelet app yourself"
+    kind: verify_in_app
+    outcome: paid_in_zonelet
+  - id: report_sticker_meter
+    label: "Report the sticker"
+    kind: report
+    outcome: sticker_reported
+  - id: leave_sticker
+    label: "Leave it"
+    kind: ignore
+    outcome: sticker_left
+
+beats:
+  - id: meter_page
+    device: browser
+    message:
+      page: { address: "zonelet-pay.example/zona3", title: "Zonelet · Pay parking" }
+      body: "Zone 3 · Pay €1.60 by card. No app needed."
+      request: enter_details
+      ask: { text: "Pay €1.60 by card." }
+    inspectables:
+      - target: page.address
+        reveal: "The address bar still ends in zonelet-pay.example. Zonelet's own address is zonelet.example."
+        red_flag: true
+        type: page_address
+      - target: page.info
+        reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
+        red_flag: false
+        type: padlock
+      - target: request
+        reveal: "It wants your card details on a page you reached from a sticker. Zonelet takes parking payments in its own app."
+        red_flag: true
+        type: request
+    actions:
+      - id: pay_meter_page
+        label: "Pay €1.60 with your card"
+        kind: enter_details
+        outcome: card_taken_meter
+        pressure_target: true
+      - id: close_open_zonelet
+        label: "Close it and open the Zonelet app"
+        kind: verify_in_app
+        outcome: paid_in_zonelet
+      - id: close_meter_page
+        label: "Close the page"
+        kind: ignore
+        outcome: sticker_left
+
+outcomes:
+  card_taken_meter:
+    narrative: "\"Payment received.\" That evening your Larchwick app shows €286.00 at an online shop."
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: report_sticker, category: report }
+      - { step: report_to_police, category: report }
+      - { step: wait_and_see, category: harmful }
+      - { step: rescan_to_cancel, category: harmful }
+  paid_in_zonelet:
+    narrative: "You open the Zonelet app yourself: Zone 3, €1.60. Paid in the app, done."
+  sticker_reported:
+    narrative: "You photograph the sticker and report it in the Zonelet app, then pay there."
+  sticker_left:
+    narrative: "You leave it and pay later in the Zonelet app. The car's fine."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A sticker over the meter's code, opening a look-alike address."
+    what_works: "Pay in the parking app you installed."
+  layer2:
+    message_flags: []
+    notes: "A QR code is a link: read the address it shows before you open it."
+  device_tip: "On a real phone, your camera usually shows the address first: read the end of it before you tap, and pay in the parking app from your home screen."
+  habit_card: read-the-link
+  already_clicked:
+    clicked: "Opened the page but typed nothing? Close it, and pay in the parking app."
+    entered_details: "Typed your card? Block it in your banking app now and call your bank on the number on your card."
+  sources: [lu-vdl-parking-qr, ie-ncsc-qr-guide, pt-portugalpost-gnr-quishing-2026, pt-deco-qrishing-2024, be-safeonweb-qr-chargers, eu-epc-threats-2025, pt-bdp-ficaadica-2023]

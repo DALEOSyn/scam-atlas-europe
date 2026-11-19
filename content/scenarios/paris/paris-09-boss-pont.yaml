@@ -100,7 +100,7 @@ beats:
     scored: false   # see header: inside beat 1's group (CR-18(e)); marked only for the validator's 3-scored-beat count
     message:
       bank: { brand: larchwick-pro }
-      account: { nickname: "Ruchelune · current account" }
+      account: { nickname: "Ruchelune · current account", kind: business }
       payee: { name: "Morvenac SAS", iban: "FR•••••••••••••••••••••••64", name_check: match, amount: "€38,500.00" }
       request: pay
     inspectables:

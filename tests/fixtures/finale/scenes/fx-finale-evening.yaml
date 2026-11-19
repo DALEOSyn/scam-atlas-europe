@@ -1,0 +1,24 @@
+# Test fixture (CR-44): the Open Evening: the postcard pick, Adaeze's last line (the end screen's epigraph), the If-then panel.
+id: fx-finale-evening
+chapter: fxfinale
+slot: resolution
+panels:
+  - speaker: noor
+    expression: relieved
+    line: "I nearly said yes. Then I asked you, and I told Mum too."
+    alt: "Noor, relieved, by the door of the hall."
+  - flip_postcard: true
+    speaker: teo
+    expression: warm
+    alt: "Teo smiling, holding up a postcard."
+  - speaker: adaeze
+    expression: warm
+    epigraph: true
+    line: "Pause. Check on a number or app you already know. Ask someone. Then be the someone for the next person."
+    alt: "Adaeze smiling at the guests."
+  - speaker: noor
+    expression: proud
+    if_then:
+      cue: "If an easy-money offer wants my bank login or card,"
+      action: "then I say no and ask someone first."
+    alt: "Noor, proud, with a postcard frame."

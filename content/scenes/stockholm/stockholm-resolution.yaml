@@ -1,0 +1,44 @@
+# Stockholm resolution (GDD §29.2 beat 3, STORY §3.9; proud; 2 panels + If-then): after the boss debrief.
+# Variant stockholm_bank_called (story-only, set by every boss fall outcome: police_logged_in, bank_signed,
+# case_code_scanned): the first panel of the resolution (STORY §4.2 rule 5). It names the step taken; no
+# refund promise (STORY §5.4).
+# Jamal's near-miss is the drill; "I hung up, like Birgitta" is true in every drill branch. Nobody in a scene
+# falls. Lina never handles money or e-ID.
+# If-then (Jamal), word for word from STORY §3.9, with the extra line under it. The panel models the habit with
+# the shared pose calm-phone-ear (ART_DIRECTION §5: Stockholm If-then, calling the bank on its own number).
+# Map invitation (Birgitta, STORY §3.9) is not built yet (ENGINE "Not in S3").
+# Not sensitive: no content note proposed for Stockholm (GDD §29, STORY §5.6).
+id: stockholm-resolution
+chapter: stockholm
+slot: resolution
+panels:
+  - backdrop: stockholm-courtyard
+    crop: centre
+    speaker: birgitta
+    expression: calm
+    if_flag: stockholm_bank_called
+    line: "The bank was called straight away, the right first step. We'll see what it can do."
+    alt: "Birgitta, calm, in the snowy courtyard in front of warmly lit windows."
+  - backdrop: stockholm-courtyard
+    crop: left
+    speaker: jamal
+    expression: proud
+    line: "A 'police officer' wanted my e-ID. I hung up, like Birgitta."
+    alt: "Jamal, proud, standing tall by the bare tree in the snowy courtyard."
+  - backdrop: stockholm-courtyard
+    crop: right
+    speaker: lina
+    expression: laughing
+    flip: true
+    with: { id: jamal, expression: calm }
+    line: "Dad hangs up on requests now. Politely."
+    alt: "Lina laughing in her bobble hat by the bikes under snow; Jamal listens, calm."
+  - backdrop: stockholm-courtyard
+    crop: centre
+    speaker: jamal
+    expression: calm-phone-ear
+    if_then:
+      cue: "If a login or signing request pops up that I didn't start,"
+      action: "then I deny it and call the bank on its own number."
+      extra: "Nobody needs your screen, either."
+    alt: "Jamal, calm, phone to his ear, in the snowy courtyard under the candle windows."

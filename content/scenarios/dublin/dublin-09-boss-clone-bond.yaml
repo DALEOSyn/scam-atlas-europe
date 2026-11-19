@@ -1,0 +1,355 @@
+# 8-9 Boss: the clone bond (GDD §28.6; investment-ad-fake-platform clone case + recovery-scam). Friday.
+# Levers borrowed authority (a real firm's name and number, then the regulator's), greed, urgency, fear of loss.
+# Beat 1 (email, start, 40 s): "Ellisfen Invest" <bonds@ellisfen-invest.example>, 8% guaranteed, "authorised by
+#   Fairmeasure (firm no. FM-20417)". R: sender (ruling 1 of §28.8 clone), claim, link. D: the real firm number (ruling 4 of §28.8), request.
+#   No engage on boss beats: "Apply through the link" is the fall (card typed on the application page).
+# Beat 2 (call, +45 s, 30 s, covered_by start): caller ID "Ellisfen Invest" (RM1). R: "only a few places left
+#   today" (claim#2), the request. D: caller ID, "on the register; you can check" (claim, ruling 1 of §28.8). "Do it now in the
+#   Larchwick app" is start_transfer with cap: engage (R16, CR-31(b)) → bond_transfer (banking sub-beat with the
+#   call on the line, CR-31 bar; the caller's line is a beat-bound follow-up): payee "Ellisfen Invest", doesn't
+#   match (no holder, CR-23). bond_transfer carries scored: false only for the validator's 3-scored-beat count
+#   (the engine scores it in beat 2's group, CR-18(e)), as Lisbon 7-9 and Rome 6-9.
+# Beat 3 (email, +45 s, 40 s, covered_by start + bond_call): "Fairmeasure Investor Protection"
+#   <protection@fairmeasure-claims.example>, a €95 "verification fee" with a bank-details card (CR-22). R: sender,
+#   request (ruling 6 of §28.8). D: claim, IBAN. Reads true whatever the player did at beats 1–2. Design combination
+#   (fraud-researcher): a fake regulator's fee after a clone-firm approach combines IAF (clone) and RCS (recovery
+#   posing as a regulator); not a separately sourced sequence, and no debrief presents it as one.
+# Interrupt after beat 3: Róisín, genuine, on_fall: skip (no "chips to celebrate" right after a loss).
+# Every fall sets dublin_bank_called (story only, R17 approach). Damage control (§28.6 merged list, cap 6) plus
+# tell_trusted_adult as a stop step in every personal-money fall: each fall has its own six (b1 card: block the
+# card, no stop_paying; b2 transfer and b3 fee: stop paying, no card block). Harmful (round 1): pay_recovery_service
+# everywhere, plus add_more_to_test (feedback override) on b1/b2 and pay_last_fee on the b3 fee fall. keep_evidence is in layer 2.
+# R 7, decoys 6, max 51. Refunds are always "may" (ruling 5 of §28.8); no figures on screen.
+id: dublin-09-boss-clone-bond
+chapter: dublin
+role: boss
+pattern: investment-ad-fake-platform
+theme: investment
+learning_objectives: [LO-13, LO-06, LO-16, LO-04]
+difficulty: 5
+is_fraud: true
+device: email
+setup: "Friday. Your travel fund is still in Larchwick. You've been reading about savings bonds all week."
+brands: [ellisfen, fairmeasure, larchwick, kettle]
+cast: [roisin]
+pressure:
+  timer: true
+  levers: [authority, greed, urgency, fear]
+  pusher:
+    messages:
+      - { at_seconds: 18, beat: bond_call, text: "Are you still there? These places are going fast." }
+      - { at_seconds: 6, beat: bond_transfer, text: "The name check is always odd for client accounts, don't worry." }
+
+message:
+  sender: { display: "Ellisfen Invest", detail: "bonds@ellisfen-invest.example" }
+  subject: "Fixed-rate bond: 8%, guaranteed"
+  body: |
+    Hi Sam, our fixed-rate bond pays 8% a year, guaranteed, with your capital protected. Ellisfen Invest is authorised by Fairmeasure (firm no. FM-20417).
+
+    Only 40 places at this rate: apply today at ellisfen-invest.example/bond
+
+    Ellisfen Invest · Bonds desk
+  request: open_link
+  ask: { text: "apply today at ellisfen-invest.example/bond" }
+  references: ["authorised by Fairmeasure (firm no. FM-20417)"]
+  claims: [{ text: "pays 8% a year, guaranteed, with your capital protected" }]
+
+inspectables:
+  - target: sender.detail
+    reveal: "bonds@ellisfen-invest.example. The register lists ellisfen.example. A real firm's name on an address the register doesn't list is how clones look. Contact it only on the register's details."
+    red_flag: true
+    type: sender
+  - target: link
+    reveal: "ellisfen-invest.example, not ellisfen.example."
+    red_flag: true
+    type: link
+  - target: reference
+    reveal: "A real firm number, copied from the register. Clones copy names and numbers, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "\"Guaranteed\" and \"capital protected\" at 8%. Nobody can guarantee that."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "Asks you to apply. Firms do; where you apply matters."
+    red_flag: false
+    type: request
+
+actions:
+  - id: apply_through_link
+    label: "Apply through the link"
+    kind: enter_details
+    outcome: card_typed_application
+    pressure_target: true
+  - id: check_register_ring_b1
+    label: "Check the register and ring its number"
+    kind: check_official_list
+    outcome: register_not_us_b1
+  - id: report_b1
+    label: "Report the email"
+    kind: report
+    outcome: b1_reported
+  - id: delete_b1
+    label: "Delete it"
+    kind: delete
+    outcome: b1_deleted
+
+beats:
+  - id: bond_call
+    device: call
+    arrives_after: 45
+    timer_seconds: 30
+    covered_by: [start]
+    message:
+      sender: { display: "Ellisfen Invest", detail: "+353 1 ••• ••87" }
+      transcript:
+        - { speaker: caller, text: "Hi Sam, Gráinne from Ellisfen Invest about the 8% bond. Only a few places left today." }
+        - { speaker: caller, text: "Ellisfen is on the Fairmeasure register; you can check." }
+        - { speaker: caller, text: "Transfer the €2,000 to our client account today and the rate is locked. I'll text you the details." }
+      request: pay
+      ask: { text: "Transfer the €2,000 to our client account today and the rate is locked." }
+      claims:
+        - { text: "Ellisfen is on the Fairmeasure register; you can check." }
+        - { text: "Only a few places left today." }
+    inspectables:
+      - target: caller_id
+        reveal: "Shows Ellisfen Invest. A caller can set the name and number, so it can't prove anything either way."
+        red_flag: false
+        type: caller_id
+      - target: claim
+        reveal: "True: the real Ellisfen is on the register. A clone uses that. It can't prove anything either way."
+        red_flag: false
+        type: claim
+      - target: claim#2
+        reveal: "\"Only a few places today.\" Pressure to pay now."
+        red_flag: true
+        type: claim
+      - target: request
+        reveal: "A transfer today, to a \"client account\", on a call you didn't make."
+        red_flag: true
+        type: request
+    actions:
+      - id: transfer_in_larchwick
+        label: "Do it now in the Larchwick app"
+        kind: start_transfer
+        next_beat: bond_transfer
+        cap: engage
+        pressure_target: true
+      - id: ring_register_number_b2
+        label: "Hang up and ring the register's number"
+        kind: call_back_known
+        outcome: register_not_us_b2
+      - id: report_b2
+        label: "Report the call"
+        kind: report
+        outcome: b2_reported
+      - id: hang_up_b2
+        label: "Hang up"
+        kind: hang_up
+        outcome: b2_left
+    what_now:
+      call_back_label: "Ring the number on the register"
+      outcomes:
+        call_back_known: register_not_us_b2
+        report: b2_reported
+        done: b2_left
+      extra:
+        - id: call_back_this_number_b2
+          label: "Call back this number"
+          kind: call_number_in_message
+          note: "That's the number that just called. A caller can set the name and number, so you can't tell whose line it is. Ring the number on the register."
+
+  - id: bond_transfer
+    device: banking
+    scored: false   # see header: inside beat 2's group (CR-18(e)); marked only for the validator's 3-scored-beat count
+    message:
+      account: { nickname: "Travel fund" }
+      payee: { name: "Ellisfen Invest", iban: "IE•• … 5521", name_check: mismatch, amount: "€2,000.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "Doesn't match: this account isn't held by Ellisfen Invest."
+        red_flag: true
+        type: payee
+      - target: payee.iban
+        reveal: "An account you've never paid, typed from the caller's text. Real new payees look the same here, so it can't prove anything either way."
+        red_flag: false
+        type: payee
+    actions:
+      - id: send_two_thousand
+        label: "Send €2,000 anyway"
+        kind: pay
+        outcome: bond_transfer_sent
+        pressure_target: true
+      - id: cancel_ring_register
+        label: "Cancel, hang up and ring the register's number"
+        kind: call_back_known
+        outcome: register_not_us_b2
+      - id: cancel_report_b2
+        label: "Cancel and report it"
+        kind: report
+        outcome: b2_transfer_reported
+      - id: cancel_b2
+        label: "Cancel"
+        kind: ignore
+        outcome: b2_transfer_cancelled
+
+  - id: protection_email
+    device: email
+    arrives_after: 45
+    timer_seconds: 40
+    covered_by: [start, bond_call]
+    message:
+      sender: { display: "Fairmeasure Investor Protection", detail: "protection@fairmeasure-claims.example" }
+      subject: "Ellisfen Invest bond holders"
+      body: |
+        We have frozen a fraudulent scheme using Ellisfen Invest's name. If you invested, your funds can be released to you after a €95 verification fee, paid to the account below within 48 hours.
+
+        If you did not invest, please ignore this email.
+
+        Fairmeasure Investor Protection
+      request: pay
+      ask: { text: "your funds can be released to you after a €95 verification fee" }
+      claims: [{ text: "We have frozen a fraudulent scheme using Ellisfen Invest's name." }]
+      payee: { name: "Fairmeasure Claims Ltd", iban: "IE•• … 0042", amount: "€95.00" }
+    inspectables:
+      - target: sender.detail
+        reveal: "fairmeasure-claims.example, not fairmeasure.example."
+        red_flag: true
+        type: sender
+      - target: payee.iban
+        reveal: "An account you've never paid. Real and fake bank details look the same here, so it can't prove anything either way."
+        red_flag: false
+        type: payee
+      - target: claim
+        reveal: "Regulators do warn about clones, so it can't prove anything either way."
+        red_flag: false
+        type: claim
+      - target: request
+        reveal: "A fee to get money back. A real regulator never charges one."
+        red_flag: true
+        type: request
+    actions:
+      - id: pay_ninety_five
+        label: "Pay the €95 now"
+        kind: pay
+        outcome: verification_fee_paid
+        pressure_target: true
+      - id: open_fairmeasure_b3
+        label: "Open Fairmeasure's site yourself"
+        kind: check_official_list
+        outcome: fairmeasure_clone_warning
+      - id: report_b3
+        label: "Report the email"
+        kind: report
+        outcome: b3_reported
+      - id: delete_b3
+        label: "Delete it"
+        kind: delete
+        outcome: b3_deleted
+
+interrupts:
+  - id: roisin_course_chips
+    after_beat: protection_email
+    on_fall: skip   # the default, set explicitly: no "chips to celebrate" right after a loss (CR-27)
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Róisín (clinic)", detail: "Saved contact: Róisín (clinic)" }
+      from_cast: roisin
+      body: "Dad's signed up for the retraining course! Chips to celebrate? 🍟"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Róisín's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what she asks for: chips."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_on_my_way
+        label: "Reply: on my way!"
+        kind: proceed
+        outcome: roisin_on_my_way
+        pressure_target: true
+      - id: report_course_chips
+        label: "Report the message"
+        kind: report
+        outcome: roisin_course_reported
+
+outcomes:
+  card_typed_application:
+    narrative: "You fill in the application, card details and all. \"Thank you, your place is reserved.\" That evening your Larchwick app shows a large card payment you didn't make."
+    sets_flags: [dublin_bank_called]
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: report_firm_to_regulator, category: report }
+      - { step: pay_recovery_service, category: harmful }
+      - { step: add_more_to_test, category: harmful, feedback: "More money only adds to the loss. Call your bank instead." }
+  bond_transfer_sent:
+    narrative: "Sent: €2,000.00. Gráinne: \"Perfect, your rate is locked. Your bond certificate follows on Monday.\" No certificate comes."
+    sets_flags: [dublin_bank_called]
+    recovery:
+      - { step: call_bank_known_number, category: stop }
+      - { step: stop_paying, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: report_firm_to_regulator, category: report }
+      - { step: pay_recovery_service, category: harmful }
+      - { step: add_more_to_test, category: harmful, feedback: "More money only adds to the loss. Call your bank instead." }
+  verification_fee_paid:
+    narrative: "Sent: €95.00 to \"Fairmeasure Claims Ltd\". Next day: \"Funds located. A €300 release charge is now due.\""
+    sets_flags: [dublin_bank_called]
+    recovery:
+      - { step: call_bank_known_number, category: stop }
+      - { step: stop_paying, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: report_firm_to_regulator, category: report }
+      - { step: pay_recovery_service, category: harmful }
+      - { step: pay_last_fee, category: harmful }
+  register_not_us_b1:
+    narrative: "Register: Ellisfen Invest, authorised, at ellisfen.example. On the register's number: \"That's not us. We don't sell that bond, and we never email from that address. Thank you for telling us.\""
+    register: { firm: "Ellisfen Invest", result: authorised, address: "ellisfen.example", phone: "+353 1 ••• ••60" }
+  b1_reported:
+    narrative: "Reported. Your mail app moves it to junk. Then your phone rings: \"Ellisfen Invest\"."
+  b1_deleted:
+    narrative: "Deleted. Then your phone rings: \"Ellisfen Invest\"."
+  register_not_us_b2:
+    narrative: "You ring the number on Fairmeasure's register for Ellisfen yourself. \"That wasn't us. We never ask for a transfer on a call, and we don't sell that bond.\""
+  b2_reported:
+    narrative: "Reported. Keep a note of the time and what was said."
+  b2_left:
+    narrative: "You hang up and leave it there. Nothing has left your travel fund."
+  b2_transfer_reported:
+    narrative: "You cancel, hang up and report it. Nothing leaves your travel fund."
+  b2_transfer_cancelled:
+    narrative: "You cancel and hang up. Nothing leaves your travel fund."
+  fairmeasure_clone_warning:
+    narrative: "You open Fairmeasure's site yourself, not from the email. Its warnings: \"Ellisfen Invest clone. We never charge fees to return money.\""
+  b3_reported:
+    narrative: "Reported. Your mail app moves it to junk."
+  b3_deleted:
+    narrative: "Deleted. A real regulator wouldn't ask for a fee anyway."
+  roisin_on_my_way:
+    narrative: "Róisín: \"Grand! Dad's already ordered for you. Large, obviously.\""
+  roisin_course_reported:
+    narrative: "You reported it. Careful is good; this one really was Róisín."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A copied firm, then a 'recovery' fee."
+    what_works: "Use the register's details. Never pay to recover."
+  layer2:
+    message_flags:
+      - "The email: the firm was real; the address wasn't. Contact a firm only on the register's details."
+      - "The call: same story by phone, with the firm's name on screen. The name check didn't match."
+      - "The last email: a \"regulator\" asking for a fee. Real regulators never charge to return money."
+    notes: "Anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam. People who've lost money are often targeted on purpose afterwards, because scammers share victims' details. That says nothing about you. If anything went, call your bank straight away; it may be able to help. Keep the emails, the call log and any receipts."
+  device_tip: "On a real phone, open the regulator's website yourself, find the firm on its register, and use only the address and phone number listed there."
+  habit_card: if-its-guaranteed-and-high-its-not
+  already_clicked:
+    entered_details: "Typed your card details? Block the card in your banking app and call your bank on the number on your card."
+    paid: "Sent money? Call your bank now on the number on your card and ask it to try to stop or recall it. It may be able to help; reporting quickly matters."
+  sources: [ie-cbi-avoiding-scams, ie-ccpc-investment-scams, ie-garda-crimecall-investment-2024, ie-bpfi-recovery-2024, ie-cbi-fraud-landscape-2025, ie-cbi-fraud-research-2026, eu-esas-crypto-factsheet-2025, eu-ec-ipr-vop-2025, eu-ecb-ipr]

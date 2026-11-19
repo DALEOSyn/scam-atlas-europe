@@ -156,4 +156,5 @@ debrief:
   already_clicked:
     clicked: "Followed a caller's steps in your app? Hang up, then call the person's saved number."
     paid: "Sent money? Call your bank now on the number on your card and ask it to try to stop or recall the transfer. Don't pay a second request."
+    headings: { clicked: "Followed the caller's steps" }
   sources: [eu-esas-ai-scams-factsheet-it, nl-veiliginternetten-voice-cloning, nl-fraudehelpdesk-hulpvraag-campaign, nl-veiligbankieren-voice-cloning-2023, it-mur-smishing-vishing, eu-ec-ipr-vop-2025, eu-ecb-ipr]

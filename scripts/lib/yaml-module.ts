@@ -36,7 +36,14 @@ export function yamlModuleData(file: string, code: string, scenariosDir: string,
  * The runtime needs only what devices show: id, names and logo files. Review-only fields
  * (rationale, checked_against, web_check, which may name real brands) never reach the bundle.
  */
-export function brandProjection(raw: unknown): { id: string; name: string; short_name?: string; mark?: string; sub_brands?: { id: string; name: string }[] }[] {
+export function brandProjection(raw: unknown): {
+  id: string;
+  name: string;
+  short_name?: string;
+  mark?: string;
+  sub_brands?: { id: string; name: string }[];
+  register?: { status: 'authorised' | 'warning_list'; address?: string; phone?: string };
+}[] {
   return brandsFileSchema.parse(raw).brands.map((b) => ({
     id: b.id,
     name: b.name,
@@ -44,6 +51,10 @@ export function brandProjection(raw: unknown): { id: string; name: string; short
     ...(b.logo?.mark ? { mark: b.logo.mark.replace(/^public\//, '') } : {}),
     // CR-27: sub-brand names for the banking header (message.bank.brand), id and name only.
     ...(b.sub_brands?.length ? { sub_brands: b.sub_brands.map((x) => ({ id: x.id, name: x.name })) } : {}),
+    // CR-38: the Fairmeasure regulator view lists registered and warned-about firms (masked phone).
+    ...(b.register
+      ? { register: { status: b.register.status, ...(b.register.address ? { address: b.register.address } : {}), ...(b.register.phone ? { phone: b.register.phone } : {}) } }
+      : {}),
   }));
 }
 

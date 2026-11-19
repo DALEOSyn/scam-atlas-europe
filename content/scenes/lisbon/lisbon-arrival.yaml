@@ -1,0 +1,30 @@
+# Lisbon arrival (GDD §27.2 beat 1, STORY §3.7; calm; 3 panels): before the chapter intro and Mateus's rule
+# card (CR-27), then 7-1. A tiled street, then Mateus's family kitchen. Mateus leads; Beatriz states the
+# human problem (rooms are scarce, STORY §4.2 rule 3). Mateus's mum is mentioned, never drawn or named.
+# No scam content: no listing, price, host, link, QR code, meter or parking slip (GDD §27.2).
+# Not sensitive: money theme only, no content note proposed (STORY §3.7, as Madrid).
+id: lisbon-arrival
+chapter: lisbon
+slot: arrival
+panels:
+  - backdrop: lisbon-street
+    crop: centre
+    speaker: mateus
+    expression: laughing
+    caption: "Lisbon. A steep, tiled street."
+    line: "Mum's cooking, so you're staying for dinner. No arguments."
+    alt: "Mateus laughing on a steep street with tiled facades and laundry on a line above."
+  - backdrop: lisbon-kitchen
+    crop: left
+    speaker: beatriz
+    expression: worried
+    line: "Six weeks of room-hunting. Everything good goes in an hour."
+    alt: "Beatriz at the kitchen table by the window with herbs, looking worried."
+  - backdrop: lisbon-kitchen
+    crop: right
+    speaker: mateus
+    expression: calm
+    flip: true
+    with: { id: beatriz, expression: calm }
+    line: "And from Thursday the cousins invade, so you need a bed too. We'll hunt together."
+    alt: "Mateus, calm, in the family kitchen; Beatriz listens, calm."

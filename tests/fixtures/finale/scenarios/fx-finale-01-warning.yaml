@@ -1,0 +1,84 @@
+# Test fixture (CR-42 in the finale chapter): a copy of cr42-browser-overlay.yaml. Not game content.
+id: fx-finale-01-warning
+chapter: fxfinale
+role: standard
+pattern: remote-access-support-call
+theme: tech-support
+learning_objectives: [LO-08, LO-03]
+difficulty: 4
+is_fraud: true
+device: browser
+brands: [waymarker]
+pressure: { timer: false, levers: [fear, urgency] }
+
+message:
+  page:
+    address: thimbleandpine.example/journal
+    title: "Thimble & Pine · Journal"
+    overlay:
+      title: "Security alert"
+      body: "Virus detected. This computer is blocked to protect your data. Call Helpdesk Support now on 02 ••• •• 17. You have 5 minutes before your files are deleted."
+  body: "Tonight: a festival of street music in the old town."
+  request: call
+  ask: { text: "Call Helpdesk Support now on 02 ••• •• 17." }
+  claims:
+    - text: "Virus detected. This computer is blocked to protect your data."
+    - text: "You have 5 minutes before your files are deleted."
+  phone_numbers: ["02 ••• •• 17"]
+
+inspectables:
+  - target: page.address
+    reveal: "A news site. Warnings like this can pop up on ordinary sites, so it can't prove anything either way."
+    red_flag: false
+  - target: page.info
+    reveal: "The padlock means the connection is private. It says nothing about who runs the site or what it shows."
+    red_flag: false
+    type: padlock
+  - target: phone_number
+    reveal: "A local number. A number on screen can be bought anywhere, so it can't prove anything either way."
+    red_flag: false
+  - target: claim
+    reveal: "A page can show any warning it likes, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: claim#2
+    reveal: "A countdown, so you call before you think."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "A warning that gives you a number to call. That's the scam: close it, don't call."
+    red_flag: true
+    type: request
+
+actions:
+  - { id: call_support, label: "Call the number and let support fix it", kind: install_or_remote, outcome: remote_in, pressure_target: true }
+  - { id: tell_it, label: "Close the browser and tell the IT desk", kind: call_back_known, outcome: it_desk }
+  - { id: report_it, label: "Report the page", kind: report, outcome: reported }
+  - { id: close_it, label: "Close the browser", kind: ignore, outcome: closed }
+
+outcomes:
+  remote_in:
+    narrative: "You call. A calm voice asks you to install a helper app and read out its code. The screen goes dark."
+    recovery:
+      - { step: call_bank_known_number, category: stop }
+      - { step: change_password, category: secure }
+      - { step: tell_it_team, category: report }
+      - { step: report_to_police_online, category: report }
+      - { step: wait_and_see, category: harmful }
+      - { step: keep_quiet, category: harmful }
+  it_desk:
+    narrative: "IT desk: \"Closing it was exactly right. I'll check the laptop tomorrow anyway.\""
+  closed:
+    narrative: "The page closes. Nothing else happens."
+  reported:
+    narrative: "You report the page. It closes."
+
+debrief:
+  layer1:
+    tell: "A warning on a web page that gives you a number to call."
+    what_works: "Close it. Nobody needs your screen."
+  device_tip: "A real warning never gives you a number to call. Close the tab or the browser."
+  habit_card: hang-up-call-back
+  already_clicked:
+    entered_details: "Installed something or read out a code? Go offline, call your bank on the number on your card, and get the device checked."
+  sources: [ch-ncsc-fake-support-2024]

@@ -1,0 +1,113 @@
+# CR-45 items 2, 3 and 6: a genuine money request paid from the player's own (personal) account, a reply
+# label and an outcome line with an inline Spanish span and its translation, and a timer whose expiry on
+# this genuine beat scores like its "Leave it" (ruling R21).
+id: fx-cr45-personal-account
+chapter: fixtures
+role: standard
+pattern: messenger-family-impersonation
+theme: home
+learning_objectives: [LO-17, LO-06, LO-07]
+difficulty: 3
+is_fraud: false
+stakes: high
+device: messenger
+brands: [kettle, larchwick]
+pressure:
+  timer: true
+  levers: []
+  honest_deadline: "Any time this week"
+
+message:
+  sender: { display: "Lucía (flat)", detail: "Saved contact: Lucía (flat)" }
+  body: "Hi! Your half of the cleaning is €12, to my account as on the note on the fridge. Any time this week."
+  request: pay
+  ask: { text: "Your half of the cleaning is €12, to my account as on the note on the fridge." }
+  references: ["the note on the fridge"]
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows Lucía's saved contact, in your usual chat. An account can be taken over and show the same, so it can't prove anything either way."
+    red_flag: false
+    type: sender
+  - target: reference
+    reveal: "It fits: the note on the fridge says cleaning €24, split in two. That isn't proof on its own."
+    red_flag: false
+    type: reference
+    reassures: true
+  - target: request
+    reveal: "€12 to her own account, by a transfer you start yourself, for something you share. No link, no code."
+    red_flag: false
+    type: request
+
+actions:
+  - { id: pay_lucia_app, label: "Pay her in the Larchwick app", kind: start_transfer, next_beat: cleaning_transfer, pressure_target: true }
+  - { id: ask_lucia_kitchen, label: "Ask Lucía in the kitchen first", kind: ask_someone, outcome: lucia_kitchen }
+  - { id: report_cleaning, label: "Report the message", kind: report, outcome: cleaning_reported }
+  - { id: leave_cleaning, label: "Leave it for now", kind: ignore, outcome: cleaning_unpaid }
+
+beats:
+  - id: cleaning_transfer
+    device: banking
+    message:
+      account: { nickname: "Your current account" }
+      payee: { name: "Lucía Marín", iban: "ES•• … 4410", name_check: match, amount: "€12.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "Name matches: the account is held by Lucía Marín, the name on the fridge note."
+        red_flag: false
+        type: payee
+        reassures: true
+      - target: payee.iban
+        reveal: "The account from the note on the fridge. An account number on its own can't prove anything either way."
+        red_flag: false
+        type: payee
+    actions:
+      - { id: send_twelve, label: "Send €12", kind: proceed, outcome: cleaning_paid, pressure_target: true }
+      - { id: cancel_ask_lucia, label: "Cancel and ask Lucía first", kind: ask_someone, outcome: lucia_kitchen }
+      - { id: cancel_cleaning, label: "Cancel", kind: ignore, outcome: cleaning_cancelled }
+
+interrupts:
+  - id: andres_coffee
+    at_seconds: 5
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Andrés (flat)", detail: "Saved contact: Andrés (flat)" }
+      body: "¿Café?"
+      lang: es
+      translation: "Coffee?"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Andrés's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what he asks for: coffee."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - { id: reply_coffee, label: "Reply: {lang:es}¡sí, gracias!{/lang}", translation: "yes, thanks!", kind: proceed, outcome: coffee_yes, pressure_target: true }
+      - { id: report_coffee, label: "Report the message", kind: report, outcome: coffee_reported }
+
+outcomes:
+  cleaning_paid:
+    narrative: "Sent. Lucía, a minute later: \"{lang:es}¡Genial, gracias!{/lang}\""
+    translation: "Great, thanks!"
+  lucia_kitchen: { narrative: "Lucía, in the kitchen: \"Yes, me. Thanks for asking.\" You pay her the €12." }
+  cleaning_reported: { narrative: "Reported. Lucía, puzzled: \"It was only the cleaning.\"" }
+  cleaning_unpaid: { narrative: "You leave it for now. She said any time this week." }
+  cleaning_cancelled: { narrative: "You cancel. Nothing is sent, and the €12 is still to pay this week." }
+  coffee_yes:
+    narrative: "Andrés: \"{lang:es}¡Vale!{/lang} Two minutes.\""
+    translation: "OK!"
+  coffee_reported: { narrative: "You reported it. Careful is good; this one really was Andrés, offering coffee." }
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Her saved chat, for cleaning you share."
+    what_works: "Paying was fine; asking is never wrong."
+  layer2:
+    message_flags: []
+  device_tip: "On a real phone, check a payment request against something you already have, and type the details yourself."
+  habit_card: call-the-number-you-know
+  sources: [eu-ecb-ipr]

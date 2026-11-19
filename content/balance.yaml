@@ -36,6 +36,7 @@ action_kinds:
   pay_protected:          { class: proceed, los: [LO-11] }
   pause:                  { class: meta,    los: [LO-04] }       # unscored, see pause
   start_transfer:         { class: step,    los: [] }            # CR-18: opens the banking beat; never scored, never decisive, no cap (GDD §6)
+  advise_comply:          { class: comply,  los: [] }            # CR-40: bad advice in an advice scenario: scores 0 like a fall, but is not a fall (no damage control, no stress); fraud and advice scenarios only
 
 # ---------------------------------------------------------------------------
 # Stars (0–3) per class x truth. Points = stars x 5, with the two exceptions below.
@@ -65,10 +66,13 @@ points:
 # waiting out a timer never beats a deliberate pause. Stamps are unchanged: they don't use points, and a report
 # still counts as "genuine message reported". ★ at 5 points stays below ★★ (10). Not applied to timer expiry
 # (not a choice; genuine high-stakes expiry has its own cell below).
-# Timer expiry on a genuine high-stakes message (design ruling 2026-11-19, QA L4), every slot: the game
-# timer is a pressure mechanic, not the message's deadline, so running out never scores like dropping it.
-# Order: verify 3 > expiry 1 = acting through the link 1 > ignore 0. Low stakes and fraud are unchanged
-# (scored as the star table's timer_expiry class; no tag bonus).
+# Timer expiry on a genuine message. Producer ruling R21 (2026-11-19, from Madrid QA) supersedes the QA L4
+# order (verify 3 > expiry 1 = acting through the link 1 > ignore 0): waiting out a timer never scores
+# higher than a deliberate dismiss. The expiry scores what the lowest dismiss option scores, on the beat
+# the timer ran out on, else on the group's later beats (grace and authored score overrides included). Only
+# when the group has no dismiss option anywhere does genuine_high below apply (★, 5 points, every slot).
+# Low stakes score as the star table's timer_expiry class unless a dismiss option scores lower. Fraud is
+# unchanged. Never a tag bonus.
 timer_expiry:
   genuine_high: { stars: 1, points: 5 }
 

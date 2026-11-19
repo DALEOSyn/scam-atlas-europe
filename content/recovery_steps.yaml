@@ -119,3 +119,44 @@ steps:
   # Labels stay generic: real bodies are named only on the Italy help card.
   - id: report_number_in_app
     label: "Block and report the number in Kettle"
+  # Lisbon (GDD §27.10). `report_sticker` is common sense (no PT source, QRP §5.4).
+  - id: report_sticker
+    label: "Photograph the sticker or slip and report it in the parking app or to the city"
+  - id: report_listing_or_host
+    label: "Report the listing or host on the platform"
+  - id: rescan_to_cancel
+    label: "Scan the code again to cancel the payment"
+    feedback: "It feels like undoing it, but the code leads to the same page. Block the card in your banking app first."
+  - id: pay_second_deposit
+    label: "Pay a 'refundable' deposit if they ask for one"
+    feedback: "Wanting your money back is natural, but a second payment only adds to the loss. Call your bank instead."
+  - id: keep_chatting_host
+    label: "Keep chatting to the 'host' on Kettle to sort it out"
+    feedback: "Wanting to sort it out with them feels reasonable, but the 'host' is the scammer and won't fix anything. Report them in the Roostwell app and call your bank."
+  # Stockholm (GDD §29.10). go_offline, get_device_checked and let_caller_finish are reused by the Brussels
+  # boss (§29.5). approve_again_to_cancel is the e-ID sibling of send_code_to_cancel and rescan_to_cancel.
+  - id: go_offline
+    label: "Turn on airplane mode and stop using the device for banking"
+  - id: get_device_checked
+    label: "Get the device checked before you use it for banking again"
+  - id: approve_again_to_cancel
+    label: "Approve another request to cancel the first one"
+    feedback: "It feels like undoing it, but a new approval can let them in again. Call your bank instead."
+  - id: let_caller_finish
+    label: "Call them back so they can finish the 'check'"
+    feedback: "They're the ones who got in. Hang up, go offline and call your bank."
+  # Dublin (GDD §28.10, T-3.10). Labels stay generic: the real regulator and police are named only on the
+  # Ireland help card. Reused in Dublin: stop_paying, pay_recovery_service, pay_last_fee, keep_evidence,
+  # block_card_in_bank_app, call_bank_known_number, report_to_police_online, tell_trusted_adult, wait_and_see.
+  - id: report_firm_to_regulator
+    label: "Report the firm to the financial regulator"
+  - id: report_ad_on_platform
+    label: "Report the ad on the social network"
+  - id: block_adviser_number
+    label: "Block the 'adviser's' number and don't take their calls"
+  - id: pay_first_deposit
+    label: "Pay a small first deposit to see if it's real"
+    feedback: "Wanting to see if it's real is natural, but that deposit would be the start of the loss. Look the firm up on the register yourself first."
+  - id: add_more_to_test
+    label: "Add a bit more to see if the gains are real"
+    feedback: "Wanting proof is natural, but more money only adds to the loss. The gains on screen were never real. Call your bank instead."

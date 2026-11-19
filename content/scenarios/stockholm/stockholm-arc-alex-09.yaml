@@ -1,0 +1,68 @@
+# Arc beat, slot 9 (GDD §28.5 slot-9 row, word for word; §10.1, §10.2; STORY §1.4: arc slot N plays by
+# play position, so the line is city-agnostic). Warning sign: an emergency, money, and "only you".
+# Slot 9 is the last arc beat before the finale (§28.5 item 6); Brussels shows this message in earlier[].
+# Options (§28.5): Call Adaeze or Teo → ask_someone · Send it → pay (alex_invested += 300) · Report → report
+# (a report at slots 7–9 closes the arc as ending B, D-S2). No damage control at the beat (it would unmask
+# the arc, §10.2). Layer 1 is §28.5's (14 authored words).
+# Glimmerfund is not named here (arc-only brand, never in a scored scenario or debrief).
+# Placed between 9-6 and 9-7 (GDD §29.3): neither neighbour's debrief mentions friends, money to people,
+# platforms or deadlines.
+id: stockholm-arc-alex-09
+chapter: stockholm
+role: arc
+arc_slot: 9
+learning_objectives: [LO-14]
+is_fraud: true
+device: messenger
+brands: [wordswap]
+cast: [alex, teo, adaeze]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Alex", detail: "Practice partner from Wordswap" }
+  from_cast: alex
+  body: |
+    I'm in trouble. My account's frozen and I need €300 by tomorrow. You're the only one I can ask. Please?
+  request: pay
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows Alex, your practice partner from Wordswap, as any profile would. A profile name can't prove anything either way."
+    red_flag: false
+    type: sender
+
+actions:
+  - id: send_alex_three_hundred
+    label: "Send it"
+    kind: pay
+    outcome: sent_alex_three_hundred
+    pressure_target: true
+  - id: call_adaeze_or_teo
+    label: "Call Adaeze or Teo"
+    kind: ask_someone
+    outcome: teo_on_only_you
+  - id: report_alex_emergency
+    label: "Report the profile"
+    kind: report
+    outcome: alex_emergency_reported
+
+outcomes:
+  sent_alex_three_hundred:
+    narrative: "You send €300. Alex: \"You're a lifesaver 🙏 I'll pay you back next week, promise.\""
+    arc_effects: { alex_invested: 300 }
+  teo_on_only_you:
+    narrative: "You call Teo. Teo: \"Frozen, money by tomorrow, and you're the only one? That's three warning signs, kiddo. Don't send anything. I'll stay on the phone while you think.\""
+  alex_emergency_reported:
+    narrative: "You report the profile to Wordswap and don't send anything."
+
+debrief:
+  variant: arc
+  layer1:
+    tell: "An emergency, money, and 'only you'."
+    what_works: "Call Teo or Adaeze before you send anything."
+  layer2:
+    message_flags: []
+    notes: "A sudden emergency, a deadline and \"you're the only one\" all push you to act before you can ask anyone. A real friend in trouble can wait while you call someone you trust."
+  already_clicked:
+    paid: "If you've already paid, stop paying, call your bank on the number on your card, and keep the chat history."
+  sources: [ie-garda-crimecall-investment-2024, be-police-romance-2026, eu-esas-ai-scams-factsheet-sv, de-evz-online-trading-scam-2026]

@@ -9,6 +9,8 @@
  */
 import { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { Scenario } from '../content/schema.ts';
+import { callDirectionOf } from '../content/callDirection.ts';
+import { firstLang } from '../content/inlineLang.ts';
 import { castMember } from '../content/cast.ts';
 import { recoveryStepFeedback, recoveryStepLabel } from '../content/recoverySteps.ts';
 import { useScenarioRunner } from '../engine/hooks.ts';
@@ -26,8 +28,11 @@ import type { CallStage } from './devices/types.ts';
 import { BreathPanel, formatTime, Hud } from './Hud.tsx';
 import { Icon } from './Icon.tsx';
 import { deadlineText, WHAT_NOW_KEYS } from './labels.ts';
-import { RichText } from './RichText.tsx';
+import { LangText, RichText, spokenNumber } from './RichText.tsx';
 import { SettingsPanel } from './Settings.tsx';
+import { RevealCard } from './ArcFinale.tsx';
+import { COACH_FAIRMEASURE, FairmeasurePanel, RegisterResult, regulatorName } from './Fairmeasure.tsx';
+import { registerAvailable, registerEntries } from '../content/brands.ts';
 import { linePace, readingHoldSeconds, unrevealedTargets } from './text.ts';
 import styles from './ScenarioView.module.css';
 
@@ -47,6 +52,8 @@ export interface ScenarioViewProps {
   /** Coach marks already shown in this game (save.coachMarks), and where a newly shown one is recorded. */
   coachMarks?: readonly string[];
   onCoachMarkSeen?: (id: string) => void;
+  /** CR-43(b): the finale's three profile names, for an outcome that opens the reveal card. */
+  revealNames?: readonly string[] | undefined;
 }
 
 function useDesk(): boolean {
@@ -63,8 +70,38 @@ function useDesk(): boolean {
   return desk;
 }
 
+/** CR-45: how long a dialled call shows "Calling…" before it connects. */
+export const DIAL_SECONDS = 1.5;
+
+/** CR-45: the authored translation of an outcome narrative (matched by its text), if any. */
+export function outcomeTranslation(s: Scenario, narrative: string): string | undefined {
+  return Object.values(s.outcomes).find((o) => o.narrative === narrative)?.translation;
+}
+
+/**
+ * CR-45: the Translate toggle for a label or outcome line with an inline language span, the same toggle as
+ * messages (beside the button, never inside it). Nothing without a translation.
+ */
+function LabelTranslation({ label, translation, id, onFreeze, alwaysOpen }: { label: string; translation: string | undefined; id: string; onFreeze: (on: boolean) => void; alwaysOpen: boolean }) {
+  if (!translation) return null;
+  return <Translate message={{ lang: firstLang(label), translation }} id={id} onFreeze={onFreeze} alwaysOpen={alwaysOpen} />;
+}
+
 /** Reading pace for call lines (UI_SPEC §3.4); lives in text.ts so the announcer queue can use it too. */
 export { linePace };
+
+/**
+ * CR-45: what a call beat says as it starts. A ringing call (scheduled, from the log) says who is calling,
+ * in its own slot so it is never folded into "N new messages"; a call the player dialled (reached by
+ * next_beat, announced by ScenarioView as it opens) is feedback on their own action (category 2, at once).
+ * null for a beat that is not a call.
+ */
+export function callAnnouncement(s: Scenario, beatId: string): { category: 2 | 5; key: string; text: string } | null {
+  const b = s.beats.find((x) => x.id === beatId);
+  if (b?.device !== 'call') return null;
+  const who = spokenNumber(b.message.sender?.display ?? '');
+  return callDirectionOf(s, b.id) === 'outgoing' ? { category: 2, key: 'call', text: t('announce_call_out', { number: who }) } : { category: 5, key: 'call', text: t('announce_call_in', { caller: who }) };
+}
 
 /**
  * What a log entry says in the polite live region (UI_SPEC §10.5). `onCallBeat`: the banking beat under the
@@ -75,10 +112,14 @@ export function logAnnouncement(
   s: Scenario,
   e: RunnerLogEntry,
   onCallBeat: string | null = null,
-): { category: 1 | 3 | 4 | 5; text: string; key?: string; foreign?: { text: string; lang: string } } | null {
+): { category: 1 | 2 | 3 | 4 | 5; text: string; key?: string; foreign?: { text: string; lang: string } } | null {
   switch (e.type) {
-    case 'beat_arrived':
-      return e.beatId === 'start' ? null : { category: 5, text: t('announce_new_message') };
+    case 'beat_arrived': {
+      if (e.beatId === 'start') return null;
+      // CR-45: a call is not a message. A ringing call says who is calling (its own slot, never folded into
+      // "N new messages"); a call the player dialled is their own action's feedback (category 2, at once).
+      return callAnnouncement(s, e.beatId) ?? { category: 5, text: t('announce_new_message') };
+    }
     case 'pusher': {
       // CR-27 (WCAG 3.1.2): a follow-up in another language is spoken with its own lang.
       const lang = s.pressure.pusher?.messages[e.index]?.lang;
@@ -101,7 +142,11 @@ export function logAnnouncement(
   }
 }
 
-function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recovery']>; onDone: (picks: string[]) => void }) {
+/**
+ * Damage control. `intro`: a line before any steps (R22, psych M3: the arc's "{name} was never real…" when money is
+ * in). `view.note`: an authored note on the feedback screen (R22, psych M4).
+ */
+export function DamageControl({ view, intro, onDone }: { view: NonNullable<RunnerView['recovery']>; intro?: string | undefined; onDone: (picks: string[]) => void }) {
   const [picks, setPicks] = useState<string[]>([]);
   const [submitted, setSubmitted] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -123,7 +168,9 @@ function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recover
   // CR-32: damage control for a cast member (a drill): the prompt names them, and this scenario's own
   // harmful-step feedback is theirs to say ("Mateus: Another code? …"). Generic feedback stays unattributed.
   // The first name, as a friend says it ("Mateus", not "Mateus Ferreira").
-  const forName = view.forCast ? (castMember(view.forCast)?.name.split(/\s+/u)[0] ?? null) : null;
+  const voiceName = view.forCast ? (castMember(view.forCast)?.name.split(/\s+/u)[0] ?? null) : null;
+  // CR-41: someone off-cast ("Noor's friend") is named in the prompt; the feedback stays in the cast member's voice.
+  const forName = view.forLabel ?? voiceName;
   if (submitted) {
     return (
       <section class={styles.panel} aria-labelledby="damage-feedback-heading">
@@ -141,9 +188,9 @@ function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recover
                     <strong>{harmful ? t('damage_doesnt_help') : t('damage_helps')}</strong> {recoveryStepLabel(step)}
                   </span>
                 </span>
-                {harmful && forName && byStep.get(step)?.feedback ? (
+                {harmful && voiceName && byStep.get(step)?.feedback ? (
                   <p data-voice="">
-                    <strong>{t('damage_voice', { name: forName })}</strong> {byStep.get(step)?.feedback}
+                    <strong>{t('damage_voice', { name: voiceName })}</strong> {byStep.get(step)?.feedback}
                   </p>
                 ) : harmful && (byStep.get(step)?.feedback ?? recoveryStepFeedback(step)) ? (
                   <p>{byStep.get(step)?.feedback ?? recoveryStepFeedback(step)}</p>
@@ -152,6 +199,7 @@ function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recover
             );
           })}
         </ol>
+        {view.note ? <p data-recovery-note="">{view.note}</p> : null}
         <button type="button" class={styles.primary} onClick={() => onDone(picks)}>
           {t('app_continue')}
         </button>
@@ -163,6 +211,11 @@ function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recover
       <h3 id="damage-heading" ref={heading} tabIndex={-1}>
         {t('damage_title')}
       </h3>
+      {intro ? (
+        <p data-damage-intro="">
+          <strong>{intro}</strong>
+        </p>
+      ) : null}
       <p>{t('damage_sub')}</p>
       <p data-damage-prompt="">{forName ? t('damage_prompt_for', { name: forName }) : t('damage_prompt')}</p>
       <ul class={styles.actions}>
@@ -197,7 +250,7 @@ function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recover
 }
 
 /** One scenario from arrival to the end of damage control. Give it a `key` to restart. */
-export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines = 'auto', onCallLines, alwaysTranslate = false, onQuit, settings, defaultTimer = 'standard', onSettings, coachMarks = [], onCoachMarkSeen }: ScenarioViewProps) {
+export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines = 'auto', onCallLines, alwaysTranslate = false, onQuit, settings, defaultTimer = 'standard', onSettings, coachMarks = [], onCoachMarkSeen, revealNames }: ScenarioViewProps) {
   const runner = useScenarioRunner(scenario, ctx);
   const { view, state } = runner;
   const announce = useContext(AnnounceContext);
@@ -314,6 +367,12 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
     const id = setTimeout(() => setChip(null), 1500);
     return () => clearTimeout(id);
   }, [chip]);
+  // CR-45: a dialled call has no arrival in the log (the player moved there): announce "Calling {number}".
+  useEffect(() => {
+    if (!beat?.outgoing) return;
+    const a = callAnnouncement(scenario, beat.id);
+    if (a) announce.polite(a.category, a.text, undefined, a.key);
+  }, [beat?.id, beat?.outgoing]);
   useEffect(() => {
     if (view.pause.open) announce.polite(2, t('pause_panel'));
   }, [view.pause.open, announce]);
@@ -328,7 +387,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
   const [callState, setCallState] = useState<CallStage | null>(null);
   const call: CallStage | null =
     isCall && beat
-      ? { ...(callState && callState.beatId === beat.id ? callState : { beatId: beat.id, answered: false, shown: 0, ended: false, step: callLines === 'step' }), ended: view.phase === 'what_now' }
+      ? { ...(callState && callState.beatId === beat.id ? callState : { beatId: beat.id, answered: false, shown: 0, ended: false, step: callLines === 'step' }), ended: view.phase === 'what_now', ...(beat.outgoing ? { outgoing: true } : {}) }
       : null;
   const lines = beat ? visibleLines(beat.message) : [];
   const revealing = !!call && !call.ended && (!call.answered || call.shown < lines.length);
@@ -342,6 +401,13 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
     // Only stage changes restart the line timer; engine ticks must not (QA B1).
   }, [call?.beatId, call?.shown, call?.answered, call?.ended, call?.step, view.pause.open, lines.length]);
   const answer = () => beat && setCallState({ beatId: beat.id, answered: true, shown: 1, ended: false, step: callLines === 'step' });
+  // CR-45: a call the player dialled shows "Calling…" for DIAL_SECONDS, then connects by itself (no Answer,
+  // no Decline). The timer stays frozen until the lines are shown, as on a ringing call; Pause holds it.
+  useEffect(() => {
+    if (!call || !call.outgoing || call.answered || call.ended || view.pause.open) return undefined;
+    const id = setTimeout(answer, DIAL_SECONDS * 1000);
+    return () => clearTimeout(id);
+  }, [call?.beatId, call?.outgoing, call?.answered, call?.ended, view.pause.open]);
   const hangUpAction = beat?.actions.find((a) => a.kind === 'hang_up');
   const ringing = !!call && !call.answered && !call.ended;
 
@@ -416,6 +482,33 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
       target?.focus();
     }, 0);
   }, [runner.freeze]);
+
+  // ---- CR-38: the Fairmeasure regulator view, a home-screen tool (HUD menu); the timer is frozen while open.
+  const [registerOpen, setRegisterOpen] = useState(false);
+  const registerReturn = useRef<HTMLElement | null>(null);
+  const openRegister = () => {
+    registerReturn.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    runner.freeze('register', true);
+    setRegisterOpen(true);
+  };
+  const closeRegister = useCallback(() => {
+    setRegisterOpen(false);
+    runner.freeze('register', false);
+    const el = registerReturn.current;
+    setTimeout(() => {
+      const menu = document.querySelector<HTMLElement>('[data-hud="menu"]');
+      const usable = !!el && el.isConnected && !el.closest('[hidden], [inert]');
+      (usable ? el : (menu ?? deviceHeadingRef.current))?.focus();
+    }, 0);
+  }, [runner.freeze]);
+  /** One-time coach mark for the register, wherever it is first used (GDD §28.5). */
+  const registerCoach = !coachSeen.includes(COACH_FAIRMEASURE);
+  const registerCoachSeen = useCallback(() => {
+    if (coachSeenRef.current.includes(COACH_FAIRMEASURE)) return;
+    coachSeenRef.current = [...coachSeenRef.current, COACH_FAIRMEASURE];
+    setCoachSeen(coachSeenRef.current);
+    onCoachMarkSeen?.(COACH_FAIRMEASURE);
+  }, [onCoachMarkSeen]);
 
   // ---- "Jump to your options" (QA M6): a sticky bar at the bottom of the screen on phones while the
   // tray is out of view; it moves focus to the tray. Hidden on the desk (the rail is always in view).
@@ -522,6 +615,8 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
       const hidden = unrevealedTargets(beat.message, call.ended || call.shown >= lines.length ? Infinity : (lines[call.shown]?.index ?? Infinity));
       list = list.filter((c) => c.beatId !== beat.id || !hidden.has(c.target));
     }
+    // CR-45: a dialled call's caller ID is the number the player dialled.
+    if (beat?.outgoing) list = list.map((c) => (c.beatId === beat.id ? { ...c, outgoing: true } : c));
     return list;
   }, [view.checkables, call?.answered, call?.shown, call?.ended, beat]);
   const itemMap = useMemo(() => new Map(items.map((c) => [c.target, c])), [items]);
@@ -577,7 +672,8 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
 
   const card = openItem ? <CheckCard item={openItem} visibleText={visible(openItem)} sender={sender} modal={modal} onTag={doTag} onClose={closeCard} /> : null;
   const live = view.phase === 'playing' || view.phase === 'what_now';
-  const blocked = modal || settingsOpen;
+  // CR-38 (sceptic B1): the Fairmeasure dialog is modal too: the scenario and the HUD go inert under it.
+  const blocked = modal || settingsOpen || registerOpen;
   const showJump = jumpShown;
   // The bar's place is kept for the rest of the beat once it has shown (CR-27).
   const [jumpBeat, setJumpBeat] = useState<string | null>(null);
@@ -616,6 +712,9 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
               onQuit: () => onQuit?.(),
               onOpen: (open) => runner.freeze('pause_menu', open),
               onSettings: settings && onSettings ? openSettings : undefined,
+              // CR-38 (psych M1): only when the register lists at least one authorised firm.
+              onRegister: registerAvailable() ? openRegister : undefined,
+              registerName: regulatorName(),
             }}
           />
         </div>
@@ -674,7 +773,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                 onCoachMark={onCoachMark}
                 call={call}
                 onAnswer={answer}
-                onDecline={hangUpAction ? () => runner.act(hangUpAction.id) : null}
+                onDecline={hangUpAction && !beat.outgoing ? () => runner.act(hangUpAction.id) : null}
                 onNextLine={() =>
                   // Functional update: two quick presses before a re-render still reveal two lines.
                   call && setCallState((prev) => {
@@ -682,7 +781,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                     return { ...base, shown: Math.min(base.shown + 1, lines.length) };
                   })
                 }
-                heading={deviceHeading(beat.device, beat.message)}
+                heading={deviceHeading(beat.device, beat.message, !!beat.outgoing)}
                 headingRef={deviceHeadingRef}
               />
             ) : null}
@@ -720,8 +819,9 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                     {i.actions.map((a) => (
                       <li key={a.id}>
                         <button type="button" class={styles.action} data-interrupt-action={a.id} onClick={() => answerInterrupt(i.id, a.id)}>
-                          {a.label}
+                          <LangText text={a.label} />
                         </button>
+                        <LabelTranslation label={a.label} translation={a.translation} id={`action-translation-${a.id}`} onFreeze={onTranslation} alwaysOpen={alwaysTranslate} />
                       </li>
                     ))}
                   </ul>
@@ -754,7 +854,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
             </div>
             {beat && view.phase === 'playing' ? (
               ringing ? (
-                <p class={styles.note}>{t('call_answer_first')}</p>
+                <p class={styles.note}>{call?.outgoing ? t('call_connecting_note') : t('call_answer_first')}</p>
               ) : actionsInDevice(beat.device, beat.message) ? (
                 // CR-23: the payee-check card holds this beat's actions (in action_order); not repeated here.
                 // The pointer goes to the result first (not the buttons), and waits until the check is done.
@@ -778,8 +878,9 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                   {beat.actions.map((a) => (
                     <li key={a.id}>
                       <button type="button" class={a.styled ? `${styles.action} ${styles.pressure}` : styles.action} data-action={a.id} onClick={() => doAct(a.id)}>
-                        {a.label}
+                        <LangText text={a.label} />
                       </button>
+                      <LabelTranslation label={a.label} translation={a.translation} id={`action-translation-${a.id}`} onFreeze={onTranslation} alwaysOpen={alwaysTranslate} />
                     </li>
                   ))}
                 </ul>
@@ -802,7 +903,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                   {view.whatNow.choices.map((c) => (
                     <li key={c.id}>
                       <button type="button" class={styles.action} data-what-now={c.id} onClick={() => runner.whatNow(c.id)}>
-                        {c.label ?? (c.builtin ? t(WHAT_NOW_KEYS[c.builtin]) : c.id)}
+                        {c.label ? <LangText text={c.label} /> : c.builtin ? t(WHAT_NOW_KEYS[c.builtin]) : c.id}
                       </button>
                     </li>
                   ))}
@@ -818,6 +919,11 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                   <Icon name="info" />
                   <span>{view.consequenceDeadline ? deadlineText(view.consequenceDeadline, scenario.pressure.honest_deadline) : <RichText text={view.consequence ?? ''} />}</span>
                 </p>
+                {!view.consequenceDeadline && view.consequence ? <LabelTranslation label={view.consequence} translation={outcomeTranslation(scenario, view.consequence)} id="consequence-translation" onFreeze={onTranslation} alwaysOpen={alwaysTranslate} /> : null}
+                {/* CR-38: what the register showed when you looked the firm up yourself. */}
+                {view.consequenceRegister ? <RegisterResult card={view.consequenceRegister} coach={registerCoach} onCoachSeen={registerCoachSeen} /> : null}
+                {/* CR-43(b): the photo check or report in the finale shows the same picture under three names. */}
+                {view.consequenceReveal && revealNames ? <RevealCard names={revealNames} headingLevel={4} /> : null}
                 {/* Boss "already checked" (ruling QA fun note a), after the beat's narrative. */}
                 {view.consequenceCovered ? (
                   <p class={styles.caption} data-covered="">
@@ -833,6 +939,9 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                       <RichText text={n} />
                     </span>
                   </p>
+                ))}
+                {view.consequenceAsides.map((n, i) => (
+                  <LabelTranslation key={`t${i}`} label={n} translation={outcomeTranslation(scenario, n)} id={`aside-translation-${i}`} onFreeze={onTranslation} alwaysOpen={alwaysTranslate} />
                 ))}
                 <button type="button" class={styles.primary} onClick={runner.continueConsequence}>
                   {t('app_continue')}
@@ -851,6 +960,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
       {settingsOpen && settings && onSettings ? (
         <SettingsPanel settings={settings} defaultTimer={defaultTimer} onChange={onSettings} onClose={closeSettings} modal inScenario />
       ) : null}
+      {registerOpen ? <FairmeasurePanel entries={registerEntries()} onClose={closeRegister} coach={registerCoach} onCoachSeen={registerCoachSeen} /> : null}
       <p id="check-hint" class={styles.vh}>
         {t('check_hint')}
       </p>

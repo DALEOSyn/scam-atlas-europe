@@ -1,0 +1,56 @@
+# CR-41: damage control for someone off-cast (Noor's friend), voiced by a cast member (Noor). A drill.
+id: fx-cr41-friend-offcast
+chapter: fixtures
+role: drill
+pattern: money-mule-recruitment
+theme: easy-money
+learning_objectives: [LO-16, LO-18]
+difficulty: 1
+is_fraud: false
+device: messenger
+brands: [kettle]
+cast: [noor]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Noor (cousin)", detail: "Saved contact: Noor" }
+  from_cast: noor
+  body: "One more thing. My friend from football already sent hers last night. She's really worried now. What should she do first?"
+  request: reply
+  ask: { text: "What should she do first?" }
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: Noor's saved contact. She asks for advice, not money or a code."
+    red_flag: false
+    reassures: true
+  - target: request
+    reveal: "She asks what her friend should do first. That's a question you can help with."
+    red_flag: false
+    type: request
+
+actions:
+  - { id: help_friend, label: "Talk it through with Noor, step by step", kind: proceed, outcome: helping_friend, pressure_target: true }
+  - { id: leave_it, label: "Tell her to leave it", kind: reply, outcome: noor_helps_anyway }
+
+outcomes:
+  helping_friend:
+    narrative: "Noor: \"Okay. What should she do first?\""
+    recovery_for: { label: "Noor's friend", voiced_by: noor }
+    recovery:
+      - { step: tell_trusted_adult, category: stop }
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: change_password, category: secure }
+      - { step: report_account_in_app, category: report }
+      - { step: keep_quiet, category: harmful, feedback: "She wants it to go away. But getting help early is the right move." }
+      - { step: pay_second_request, category: harmful, feedback: "If anyone pressures you to keep going, that's a reason to get help now." }
+  noor_helps_anyway:
+    narrative: "Noor: \"She's telling her mum tonight anyway.\""
+
+debrief:
+  layer1: { tell: "Already said yes? It's not too late.", what_works: "Stop, tell an adult, call the bank." }
+  device_tip: "Keep your bank's card number in your phone before you need it."
+  habit_card: stop-the-damage-first
+  already_clicked:
+    entered_details: "Shared a login or card? Change the login, call your bank on the number on your card, and tell a trusted adult."
+  sources: [eu-europol-mule-jobs]

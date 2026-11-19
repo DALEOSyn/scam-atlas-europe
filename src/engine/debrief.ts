@@ -6,7 +6,7 @@
 import type { Device, Inspectable, Message, Scenario } from '../content/schema.ts';
 import { overCautionOf } from './choiceText.ts';
 import { inspectableFor } from './inspect.ts';
-import { alreadyClickedLine, type AlreadySituation } from './recovery.ts';
+import { alreadyClickedLine, clickedViaOf, type AlreadySituation, type ClickedVia } from './recovery.ts';
 import type { ScenarioResult } from './result.ts';
 import { beatById, deadlineLine, interruptNarratives, WHAT_NOW_BUILTINS, type DeadlineLine, type GroupState, type RunnerState, type WhatNowBuiltin } from './runner.ts';
 import type { BeatResult } from './result.ts';
@@ -72,7 +72,8 @@ export type ChoiceLine =
   | { beatId: string; kind: 'action'; label: string; path?: ChoicePath }
   | { beatId: string; kind: 'what_now'; choice: WhatNowBuiltin; path?: ChoicePath }
   | { beatId: string; kind: 'over_caution'; which: OverCaution; label?: string }
-  | { beatId: string; kind: 'timer' };
+  /** `genuine` (CR-45, psych M2): the timer ran out on a genuine message (`you_chose_timer_genuine`). */
+  | { beatId: string; kind: 'timer'; genuine?: true };
 
 /** The final choice after an engage (CR-27): an authored label, or a What-now built-in. */
 export type ChoiceThen = { label: string } | { builtin: WhatNowBuiltin };
@@ -124,6 +125,11 @@ export interface DebriefData {
     /** null on arc beats and drills (no stars, no points). */
     stars: number | null;
     alreadyClicked: { situation: AlreadySituation; text: string } | null;
+    /**
+     * CR-40: after `advise_comply` in an advice scenario, the authored line shown without blame under the "You
+     * chose" line ("Noor asked, and that was the smart bit. …"). null otherwise.
+     */
+    adviceLine: string | null;
   };
   layer2: {
     /**
@@ -157,7 +163,10 @@ export interface DebriefData {
     /** "You spotted {marked} of {could} you could mark." */
     spotted: { marked: number; could: number };
     deviceTip: string | null;
-    alreadyClicked: { clicked?: string; entered_details?: string; shared_code?: string; paid?: string } | null;
+    /** CR-45: `headings` = authored sub-headings per situation (else the game's own). */
+    alreadyClicked: { clicked?: string; entered_details?: string; shared_code?: string; paid?: string; headings?: Partial<Record<AlreadySituation, string>> | undefined } | null;
+    /** CR-45: what "clicked" means in this scenario (link, call, reply, QR code), for its default sub-heading. */
+    clickedVia?: ClickedVia;
     habitCard: string | null;
     pressureCallout: PressureCallout;
     /** Authored levers, the answer for the optional "Which pressure did they use?" tap. */
@@ -285,6 +294,7 @@ export function debriefOf(
       bestLine: bestLineOf(s, r),
       stars: unscored ? null : r.stars,
       alreadyClicked: alreadyClickedLine(s, r.situation) ?? null,
+      adviceLine: st.groups.some((g) => g.decision?.kind === 'advise_comply') ? (d.advice_line ?? null) : null,
     },
     layer2: {
       // A boss can reach the same outcome on several beats: say it once (QA E4). Interrupts the player
@@ -307,6 +317,7 @@ export function debriefOf(
       spotted: { marked, could },
       deviceTip: d.device_tip ?? null,
       alreadyClicked: d.already_clicked ?? null,
+      clickedVia: clickedViaOf(s),
       habitCard: d.habit_card ?? null,
       pressureCallout: arc ? null : pressureCalloutFor(st.styledShown, !s.is_fraud, seen),
       levers: [...s.pressure.levers],
@@ -359,7 +370,7 @@ function finalChoice(s: Scenario, g: GroupState, actionId: string, via: string |
 
 export function choiceLine(s: Scenario, g: GroupState, beat: BeatResult): ChoiceLine | null {
   if (beat.stars >= 3 && !beat.fell) return null;
-  if (beat.timerExpired) return { beatId: g.beatId, kind: 'timer' };
+  if (beat.timerExpired) return { beatId: g.beatId, kind: 'timer', ...(s.is_fraud ? {} : { genuine: true as const }) };
   const d = g.decision;
   // CR-34: a payment code shared, then the confirmation declined: the code is what cost the third star (★★, ruling R18), so it is
   // named, with the final choice as the path ("You chose: Make a code and send it. Then: Decline.").

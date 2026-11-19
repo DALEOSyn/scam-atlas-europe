@@ -1,0 +1,23 @@
+# Lisbon turn (GDD §27.2 beat 2, STORY §3.7; laughing → thinking; 2 panels): the stop point, after 7-3.
+# Drill 7-4 (Beatriz's two rooms; she asks you) follows directly. Order-safe: no other city mentioned.
+# Mateus's "look at it properly before anyone pays anything" is a general habit, never wrong on the
+# genuine twins later in the chapter (STORY §4.2 rule 2). No listing, price, host or link is shown; the
+# phone is not drawn with a screen (STORY §4.2 rule 1).
+id: lisbon-turn
+chapter: lisbon
+slot: turn
+panels:
+  - backdrop: lisbon-kitchen
+    crop: left
+    speaker: beatriz
+    expression: laughing
+    line: "I think I've found one! Near the faculty, with a balcony."
+    alt: "Beatriz laughing at the kitchen table, beside a bowl of oranges."
+  - backdrop: lisbon-kitchen
+    crop: right
+    speaker: mateus
+    expression: thinking
+    flip: true
+    with: { id: beatriz, expression: calm }
+    line: "Great. Let's look at it properly before anyone pays anything."
+    alt: "Mateus, thinking, in the kitchen; Beatriz listens, calm."

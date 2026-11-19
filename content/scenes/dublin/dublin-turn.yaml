@@ -1,0 +1,30 @@
+# Dublin turn (GDD §28.2 beat 2, STORY §3.8; thinking → calm): the stop point, after 8-3. Drill 8-4 (Declan's
+# two ads; he asks you) follows directly. Order-safe: no other city mentioned.
+# Optional rehearsal choice (STORY §4.1): "Where would you start?", both options get the same reply, no score,
+# no flag. Declan decides for himself (D-M1): the reply is his. "Register first, and find it yourself, not
+# through an ad" is a general habit, never wrong on the genuine twins later in the chapter (STORY §4.2 rule 2).
+# Panel count: GDD §28.2 counts 3 (line, choice, reply). The engine shows a choice's reply inside its own
+# panel, and a panel needs a line or a caption, so the turn is 2 panels: Declan (thinking) with his line, then
+# Declan (calm) with the choice and his reply under a short time caption (the only added wording).
+# No ad, platform, firm name or amount is shown; no phone screen is drawn (STORY §4.2 rule 1).
+id: dublin-turn
+chapter: dublin
+slot: turn
+panels:
+  - backdrop: dublin-hall
+    crop: left
+    speaker: declan
+    expression: thinking
+    line: "Everyone online seems to be getting rich. Am I the only one being careful?"
+    alt: "Declan, thinking, in the community hall by the tall arched windows and the small noticeboard."
+  - backdrop: dublin-hall
+    crop: right
+    speaker: declan
+    expression: calm
+    flip: true
+    caption: "Over a cup of tea."
+    alt: "Declan, calm, by the tea table with the urn, cups and biscuits."
+    choice:
+      prompt: "Where would you start?"
+      options: ["Find out who's behind it", "Look it up on the register"]
+      reply: "Both. Register first, and I'll find it myself, not through an ad."

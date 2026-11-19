@@ -8,18 +8,20 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { habitCard } from '../content/habitCards.ts';
 import type { ChoiceLine, DebriefData, DebriefWrongTag, OtherChoice } from '../engine/debrief.ts';
+import type { AlreadySituation, ClickedVia } from '../engine/recovery.ts';
 import { choiceLineText, choicePathText, nextTimeText } from '../engine/choiceText.ts';
 import { lookup, t, type MessageKey } from '../i18n/index.ts';
 import { deviceHeading } from './devices/Device.tsx';
 import { Icon } from './Icon.tsx';
 import { deadlineText, elementLabel } from './labels.ts';
-import { RichText } from './RichText.tsx';
+import { LangText, RichText } from './RichText.tsx';
 import styles from './DebriefView.module.css';
 
 export interface DebriefViewProps {
   data: DebriefData;
   onContinue: () => void;
-  onAgain: () => void;
+  /** Absent for the arc finale's steps (CR-43): a replay would bank its arc points twice. */
+  onAgain?: (() => void) | undefined;
   /** Arc debriefs (GDD §10.2): "Tell me now", behind a confirmation. Absent once the arc is closed. */
   onTellMeNow?: (() => void) | undefined;
 }
@@ -38,6 +40,27 @@ const ARC_SITUATION_KEYS: Record<'clicked' | 'entered_details' | 'shared_code' |
   shared_code: 'debrief_shared_code',
   paid: 'debrief_arc_paid',
 };
+
+/** CR-45: the default `clicked` heading follows what "clicking" was in this scenario. */
+const CLICKED_VIA_KEYS: Record<ClickedVia, MessageKey> = {
+  link: 'debrief_clicked',
+  call: 'debrief_called',
+  reply: 'debrief_replied',
+  qr: 'debrief_scanned',
+  mixed: 'debrief_clicked_mixed',
+};
+
+/**
+ * CR-45: the sub-heading over an "If you already…" situation: the authored heading, else (standard debriefs)
+ * the game's heading, with `clicked` following the scenario's own action, else the arc wording.
+ */
+export function alreadyHeading(k: AlreadySituation, ac: DebriefData['layer2']['alreadyClicked'], arc: boolean, via: ClickedVia | undefined): string {
+  const own = ac?.headings?.[k];
+  if (own) return own;
+  if (arc) return t(ARC_SITUATION_KEYS[k]);
+  if (k === 'clicked' && via) return t(CLICKED_VIA_KEYS[via]);
+  return t(SITUATION_KEYS[k]);
+}
 
 const STATUS_KEYS: Record<DebriefData['layer2']['flags'][number]['status'], MessageKey> = {
   marked: 'debrief_marked',
@@ -130,11 +153,19 @@ export function DebriefView({ data, onContinue, onAgain, onTellMeNow }: DebriefV
           <RichText text={l1.whatWorks} />
         </p>
         {l1.youChose.map((c, i) => (
-          <p key={i}>{choiceText(c)}</p>
+          <p key={i}>
+            <LangText text={choiceText(c)} />
+          </p>
         ))}
         {l1.nextTime ? <p>{nextTimeText(l1.nextTime, lookup)}</p> : null}
         {arc && l2.safeguardingLine ? <p>{l2.safeguardingLine}</p> : null}
         {l1.stars !== null ? <Stars n={l1.stars} /> : null}
+        {/* CR-40: after bad advice, the authored line without blame (psych M1), below the stars (R22); never "You fell". */}
+        {l1.adviceLine ? (
+          <p data-advice-line="">
+            <RichText text={l1.adviceLine} />
+          </p>
+        ) : null}
         {best ? <p class={styles.best}>{t(l1.bestLine === 'acted' ? 'outcome_best_acted' : 'outcome_best')}</p> : null}
         {ac ? (
           <p>
@@ -158,9 +189,11 @@ export function DebriefView({ data, onContinue, onAgain, onTellMeNow }: DebriefV
           <button type="button" class={styles.primary} onClick={onContinue}>
             {t('app_continue')}
           </button>
-          <button type="button" class={styles.secondary} onClick={onAgain}>
-            {t('app_again')}
-          </button>
+          {onAgain ? (
+            <button type="button" class={styles.secondary} onClick={onAgain}>
+              {t('app_again')}
+            </button>
+          ) : null}
           {arc && onTellMeNow && !confirm ? (
             <button type="button" class={styles.secondary} ref={tellButton} onClick={() => setConfirm(true)}>
               {t('tell_me_now')}
@@ -199,7 +232,9 @@ export function DebriefView({ data, onContinue, onAgain, onTellMeNow }: DebriefV
             <h2 id="other-choices-h">{t('debrief_you_chose_more')}</h2>
             <ul>
               {l2.youChoseOther.map((c, i) => (
-                <li key={i}>{otherChoiceText(c)}</li>
+                <li key={i}>
+                  <LangText text={otherChoiceText(c)} />
+                </li>
               ))}
             </ul>
           </section>
@@ -210,7 +245,11 @@ export function DebriefView({ data, onContinue, onAgain, onTellMeNow }: DebriefV
             <h2 id="choice-path-h">{t('debrief_choice_path')}</h2>
             {l2.choicePaths.map((c, i) => {
               const line = choicePathText(c.line, lookup) ?? '';
-              return <p key={i}>{c.beat ? t('debrief_choice_path_beat', { beat: deviceHeading(c.beat.device, c.beat.message), line }) : line}</p>;
+              return (
+                <p key={i}>
+                  <LangText text={c.beat ? t('debrief_choice_path_beat', { beat: deviceHeading(c.beat.device, c.beat.message), line }) : line} />
+                </p>
+              );
             })}
           </section>
         ) : null}
@@ -268,7 +307,9 @@ export function DebriefView({ data, onContinue, onAgain, onTellMeNow }: DebriefV
               {(['clicked', 'entered_details', 'shared_code', 'paid'] as const).map((k) =>
                 ac[k] ? (
                   <div key={k} class={l1.alreadyClicked?.situation === k ? styles.yours : undefined}>
-                    <dt>{t((arc ? ARC_SITUATION_KEYS : SITUATION_KEYS)[k])}</dt>
+                    <dt>
+                      <LangText text={alreadyHeading(k, ac, arc, l2.clickedVia)} />
+                    </dt>
                     <dd>
                       <RichText text={ac[k] ?? ''} />
                     </dd>

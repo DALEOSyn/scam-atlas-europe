@@ -13,6 +13,8 @@
 import { z } from 'zod';
 import { deriveCheckables } from './checkables.ts';
 import { ICU_MESSAGE_RE, SPOTTED_EXPR_RE } from './constants.ts';
+import { firstLang, langMarkupIssues, strayLangMarkers } from './inlineLang.ts';
+import { DIAL_KINDS, parentKinds } from './callDirection.ts';
 
 /** Lower-case kebab-case identifier, e.g. `berlin-03-parcel-customs`. */
 export const slug = z
@@ -38,6 +40,8 @@ export const ACTION_KINDS = [
   'report', 'block', 'ignore', 'delete', 'hang_up', 'deny_prompt', 'reply', 'open_link', 'call_number_in_message',
   'scan_qr_and_open', 'pay', 'pay_unprotected', 'enter_details', 'share_code', 'approve_prompt', 'install_or_remote',
   'proceed', 'pay_protected', 'pause', 'start_transfer',
+  // CR-40: bad advice to a cast member in an advice scenario (class comply): scores 0, but is not a fall.
+  'advise_comply',
 ] as const;
 export const actionKindSchema = z.enum(ACTION_KINDS);
 export type ActionKind = z.infer<typeof actionKindSchema>;
@@ -71,6 +75,8 @@ export const RECOVERY_CATEGORIES = ['stop', 'secure', 'report', 'warn', 'harmful
 export const INSPECTABLE_TYPES = [
   'sender', 'link', 'qr', 'payee', 'caller_id', 'padlock', 'page_address', 'logo', 'display_name', 'attachment',
   'reference', 'phone_number', 'letterhead', 'prompt', 'image', 'request', 'claim', 'video', 'spelling', 'grammar', 'language', 'other',
+  // CR-36: the "Sounds like {name}" voice label on a call (always neutral). CR-37: how a QR code is attached.
+  'voice', 'qr_mount',
 ] as const;
 export const LANGUAGE_TYPES: readonly (typeof INSPECTABLE_TYPES)[number][] = ['spelling', 'grammar', 'language'];
 export const NEVER_PROOF_TYPES: readonly (typeof INSPECTABLE_TYPES)[number][] = ['logo', 'display_name'];
@@ -98,6 +104,15 @@ const fictionalAddress = (what: string) =>
     .min(1)
     .refine((v) => FICTIONAL_HOST.test(addressHost(v)), `${what} must be a lowercase host ending in .example, .test or .invalid (Red Line 3)`);
 
+/** CR-37: how a QR code is attached. */
+export const QR_MOUNTS = ['printed', 'sticker'] as const;
+/** CR-37: devices whose QR code is on a physical surface, so `qr.mount` applies. */
+export const QR_MOUNT_DEVICES: readonly Device[] = ['qr', 'letter'];
+/** CR-37 (Lisbon): from this chapter slot, every qr / letter beat with a QR code sets `qr.mount` (parity). */
+export const CR37_FROM_SLOT = 7;
+/** CR-39(b): devices that can show a QR code (a chat message carries one in a bubble). */
+export const QR_DEVICES: readonly Device[] = ['qr', 'letter', 'messenger'];
+
 /** QR codes may only resolve to an in-game route (Red Line 3). */
 export const QR_PAYLOAD_RE = /^\/qr\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export const qrSchema = z
@@ -106,8 +121,20 @@ export const qrSchema = z
     /** Host shown on the destination chip ("QR code · opens trundle-redelivery.example"). */
     destination: fictionalAddress('qr.destination'),
     caption: z.string().min(1).optional(),
+    /**
+     * CR-37: how the code is attached, on `qr` and `letter` beats: printed on the surface, or a sticker over the
+     * printed code. Checkable `qr.mount` (after qr.destination) when set. "Printed" is never proof; a sticker
+     * may be a red flag. Required on every qr / letter QR beat from slot CR37_FROM_SLOT (rules.ts), for parity.
+     */
+    mount: z.enum(QR_MOUNTS).optional(),
+    /**
+     * CR-37 (S1): what a printed code is printed on, for the text "Printed on the {surface}" (e.g. "panel" on a
+     * parking meter). Without it: "Printed on it" (qr) or "Printed on the letter" (letter). Needs `mount: printed`.
+     */
+    surface: z.string().regex(/^[a-z][a-z' -]{0,29}$/u, 'surface is a short lower-case noun such as panel or poster').optional(),
   })
-  .strict();
+  .strict()
+  .refine((q) => q.surface === undefined || q.mount === 'printed', { message: 'surface names what a printed code is printed on: it needs mount: printed (CR-37)', path: ['surface'] });
 
 export const senderSchema = z
   .object({
@@ -157,7 +184,34 @@ export const messageSchema = z
     references: z.array(z.string().min(1)).optional(),
     phone_numbers: z.array(z.string().min(1)).optional(),
     qr: qrSchema.optional(),
-    page: z.object({ address: fictionalAddress('page.address'), title: z.string().min(1).optional() }).strict().optional(),
+    page: z
+      .object({
+        address: fictionalAddress('page.address'),
+        title: z.string().min(1).optional(),
+        /**
+         * CR-42: a browser warning drawn over the page as a game-styled panel (the Waymarker training frame; no
+         * operating-system, browser or security-product look, no sound, no fullscreen, no real countdown). Its
+         * body is the beat's message text: phone numbers, claims, the ask and references are quoted from it.
+         * A visible "Close" picks the beat's dismiss action (rules.ts: exactly one). Browser only.
+         */
+        overlay: z.object({ title: z.string().min(1).max(60), body: z.string().min(1) }).strict().optional(),
+      })
+      .strict()
+      .optional(),
+    /**
+     * CR-40: a message a cast member forwards to you, drawn as a quoted card inside their bubble (advice
+     * scenarios). Its sender (`forwarded.sender`) and its body are the beat's checkables: claims, the ask and
+     * references are quoted from `forwarded.body`; the cast member's own bubble is never checkable.
+     * Messenger only. `app` is the brand id of the app it came from (in the scenario's brands).
+     */
+    forwarded: z
+      .object({
+        app: slug,
+        sender: z.object({ display: z.string().min(1), detail: z.string().min(1).optional() }).strict(),
+        body: z.string().min(1),
+      })
+      .strict()
+      .optional(),
     /**
      * CR-33: the marketplace app the beat is shown in (its header): a brand id from content/brands.yaml,
      * listed in the scenario's brands. Marketplace only, required there.
@@ -197,6 +251,12 @@ export const messageSchema = z
       .strict()
       .optional(),
     transcript: z.array(z.object({ speaker: z.enum(['caller', 'you']), text: z.string().min(1) }).strict()).optional(),
+    /**
+     * CR-36: the voice label on a call, "Sounds like {cast name}" under the caller ID once answered (the cast
+     * id is in the scenario's cast and in content/cast.yaml). Checkable `voice` after `caller_id`, always
+     * neutral: a voice can be copied, so it never proves anything either way. Call only. Never audio.
+     */
+    voice: z.object({ sounds_like: slug }).strict().optional(),
     /** CR-20: a recorded-message call. The header says "Recorded message" and "you" lines are not shown. Call only. */
     recorded: z.boolean().optional(),
     /**
@@ -220,8 +280,12 @@ export const messageSchema = z
      * content:validate rejects non-bank ids. Default: the player's bank (Larchwick).
      */
     bank: z.object({ brand: slug }).strict().optional(),
-    /** CR-26: whose money it is, on banking beats ("Ruchelune · current account"). */
-    account: z.object({ nickname: z.string().min(1) }).strict().optional(),
+    /**
+     * CR-26: whose money it is, on banking beats ("Ruchelune · current account"). CR-45: `kind` sets the
+     * bank header's sub-label: `business` → "Business account"; `personal` (default) → the screen's own
+     * sub-label ("Payments", "Payment request", "Confirm payment").
+     */
+    account: z.object({ nickname: z.string().min(1), kind: z.enum(['business', 'personal']).default('personal') }).strict().optional(),
     prompt: z
       .object({
         type: z.enum(['sign_in', 'signature', 'qr_login']),
@@ -278,9 +342,12 @@ export const messageSchema = z
       ctx.addIssue({ code: 'custom', path: ['translation'], message: `text in lang "${m.lang}" needs an inline translation` });
     }
     const callerLines = (m.transcript ?? []).filter((l) => l.speaker === 'caller').map((l) => l.text);
+    // CR-40 / CR-42: a forwarded message or a page overlay is the message text; the bubble or page around it is not.
+    const own = checkableText(m);
+    const where = m.forwarded ? 'forwarded.body' : m.page?.overlay ? 'page.overlay.body' : 'the body or from one caller line of the transcript';
     const quoteRules = (q: { text: string; translation?: string | undefined }, path: (string | number)[], what: string) => {
-      if (!(m.body ?? '').includes(q.text) && !callerLines.some((l) => l.includes(q.text))) {
-        ctx.addIssue({ code: 'custom', path: [...path, 'text'], message: `${what}.text must be copied verbatim from the body or from one caller line of the transcript` });
+      if (!(own ?? '').includes(q.text) && (own !== m.body || !callerLines.some((l) => l.includes(q.text)))) {
+        ctx.addIssue({ code: 'custom', path: [...path, 'text'], message: `${what}.text must be copied verbatim from ${where}` });
       }
       if (m.lang && m.lang !== 'en') {
         if (!q.translation) ctx.addIssue({ code: 'custom', path: [...path, 'translation'], message: `the message is in "${m.lang}": ${what}.translation is required` });
@@ -316,6 +383,19 @@ export const messageSchema = z
   });
 export type Message = z.infer<typeof messageSchema>;
 
+/** "It fits…" opens reassuring reveals; never on details that cannot prove anything (CR-36 RM2, CR-37 LS2). */
+export function startsWithItFits(reveal: string): boolean {
+  return /^\s*it fits\b/iu.test(reveal);
+}
+
+/**
+ * The text a beat's inline checkables (claims, ask, references, phone numbers, links) are quoted from:
+ * a forwarded message (CR-40), else a page overlay (CR-42), else the body.
+ */
+export function checkableText(m: Pick<Message, 'body' | 'forwarded' | 'page'>): string | undefined {
+  return m.forwarded?.body ?? m.page?.overlay?.body ?? m.body;
+}
+
 /**
  * Message parts that only some devices render (CR-19 … CR-26). Returns [path under message, error].
  * Pure; shared by the scenario schema (beats, interrupts) and banners.
@@ -325,6 +405,9 @@ export function deviceOnlyIssues(device: Device, m: Message): [(string | number)
   if (m.sender?.new_contact && device !== 'messenger') out.push([['sender', 'new_contact'], 'new_contact (the "Not in your contacts" banner) is for messenger chats (CR-19)']);
   if (m.sender?.new_contact && !m.sender.detail) out.push([['sender', 'detail'], 'a new contact shows its number: sender.detail is required (CR-19)']);
   if (m.recorded && device !== 'call') out.push([['recorded'], 'recorded is for call beats (CR-20)']);
+  if (m.voice && device !== 'call') out.push([['voice'], 'voice (the "Sounds like" label) is for call beats (CR-36)']);
+  if (m.qr && !QR_DEVICES.includes(device)) out.push([['qr'], `a QR code is shown on ${QR_DEVICES.join(', ')} beats, not on ${device} (CR-39(b))`]);
+  if (m.qr?.mount && !QR_MOUNT_DEVICES.includes(device)) out.push([['qr', 'mount'], `qr.mount (how the code is attached) is for ${QR_MOUNT_DEVICES.join(' and ')} beats (CR-37)`]);
   if (m.video && device !== 'call') out.push([['video'], 'video is for call beats (CR-24)']);
   if (m.account && device !== 'banking') out.push([['account'], 'account (whose money it is) is for banking beats (CR-26)']);
   if (m.bank && device !== 'banking') out.push([['bank'], 'bank (the bank app header) is for banking beats (CR-27)']);
@@ -332,6 +415,8 @@ export function deviceOnlyIssues(device: Device, m: Message): [(string | number)
   if (m.listing && device !== 'marketplace') out.push([['listing'], 'listing (the listing card) is for marketplace beats (CR-33)']);
   if (m.notice && device !== 'marketplace') out.push([['notice'], 'notice (a system notice from the app) is for marketplace beats (CR-33)']);
   if (m.payee?.code_confirm && device !== 'banking') out.push([['payee', 'code_confirm'], 'code_confirm is the bank app\'s confirmation: banking beats only (CR-34)']);
+  if (m.forwarded && device !== 'messenger') out.push([['forwarded'], 'forwarded (a message a cast member forwards) is for messenger beats (CR-40)']);
+  if (m.page?.overlay && device !== 'browser') out.push([['page', 'overlay'], 'page.overlay (the warning drawn over a page) is for browser beats (CR-42)']);
   const p = m.payee;
   if (p && device !== 'banking') {
     // CR-22: the "Bank details" card. No name check outside the bank app.
@@ -412,6 +497,17 @@ export const inspectableSchema = z
   .strict();
 export type Inspectable = z.infer<typeof inspectableSchema>;
 
+/**
+ * CR-45: inline language spans in `text` (an action label or outcome narrative) and the optional translation.
+ * Returns [field, message] pairs; `text` = the label/narrative, `translation` = the translation.
+ */
+export function langFieldIssues(text: string, translation: string | undefined): ['text' | 'translation', string][] {
+  const out: ['text' | 'translation', string][] = langMarkupIssues(text).map((m) => ['text', m]);
+  if (translation !== undefined && firstLang(text) === undefined) out.push(['translation', 'a translation needs an inline language span to translate: {lang:es}…{/lang}']);
+  if (translation !== undefined && translation.includes('{lang:')) out.push(['translation', 'the translation is English: no inline language spans']);
+  return out;
+}
+
 export const actionSchema = z
   .object({
     id: snakeId,
@@ -430,9 +526,15 @@ export const actionSchema = z
      * the source beat is a call on a fraud scenario (rules.ts), forbidden on genuine scenarios.
      */
     cap: z.literal('engage').optional(),
+    /**
+     * CR-45 (WCAG 3.1.2): English translation of the label's inline language span(s)
+     * (`Reply: {lang:es}¡sí, gracias!{/lang}`), offered with a Translate toggle next to the button.
+     */
+    translation: z.string().min(1).optional(),
   })
   .strict()
   .superRefine((a, ctx) => {
+    langFieldIssues(a.label, a.translation).forEach(([field, message]) => ctx.addIssue({ code: 'custom', path: [field === 'text' ? 'label' : 'translation'], message }));
     if (a.cap !== undefined && a.kind !== 'start_transfer') ctx.addIssue({ code: 'custom', path: ['cap'], message: 'cap: engage is for start_transfer actions (CR-31(b))' });
     if ((a.outcome === undefined) === (a.next_beat === undefined)) {
       ctx.addIssue({ code: 'custom', path: ['outcome'], message: 'an action has exactly one of outcome or next_beat' });
@@ -470,6 +572,7 @@ export const whatNowSchema = z
         z
           .object({ id: snakeId, label: z.string().min(1), kind: actionKindSchema, note: z.string().min(1).optional(), outcome: snakeId.optional() })
           .strict()
+          .superRefine((x, ctx) => langMarkupIssues(x.label).forEach((message) => ctx.addIssue({ code: 'custom', path: ['label'], message })))
           .refine((x) => (x.note === undefined) !== (x.outcome === undefined), 'a what_now extra has exactly one of note (engage: back to "What now?") or outcome (verify: ends the step)'),
       )
       .max(3)
@@ -517,6 +620,12 @@ export const beatSchema = z
      * verified on one of them, report or dismiss here scores as verify ("already checked").
      */
     covered_by: z.array(z.string().min(1)).min(1).optional(),
+    /**
+     * CR-45, call beats only: `outgoing` = the player dialled ("Calling …", then connected; no Answer or
+     * Decline), `incoming` = it rings. Default: outgoing when every action leading here dials
+     * (call_number_in_message, call_back_known; src/content/callDirection.ts), else incoming.
+     */
+    direction: z.enum(['incoming', 'outgoing']).optional(),
   })
   .strict();
 export type Beat = z.infer<typeof beatSchema>;
@@ -551,9 +660,59 @@ export const interruptSchema = z
   .strict()
   .refine((i) => (i.at_seconds === undefined) !== (i.after_beat === undefined), 'an interrupt has exactly one of at_seconds or after_beat');
 
+/**
+ * CR-43(c), GDD §30.6: what a red-flag timeline string never contains: "fell", "fooled", "mistake", a currency
+ * amount or any figure (no `alex_invested` value, no count of falls, no score per slot), or a count word.
+ */
+export function timelineTextIssues(text: string): string[] {
+  const out: string[] = [];
+  const t = text.normalize('NFKC');
+  const blame = /\b(fell|fall(?:s|en)?\s+for|fooled|mistakes?)\b/iu.exec(t);
+  if (blame) out.push(`no blame words ("${blame[1] ?? blame[0]}")`);
+  if (/[€$£¥]|\b(?:EUR|USD|GBP|PLN|SEK|euros?|cents?)\b/iu.test(t)) out.push('no money or currency');
+  if (/\p{Nd}/u.test(t)) out.push('no figures (no amounts, counts or scores)');
+  if (/\b(?:twice|thrice|times)\b/iu.test(t)) out.push('no counts ("twice", "times")');
+  return out;
+}
+
+/** R22 (psych M1): the flag the finale's close beat and Teo's chat set when the player told or checked with someone. */
+export const ARC_TOLD_SOMEONE = 'arc_told_someone';
+const TOLD_KINDS: readonly ActionKind[] = ['report', 'verify_identity', 'ask_someone'];
+
+/** CR-40: what nobody does in an advice scenario (the player advises; the cast member stays safe). */
+export const ADVICE_UNSAFE_KINDS: readonly ActionKind[] = ['pay', 'pay_unprotected', 'pay_protected', 'enter_details', 'share_code', 'approve_prompt', 'install_or_remote', 'proceed', 'start_transfer', 'open_link', 'scan_qr_and_open', 'call_number_in_message'];
+
+/** CR-38: what the Fairmeasure register shows for a firm. */
+export const REGISTER_RESULTS = ['authorised', 'not_listed', 'warning_list'] as const;
+export type RegisterResult = (typeof REGISTER_RESULTS)[number];
+/** A masked phone number hides at least 4 digits behind bullets (Red Line 3), e.g. "+353 1 ••• ••42". */
+export const MASKED_PHONE_RE = /(?:•[^•]*){4}/u;
+
+/** CR-38: the register's own contact details for an authorised firm; masked phone (Red Line 3). */
+const registerContact = {
+  address: z.string().min(1).optional(),
+  phone: z.string().min(1).refine((v) => MASKED_PHONE_RE.test(v), 'the register\'s phone number hides at least 4 digits behind • (Red Line 3)').optional(),
+};
+
+/**
+ * CR-38: the Fairmeasure result card a `check_official_list` outcome opens. `firm` is the name looked up;
+ * address and phone only for `authorised` (the register's own details, as in content/brands.yaml).
+ */
+export const registerCardSchema = z
+  .object({ firm: z.string().min(1), result: z.enum(REGISTER_RESULTS), ...registerContact })
+  .strict()
+  .superRefine((r, ctx) => {
+    if (r.result !== 'authorised' && (r.address || r.phone)) ctx.addIssue({ code: 'custom', path: ['result'], message: 'address and phone are shown for authorised firms only (CR-38)' });
+  });
+export type RegisterCard = z.infer<typeof registerCardSchema>;
+
 export const outcomeSchema = z
   .object({
     narrative: z.string().min(1),
+    /** CR-45: English translation of the narrative's inline language span(s) (`{lang:es}¡Genial!{/lang}`). */
+    translation: z.string().min(1).optional(),
+    /** CR-38: the Fairmeasure result card (check_official_list outcomes only). */
+    register: registerCardSchema.optional(),
     /** CR-07: damage-control options for this outcome, each with its category for THIS scenario. */
     recovery: z
       .array(
@@ -570,16 +729,49 @@ export const outcomeSchema = z
           .strict(),
       )
       .optional(),
+    /**
+     * R22 (psych M4): an optional authored note on the damage-control feedback screen ("Your steps"), after the
+     * picks, e.g. the recovery offer: "…scammers share victims' details. That says nothing about you." Needs recovery.
+     */
+    recovery_note: z
+      .string()
+      .min(1)
+      .refine((v) => v.trim().split(/\s+/u).length <= 30, 'recovery_note is at most 30 words (R22)')
+      .optional(),
     sets_flags: z.array(flagName).optional(),
     /**
      * CR-32: damage control for a cast member (a drill): "Pick the step {name} should take first, then 2 more."
      * Scenario `feedback` on harmful steps is then shown in that person's voice. Needs `recovery`.
+     * CR-41: for someone off-cast, `{ label, voiced_by }`: "Pick the step {label} should take first, then 2
+     * more.", with the scenario feedback voiced by the cast member `voiced_by` (e.g. Noor about her friend).
      */
-    recovery_for: slug.optional(),
+    recovery_for: z
+      .union([
+        slug,
+        z
+          .object({
+            label: z
+              .string()
+              .min(1)
+              .max(40)
+              .refine((v) => sceneArtefacts(v).length === 0, 'recovery_for.label is a plain description of the person ("Noor\'s friend"): no numbers, links or names of accounts'),
+            voiced_by: slug,
+          })
+          .strict(),
+      ])
+      .optional(),
+    /**
+     * CR-43(b): this outcome opens the reveal card (one portrait, the finale chapter's `arc_finale.reveal_names`,
+     * under "The same picture {name} used."). Finale scenarios only, on verify_identity or report outcomes.
+     */
+    reveal: z.literal(true).optional(),
     /** Arc scenarios only, e.g. { alex_invested: 50 }. */
     arc_effects: z.record(flagName, z.union([z.number(), z.boolean()])).optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((o, ctx) => {
+    langFieldIssues(o.narrative, o.translation).forEach(([field, message]) => ctx.addIssue({ code: 'custom', path: [field === 'text' ? 'narrative' : 'translation'], message }));
+  });
 export type Outcome = z.infer<typeof outcomeSchema>;
 
 export const debriefSchema = z
@@ -605,12 +797,40 @@ export const debriefSchema = z
         /** Shared a code or approved a request (ruling QA m10). Required where share_code / approve_prompt actions exist. */
         shared_code: z.string().min(1).optional(),
         paid: z.string().min(1).optional(),
+        /**
+         * CR-45: the sub-heading over each situation's text, when the fixed one does not fit the content
+         * (e.g. `clicked: "Called the number"`, `paid: "Moved money"`). Without one: the game's heading for
+         * that situation (`clicked` follows the scenario's own action: link, call, reply or QR code).
+         */
+        headings: z
+          .object({
+            clicked: z.string().min(1).optional(),
+            entered_details: z.string().min(1).optional(),
+            shared_code: z.string().min(1).optional(),
+            paid: z.string().min(1).optional(),
+          })
+          .strict()
+          .optional(),
       })
       .strict()
       .refine((a) => a.clicked || a.entered_details || a.shared_code || a.paid, 'already_clicked needs at least one of clicked, entered_details, shared_code, paid')
+      .superRefine((a, ctx) => {
+        for (const [k, v] of Object.entries(a.headings ?? {})) {
+          if (v !== undefined && !a[k as 'clicked' | 'entered_details' | 'shared_code' | 'paid']) ctx.addIssue({ code: 'custom', path: ['headings', k], message: `a heading for "${k}" needs already_clicked.${k} (the text under it)` });
+        }
+      })
       .optional(),
     /** Support line for arc slots 2–3 and other safeguarding moments. */
     safeguarding_line: z.string().min(1).optional(),
+    /**
+     * CR-40: advice scenarios with an `advise_comply` action: the line the debrief adds, without blame, after that
+     * advice (authored, e.g. "Noor asked, and that was the smart bit. With an offer like this, the answer is always no.").
+     */
+    advice_line: z
+      .string()
+      .min(1)
+      .refine((v) => v.trim().split(/\s+/u).length <= 20, 'advice_line is at most 20 words (shown in layer 1 next to the "You chose" line, CR-40)')
+      .optional(),
     sources: z.array(slug).min(1, 'every scenario must cite at least one source (Red Line 6)'),
   })
   .strict();
@@ -628,6 +848,17 @@ export const scenarioSchema = z
     twin_of: slug.optional(),
     /** Arc beats only: 1–9 (GDD §10.1). */
     arc_slot: z.number().int().min(1).max(9).optional(),
+    /**
+     * CR-43: an arc scenario of the finale block (instead of `arc_slot`): the close beat, the recovery-agency test or
+     * Teo's chat, named by the finale chapter's `arc_finale`. Unscored like every arc beat; a fall here runs its
+     * damage control (banked as arc points), unlike slots 1–9.
+     */
+    finale: z.enum(['close', 'recovery_offer', 'teo']).optional(),
+    /**
+     * CR-40: an advice scenario: a cast member forwards a message and asks you; you advise them. They never act on
+     * bad advice (`advise_comply` scores 0 and is not a fall), and no outcome makes them pay or share anything.
+     */
+    advice: z.object({ for: slug }).strict().optional(),
     /** The player started this (reset link they requested, their own sign-in): in-message action is proceed. */
     player_started: z.boolean().default(false),
     /**
@@ -648,7 +879,8 @@ export const scenarioSchema = z
     pressure: pressureSchema.default({ timer: false, levers: [] }),
     message: messageSchema,
     inspectables: z.array(inspectableSchema).default([]),
-    actions: z.array(actionSchema).min(2, 'a scenario offers 2–5 actions').max(5, 'a scenario offers 2–5 actions'),
+    /** 2–5; CR-45: an opener with `request: none` may offer 1, a setup step (e.g. "Wait for the code"). */
+    actions: z.array(actionSchema).min(1, 'a scenario offers 2–5 actions').max(5, 'a scenario offers 2–5 actions'),
     banner: bannerSchema.optional(),
     what_now: whatNowSchema.optional(),
     beats: z.array(beatSchema).default([]),
@@ -669,11 +901,23 @@ export const scenarioSchema = z
     if (s.is_fraud && s.stakes) issue(['stakes'], 'stakes apply to genuine scenarios only');
     if (s.role === 'boss' && !s.is_fraud) issue(['is_fraud'], 'bosses are always fraud');
     if (s.role === 'boss' && s.beats.length === 0) issue(['beats'], 'a boss has several beats');
-    if (s.role === 'arc' && s.arc_slot === undefined) issue(['arc_slot'], 'arc beats need arc_slot (1–9)');
+    if (s.role === 'arc' && (s.arc_slot === undefined) === (s.finale === undefined)) issue(['arc_slot'], 'arc beats need arc_slot (1–9), or `finale` for the finale block (CR-43), not both');
+    if (s.role !== 'arc' && s.finale !== undefined) issue(['finale'], 'finale is for arc scenarios (CR-43)');
+    if (s.finale !== undefined && s.pressure.timer) issue(['pressure', 'timer'], 'the finale block has no timer: pressure.timer: false (CR-43, R22)');
     if (s.role !== 'arc' && s.arc_slot !== undefined) issue(['arc_slot'], 'arc_slot is for arc beats only');
     if ((s.role === 'arc') !== (s.debrief.variant === 'arc')) issue(['debrief', 'variant'], 'debrief.variant is arc exactly for arc beats');
     if (s.pressure.honest_deadline && s.is_fraud) issue(['pressure', 'honest_deadline'], 'honest_deadline is for genuine messages');
     if (s.twin_of === s.id) issue(['twin_of'], 'a scenario cannot be its own twin');
+    // CR-45 (sceptic): inline language spans render only in action labels and outcome narratives; a marker
+    // anywhere else would show as raw text, so it is an error.
+    for (const at of strayLangMarkers(s)) issue(at, 'inline language markers ({lang:xx}…{/lang}) are only for action labels and outcome narratives (CR-45); mark a whole message with message.lang');
+    // CR-45: one opening action only on an opener that asks nothing, and then it leads on (next_beat).
+    // Sceptic B1: only a real setup step (isSetupStep): genuine, request: none, a proceed with next_beat. The
+    // class check (proceed) needs balance.yaml, so it is in scripts/lib/rules.ts.
+    if (s.actions.length === 1) {
+      if (s.is_fraud || s.message.request !== 'none') issue(['actions'], 'a scenario offers 2–5 actions (only a genuine opener with request: none may offer a single setup step)');
+      else if (s.actions[0]?.next_beat === undefined) issue(['actions', 0, 'next_beat'], 'a single opening action is a setup step: it needs next_beat (CR-45)');
+    }
 
     // Red Line 4 debrief content.
     if ((s.is_fraud || s.role === 'arc') && !s.debrief.already_clicked) {
@@ -681,6 +925,10 @@ export const scenarioSchema = z
     }
     if (s.role !== 'arc' && !s.debrief.habit_card) issue(['debrief', 'habit_card'], 'debriefs need a habit_card');
     if (s.role !== 'arc' && !s.debrief.device_tip) issue(['debrief', 'device_tip'], 'debriefs need a device_tip (how to check on a real phone)');
+    // CR-43(c): each arc slot's layer-1 tell is shown on the red-flag timeline: no blame words, amounts or counts.
+    if (s.role === 'arc' && s.arc_slot !== undefined) {
+      for (const what of timelineTextIssues(s.debrief.layer1.tell)) issue(['debrief', 'layer1', 'tell'], `this tell is shown on the red-flag timeline: ${what} (CR-43(c))`);
+    }
     if (s.role === 'arc' && s.arc_slot !== undefined && [2, 3].includes(s.arc_slot) && !s.debrief.safeguarding_line) {
       issue(['debrief', 'safeguarding_line'], 'arc slots 2 and 3 need the safeguarding line (GDD §10.2)');
     }
@@ -749,6 +997,26 @@ export const scenarioSchema = z
         if (ins.target === 'video' && ins.type !== undefined && ins.type !== 'video') issue([...b.path, 'inspectables', i, 'type'], 'a video checkable has type: video');
         if (ins.type === 'claim' && !/^claim(?:#2)?$/.test(ins.target)) issue([...b.path, 'inspectables', i, 'type'], 'type: claim is only for the claim / claim#2 checkables');
         if (ins.type === 'video' && ins.target !== 'video') issue([...b.path, 'inspectables', i, 'type'], 'type: video is only for the video checkable');
+        // CR-36 (RM2): the voice is neutral everywhere: never a red flag, never "It fits" (a voice can be copied).
+        if (ins.target === 'voice') {
+          if (ins.type !== undefined && ins.type !== 'voice') issue([...b.path, 'inspectables', i, 'type'], 'a voice checkable has type: voice');
+          if (ins.red_flag) issue([...b.path, 'inspectables', i, 'red_flag'], 'the voice is never a red flag: a voice can be copied, so it proves nothing either way (CR-36, RM2)');
+          if (startsWithItFits(ins.reveal)) issue([...b.path, 'inspectables', i, 'reveal'], 'a voice reveal never starts with "It fits": a voice can be copied (CR-36, RM2)');
+        }
+        if (ins.type === 'voice' && ins.target !== 'voice') issue([...b.path, 'inspectables', i, 'type'], 'type: voice is only for the voice checkable');
+        // CR-37 (LS2): how the code is attached is never "It fits"; only a sticker can be a red flag ("printed" is never proof).
+        if (ins.target === 'qr.mount') {
+          if (ins.type !== undefined && ins.type !== 'qr_mount') issue([...b.path, 'inspectables', i, 'type'], 'a qr.mount checkable has type: qr_mount');
+          if (ins.red_flag && b.message.qr?.mount !== 'sticker') issue([...b.path, 'inspectables', i, 'red_flag'], 'qr.mount can be a red flag only when the code is a sticker (CR-37)');
+          if (startsWithItFits(ins.reveal)) issue([...b.path, 'inspectables', i, 'reveal'], 'a qr.mount reveal never starts with "It fits": printed is never proof (CR-37, LS2)');
+        }
+        if (ins.type === 'qr_mount' && ins.target !== 'qr.mount') issue([...b.path, 'inspectables', i, 'type'], 'type: qr_mount is only for the qr.mount checkable');
+      });
+      // CR-36: the voice label always carries its lesson (RM2), never the neutral filler.
+      if (b.message.voice && !b.inspectables.some((ins) => ins.target === 'voice')) issue([...b.path, 'inspectables'], 'a call with voice needs an inspectable with target: voice (its reveal: a voice can be copied, CR-36)');
+      // CR-37, CR-39(b): scanning needs a code on the same beat.
+      b.actions.forEach((a, i) => {
+        if (a.kind === 'scan_qr_and_open' && !b.message.qr) issue([...b.path, 'actions', i, 'kind'], 'scan_qr_and_open needs a QR code on the same beat (message.qr)');
       });
       if (b.banner && !b.banner.message.body) issue([...b.path, 'banner', 'message', 'body'], 'a banner needs a body: it is displayed on the beat');
       if (b.what_now) {
@@ -782,6 +1050,16 @@ export const scenarioSchema = z
         }
       });
     }
+    // CR-45: a dialled call is reached by an action; one the player dialled never rings.
+    s.beats.forEach((b, i) => {
+      if (b.direction === undefined) return;
+      if (b.device !== 'call') issue(['beats', i, 'direction'], 'direction is for call beats (CR-45)');
+      else if (b.direction === 'outgoing' && (b.arrives_after !== undefined || !referencedBeats.has(b.id))) issue(['beats', i, 'direction'], 'an outgoing call is one the player dials: it is reached by an action (next_beat), never on a schedule (CR-45)');
+      else if (b.direction === 'incoming') {
+        const kinds = parentKinds(s, b.id);
+        if (kinds.length > 0 && kinds.every((k) => DIAL_KINDS.includes(k))) issue(['beats', i, 'direction'], `every action leading here dials (${kinds.join(', ')}): the player placed this call, so it cannot ring as incoming (CR-45)`);
+      }
+    });
     for (const key of Object.keys(s.outcomes)) {
       if (!usedOutcomes.has(key)) issue(['outcomes', key], `outcome "${key}" is never reached by any action`);
     }
@@ -841,12 +1119,68 @@ export const scenarioSchema = z
       if (via.some((k) => k !== 'share_code')) issue([...b.path, 'message', 'payee', 'code_confirm'], `the code confirmation "${b.id}" is reached only by share_code actions (CR-34)`);
       if (b.actions.some((a) => a.next_beat !== undefined)) issue([...b.path, 'actions'], `the code confirmation "${b.id}" ends the beat: its actions have outcomes, not next_beat (CR-34)`);
     }
-    // CR-32: damage control for a cast member, in a drill.
+    // CR-38: the Fairmeasure result card is what you see when you look the firm up yourself.
+    for (const [key, o] of Object.entries(s.outcomes)) {
+      if (!o.register) continue;
+      const via = beats.flatMap((b) => [
+        ...b.actions.filter((a) => a.outcome === key).map((a) => a.kind),
+        ...(b.what_now?.extra ?? []).filter((x) => x.outcome === key).map((x) => x.kind),
+        ...Object.values(b.what_now?.outcomes ?? {}).filter((x) => x === key).map(() => 'what_now' as const),
+      ]);
+      if (via.some((k) => k !== 'check_official_list')) issue(['outcomes', key, 'register'], 'a register result card is reached only by check_official_list actions (CR-38)');
+    }
+    // CR-32: damage control for a cast member, in a drill. CR-41: for someone off-cast, voiced by a cast member.
     for (const [key, o] of Object.entries(s.outcomes)) {
       if (o.recovery_for === undefined) continue;
+      const voice = typeof o.recovery_for === 'string' ? o.recovery_for : o.recovery_for.voiced_by;
       if (!o.recovery?.length) issue(['outcomes', key, 'recovery_for'], 'recovery_for names whose damage control it is: the outcome needs recovery steps (CR-32)');
-      if (s.role !== 'drill') issue(['outcomes', key, 'recovery_for'], 'recovery_for is for drills (damage control for a cast member, CR-32)');
-      if (!s.cast.includes(o.recovery_for)) issue(['outcomes', key, 'recovery_for'], `recovery_for "${o.recovery_for}" must be in the scenario's cast list (CR-32)`);
+      if (s.role !== 'drill') issue(['outcomes', key, 'recovery_for'], 'recovery_for is for drills (damage control for a cast member, CR-32, CR-41)');
+      if (!s.cast.includes(voice)) issue(['outcomes', key, 'recovery_for'], `recovery_for "${voice}" must be in the scenario's cast list (CR-32, CR-41)`);
+    }
+    // CR-40: advice scenarios. The cast member is always safe: the player only advises.
+    const allActions = beats.flatMap((b) => b.actions.map((a, i) => ({ a, path: [...b.path, 'actions', i] })));
+    const advise = allActions.filter((x) => x.a.kind === 'advise_comply');
+    if (s.advice) {
+      if (!s.cast.includes(s.advice.for)) issue(['advice', 'for'], `advice.for "${s.advice.for}" must be in the scenario's cast list (CR-40)`);
+      if (s.role !== 'standard' && s.role !== 'arc') issue(['advice'], 'advice scenarios are standard scenarios or arc beats (CR-40)');
+      for (const x of allActions) {
+        if (ADVICE_UNSAFE_KINDS.includes(x.a.kind)) issue([...x.path, 'kind'], `in an advice scenario nobody pays, enters details, shares a code, approves or installs anything: "${x.a.kind}" is not an option (CR-40; bad advice is advise_comply)`);
+      }
+      for (const [key, o] of Object.entries(s.outcomes)) {
+        if (o.recovery?.length) issue(['outcomes', key, 'recovery'], 'an advice scenario keeps the cast member safe: no outcome has damage control (CR-40)');
+      }
+      if (advise.length > 0 && !s.debrief.advice_line) issue(['debrief', 'advice_line'], 'an advice scenario with advise_comply needs debrief.advice_line, the line shown without blame after that advice (CR-40)');
+    }
+    for (const x of advise) {
+      if (!s.advice) issue([...x.path, 'kind'], 'advise_comply is for advice scenarios (advice: { for: <cast id> }, CR-40)');
+      if (!s.is_fraud) issue([...x.path, 'kind'], 'advise_comply is for fraud scenarios (CR-40)');
+      if (x.a.outcome === undefined) issue([...x.path, 'outcome'], 'advise_comply ends the beat: it needs an outcome (CR-40)');
+    }
+    if (s.debrief.advice_line && advise.length === 0) issue(['debrief', 'advice_line'], 'advice_line is shown after advise_comply: this scenario has none (CR-40)');
+    if (s.message.forwarded && !s.brands.includes(s.message.forwarded.app)) issue(['message', 'forwarded', 'app'], `forwarded.app "${s.message.forwarded.app}" must be listed in the scenario's brands (CR-40)`);
+    for (const b of beats) {
+      if (b.message.forwarded && !s.advice) issue([...b.path, 'message', 'forwarded'], 'a forwarded message belongs to an advice scenario (advice: { for: <cast id> }, CR-40)');
+    }
+    // CR-43(b), R22 (psych M1): every player sees the reveal. In the close beat and Teo's chat every outcome an
+    // action reaches opens it; elsewhere in the finale it follows a photo check or a report.
+    const revealKinds: readonly ActionKind[] = s.finale === 'close' || s.finale === 'teo' ? ['verify_identity', 'report', 'ignore', 'advise_comply', 'ask_someone'] : ['verify_identity', 'report'];
+    for (const [key, o] of Object.entries(s.outcomes)) {
+      const via = beats.flatMap((b) => b.actions.filter((a) => a.outcome === key).map((a) => a.kind));
+      if ((s.finale === 'close' || s.finale === 'teo') && via.length > 0 && !o.reveal) issue(['outcomes', key, 'reveal'], `every outcome of the finale's ${s.finale === 'close' ? 'close beat' : "Teo's chat"} opens the reveal card: reveal: true (R22, psych M1)`);
+      if (!o.reveal) continue;
+      if (s.finale === undefined) issue(['outcomes', key, 'reveal'], 'the reveal card is shown in the finale block only (scenarios with finale, CR-43(b))');
+      if (via.some((k) => !revealKinds.includes(k))) issue(['outcomes', key, 'reveal'], `the reveal card is reached by ${revealKinds.join(', ')} actions only here (CR-43(b), R22)`);
+    }
+    for (const [key, o] of Object.entries(s.outcomes)) if (o.recovery_note && !o.recovery?.length) issue(['outcomes', key, 'recovery_note'], 'recovery_note is shown with damage control: this outcome has no recovery (R22)');
+    // R22 (psych M1): ending lines that say the player told someone are gated on ARC_TOLD_SOMEONE; it is set exactly
+    // where it is true (a report, a photo check, asking someone) and never by stepping away.
+    if (s.finale === 'close' || s.finale === 'teo') {
+      for (const [key, o] of Object.entries(s.outcomes)) {
+        const via = beats.flatMap((b) => b.actions.filter((a) => a.outcome === key).map((a) => a.kind));
+        const told = o.sets_flags?.includes(ARC_TOLD_SOMEONE) === true;
+        if (via.some((k) => TOLD_KINDS.includes(k)) && !told) issue(['outcomes', key, 'sets_flags'], `a report, photo check or asking someone sets ${ARC_TOLD_SOMEONE} (R22, psych M1)`);
+        if (told && via.length > 0 && via.every((k) => k === 'ignore')) issue(['outcomes', key, 'sets_flags'], `stepping away is not telling someone: no ${ARC_TOLD_SOMEONE} here (R22)`);
+      }
     }
     if (s.role === 'boss') {
       // CR-18(e): a scheduled boss beat chains through start_transfer to exactly one banking sub-beat.
@@ -963,7 +1297,11 @@ export const chapterSchema = z
       .object({
         arrival: slug.optional(),
         turn: slug.optional(),
-        resolution: slug.optional(),
+        /**
+         * One scene, or (CR-43(d), the finale) several in order, e.g. [opening, ending variants…, feelings, part 2].
+         * Scenes with `if_arc_ending` play only for those endings. The last one ends on the If-then panel.
+         */
+        resolution: z.union([slug, z.array(slug).min(1).max(8)]).optional(),
         placed: z.array(z.object({ scene: slug, after: slug }).strict()).max(3).default([]),
       })
       .strict()
@@ -974,6 +1312,31 @@ export const chapterSchema = z
     content_note_arc_closed: z.string().min(1).optional(),
     /** Habit cards the chapter's Atlas page links to (STORY §1.3; an Atlas page = If-then line + these). */
     atlas_cards: z.array(slug).max(5).optional(),
+    /**
+     * CR-43: the finale (slot 10 only). After the last scenario's debrief and damage control, before the resolution,
+     * the engine plays the Alex ending from the saved arc state (GDD §30.6): the close beat, the reveal, arc damage
+     * control, the recovery-agency test, Teo's chat and the red-flag timeline. The three scenarios are role arc with
+     * the matching `finale`; `reveal_names` are the three names under the one portrait (the arc character's first);
+     * `damage_control` is ending C's arc damage control (banked as arc points, no amounts).
+     */
+    arc_finale: z
+      .object({
+        close: slug,
+        recovery_offer: slug,
+        teo: slug,
+        reveal_names: z.tuple([z.string().min(1).max(20), z.string().min(1).max(20), z.string().min(1).max(20)]),
+        /**
+         * R22 (sceptic nb4): the finale's reveal step (an arc closed earlier) is authored: its tell and habit lines
+         * are content, so the engine owns no lesson wording. Shown under the reveal card and its fixed line.
+         */
+        reveal: z.object({ tell: z.string().min(1).max(120), habit: z.string().min(1).max(120) }).strict(),
+        damage_control: z
+          .array(z.object({ step: snakeId, category: z.enum(RECOVERY_CATEGORIES), feedback: z.string().min(1).optional() }).strict())
+          .min(5)
+          .max(6),
+      })
+      .strict()
+      .optional(),
   })
   .strict()
   .superRefine((c, ctx) => {
@@ -987,7 +1350,8 @@ export const chapterSchema = z
       c.scenes.placed.forEach((p, i) => {
         if (!all.includes(p.after)) ctx.addIssue({ code: 'custom', path: ['scenes', 'placed', i, 'after'], message: `"${p.after}" is not in scenario_order` });
       });
-      const ids = [c.scenes.arrival, c.scenes.turn, c.scenes.resolution, ...c.scenes.placed.map((p) => p.scene)].filter((x): x is string => !!x);
+      const ids = [c.scenes.arrival, c.scenes.turn, ...resolutionList(c.scenes.resolution), ...c.scenes.placed.map((p) => p.scene)].filter((x): x is string => !!x);
+      if (Array.isArray(c.scenes.resolution) && c.scenes.resolution.length > 1 && !c.arc_finale) ctx.addIssue({ code: 'custom', path: ['scenes', 'resolution'], message: 'a resolution of several scenes is for the finale (arc_finale, CR-43(d))' });
       const dupScene = ids.find((id, i) => ids.indexOf(id) !== i);
       if (dupScene) ctx.addIssue({ code: 'custom', path: ['scenes'], message: `scene "${dupScene}" is placed twice` });
       if (c.scenes.turn && (c.scenario_order.am.length === 0 || c.scenario_order.pm.length === 0)) {
@@ -1002,7 +1366,30 @@ export const chapterSchema = z
     }
     if (c.arc_beat && !all.includes(c.arc_beat)) ctx.addIssue({ code: 'custom', path: ['arc_beat'], message: 'arc_beat must be in scenario_order' });
     if (c.status === 'complete' && !c.boss) ctx.addIssue({ code: 'custom', path: ['boss'], message: 'a complete chapter has a boss' });
+    if (c.arc_finale) {
+      const f = c.arc_finale;
+      if (c.slot !== 10) ctx.addIssue({ code: 'custom', path: ['arc_finale'], message: 'arc_finale is for the finale (slot 10, CR-43)' });
+      if (c.arc_beat) ctx.addIssue({ code: 'custom', path: ['arc_beat'], message: 'the finale has no arc beat: slot 9 is the last one, played before it (CR-43(f))' });
+      for (const k of ['close', 'recovery_offer', 'teo'] as const) {
+        if (all.includes(f[k])) ctx.addIssue({ code: 'custom', path: ['arc_finale', k], message: `"${f[k]}" plays in the finale block, not in scenario_order (CR-43)` });
+      }
+      if (new Set([f.close, f.recovery_offer, f.teo]).size < 3) ctx.addIssue({ code: 'custom', path: ['arc_finale'], message: 'close, recovery_offer and teo are three different scenarios' });
+      if (new Set(f.reveal_names.map((n) => n.trim().toLowerCase())).size < 3) ctx.addIssue({ code: 'custom', path: ['arc_finale', 'reveal_names'], message: 'three different names under the one picture (CR-43(b))' });
+      f.reveal_names.forEach((n, i) => {
+        for (const what of sceneArtefacts(n)) ctx.addIssue({ code: 'custom', path: ['arc_finale', 'reveal_names', i], message: `a profile name only: this looks like ${what}` });
+      });
+      for (const k of ['tell', 'habit'] as const) for (const what of timelineTextIssues(f.reveal[k])) ctx.addIssue({ code: 'custom', path: ['arc_finale', 'reveal', k], message: `the reveal is never blame: ${what} (R22)` });
+      if (!f.damage_control.some((x) => x.category === 'harmful')) ctx.addIssue({ code: 'custom', path: ['arc_finale', 'damage_control'], message: 'damage control offers at least one harmful step (GDD §9)' });
+      if (!f.damage_control.some((x) => x.category === 'stop')) ctx.addIssue({ code: 'custom', path: ['arc_finale', 'damage_control'], message: 'damage control offers at least one stop step (GDD §9)' });
+      if (new Set(f.damage_control.map((x) => x.step)).size !== f.damage_control.length) ctx.addIssue({ code: 'custom', path: ['arc_finale', 'damage_control'], message: 'a step is listed twice' });
+      if (c.boss && c.scenario_order.pm.at(-1) !== c.boss) ctx.addIssue({ code: 'custom', path: ['boss'], message: 'in the finale the boss is the last scenario: the arc finale block follows its debrief (CR-43(a))' });
+    }
   });
+
+/** The chapter's resolution scenes in order (one id or a list, CR-43(d)). */
+export function resolutionList(r: string | readonly string[] | undefined): string[] {
+  return r === undefined ? [] : typeof r === 'string' ? [r] : [...r];
+}
 export type Chapter = z.infer<typeof chapterSchema>;
 
 // ---------------------------------------------------------------------------
@@ -1010,6 +1397,8 @@ export type Chapter = z.infer<typeof chapterSchema>;
 // content/scenes/interludes/<id>.yaml. Scenes carry people, places and habits, never scams.
 
 export const SCENE_SLOTS = ['arrival', 'turn', 'resolution', 'beat', 'interlude'] as const;
+/** GDD §10.3 arc endings (mirrors ArcEnding in src/engine/arc.ts): R, C, A′ (A_prime), A, B. */
+export const ARC_ENDINGS = ['A', 'A_prime', 'B', 'C', 'R'] as const;
 export type SceneSlot = (typeof SCENE_SLOTS)[number];
 /** The folder interludes live in (they belong to no city: keyed to play position, STORY §3.12). */
 export const INTERLUDE_FOLDER = 'interludes';
@@ -1146,6 +1535,13 @@ export const scenePanelSchema = z
     /** Story-only variant flags (STORY §4.2 rule 5): the panel shows only when the chapter run has (or lacks) the flag. */
     if_flag: flagName.optional(),
     unless_flag: flagName.optional(),
+    /** CR-43(d): the panel shows only for these arc endings (finale resolution scenes). */
+    if_arc_ending: z.array(z.enum(ARC_ENDINGS)).min(1).optional(),
+    /**
+     * CR-44(b): this panel's line opens the end screen "Your Atlas" as its epigraph (Adaeze's last line, STORY §1.5).
+     * At most one, in a resolution scene, a cast member's line, shown to everyone.
+     */
+    epigraph: z.literal(true).optional(),
     /** ART_DIRECTION §9: who → expression word → doing → where; ≤ 150 characters (≤ 80 backdrop-only). */
     alt: sceneText,
   })
@@ -1161,6 +1557,8 @@ export const scenePanelSchema = z
     if (p.if_then && p.choice) ctx.addIssue({ code: 'custom', path: ['choice'], message: 'no choice on the If-then panel' });
     if (p.flip_postcard && (p.if_then || p.choice)) ctx.addIssue({ code: 'custom', path: ['flip_postcard'], message: 'flip the postcard is a panel of its own' });
     if (p.if_flag && p.unless_flag) ctx.addIssue({ code: 'custom', path: ['unless_flag'], message: 'use if_flag or unless_flag, not both' });
+    if (p.epigraph && (!p.line || !drawn)) ctx.addIssue({ code: 'custom', path: ['epigraph'], message: 'the epigraph is a cast member\'s line (CR-44(b))' });
+    if (p.epigraph && (p.if_flag || p.unless_flag || p.if_arc_ending)) ctx.addIssue({ code: 'custom', path: ['epigraph'], message: 'the epigraph panel is shown to everyone (no variant)' });
     if (p.with) {
       if (!LISTENER_EXPRESSIONS.includes(baseExpression(p.with.expression)) || p.with.expression.includes('-')) {
         ctx.addIssue({ code: 'custom', path: ['with', 'expression'], message: 'a listener is calm or warm only (ART_DIRECTION §7.1)' });
@@ -1218,6 +1616,14 @@ export const sceneSchema = z
     content_note: sceneText.optional(),
     /** Interludes only: shown after this many middle cities are finished (STORY §3.12: 2, 4, 6, 8). */
     after_middle: z.union([z.literal(2), z.literal(4), z.literal(6), z.literal(8)]).optional(),
+    /** CR-43(d): a finale resolution scene that plays only for these arc endings (e.g. the ending-C scene: [C]). */
+    if_arc_ending: z.array(z.enum(ARC_ENDINGS)).min(1).optional(),
+    /**
+     * CR-43(d): with `if_arc_ending`, the scene also needs (or must lack) this flag; in the finale the arc variables
+     * that are set count as flags (`if_flag: alex_invested`: ending R with money in plays C's scene).
+     */
+    if_flag: flagName.optional(),
+    unless_flag: flagName.optional(),
     panels: z.array(scenePanelSchema).min(1).max(SCENE_MAX_PANELS),
     notes: z.string().optional(),
   })
@@ -1234,12 +1640,19 @@ export const sceneSchema = z
     for (const i of ifThen) {
       if (sc.slot !== 'resolution') ctx.addIssue({ code: 'custom', path: ['panels', i, 'if_then'], message: 'the If-then panel is in a resolution scene' });
       if (i !== sc.panels.length - 1) ctx.addIssue({ code: 'custom', path: ['panels', i, 'if_then'], message: 'the If-then panel is the last panel (STORY §3)' });
-      if (sc.panels[i]?.if_flag || sc.panels[i]?.unless_flag) ctx.addIssue({ code: 'custom', path: ['panels', i], message: 'the If-then panel is shown to everyone (no variant flag)' });
+      if (sc.panels[i]?.if_flag || sc.panels[i]?.unless_flag || sc.panels[i]?.if_arc_ending) ctx.addIssue({ code: 'custom', path: ['panels', i], message: 'the If-then panel is shown to everyone (no variant flag)' });
+      if (sc.if_arc_ending) ctx.addIssue({ code: 'custom', path: ['if_arc_ending'], message: 'a scene with the If-then panel is shown to everyone (no if_arc_ending)' });
     }
     const count = (f: (p: ScenePanel) => unknown) => sc.panels.filter(f).length;
     if (count((p) => p.choice) > 1) ctx.addIssue({ code: 'custom', path: ['panels'], message: 'at most one choice per scene (STORY §4.1)' });
     if (count((p) => p.local) > 1) ctx.addIssue({ code: 'custom', path: ['panels'], message: 'at most one local-language phrase per scene (STORY §4.1)' });
     if (count((p) => p.flip_postcard) > 1) ctx.addIssue({ code: 'custom', path: ['panels'], message: 'at most one flip-the-postcard panel per scene' });
+    if (count((p) => p.epigraph) > 1) ctx.addIssue({ code: 'custom', path: ['panels'], message: 'at most one epigraph panel per scene (CR-44(b))' });
+    if ((sc.if_flag || sc.unless_flag) && !sc.if_arc_ending) ctx.addIssue({ code: 'custom', path: ['if_flag'], message: 'a scene-level if_flag / unless_flag goes with if_arc_ending (finale resolution scenes, CR-43(d)); use panel flags elsewhere' });
+    if (sc.if_flag && sc.unless_flag) ctx.addIssue({ code: 'custom', path: ['unless_flag'], message: 'use if_flag or unless_flag, not both' });
+    if (sc.slot !== 'resolution' && (sc.if_arc_ending || sc.panels.some((p) => p.if_arc_ending || p.epigraph))) {
+      ctx.addIssue({ code: 'custom', path: ['slot'], message: 'if_arc_ending and epigraph are for finale resolution scenes (CR-43(d), CR-44(b))' });
+    }
     sc.panels.forEach((p, i) => {
       if (p.flip_postcard && sc.slot !== 'interlude' && sc.slot !== 'resolution') ctx.addIssue({ code: 'custom', path: ['panels', i, 'flip_postcard'], message: 'flip the postcard is for interludes and the Open Evening (resolution)' });
       if (!interlude && /\{(?:count|lastCity)\}/.test(`${p.line ?? ''} ${p.caption ?? ''}`)) ctx.addIssue({ code: 'custom', path: ['panels', i], message: '{count} and {lastCity} are for interludes' });
@@ -1252,10 +1665,10 @@ export const sceneSchema = z
         if (p.expression && NEVER_LAST_ON_SENSITIVE.includes(baseExpression(p.expression))) {
           ctx.addIssue({ code: 'custom', path: ['panels', i, 'expression'], message: `a sensitive scene never ends on ${baseExpression(p.expression)} (STORY §5.3, ART_DIRECTION §14 F)` });
         }
-        if (!p.if_flag && !p.unless_flag) break;
+        if (!p.if_flag && !p.unless_flag && !p.if_arc_ending) break;
       }
     }
-    if (sc.panels.every((p) => p.if_flag || p.unless_flag)) ctx.addIssue({ code: 'custom', path: ['panels'], message: 'at least one panel is shown to everyone' });
+    if (sc.panels.every((p) => p.if_flag || p.unless_flag || p.if_arc_ending)) ctx.addIssue({ code: 'custom', path: ['panels'], message: 'at least one panel is shown to everyone' });
   });
 export type Scene = z.infer<typeof sceneSchema>;
 
@@ -1554,6 +1967,17 @@ export const brandSchema = z
     notes: z.string().optional(),
     /** Stub entries awaiting the ux-artist brand registry (T-1.6). */
     placeholder: z.boolean().default(false),
+    /**
+     * CR-38: the firm's entry with Fairmeasure, the in-world regulator: on the register of authorised firms
+     * (with the register's own contact details) or on the warning list. Read by the regulator view.
+     */
+    register: z
+      .object({ status: z.enum(['authorised', 'warning_list']), ...registerContact })
+      .strict()
+      .superRefine((r, ctx) => {
+        if (r.status !== 'authorised' && (r.address || r.phone)) ctx.addIssue({ code: 'custom', path: ['status'], message: 'contact details are listed for authorised firms only (CR-38)' });
+      })
+      .optional(),
   })
   .strict();
 export const brandsFileSchema = z

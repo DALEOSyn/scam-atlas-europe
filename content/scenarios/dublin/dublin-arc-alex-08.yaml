@@ -1,0 +1,68 @@
+# Arc beat, slot 8 (GDD §28.5 slot-8 row, word for word; §10.1, §10.2; STORY §1.4: arc slot N plays by
+# play position, so the line is city-agnostic). Warning sign: a deadline plus "do it with me".
+# Options (§28.5): Transfer → pay (alex_invested += 200) · Ask someone → ask_someone · Report → report
+# (D-S2; a report at slots 7–9 closes the arc as ending B, §10.3; the engine handles it). Listed in the canonical
+# action order (the message's own action first, ruling QA L6; the validator enforces it), not §28.5's order.
+# No damage control at the beat (it would unmask the arc, §10.2); already_clicked.paid is §10.2's line.
+# Glimmerfund is the arc-only brand (§28.5); it is never named in a scored scenario or debrief.
+# Placement (GDD §28.3, §28.11 Q1, producer): the first beat after the intro, before 8-1. Every other gap
+# in Dublin sits next to an investment, recovery or easy-money debrief.
+id: dublin-arc-alex-08
+chapter: dublin
+role: arc
+arc_slot: 8
+learning_objectives: [LO-14]
+is_fraud: true
+device: messenger
+brands: [wordswap, glimmerfund]
+cast: [alex, teo]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Alex", detail: "Practice partner from Wordswap" }
+  from_cast: alex
+  body: |
+    Glimmerfund's VIP window closes tonight. Put €200 in with me? It'd be so fun doing this together 🙌
+  request: pay
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows Alex, your practice partner from Wordswap, as any profile would. A profile name can't prove anything either way."
+    red_flag: false
+    type: sender
+
+actions:
+  - id: transfer_two_hundred
+    label: "Transfer €200"
+    kind: pay
+    outcome: put_in_two_hundred
+    pressure_target: true
+  - id: ask_someone_vip
+    label: "Ask someone you trust first"
+    kind: ask_someone
+    outcome: teo_on_vip_window
+  - id: report_alex_vip
+    label: "Report the profile"
+    kind: report
+    outcome: alex_vip_reported
+
+outcomes:
+  put_in_two_hundred:
+    narrative: "You send €200. Alex: \"Yesss! Together now 🙌\""
+    arc_effects: { alex_invested: 200 }
+  teo_on_vip_window:
+    narrative: "Teo: \"A window that closes tonight, and a friend who wants you in it? Real chances wait a day, kiddo. So do real friends.\""
+  alex_vip_reported:
+    narrative: "You report Alex's profile. A deadline and \"do it with me\" are reason enough."
+
+debrief:
+  variant: arc
+  layer1:
+    tell: "A deadline, plus 'do it with me'."
+    what_works: "Ask someone before you send money. A real friend can wait."
+  layer2:
+    message_flags: []
+    notes: "Friends do make plans together, and that's fine. But a deadline on an investment, from someone pushing you to join them, is there so you don't stop and check. Nothing real is lost by waiting a day and talking to someone you trust."
+  already_clicked:
+    paid: "If you've already paid, stop paying, call your bank on the number on your card, and keep the chat history."
+  sources: [ie-garda-investment-2025, ie-fraudsmart-investment-2025, ie-fraudsmart-state-scheme-ads-2026, be-police-romance-2026]

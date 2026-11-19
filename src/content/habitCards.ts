@@ -10,3 +10,8 @@ const cards = (data as { cards: HabitCard[] }).cards;
 export function habitCard(id: string | undefined): HabitCard | undefined {
   return id === undefined ? undefined : cards.find((c) => c.id === id);
 }
+
+/** Every habit card, in content order (the end screen lists the ones earned, CR-44(b)). */
+export function allHabitCards(): readonly HabitCard[] {
+  return cards;
+}

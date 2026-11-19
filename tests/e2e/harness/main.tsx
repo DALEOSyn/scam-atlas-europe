@@ -9,7 +9,9 @@
  */
 import { render } from 'preact';
 import { balance } from '../../../src/content/balance.ts';
-import type { Scenario, Scene } from '../../../src/content/schema.ts';
+import type { Chapter, Scenario, Scene } from '../../../src/content/schema.ts';
+import { SAVE_KEY } from '../../../src/engine/save.ts';
+import { App } from '../../../src/app.tsx';
 import { resultOf } from '../../../src/engine/result.ts';
 import type { RunnerContext, RunnerView } from '../../../src/engine/runner.ts';
 import { AnnouncerProvider } from '../../../src/ui/Announcer.tsx';
@@ -22,6 +24,34 @@ import '../../../src/global.css';
 declare const __HARNESS_SCENES__: Scene[];
 declare const __HARNESS_REAL_SCENES__: Scene[];
 declare const __HARNESS_SCENARIOS__: Scenario[];
+declare const __HARNESS_FINALE__: { chapters: Chapter[]; scenarios: Scenario[]; scenes: Scene[] };
+
+/**
+ * CR-43: seeded arc states for `?view=app&arc=…` (a local save only, Red Line 7): C open with money in, A reported
+ * at slot 3, B open with nothing in, R "Tell me now" with money in. The finale chapter's stub past city is finished.
+ */
+function finaleSeed(which: string): unknown {
+  const kinds = ['reply', 'reply', 'reply', 'reply', 'pay', 'ask_someone', 'reply', 'ignore', 'ask_someone'];
+  const choices = (n: number, over: Record<number, string> = {}) => Array.from({ length: n }, (_, i) => ({ slot: i + 1, kind: over[i + 1] ?? kinds[i] ?? 'reply' }));
+  const base = { vars: {}, closes: 0, tellMeNow: false, reportedAtSlot: null, closed: false, points: 20, timeline: [] as number[], choices: [] as unknown[], finale: null };
+  const arc =
+    which === 'A'
+      ? { ...base, reportedAtSlot: 3, closed: true, timeline: [1, 2, 3], choices: choices(3, { 2: 'ask_someone', 3: 'report' }) }
+      : which === 'B'
+        ? { ...base, timeline: [1, 2, 3, 4, 5, 6, 7, 8, 9], choices: choices(9, { 5: 'check_official_list' }) }
+        : which === 'R'
+          ? { ...base, vars: { alex_invested: 50 }, tellMeNow: true, closed: true, timeline: [1, 2, 3, 4, 5], choices: choices(5) }
+          : { ...base, vars: { alex_invested: 50 }, timeline: [1, 2, 3, 4, 5, 6, 7, 8, 9], choices: choices(9) };
+  const done = { finished: true, bestStamp: 'bronze', bestRating: 50, position: 1, run: null };
+  return {
+    version: 1,
+    settings: { timerMode: 'off', pushers: false, callLines: 'auto', alwaysTranslate: false, shortcuts: false, nickname: null },
+    chapters: { fxpast: done },
+    habits: { 'LO-18': { scenarios: ['a', 'b'], hard: true }, 'LO-03': { scenarios: ['a'], hard: false } },
+    story: { postcards: ['fxpast'], flips: [], seen: [] },
+    arc,
+  };
+}
 
 /** A fixed postcard for flip panels, so every authored panel is laid out (CR-28). */
 const FLIP = { city: 'home', cityName: 'Home', ifThen: { cue: 'If a message rushes you to act,', action: 'then I stop and check it another way.' } };
@@ -63,7 +93,7 @@ function Harness() {
         <ScenarioView
           scenario={s}
           ctx={ctx}
-          coachMarks={q.get('coach') === '1' ? [] : ['payee_check']}
+          coachMarks={q.get('coach') === '1' ? [] : ['payee_check', 'fairmeasure']}
           onDone={(st) => {
             const r = resultOf(s, balance, st);
             document.body.setAttribute('data-done', JSON.stringify({ stars: r.stars, points: r.points, beats: r.beats.map((b) => b.stars) }));
@@ -71,6 +101,13 @@ function Harness() {
         />
       </AnnouncerProvider>
     );
+  }
+  if (q.get('view') === 'app') {
+    // CR-40 … CR-44: the finale fixture chapter in the real App, with a seeded save in this page's storage.
+    if (!localStorage.getItem(SAVE_KEY)) localStorage.setItem(SAVE_KEY, JSON.stringify(finaleSeed(q.get('arc') ?? 'C')));
+    const byId = new Map(__HARNESS_FINALE__.scenarios.map((x) => [x.id, x]));
+    const refs = __HARNESS_FINALE__.scenes.map((sc) => ({ folder: sc.chapter, id: sc.id, load: () => Promise.resolve(sc) }));
+    return <App chapters={__HARNESS_FINALE__.chapters} load={(_city, id) => Promise.resolve(byId.get(id))} sceneRefs={refs} />;
   }
   if (q.get('view') === 'real') {
     const real = __HARNESS_REAL_SCENES__.find((s) => s.id === q.get('id'));

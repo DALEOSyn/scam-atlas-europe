@@ -1,0 +1,87 @@
+# 9-4 Drill: Jamal's "police" call (GDD §29.4; e-id-approval-on-call, with the spoofed-authority-call
+# callback). Unscored. Jamal, from his saved Kettle contact, quotes a "police officer" who wants him to
+# identify himself with Gatewren. The caller's words are quoted (context: quoted): the request is the tell.
+# Every pick gets a Jamal reply; no stars. S-M1: Jamal hangs up himself in every branch, so his resolution
+# line ("I hung up, like Birgitta") is true whatever the player picked. The last pick is gentle: Birgitta
+# shouts "Lägg på!" from upstairs.
+# SK6: "Police never call and ask you to identify yourself with your e-ID" appears in the drill and the
+# boss only. 114 14 appears on the player's side only (a pick label), never as a link.
+id: stockholm-04-jamal-police-call
+chapter: stockholm
+role: drill
+pattern: e-id-approval-on-call
+learning_objectives: [LO-09, LO-18]
+difficulty: 3
+is_fraud: false
+device: messenger
+brands: [kettle, gatewren]
+cast: [jamal, birgitta]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Jamal (downstairs)", detail: "Saved contact: Jamal (downstairs)" }
+  from_cast: jamal
+  body: "A 'police officer' just called. He said someone used my identity, and I must identify myself with Gatewren so they can protect me. He's calling back in 5 minutes. Is this normal in Sweden?"
+  request: reply
+  ask: { text: "I must identify myself with Gatewren so they can protect me" }
+  claims: [{ text: "He said someone used my identity" }]
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: Jamal's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what he asks for: your advice, not his e-ID."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: claim
+    reveal: "In Jamal's quote: someone used his identity. A worrying story. Real and fake calls both start like this, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+    context: quoted
+  - target: request
+    reveal: "In Jamal's quote: identify himself with Gatewren for a caller. Police never call and ask you to identify yourself with your e-ID."
+    red_flag: true
+    type: request
+    context: quoted
+
+actions:
+  - id: say_no_call_police
+    label: "No. Hang up, call the police: 114 14."
+    kind: proceed
+    outcome: jamal_hung_up_rude
+    pressure_target: true
+  - id: ask_badge_number
+    label: "Ask him for his badge number first."
+    kind: proceed
+    outcome: jamal_badge_number
+  - id: ask_birgitta
+    label: "Ask Birgitta: she knows how things work here."
+    kind: proceed
+    outcome: jamal_birgitta_slippers
+  - id: do_it_for_protection
+    label: "Do it, so they can protect you."
+    kind: reply
+    outcome: jamal_birgitta_shouts
+
+outcomes:
+  jamal_hung_up_rude:
+    narrative: "Jamal: \"He called back. I said I'd call the police myself, and hung up. Rudeness is free!\""
+  jamal_badge_number:
+    narrative: "Jamal: \"He gave one instantly. Birgitta says a number on the phone proves nothing. I hung up.\""
+  jamal_birgitta_slippers:
+    narrative: "Jamal: \"She came down in her slippers and said 'Lägg på!' (Hang up!). So I did.\""
+  jamal_birgitta_shouts:
+    narrative: "Jamal: \"Birgitta just shouted 'Lägg på!' (Hang up!) from upstairs. So I hung up.\""
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "'Police' asking you to identify yourself with your e-ID."
+    what_works: "Hang up. Police never call for it."
+  layer2:
+    message_flags: []
+    notes: "Police never call and ask you to identify yourself with your e-ID. Whoever it is, hang up and call the police or your bank yourself. Where to report and get help (Sweden) is on the help screen."
+  device_tip: "On a real phone, end the call yourself, then dial the police or your bank on a number you looked up. Don't use redial or the call log."
+  habit_card: only-approve-what-you-started
+  already_clicked:
+    shared_code: "Identified yourself for a caller already? Call your bank now on the number on your card; banks answer day and night. Then report it to the police."
+  sources: [se-polisen-nord-fake-police-2025, se-polisen-telefonbedrageri]

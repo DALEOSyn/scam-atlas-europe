@@ -20,7 +20,8 @@
  * - The clock and timer freeze while any freeze reason is active (pause menu,
  *   settings, help, debrief, Take a breath, an expanded translation).
  */
-import type { Action, ActionClass, ActionKind, Message, Device, Scenario, WhatNow } from '../content/schema.ts';
+import type { Action, ActionClass, ActionKind, Message, Device, RegisterCard, Scenario, WhatNow } from '../content/schema.ts';
+import { callDirectionOf } from '../content/callDirection.ts';
 import type { CheckableBeat } from './inspect.ts';
 import { checkablesOf, keyOf } from './inspect.ts';
 import { armBeat, firePusher, planPushers, startPushers, stopPushers, type PusherPlan, type PusherState } from './pushers.ts';
@@ -52,7 +53,7 @@ export interface RunnerContext {
  * starts only after the last line of the beat is shown).
  */
 /** `coach_mark`: a coach mark is open (GDD §8, CR-23: the first payee-name check). */
-export type FreezeReason = 'pause_menu' | 'settings' | 'help' | 'debrief' | 'take_a_breath' | 'translation' | 'call_lines' | 'coach_mark' | 'setup';
+export type FreezeReason = 'pause_menu' | 'settings' | 'help' | 'debrief' | 'take_a_breath' | 'translation' | 'call_lines' | 'coach_mark' | 'setup' | 'register';
 /**
  * `interrupt`: an `after_beat` interrupt still waits for an answer at the end of the scenario (ruling
  * QA M6): its own "New notification" step before the debrief.
@@ -363,7 +364,7 @@ function resolveGroup(s: Scenario, ctx: RunnerContext, st: RunnerState, g: Group
   const done: GroupState = { ...g, resolved: true, pendingOutcome: undefined };
   // The beat is over: its follow-ups stop (QA M2); its after_beat interrupts become due (ruling QA M6).
   let next = withGroup({ ...st, timer: null, pushers: stopPushers(st.pushers), interrupts: markDue(st.interrupts, done.visited) }, done);
-  const fell = !done.timerExpired && done.decision !== undefined && isFall(done.decision.cls, st.truth);
+  const fell = !done.timerExpired && done.decision !== undefined && isFall(done.decision.cls, st.truth, done.decision.kind);
   if (fell) next = setStress(ctx, next, next.stress + ctx.balance.stress.on_fall);
   // CR-27: after a fall, after_beat interrupts not flagged `on_fall: show` are dropped (no "Have a good
   // long weekend!" right after damage control). Already answered ones stay.
@@ -410,14 +411,15 @@ function finish(ctx: RunnerContext, st: RunnerState): RunnerState {
 }
 
 function enterDamageControlOrDone(s: Scenario, ctx: RunnerContext, st: RunnerState): RunnerState {
-  if (s.role === 'arc') return finish(ctx, st);
+  // Arc beats never run damage control (it would unmask the arc, GDD §10.2); the finale's scenarios do (CR-43).
+  if (s.role === 'arc' && s.finale === undefined) return finish(ctx, st);
   // Boss: damage control once at the end, with the steps of every beat that fell, merged in beat order
   // (the first fallen beat's steps first), de-duplicated (QA L2) and capped at RECOVERY_OPTIONS_MAX
   // (follow-up f, GDD §9: 5–6 options). Others: the outcome reached.
   const truth = st.truth;
   const sources =
     s.role === 'boss'
-      ? st.groups.filter((g) => g.decision && !g.timerExpired && isFall(g.decision.cls, truth) && g.outcome)
+      ? st.groups.filter((g) => g.decision && !g.timerExpired && isFall(g.decision.cls, truth, g.decision.kind) && g.outcome)
       : st.groups.slice(-1);
   const options = mergeRecoveryOptions(sources.map((g) => recoveryOptionsOf(g.outcome ? s.outcomes[g.outcome] : undefined)));
   if (options.length === 0) return finish(ctx, st);
@@ -478,7 +480,9 @@ function moveToBeat(s: Scenario, ctx: RunnerContext, st: RunnerState, g: GroupSt
   const firstVisit = !g.visited.includes(beatId);
   const prev = storyBeat(s, g.current);
   // CR-31: a call keeps running while the player follows it into the bank app (start_transfer from a call).
-  const callSince = beat.device === 'call' ? (prev?.device === 'call' ? g.callSince : st.clock) : via === 'start_transfer' && prev?.device === 'call' ? g.callSince : undefined;
+  // CR-39(a): or onto a Gatewren prompt the caller asked for (an auth beat reached from the call).
+  const followsCall = prev?.device === 'call' && ((via === 'start_transfer' && beat.device === 'banking') || beat.device === 'auth');
+  const callSince = beat.device === 'call' ? (prev?.device === 'call' ? g.callSince : st.clock) : followsCall ? g.callSince : undefined;
   const g2: GroupState = { ...g, current: beatId, visited: firstVisit ? [...g.visited, beatId] : g.visited, callSince };
   // A call beat runs on its own call length. [P] Amsterdam QA p (2-7): when a call leads into a non-call
   // beat, that beat starts a fresh slot-length timer (the call kept its own 30 s); further follow-ups keep
@@ -822,6 +826,8 @@ export interface ActionView {
   kind: ActionKind;
   /** Bright "pressure" style: Tense or higher and the action the message is pushing. */
   styled: boolean;
+  /** CR-45: English translation of the label's inline language span (Translate toggle beside the button). */
+  translation?: string;
 }
 
 export interface BeatView {
@@ -831,6 +837,8 @@ export interface BeatView {
   actions: ActionView[];
   /** Notification shown inside the beat (code SMS, approval prompt). No actions, never reportable. */
   banner: { device: Device; message: Message } | null;
+  /** CR-45: a call the player dialled ("Calling …", then connected; no Answer or Decline). Set only when true. */
+  outgoing?: true;
 }
 
 export interface WhatNowView {
@@ -853,6 +861,8 @@ export interface CheckableView {
   /** CR-27: language of `shown` when it is message text in another language, and its English translation. */
   lang?: string | undefined;
   translation?: string | undefined;
+  /** CR-45: on a call the player dialled, set by the UI: the caller ID is "Number you dialled". */
+  outgoing?: boolean;
 }
 
 /** A beat that speaks with a sender of its own (not a page and not the banking app). */
@@ -927,8 +937,16 @@ export interface RunnerView {
   consequenceAsides: string[];
   /** The beat that just ended was "already checked" (boss covered_by, ruling QA fun note a). */
   consequenceCovered: boolean;
-  /** CR-32: `forCast` is the cast id whose damage control it is (outcome `recovery_for`), else null. */
-  recovery: { options: RecoveryOption[]; pick: number; forCast: string | null } | null;
+  /** CR-38: the Fairmeasure result card of the last outcome (check_official_list), if it names one. */
+  consequenceRegister: RegisterCard | null;
+  /** CR-43(b): the outcome on the consequence step opens the reveal card (one portrait, three names). */
+  consequenceReveal: boolean;
+  /**
+   * CR-32: `forCast` is the cast id whose damage control it is (outcome `recovery_for`), else null; its harmful-step
+   * feedback is voiced by them. CR-41: `forLabel` names someone off-cast ("Noor's friend") in the prompt, and
+   * `forCast` is then the cast member who voices the feedback (`voiced_by`).
+   */
+  recovery: { options: RecoveryOption[]; pick: number; forCast: string | null; forLabel?: string | null; note?: string | null } | null;
   /**
    * CR-31: the on-call bar over a banking beat reached by start_transfer from a call: "On a call · {caller} ·
    * mm:ss". `seconds` since the call started (scenario clock); `hangUp` lists the banking beat's own
@@ -939,13 +957,21 @@ export interface RunnerView {
 
 /**
  * CR-31: the call the player followed into the bank app, if the group's current beat is the banking beat
- * opened by start_transfer from a call beat.
+ * opened by start_transfer from a call beat. CR-39(a): or the auth beat (a Gatewren prompt) the player
+ * opened from a call beat by any of its actions ("Open Gatewren as he asks").
  */
 export function callBehind(s: Scenario, g: Pick<GroupState, 'current' | 'visited' | 'transferBeat'>): BeatLike | undefined {
-  if (g.transferBeat === undefined || g.current !== g.transferBeat) return undefined;
+  const cur = storyBeat(s, g.current);
+  if (!cur) return undefined;
   const at = g.visited.indexOf(g.current);
   const prev = at > 0 ? storyBeat(s, g.visited[at - 1] ?? '') : undefined;
-  return prev?.device === 'call' && prev.actions.some((a) => a.kind === 'start_transfer' && a.next_beat === g.current) ? prev : undefined;
+  if (prev?.device !== 'call') return undefined;
+  if (cur.device === 'banking') {
+    if (g.transferBeat === undefined || g.current !== g.transferBeat) return undefined;
+    return prev.actions.some((a) => a.kind === 'start_transfer' && a.next_beat === g.current) ? prev : undefined;
+  }
+  if (cur.device === 'auth') return prev.actions.some((a) => a.next_beat === g.current) ? prev : undefined;
+  return undefined;
 }
 
 /** The timer-expiry line (consequence caption and layer 2 "What happened", UI_SPEC §7). */
@@ -956,11 +982,11 @@ export function deadlineLine(isFraud: boolean, fell: boolean): Exclude<DeadlineL
 }
 
 function groupFell(g: GroupState, truth: Truth): boolean {
-  return !!g.decision && !g.timerExpired && isFall(g.decision.cls, truth);
+  return !!g.decision && !g.timerExpired && isFall(g.decision.cls, truth, g.decision.kind);
 }
 
 function actionViews(actions: readonly Action[], state: StressState): ActionView[] {
-  return actions.map((a) => ({ id: a.id, label: a.label, kind: a.kind, styled: pressureStyled(state, a.pressure_target) }));
+  return actions.map((a) => ({ id: a.id, label: a.label, kind: a.kind, styled: pressureStyled(state, a.pressure_target), ...(a.translation ? { translation: a.translation } : {}) }));
 }
 
 export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): RunnerView {
@@ -975,6 +1001,7 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
         message: cur.message,
         actions: st.phase === 'what_now' ? [] : actionViews(cur.actions, state),
         banner: cur.banner ? { device: cur.banner.device, message: cur.banner.message } : null,
+        ...(cur.device === 'call' && callDirectionOf(s, cur.id) === 'outgoing' ? { outgoing: true as const } : {}),
       }
     : null;
   const checkables: CheckableView[] = cur && st.phase === 'playing'
@@ -1045,17 +1072,32 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
     consequenceTimerExpired: !st.tail && !!last && last.timerExpired && !last.outcome,
     consequenceDeadline: !st.tail && !!last && last.timerExpired && !last.outcome ? deadlineLine(s.is_fraud, st.groups.some((x) => groupFell(x, st.truth))) : null,
     consequenceCovered: st.phase === 'consequence' && !st.tail && !!last && coveredDecision(s, st.groups, last).covered,
+    consequenceRegister: st.phase === 'consequence' && !st.tail && last?.outcome ? (s.outcomes[last.outcome]?.register ?? null) : null,
+    consequenceReveal: st.phase === 'consequence' && !st.tail && !!last?.outcome && s.outcomes[last.outcome]?.reveal === true,
     consequenceAsides: st.phase !== 'consequence' ? [] : st.tail ? interruptNarratives(s, st, st.groups.length) : last ? interruptNarratives(s, st, st.groups.indexOf(last)) : [],
-    recovery: st.phase === 'damage_control' && st.recovery ? { options: st.recovery.options, pick: ctx.balance.recovery.pick, forCast: recoveryForOf(s, st) } : null,
+    recovery: st.phase === 'damage_control' && st.recovery ? { options: st.recovery.options, pick: ctx.balance.recovery.pick, ...recoveryForOf(s, st), note: recoveryNoteOf(s, st) } : null,
     onCall: onCallOf(s, ctx, st, live && st.phase === 'playing' ? g : undefined),
   };
 }
 
-/** CR-32: whose damage control it is: the `recovery_for` of the outcome that opened it (the last fallen group's). */
-function recoveryForOf(s: Scenario, st: RunnerState): string | null {
+/**
+ * CR-32: whose damage control it is: the `recovery_for` of the outcome that opened it (the last fallen group's).
+ * CR-41: `{ label, voiced_by }` names someone off-cast; the cast member `voiced_by` speaks the feedback.
+ */
+export function recoveryForOf(s: Scenario, st: Pick<RunnerState, 'groups'>): { forCast: string | null; forLabel: string | null } {
   for (const g of [...st.groups].reverse()) {
-    const id = g.outcome ? s.outcomes[g.outcome]?.recovery_for : undefined;
-    if (id !== undefined) return id;
+    const r = g.outcome ? s.outcomes[g.outcome]?.recovery_for : undefined;
+    if (r === undefined) continue;
+    return typeof r === 'string' ? { forCast: r, forLabel: null } : { forCast: r.voiced_by, forLabel: r.label };
+  }
+  return { forCast: null, forLabel: null };
+}
+
+/** R22 (psych M4): the authored note for the "Your steps" screen, from the latest outcome that has one. */
+export function recoveryNoteOf(s: Scenario, st: Pick<RunnerState, 'groups'>): string | null {
+  for (const g of [...st.groups].reverse()) {
+    const n = g.outcome ? s.outcomes[g.outcome]?.recovery_note : undefined;
+    if (n) return n;
   }
   return null;
 }

@@ -18,6 +18,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import { castMember } from '../content/cast.ts';
 import type { Chapter, Scene, ScenePanel } from '../content/schema.ts';
 import { fillStory, scenesAfter, visiblePanels, type IfThen, type StoryVars } from '../engine/story.ts';
+import type { ArcEnding } from '../engine/arc.ts';
 import { t, type MessageKey } from '../i18n/index.ts';
 import { artUrl, FlipCard, Postcard } from './Postcard.tsx';
 import styles from './Scene.module.css';
@@ -39,6 +40,14 @@ export interface ScenePlayerProps {
   vars?: StoryVars;
   /** The postcard Teo reads on a flip_postcard panel; null hides that panel. */
   flip?: FlipPick | null;
+  /**
+   * CR-44(a): the Open Evening: every collected postcard with an If-then line. The flip panel first asks the player
+   * to pick one (a list of city names, no right or wrong), then Teo reads its cue and the player may flip it.
+   * Takes the place of `flip` when non-empty. The pick is recorded as the flip.
+   */
+  flipChoices?: readonly FlipPick[] | null;
+  /** CR-43(d): the arc ending, for finale panels with `if_arc_ending` (null elsewhere). */
+  arcEnding?: ArcEnding | null;
   onFlip?: (city: string) => void;
   /**
    * Text of the content note to show before this sensitive scene (null: none). The app passes it for the
@@ -95,8 +104,11 @@ export function HelpList({ sensitive = false }: { sensitive?: boolean }) {
   );
 }
 
-export function ScenePlayer({ scene, heading: title, chapterName = '', flags = new Set(), vars = { count: 0, lastCity: '' }, flip = null, onFlip, contentNote = null, onDone }: ScenePlayerProps) {
-  const panels = visiblePanels(scene, flags).filter((p) => !p.flip_postcard || flip);
+export function ScenePlayer({ scene, heading: title, chapterName = '', flags = new Set(), vars = { count: 0, lastCity: '' }, flip: autoFlip = null, flipChoices = null, arcEnding = null, onFlip, contentNote = null, onDone }: ScenePlayerProps) {
+  const choosing = !!flipChoices && flipChoices.length > 0;
+  const [chosen, setChosen] = useState<FlipPick | null>(null);
+  const flip = choosing ? chosen : autoFlip;
+  const panels = visiblePanels(scene, flags, arcEnding).filter((p) => !p.flip_postcard || flip || choosing);
   const [view, setView] = useState<'note' | 'panels' | 'help'>(scene.sensitive && contentNote ? 'note' : 'panels');
   const [shown, setShown] = useState(1);
   const [helpFrom, setHelpFrom] = useState<'note' | 'panels'>('panels');
@@ -108,7 +120,9 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
   const items = useRef<(HTMLLIElement | null)[]>([]);
   const replies = useRef<(HTMLParagraphElement | null)[]>([]);
   /** What gets focus after the next render: the heading, a panel, or a choice reply. */
-  const focusNext = useRef<{ kind: 'heading' } | { kind: 'panel'; i: number } | { kind: 'reply'; i: number }>({ kind: 'heading' });
+  const focusNext = useRef<{ kind: 'heading' } | { kind: 'panel'; i: number } | { kind: 'reply'; i: number } | { kind: 'picked' }>({ kind: 'heading' });
+  /** CR-44(a), QA B3: the "You picked {city}." line, focused after a postcard pick. */
+  const pickedLine = useRef<HTMLParagraphElement | null>(null);
 
   const fill = (text: string) => fillStory(text, vars);
   const sensitive = scene.sensitive;
@@ -116,7 +130,7 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
   // [P] A flip counts as soon as its panel is shown (the tap stays optional), so the rotation also works
   // for players who never tap.
   useEffect(() => {
-    if (view !== 'panels' || flipRecorded.current || !flip) return;
+    if (view !== 'panels' || flipRecorded.current || !flip || choosing) return;
     if (panels.slice(0, shown).some((p) => p.flip_postcard)) {
       flipRecorded.current = true;
       onFlip?.(flip.city);
@@ -157,6 +171,7 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
       el.focus({ preventScroll: true });
       revealPanel(el, footerRef.current, prefersReducedMotion() ? 'auto' : 'smooth');
     } else if (f.kind === 'reply') replies.current[f.i]?.focus();
+    else if (f.kind === 'picked') pickedLine.current?.focus();
     else {
       heading.current?.focus({ preventScroll: true });
       // CR-27 / CR-28 round 2: on open the heading row (focused h1, Help, Skip) stays fully in view, and the
@@ -164,7 +179,7 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
       const first = items.current[0];
       if (view === 'panels' && shown === 1 && first) revealOnOpen(headRef.current, first, footerRef.current);
     }
-  }, [view, shown, picked]);
+  }, [view, shown, picked, chosen]);
 
   // CR-29: a rotation (or any width change) lifts every inline art cap, which was measured for the old
   // viewport, and reveals the newest panel again for the new one (on open: the heading row first). A
@@ -324,6 +339,15 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
                       fill={fill}
                       withRole={!!firstOfSpeaker}
                       flip={flip}
+                      choices={choosing ? flipChoices : null}
+                      pickedRef={(el) => {
+                        pickedLine.current = el;
+                      }}
+                      onChoose={(c) => {
+                        focusNext.current = { kind: 'picked' };
+                        setChosen(c);
+                        onFlip?.(c.city);
+                      }}
                       chapterName={chapterName}
                       picked={picked[i]}
                       replyRef={(el) => {
@@ -479,19 +503,25 @@ function PanelText({
   fill,
   withRole,
   flip,
+  choices,
+  onChoose,
   chapterName,
   picked,
   onPick,
   replyRef,
+  pickedRef,
 }: {
   p: ScenePanel;
   fill: (s: string) => string;
   withRole: boolean;
   flip: FlipPick | null;
+  choices: readonly FlipPick[] | null;
+  onChoose: (c: FlipPick) => void;
   chapterName: string;
   picked: number | undefined;
   onPick: (option: number) => void;
   replyRef: (el: HTMLParagraphElement | null) => void;
+  pickedRef?: ((el: HTMLParagraphElement | null) => void) | undefined;
 }) {
   const member = p.speaker && p.speaker !== 'you' ? castMember(p.speaker) : undefined;
   const label = p.speaker === 'you' ? t('scene_you') : member?.name ?? null;
@@ -520,8 +550,30 @@ function PanelText({
       ) : null}
       {/* The postcard's own heading reads "Postcard to Teo:"; no extra caption (review T-S3). */}
       {p.if_then ? <Postcard ifThen={p.if_then} city={chapterName} /> : null}
+      {/* CR-44(a): at the Open Evening you pick the postcard (no right or wrong), then Teo reads its cue. */}
+      {p.flip_postcard && choices && !flip ? (
+        <div class={styles.choice} data-postcard-pick="">
+          <p class={styles.line} id="postcard-pick-q">
+            {t('scene_postcard_pick')}
+          </p>
+          <ul class={styles.options} aria-labelledby="postcard-pick-q">
+            {choices.map((c) => (
+              <li key={c.city}>
+                <button type="button" class={styles.option} data-postcard={c.city} onClick={() => onChoose(c)}>
+                  {c.cityName}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
       {p.flip_postcard && flip ? (
         <>
+          {choices ? (
+            <p class={styles.youSaid} tabIndex={-1} ref={pickedRef} data-postcard-picked="">
+              {t('scene_postcard_picked', { city: flip.cityName })}
+            </p>
+          ) : null}
           <p class={styles.narrationText}>{t('scene_flip_caption')}</p>
           <FlipCard ifThen={flip.ifThen} cityName={flip.cityName} />
         </>

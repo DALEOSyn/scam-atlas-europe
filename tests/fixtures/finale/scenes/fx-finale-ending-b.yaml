@@ -1,0 +1,10 @@
+# Test fixture (CR-43(d)): ending B.
+id: fx-finale-ending-b
+chapter: fxfinale
+slot: resolution
+if_arc_ending: [B]
+panels:
+  - speaker: adaeze
+    expression: calm
+    line: "You told someone, and the timeline did the rest. That's the whole trick."
+    alt: "Adaeze, calm, closing a folder."

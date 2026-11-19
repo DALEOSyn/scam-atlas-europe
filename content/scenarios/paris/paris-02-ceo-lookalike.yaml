@@ -89,7 +89,7 @@ beats:
     device: banking
     message:
       bank: { brand: larchwick-pro }
-      account: { nickname: "Ruchelune · current account" }
+      account: { nickname: "Ruchelune · current account", kind: business }
       payee: { name: "Tessivane SAS", iban: "FR•••••••••••••••••••••••58", name_check: unavailable, amount: "€18,400.00" }
       request: pay
     inspectables:

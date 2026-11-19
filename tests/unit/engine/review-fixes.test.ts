@@ -192,8 +192,11 @@ describe('producer rulings', () => {
       const ticks = Array.from({ length: 400 }, () => tick(1));
       const { st, r } = play(s, c, [act('go_to_inbox'), ...ticks]);
       expect(st.phase).toBe('done');
-      expect(r.beats[0], `slot ${slot}`).toMatchObject({ stars: 1, points: 5, timerExpired: true });
-      expect(r).toMatchObject({ stars: 1, points: 5 });
+      // Ruling R21 (CR-45): expiry on a genuine beat scores what its deliberate dismiss ("Leave it") scores:
+      // ★, 5 points under tutorial grace (slot 0, where 0-3 ships); 0 from slot 1 on.
+      const want = slot === 0 ? { stars: 1, points: 5 } : { stars: 0, points: 0 };
+      expect(r.beats[0], `slot ${slot}`).toMatchObject({ ...want, timerExpired: true });
+      expect(r).toMatchObject(want);
       const dd = debriefOf(s, st, r, { pressureAny: true, pressureGenuine: true });
       expect(dd.layer1.allBest).toBe(false);
       expect(dd.layer2.deadline).toBe('genuine');

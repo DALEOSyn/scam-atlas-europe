@@ -1,0 +1,68 @@
+# CR-38: "Look the firm up on the Fairmeasure register yourself" opens a result card: not on the register,
+# warning list clean. Not on the register means don't pay; a clean warning list proves nothing.
+id: fx-cr38-register-check
+chapter: fixtures
+role: standard
+pattern: investment-ad-fake-platform
+theme: investment
+learning_objectives: [LO-12, LO-13]
+difficulty: 3
+is_fraud: true
+device: messenger
+brands: [kettle]
+pressure: { timer: true, levers: [greed, urgency] }
+
+message:
+  sender: { display: "Ciarán (Quorvex Wealth)", detail: "+353 8• ••• ••17", new_contact: true }
+  body: "Hi! Ciarán from Quorvex Wealth. Guaranteed 12% a month, fully managed. Start with €250 today and I'll set you up."
+  request: pay
+  ask: { text: "Start with €250 today and I'll set you up." }
+  claims: [{ text: "Guaranteed 12% a month, fully managed." }]
+  references: ["Quorvex Wealth · firm no. 48213"]
+
+inspectables:
+  - target: sender.detail
+    reveal: "A number you don't know. Real firms call new customers too, so it can't prove anything either way."
+    red_flag: false
+  - target: reference
+    reveal: "A firm number. Anyone can type one, so it can't prove anything either way. Look the firm up yourself."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "High and guaranteed. Real investments can lose money; nobody can promise 12% a month."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "Money today, to a firm you haven't looked up."
+    red_flag: true
+    type: request
+
+actions:
+  - { id: send_250, label: "Send the €250", kind: pay, outcome: paid_quorvex, pressure_target: true }
+  - { id: look_up, label: "Look Quorvex up on the Fairmeasure register yourself", kind: check_official_list, outcome: not_on_register }
+  - { id: report_chat, label: "Block and report the number", kind: report, outcome: reported }
+  - { id: ignore_chat, label: "Ignore it", kind: ignore, outcome: ignored }
+
+outcomes:
+  paid_quorvex:
+    narrative: "Your dashboard shows €250 growing. You can't take any of it out."
+    recovery:
+      - { step: stop_paying, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: keep_evidence, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: wait_and_see, category: harmful }
+      - { step: pay_recovery_service, category: harmful }
+  not_on_register:
+    narrative: "No firm called Quorvex is authorised. The warning list has nothing either, and that proves nothing: scammers change names."
+    register: { firm: "Quorvex Wealth", result: not_listed }
+  reported: { narrative: "You block and report the number." }
+  ignored: { narrative: "The chat goes quiet." }
+
+debrief:
+  layer1: { tell: "Guaranteed and high, from a firm you never looked up.", what_works: "Find the firm on the register yourself." }
+  device_tip: "Look a firm up on the regulator's register yourself, never through a link they send."
+  habit_card: easy-money-costs-you
+  already_clicked:
+    paid: "Paid already? Stop paying and call your bank on the number on your card."
+  sources: [ie-garda-investment-2025]

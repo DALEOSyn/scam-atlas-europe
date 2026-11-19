@@ -10,6 +10,7 @@ const ELEMENT_KEYS: Record<string, MessageKey> = {
   reference: 'element_reference',
   phone_number: 'element_phone_number',
   'qr.destination': 'element_qr',
+  'qr.mount': 'element_qr_mount',
   'page.address': 'element_page_address',
   'page.info': 'element_page_info',
   'payee.name_check': 'element_name_check',
@@ -23,12 +24,15 @@ const ELEMENT_KEYS: Record<string, MessageKey> = {
   letterhead: 'element_letterhead',
   image: 'element_image',
   video: 'element_video',
+  voice: 'element_voice',
   claim: 'element_claim',
   request: 'element_request',
 };
 
-export function elementLabel(target: string, device?: string): string {
+export function elementLabel(target: string, device?: string, outgoing = false): string {
   const base = target.replace(/#(\d)$/, '');
+  // CR-45: on a call the player dialled there is no caller ID: it is the number they dialled.
+  if (base === 'caller_id' && outgoing) return t('element_number_dialled');
   const n = /#(\d)$/.exec(target)?.[1];
   // The ask (ruling QA L1): "What the caller asks" on a call, "What the message asks" elsewhere.
   const label = t(

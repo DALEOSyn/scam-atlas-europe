@@ -1,0 +1,67 @@
+# CR-36: the voice label on a call. "Sounds like Grandpa Teo" under the caller ID once answered; the
+# `voice` checkable is neutral (a voice can be copied). No audio is ever played: a label and a transcript.
+id: fx-cr36-voice-call
+chapter: fixtures
+role: standard
+pattern: cloned-voice-family-emergency
+theme: family-call
+learning_objectives: [LO-07, LO-08]
+difficulty: 4
+is_fraud: true
+device: call
+cast: [teo]
+pressure: { timer: true, levers: [affection, urgency, secrecy] }
+
+message:
+  sender: { display: "+•• ••• ••• ••52", detail: "Not in your contacts" }
+  voice: { sounds_like: teo }
+  transcript:
+    - { speaker: caller, text: "It's me, it's Grandpa. I've lost my phone and I'm in a bit of trouble." }
+    - { speaker: caller, text: "Please send €400 to this account for me today. Don't call my old number, it's gone." }
+  request: pay
+  ask: { text: "Please send €400 to this account for me today." }
+  claims: [{ text: "I've lost my phone and I'm in a bit of trouble." }]
+
+inspectables:
+  - target: caller_id
+    reveal: "A number you don't know, for someone whose number you have saved."
+    red_flag: true
+    type: caller_id
+  - target: voice
+    reveal: "Sounds like Grandpa Teo. A voice can be copied from a short recording, so it can't prove anything either way."
+    red_flag: false
+    type: voice
+  - target: claim
+    reveal: "A reason for the new number. Phones do get lost, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "Money, today, and 'don't call my old number'. That cuts you off from checking."
+    red_flag: true
+    type: request
+
+actions:
+  - { id: send_money, label: "Send the €400", kind: pay, outcome: money_sent, pressure_target: true }
+  - { id: call_saved_number, label: "Hang up and call Teo's saved number", kind: call_back_known, outcome: teo_safe }
+  - { id: hang_up, label: "Hang up", kind: hang_up, outcome: hung_up }
+
+outcomes:
+  money_sent:
+    narrative: "The money goes. Later, Teo calls from his usual number: he never lost his phone."
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: keep_evidence, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: wait_and_see, category: harmful }
+      - { step: pay_recovery_service, category: harmful }
+  teo_safe: { narrative: "Teo answers on his saved number: 'Lost my phone? It's in my hand. Thanks for checking.'" }
+  hung_up: { narrative: "You hang up. Nothing leaves your account." }
+
+debrief:
+  layer1: { tell: "Teo's voice, a new number, money today.", what_works: "Hang up. Call the number you have saved." }
+  device_tip: "Call back on the number in your contacts, not the one that called."
+  habit_card: hang-up-call-back
+  already_clicked:
+    paid: "Sent money? Call your bank now on the number on your card."
+  sources: [nl-veiligbankieren-voice-cloning-2023]

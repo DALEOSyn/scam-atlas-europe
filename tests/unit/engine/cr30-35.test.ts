@@ -8,7 +8,7 @@ import { readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { lintPaths, loadConfig } from '../../../scripts/redline-lint.ts';
 import { chapterRules, choiceLines, continuesConversation, scenarioRules } from '../../../scripts/lib/rules.ts';
-import { checkScenario, loadBrands, loadSources, readYaml, type ContentReport } from '../../../scripts/lib/content.ts';
+import { checkScenario, loadSources, readYaml, type ContentReport } from '../../../scripts/lib/content.ts';
 import { deriveCheckables } from '../../../src/content/checkables.ts';
 import { chapterSchema, scenarioSchema, type Scenario } from '../../../src/content/schema.ts';
 import { choiceLine } from '../../../src/engine/debrief.ts';
@@ -18,6 +18,7 @@ import { callBehind, startScenario, step, viewOf, type RunnerState } from '../..
 import { scoreGroup } from '../../../src/engine/scoring.ts';
 import { CONTENT, ROOT, rawFraud, rawGenuine, realRegistries, scenario } from '../../content/fixtures.ts';
 import { act, B, ctx, play, run, tick, type Raw } from './helpers.ts';
+import { fixtureBrands } from './fixture-brands.ts';
 import { rawTransfer } from './cr-fixtures.ts';
 
 const reg = realRegistries();
@@ -41,7 +42,7 @@ function ruleErrors(r: Raw): string[] {
 }
 function crossErrors(r: Raw): string[] {
   const report: ContentReport = { errors: [], warnings: [], scenarios: new Map() };
-  checkScenario('fixture.yaml', r, loadBrands(CONTENT, report), loadSources(CONTENT, report), report);
+  checkScenario('fixture.yaml', r, fixtureBrands(report), loadSources(CONTENT, report), report);
   return report.errors;
 }
 const clone = <T>(x: T): T => structuredClone(x);
@@ -123,6 +124,15 @@ describe('CR-30: ask on every request type, required from slot 4', () => {
     const r = clone(raw('cr30-ask-none.yaml'));
     msg(r).request = 'scan_qr';
     expect(schemaErrors(r).join('\n')).toMatch(/ask is only for messages whose request is/);
+  });
+  it('exempts scan_qr and install from the slot-4 ask rule: they cannot carry an ask (GDD §29.4, CR-39(b))', () => {
+    for (const request of ['scan_qr', 'install']) {
+      const f = rawFraud('f4', { message: { ...(rawFraud().message as Raw), request } });
+      expect(chapterWith(9, [f]), request).not.toMatch(/CR-30/);
+    }
+    // Positive control: a request that can carry an ask still needs one at slot 9.
+    const call = rawFraud('f5', { message: { ...(rawFraud().message as Raw), request: 'call' } });
+    expect(chapterWith(9, [call])).toMatch(/"f5" opening message: request call needs message.ask from slot 4 on \(CR-30/);
   });
 });
 

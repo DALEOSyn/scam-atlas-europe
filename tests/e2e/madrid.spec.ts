@@ -96,3 +96,97 @@ test('Madrid 4-5: a "bank" call guides you into your own app; the name doesn\'t 
   await expect(page.getByText('Being guided to move your money is the tell.').first()).toBeVisible();
   await axeClean(page);
 });
+
+/** A Madrid run resumed at `index` (records explain the index, QA E8); timers and follow-ups off. */
+const ORDER: [string, boolean, string | undefined][] = [
+  ['madrid-01-dinner-at-nine', true, 'messenger-family-impersonation'],
+  ['madrid-02-real-card-call', true, 'bank-safe-account-call'],
+  ['madrid-03-text-in-the-thread', true, 'bank-safe-account-call'],
+  ['madrid-04-lucia-slept-on-it', false, 'bank-safe-account-call'],
+  ['madrid-05-reserve-account-call', true, 'bank-safe-account-call'],
+  ['madrid-06-real-code-for-you', true, 'multichannel-support-callback'],
+  ['madrid-07-cancellation-code', true, 'multichannel-support-callback'],
+  ['madrid-arc-alex-04', false, undefined],
+  ['madrid-08-card-paused-link', true, 'bank-safe-account-call'],
+];
+function seedAt(index: number) {
+  const records = ORDER.slice(0, index).map(([id, scored, pattern]) => ({
+    id, scored, points: scored ? 15 : 0, maxPoints: scored ? 15 : 0, stars: scored ? 3 : null, correctTags: 0, wrongTags: 0, redFlags: 0, genuineReported: 0, doubleCheckedHarmless: false, ...(pattern ? { pattern } : {}),
+  }));
+  return { ...SEED, chapters: { ...SEED.chapters, madrid: { finished: false, bestStamp: null, bestRating: 0, position: 4, run: { index, records, flags: [] } } } };
+}
+async function resumeMadrid(page: Page, index: number) {
+  await page.addInitScript((seed) => {
+    if (!localStorage.getItem('scam-atlas-europe:save')) localStorage.setItem('scam-atlas-europe:save', JSON.stringify(seed));
+  }, seedAt(index));
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Chapters' }).click();
+  await page.getByRole('button', { name: 'Continue Madrid' }).click();
+  await page.locator('[data-chapter-intro]').getByRole('button', { name: /^(Start|Continue)$/ }).click();
+}
+const option = (page: Page, name: string) => page.getByRole('region', { name: 'Your options' }).getByRole('button', { name, exact: true });
+
+test('Madrid 4-3: calling the number in the text, then hanging up and calling the card\'s number, is ★★', async ({ page }) => {
+  test.setTimeout(90_000);
+  await resumeMadrid(page, 2);
+  await option(page, 'Call the number in the text').click();
+  // CR-45 dependency: today the call the player placed rings with "Answer"; after CR-45 it is an outgoing
+  // call that connects on its own. Either way the transcript and "Hang up" follow, so the path below holds.
+  const answer = page.getByRole('button', { name: 'Answer', exact: true });
+  const hangUp = page.getByRole('button', { name: 'Hang up', exact: true });
+  await expect(answer.or(hangUp).first()).toBeVisible({ timeout: 10_000 });
+  if (await answer.isVisible()) await answer.click();
+  await hangUp.click();
+  await expect(page.getByRole('heading', { level: 3, name: 'What now?' })).toBeVisible();
+  await option(page, 'Call the number on your card').click();
+  await expect(consequenceHeading(page)).toBeFocused();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(debriefHeading(page)).toBeFocused();
+  await expect(page.getByRole('img', { name: '2 of 3 stars' })).toBeVisible();
+  await expect(page.getByText('You chose: Call the number in the text.', { exact: true })).toBeVisible();
+  // QA (Madrid round 2): the "More" line is true whether or not the player called.
+  await page.getByText('More', { exact: true }).click();
+  await expect(page.getByText(/^Behind that number: a recorded menu/)).toBeVisible();
+  await expect(page.getByText(/If you'd called/)).toHaveCount(0);
+  await axeClean(page);
+});
+
+test('Madrid boss 4-9: the ideal run (app, hang up and call the card, call the card) is ★★★', async ({ page }) => {
+  test.setTimeout(150_000);
+  await resumeMadrid(page, 9);
+  // Beat 1, the text: open the app yourself.
+  await option(page, 'Open the Larchwick app yourself').click();
+  // Beat 2, the "Larchwick Bank" call: answer, hang up, call the card's number.
+  const answer = page.getByRole('button', { name: 'Answer', exact: true });
+  const cont = page.getByRole('button', { name: 'Continue', exact: true });
+  for (let i = 0; i < 60 && !(await answer.isVisible()); i++) {
+    if (await cont.isVisible()) await cont.click();
+    await page.waitForTimeout(500);
+  }
+  await answer.click();
+  await page.getByRole('button', { name: 'Hang up', exact: true }).click();
+  await option(page, 'Call the number on your card').click();
+  // Beat 3, the second text: call the card's number.
+  const b3 = option(page, 'Call the number on your card');
+  for (let i = 0; i < 60; i++) {
+    if (await b3.isVisible() && !(await page.getByRole('heading', { level: 3, name: 'What now?' }).isVisible())) break;
+    if (await cont.isVisible()) await cont.click();
+    await page.waitForTimeout(500);
+  }
+  await b3.click();
+  // Andrés says good night (after beat 3), then the debrief.
+  const goodNight = page.locator('[data-interrupt-action]', { hasText: 'buenas noches' }).first();
+  for (let i = 0; i < 60 && !(await debriefHeading(page).isVisible()); i++) {
+    if (await goodNight.isVisible()) await goodNight.click();
+    else if (await cont.isVisible()) await cont.click();
+    await page.waitForTimeout(500);
+  }
+  await expect(debriefHeading(page)).toBeVisible();
+  await expect(page.getByRole('img', { name: '3 of 3 stars' })).toBeVisible();
+  // QA (Madrid round 2): the app line is conditional, and no later beat restates the full balance.
+  await page.getByText('More', { exact: true }).click();
+  await expect(page.getByText(/^If you opened the app during the call:/)).toBeVisible();
+  await expect(page.getByText(/In the app: the name matched/)).toHaveCount(0);
+  await axeClean(page);
+});
+

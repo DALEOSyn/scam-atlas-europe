@@ -293,7 +293,7 @@ outcomes:
       - { step: call_back_text_number, category: harmful }
       - { step: wait_and_see, category: harmful }
   sent_to_custodia:
-    narrative: "Sent: €3,215.28 to Olvarde Custodia SL. \"Perfect. Your money is safe with our reserve partner. Don't use the app tonight.\" The line goes dead."
+    narrative: "Sent to Olvarde Custodia SL. \"Perfect. Your money is safe with our reserve partner. Don't use the app tonight.\" The line goes dead."
     sets_flags: [madrid_money_moved]
     recovery:
       - { step: call_bank_stop_payment, category: stop }
@@ -303,7 +303,7 @@ outcomes:
       - { step: call_back_caller_number, category: harmful }
       - { step: wait_and_see, category: harmful }
   moved_on_agent_line:
-    narrative: "You call the \"direct line\". The same calm voice guides you to move what's in your account to the \"security reserve\". \"Done. Sleep well.\""
+    narrative: "You call the \"direct line\". The same calm voice guides you to move whatever is in your account to the \"security reserve\". \"Done. Sleep well.\""
     sets_flags: [madrid_money_moved]
     recovery:
       - { step: call_bank_stop_payment, category: stop }
@@ -352,7 +352,7 @@ debrief:
     message_flags:
       - "First text: a number that isn't your card's, in the real thread."
       - "The call: \"No passwords needed\" and \"don't hang up\" came with the real request: move your money. Following a caller's steps into your own app is already the risky part, even if you hang up before sending."
-      - "In the app: the name matched because you typed what the caller said."
+      - "If you opened the app during the call: a name check can match only because you typed the name the caller gave you."
       - "Second text: same number, same request, back in the thread."
     notes: "Most calls from your bank are what they seem. When one asks you to move money, read out a code, or stay on the line, hang up and call the number on your card."
   device_tip: "On a real phone, end the call yourself, then dial the number on the back of your card. Don't use redial or the call log."

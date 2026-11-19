@@ -151,7 +151,7 @@ debrief:
     what_works: "Open your app, or call your card's number."
   layer2:
     message_flags:
-      - "If you'd called: a recorded menu, then a \"security department\" that won't ask for your passwords, and wants you to move your money to a \"safe\" account. That move is the scam."
+      - "Behind that number: a recorded menu, then a \"security department\" that won't ask for your passwords, and wants you to move your money to a \"safe\" account. That move is the scam."
     notes: "A logo or familiar name proves nothing. Scammers copy them perfectly, even into a real thread. Since September 2026, Spanish phone companies must block texts under sender names that aren't registered. Even so, a text in your bank's real thread is no proof."
   device_tip: "On a real phone, a text can sit right under your bank's genuine messages. Check in the app you open yourself."
   habit_card: who-really-sent

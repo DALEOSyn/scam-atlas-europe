@@ -133,6 +133,12 @@ describe('Madrid: chapter totals (GDD §24.7)', () => {
     expect(get('madrid-03-text-in-the-thread').debrief.layer2.notes).toContain(line);
   });
 
+  it('boss: only the first fall narrative names the amount, so a run that falls three times never moves the full balance twice (QA round 2)', () => {
+    const o = get(BOSS).outcomes;
+    const falls = ['moved_on_text_call', 'sent_to_custodia', 'moved_on_agent_line'];
+    expect(falls.filter((k) => (o[k]?.narrative ?? '').includes('€3,215.28'))).toEqual(['moved_on_text_call']);
+  });
+
   it('refunds are only ever "may" (no "will refund")', () => {
     for (const s of all.values()) expect([s.id, /\bwill (?:refund|get (?:it|your money) back)/i.test(JSON.stringify(s))]).toEqual([s.id, false]);
   });

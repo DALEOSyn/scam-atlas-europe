@@ -439,5 +439,8 @@
   "oncall_hang_up_hint": "Goes to this screen's options for ending the call.",
   "oncall_lines": "What {caller} says",
   "damage_prompt_for": "Pick the step {name} should take first, then 2 more.",
-  "damage_voice": "{name}:"
+  "damage_voice": "{name}:",
+  "announce_caller_line": "Caller: {text}",
+  "oncall_choose": "Choose how to end the call:",
+  "bank_confirm_code": "Payment code used"
 }

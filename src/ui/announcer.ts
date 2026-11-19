@@ -8,7 +8,11 @@
  * Categories 1–2 are immediate. Categories 3–5 keep at least `minInterval` seconds between
  * announcements (balance pushers.sr_announce_min_interval_seconds). New messages arriving inside
  * the interval coalesce ("2 new messages").
+ * A category 1–2 text holds the region for its reading pace (`linePace`): a category 3–5 item waits in
+ * the queue until then, so it never replaces a caller line or feedback before it is spoken (QA r2, WCAG 4.1.3).
  */
+import { linePace } from './text.ts';
+
 export type Category = 1 | 2 | 3 | 4 | 5;
 
 export interface Pending {
@@ -35,6 +39,8 @@ export interface QueueState {
   pending: Pending[];
   /** When the last category 3–5 item was announced (seconds), or null. */
   lastSlow: number | null;
+  /** Until when (seconds) the last category 1–2 text holds the region; category 3–5 waits until then. */
+  holdUntil?: number | undefined;
 }
 
 export const EMPTY_QUEUE: QueueState = { pending: [], lastSlow: null };
@@ -52,12 +58,16 @@ export function enqueue(q: QueueState, category: Category, text: string, coalesc
 /** The next item to announce at `now` (seconds), if any is due. */
 export function nextAnnouncement(q: QueueState, now: number, minInterval: number): { queue: QueueState; say: string | null; foreign?: Foreign | undefined } {
   const ready = q.pending
-    .filter((p) => p.category <= 2 || q.lastSlow === null || now - q.lastSlow >= minInterval)
+    .filter((p) => p.category <= 2 || ((q.holdUntil === undefined || now >= q.holdUntil) && (q.lastSlow === null || now - q.lastSlow >= minInterval)))
     .sort((a, b) => a.category - b.category || (a.key === undefined ? 1 : 0) - (b.key === undefined ? 1 : 0));
   const first = ready[0];
   if (!first) return { queue: q, say: null };
   return {
-    queue: { pending: q.pending.filter((p) => p !== first), lastSlow: first.category >= 3 ? now : q.lastSlow },
+    queue: {
+      pending: q.pending.filter((p) => p !== first),
+      lastSlow: first.category >= 3 ? now : q.lastSlow,
+      holdUntil: first.category <= 2 ? Math.max(q.holdUntil ?? 0, now + linePace(first.text)) : q.holdUntil,
+    },
     say: first.text,
     foreign: first.foreign,
   };

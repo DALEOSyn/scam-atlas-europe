@@ -285,27 +285,40 @@ describe('CR-33: the marketplace device', () => {
 
 describe('CR-34: code then confirm', () => {
   const s = fixture('cr34-code-confirm.yaml');
-  it('sharing the code is non-terminal; Decline keeps the ★ cap (5 points)', () => {
+  it('sharing the code is non-terminal; Decline scores ★★ (10 points, ruling R18)', () => {
     const mid = run(s, ctx(), [act('send_code')]);
     expect(mid.phase).toBe('playing');
     expect(mid.groups[0]).toMatchObject({ current: 'code_confirm', decision: undefined, codeShared: { id: 'send_code' } });
     expect(viewOf(s, ctx(), mid).checkables.map((c) => c.target)).toEqual(['payee.name']);
-    expect(play(s, ctx(), [act('send_code'), act('decline')]).r.beats[0]).toMatchObject({ stars: 1, points: 5, fell: false, capped: true });
+    expect(play(s, ctx(), [act('send_code'), act('decline')]).r.beats[0]).toMatchObject({ stars: 2, points: 10, fell: false, capped: true });
   });
-  it('"Decline and call Kasia" (verify) keeps the ★ cap too; Confirm is the fall', () => {
-    expect(play(s, ctx(), [act('send_code'), act('decline_call')]).r.beats[0]).toMatchObject({ stars: 1, points: 5, cls: 'verify' });
+  it('"Decline and call Kasia" (verify) is capped at ★★ too (R18); Confirm is the fall', () => {
+    expect(play(s, ctx(), [act('send_code'), act('decline_call')]).r.beats[0]).toMatchObject({ stars: 2, points: 10, cls: 'verify', capped: true });
     const fell = run(s, ctx(), [act('send_code'), act('confirm_payment')]);
     expect(fell.phase).toBe('damage_control');
     expect(resultOf(s, B, fell).beats[0]).toMatchObject({ fell: true });
+  });
+  it('QA-1 (R18, GDD §7): Decline and "Decline and call" outrank Confirm plus a perfect damage-control pick, on stars and on points', () => {
+    const fell = run(s, ctx(), [act('send_code'), act('confirm_payment')]);
+    expect(fell.phase).toBe('damage_control');
+    const best = step(s, ctx(), fell, { type: 'recovery', picks: ['call_bank_stop_payment', 'tell_trusted_adult', 'keep_evidence'] });
+    expect(best.recovery?.result).toMatchObject({ lo16: true });
+    const fall = resultOf(s, B, best);
+    for (const id of ['decline', 'decline_call']) {
+      const save = play(s, ctx(), [act('send_code'), act(id)]).r;
+      expect(save.beats[0]?.stars, `${id} stars`).toBeGreaterThan(fall.beats[0]?.stars ?? 0);
+      expect(save.points, `${id} points`).toBeGreaterThan(fall.points);
+      expect(save.stars, `${id} scenario stars`).toBeGreaterThan(fall.stars ?? 0);
+    }
   });
   it('without the code, the message\'s own verify scores ★★★', () => {
     expect(play(s, ctx(), [act('call_kasia')]).r.beats[0]).toMatchObject({ stars: 3, points: 15 });
   });
   it('the cap is a balance value and scoreGroup applies it on fraud only', () => {
-    expect(B.points.code_then_confirm.star_cap).toBe(1);
-    const d = { cls: 'dismiss' as const, kind: 'ignore' as const, actionId: 'x' };
-    expect(scoreGroup(B, 'fraud', d, { engagedOnFraud: false, timerExpired: false, codeShared: true })).toMatchObject({ stars: 1, points: 5, capped: true });
-    expect(scoreGroup(B, 'legit_low', d, { engagedOnFraud: false, timerExpired: false, codeShared: true })).toMatchObject({ stars: 2, capped: false });
+    expect(B.points.code_then_confirm.star_cap).toBe(2);
+    const d = { cls: 'verify' as const, kind: 'call_back_known' as const, actionId: 'x' };
+    expect(scoreGroup(B, 'fraud', d, { engagedOnFraud: false, timerExpired: false, codeShared: true })).toMatchObject({ stars: 2, points: 10, capped: true });
+    expect(scoreGroup(B, 'legit_low', d, { engagedOnFraud: false, timerExpired: false, codeShared: true })).toMatchObject({ stars: 3, capped: false });
   });
   it('"You chose" names the code, with Decline as the path', () => {
     const { st, r } = play(s, ctx(), [act('send_code'), act('decline')]);
@@ -359,6 +372,26 @@ describe('CR-35 (ruling R14): an engage that ends a boss beat', () => {
     // An engage is never "already checked" cover for beat 2's report.
     const reported = continueTo(s, step(s, ctx(), continueTo(s, run(s, ctx(), [act('move_to_kettle')])), act('block_report')));
     expect(resultOf(s, B, reported).beats[1]).toMatchObject({ covered: false, stars: 2 });
+  });
+  it('limited to scheduled boss beats at run time: the Alex arc engages still never decide (sceptic round 1)', () => {
+    const arcs: [string, string][] = [
+      ['berlin/berlin-arc-alex-01.yaml', 'chat_back_alex'],
+      ['amsterdam/amsterdam-arc-alex-02.yaml', 'move_to_kettle'],
+      ['paris/paris-arc-alex-03.yaml', 'promise_secret'],
+    ];
+    for (const [file, id] of arcs) {
+      const a = scenarioSchema.parse(readYaml(join(CONTENT, 'scenarios', file)));
+      const st = run(a, ctx(), [act(id)]);
+      const g = st.groups[0];
+      expect(g?.resolved, file).toBe(true);
+      expect(g?.decision, file).toBeUndefined();
+      expect(resultOf(a, B, st).beats[0]?.cls, file).toBe('dismiss');
+    }
+    // A standard fraud scenario with an engage outcome (invalid content, but the engine stays as before).
+    const f = scenario(rawFraud('f8'));
+    const raw8 = clone(f) as unknown as Scenario;
+    raw8.actions = [{ ...f.actions[0], next_beat: undefined, outcome: 'left' } as Scenario['actions'][number], ...f.actions.slice(1)];
+    expect(run(raw8, ctx(), [act('tap_link')]).groups[0]?.decision).toBeUndefined();
   });
   it('validator: only on a scheduled boss beat continued by a later one (covered_by or the same sender thread)', () => {
     expect(continuesConversation(s, 'start')).toBe(true);

@@ -205,7 +205,10 @@ brands:
     sector: second-hand marketplace (peer to peer)
     role_in_game: >
       Where the player sells and buys used items (Warsaw, Lisbon). Teaches "stay on the platform":
-      genuine in-app messages vs. off-platform "safe delivery" links.
+      genuine in-app messages vs. off-platform "safe delivery" links. Warsaw (GDD §25.9): the fake page on
+      swaploft-safe-delivery.example labels itself "Swaploft Safe Delivery" (/collect/<id>, /release/<id>);
+      debriefs only ever say "a link to collect your payment". Real-domain paths: /sales/<id>, /item/<id>,
+      /help/payouts.
     domain: swaploft.example
     app_name: "Swaploft app"
     palette:
@@ -223,7 +226,7 @@ brands:
         cluster on teal/turquoise, orange, green and multi-colour. Palette fixed in rework 1: the Hoardly
         draft borrowed Gatewren's peach and Wordswap's apricot; Swaploft uses only its own colours.
       typography: "Heavy lowercase sans, tight tracking."
-    checked_against: ["Vinted", "Wallapop", "Leboncoin", "Kleinanzeigen", "Marktplaats", "OLX", "Allegro Lokalnie", "Blocket", "Tori", "Subito", "Depop", "eBay", "Facebook Marketplace", "GoHoardly", "SW Lofts (UK loft conversions)"]
+    checked_against: ["Vinted", "Wallapop", "Leboncoin", "Kleinanzeigen", "Marktplaats", "OLX", "Allegro Lokalnie", "Blocket", "Tori", "Subito", "Depop", "eBay", "Facebook Marketplace", "GoHoardly", "SW Lofts (UK loft conversions)", "Swappie", "Swapfiets"]
     web_check: "Low. Only an unrelated UK loft-conversion firm and crypto 'SWFT' results (BRAND_CHECK §5, alternatives)."
     lookalike_examples:
       - "swaploft-safe-delivery.example"
@@ -485,37 +488,112 @@ brands:
   # descriptor "MERCADO PUESTO 14" ("market stall 14") is generic, not a brand (sceptic to confirm).
   # Larchwick's look-alike larchwick-secure.example (4-8, boss thread history) is already registered.
 
+  # Warsaw (GDD §25.9; T-3.7 and story art T-S6a). Kept by BRAND_CHECK MW3 (Votelark) and MW4 (TREMOLIK).
   - id: votelark
     name: "Votelark"
     sector: online "school contest" voting page (scam-only)
     role_in_game: >
-      Warsaw callback 5-2: a "vote for my class" page that asks for your phone number and then the code you
-      get, which takes over your chat-app account. Training pages only; never a real service.
+      Warsaw callback 5-2: a "vote for my little sister's band" page that asks for your phone number and then
+      the code you get; the code really registers your Kettle account on a new device. Training pages only;
+      never a real service. Real institutions do run online votes, so the tell is the code banner, never
+      "votes are fake".
     domain: votelark-vote.example
     rationale:
-      name: "Coined: 'vote' + 'lark' (a songbird, light and playful). Kept by BRAND_CHECK MW1-MW4; alternatives Cheerpoll, Tunepoll."
+      name: "Coined: 'vote' + 'lark' (a songbird, light and playful). No exact hit (BRAND_CHECK MW3); alternatives Cheerpoll, Tunepoll."
       colour_shape: "No mark drawn: the page shows the name as plain text in the device's neutral page style, so no palette or shape can echo a real voting or contest site."
-    checked_against: ["Real school-contest and poll apps (BRAND_CHECK MW1-MW4)"]
-    web_check: "Low. Keep (BRAND_CHECK MW1-MW4)."
+    checked_against: ["Vote Owl", "VOTEism", "Votemar", "ActiVote", "Lark (office suite)", "Real school-contest and poll apps (BRAND_CHECK MW1-MW4)"]
+    web_check: "Low. Keep (BRAND_CHECK MW3)."
     lookalike_examples: []
-    trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"
+    trademark_search: "web-checked 2026-11-19; formal TMview/EUIPO pending before G4"
     status: draft
 
   - id: tremolik
     name: "TREMOLIK"
     sector: online music shop (merchant name only)
     role_in_game: >
-      The merchant name on the Larchwick payment-code confirmation in 5-6 and drill 5-7. A fictional online
-      music shop; no domain, no address, never drawn.
+      The merchant name on the Larchwick payment-code confirmation in 5-6 and drill 5-7 ("Confirm payment ·
+      €249.00 · to TREMOLIK"). A fictional online music shop; no domain, no address, never drawn.
     rationale:
-      name: "Coined from 'tremolo'. Kept by BRAND_CHECK MW1-MW4; no alternatives kept (both earlier ones were too close to a real retailer and a real festival)."
+      name: "Coined from 'tremolo' (a music term). No company or shop found (BRAND_CHECK MW4); no alternatives kept (both earlier ones were too close to a real retailer and a real festival)."
       colour_shape: "No mark: shown only as a payee name in Larchwick's own confirmation style."
-    checked_against: ["Polish music retailers and festivals (BRAND_CHECK MW1-MW4)"]
-    web_check: "Low. Keep (BRAND_CHECK MW1-MW4)."
+    checked_against: ["Tremach Sp. z o.o.", "tremolo (guitar-effect listings)", "Polish music retailers and festivals (BRAND_CHECK MW1-MW4)"]
+    web_check: "Low. Keep (BRAND_CHECK MW4)."
     lookalike_examples: []
-    trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"
+    trademark_search: "web-checked 2026-11-19; formal TMview/EUIPO pending before G4"
+    status: draft
+
+  # -------------------------------------------------------------------------------------------
+  # Lisbon (GDD §27.10, BRAND_CHECK RL1-RL2). Rome adds no brand: "Police Info" is a generic sender label
+  # (GDD §26.10) with no badge, crest, insignia, colours or mark, and is never registered here.
+  - id: roostwell
+    name: "Roostwell"
+    kind: marketplace
+    sector: rental platform (holiday lets and rooms; app and site)
+    role_in_game: >
+      Lisbon: the genuine platform where the player and Beatriz book (in-app notices, listing cards, the
+      in-app chat with the real host Leonor), and the brand that look-alike sites and fake "partner pages"
+      copy. Teaches "book, message and pay inside the app you opened yourself".
+    domain: roostwell.example
+    app_name: "Roostwell app"
+    known_channels: "Roostwell app (in-game) and the typed address roostwell.example (paths /trips/<id>, /trips/<id>/tax, /help). No phone number shown."
+    palette:
+      primary: "#46521A"       # olive
+      on_primary: "#FFFFFF"    # 8.46:1
+      accent: "#F1E2A8"        # straw; on primary 6.52:1
+      text_on_light: "#46521A"
+    logo: { lockup: public/brands/roostwell.svg, mark: public/brands/roostwell-mark.svg }
+    typography: "Serif (Georgia-style), bold, title case 'Roostwell'."
+    rationale:
+      name: "'Roost' (a place to settle for the night) + 'well'. Kept by BRAND_CHECK RL1 (watch item: Student Roost); spares Tilestay, Hearthlane."
+      colour_shape: >
+        Olive and straw, a round-topped doorway with a small bird perched on its crown. Rental and
+        hotel platforms cluster on coral/red, blue, navy+yellow, purple and lime; their marks use loops,
+        location pins, hearts or house outlines. No pin, no loop, no heart, no roof outline (Swaploft
+        already uses a roof line), no keys.
+      typography: "A bookish serif in title case; rental platforms mostly use rounded lowercase or bold sans wordmarks."
+    checked_against: ["Airbnb", "Booking (booking dot com)", "Vrbo", "Expedia", "Spotahome", "Uniplaces", "HousingAnywhere", "Idealista", "Imovirtual", "OLX", "Custojusto", "Student Roost (UK student housing, BRAND_CHECK RL1)", "Swaploft (in-game, roof line)"]
+    web_check: "Low-Medium, keep (BRAND_CHECK RL1): no 'Roostwell' anywhere; Student Roost shares the common word 'roost'. Re-check before G4."
+    lookalike_examples:
+      - "roostwell-stays.example"      # 7-3 fake listing site from a social ad
+      - "roostwell-securepay.example"  # 7-6 off-platform "partner page"
+      - "roostwell-bookings.example"   # boss login email
+    trademark_search: "web-checked 2026-11-19; TMview/EUIPO and INPI-PT pending before G4"
+    status: draft
+
+  - id: zonelet
+    name: "Zonelet"
+    kind: utility
+    sector: city parking app and operator (fictional; Lisbon)
+    role_in_game: >
+      Lisbon: the city's official parking app and the name on meter panels and slips. Its own printed
+      meter code opens zonelet.example (genuine, 7-5); stickers and fake slips point at look-alikes. Teaches
+      "pay parking in the app you installed, and read where a QR code goes".
+    domain: zonelet.example
+    app_name: "Zonelet app"
+    known_channels: "Zonelet app (in-game), the typed address zonelet.example, and the code printed on the meter's own panel. No phone number shown."
+    palette:
+      primary: "#333847"       # graphite
+      on_primary: "#FFFFFF"    # 11.68:1
+      accent: "#C9B6F2"        # lilac; on primary 6.37:1
+      text_on_light: "#333847"
+    logo: { lockup: public/brands/zonelet.svg, mark: public/brands/zonelet-mark.svg }
+    typography: "System sans, bold, lowercase 'zonelet', slightly open tracking."
+    rationale:
+      name: "Coined: 'zone' (the 'Zona 2 / Zona 3' on the meters) + '-let'. Replaces Kerbello (BRAND_CHECK RL2: began with the whole name of a real parking app); spare Lanefare."
+      colour_shape: >
+        Graphite and lilac: a round timer between two dashed bay lines. Parking apps and operators
+        cluster on blue (and the blue-square 'P' road sign), green, pink/magenta and yellow; municipal
+        operators use their city's colours. No letter P, no blue square, no car, no meter or road-sign
+        shape, no city colours or crest.
+      typography: "Plain lowercase sans."
+    checked_against: ["EasyPark", "PayByPhone", "ParkMobile", "Telpark", "ePark (Lisbon municipal parking app)", "EMEL", "Via Verde", "Empark", "Saba", "Indigo", "APCOA", "Flowbird", "Parkopedia", "Kerb (parking app, BRAND_CHECK RL2)"]
+    web_check: "Low (BRAND_CHECK RL2): only 'Zonelets', a static-blog template, and code identifiers."
+    lookalike_examples:
+      - "zonelet-pay.example"     # 7-2 meter sticker (text only)
+      - "zonelet-multas.example"  # 7-7 fake parking slip (text only; multas = fines)
+    trademark_search: "web-checked 2026-11-19; TMview/EUIPO and INPI-PT pending before G4"
     status: draft
 
 # Not yet registered (request ux-artist before writing these scenarios): streaming service (0-4 now
-# uses Kettle, so possibly not needed), utility company (Rome), parking app (Lisbon), in-world regulator
-# warning list (Dublin), remote-support tool (finale), holiday-rental site (Lisbon).
+# uses Kettle, so possibly not needed), utility company (Rome), in-world regulator warning list
+# (Dublin), remote-support tool (finale).

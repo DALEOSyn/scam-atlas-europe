@@ -70,9 +70,36 @@ cast:
     name: "Kasia Wójcik"
     role: "Music student, Waymarker volunteer (Warsaw)"
     known_channel: { label: "Saved contact", detail: "Kasia (Warsaw)" }
-    notes: "Her real Kettle account is taken over in 5-6 while she is at rehearsal (never her fault, never shown how). She is never the one who falls."
+    notes: "Selling half her flat before she moves. Her real Kettle account is taken over in 5-6 while she is at rehearsal (never her fault, never shown how). She is never the one who falls."
   - id: ola
     name: "Ola"
     role: "Fellow Waymarker volunteer (Warsaw)"
     known_channel: { label: "Saved contact", detail: "Ola (volunteers)" }
     notes: "Contact only (GDD §25.9): never drawn, never in a scene, no lines outside 5-2. Her real account is taken over in 5-2."
+  # Rome (GDD §26.10, story bible §3.6). Teo appears by phone and video only (recurring).
+  - id: bruna
+    name: "Signora Bruna Esposito"
+    role: "B&B owner, Teo's pen-pal (Rome)"
+    known_channel: { label: "Saved contact", detail: "Bruna (B&B)" }
+    notes: "72, capable, leads; tells her past-tense police-call story in the resolution. Her money is never in a scored scenario."
+  - id: davide
+    name: "Davide Esposito"
+    role: "Bruna's grandson, student (Rome)"
+    known_channel: { label: "Saved contact", detail: "Davide (B&B)" }
+    notes: "19; falls in drill 6-6 (a voice like Giulia's from a new number), never mocked. Speaks the Rome If-then line (phone at the ear)."
+  - id: giulia
+    name: "Giulia Esposito"
+    role: "Bruna's granddaughter, studying abroad (video only)"
+    known_channel: { label: "Saved contact", detail: "Giulia (family)" }
+    notes: "Drawn only inside a video frame (rome-giulia-safe). Her voice is borrowed in 6-6 (never her fault). The known_channel detail is the ux-artist's placeholder; game-designer to confirm."
+  # Lisbon (GDD §27.10, story bible §3.7). Mateus is recurring.
+  - id: beatriz
+    name: "Beatriz Ferreira"
+    role: "Mateus's sister, room-hunting (Lisbon)"
+    known_channel: { label: "Saved contact", detail: "Beatriz (Lisbon)" }
+    notes: "20; capable once she slows down, never falls (drill 7-4: she asks you)."
+  - id: leonor
+    name: "Leonor"
+    role: "Genuine host of the Graça studio (Lisbon)"
+    known_channel: { label: "Roostwell app", detail: "Leonor (host)" }
+    notes: "Contact only (GDD §27.10): never drawn, never in a scene. Her name is borrowed by the boss's Kettle number (never her fault); no surname on screen."

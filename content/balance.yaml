@@ -57,7 +57,7 @@ points:
     report_on_legit: -5        # 0 stars, -5 points: the over-reporting cost
     fall_on_fraud: recovery    # comply/proceed on fraud: points = recovery points (floor 0); stars 1 if recovery >= 6, else 0
   engage_on_fraud: { terminal: false, star_cap: 2 }   # every fraud engage must have next_beat (validator), except CR-35 boss beats
-  code_then_confirm: { star_cap: 1 }                  # CR-34: a payment code shared, then the confirmation declined (★, 5 points)
+  code_then_confirm: { star_cap: 2 }                  # CR-34, ruling R18: a payment code shared, then the confirmation declined (★★, 10 points)
 
 # Tutorial grace (design ruling L4, 2026-11-18): chapter slot 0 only. The player has not yet met a scam or
 # learned that over-reporting has a cost, so over-caution on a genuine message earns ★ and 5 points instead of

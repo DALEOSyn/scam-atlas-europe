@@ -1,0 +1,169 @@
+# 4-6 A REAL Larchwick code for a payment you're making (GDD §24.4; pattern multichannel-support-callback,
+# the genuine twin of 4-7, and the thread twin of 4-3 and 4-8). Genuine, high stakes (a code), difficulty 4,
+# slot timer 50 s with the honest deadline "Code valid 5 minutes", an honest follow-up from the checkout
+# page, and an interrupt (Andrés, small talk). The player started it (player_started).
+# Opens on the Thimble & Pine checkout (opener beat, request: none; "Wait for the code" is a setup step,
+# GDD §6 opener ruling), then the code text in the same Larchwick thread as this morning's fake (4-3),
+# shown muted in the thread history and not checkable.
+# Checkables on the code text (G, 5; parity with 4-7): sender (M1 neutral + "you started this"), the
+# payment (It fits: something the player started), the "never share" claim (neutral), the card's number
+# (M3 neutral), the request.
+# Not marked twin_of 4-7: the validator compares the opening beats, and this one opens on the browser
+# (2 checkables vs 4-7's 5). The code text itself has 5, as GDD §24.7 asks.
+id: madrid-06-real-code-for-you
+chapter: madrid
+role: standard
+pattern: multichannel-support-callback
+theme: bank-text
+player_started: true
+learning_objectives: [LO-17, LO-05]
+difficulty: 4
+is_fraud: false
+stakes: high
+device: browser
+setup: "You're buying a travel adapter from Thimble & Pine, the online shop."
+brands: [thimble-pine, larchwick, kettle, waymarker]
+cast: [andres]
+pressure:
+  timer: true
+  levers: [urgency]
+  honest_deadline: "Code valid 5 minutes"
+  pusher:
+    messages:
+      - { at_seconds: 30, text: "Waiting for your bank… 3:00 left." }
+
+message:
+  page: { address: "thimbleandpine.example/checkout", title: "Thimble & Pine · Checkout" }
+  body: "Confirm with your bank. We've sent a code to your phone."
+  request: none
+
+inspectables:
+  - target: page.address
+    reveal: "It fits: you opened thimbleandpine.example yourself to buy the adapter. That isn't proof on its own, so weigh it with whether you started this."
+    red_flag: false
+    type: page_address
+    reassures: true
+  - target: page.info
+    reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
+    red_flag: false
+    type: padlock
+
+actions:
+  - id: wait_for_code
+    label: "Wait for the code"
+    kind: proceed
+    next_beat: code_text
+  - id: close_checkout
+    label: "Close the page and buy it later"
+    kind: ignore
+    outcome: adapter_later
+
+beats:
+  - id: code_text
+    device: sms
+    message:
+      sender: { display: "LARCHWICK", detail: "Sender name: LARCHWICK (in your Larchwick thread)" }
+      body: "LARCHWICK: Code 4••••• to confirm your payment of €24.90 to THIMBLE & PINE. Enter it on the payment page. Valid 5 minutes. Never share this code with anyone. Not you? Call us on 9•• ••• •00."
+      request: enter_details
+      ask: { text: "Enter it on the payment page." }
+      claims: [{ text: "Never share this code with anyone." }]
+      references: ["€24.90 to THIMBLE & PINE"]
+      phone_numbers: ["9•• ••• •00"]
+      earlier:
+        - { when: "Yesterday 18:12", body: "LARCHWICK: Card payment of €18.60 at MERCADO PUESTO 14." }
+        - { when: "Today 10:41", body: "LARCHWICK: A transfer of €2,940.00 to ES•• •••• 0417 is being processed. Not you? Call us now to stop it: 9•• ••• •14." }
+    inspectables:
+      - target: sender.detail
+        reveal: "Shows LARCHWICK, in the same thread as your other Larchwick texts, as a real one would. A sender name can be faked so a text lands in the real thread, so it can't prove anything either way. Separately: you started this payment a moment ago."
+        red_flag: false
+        type: sender
+      - target: reference
+        reveal: "It fits: €24.90 to Thimble & Pine, the adapter in your basket right now. That isn't proof on its own, so weigh it with what it asks: to type the code where you're paying."
+        red_flag: false
+        type: reference
+        reassures: true
+      - target: phone_number
+        reveal: "9•• ••• •00, the number on the back of your card. A text can copy it, so it can't prove the text is real, but calling that number reaches Larchwick."
+        red_flag: false
+        type: phone_number
+      - target: claim
+        reveal: "Good advice that real texts give too. A fake can copy it, so it can't prove anything either way."
+        red_flag: false
+        type: claim
+      - target: request
+        reveal: "Asks you to type the code into the page where you're paying, for a payment you started. Nobody is asking you to read it out."
+        red_flag: false
+        type: request
+    actions:
+      - id: type_code_checkout
+        label: "Type the code into the checkout page"
+        kind: proceed
+        outcome: adapter_on_its_way
+        pressure_target: true
+      - id: open_app_first
+        label: "Open the Larchwick app first"
+        kind: verify_in_app
+        outcome: app_shows_pending
+      - id: report_code_text
+        label: "Report the text as a scam"
+        kind: report
+        outcome: code_text_reported
+      - id: leave_adapter
+        label: "Leave it, buy the adapter later"
+        kind: ignore
+        outcome: adapter_later
+
+interrupts:
+  - id: andres_pasta
+    at_seconds: 15
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Andrés (Madrid)", detail: "Saved contact: Andrés (Madrid)" }
+      from_cast: andres
+      body: "¿Lentejas otra vez? Es broma. Esta noche, pasta 🙂"
+      lang: es
+      translation: "Lentils again? Joking. Pasta tonight 🙂"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Andrés's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what he asks for: nothing, it's about dinner."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_andres_pasta
+        label: "Reply: ¡pasta, genial!"
+        kind: proceed
+        outcome: andres_pasta_thanks
+        pressure_target: true
+      - id: report_andres_pasta
+        label: "Report the message"
+        kind: report
+        outcome: andres_pasta_reported
+
+outcomes:
+  adapter_on_its_way:
+    narrative: "Payment confirmed. Adapter on its way."
+  app_shows_pending:
+    narrative: "A pending €24.90 to Thimble & Pine, waiting for your code. You type it in. Payment confirmed."
+  code_text_reported:
+    narrative: "You report the text. The code runs out, the payment doesn't go through, and the adapter waits in your basket."
+  adapter_later:
+    narrative: "The code runs out and the payment is cancelled. The adapter waits in your basket for another day."
+  andres_pasta_thanks:
+    narrative: "Andrés: \"😄\""
+  andres_pasta_reported:
+    narrative: "You reported it. Careful is good; this one really was Andrés, talking about dinner."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A code for the payment you're making."
+    what_works: "Type it where you're paying. Never read it out."
+  layer2:
+    message_flags: []
+    notes: "Same thread as this morning's fake, same sender name, same kind of deadline. The difference: you started this, it says what the code is for, and nobody wants it from you. The only number it gives is the one on your card."
+  device_tip: "On a real phone, compare the amount and shop in the code text with the page you're paying on. If they match and you started it, type the code there and nowhere else."
+  habit_card: codes-are-only-for-you
+  sources: [es-bde-sms-callerid-spoofing-2022]

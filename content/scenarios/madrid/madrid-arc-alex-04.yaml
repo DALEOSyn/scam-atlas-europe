@@ -1,0 +1,67 @@
+# Arc beat, slot 4 (GDD §10.1, §10.2; STORY §1.4: arc slot N plays by play position, so the line is
+# city-agnostic). Alex brags about trading wins. Warning sign: profit bragging. Friendship only; Alex's
+# line is ≤ 25 words, generic small talk, no platform, no persuasion copy, no how-to.
+# Options per §10.1 slot 4: Change topic → ignore · Ask how to join → reply · Report → report (a report
+# at slot ≤ 6 closes the arc as ending A, GDD §10.3; the engine handles it).
+# Placed between 4-7 and 4-8 (GDD §24.4): not next to 4-5's "move your money" debrief.
+# Layer 1 (no verdict, no stars) per §10.2; slot 4 has no layer-1 example in the GDD, so the wording here
+# is the writer's (flagged for game-designer). No safeguarding line (slots 2 and 3 only).
+id: madrid-arc-alex-04
+chapter: madrid
+role: arc
+arc_slot: 4
+learning_objectives: [LO-14]
+is_fraud: true
+device: messenger
+brands: [wordswap]
+cast: [alex]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Alex", detail: "Practice partner from Wordswap" }
+  from_cast: alex
+  body: |
+    Guess what, I made €300 this week just from trading 😎 Easiest money ever. Anyway, how's your trip going?
+  request: reply
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows Alex, your practice partner from Wordswap, as any profile would. A profile name can't prove anything either way."
+    red_flag: false
+    type: sender
+
+actions:
+  - id: ask_how_to_join
+    label: "Ask how to join"
+    kind: reply
+    outcome: alex_will_explain
+    pressure_target: true
+  - id: report_alex_trading
+    label: "Report the profile"
+    kind: report
+    outcome: alex_reported
+  - id: change_topic_alex
+    label: "Change the topic: tell Alex about your trip"
+    kind: ignore
+    outcome: alex_trip_chat
+
+outcomes:
+  alex_trip_chat:
+    narrative: "You tell Alex about the market and the late dinners. Alex sends a laughing face, then: \"Lucky you. Trading's going great, by the way.\""
+  alex_will_explain:
+    narrative: "Alex: \"Ha, I knew you'd ask 😄 I'll show you soon. It's easy, honestly.\""
+  alex_reported:
+    narrative: "You report Alex's profile to Wordswap. Easy money talk from someone you can't check is reason enough."
+
+debrief:
+  variant: arc
+  layer1:
+    tell: "Bragging about easy profits often comes before an invitation."
+    what_works: "Change the subject, and tell someone you trust."
+  layer2:
+    message_flags: []
+    notes: "Friends share good news, and that's fine. But big, easy wins from someone you've only met online are often the first step towards \"you could do it too\". Real investing carries risk and nobody can promise profits. Talk to someone you trust before you sign up for anything or send money."
+  already_clicked:
+    clicked: "Asked how to join already? That's fine. Don't sign up or send money; talk to someone you trust first."
+    paid: "Sent money already? Stop paying, call your bank on the number on your card, and keep the chat history."
+  sources: [eu-esas-ai-scams-factsheet-nl, be-police-romance-2026, eu-europol-iocta-2026, ie-garda-investment-2025]

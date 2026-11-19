@@ -54,3 +54,14 @@ cast:
     role: "Apprentice designer, Ruchelune (17)"
     known_channel: { label: "Saved contact", detail: "Inès (Ruchelune)" }
     notes: "Capable: spots the plumber fake herself (drill 3-3); her name is used in 3-5. Never the one who falls."
+  # Madrid (GDD §24.10, story bible §3.4). Neither is ever impersonated, and their money is never in a scored scenario.
+  - id: lucia
+    name: "Lucía Herrera"
+    role: "Night-shift nurse, your host (Madrid)"
+    known_channel: { label: "Saved contact", detail: "Lucía (Madrid)" }
+    notes: "Her rule: no big decisions until she's slept. Shows it working in drill 4-4 (a fake text in her own Larchwick thread). Never falls, never impersonated."
+  - id: andres
+    name: "Andrés"
+    role: "Teacher, your host (Madrid)"
+    known_channel: { label: "Saved contact", detail: "Andrés (Madrid)" }
+    notes: "Saving every euro for a first flat with Lucía; cooks lentils. Small-talk interrupts only in scored scenarios; never impersonated."

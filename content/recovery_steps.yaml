@@ -89,3 +89,11 @@ steps:
   - id: wait_until_after_long_weekend
     label: "Wait until the office reopens after the long weekend"
     feedback: "Waiting for the office to reopen feels sensible, but the sooner you call, the better the chance of getting a transfer back. Call the bank now."
+  # Madrid (GDD §24.10, T-3.6). Labels stay generic: real bodies are named only on the Spain help card.
+  - id: keep_call_evidence
+    label: "Keep screenshots of the texts, the call log and the times"
+  - id: report_police_copy_to_bank
+    label: "Make a police report and give your bank a copy"
+  - id: call_back_caller_number
+    label: "Call back the number that called you and ask them to send it back"
+    feedback: "Wanting to fix it fast is natural, but the number that called you can be faked, so you can't tell whose line you'd reach. Call the number on your card instead."

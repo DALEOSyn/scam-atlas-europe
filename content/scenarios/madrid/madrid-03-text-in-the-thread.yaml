@@ -1,0 +1,161 @@
+# 4-3 A fake text IN the real Larchwick thread (GDD §24.4; bank-safe-account-call, BSA §3.2–3.3).
+# Fraud, difficulty 2, slot timer 50 s + pusher at 25 s (same thread). Levers fear, urgency, authority.
+# Thread history (CR-25 earlier): two genuine Larchwick texts, muted. Today: a €2,940 transfer "being
+# processed" and a number to call that isn't the card's (the card's ends 00).
+# R 2: the number in the text (M3), the request. D 2: the LARCHWICK sender in the real thread (M1, the
+# sender-or-link decoy) and the masked account.
+# "Call the number in the text" is the engage (next_beat security_line, a call the player placed: recorded
+# menu, then a "security department" that wants the balance moved; not in R). Following their steps there
+# is the fall; hanging up there scores ★★ (engage cap). No depiction of how sender names are faked.
+# Layer 2 carries the Spain sender-register line once, word for word (ruling M5 / R10); nowhere else.
+id: madrid-03-text-in-the-thread
+chapter: madrid
+role: standard
+pattern: bank-safe-account-call
+theme: bank-text
+learning_objectives: [LO-01, LO-08, LO-03, LO-04]
+difficulty: 2
+is_fraud: true
+device: sms
+brands: [larchwick, waymarker]
+pressure:
+  timer: true
+  levers: [fear, urgency, authority]
+  pusher:
+    messages:
+      - { at_seconds: 25, text: "LARCHWICK: Transfer still processing. Call now to stop it." }
+
+message:
+  sender: { display: "LARCHWICK", detail: "Sender name: LARCHWICK (in your Larchwick thread)" }
+  body: "LARCHWICK: A transfer of €2,940.00 to ES•• •••• 0417 is being processed. Not you? Call us now to stop it: 9•• ••• •14."
+  request: call
+  ask: { text: "Not you? Call us now to stop it" }
+  references: ["ES•• •••• 0417"]
+  phone_numbers: ["9•• ••• •14"]
+  earlier:
+    - { when: "Mon 09:03", body: "LARCHWICK: You've received €400.00 from WAYMARKER NETWORK." }
+    - { when: "Yesterday 18:12", body: "LARCHWICK: Card payment of €18.60 at MERCADO PUESTO 14." }
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows LARCHWICK, in the same thread as your real Larchwick texts, as a real one would. A sender name can be faked so a text lands in the real thread, so it can't prove anything either way. Judge what it asks."
+    red_flag: false
+    type: sender
+  - target: reference
+    reveal: "An account ending 0417. Real and fake alerts both show a masked account, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: phone_number
+    reveal: "9•• ••• •14: a number given in the text. It isn't the number on your card, which ends 00. Calling it reaches whoever sent the text."
+    red_flag: true
+    type: phone_number
+  - target: request
+    reveal: "Asks you to call a number it gives you about a payment you don't recognise. A real alert sends you to your own app or the number on your card."
+    red_flag: true
+    type: request
+
+actions:
+  - id: call_number_in_text
+    label: "Call the number in the text"
+    kind: call_number_in_message
+    next_beat: security_line
+    pressure_target: true
+  - id: open_app_text
+    label: "Open the Larchwick app yourself"
+    kind: verify_in_app
+    outcome: app_no_transfer
+  - id: call_card_text
+    label: "Call the number on your card"
+    kind: call_back_known
+    outcome: card_line_no_transfer
+  - id: report_text
+    label: "Report the text"
+    kind: report
+    outcome: text_reported
+  - id: delete_text
+    label: "Delete it"
+    kind: delete
+    outcome: text_deleted
+
+beats:
+  - id: security_line
+    device: call
+    message:
+      sender: { display: "9•• ••• •14", detail: "The number from the text" }
+      transcript:
+        - { speaker: caller, text: "(Recorded message) Welcome to Larchwick Bank. Connecting you to our security department." }
+        - { speaker: caller, text: "Security department. I can see the transfer. We've paused it, but your account is exposed." }
+        - { speaker: caller, text: "I won't ask for your passwords." }
+        - { speaker: caller, text: "Open your Larchwick app and I'll guide you to move your balance to a safe reserve account while we fix this." }
+      request: pay
+      ask: { text: "Open your Larchwick app and I'll guide you to move your balance to a safe reserve account while we fix this." }
+      claims: [{ text: "I won't ask for your passwords." }]
+    inspectables:
+      - target: claim
+        reveal: "Says they won't ask for your passwords. Real banks say this, and a fake caller can say it too, so it can't prove anything either way. Judge what you're asked to do."
+        red_flag: false
+        type: claim
+      - target: request
+        reveal: "Asks you to move your money to keep it safe. No real bank does that. That request is the scam."
+        red_flag: true
+        type: request
+    actions:
+      - id: follow_steps_security
+        label: "Follow their steps in your app"
+        kind: pay
+        outcome: moved_to_reserve
+        pressure_target: true
+      - id: hang_up_security
+        label: "Hang up"
+        kind: hang_up
+        outcome: security_left
+    what_now:
+      call_back_label: "Call the number on your card"
+      outcomes:
+        call_back_known: card_line_no_transfer
+        report: security_reported
+        done: security_left
+      extra:
+        - id: open_app_after_call
+          label: "Open the Larchwick app yourself"
+          kind: verify_in_app
+          outcome: app_no_transfer
+
+outcomes:
+  moved_to_reserve:
+    narrative: "You move €3,240.18 to the \"reserve account\" as the voice guides you. \"Done. We'll be in touch.\" The line goes quiet."
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: keep_call_evidence, category: secure }
+      - { step: report_police_copy_to_bank, category: report }
+      - { step: call_back_caller_number, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  app_no_transfer:
+    narrative: "You open the Larchwick app yourself. No transfer, nothing pending. Your balance is as it was."
+  card_line_no_transfer:
+    narrative: "Larchwick, on the number on your card: \"No such transfer. We'd never ask you to move money, and the number on your card is the only number to call us on. Thanks for checking.\""
+  text_reported:
+    narrative: "Reported. Your phone files the text under spam. Your balance hasn't moved."
+  text_deleted:
+    narrative: "Deleted. Nothing else arrives, and your balance hasn't moved."
+  security_reported:
+    narrative: "Reported. Keep a note of the number and the time: your bank and the police can use them."
+  security_left:
+    narrative: "You hang up and leave it there. Nothing has left your account."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A number that isn't your card's, in the real thread."
+    what_works: "Open your app, or call your card's number."
+  layer2:
+    message_flags:
+      - "If you'd called: a recorded menu, then a \"security department\" that won't ask for your passwords, and wants you to move your money to a \"safe\" account. That move is the scam."
+    notes: "A logo or familiar name proves nothing. Scammers copy them perfectly, even into a real thread. Since September 2026, Spanish phone companies must block texts under sender names that aren't registered. Even so, a text in your bank's real thread is no proof."
+  device_tip: "On a real phone, a text can sit right under your bank's genuine messages. Check in the app you open yourself."
+  habit_card: who-really-sent
+  already_clicked:
+    clicked: "Called the number? Hang up, then call the number on your card and tell your bank what happened."
+    paid: "Moved money? Call your bank now on the number on your card and ask it to try to stop or recall the transfer. Keep the texts and the call log."
+  sources: [es-incibe-smishing-bank-callback-2025, es-bde-sms-callerid-spoofing-2022, es-incibe-sms-banks-2022, eu-epc-threats-2025, es-boe-orden-tdf-149-2025, es-boe-cnmc-circular-3-2026, es-cnmc-alias-callout-2026, es-bde-msr2025-fraude]

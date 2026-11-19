@@ -139,7 +139,7 @@ brands:
         purpose: "Business account app (Ruchelune's account in Paris; CR-26 'Business account' header). Added T-3.5."
         domain: pro.larchwick-bank.example
     sms_sender_id: "LARCHWICK"
-    known_channels: "The number on the back of your in-game card (shown masked), and the Larchwick app."
+    known_channels: "The number on the back of your in-game card (shown masked: 9•• ••• •00; no other number in Madrid ends 00), and the Larchwick app."
     palette:
       primary: "#2D2A6E"       # deep indigo
       on_primary: "#FFFFFF"    # 12.59:1
@@ -476,6 +476,14 @@ brands:
     lookalike_examples: []
     trademark_search: "web-checked 2026-11-19; INPI, company directory and TMview pending before G4"
     status: draft
+
+  # -------------------------------------------------------------------------------------------
+  # Madrid (T-3.6, 2026-11-19, GDD §24.10). No new brands. Fictional account holders are not brands and
+  # are not registered here (as Paris): "Olvarde Custodia SL" (boss 4-9, the "safe" account's holder, payee
+  # check match) and "Larchwick Reserva" (4-5, the name the caller dictates; no holder exists, it never
+  # matches). Both kept by BRAND_CHECK MW1 and MW2; alternative "Corvaldo Custodia SL". The merchant
+  # descriptor "MERCADO PUESTO 14" ("market stall 14") is generic, not a brand (sceptic to confirm).
+  # Larchwick's look-alike larchwick-secure.example (4-8, boss thread history) is already registered.
 
 # Not yet registered (request ux-artist before writing these scenarios): streaming service (0-4 now
 # uses Kettle, so possibly not needed), utility company (Rome), parking app (Lisbon), in-world regulator

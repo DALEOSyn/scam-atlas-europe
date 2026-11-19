@@ -24,3 +24,10 @@ Companion to GDD §23. Owner: game-designer (lists); verification: fraud-researc
 | France "Where to report" card (§23.9) | fr-cybermalveillance-fiche-faux-rib, fr-cybermalveillance-fiche-fovi, fr-gendarmerie-fovi, fr-bdf-fraude-moyens-paiement, fr-cybermalveillance-17cyber-2024, fr-justice-thesee-messagerie-2025, fr-cybermalveillance-fiche-hameconnage, eu-europol-ceo-bec-leaflet, eu-esas-ai-scams-factsheet-nl |
 | Recovery steps (recall, warn the creditor, keep evidence, complaint, secure the mailbox) | fr-cybermalveillance-fiche-faux-rib, fr-cybermalveillance-fiche-fovi, fr-inc-iban-rib-fraudes-2025, fr-bdf-fraude-moyens-paiement, fr-gendarmerie-fovi |
 | Habit card `verify-the-change` | fr-cybermalveillance-fiche-faux-rib, fr-fbf-cles-faux-rib-2025, fr-inc-vop-2025, fr-bdf-fraude-moyens-paiement, fr-gendarmerie-fovi |
+
+
+## France help card wording (moved from GDD §23.9, producer 2026-11-19)
+Real bodies are named only here and on the help screen (Red Line 1).
+2. **Complaint** with the police or gendarmerie (you can start online), in parallel with the bank; the bank may ask for it. This is the route for workplace cases (3-2, 3-8, the boss).
+3. **17Cyber** (17cyber.gouv.fr): "a government service from the police, gendarmerie and Cybermalveillance.gouv.fr. It helps you work out what happened and links you to reporting and complaints. In an emergency, call 17 or 112."
+- Recovery step `file_complaint_police`, France help text: "File a complaint with the police or gendarmerie (you can start online)."

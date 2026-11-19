@@ -588,7 +588,7 @@ Recovery:
   - `call_bank_recall_transfer` (stop);
   - `warn_creditor_known_number` (warn: they're being impersonated, and their mailbox may be misused);
   - `tell_management_known_channel` (warn);
-  - `file_complaint_police` (report). France label: "File a complaint with the police or gendarmerie (you can start online)";
+  - `file_complaint_police` (report). France label: same as the generic one (producer ruling: the in-game label says "police"; the France help card names both national forces, see docs/patterns/ch3-paris-sources.md);
   - `reply_to_sender` (harmful);
   - `wait_until_after_long_weekend` (harmful).
 
@@ -663,7 +663,7 @@ Setup (intro, ≤ 20 s): "18:40, the last working day before the long weekend. B
   - "Most calls are what they seem. When one asks for money, secrecy or skipping a check, end it and call back.";
   - at home: "The same trick works with a family member's face or voice: end the call and call them back on the number you have."
 
-  `already_clicked.paid`: "Call your bank now on the number you already have and ask it to recall the transfer for fraud. Tell Solène on the directory number, keep everything, and file a complaint." Workplace cases point to a complaint with the police or gendarmerie, made in parallel with the bank call; the THESEE complaint service is not used here (§23.9).
+  `already_clicked.paid`: "Call your bank now on the number you already have and ask it to recall the transfer for fraud. Tell Solène on the directory number, keep everything, and file a complaint." Workplace cases point to a complaint with the police, made in parallel with the bank call; the THESEE complaint service is not used here (§23.9).
 - **Sources:** `ch3-paris-sources.md` §3-9.
 - **QA:** `boss_transfer` has its own 40 s timer and holds beat 2 until its card closes (§23.3). Paper-playtest the load anyway.
 
@@ -744,7 +744,7 @@ Row details:
 **New recovery steps** for `content/recovery_steps.yaml` (scenario-writer adds them; labels are generic, and every harmful step needs `feedback`):
 - `call_bank_recall_transfer`: "Call your bank at once on the number you already have and ask it to recall the transfer for fraud".
 - `warn_creditor_known_number`: "Warn the real landlord or supplier on the number you already have: they're being impersonated, and their mailbox may be misused".
-- `file_complaint_police`: "File a complaint with the police (you can start online)". France label: "File a complaint with the police or gendarmerie (you can start online)". "Gendarmerie" is on the red-line denylist, so the France label needs a scoped allowlist entry or locale-specific help text. Sceptic to rule.
+- `file_complaint_police`: "File a complaint with the police (you can start online)". Producer ruling (2026-11-19): the in-game label stays generic ("police"); real bodies are named only on the France help card (Red Line 1), whose wording is in docs/patterns/ch3-paris-sources.md.
 - `keep_evidence`: "Keep the emails, bank details, transfer and times".
 - `tell_management_known_channel`: "Tell your manager through the directory, not by replying".
 - `check_pay_details_with_person`: "Check the pay details with the person directly and put the right ones back".
@@ -763,8 +763,8 @@ Row details:
 
 **"Where to report and get help" (France) card**, linked from layer 2 of every Paris debrief. Real organisations are named only here (Red Line 1). `fraud-researcher` verifies each entry into `docs/patterns/where-to-report.draft.en.yaml`, and the red-line allowlist must list them.
 1. **Your bank, first and at once:** the number on your card or in your app. Ask it to block or recall the transfer for fraud. The sooner you call, the better the chance.
-2. **Complaint** with the police or gendarmerie (you can start online), in parallel with the bank; the bank may ask for it. This is the route for workplace cases (3-2, 3-8, the boss).
-3. **17Cyber** (17cyber.gouv.fr): "a government service from the police, gendarmerie and Cybermalveillance.gouv.fr. It helps you work out what happened and links you to reporting and complaints. In an emergency, call 17 or 112."
+2. **Complaint** with the police (you can start online), in parallel with the bank; the bank may ask for it. This is the route for workplace cases (3-2, 3-8, the boss). The France help card wording, which names the national forces, is in docs/patterns/ch3-paris-sources.md.
+3. **17Cyber**: the government help service; exact help-card wording in docs/patterns/ch3-paris-sources.md.
 4. **THESEE** (general information only, not mapped to any scenario): "an online complaint for individuals (18+), in their own name, when a contact's hijacked mailbox asked them for money. Minors can only make a report."
 5. **Info Escroqueries 0 805 805 817** (free): advice. No hours shown.
 6. **Suspicious texts:** forward them to **33 700**.

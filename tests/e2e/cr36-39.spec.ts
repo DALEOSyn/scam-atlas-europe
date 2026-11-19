@@ -111,6 +111,25 @@ for (const width of [320, 1280]) {
     await minTarget(page, '[data-register-close]');
     await noOverflow(page);
     await axeClean(page);
+    // Sceptic B1: modal for real. The scenario and the HUD are inert under the dialog, and Tab / Shift+Tab
+    // stay inside it, also from the heading and from Close.
+    expect(await page.locator('main').evaluate((el) => (el as HTMLElement).inert), 'main is inert').toBe(true);
+    expect(await page.locator('header').first().evaluate((el) => !!el.closest('[inert]')), 'the HUD is inert').toBe(true);
+    const inDialog = () => page.evaluate(() => !!document.activeElement?.closest('[data-register]'));
+    await page.locator('#register-h').focus();
+    for (let i = 0; i < 6; i++) {
+      await page.keyboard.press('Shift+Tab');
+      expect(await inDialog(), `Shift+Tab ${i + 1} from the heading stays in the dialog`).toBe(true);
+    }
+    await page.locator('[data-register-close]').focus();
+    for (let i = 0; i < 6; i++) {
+      await page.keyboard.press('Tab');
+      expect(await inDialog(), `Tab ${i + 1} from Close stays in the dialog`).toBe(true);
+    }
+    // "Got it" closes the coach mark and leaves focus in the dialog (on its heading).
+    await pressOn(page, dialog.getByRole('button', { name: 'Got it' }), 'Got it');
+    await expect(dialog.locator('[data-coach]')).toHaveCount(0);
+    await expect(page.locator('#register-h')).toBeFocused();
     await pressOn(page, dialog.locator('[data-tab="register"]'), 'the register tab');
     await page.keyboard.press('ArrowRight');
     await expect(dialog.locator('[data-tab="warnings"]')).toBeFocused();
@@ -121,6 +140,7 @@ for (const width of [320, 1280]) {
     await page.keyboard.press('Escape');
     await expect(dialog).toHaveCount(0);
     await expect(menu).toBeFocused();
+    expect(await page.locator('main').evaluate((el) => (el as HTMLElement).inert), 'main is live again').toBe(false);
   });
 }
 

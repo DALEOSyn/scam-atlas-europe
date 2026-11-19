@@ -28,7 +28,7 @@ import { Icon } from './Icon.tsx';
 import { deadlineText, WHAT_NOW_KEYS } from './labels.ts';
 import { RichText } from './RichText.tsx';
 import { SettingsPanel } from './Settings.tsx';
-import { COACH_FAIRMEASURE, FairmeasurePanel, RegisterResult } from './Fairmeasure.tsx';
+import { COACH_FAIRMEASURE, FairmeasurePanel, RegisterResult, regulatorName } from './Fairmeasure.tsx';
 import { registerAvailable, registerEntries } from '../content/brands.ts';
 import { linePace, readingHoldSeconds, unrevealedTargets } from './text.ts';
 import styles from './ScenarioView.module.css';
@@ -606,7 +606,8 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
 
   const card = openItem ? <CheckCard item={openItem} visibleText={visible(openItem)} sender={sender} modal={modal} onTag={doTag} onClose={closeCard} /> : null;
   const live = view.phase === 'playing' || view.phase === 'what_now';
-  const blocked = modal || settingsOpen;
+  // CR-38 (sceptic B1): the Fairmeasure dialog is modal too: the scenario and the HUD go inert under it.
+  const blocked = modal || settingsOpen || registerOpen;
   const showJump = jumpShown;
   // The bar's place is kept for the rest of the beat once it has shown (CR-27).
   const [jumpBeat, setJumpBeat] = useState<string | null>(null);
@@ -647,6 +648,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
               onSettings: settings && onSettings ? openSettings : undefined,
               // CR-38 (psych M1): only when the register lists at least one authorised firm.
               onRegister: registerAvailable() ? openRegister : undefined,
+              registerName: regulatorName(),
             }}
           />
         </div>

@@ -9,10 +9,15 @@
  * regulator or EU body (Red Line 1).
  */
 import { useEffect, useRef, useState } from 'preact/hooks';
-import type { RegisterEntry } from '../content/brands.ts';
+import { brandById, type RegisterEntry } from '../content/brands.ts';
 import type { RegisterCard } from '../content/schema.ts';
 import { t } from '../i18n/index.ts';
 import styles from './Fairmeasure.module.css';
+
+/** The regulator's name from the brand registry (content/brands.yaml `fairmeasure`, BRAND_CHECK DS1). */
+export function regulatorName(): string {
+  return brandById('fairmeasure')?.name ?? t('register_title');
+}
 
 /** The one-time coach mark id (save.coachMarks). */
 export const COACH_FAIRMEASURE = 'fairmeasure';
@@ -45,14 +50,22 @@ export function registerResultLines(card: RegisterCard): string[] {
   }
 }
 
-/** CR-38: the result card on the consequence step of a `check_official_list` outcome. */
+/**
+ * CR-38: the result card on the consequence step of a `check_official_list` outcome. Its heading is an h4
+ * under the step's h3 ("What happened"). "Got it" on the coach mark returns focus to the card heading.
+ */
 export function RegisterResult({ card, coach, onCoachSeen }: { card: RegisterCard; coach: boolean; onCoachSeen: () => void }) {
+  const heading = useRef<HTMLHeadingElement>(null);
+  const seen = () => {
+    onCoachSeen();
+    setTimeout(() => heading.current?.focus(), 0);
+  };
   return (
     <section class={styles.card} aria-labelledby="register-result-h" data-register-result={card.result}>
-      <h4 id="register-result-h" class={styles.cardTitle}>
-        <span class={styles.wordmark}>{t('register_title')}</span> <span class={styles.sub}>{t('register_card_sub')}</span>
+      <h4 id="register-result-h" class={styles.cardTitle} ref={heading} tabIndex={-1}>
+        <span class={styles.wordmark}>{regulatorName()}</span> <span class={styles.sub}>{t('register_card_sub')}</span>
       </h4>
-      {coach ? <Coach onSeen={onCoachSeen} /> : null}
+      {coach ? <Coach onSeen={seen} /> : null}
       <ul class={styles.lines}>
         {registerResultLines(card).map((line, i) => (
           <li key={i}>{line}</li>
@@ -81,16 +94,21 @@ export function FairmeasurePanel({ entries, onClose, coach, onCoachSeen }: { ent
         onClose();
         return;
       }
-      // Modal: Tab stays inside the dialog.
+      // Modal (sceptic B1): Tab and Shift+Tab stay inside the dialog, also from the heading (tabindex -1) or
+      // from anywhere outside it; the page under it is inert as well (ScenarioView `blocked`).
       if (e.key !== 'Tab' || !box.current) return;
       const f = [...box.current.querySelectorAll<HTMLElement>('button:not([tabindex="-1"])')];
       const first = f[0];
       const last = f[f.length - 1];
       if (!first || !last) return;
-      if (e.shiftKey && document.activeElement === first) {
+      const active = document.activeElement;
+      const inside = !!active && box.current.contains(active);
+      const atStart = !inside || active === first || active === heading.current;
+      const atEnd = !inside || active === last;
+      if (e.shiftKey && atStart) {
         e.preventDefault();
         last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
+      } else if (!e.shiftKey && atEnd) {
         e.preventDefault();
         first.focus();
       }
@@ -112,11 +130,19 @@ export function FairmeasurePanel({ entries, onClose, coach, onCoachSeen }: { ent
       <div class={styles.scrim} aria-hidden="true" onClick={onClose} />
       <div ref={box} class={styles.dialog} role="dialog" aria-modal="true" aria-labelledby="register-h" data-register="">
         <h2 id="register-h" ref={heading} tabIndex={-1} class={styles.title}>
-          <span class={styles.wordmark}>{t('register_title')}</span>
+          <span class={styles.wordmark}>{regulatorName()}</span>
         </h2>
         <p class={styles.note}>{t('register_intro')}</p>
-        {coach ? <Coach onSeen={onCoachSeen} /> : null}
-        <div class={styles.tabs} role="tablist" aria-label={t('register_title')}>
+        {coach ? (
+          <Coach
+            onSeen={() => {
+              onCoachSeen();
+              // The coach mark's button is gone: focus goes back to the dialog heading, never to <body>.
+              setTimeout(() => heading.current?.focus(), 0);
+            }}
+          />
+        ) : null}
+        <div class={styles.tabs} role="tablist" aria-label={regulatorName()}>
           {tabs.map(([id, label]) => (
             <button
               key={id}

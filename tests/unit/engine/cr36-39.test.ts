@@ -11,7 +11,7 @@ import { readYaml, registerCardIssues } from '../../../scripts/lib/content.ts';
 import { brandProjection } from '../../../scripts/lib/yaml-module.ts';
 import { deriveCheckables } from '../../../src/content/checkables.ts';
 import { registerEntries } from '../../../src/content/brands.ts';
-import { brandSchema, chapterSchema, scenarioSchema, type Scenario } from '../../../src/content/schema.ts';
+import { brandSchema, chapterSchema, MASKED_PHONE_RE, scenarioSchema, type Scenario } from '../../../src/content/schema.ts';
 import { sequenceOf } from '../../../src/engine/chapter.ts';
 import { beginChapter, nextScenarioId } from '../../../src/engine/game.ts';
 import { checkablesOf, qrMountText } from '../../../src/engine/inspect.ts';
@@ -177,7 +177,7 @@ describe('CR-38: the Fairmeasure register', () => {
     expect(schemaErrors(addr).join('\n')).toMatch(/address and phone are shown for authorised firms only/);
     const phone = clone(raw('cr38-register-authorised.yaml'));
     (((phone.outcomes as Raw).on_register as Raw).register as Raw).phone = '+353 1 555 0142';
-    expect(schemaErrors(phone).join('\n')).toMatch(/the register's phone number is masked/);
+    expect(schemaErrors(phone).join('\n')).toMatch(/the register's phone number hides at least 4 digits/);
     const via = clone(raw('cr38-register-check.yaml'));
     ((via.actions as Raw[]).find((a) => a.id === 'report_chat') as Raw).outcome = 'not_on_register';
     delete (via.outcomes as Raw).reported;
@@ -198,6 +198,24 @@ describe('CR-38: the Fairmeasure register', () => {
     expect(registerCardIssues(scenarioSchema.parse(warned), brands)).toEqual([]);
     ((warned.outcomes as Raw).not_on_register as Raw).register = { firm: 'Quorvex Wealth', result: 'warning_list' };
     expect(registerCardIssues(scenarioSchema.parse(warned), brands).join('\n')).toMatch(/must be a brand with register.status: warning_list/);
+  });
+  it('the scenario clock and the timer stand still while the register is open (freeze reason "register")', () => {
+    const c = ctx({ timerMode: 'standard' });
+    let st = step(s, c, startScenario(s, c), tick(2));
+    const clock = st.clock;
+    const left = st.timer?.remaining;
+    st = step(s, c, st, { type: 'freeze', reason: 'register', on: true });
+    st = step(s, c, st, tick(10));
+    expect(st.clock).toBe(clock);
+    expect(st.timer?.remaining).toBe(left);
+    st = step(s, c, st, { type: 'freeze', reason: 'register', on: false });
+    st = step(s, c, st, tick(1));
+    expect(st.clock).toBeCloseTo(clock + 1);
+  });
+  it('a masked phone hides at least 4 digits', () => {
+    expect(MASKED_PHONE_RE.test('+353 1 ••• ••42')).toBe(true);
+    expect(MASKED_PHONE_RE.test('+353 1 555 •142')).toBe(false);
+    expect(MASKED_PHONE_RE.test('+353 1 55• ••42')).toBe(false);
   });
   it('brands.yaml: contact details only for authorised firms, masked phone; the runtime projection carries the lists', () => {
     expect(brandSchema.safeParse({ id: 'x', name: 'X', register: { status: 'warning_list', address: 'Somewhere' } }).success).toBe(false);

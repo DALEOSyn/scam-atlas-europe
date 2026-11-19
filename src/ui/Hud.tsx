@@ -32,6 +32,8 @@ export interface HudMenu {
   onSettings?: (() => void) | undefined;
   /** CR-38: opens the Fairmeasure regulator view (a home-screen tool in every chapter). */
   onRegister?: (() => void) | undefined;
+  /** CR-38: the regulator's name from the brand registry. */
+  registerName?: string | undefined;
 }
 
 export function Hud({ view, progress, chip, timersOff, onPause, menu }: { view: RunnerView; progress: { index: number; total: number } | null; chip: string | null; timersOff: boolean; onPause: () => void; menu: HudMenu }) {
@@ -135,7 +137,7 @@ export function Hud({ view, progress, chip, timersOff, onPause, menu }: { view: 
                 menu.onRegister?.();
               }}
             >
-              {t('register_menu')}
+              {t('register_menu', { name: menu.registerName ?? '' })}
             </button>
           ) : null}
           {menu.onSettings ? (

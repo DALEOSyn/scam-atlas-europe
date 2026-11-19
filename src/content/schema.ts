@@ -591,13 +591,13 @@ export const interruptSchema = z
 /** CR-38: what the Fairmeasure register shows for a firm. */
 export const REGISTER_RESULTS = ['authorised', 'not_listed', 'warning_list'] as const;
 export type RegisterResult = (typeof REGISTER_RESULTS)[number];
-/** A masked phone number shows bullets (Red Line 3), e.g. "+353 1 ••• ••42". */
-export const MASKED_PHONE_RE = /•/u;
+/** A masked phone number hides at least 4 digits behind bullets (Red Line 3), e.g. "+353 1 ••• ••42". */
+export const MASKED_PHONE_RE = /(?:•[^•]*){4}/u;
 
 /** CR-38: the register's own contact details for an authorised firm; masked phone (Red Line 3). */
 const registerContact = {
   address: z.string().min(1).optional(),
-  phone: z.string().min(1).refine((v) => MASKED_PHONE_RE.test(v), 'the register\'s phone number is masked (•), Red Line 3').optional(),
+  phone: z.string().min(1).refine((v) => MASKED_PHONE_RE.test(v), 'the register\'s phone number hides at least 4 digits behind • (Red Line 3)').optional(),
 };
 
 /**

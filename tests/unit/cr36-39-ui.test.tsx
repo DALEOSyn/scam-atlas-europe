@@ -133,6 +133,15 @@ describe('CR-38: Fairmeasure', () => {
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(onClose).toHaveBeenCalled();
   });
+  it('"Got it" on the result card\'s coach mark moves focus to the card heading', async () => {
+    vi.useFakeTimers();
+    const { container } = render(<RegisterResult card={{ firm: 'Quorvex Wealth', result: 'not_listed' }} coach onCoachSeen={() => undefined} />);
+    const got = screen.getByRole('button', { name: 'Got it' });
+    got.focus();
+    fireEvent.click(got);
+    vi.advanceTimersByTime(1);
+    expect(document.activeElement).toBe(container.querySelector('#register-result-h'));
+  });
   it('the one-time coach mark names both lists', () => {
     const seen = vi.fn();
     render(<FairmeasurePanel entries={entries} onClose={() => undefined} coach onCoachSeen={seen} />);

@@ -459,7 +459,7 @@
   "register_tab_warnings": "Warning list",
   "register_empty": "No firms listed.",
   "register_close": "Close",
-  "register_menu": "Fairmeasure register",
+  "register_menu": "{name} register",
   "register_result_authorised": "{firm}: on the register of authorised firms.",
   "register_contact_only": "Contact it only on the register's own details:",
   "register_address": "Address: {address}",

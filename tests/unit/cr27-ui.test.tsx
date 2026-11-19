@@ -89,7 +89,8 @@ describe('CR-27 item 1: chapter intro and scenario setup', () => {
     await waitFor(() => expect(document.activeElement).toBe(h1));
     expect(screen.getByText('Paris, the last working day.')).toBeTruthy();
     expect(screen.getByText('Pinned by the screen: "Payments at Ruchelune."')).toBeTruthy();
-    expect(screen.getAllByRole('button')).toHaveLength(1);
+    // One primary action; the only other button is the optional "How stamps work" disclosure (CR-48b).
+    expect(screen.getAllByRole('button').map((b) => b.textContent)).toEqual(['Start', 'How stamps work']);
     fireEvent.click(screen.getByRole('button', { name: 'Start' }));
     expect(onStart).toHaveBeenCalledOnce();
   });

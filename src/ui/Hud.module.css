@@ -241,12 +241,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-/* Review T-S3 item 5: only "Paused" below 600 px so the HUD keeps one row with the tip open
-   (measured in tests/e2e/scene-layout.spec.ts); "Paused: tip open" from 600 px. */
+/* Review T-S3 item 5: only "Paused" below 720 px so the HUD keeps one row with the tip open
+   (measured in tests/e2e/scene-layout.spec.ts); "Paused: tip open" from 720 px (CI fonts wrapped at 608 px). */
 .frozenNarrow {
   display: none;
 }
-@media (max-width: 599px) {
+@media (max-width: 719px) {
   .frozenWide {
     display: none;
   }

@@ -53,7 +53,7 @@ Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR 
 - Registered-host rule: extend to all player-visible scenario text (pusher messages first, reveals, narratives, debriefs, labels), allowing bare owner parts of registered hosts. Keep Larchwick's example-verify.test look-alike a few chapters away from 0-4.
 - Timer coach mark explaining compressed game time (0-3).
 - Scene help list [P]: the generic help list in the scene player blocks shipping the sensitive chapters (Amsterdam, Rome, Brussels) until fraud-researcher's verified per-country list replaces it.
-- UI_SPEC §1 HUD table: Pause/Menu labels now hide below 540 px (was 440) and the tip label is "Paused" below 600 px (T-S3 item 5); ux owner to update the table.
+- UI_SPEC §1 HUD table: Pause/Menu labels now hide below 540 px (was 440) and the tip label is "Paused" below 720 px (T-S3 item 5); ux owner to update the table.
 
 ## Blocked
 _(none)_

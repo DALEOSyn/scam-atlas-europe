@@ -89,15 +89,15 @@ test.describe('HUD (harness)', () => {
       const closed = await height(0);
       const open = await height(1);
       expect(open).toBe(closed);
-      // Below 600 px only "Paused" shows; the full sentence stays for screen readers.
+      // Below 720 px only "Paused" shows; the full sentence stays for screen readers.
       await expect(page.locator('[data-frozen="narrow"]')).toBeVisible();
       await expect(page.locator('[data-frozen="narrow"]')).toHaveText('Paused');
       await expect(page.locator('[data-frozen="wide"]')).toBeHidden();
       await expect(page.locator('[role="timer"]')).toContainText('Paused while the tip is open');
     });
   }
-  test('item 5: from 600 px the label reads "Paused: tip open"; one row with and without the tip from 320 to 1024 px', async ({ page }) => {
-    await page.setViewportSize({ width: 640, height: 800 });
+  test('item 5: from 720 px the label reads "Paused: tip open"; one row with and without the tip from 320 to 1024 px', async ({ page }) => {
+    await page.setViewportSize({ width: 760, height: 800 });
     await page.goto(`${HARNESS_URL}/?view=hud&coach=1`);
     await expect(page.locator('[data-frozen="wide"]')).toHaveText('Paused: tip open');
     await expect(page.locator('[data-frozen="narrow"]')).toBeHidden();

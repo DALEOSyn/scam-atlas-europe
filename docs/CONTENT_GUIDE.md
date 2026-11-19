@@ -56,3 +56,5 @@ A **new number** is different from a saved contact, so its reveal states the fac
 
 ### Payee names (sceptic, T-3.4 review)
 Scam payees are shown as an initial plus a masked surname (`R. ••••`, `K. ••••`). **Any genuine payment to a stranger outside the cast is masked the same way**, so masking never becomes a tell. Cast members keep their own names (Mateus Ferreira on his request page); a name typed from a saved contact is masked like the contact's surname (`Noor ••••`).
+
+**Exceptions (Paris, GDD §23 rework 1):** a payee name the player has to type or compare in full is shown in full, as long as it is brand-checked (docs/patterns/BRAND_CHECK.md) and belongs to no real person or company. "N. Vardoulec" (3-8, the name the fake email gives and the bank matches) is the only person so far. Fictional company holders ("Tessivane SAS", "Morvenac SAS") are company names, not people, and are shown in full; they are brand-checked the same way.

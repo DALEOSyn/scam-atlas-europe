@@ -69,3 +69,23 @@ steps:
   - id: pay_last_fee
     label: "Pay the last fee to unlock your balance"
     feedback: "It feels like one more payment will get your money back, and that is exactly how the trap works: no fee ever releases it, and the amounts keep growing. Stop paying and call your bank on the number on your card."
+  # Paris (GDD §23.9, T-3.5). Labels stay generic: real bodies are named only on the France help card.
+  # GDD §23.9's `keep_evidence` is Amsterdam's step with a chat-and-site label, so Paris uses its own
+  # `keep_transfer_evidence` (emails, bank details, transfer, times) instead of rewording Amsterdam's.
+  - id: call_bank_recall_transfer
+    label: "Call your bank at once on the number you already have and ask it to try to stop or recall the transfer for fraud"
+  - id: warn_creditor_known_number
+    label: "Warn the real landlord or supplier on the number you already have: they're being impersonated, and their mailbox may be misused"
+  - id: file_complaint_police
+    label: "File a complaint with the police (you can start online)"
+  - id: keep_transfer_evidence
+    label: "Keep the emails, bank details, transfer and times"
+  - id: tell_management_known_channel
+    label: "Tell your manager through the directory, not by replying"
+  - id: check_pay_details_with_person
+    label: "Check the pay details with the person directly and put the right ones back"
+  - id: secure_mailbox_owner
+    label: "Ask the person whose mailbox was used to change its password and turn on two-step sign-in"
+  - id: wait_until_after_long_weekend
+    label: "Wait until the office reopens after the long weekend"
+    feedback: "Waiting for the office to reopen feels sensible, but the sooner you call, the better the chance of getting a transfer back. Call the bank now."

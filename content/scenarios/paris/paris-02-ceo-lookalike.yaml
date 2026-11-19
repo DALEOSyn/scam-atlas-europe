@@ -1,0 +1,168 @@
+# 3-2 "Solène" from a look-alike address (GDD §23.4 3-2; ceo-fraud-bec brief). Fraud, difficulty 2,
+# timer (slot length) + pusher at 25 s. Twin of paris-06-solene-urgent (the real, urgent Solène).
+# Red flags (R = 2): sender (look-alike owner part ruchelune-direction.example) and request (the ask:
+# "send it yourself, no need to put it through approval"; skipping the sign-off and secrecy).
+# Decoys: reference (a file name) and the RIB attachment (tidy proves nothing).
+# Text flags (layer 2): unplanned, "not even Bastien", "I'm counting on you", "email only" (also on the
+# genuine twin, so never proof on its own), "couldn't check" = nothing checked.
+# Banking beat (start_transfer, class step): Tessivane SAS, an account Ruchelune has never paid (holder
+# and IBAN differ from the boss's). Payee check: couldn't check (CR-23), neutral (P3).
+# "Send it to Solène for her sign-off" is the four-eyes win (ask_someone, verify): the real Solène sees it.
+# Fall -> damage control (6 options, 2 harmful). The fall narrative leaves the real Solène unaware, so
+# telling her through the directory is a real step.
+id: paris-02-ceo-lookalike
+chapter: paris
+role: standard
+pattern: ceo-fraud-bec
+theme: ceo
+twin_of: paris-06-solene-urgent
+learning_objectives: [LO-06, LO-01, LO-04, LO-18]
+difficulty: 2
+is_fraud: true
+device: email
+brands: [ruchelune, larchwick]
+cast: [solene, bastien]
+pressure:
+  timer: true
+  levers: [authority, secrecy, urgency, helpfulness]
+  pusher:
+    messages:
+      - { at_seconds: 25, text: "Have you started the transfer? It's urgent." }
+
+message:
+  sender: { display: "Solène Arbogast", detail: "solene@ruchelune-direction.example" }
+  subject: "Confidentiel · Dossier LY-2207"
+  body: |
+    Hello,
+
+    Please prepare a transfer of €18,400 today: the deposit for a purchase we're about to sign. Bank details in the attached RIB. This is strictly confidential until the announcement: don't mention it to anyone, not even Bastien.
+
+    Send it yourself today, no need to put it through approval. I'll sign it off later. I'm in meetings all day, reply by email only.
+
+    I'm counting on you.
+    Solène
+  request: pay
+  ask: { text: "Send it yourself today, no need to put it through approval." }
+  attachments: [{ name: "RIB_LY-2207.pdf", size: "61 KB" }]
+  references: ["Dossier LY-2207"]
+  l10n_note: "'Confidentiel · Dossier' (subject) and 'RIB' (relevé d'identité bancaire, a bank-details slip) are kept in French as local flavour."
+
+inspectables:
+  - target: sender.detail
+    reveal: "ruchelune-direction.example. Read the end: the owner part is ruchelune-direction.example, not ruchelune.example, where Solène's address in the Ruchelune directory ends."
+    red_flag: true
+    type: sender
+  - target: attachment
+    reveal: "Opens a bank-details slip (RIB) for Tessivane SAS. A real RIB and a fake one look just as tidy, so it can't prove anything either way."
+    red_flag: false
+    type: attachment
+  - target: reference
+    reveal: "Shows a file name, Dossier LY-2207, as a real deal might have. Anyone can make one up, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: request
+    reveal: "Asks you to send a transfer nobody planned without the usual approval, and to keep it even from Bastien, who co-signs payments. Skipping the sign-off and secrecy about a payment are the tells."
+    red_flag: true
+    type: request
+
+actions:
+  - id: start_ceo_transfer
+    label: "Set up the transfer in Larchwick Pro"
+    kind: start_transfer
+    next_beat: ceo_transfer
+    pressure_target: true
+  - id: call_solene_directory
+    label: "Call Solène on the Ruchelune directory number"
+    kind: call_back_known
+    outcome: solene_never_sent
+  - id: report_ceo_email
+    label: "Forward it to Ruchelune IT as phishing"
+    kind: report
+    outcome: ceo_email_reported
+  - id: leave_ceo_email
+    label: "Leave it for now"
+    kind: ignore
+    outcome: ceo_email_left
+
+beats:
+  - id: ceo_transfer
+    device: banking
+    message:
+      bank: { brand: larchwick-pro }
+      account: { nickname: "Ruchelune · current account" }
+      payee: { name: "Tessivane SAS", iban: "FR•••••••••••••••••••••••58", name_check: unavailable, amount: "€18,400.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "Larchwick couldn't check the name for this account. Some accounts and transfers can't be checked. Nothing was checked, so it can't prove anything either way."
+        red_flag: false
+        type: payee
+      - target: payee.iban
+        reveal: "An account Ruchelune has never paid, from the RIB. Real new payees look the same here, so it can't prove anything either way. A call on a number you already had can."
+        red_flag: false
+        type: payee
+    actions:
+      - id: send_alone_ceo
+        label: "Send it now, signing off alone"
+        kind: pay
+        outcome: ceo_sent
+        pressure_target: true
+      - id: send_ceo_for_signoff
+        label: "Send it to Solène for her sign-off"
+        kind: ask_someone
+        outcome: solene_signoff_catches
+      - id: cancel_call_solene
+        label: "Cancel and call Solène on the directory number"
+        kind: call_back_known
+        outcome: solene_never_sent
+      - id: cancel_report_ceo
+        label: "Cancel and report it"
+        kind: report
+        outcome: ceo_email_reported
+      - id: cancel_ceo
+        label: "Cancel"
+        kind: ignore
+        outcome: ceo_transfer_cancelled
+
+outcomes:
+  ceo_sent:
+    narrative: "Sent: €18,400 to Tessivane SAS. A reply arrives at once: \"Thank you. Not a word to anyone.\" The real Solène is in meetings and knows nothing about it yet."
+    recovery:
+      - { step: call_bank_recall_transfer, category: stop }
+      - { step: tell_management_known_channel, category: warn }
+      - { step: keep_transfer_evidence, category: secure }
+      - { step: file_complaint_police, category: report }
+      - { step: wait_until_after_long_weekend, category: harmful }
+      - step: keep_quiet
+        category: harmful
+        feedback: "Feeling embarrassed is normal, and secrecy is exactly what the email asked for. Anyone can be caught by this. Calling the bank now and telling Solène through the directory is what gives the money the best chance."
+  solene_never_sent:
+    narrative: "Solène, between meetings, on the directory line: \"I never sent that. Thanks for calling. I'll warn IT and the team.\""
+  solene_signoff_catches:
+    narrative: "The approval request lands in Solène's own Larchwick Pro app. She calls you on the directory line: \"I didn't ask for this. Good thing it came to me.\""
+  ceo_email_reported:
+    narrative: "Reported to Ruchelune IT, and nothing goes out. IT warns the team about the look-alike address."
+  ceo_email_left:
+    narrative: "You leave it, and nothing goes out. A call to Solène on the directory number would also let her warn the team."
+  ceo_transfer_cancelled:
+    narrative: "You cancel, and nothing goes out. A call to Solène on the directory number would also let her warn the team."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A secret, unplanned transfer from a look-alike address."
+    what_works: "Call Solène on the directory number; keep the sign-off."
+  layer2:
+    message_flags:
+      - "An unplanned transfer: nobody had mentioned this purchase."
+      - "\"Send it yourself, no need to put it through approval\": skipping the sign-off."
+      - "Secrecy: \"not even Bastien\", who co-signs payments."
+      - "\"I'm counting on you\": you're the one she trusts, so saying no feels like letting her down."
+      - "\"Email only\" blocks a call. Busy managers really do say this, so on its own it proves nothing; here it came with secrecy and no sign-off."
+      - "\"Couldn't check\" means nothing was checked, not \"safe\"."
+    notes: "At home: the same pressure turns up in personal messages too: an urgent, secret money request is a reason to call the person on the number you have."
+  device_tip: "On a real computer or phone, find the person in your own contacts or staff directory and call that number; don't reply to the email or use a number in it."
+  habit_card: check-who-gets-the-money
+  already_clicked:
+    paid: "Call your bank now on the number you already have and ask it to try to stop or recall the transfer for fraud. Then tell Solène on the directory number and keep the emails."
+  sources: [fr-gendarmerie-fovi, fr-cybermalveillance-fiche-fovi, eu-europol-ceo-bec-leaflet, fr-inc-vop-2025, eu-epc-vop-scheme]

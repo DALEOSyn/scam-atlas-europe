@@ -133,6 +133,11 @@ brands:
       and the brand spoofed in "safe account" and in-thread scenarios (Madrid, Stockholm).
     domain: larchwick-bank.example
     app_name: "Larchwick app"
+    sub_brands:
+      - id: larchwick-pro
+        name: "Larchwick Pro"
+        purpose: "Business account app (Ruchelune's account in Paris; CR-26 'Business account' header). Added T-3.5."
+        domain: pro.larchwick-bank.example
     sms_sender_id: "LARCHWICK"
     known_channels: "The number on the back of your in-game card (shown masked), and the Larchwick app."
     palette:
@@ -354,6 +359,122 @@ brands:
       - "tallyfern-earn.example"    # 2-7 trial and task pages
       - "tallyfern-start.example"   # boss 2-9 beat 1 "starter top-up" link
     trademark_search: "web-checked 2026-11-19; formal TMview/EUIPO pending before G4 (classes 9, 35, 42)"
+    status: draft
+
+  # -------------------------------------------------------------------------------------------
+  # Added by scenario-writer for Paris (T-3.5, 2026-11-19), names per GDD §23.10 and BRAND_CHECK "Paris
+  # names" (Pressoria -> Platinoir, Encrevive -> Feuillemont, Maître Lenoir -> Maître Vellacourt). No logo
+  # or palette: none is drawn yet (text-only senders and bank-details cards). sceptic-reviewer:
+  # brand-resemblance check pending. Fictional account holders (Tessivane SAS, Morvenac SAS,
+  # N. Vardoulec) are not brands and are not registered here; ux-artist decides (GDD §23.10).
+  - id: ruchelune
+    name: "Ruchelune"
+    sector: print-and-design cooperative (genuine; the player's Paris partner)
+    role_in_game: >
+      Waymarker partner in Paris (chapter 3). Solène Arbogast (director), Bastien Morel (accounts, on
+      leave) and Inès Roussel (apprentice). Its staff directory is the known channel. Impersonated by
+      look-alike addresses in 3-2 and 3-5; its real mailbox is misused in the boss (never shown how).
+    domain: ruchelune.example
+    email_addresses: ["solene@ruchelune.example", "ines@ruchelune.example", "compta@ruchelune.example"]
+    known_channels: "The Ruchelune staff directory (numbers shown masked) and Inès's saved contact."
+    rationale:
+      name: "Coined: 'ruche' (beehive, a busy cooperative) + 'lune'. No hits (BRAND_CHECK Paris summary)."
+      colour_shape: "Not drawn yet; text-only in Paris."
+    checked_against: ["Ruchen (Swiss mountains)", "Du Ruchon (unrelated company)"]
+    web_check: "Low. Keep (BRAND_CHECK, Paris names, 2026-11-19)."
+    lookalike_examples:
+      - "ruchelune-direction.example"   # 3-2: brand plus word, difficulty 2
+      - "ruchelune.example-rh.test"     # 3-5: real name first, different owner (owner part example-rh.test)
+    trademark_search: "web-checked 2026-11-19; INPI, company directory and TMview pending before G4"
+    status: draft
+
+  - id: volet-bleu
+    name: "Volet Bleu"
+    short_name: "Volet Bleu"
+    sector: letting agency (genuine; the player's Paris studio)
+    role_in_game: >
+      The player's letting agency in Paris (3-1 genuine first rent, close match with the legal name
+      "Volet Bleu Gestion SAS"). Impersonated in 3-7 by a look-alike address with an added hyphen.
+    domain: voletbleu.example
+    email_addresses: ["loyers@voletbleu.example"]
+    known_channels: "The phone number and account on the player's lease (never shown in full)."
+    rationale:
+      name: "'Blue shutter', a common descriptive phrase; no letting agency found under it."
+      colour_shape: "Not drawn yet; text-only in Paris."
+    checked_against: ["Les Volets Bleus (a registered company, activity unconfirmed; BRAND_CHECK P3)", "Agence La Clef d'Or (estate agency)"]
+    web_check: "Low-Medium. Keep, with a human check of that company's activity before G4 (BRAND_CHECK P3)."
+    lookalike_examples:
+      - "volet-bleu.example"            # 3-7: an added hyphen, difficulty 3
+    trademark_search: "web-checked 2026-11-19; INPI, company directory and TMview pending before G4"
+    status: draft
+
+  - id: feuillemont
+    name: "Feuillemont"
+    sector: paper and ink supplier (genuine only)
+    role_in_game: >
+      Ruchelune's paper supplier. Really changes banks in 3-4 (genuine, confirmed on the number in the
+      supplier file); its invoice is the real urgent request in 3-6. Never impersonated.
+    domain: feuillemont.example
+    email_addresses: ["compta@feuillemont.example"]
+    known_channels: "The number in Ruchelune's supplier file (never shown in full)."
+    rationale:
+      name: "Coined: 'feuille' (sheet of paper) + 'mont'. Replaces Encrevive (collision with 'Encre Vive')."
+      colour_shape: "Not drawn yet; text-only in Paris."
+    checked_against: ["Encre Vive", "Feuillères (commune)", "La Feuillie (commune)"]
+    web_check: "Low. Keep (BRAND_CHECK, Paris names)."
+    lookalike_examples: []
+    trademark_search: "web-checked 2026-11-19; INPI, company directory and TMview pending before G4"
+    status: draft
+
+  - id: platinoir
+    name: "Platinoir"
+    sector: press maintenance firm (genuine; its real mailbox is misused)
+    role_in_game: >
+      Ruchelune's press-maintenance supplier. In 3-8 a fake request arrives from its real address, in the
+      real thread (how the mailbox was misused is never shown). No look-alike domain.
+    domain: platinoir.example
+    email_addresses: ["facturation@platinoir.example"]
+    known_channels: "The number in Ruchelune's supplier file (never shown in full)."
+    rationale:
+      name: "From 'platine' (a press platen). Replaces Pressoria (a real visitor centre; BRAND_CHECK P1)."
+      colour_shape: "Not drawn yet; text-only in Paris."
+    checked_against: ["Pressoria (Aÿ-Champagne visitor centre)", "Rouvière maintenance firms"]
+    web_check: "Low. No exact hit (BRAND_CHECK P1)."
+    lookalike_examples: []
+    trademark_search: "web-checked 2026-11-19; INPI, company directory and TMview pending before G4"
+    status: draft
+
+  - id: cuivrelin
+    name: "Cuivrelin"
+    sector: plumber (genuine; quoted in drill 3-3)
+    role_in_game: >
+      The plumber who fixed Inès's family's boiler. Impersonated by a look-alike address in a quoted
+      screenshot (drill 3-3); Inès calls the number on his quote.
+    domain: cuivrelin.example
+    known_channels: "The number on his quote (never shown in full)."
+    rationale:
+      name: "Coined from 'cuivre' (copper pipes)."
+      colour_shape: "Not drawn; quoted text only."
+    checked_against: ["copper-supplement products"]
+    web_check: "Low. Keep (BRAND_CHECK, Paris names)."
+    lookalike_examples:
+      - "cuivrelin-factures.example"    # drill 3-3 (quoted)
+    trademark_search: "web-checked 2026-11-19; INPI, company directory and TMview pending before G4"
+    status: draft
+
+  - id: ostrelle
+    name: "Cabinet Ostrelle"
+    sector: law firm the scammer invents (voice only)
+    role_in_game: >
+      Named by the fake "Maître Vellacourt" on the boss call (beat 2). Never a real firm, no domain,
+      no address; registered only so the name is cleared.
+    rationale:
+      name: "Coined. 'Maître Vellacourt' replaces 'Maître Lenoir' (real Paris lawyers; BRAND_CHECK P2)."
+      colour_shape: "Not drawn; voice only."
+    checked_against: ["Orelle (commune)", "Ostel (commune)", "Maître Lenoir (real lawyers)"]
+    web_check: "Low. No firm or lawyer found for Ostrelle or Vellacourt (BRAND_CHECK P2)."
+    lookalike_examples: []
+    trademark_search: "web-checked 2026-11-19; INPI, company directory and TMview pending before G4"
     status: draft
 
 # Not yet registered (request ux-artist before writing these scenarios): streaming service (0-4 now

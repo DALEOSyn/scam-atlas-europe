@@ -1,0 +1,174 @@
+# 3-7 "Volet Bleu" from a look-alike address: new RIB, pay early (GDD §23.4 3-7; payment-detail-change
+# brief). Fraud, difficulty 3, timer (slot length) + pusher at 25 s. Home twin of paris-01-rent-close-match
+# (both French, both with the real lease reference).
+# Red flags (R = 3): sender (an added hyphen), request (pay early, new account, late fee), attachment
+# (edited-looking RIB: a bonus clue; a tidy one proves nothing).
+# Decoys (2): reference (your real lease reference, same wording as 3-1) and the claim "we've changed
+# banks" (P2: a new account is never a checkable red flag, because real changes happen; the email device
+# has no logo checkable, so the GDD's logo decoy becomes this claim; same count, same strategy rows).
+# The French pusher (with translation, CR-14) is the sourced coaching tactic: "the name check may say it
+# doesn't match, just confirm" (EPC threats report; INC: don't confirm after a no-match).
+# The banking beat shows the same lease note as 3-1 (not checkable; the new IBAN differs from it).
+# Banking beat: you type "Volet Bleu" from your lease; the check says it doesn't match (no holder shown,
+# CR-23); the warning is a red flag on the sub-beat (counts toward spotting, not R).
+# Fall -> damage control (6, 2 harmful); layer 2 keeps "may not have to refund you" (never "won't").
+id: paris-07-agency-new-account
+chapter: paris
+role: standard
+pattern: payment-detail-change
+theme: home
+twin_of: paris-01-rent-close-match
+learning_objectives: [LO-06, LO-01, LO-04]
+difficulty: 3
+is_fraud: true
+device: email
+brands: [volet-bleu, larchwick]
+cast: []
+pressure:
+  timer: true
+  levers: [urgency, fear]
+  pusher:
+    messages:
+      - at_seconds: 25
+        text: "Rappel : la vérification du bénéficiaire par votre banque peut indiquer que le nom ne correspond pas à notre nouveau compte. C'est normal, il suffit de confirmer."
+        lang: fr
+        translation: "Reminder: your bank's name check may say the name doesn't match our new account. That's normal, just confirm."
+
+message:
+  sender: { display: "Volet Bleu · Gestion", detail: "gestion@volet-bleu.example" }
+  subject: "Loyer du mois prochain · nouveau RIB"
+  body: |
+    Bonjour,
+
+    Nous avons changé de banque et l'ancien compte va être clôturé. Merci de régler le loyer du mois prochain avant vendredi sur notre nouveau compte (RIB en pièce jointe). Des frais de retard s'appliqueront après cette date.
+
+    Réf. VB-2291-03
+
+    Volet Bleu · Gestion locative
+  lang: fr
+  translation: "Hello, we've changed banks and the old account is closing. Please pay next month's rent before Friday to our new account (RIB attached). Late fees will apply after that date. Ref. VB-2291-03. Volet Bleu · Lettings"
+  request: pay
+  ask:
+    text: "Merci de régler le loyer du mois prochain avant vendredi sur notre nouveau compte (RIB en pièce jointe)."
+    translation: "Please pay next month's rent before Friday to our new account (RIB attached)."
+  claims:
+    - text: "Nous avons changé de banque et l'ancien compte va être clôturé."
+      translation: "we've changed banks and the old account is closing."
+  attachments: [{ name: "RIB_VoletBleu.pdf", size: "63 KB" }]
+  references: ["VB-2291-03"]
+  l10n_note: "French in-world text is intentional (Paris chapter); the English translation is shown inline. 'RIB' is a bank-details slip."
+
+inspectables:
+  - target: sender.detail
+    reveal: "volet-bleu.example. Read it slowly: there's a hyphen. The agency's address on your lease and on its first email is voletbleu.example."
+    red_flag: true
+    type: sender
+  - target: attachment
+    reveal: "Opens the RIB: the account-holder line is in a different typeface from the rest, as if pasted in. An edited-looking RIB is a bonus clue; a tidy one proves nothing."
+    red_flag: true
+    type: attachment
+  - target: reference
+    reveal: "Your lease reference, VB-2291-03, as on your lease. A reference like this can be copied from earlier mail, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "Says the agency has changed banks, as a real agency sometimes does. A real change and a fake one read the same, so it can't prove anything either way. The phone number in your lease can."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "Asks you to pay early, to a new account, with a late fee if you don't. New bank details with a deadline, just as a payment falls due, is the pattern."
+    red_flag: true
+    type: request
+
+actions:
+  - id: start_agency_transfer
+    label: "Pay it in the Larchwick app"
+    kind: start_transfer
+    next_beat: agency_transfer
+    pressure_target: true
+  - id: call_agency_lease_fake
+    label: "Call Volet Bleu on your lease's number"
+    kind: call_back_known
+    outcome: agency_no_change
+  - id: report_agency_email
+    label: "Report the email"
+    kind: report
+    outcome: agency_reported
+  - id: leave_agency_email
+    label: "Leave it"
+    kind: ignore
+    outcome: agency_left
+
+beats:
+  - id: agency_transfer
+    device: banking
+    message:
+      body: "Your lease, page 4: Volet Bleu Gestion SAS · account ending 31"
+      payee: { name: "Volet Bleu", iban: "FR•••••••••••••••••••••••82", name_check: mismatch, amount: "€690.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "Doesn't match: the account isn't held by Volet Bleu, the name from your lease. That warning is the moment to stop, even when the sender told you to expect it."
+        red_flag: true
+        type: payee
+      - target: payee.iban
+        reveal: "The account number from the RIB. An account number looks the same whoever holds it, so it can't prove anything either way. The phone number in your lease can."
+        red_flag: false
+        type: payee
+    actions:
+      - id: pay_anyway_agency
+        label: "Pay anyway"
+        kind: pay
+        outcome: agency_paid
+        pressure_target: true
+      - id: stop_call_agency
+        label: "Stop and call the number in your lease"
+        kind: call_back_known
+        outcome: mismatch_then_call
+      - id: cancel_report_agency
+        label: "Cancel and report the email"
+        kind: report
+        outcome: agency_reported
+      - id: cancel_agency
+        label: "Cancel"
+        kind: ignore
+        outcome: agency_transfer_cancelled
+
+outcomes:
+  agency_paid:
+    narrative: "Paid: €690 to the new account. That evening you mention it to the agency on the number in your lease: \"We haven't changed banks. That wasn't us.\""
+    recovery:
+      - { step: call_bank_recall_transfer, category: stop }
+      - { step: warn_creditor_known_number, category: warn }
+      - { step: keep_transfer_evidence, category: secure }
+      - { step: file_complaint_police, category: report }
+      - step: reply_ask_money_back
+        category: harmful
+        feedback: "Asking for your money back feels fair, but the reply goes straight to the scammer and can invite a second scam. Call your bank now, then the agency on the number in your lease."
+      - { step: pay_recovery_service, category: harmful }
+  agency_no_change:
+    narrative: "The agency, on the number in your lease: \"We haven't changed banks. Please don't pay that. Thanks for calling.\""
+  mismatch_then_call:
+    narrative: "The name check caught it. Good stop. The agency, on the number in your lease: \"We haven't changed banks. That wasn't us.\""
+  agency_reported:
+    narrative: "Reported, and nothing goes out. A call to the agency on the number in your lease would let them warn other tenants too."
+  agency_left:
+    narrative: "You leave it. Your rent goes to the account in your lease, as always."
+  agency_transfer_cancelled:
+    narrative: "You cancel, and nothing goes out. Another email arrives: \"Late fees apply after Friday.\""
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "New account, pay early, and told to ignore a warning."
+    what_works: "Name warning? Stop. Call the number on your lease."
+  layer2:
+    message_flags:
+      - "Pay early, before Friday, or late fees: a deadline just as a payment falls due."
+      - "Scammers sometimes warn you to expect a \"doesn't match\" and say to confirm anyway. Being coached past a bank warning is a tell on its own."
+    notes: "After a \"doesn't match\" warning, your bank may not have to refund you. Call it at once anyway and ask it to try to stop or recall the transfer. Under 18? Tell a parent or guardian straight away and call the bank with them: that call is the urgent step. They can make the complaint; some online complaint services are for adults only."
+  device_tip: "Banks in euro countries run this check on most euro transfers. If your bank shows no name check, the call to the number you already had is your only check."
+  habit_card: check-who-gets-the-money
+  already_clicked:
+    paid: "Call your bank at once on the number you already have and ask it to try to stop or recall the transfer for fraud. Then warn the agency on the number in your lease."
+  sources: [fr-cybermalveillance-fiche-faux-rib, fr-fbf-cles-faux-rib-2025, fr-inc-iban-rib-fraudes-2025, fr-inc-vop-2025, eu-eurlex-ipr-2024-886, fr-bdf-fraude-moyens-paiement, eu-epc-threats-2025, eu-ec-ipr-vop-2025, eu-ecb-ipr, fr-justice-thesee-messagerie-2025]

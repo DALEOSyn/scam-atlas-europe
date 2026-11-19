@@ -1,0 +1,155 @@
+# 4-7 "Read me the cancellation code" (GDD §24.4; callback multichannel-support-callback; fraud twin of the
+# genuine 4-6 code). Difficulty 4, call timer 30 s, interrupt (Lucía, small talk). Levers authority, fear,
+# urgency. The genuine code text is a banner inside the call (no actions, never reportable) and says the
+# code CONFIRMS a payment.
+# R 1: the request. D 4: caller ID (M2, the sender-or-link decoy), the card's last digits (a real detail),
+# the "won't ask for your PIN" claim (M4), the card's number quoted by the caller (M3; as Berlin 1-9).
+# Hang up opens "What now?": the card's number (verify), "Call back this number" (engage note), report, Done.
+# Spec gap: GDD §24.4 line 1 greets the player by {nickname}; the engine has no nickname placeholder in
+# transcripts, so the caller names the card instead and the reference reveal says "the last digits".
+id: madrid-07-cancellation-code
+chapter: madrid
+role: standard
+pattern: multichannel-support-callback
+theme: bank-call
+learning_objectives: [LO-05, LO-08, LO-01]
+difficulty: 4
+is_fraud: true
+device: call
+brands: [larchwick, kettle]
+cast: [lucia]
+pressure:
+  timer: true
+  levers: [authority, fear, urgency]
+
+message:
+  sender: { display: "Larchwick Bank", detail: "Saved contact: Larchwick Bank, the number on your card" }
+  transcript:
+    - { speaker: caller, text: "Good afternoon, Larchwick security. I'm calling the holder of your card ending 17." }
+    - { speaker: caller, text: "Someone's trying to pay €640 to an electronics site with it right now. I won't ask for your PIN or passwords." }
+    - { speaker: caller, text: "We've just sent you a cancellation code. Read it to me and I'll stop the payment." }
+    - { speaker: caller, text: "You can check us on 9•• ••• •00, the number on your card, afterwards." }
+  request: share_code
+  ask: { text: "We've just sent you a cancellation code. Read it to me and I'll stop the payment." }
+  claims: [{ text: "I won't ask for your PIN or passwords." }]
+  references: ["your card ending 17"]
+  phone_numbers: ["9•• ••• •00"]
+
+banner:
+  device: sms
+  message:
+    sender: { display: "LARCHWICK" }
+    body: "LARCHWICK: Code 5••••• to confirm a card payment of €640.00 online. Never share this code, not even with Larchwick."
+    request: none
+
+inspectables:
+  - target: caller_id
+    reveal: "Shows Larchwick Bank, the number on your card, as a real call would. A number on screen can be faked to show the same, so it can't prove anything either way. Judge what the caller asks."
+    red_flag: false
+    type: caller_id
+  - target: reference
+    reveal: "Knows the last digits of your card. Details like these aren't hard to find out, so they can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: phone_number
+    reveal: "9•• ••• •00, the number on the back of your card. A caller can quote it, so it can't prove the call is real, but calling that number yourself reaches Larchwick."
+    red_flag: false
+    type: phone_number
+  - target: claim
+    reveal: "Says they won't ask for your PIN or passwords. Real banks say this, and a fake caller can say it too, so it can't prove anything either way. Judge what you're asked to do."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "Wants the code read out to \"cancel\" a payment. Read the text: the code is to confirm a payment. A code is only for making an operation; your bank never needs one from you to stop fraud."
+    red_flag: true
+    type: request
+
+actions:
+  - id: read_out_cancel_code
+    label: "Read out the code"
+    kind: share_code
+    outcome: code_read_out_640
+    pressure_target: true
+  - id: hang_up_cancel_code
+    label: "Hang up"
+    kind: hang_up
+    outcome: code_call_left
+
+what_now:
+  outcomes:
+    report: code_call_reported
+    done: code_call_left
+  extra:
+    - id: call_card_after_code_call
+      label: "Call the number on your card"
+      kind: call_back_known
+      outcome: card_blocked_attempt
+    - id: call_back_this_number_code
+      label: "Call back this number"
+      kind: call_number_in_message
+      note: "That's the number that just called. It can show the bank's real number, so you can't tell whose line it is. Use the number on your card."
+
+interrupts:
+  - id: lucia_coffee
+    at_seconds: 12
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Lucía (Madrid)", detail: "Saved contact: Lucía (Madrid)" }
+      from_cast: lucia
+      body: "¡Ya estoy despierta! ¿Café? ☕"
+      lang: es
+      translation: "I'm up! Coffee? ☕"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Lucía's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what she asks for: whether you want coffee."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_lucia_coffee
+        label: "Reply: {lang:es}¡sí, gracias!{/lang}"
+        translation: "yes, thanks!"
+        kind: proceed
+        outcome: lucia_coffee_on
+        pressure_target: true
+      - id: report_lucia_coffee
+        label: "Report the message"
+        kind: report
+        outcome: lucia_coffee_reported
+
+outcomes:
+  code_read_out_640:
+    narrative: "\"Thank you, that's cancelled.\" Your app shows €640.00 paid."
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: refuse_codes_to_callers, category: secure }
+      - { step: report_police_copy_to_bank, category: report }
+      - { step: call_back_caller_number, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  card_blocked_attempt:
+    narrative: "Larchwick, on the number on your card: \"We've blocked that payment attempt and your card. Never share a code with anyone who calls.\""
+  code_call_reported:
+    narrative: "Reported. Keep a note of the number and the time. The code text is still there: a code you didn't ask for probably means someone has your card details, so call the number on your card."
+  code_call_left:
+    narrative: "You hang up. The code text is still on your screen: a code you didn't ask for probably means someone has your card details. Call the number on your card to block it."
+  lucia_coffee_on:
+    narrative: "Lucía: \"Two minutes ☕\""
+  lucia_coffee_reported:
+    narrative: "You reported it. Careful is good; this one really was Lucía, offering coffee."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A code \"to cancel\" a payment really makes one."
+    what_works: "Hang up. Call the number on your card."
+  layer2:
+    message_flags: []
+    notes: "Real details (the last digits of your card) prove nothing. Read what the code text says it's for."
+  device_tip: "On a real phone, end the call yourself, then dial the number on the back of your card. Don't use redial or the call log."
+  habit_card: codes-are-only-for-you
+  already_clicked:
+    shared_code: "Read out a code? Call your bank now on the number on your card: block the card and ask it to try to stop or recall the payment."
+  sources: [es-bde-sms-callerid-spoofing-2022, es-bde-vishing-2020, ch-ncsc-double-phishing-2026, pl-cert-fake-consultants]

@@ -1,0 +1,168 @@
+# 4-5 "Larchwick Bank" calls: move your balance to a reserve account (GDD §24.4, §24.5; BSA core).
+# Fraud, difficulty 3. Call timer 30 s, then the banking beat on the slot timer (50 s, fresh after the call).
+# Levers authority, fear, urgency, helpfulness. The 4-2 genuine call is its twin (same caller ID, same
+# reassurance; the difference is the request).
+# R 2: "stay on the line" (claim#2; sourced outside Spain, the Madrid sources page in docs/patterns, presented as a general
+# tell, never as Spanish) and the request. D 3: caller ID (M2, the sender-or-link decoy), the payment
+# described (neutral, as 4-2), the "won't ask for passwords" claim (M4, the same wording as 4-2's claim).
+# "Open the app and follow their steps" is start_transfer with cap: engage (ruling R16, CR-31(b)): every
+# outcome after it scores at most ★★; the engine's standard "You chose" line names it (psych CR review:
+# no custom line). reserve_transfer is the player's own Larchwick app with the call still on the line
+# (CR-31 on-call bar; the caller's lines are beat-bound follow-ups). Payee check: doesn't match (no holder
+# shown, CR-23), and the caller coaches past it (eu-epc-threats-2025). Not in R.
+id: madrid-05-reserve-account-call
+chapter: madrid
+role: standard
+pattern: bank-safe-account-call
+theme: bank-call
+learning_objectives: [LO-08, LO-04, LO-06]
+difficulty: 3
+is_fraud: true
+device: call
+brands: [larchwick]
+pressure:
+  timer: true
+  levers: [authority, fear, urgency, helpfulness]
+  pusher:
+    messages:
+      - { at_seconds: 6, beat: reserve_transfer, text: "Type the name exactly: Larchwick Reserva." }
+      - { at_seconds: 20, beat: reserve_transfer, text: "It'll say the name doesn't match. That's normal for our internal reserve. Just confirm." }
+
+message:
+  sender: { display: "Larchwick Bank", detail: "Saved contact: Larchwick Bank, the number on your card" }
+  transcript:
+    - { speaker: caller, text: "Larchwick Bank, security department. A payment of €1,180 is leaving your account for an online shop right now." }
+    - { speaker: caller, text: "Don't worry. I won't ask for your passwords or any codes." }
+    - { speaker: you, text: "Can I call you back on the number on my card?" }
+    - { speaker: caller, text: "Please stay on the line, or the payment goes through." }
+    - { speaker: caller, text: "Open your Larchwick app and I'll guide you to move your balance to our reserve account until we've blocked it." }
+  request: pay
+  ask: { text: "Open your Larchwick app and I'll guide you to move your balance to our reserve account until we've blocked it." }
+  claims:
+    - { text: "I won't ask for your passwords or any codes." }
+    - { text: "Please stay on the line, or the payment goes through." }
+  references: ["€1,180 to an online shop"]
+
+inspectables:
+  - target: caller_id
+    reveal: "Shows Larchwick Bank, the number on your card, as a real call would. A number on screen can be faked to show the same, so it can't prove anything either way. Judge what the caller asks."
+    red_flag: false
+    type: caller_id
+  - target: reference
+    reveal: "A payment you didn't make, described on the call. A fake call can describe a payment too, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "Says the bank never asks for passwords or codes. Real banks say this, and a fake caller can say it too, so it can't prove anything either way. Judge what you're asked to do."
+    red_flag: false
+    type: claim
+  - target: claim#2
+    reveal: "Wants you to stay on the line so you can't check. A real bank is fine with you hanging up and calling back."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "Asks you to move your money to another account to keep it safe. No real bank does that, however it's explained. That request is the scam."
+    red_flag: true
+    type: request
+
+actions:
+  - id: follow_steps_reserve
+    label: "Open the app and follow their steps"
+    kind: start_transfer
+    next_beat: reserve_transfer
+    cap: engage
+    pressure_target: true
+  - id: hang_up_reserve
+    label: "Hang up"
+    kind: hang_up
+    outcome: reserve_call_left
+
+what_now:
+  call_back_label: "Call the number on your card"
+  outcomes:
+    call_back_known: no_payment_leaving
+    report: reserve_call_reported
+    done: reserve_call_left
+  extra:
+    - id: open_app_after_reserve_call
+      label: "Open the Larchwick app yourself"
+      kind: verify_in_app
+      outcome: app_nothing_leaving
+    - id: call_back_this_number_reserve
+      label: "Call back this number"
+      kind: call_number_in_message
+      note: "That's the number that just called. It can show the bank's real number, so you can't tell whose line it is. Use the number on your card."
+
+beats:
+  - id: reserve_transfer
+    device: banking
+    message:
+      account: { nickname: "Your current account" }
+      payee: { name: "Larchwick Reserva", iban: "ES•• •••• •••• •••• •••• 7731", name_check: mismatch, amount: "€3,240.18" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "Doesn't match: this account isn't held by Larchwick Reserva, the name the caller gave you. And no real bank moves your money to keep it safe, whatever the screen says."
+        red_flag: true
+        type: payee
+      - target: payee.iban
+        reveal: "An account you've never paid, typed as the caller read it out. Real new payees look the same here, so it can't prove anything either way."
+        red_flag: false
+        type: payee
+    actions:
+      - id: confirm_send_reserve
+        label: "Confirm and send €3,240.18"
+        kind: pay
+        outcome: reserve_sent
+        pressure_target: true
+      - id: hang_up_call_card_reserve
+        label: "Hang up and call your card's number"
+        kind: call_back_known
+        outcome: no_payment_leaving
+      - id: hang_up_report_reserve
+        label: "Hang up and report it"
+        kind: report
+        outcome: reserve_call_reported
+      - id: hang_up_cancel_reserve
+        label: "Hang up and cancel"
+        kind: ignore
+        outcome: reserve_cancelled
+
+outcomes:
+  reserve_sent:
+    narrative: "Sent. \"Perfect, your money is safe now. Don't use the app for a few hours.\" The line goes dead."
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: keep_call_evidence, category: secure }
+      - { step: report_police_copy_to_bank, category: report }
+      - { step: call_back_caller_number, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  no_payment_leaving:
+    narrative: "Larchwick, on the number on your card: \"No payment is leaving your account. We'd never ask you to move money. Thank you for calling.\""
+  app_nothing_leaving:
+    narrative: "You open the Larchwick app yourself. No payment is leaving, and your balance is as it was."
+  reserve_call_reported:
+    narrative: "Reported. Keep a note of the time and what was said: your bank and the police can use them."
+  reserve_call_left:
+    narrative: "You hang up and leave it there. Nothing has left your account."
+  reserve_cancelled:
+    narrative: "You hang up and cancel. Nothing has left your account."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Being guided to move your money is the tell."
+    what_works: "Hang up. Call the number on your card."
+  layer2:
+    message_flags:
+      - "Not asking for passwords isn't reassurance. They didn't need them: you were going to make the transfer yourself, in your real app. Being guided to move money is the tell."
+      - "\"Stay on the line\" is there so you can't check."
+    notes: "Following a caller's steps into your own app is already the risky part, even if you hang up before sending. The call showed your bank's name, maybe even its real number. A number that calls you proves nothing; one you dial yourself, from your card, does. After a \"doesn't match\" warning, your bank may not have to refund you. Call it at once anyway."
+  device_tip: "On a real phone, end the call yourself, then dial the number on the back of your card. Don't use redial or the call log."
+  habit_card: hang-up-call-back
+  already_clicked:
+    clicked: "Followed a caller's steps in your app? Hang up, then call the number on your card."
+    paid: "Moved money? Call your bank now on the number on your card and ask it to try to stop or recall the transfer. Keep the texts and the call log."
+    headings: { clicked: "Followed the caller's steps", paid: "Moved your money" }   # CR-45: no link here (as Rome 6-4); QA re-check: a transfer, not a card
+  sources: [es-incibe-smishing-bank-callback-2025, es-bde-vishing-2020, ch-ncsc-double-phishing-2026, it-carabinieri-21-arresti-2025, pl-cert-fake-consultants, fr-bdf-osmp-2024, eu-eba-ecb-fraud-2025, eu-epc-threats-2025, fr-inc-vop-2025, eu-ec-ipr-vop-2025, eu-eurlex-ipr-2024-886, eu-ecb-ipr, es-bde-msr2025-fraude]

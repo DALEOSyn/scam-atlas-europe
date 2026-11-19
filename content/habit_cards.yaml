@@ -19,7 +19,7 @@ cards:
   - id: who-really-sent
     lo: LO-01
     title: "Who really sent this?"
-    habit: "Look at the address or number behind the name. A familiar name or logo proves nothing: both are easy to copy."
+    habit: "Look at the address or number behind the name. A familiar name or logo proves nothing: both are easy to copy. A fake text can even land in your bank's real thread."
     example: "A text signed \"your bank\" from a number you don't know: the name is easy to copy, the number behind it tells you more."
     already_clicked: "Close it and type nothing. If you already did, change that password from the real app or site."
   - id: pressure-is-the-tell
@@ -55,7 +55,7 @@ cards:
   - id: hang-up-call-back
     lo: LO-08
     title: "Hang up, call back"
-    habit: "An unexpected call from your bank, the police or any official? Hang up, then call back on a number you find yourself. Caller ID proves nothing."
+    habit: "An unexpected call from your bank, the police or any official? Hang up, then call back on a number you find yourself, like the one on your card. Caller ID proves nothing, and no real bank asks you to move your money to keep it safe."
     example: "The phone shows your bank's name? End the call, then dial the number on the back of your card."
     already_clicked: "Read out a code or approved something? Call your bank now on the number on your card and ask it to block the card and try to stop or recall the payment."
   # Amsterdam (GDD §22.5; titles from docs/LEARNING_OBJECTIVES.md, LO-06 retitled by producer answer 4).

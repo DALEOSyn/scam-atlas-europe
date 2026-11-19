@@ -59,12 +59,12 @@ cast:
     name: "Lucía Herrera"
     role: "Night-shift nurse, your host (Madrid)"
     known_channel: { label: "Saved contact", detail: "Lucía (Madrid)" }
-    notes: "Capable; tiredness is the risk, not ability. Her own near-miss is drill 4-4 (she slept on a text, then checked on the number on her card). Speaks the Madrid If-then line (phone at the ear)."
+    notes: "Capable; tiredness is the risk, not ability. Her rule: no big decisions until she's slept. Her own near-miss is drill 4-4 (a fake text in her real Larchwick thread; she slept on it, then checked on the number on her card). Speaks the Madrid If-then line (phone at the ear). Never falls, never impersonated."
   - id: andres
     name: "Andrés"
     role: "Teacher, your host (Madrid)"
     known_channel: { label: "Saved contact", detail: "Andrés (Madrid)" }
-    notes: "Lucía's partner; saving for the deposit on their first flat. Never impersonated."
+    notes: "Lucía's partner; saving for the deposit on their first flat; cooks lentils. Small-talk interrupts only in scored scenarios. Never impersonated."
   # Warsaw (GDD §25.9, story bible §3.5).
   - id: kasia
     name: "Kasia Wójcik"

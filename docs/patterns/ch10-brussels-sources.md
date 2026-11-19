@@ -19,6 +19,7 @@ Companion to GDD §18 (Brussels summary), §28.5 and §29.5 (hand-overs) until t
   - Kettle is the messenger;
   - Backhaven Recovery (or a new registered name) is the recovery agency.
 - The fictional "card-blocking line" in a scam call needs its own fictional name. Never use Card Stop's real name or number in a scene (RL1). Card Stop appears on the help screen only.
+- **Scope of "never calls first" (round 2):** the source covers the card-blocking line only. In game, say "The real card-blocking line never calls you first", about cards only. Don't widen it to "your bank never calls you": the source doesn't say that, and real banks do sometimes call. The bank-side tell is the install request.
 - **Show only the victim's screens:**
   - the pop-up, the call, the install request, the dark screen after the cut;
   - Noor's DM;
@@ -34,13 +35,13 @@ Companion to GDD §18 (Brussels summary), §28.5 and §29.5 (hand-overs) until t
 | Beat (likely) | What the player sees | Sources | Notes |
 |---|---|---|---|
 | Pop-up "virus found, call support" | A full-screen warning in the browser with a masked number and a countdown | be-police-microsoft-scam-2024, be-ccb-remote-access-2019, ch-ncsc-fake-support-2024 | Tell: a number inside a warning. Safe action: close it, don't call. The CCB source is from 2019 and supports the screen-lock detail only. |
-| "Bank" or "card-blocking line" call asks you to install Kindhand to "secure" the account | Call screen, then a store-style Kindhand page (visibly a game screen) | be-febelfin-vishing-2026, be-febelfin-helpdesk-fraud, eu-esas-ai-scams-factsheet-nl | Tells: "a genuine bank employee never asks you to install remote-access software", and "Card Stop never contacts customers first" (debrief may say "the real card-blocking line never calls you first"). A Belgian-looking number proves nothing. |
+| "Bank" or "card-blocking line" call asks you to install Kindhand to "secure" the account | Call screen, then a store-style Kindhand page (visibly a game screen) | be-febelfin-vishing-2026, be-febelfin-helpdesk-fraud, eu-esas-ai-scams-factsheet-nl | Tells: "a genuine bank employee never asks you to install remote-access software", and "Card Stop never contacts customers first". The debrief may say "the real card-blocking line never calls you first", scoped to the card line only (see Rules). A Belgian-looking number proves nothing. |
 | "Log in to Larchwick so I can check" / "approve this" while on the line | The bank app or approval prompt over the call bar | be-febelfin-vishing-2026, se-konsumentverket-investment-fraud | "Never share codes or passwords"; "do not approve any transaction under pressure following an unexpected call". Links to the ch 9 e-ID habit. |
 | "Switch off your phone so we aren't interrupted" | Caller line on the call screen | be-ccb-remote-access-2019, eu-epc-threats-2025 | Tell: cutting you off from your bank's alerts. The CCB source is older; EPC (2025) supports "ignore bank alerts". |
 | Narrative cut after access (if the player goes along) | "Your screen goes dark…", then damage control | be-ccb-remote-access-2019, be-police-microsoft-scam-2024 | Narrative only (GDD §29.5). No amount. |
 | Remote-access damage control | Steps: go offline → call the bank / card line now → change passwords → uninstall and get the device checked → police | be-febelfin-helpdesk-fraud, be-febelfin-fraudstop-2026, be-police-microsoft-scam-2024, be-police-plainte-arnaque-en-ligne | Harmful steps: `let_caller_finish` (be-febelfin-helpdesk-fraud); paying to "unlock" (be-ccb-remote-access-2019); calling the pop-up number. |
 | Noor's easy-money DM | Kettle or social DM: easy money for "a few transfers" with her banking-app login, card details or account access | eu-europol-mule-flyer-be-fr, be-febelfin-money-mules, be-febelfin-games-campaign-2025, be-police-money-mules-2020 | "Banking-app login" is the game's translation (card + PIN and "login details or codes" are what the sources say). Player is a helper, Noor is a target. |
-| Noor already said yes | Noor: "I already sent it…" | eu-europol-mule-flyer-be-fr, be-febelfin-money-mules, be-febelfin-games-campaign-2025, be-febelfin-fraudstop-2026 | Stop; trusted adult; bank now; change login; police; report the account; warn friends. Consequences once, calmly. Don't say "you won't be in trouble" (no source; see the mule brief §7). |
+| Noor already said yes | Noor: "I already sent it…" | eu-europol-mule-flyer-be-fr, be-febelfin-money-mules, be-febelfin-games-campaign-2025, be-febelfin-fraudstop-2026 | The scene shows Noor getting help (stop; trusted adult; bank now; change login; police; report the account; warn friends) and never calls her action a crime (STORY §5.2). In the general debrief only, the consequences come once, always followed by the next step: "Letting someone use your account like this is a crime, and the account holder can be held responsible. If it's already happened, getting help early is the right move." Pressure line: "If anyone pressures you to keep going, that's a reason to get help now." Parents' liability and recruiters' threats are designer-only, never on screen (mule brief §6). Don't say "you won't be in trouble" (no source; see the mule brief §7). |
 | Alex reveal: the same portrait on profiles with other names | A photo check showing the same illustrated portrait on 2–3 profiles with different names | be-police-romance-2026 | Sourced: the Belgian police advise a reverse image search on profile photos. Showing the *same* photo under other names is the game's visualisation of that check's result. "Beware AI" also from that page: a clean check doesn't prove a profile is real, so the debrief should say so. |
 | Arc wrap-up: dating to investment | Red-flag timeline (slots 1–9) | eu-esas-ai-scams-factsheet-nl, be-police-romance-2026, be-fsma-trading-platforms-2025 | Dating-to-investment pipeline (ESAs). Romance red flags (BE police). |
 | Ending C: recovery-agency test (Backhaven, fee first) | Email or call offering to get the money back; the fee comes first | be-fsma-recovery-room, be-fsma-trading-platforms-2025, recovery-scam brief sources (ie-bpfi-recovery-2024, ie-cbi-fraud-landscape-2025, se-konsumentverket-investment-fraud) | BE FSMA: recovery firms "always ask for a fee" first; they may "falsely claim to work with the police or with financial supervisors"; supervisors never contact victims for this. Debrief: the Dublin line "Anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam." Sourced. |
@@ -57,24 +58,32 @@ Companion to GDD §18 (Brussels summary), §28.5 and §29.5 (hand-overs) until t
    - Go to a local police station, where first steps can be taken quickly.
    - With a Belgian identity card you can also use Police on Web for some non-urgent facts.
    - Bring screenshots, the numbers used and a short timeline. (be-police-plainte-arnaque-en-ligne)
-   - For under-18s: "Go with a parent or a trusted adult." This is safeguarding framing, not from the source.
+   - **Shown on the card:** "Under 18? Go with a parent, carer or another adult you trust." This is safeguarding framing, not from the source. It matches the step 0 wording and is also in the `be-police` help-list body.
 3. **Forward suspicious messages** to suspicious@safeonweb.be. (be-ccb-safeonweb-2025; help-list row be-safeonweb-forward)
 4. **Investment offer, or someone offering to get your money back?**
    - Check the FSMA warnings list. It isn't complete, so a firm missing from it isn't proof it's safe.
    - Never pay a fee to get money back. (be-fsma-warnings-list, be-fsma-recovery-room)
-5. **Someone let into your computer?** Disconnect it from the internet, call your bank, change your passwords, and get the device checked before using it again. (be-febelfin-helpdesk-fraud, be-police-microsoft-scam-2024)
-6. **Asked to lend your account, card or login?**
+5. **Did a caller get into your computer?** It can happen to anyone. Disconnect it from the internet, call your bank, change your passwords, and get the device checked before using it again. (be-febelfin-helpdesk-fraud, be-police-microsoft-scam-2024, be-ccb-remote-access-2019)
+6. **Asked to lend your account, card or login?** (Written for adult readers; the help screen's step 0 covers under-18s.)
    - Say no.
-   - If you already said yes: stop, tell a trusted adult, call your bank, go to the police. (eu-europol-mule-flyer-be-fr, be-febelfin-money-mules)
+   - If you already said yes: stop, tell someone you trust, call your bank, go to the police. (eu-europol-mule-flyer-be-fr, be-febelfin-money-mules)
 7. **Someone to talk to:**
-   - Tele-Onthaal 106 (Dutch) / Télé-Accueil 107 (French).
-   - Young people: Awel 102 (Dutch) / Écoute-Enfants 103 (French).
-   - As in the help list: be-listening-line, be-youth-line.
-8. **Crisis row, last:** "Thinking about ending your life, or worried about someone?"
-   - Zelfmoordlijn **1813** (Dutch: free, anonymous, 24/7) (be-zelfmoord1813).
-   - Suicide prevention line **0800 32 123** (French: free, 24/7) (be-police-autres-numeros).
+   - Tele-Onthaal 106 (Dutch) / Télé-Accueil 107 (French). (help-list row be-listening-line)
+8. **Under 18? Lines for young people** (its own row):
+   - Awel 102 (Dutch) / Écoute-Enfants 103 (French). (help-list row be-youth-line)
+9. **Crisis row, last:** "Thinking about ending your life, or worried about someone?"
+   - Zelfmoordlijn **1813** (Dutch: free, anonymous, day and night) (be-zelfmoord1813).
+   - Suicide prevention line **0800 32 123** (French: free, day and night) (be-police-autres-numeros).
    - "In danger now? Call 112."
    - Wording goes to G3 review.
+
+**Source host warnings (for the engineer, round 2):** several hosts used here aren't in `scripts/lib/source-hosts.ts` yet, so content:validate should warn on them. They are listed in `SOURCE_HOSTS.md` ("chapter 10"):
+- febelfin.be (already warns);
+- www.fsma.be (new since T-R.1);
+- news.belgium.be (new; the CCB 2019 press release);
+- www.zelfmoord1813.be (operator, tier 4, help list only; the warning is expected).
+
+These are warnings, not errors. The hosts are official or operator sites.
 
 **Not on the card (unverified this session):**
 - **The federal consumer contact point** (pointdecontact.belgique.be): its own site could not be read.

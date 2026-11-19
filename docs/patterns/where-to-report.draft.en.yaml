@@ -61,7 +61,7 @@ meta:
 first_steps:
   - id: under-18
     title: "Under 18? Tell an adult you trust first"
-    body: "Tell a parent, carer, teacher or another adult you trust. You're not in trouble for asking for help. They can call the bank or the police with you."
+    body: "Tell a parent, carer, teacher or another adult you trust. Getting help early is the right move. Asking for help is never the wrong thing to do. They can call the bank or the police with you."
     checked: 2026-11-18
     sources: []
     review_note: "Safeguarding step for the 14+ audience; wording to be checked by sceptic-reviewer and qa-playtester."
@@ -188,11 +188,11 @@ countries:
     - id: be-police
       role: police
       name: "Police"
-      body: "File a complaint after a fraud. A local police station is best, so first steps can be taken quickly; with a Belgian identity card you can also use Police on Web for some non-urgent facts. Bring screenshots and the numbers or accounts used."
+      body: "File a complaint after a fraud. A local police station is best, so first steps can be taken quickly; with a Belgian identity card you can also use Police on Web for some non-urgent facts. Bring screenshots and the numbers or accounts used. Under 18? Go with a parent, carer or another adult you trust."
       url: https://www.police.be/5998/fr/a-propos/campagnes-de-communication/campagne-scam/porter-plainte-pour-une-arnaque-en-ligne
       checked: 2026-11-19
       sources: [be-police-plainte-arnaque-en-ligne, be-police-romance-2026]
-      review_note: "T-3.12r: police.be SCAM campaign page (French; no English version opened) says Police on Web needs a Belgian identity card and covers 'certains faits non urgents'; a local station is 'préférable'. Not checked: whether under-18s can use Police on Web (young-people help text should say 'go with a parent or trusted adult')."
+      review_note: "T-3.12r: police.be SCAM campaign page (French; no English version opened) says Police on Web needs a Belgian identity card and covers 'certains faits non urgents'; a local station is 'préférable'. Not checked: whether under-18s can use Police on Web. Round 2 (sceptic): the under-18 line is now in the displayed body (safeguarding wording, no source)."
     - id: be-fsma
       role: advice
       name: "FSMA (financial regulator) warnings list"

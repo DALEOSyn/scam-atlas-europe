@@ -11,7 +11,7 @@ A caller from "your bank", "Card Stop", "IT support", "the software maker" or an
 - **Dutch (BE):** *helpdeskfraude*, the Febelfin theme name in Dutch. The English page is titled "Computer helpdesk fraud" [be-febelfin-helpdesk-fraud]. The Dutch title was not opened.
 - **French (BE):** *arnaque au faux support technique*. The Police fédérale page says "arnaques utilisant [a software maker's name]" [be-police-microsoft-scam-2024]. The French alias is descriptive and was not quoted from a source.
 - **Swedish:** *fjärråtkomst*, *dela din skärm* (share your screen) [eu-esas-ai-scams-factsheet-sv].
-- **Game label:** Kindhand, a fictional "support" brand (BRAND_CHECK DS-series). It has a fictional, clearly non-functional "helper" app screen (Red Line 2). No real remote-access product names or icons. Several appear in official sources; they are for research only.
+- **Game label:** Kindhand, a fictional "support" brand (BRAND_CHECK DS8: Low risk, keep). It has a fictional, clearly non-functional "helper" app screen (Red Line 2). No real remote-access product names or icons. Several appear in official sources; they are for research only.
 - **Where it is prominent, and the evidence:**
   - **EU:**
     - Tech-support fraud is among the most common typologies reported by Member States [eu-europol-iocta-2026].
@@ -38,7 +38,7 @@ A caller from "your bank", "Card Stop", "IT support", "the software maker" or an
 3. **An unexpected call from "your bank" or "Card Stop"** about a suspicious payment, then a request to install something to "secure" the account [be-febelfin-vishing-2026]. A text that gives a number to call can come first [eu-epc-threats-2025].
 4. **An investment "adviser"** who offers to "help" with a platform by taking over the device [be-fsma-trading-platforms-2025], [ie-garda-crimecall-investment-2024].
 
-**Levers:** authority and expertise; fear (virus, hacked account, money leaving); urgency; helpfulness and the relief of being looked after; for some people, embarrassment about not being "good with computers". The Febelfin page calls the callers "very aggressive and efficient" [be-febelfin-helpdesk-fraud].
+**Levers:** authority and expertise; fear (virus, hacked account, money leaving); urgency; helpfulness and the relief of being looked after; for some people, embarrassment about not being "good with computers". That last lever is designer context only, never a description of the player or a character. The Febelfin page calls the callers "very aggressive and efficient" [be-febelfin-helpdesk-fraud].
 
 ## 3. What the victim sees (screens only)
 **Before access:**
@@ -59,6 +59,8 @@ A caller from "your bank", "Card Stop", "IT support", "the software maker" or an
 2. **A pop-up or warning gives a phone number to call** for "support" [be-police-microsoft-scam-2024], [ch-ncsc-fake-support-2024].
 3. **An unexpected "helpdesk" or "software maker" call** about your computer. They "suddenly ask you to follow steps via your computer" [be-febelfin-helpdesk-fraud].
 4. **"Card Stop" calls you.** Card Stop never contacts customers first [be-febelfin-vishing-2026].
+   - This covers the card-blocking line only. Don't widen it to "your bank never calls"; the source doesn't say that.
+   - In game, the fictional card line gets its own name (RL1).
 5. **Urgency**: a countdown, "within 5 minutes", "stay on the line" [be-police-microsoft-scam-2024], [se-polisen-anmal-telefonbedrageri].
 6. **They ask you to log in to your bank, read out a code or approve something while they are connected or on the line.** "Never share codes or passwords" [be-febelfin-vishing-2026], [se-konsumentverket-investment-fraud].
 7. **They tell you to switch off your phone or ignore your bank's messages** [be-ccb-remote-access-2019], [eu-epc-threats-2025].
@@ -98,7 +100,10 @@ A caller from "your bank", "Card Stop", "IT support", "the software maker" or an
    - Febelfin says to report fake helpdesk calls to the CCB [be-febelfin-helpdesk-fraud].
    - Suspicious messages can be forwarded to suspicious@safeonweb.be (be-safeonweb-forward on the help list).
    - No Safeonweb page specific to remote access was found this session.
-7. **Tell someone.** Many victims feel ashamed and don't report. Reporting helps, and it can happen to anyone [be-ccb-remote-access-2019]. The tone is RL5.
+7. **Tell someone.**
+   - On-screen wording: "It can happen to anyone, and telling someone helps."
+   - Never label the reader as ashamed (RL5).
+   - Designer background: the CCB notes that many victims feel ashamed and don't report [be-ccb-remote-access-2019].
 
 **Harmful choices (debrief "don't"):**
 - Letting the caller finish "so they can undo it" [be-febelfin-helpdesk-fraud].
@@ -153,6 +158,6 @@ be-febelfin-helpdesk-fraud · be-febelfin-vishing-2026 · be-febelfin-fraudstop-
   - **Safeonweb:** no current page specific to remote access was found. The CCB source is from 2019, so it supports the victim's view only.
   - **Report to the CCB:** the Febelfin advice to report to the CCB doesn't say which channel. The help screen uses the verified forwarding address only.
   - **The Dutch and French aliases** are descriptive, not quoted from sources.
-  - **Police on Web for under-18s:** whether they can use it was not checked. Help text for 14+ should say "with a parent or trusted adult, at a police station".
+  - **Police on Web for under-18s:** whether they can use it was not checked. The displayed help text says "Under 18? Go with a parent, carer or another adult you trust." (`be-police` body).
   - **Fraudstop costs:** the cost of calling 078 170 170 is not stated, so use "Call costs may apply".
   - **Sweden:** no Sweden-specific "tech-support" source (unchanged from T-3.10r).

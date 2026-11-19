@@ -39,7 +39,7 @@ The sources also describe offline recruitment near schools, stations and nightli
 - friendship and belonging ("it's a favour");
 - reassurance ("perfectly safe") [be-febelfin-money-mules];
 - urgency;
-- later, fear: threats if you try to stop [eu-europol-mule-flyer-be-fr], [be-febelfin-money-mules].
+- later, fear: threats if you try to stop [eu-europol-mule-flyer-be-fr], [be-febelfin-money-mules]. **Designer-only, not for screen (round 2, M2).** On screen, use only: "If anyone pressures you to keep going, that's a reason to get help now."
 
 ## 4. Red flags (numbered, concrete)
 1. **Easy money you didn't ask for.** "Too good to be true" [eu-europol-mule-flyer-be-fr].
@@ -63,18 +63,23 @@ Sources:
 - [eu-europol-mule-flyer-be-fr].
 
 ## 6. Why it matters (state once, factually, as the reason to get help)
-The sources agree on these consequences for the person whose account is used:
+**On-screen text (round 2, M1 and M2).** Use only these lines. The consequence line always comes with the next step:
+- "Letting someone use your account like this is a crime, and the account holder can be held responsible. If it's already happened, getting help early is the right move."
+- "If anyone pressures you to keep going, that's a reason to get help now."
+
+**Designer background.** The sources agree on the consequences below for the person whose account is used. Items marked **NOT FOR SCREEN** must not appear in any player-facing text, in any form.
 - **It is a crime.** You can be prosecuted, and penalties can include a fine, community service or prison [be-febelfin-money-mules], [eu-europol-mule-flyer-be-fr], [be-police-money-mules-2020].
 - **You may have to pay back the money** that went through your account [be-febelfin-money-mules], [be-police-money-mules-2020].
 - **Your account can be blocked or closed.** Banks may refuse you an account, card or loan later [be-febelfin-money-mules], [eu-europol-mule-flyer-be-fr].
-- **For under-18s, parents can be held liable** [be-febelfin-money-mules], [be-police-money-mules-2020].
-- **The people behind it may threaten you** if you try to stop [eu-europol-mule-flyer-be-fr], [be-febelfin-money-mules].
+- **NOT FOR SCREEN (designer-only, M2):** for under-18s, parents can be held liable [be-febelfin-money-mules], [be-police-money-mules-2020].
+- **NOT FOR SCREEN (designer-only, M2):** the people behind it may threaten you if you try to stop [eu-europol-mule-flyer-be-fr], [be-febelfin-money-mules]. On screen this becomes only the "pressures you to keep going" line above.
 - **Your own account can be emptied** [be-febelfin-money-mules-2023], [be-police-money-mules-2020].
 
-**Writer rule:**
-- One calm sentence in the debrief, for example: "Using your account like this is a crime, and the person whose account it is can be held responsible, even if they didn't know where the money came from."
-- The "even if they didn't know" part is a design inference. The sources say mules can be prosecuted without making knowledge a condition. If a writer wants it, keep it soft ("can be").
+**Writer rules:**
+- Use the on-screen consequence sentence once in the debrief, always followed by the next step (as above). Never use it alone.
+- Don't add anything about whether the account holder knew where the money came from (round 2, M1).
 - No list of punishments on screen, no prison imagery, and no shame.
+- Repaying, account closure and refused accounts may be used in layer 2 only if a reviewer asks for more detail. Parents' liability and threats never go on screen (M2).
 
 ## 7. Already said yes? What to do (14+)
 1. **Stop.** Don't move any more money and don't share anything else [eu-europol-mule-flyer-be-fr].
@@ -124,7 +129,9 @@ The sources agree on these consequences for the person whose account is used:
   - tell Noor it's a trap and to tell a trusted adult (`ask_someone`);
   - report the account (`report`);
   - ignore or block (`ignore`).
-- **If Noor already said yes:** the §7 order.
+- **If Noor already said yes:** the scene shows her getting help, in the §7 order: stop, tell an adult she trusts, call the bank, police (STORY §5.2).
+  - No scene calls Noor's action a crime.
+  - The consequence sentence (§6) lives only in the general debrief, never in Noor's scene or her dialogue.
 - **Accuracy note (keep, MAP):** the sources name account, card and PIN, and (Febelfin 2025) login details and codes. "Banking-app login" is the game's digital translation, not a quoted statistic.
 
 ## 11. Sources
@@ -135,7 +142,7 @@ be-febelfin-money-mules · be-febelfin-money-mules-2023 · be-febelfin-games-cam
   - the red flags, the consequences and the "what to do" steps;
   - consistent across Febelfin, the Federal Police and Europol.
 - **Not verified:**
-  - **Minors:** how Belgian law treats under-18 mules in practice (youth justice) is not covered by the sources, so make no claims beyond "parents can be held liable". Police on Web for minors was not checked either.
+  - **Minors:** how Belgian law treats under-18 mules in practice (youth justice) is not covered by the sources. Make no claims about it on screen. Parents' liability is designer-only (M2). Police on Web for minors was not checked either.
   - **Dutch alias:** the term was not quoted from an opened source.
   - **Banking-app login:** the wording is a translation. No opened source says recruiters ask specifically for banking-app logins, though Febelfin 2025 warns against sharing login details and codes.
   - **The 2020 Federal Police page** is older; it is used only alongside current sources.

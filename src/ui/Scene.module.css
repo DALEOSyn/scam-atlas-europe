@@ -367,3 +367,58 @@
     color: #000;
   }
 }
+/* CR-28 (CI, psych S9): a compact header on narrow screens, so the heading row, the first panel and its
+   caption fit above the sticky footer on a 320×568 phone with wider fallback fonts. The title steps down
+   one size, Help and Skip share one row (Help may wrap inside its button, Skip keeps its width), the
+   gaps tighten. The 44 px targets stay. Last in the file, so it overrides the base rules. */
+@media (max-width: 599px) {
+  .head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-1);
+  }
+  .title {
+    font-size: var(--fs-lg);
+  }
+  .chrome {
+    flex-wrap: nowrap;
+    align-items: stretch;
+  }
+  .chrome .help {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-inline: var(--space-3);
+    font-size: var(--fs-sm);
+    text-align: start;
+    border-radius: var(--radius-md);
+  }
+  .chrome .skip {
+    flex: none;
+    padding-inline: var(--space-3);
+    font-size: var(--fs-sm);
+  }
+}
+/* Short landscape screens (720×450): one heading row. The title steps down and may wrap inside its own
+   column; Help and Skip keep one row beside it, in the smaller type. The 44 px targets stay. */
+@media (min-width: 600px) and (max-height: 520px) {
+  .head {
+    flex-wrap: nowrap;
+    align-items: flex-start;
+  }
+  .head > :first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .title {
+    font-size: var(--fs-lg);
+  }
+  .chrome {
+    flex: none;
+    flex-wrap: nowrap;
+  }
+  .chrome .help,
+  .chrome .skip {
+    padding-inline: var(--space-3);
+    font-size: var(--fs-sm);
+  }
+}

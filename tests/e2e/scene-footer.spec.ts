@@ -16,6 +16,12 @@ const IDS = readdirSync(SCENES, { withFileTypes: true })
   .flatMap((d) => readdirSync(join(SCENES, d.name)).filter((f) => f.endsWith('.yaml')).map((f) => basename(f, '.yaml')))
   .sort();
 
+/**
+ * CR-28 (CI): CI resolves the system font stack to wider fonts than a dev machine. `PW_SCENE_FONT` (e.g.
+ * `"DejaVu Sans"`, the widest stack we have seen) forces one font for a local run that simulates CI.
+ */
+const FONT = process.env['PW_SCENE_FONT'];
+
 const SENSITIVE = new Set(['amsterdam-sanne-story', 'amsterdam-turn', 'amsterdam-resolution']);
 
 /**
@@ -57,6 +63,18 @@ for (const size of [
     test.setTimeout(120_000);
     await page.setViewportSize(size);
     await page.emulateMedia({ reducedMotion: 'reduce' });
+    if (FONT) {
+      await page.addInitScript((f) => {
+        // Before the app's module script runs ("interactive" comes first), so the first layout uses it,
+        // as system fonts do in CI.
+        document.addEventListener('readystatechange', () => {
+          if (document.readyState !== 'interactive') return;
+          const st = document.createElement('style');
+          st.textContent = `:root { --font-ui: ${f} !important; } body, button { font-family: ${f} !important; }`;
+          document.head.append(st);
+        });
+      }, FONT);
+    }
     const bad: string[] = [];
     let panels = 0;
     for (const id of IDS) {
@@ -76,6 +94,9 @@ for (const size of [
           // On open: the focused h1 and the whole heading row are on screen (WCAG 2.4.11), above the footer.
           if (m.focusTag !== 'H1') bad.push(`${at}: focus is on ${m.focusTag}, not the h1`);
           if (m.headTop < 0 || m.headBottom > m.footTop) bad.push(`${at}: heading row ${m.headTop}..${m.headBottom} not fully in view`);
+          // Headroom against font variance (CI fonts are wider): the opening layout fits with the first
+          // panel's art at least 24 px above its 88 px floor, so a taller caption or heading still fits.
+          if (m.art - 88 < 24) bad.push(`${at}: only ${m.art - 88} px of art headroom on open (needs ≥ 24)`);
         } else if (!m.onLi) bad.push(`${at}: focus is not on the new panel`);
         // The focused element is on screen: its top in view, and not hidden under the footer.
         if (m.focusTop < 0 || m.focusTop >= m.footTop) bad.push(`${at}: focused element top ${m.focusTop} off screen`);

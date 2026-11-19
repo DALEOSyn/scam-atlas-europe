@@ -179,7 +179,7 @@ debrief:
     what_works: "Call his saved number first."
   layer2:
     message_flags:
-      - "\"The gas bill is due today\": a deadline leaves no time for a call."
+      - "\"The gas bill is due today\": the deadline is there to stop you calling first."
     notes: "A \"doesn't match\" warning means the account isn't in his name. Stop there and call his saved number."
   device_tip: "On a real phone, open your contacts and call the number you already have for the person, not the new one in the chat."
   habit_card: call-the-number-you-know

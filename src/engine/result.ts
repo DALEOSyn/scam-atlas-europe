@@ -18,7 +18,7 @@ import type { ActionKind, Scenario } from '../content/schema.ts';
 import { tallyTags, redFlagsOf } from './inspect.ts';
 import { situationOf, type AlreadySituation, type RecoveryResult } from './recovery.ts';
 import { beatById, coveredDecision, type GroupState, type RunnerState } from './runner.ts';
-import { classOf, groupEarnsTagBonus, maxPointsOf, scoreGroup, tagBonus, type EngineBalance, type GroupScore, type Truth } from './scoring.ts';
+import { classOf, decisionOf, groupEarnsTagBonus, maxPointsOf, scoreGroup, tagBonus, type Decision, type EngineBalance, type GroupScore, type Truth } from './scoring.ts';
 
 export interface BeatResult extends GroupScore {
   beatId: string;
@@ -83,6 +83,33 @@ function groupTags(s: Scenario, st: RunnerState, g: GroupState): { correct: numb
   return { correct, wrong };
 }
 
+/**
+ * Ruling R21 (CR-45): the deliberate dismiss options of the beat the group's timer expired on (its current
+ * beat), else of the beats reachable from it by next_beat, as decisions. A genuine expiry scores like the
+ * lowest of them (scoreGroup `expiryDismiss`); none anywhere → `timer_expiry` as before.
+ */
+export function expiryDismissOf(s: Scenario, b: EngineBalance, g: Pick<GroupState, 'current' | 'timerExpired'>): Decision[] {
+  if (!g.timerExpired) return [];
+  const dismissOf = (id: string): Decision[] => (beatById(s, id)?.actions ?? []).filter((a) => classOf(b, a.kind) === 'dismiss').map((a) => decisionOf(b, a));
+  const own = dismissOf(g.current);
+  if (own.length > 0) return own;
+  // Psych M1 (option a): no dismiss option where the timer ran out (e.g. a one-action opener, "Wait for the
+  // code"): the lowest dismiss option of the beats the group can still reach from here (next_beat chains).
+  const later: Decision[] = [];
+  const seen = new Set([g.current]);
+  const queue = [g.current];
+  while (queue.length > 0) {
+    const id = queue.shift() as string;
+    for (const a of beatById(s, id)?.actions ?? []) {
+      if (a.next_beat === undefined || seen.has(a.next_beat)) continue;
+      seen.add(a.next_beat);
+      queue.push(a.next_beat);
+      later.push(...dismissOf(a.next_beat));
+    }
+  }
+  return later;
+}
+
 /** Red flags on the scheduled, scored beats of a scenario (R for stamps and max points). */
 export function redFlagCount(s: Scenario): number {
   const ids = ['start', ...(s.role === 'boss' ? s.beats.filter((b) => b.arrives_after !== undefined && b.scored).map((b) => b.id) : [])];
@@ -106,7 +133,7 @@ export function resultOf(s: Scenario, b: EngineBalance, st: RunnerState): Scenar
   const truth = st.truth;
   const beats: BeatResult[] = st.groups.map((g) => {
     const { decision, covered } = coveredDecision(s, st.groups, g);
-    const score = scoreGroup(b, truth, decision, { engagedOnFraud: g.engagedOnFraud, timerExpired: g.timerExpired, slot: st.slot, codeShared: g.codeShared !== undefined });
+    const score = scoreGroup(b, truth, decision, { engagedOnFraud: g.engagedOnFraud, timerExpired: g.timerExpired, slot: st.slot, codeShared: g.codeShared !== undefined, expiryDismiss: expiryDismissOf(s, b, g) });
     const tags = groupTags(s, st, g);
     return { ...score, beatId: g.beatId, covered, scored: g.scored, outcome: g.outcome, correctTags: tags.correct, wrongTags: tags.wrong, kinds: g.kinds };
   });

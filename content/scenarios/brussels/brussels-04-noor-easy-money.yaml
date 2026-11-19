@@ -105,4 +105,5 @@ debrief:
   advice_line: "Noor asked, and that was the smart bit. With an offer like this, the answer is always no."
   already_clicked:
     entered_details: "If you've already shared it, it's not too late: change your login, call your bank on the number on your card, and tell a trusted adult."
+    headings: { entered_details: "Shared a login or card details" }
   sources: [eu-europol-mule-flyer-be-fr, be-febelfin-money-mules, be-febelfin-games-campaign-2025, be-police-money-mules-2020, be-febelfin-money-mules-2023]

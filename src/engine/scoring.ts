@@ -138,8 +138,18 @@ export function scoreGroup(
     slot?: number;
     /** CR-34: a payment code was shared in the group (points.code_then_confirm.star_cap). */
     codeShared?: boolean;
+    /**
+     * Ruling R21 (CR-45): the deliberate dismiss options (class dismiss, e.g. "Leave it", Hang up) of the beat
+     * the timer expired on. On a genuine beat an expiry scores what the lowest of them scores, never more.
+     */
+    expiryDismiss?: readonly Decision[];
   },
 ): GroupScore {
+  if (opts.timerExpired && decision === undefined && truth !== 'fraud' && opts.expiryDismiss && opts.expiryDismiss.length > 0) {
+    const asChosen = opts.expiryDismiss.map((d) => scoreGroup(b, truth, d, { ...opts, timerExpired: false, expiryDismiss: [] }));
+    const low = asChosen.reduce((m, x) => (x.stars < m.stars || (x.stars === m.stars && x.points < m.points) ? x : m));
+    return { ...low, timerExpired: true };
+  }
   // Expiry scores as dismiss only when nothing was decided yet: a verify (or any decision) before the
   // deadline keeps its own score (sceptic T-2.1 #2).
   const expired = opts.timerExpired && decision === undefined;

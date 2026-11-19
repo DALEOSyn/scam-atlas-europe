@@ -15,9 +15,9 @@ import type { ActionView } from '../../engine/runner.ts';
 import { t } from '../../i18n/index.ts';
 import { Checkable } from '../check/Check.tsx';
 import { Icon } from '../Icon.tsx';
-import { Host, RichText } from '../RichText.tsx';
+import { Host, LangText, RichText } from '../RichText.tsx';
 import { DemoField, SimPill, SimulatedForm } from '../SimulatedForm.tsx';
-import { hostParts, segmentMessage } from '../text.ts';
+import { forwardedSegments, hostParts, outerLeftover, segmentMessage } from '../text.ts';
 import { qrMountText } from '../../engine/inspect.ts';
 import { castMember } from '../../content/cast.ts';
 import { balance } from '../../content/balance.ts';
@@ -26,8 +26,8 @@ import { QrGraphic } from './QrGraphic.tsx';
 import type { DeviceProps } from './types.ts';
 import styles from './devices.module.css';
 
-/** Descriptive heading of a beat (focus target on arrival, UI_SPEC §10.3). */
-export function deviceHeading(device: Device, m: Message): string {
+/** Descriptive heading of a beat (focus target on arrival, UI_SPEC §10.3). `outgoing`: a call the player dialled (CR-45). */
+export function deviceHeading(device: Device, m: Message, outgoing = false): string {
   const from = m.sender?.display ?? '';
   switch (device) {
     case 'email':
@@ -42,6 +42,7 @@ export function deviceHeading(device: Device, m: Message): string {
     case 'social':
       return t('heading_social', { from });
     case 'call':
+      if (outgoing) return t('heading_call_out', { from });
       return m.video ? t('heading_video_call', { from }) : t('heading_call', { from });
     case 'browser':
       return t('heading_browser', { page: m.page?.title ?? m.page?.address ?? '' });
@@ -376,7 +377,8 @@ function Chat(p: DeviceProps) {
               ))}
             <div class={styles.bubbleIn}>
               {m.forwarded ? <Forwarded m={m} /> : <ChatBody message={m} quoted={new Set(p.quoted ?? [])} />}
-              <Chips items={segs.leftover} />
+              {/* QA B1 (10-4): checkables the forwarded card draws are never repeated as chips in the forwarder's bubble. */}
+              <Chips items={outerLeftover(m, segs)} />
               {m.image && p.device !== 'messenger' ? <ImageBox alt={m.image.alt} /> : null}
               {m.payee ? <BankDetails m={m} /> : null}
               {/* CR-39(b): a QR code sent in the chat, after the body; its destination chip is checkable. */}
@@ -410,8 +412,8 @@ function Forwarded({ m }: { m: Message }) {
   const f = m.forwarded;
   if (!f) return null;
   const app = brandById(f.app);
-  const inner: Message = { ...m, body: f.body, transcript: undefined, lang: undefined, translation: undefined, forwarded: undefined };
-  const segs = segmentMessage(inner);
+  const segs = forwardedSegments(m);
+  if (!segs) return null;
   return (
     <>
       {m.body ? (
@@ -589,6 +591,7 @@ function Call(p: DeviceProps) {
   const shown = stage?.shown ?? lines.length;
   const answered = stage?.answered ?? true;
   const ended = stage?.ended ?? false;
+  const outgoing = stage?.outgoing ?? false;
   // After Answer the Answer button is gone: focus moves to the transcript heading (QA B2).
   const transcriptRef = useRef<HTMLHeadingElement>(null);
   const wasAnswered = useRef(answered);
@@ -621,7 +624,16 @@ function Call(p: DeviceProps) {
           <Checkable target="caller_id" class={styles.callerName}>
             {display}
           </Checkable>
-          <span class={styles.callerSub}>{ended ? t('call_ended') : answered ? t('call_in_progress') : t('call_incoming')}</span>
+          {/* CR-45: a call the player dialled: "Calling…", then "Connected"; never "Incoming call". */}
+          <span class={styles.callerSub} data-call-state={ended ? 'ended' : answered ? 'connected' : outgoing ? 'dialling' : 'ringing'}>
+            {ended ? t('call_ended') : answered ? (outgoing ? t('call_connected') : t('call_in_progress')) : outgoing ? t('call_dialling') : t('call_incoming')}
+          </span>
+          {/* CR-45 (QA): while dialling, where the number came from ("The number from the text"). */}
+          {outgoing && !answered && !ended && m.sender?.detail ? (
+            <span class={styles.callerSub} data-dialled-detail="">
+              {m.sender.detail}
+            </span>
+          ) : null}
           {/* Known only once the call is answered (sceptic T-3.3). */}
           {m.recorded && answered ? <span class={styles.callKind} data-recorded="">{t('call_recorded')}</span> : null}
           {/* CR-36: who the voice sounds like, once answered. A label only: no audio is ever played. */}
@@ -644,7 +656,7 @@ function Call(p: DeviceProps) {
           </figure>
         ) : null}
         {p.banner && answered ? <Banner banner={p.banner} beatId={p.beatId} onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} /> : null}
-        {!answered && !ended ? (
+        {!answered && !ended && outgoing ? null : !answered && !ended ? (
           <div class={styles.callButtons}>
             <button type="button" class={styles.round} onClick={p.onAnswer}>
               <Icon name="phone-answer" size={28} />
@@ -1020,7 +1032,7 @@ function NameCheckCard(p: DeviceProps & { bankName: string }) {
                   aria-disabled={!p.canAct}
                   onClick={() => p.canAct && p.onAct(a.id)}
                 >
-                  {a.label}
+                  <LangText text={a.label} />
                 </button>
               </li>
             ))}
@@ -1109,7 +1121,8 @@ function Bank(p: DeviceProps) {
       {p.onCall ? (
         <OnCallBar onCall={p.onCall} beatId={p.beatId} lines={p.pushers.filter((x) => x.boundTo === p.beatId)} onTranslation={p.onTranslation} alwaysTranslate={p.alwaysTranslate} />
       ) : null}
-      <BrandBar brand={bank} title={bank?.name ?? ''} sub={m.account ? t('bank_business') : request ? t('bank_request_title') : confirm ? t('bank_confirm_sub') : t('bank_payments')} />
+      {/* CR-45: "Business account" only for a business account; a personal one keeps the screen's own sub-label. */}
+      <BrandBar brand={bank} title={bank?.name ?? ''} sub={m.account?.kind === 'business' ? t('bank_business') : request ? t('bank_request_title') : confirm ? t('bank_confirm_sub') : t('bank_payments')} />
       <div class={styles.bank}>
         <SimPill />
         <MessageBody message={m} />

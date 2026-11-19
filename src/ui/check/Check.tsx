@@ -139,7 +139,7 @@ export function TagToggle({ item, onTag }: { item: CheckableView; onTag: (c: Che
       type="button"
       class={styles.tag}
       aria-pressed={item.tagged}
-      aria-label={t('tag_mark_named', { element: elementLabel(item.target, item.device) })}
+      aria-label={t('tag_mark_named', { element: elementLabel(item.target, item.device, item.outgoing) })}
       data-tag={item.target}
       onClick={() => onTag(item, !item.tagged)}
     >
@@ -255,7 +255,7 @@ export function CheckCard({
       <div class={styles.cardHead}>
         <h2 id="check-card-title" ref={title} tabIndex={-1}>
           <Icon name="magnifier" />
-          <span>{t('check_card_title', { element: elementLabel(item.target, item.device) })}</span>
+          <span>{t('check_card_title', { element: elementLabel(item.target, item.device, item.outgoing) })}</span>
         </h2>
         <button type="button" class={styles.close} onClick={onClose}>
           <Icon name="close" />
@@ -311,7 +311,7 @@ export function DetailsList({
         {items.map((c) => (
           <li key={c.key}>
             <button type="button" class={styles.row} data-check-row={c.target} onClick={() => onCheck(c)} aria-expanded={c.checked}>
-              <span class={styles.rowLabel}>{t('check_item', { element: elementLabel(c.target, c.device) })}</span>
+              <span class={styles.rowLabel}>{t('check_item', { element: elementLabel(c.target, c.device, c.outgoing) })}</span>
               <span class={isIdentifier(c.target) ? `${styles.rowValue} ${styles.mono}` : styles.rowValue} lang={c.lang}>
                 <Value target={c.target} text={visible(c)} />
               </span>

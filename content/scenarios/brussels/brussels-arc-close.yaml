@@ -1,9 +1,10 @@
 # Arc finale: the close beat (GDD §30.6; CR-43). Plays only if the Alex arc is still open on entering Brussels,
 # after the boss's debrief and damage control. Unscored for the chapter (arc points only); no timer (R22).
-# Alex sends nothing new (§28.5 item 6): the chat shows Alex's last message (slot 9's) as it stands.
-# Spec deviation: §30.6 puts slot 9's message in earlier[], but a chat beat needs a body and Alex sends
-# nothing new, so the last message is the body; its amount sentence ("…and I need €300 by tomorrow") is left
-# out so that no amount a player may have sent appears in the finale (§28.5 item 8, "no amounts lost anywhere").
+# Alex sends nothing new (§28.5 item 6): the chat shows Alex's last message (slot 9's) as it stands, under
+# "Earlier" with "Yesterday" (§30.6), not as a new bubble under "Today" (QA round 1). A chat beat needs a
+# body, so the slot-9 message's own last word, "Please?", stays as the body: no new words from Alex. Its amount
+# sentence ("…and I need €300 by tomorrow") is left out so that no amount a player may have sent appears in the
+# finale (§28.5 item 8, "no amounts lost anywhere").
 # Both options open the reveal card (CR-43(b), R22: reveal on every outcome) and set arc_told_someone (a report
 # or a photo check). Reveal: the one Alex portrait under "The same picture Alex used.", names from the
 # chapter's arc_finale.reveal_names (Alex, Robin, Sacha), and the engine's fixed line under it.
@@ -22,7 +23,9 @@ pressure: { timer: false, levers: [] }
 message:
   sender: { display: "Alex", detail: "Practice partner from Wordswap" }
   from_cast: alex
-  body: "I'm in trouble. My account's frozen. You're the only one I can ask. Please?"
+  earlier:
+    - { when: "Yesterday", body: "I'm in trouble. My account's frozen. You're the only one I can ask." }
+  body: "Please?"
   request: none
 
 inspectables:

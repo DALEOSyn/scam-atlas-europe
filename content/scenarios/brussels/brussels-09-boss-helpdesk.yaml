@@ -323,4 +323,5 @@ debrief:
   already_clicked:
     clicked: "Called the number but installed nothing? Hang up, close the browser, and tell your IT desk or someone you trust."
     shared_code: "Installed it, read out a code or approved it? Go offline, call your bank on the number on your card, change your passwords from another device, and get the device checked. It can happen to anyone, and telling someone helps."
+    headings: { clicked: "Called the number they gave" }   # CR-45: beat 1 is a pop-up number, not a link
   sources: [be-police-microsoft-scam-2024, be-ccb-remote-access-2019, ch-ncsc-fake-support-2024, be-febelfin-vishing-2026, be-febelfin-helpdesk-fraud, be-febelfin-fraudstop-2026, eu-epc-threats-2025, be-police-plainte-arnaque-en-ligne]

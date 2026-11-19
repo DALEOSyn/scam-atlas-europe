@@ -94,4 +94,5 @@ debrief:
   habit_card: stop-the-damage-first
   already_clicked:
     entered_details: "Shared a login or card details? It's not too late: change the login, call your bank on the number on your card, and tell a trusted adult."
+    headings: { entered_details: "Shared a login or card details" }
   sources: [eu-europol-mule-flyer-be-fr, be-febelfin-money-mules, be-febelfin-games-campaign-2025, be-febelfin-fraudstop-2026]

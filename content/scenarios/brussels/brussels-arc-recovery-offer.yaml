@@ -1,6 +1,6 @@
 # Arc finale: the recovery-agency test (GDD §30.6; CR-43(e); §28.5 items 2 and 9). Plays for every ending with
 # money in (C; R and a report with money in, R22(1)), after the arc damage control. Unscored for the chapter
-# (arc points only); no timer (R22). Blame on the lie first (STORY §5.8) in the setup. No amount anywhere
+# (arc points only); no timer (R22). Blame on the lie first (STORY §5.8) comes from the arc damage control just before (psych scenes M1). No amount anywhere
 # (§28.5 item 8); never "again" or "twice" (§28.5 item 9).
 # Checkables (5): sender D · link D · reference D (scammers share victims' details) · claim R (BE FSMA: recovery
 # firms may falsely claim to work with the police or supervisors) · request R (a fee first).
@@ -14,7 +14,7 @@ finale: recovery_offer
 learning_objectives: [LO-13, LO-16]
 is_fraud: true
 device: email
-setup: "Alex was never real. The lie was theirs, not yours. A few days later, an email arrives."
+setup: "A few days later, an email arrives."
 brands: [backhaven-recovery, glimmerfund, fairmeasure, larchwick]
 pressure: { timer: false, levers: [] }
 

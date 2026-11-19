@@ -13,6 +13,8 @@
 import { z } from 'zod';
 import { deriveCheckables } from './checkables.ts';
 import { ICU_MESSAGE_RE, SPOTTED_EXPR_RE } from './constants.ts';
+import { firstLang, langMarkupIssues, strayLangMarkers } from './inlineLang.ts';
+import { DIAL_KINDS, parentKinds } from './callDirection.ts';
 
 /** Lower-case kebab-case identifier, e.g. `berlin-03-parcel-customs`. */
 export const slug = z
@@ -278,8 +280,12 @@ export const messageSchema = z
      * content:validate rejects non-bank ids. Default: the player's bank (Larchwick).
      */
     bank: z.object({ brand: slug }).strict().optional(),
-    /** CR-26: whose money it is, on banking beats ("Ruchelune · current account"). */
-    account: z.object({ nickname: z.string().min(1) }).strict().optional(),
+    /**
+     * CR-26: whose money it is, on banking beats ("Ruchelune · current account"). CR-45: `kind` sets the
+     * bank header's sub-label: `business` → "Business account"; `personal` (default) → the screen's own
+     * sub-label ("Payments", "Payment request", "Confirm payment").
+     */
+    account: z.object({ nickname: z.string().min(1), kind: z.enum(['business', 'personal']).default('personal') }).strict().optional(),
     prompt: z
       .object({
         type: z.enum(['sign_in', 'signature', 'qr_login']),
@@ -491,6 +497,17 @@ export const inspectableSchema = z
   .strict();
 export type Inspectable = z.infer<typeof inspectableSchema>;
 
+/**
+ * CR-45: inline language spans in `text` (an action label or outcome narrative) and the optional translation.
+ * Returns [field, message] pairs; `text` = the label/narrative, `translation` = the translation.
+ */
+export function langFieldIssues(text: string, translation: string | undefined): ['text' | 'translation', string][] {
+  const out: ['text' | 'translation', string][] = langMarkupIssues(text).map((m) => ['text', m]);
+  if (translation !== undefined && firstLang(text) === undefined) out.push(['translation', 'a translation needs an inline language span to translate: {lang:es}…{/lang}']);
+  if (translation !== undefined && translation.includes('{lang:')) out.push(['translation', 'the translation is English: no inline language spans']);
+  return out;
+}
+
 export const actionSchema = z
   .object({
     id: snakeId,
@@ -509,9 +526,15 @@ export const actionSchema = z
      * the source beat is a call on a fraud scenario (rules.ts), forbidden on genuine scenarios.
      */
     cap: z.literal('engage').optional(),
+    /**
+     * CR-45 (WCAG 3.1.2): English translation of the label's inline language span(s)
+     * (`Reply: {lang:es}¡sí, gracias!{/lang}`), offered with a Translate toggle next to the button.
+     */
+    translation: z.string().min(1).optional(),
   })
   .strict()
   .superRefine((a, ctx) => {
+    langFieldIssues(a.label, a.translation).forEach(([field, message]) => ctx.addIssue({ code: 'custom', path: [field === 'text' ? 'label' : 'translation'], message }));
     if (a.cap !== undefined && a.kind !== 'start_transfer') ctx.addIssue({ code: 'custom', path: ['cap'], message: 'cap: engage is for start_transfer actions (CR-31(b))' });
     if ((a.outcome === undefined) === (a.next_beat === undefined)) {
       ctx.addIssue({ code: 'custom', path: ['outcome'], message: 'an action has exactly one of outcome or next_beat' });
@@ -549,6 +572,7 @@ export const whatNowSchema = z
         z
           .object({ id: snakeId, label: z.string().min(1), kind: actionKindSchema, note: z.string().min(1).optional(), outcome: snakeId.optional() })
           .strict()
+          .superRefine((x, ctx) => langMarkupIssues(x.label).forEach((message) => ctx.addIssue({ code: 'custom', path: ['label'], message })))
           .refine((x) => (x.note === undefined) !== (x.outcome === undefined), 'a what_now extra has exactly one of note (engage: back to "What now?") or outcome (verify: ends the step)'),
       )
       .max(3)
@@ -596,6 +620,12 @@ export const beatSchema = z
      * verified on one of them, report or dismiss here scores as verify ("already checked").
      */
     covered_by: z.array(z.string().min(1)).min(1).optional(),
+    /**
+     * CR-45, call beats only: `outgoing` = the player dialled ("Calling …", then connected; no Answer or
+     * Decline), `incoming` = it rings. Default: outgoing when every action leading here dials
+     * (call_number_in_message, call_back_known; src/content/callDirection.ts), else incoming.
+     */
+    direction: z.enum(['incoming', 'outgoing']).optional(),
   })
   .strict();
 export type Beat = z.infer<typeof beatSchema>;
@@ -679,6 +709,8 @@ export type RegisterCard = z.infer<typeof registerCardSchema>;
 export const outcomeSchema = z
   .object({
     narrative: z.string().min(1),
+    /** CR-45: English translation of the narrative's inline language span(s) (`{lang:es}¡Genial!{/lang}`). */
+    translation: z.string().min(1).optional(),
     /** CR-38: the Fairmeasure result card (check_official_list outcomes only). */
     register: registerCardSchema.optional(),
     /** CR-07: damage-control options for this outcome, each with its category for THIS scenario. */
@@ -736,7 +768,10 @@ export const outcomeSchema = z
     /** Arc scenarios only, e.g. { alex_invested: 50 }. */
     arc_effects: z.record(flagName, z.union([z.number(), z.boolean()])).optional(),
   })
-  .strict();
+  .strict()
+  .superRefine((o, ctx) => {
+    langFieldIssues(o.narrative, o.translation).forEach(([field, message]) => ctx.addIssue({ code: 'custom', path: [field === 'text' ? 'narrative' : 'translation'], message }));
+  });
 export type Outcome = z.infer<typeof outcomeSchema>;
 
 export const debriefSchema = z
@@ -762,9 +797,28 @@ export const debriefSchema = z
         /** Shared a code or approved a request (ruling QA m10). Required where share_code / approve_prompt actions exist. */
         shared_code: z.string().min(1).optional(),
         paid: z.string().min(1).optional(),
+        /**
+         * CR-45: the sub-heading over each situation's text, when the fixed one does not fit the content
+         * (e.g. `clicked: "Called the number"`, `paid: "Moved money"`). Without one: the game's heading for
+         * that situation (`clicked` follows the scenario's own action: link, call, reply or QR code).
+         */
+        headings: z
+          .object({
+            clicked: z.string().min(1).optional(),
+            entered_details: z.string().min(1).optional(),
+            shared_code: z.string().min(1).optional(),
+            paid: z.string().min(1).optional(),
+          })
+          .strict()
+          .optional(),
       })
       .strict()
       .refine((a) => a.clicked || a.entered_details || a.shared_code || a.paid, 'already_clicked needs at least one of clicked, entered_details, shared_code, paid')
+      .superRefine((a, ctx) => {
+        for (const [k, v] of Object.entries(a.headings ?? {})) {
+          if (v !== undefined && !a[k as 'clicked' | 'entered_details' | 'shared_code' | 'paid']) ctx.addIssue({ code: 'custom', path: ['headings', k], message: `a heading for "${k}" needs already_clicked.${k} (the text under it)` });
+        }
+      })
       .optional(),
     /** Support line for arc slots 2–3 and other safeguarding moments. */
     safeguarding_line: z.string().min(1).optional(),
@@ -825,7 +879,8 @@ export const scenarioSchema = z
     pressure: pressureSchema.default({ timer: false, levers: [] }),
     message: messageSchema,
     inspectables: z.array(inspectableSchema).default([]),
-    actions: z.array(actionSchema).min(2, 'a scenario offers 2–5 actions').max(5, 'a scenario offers 2–5 actions'),
+    /** 2–5; CR-45: an opener with `request: none` may offer 1, a setup step (e.g. "Wait for the code"). */
+    actions: z.array(actionSchema).min(1, 'a scenario offers 2–5 actions').max(5, 'a scenario offers 2–5 actions'),
     banner: bannerSchema.optional(),
     what_now: whatNowSchema.optional(),
     beats: z.array(beatSchema).default([]),
@@ -853,6 +908,16 @@ export const scenarioSchema = z
     if ((s.role === 'arc') !== (s.debrief.variant === 'arc')) issue(['debrief', 'variant'], 'debrief.variant is arc exactly for arc beats');
     if (s.pressure.honest_deadline && s.is_fraud) issue(['pressure', 'honest_deadline'], 'honest_deadline is for genuine messages');
     if (s.twin_of === s.id) issue(['twin_of'], 'a scenario cannot be its own twin');
+    // CR-45 (sceptic): inline language spans render only in action labels and outcome narratives; a marker
+    // anywhere else would show as raw text, so it is an error.
+    for (const at of strayLangMarkers(s)) issue(at, 'inline language markers ({lang:xx}…{/lang}) are only for action labels and outcome narratives (CR-45); mark a whole message with message.lang');
+    // CR-45: one opening action only on an opener that asks nothing, and then it leads on (next_beat).
+    // Sceptic B1: only a real setup step (isSetupStep): genuine, request: none, a proceed with next_beat. The
+    // class check (proceed) needs balance.yaml, so it is in scripts/lib/rules.ts.
+    if (s.actions.length === 1) {
+      if (s.is_fraud || s.message.request !== 'none') issue(['actions'], 'a scenario offers 2–5 actions (only a genuine opener with request: none may offer a single setup step)');
+      else if (s.actions[0]?.next_beat === undefined) issue(['actions', 0, 'next_beat'], 'a single opening action is a setup step: it needs next_beat (CR-45)');
+    }
 
     // Red Line 4 debrief content.
     if ((s.is_fraud || s.role === 'arc') && !s.debrief.already_clicked) {
@@ -985,6 +1050,16 @@ export const scenarioSchema = z
         }
       });
     }
+    // CR-45: a dialled call is reached by an action; one the player dialled never rings.
+    s.beats.forEach((b, i) => {
+      if (b.direction === undefined) return;
+      if (b.device !== 'call') issue(['beats', i, 'direction'], 'direction is for call beats (CR-45)');
+      else if (b.direction === 'outgoing' && (b.arrives_after !== undefined || !referencedBeats.has(b.id))) issue(['beats', i, 'direction'], 'an outgoing call is one the player dials: it is reached by an action (next_beat), never on a schedule (CR-45)');
+      else if (b.direction === 'incoming') {
+        const kinds = parentKinds(s, b.id);
+        if (kinds.length > 0 && kinds.every((k) => DIAL_KINDS.includes(k))) issue(['beats', i, 'direction'], `every action leading here dials (${kinds.join(', ')}): the player placed this call, so it cannot ring as incoming (CR-45)`);
+      }
+    });
     for (const key of Object.keys(s.outcomes)) {
       if (!usedOutcomes.has(key)) issue(['outcomes', key], `outcome "${key}" is never reached by any action`);
     }

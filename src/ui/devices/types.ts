@@ -9,6 +9,8 @@ export interface CallStage {
   /** Call ended (hang-up, "What now?"). */
   ended: boolean;
   step: boolean;
+  /** CR-45: the player dialled: "Calling…" until connected (`answered`), never Answer or Decline. */
+  outgoing?: boolean;
 }
 
 export interface DeviceProps {

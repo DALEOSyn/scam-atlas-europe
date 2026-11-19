@@ -312,13 +312,18 @@ describe('Finale scenarios (GDD §30.6; CR-43, R22)', () => {
   it('the close beat: Alex sends nothing new (no request, no amount) and the layer-2 line is word for word', () => {
     const s = sc('brussels-arc-close');
     expect(s.message.request).toBe('none');
-    expect(s.message.body).toBe("I'm in trouble. My account's frozen. You're the only one I can ask. Please?");
+    // QA round 1: slot 9's message is history ("Yesterday", under "Earlier"), not a new bubble under "Today";
+    // the body a messenger beat needs is that message's own last word, so Alex adds no new words.
+    expect(s.message.earlier).toEqual([{ when: 'Yesterday', body: "I'm in trouble. My account's frozen. You're the only one I can ask." }]);
+    expect(s.message.body).toBe('Please?');
+    expect([...(s.message.earlier ?? []).map((e) => e.body), s.message.body].join(' ')).toBe("I'm in trouble. My account's frozen. You're the only one I can ask. Please?");
+    expect(JSON.stringify(s.message)).not.toMatch(/€|\d{2,}/u);
     expect(s.setup).toBe('The Open Evening is tomorrow. You open your chat with Alex one more time.');
     expect(s.debrief.layer2.notes?.startsWith("A clean photo check doesn't prove a profile is real: pictures can be made with AI. Telling someone is what works.")).toBe(true);
   });
   it('the recovery-agency test: blame on the lie first, the Dublin line, the M2 line and its recovery_note', () => {
     const s = sc('brussels-arc-recovery-offer');
-    expect(s.setup).toBe('Alex was never real. The lie was theirs, not yours. A few days later, an email arrives.');
+    expect(s.setup).toBe('A few days later, an email arrives.');
     expect(s.message.sender).toEqual({ display: 'Backhaven Recovery', detail: 'cases@backhaven-recovery.example' });
     const m2 = "People who've lost money are often targeted on purpose afterwards, because scammers share victims' details. That says nothing about you.";
     expect(s.debrief.layer2.notes).toContain(`Anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam. ${m2} Call your bank straight away; it may be able to help.`);

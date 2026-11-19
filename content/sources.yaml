@@ -1354,6 +1354,17 @@ sources:
     used_for: [multichannel-support-callback, spoofed-authority-call]
     notes: "Fraudsters claim a push-TAN will stop suspicious debits, but it authorises transfers; being asked by phone for passwords or TANs is always a sign of fraud; banks generally don't call unprompted."
 
+  - id: de-polizei-berlin-falsche-polizei-2025
+    publisher: Polizei Berlin
+    title: "Falsche Polizeibeamte/Falsche Bankmitarbeiter"
+    url: https://www.berlin.de/polizei/aufgaben/praevention/betrug/artikel.1560623.php
+    published: "2025-06-25"
+    accessed: "2026-11-19"
+    region: DE
+    tier: 3
+    used_for: [spoofed-authority-call, bank-safe-account-call]
+    notes: "Police prevention page. Fake police or bank staff; money to be transferred 'zum Schein' to a 'Sicherheitskonto' (security account) or handed to a 'supposed police officer'; the perpetrators claim the culprit is a 'Maulwurf' (mole) in the bank. Advice: note the number on the display, hang up, dial 110 yourself. Supports the 'someone at your bank is involved' isolation line (Rome boss beat 1) as a known police-impersonation claim. Does NOT mention codes or approvals in a banking app. The cash or valuables hand-over parts are offline (Red Line 8) and not used."
+
   # ================================================ Phase 3, chapter 2 (Amsterdam) briefs: messenger-family-impersonation, task-job-scam
   # All opened 2026-11-19. Real brand names in titles/URLs/notes (messenger, payment-request app, job site, crypto platform)
   # are factual references only; the game uses fictional brands (Red Line 1).

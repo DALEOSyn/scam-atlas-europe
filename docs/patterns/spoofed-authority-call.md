@@ -48,7 +48,7 @@ This brief covers the **authority-first** call. Someone claiming to be police, t
    - Wording to use: "Since 2025, phone companies must block calls from abroad that show an Italian number. Even so, a number on your screen proves nothing." [it-agcom-antispoofing-2025]. Spoofing from inside Italy is still possible. State the rule only, never its effect, and don't teach "a local number is safe".
 2. **Police never ask you for money**, and never ask you to move it or hand it over [it-carabinieri-contro-truffe].
 3. **Your bank never asks you to move money to keep it safe, or to read out a code or password on the phone** [eu-epc-threats-2025], [de-vzhh-fake-bank-calls-2025], [pl-cert-fake-consultants].
-4. **They want you to stay on the line** and not hang up to check [it-carabinieri-21-arresti-2025].
+4. **They want you to stay on the line** and not hang up to check [it-carabinieri-21-arresti-2025]. A variant cuts you off from your bank: fake police claim someone inside the bank is involved [de-polizei-berlin-falsche-polizei-2025], and callers tell victims to ignore the bank's alerts [eu-epc-threats-2025].
 5. **Pressure to act now**, often with a frightening story about a relative or a crime [it-carabinieri-contro-truffe], [eu-esas-ai-scams-factsheet-it].
 6. **They ask you to install an app or approve something you didn't start** [pl-cert-fake-consultants], [se-polisen-campaign-2026].
 
@@ -74,7 +74,7 @@ This brief covers the **authority-first** call. Someone claiming to be police, t
 - **IT:** fake Carabinieri, police or lawyers calling about a relative; fake bank operators; numbers that look like bank helplines [it-carabinieri-contro-truffe], [it-bdi-educazione-cyber]. Since 2025, phone companies must block calls from abroad that show an Italian number; spoofing from inside Italy is still possible [it-agcom-antispoofing-2025].
 - **SE:** vishing often starts with an SMS that gives a number to call. Police never collect cards or valuables, and you should never log in with your e-ID for a caller [se-polisen-campaign-2026].
 - **PL:** "fake consultants" spoof caller ID and names, ask for "safe account" transfers or remote-access apps [pl-cert-fake-consultants].
-- **DE:** callers claim a push-TAN "stops" a debit; it authorises it [de-vzhh-fake-bank-calls-2025].
+- **DE:** callers claim a push-TAN "stops" a debit; it authorises it [de-vzhh-fake-bank-calls-2025]. Fake police say a "mole" in the bank is involved and ask for a transfer to a "security account"; the police advice is to hang up and dial 110 yourself [de-polizei-berlin-falsche-polizei-2025] (accessed 2026-11-19).
 - **EU:** spoofed numbers, "safe account" scams, and callers telling victims to ignore bank alerts [eu-epc-threats-2025].
 
 ## 7. Genuine-twin notes
@@ -92,7 +92,7 @@ This brief covers the **authority-first** call. Someone claiming to be police, t
 - **Boss option:** a text with a number to call, then a "bank security" call asking for a transfer to a "verification account", ending in a Larchwick payee check. This reuses the Madrid structure, so check the overlap with Madrid before using it.
 
 ## 9. Sources (accessed 2026-11-19 unless noted)
-it-mur-smishing-vishing · it-agcom-antispoofing-2025 · it-bdi-truffe-cyber · it-bdi-educazione-cyber · eu-esas-ai-scams-factsheet-it · it-open-roma-finti-poliziotti-2026 (news, supporting) · accessed 2026-11-18: it-carabinieri-contro-truffe · it-carabinieri-21-arresti-2025 · eu-epc-threats-2025 · eu-esas-ai-scams-factsheet-nl · pl-cert-fake-consultants · se-polisen-campaign-2026 · fr-cybermalveillance-fiche-hameconnage · accessed 2026-11-19: de-vzhh-fake-bank-calls-2025
+it-mur-smishing-vishing · it-agcom-antispoofing-2025 · it-bdi-truffe-cyber · it-bdi-educazione-cyber · eu-esas-ai-scams-factsheet-it · it-open-roma-finti-poliziotti-2026 (news, supporting) · accessed 2026-11-18: it-carabinieri-contro-truffe · it-carabinieri-21-arresti-2025 · eu-epc-threats-2025 · eu-esas-ai-scams-factsheet-nl · pl-cert-fake-consultants · se-polisen-campaign-2026 · fr-cybermalveillance-fiche-hameconnage · accessed 2026-11-19: de-vzhh-fake-bank-calls-2025 · de-polizei-berlin-falsche-polizei-2025
 
 ## 10. Confidence
 **High** for the call script, the red flags and the habit: the Carabinieri, a ministry, the regulator, the central bank and EU sources agree. **Medium** for Italy-specific detail on spoofed police numbers. The official Italian sources say numbers can be faked and look like bank helplines, but none shows a spoofed *police* number specifically.

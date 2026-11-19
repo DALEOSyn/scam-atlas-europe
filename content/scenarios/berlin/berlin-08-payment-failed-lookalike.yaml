@@ -1,0 +1,139 @@
+# 1-8 Look-alike "Thimble & Pine" payment-failed email with a padlocked login page (GDD §17).
+# Fraud, difficulty 3, timer 60. Fraud twin of berlin-06-payment-failed: same look, same 48-hour
+# deadline, same logo. Brief: card-phishing-payment-failed §2–§3 (red flags 1, 2, 3, 6), §5.
+# Red flags (R): sender and link (thimbleandpine.example-account.test, "real name first" look-alike,
+# GDD §17 T-2.4b ruling 8; owner part example-account.test).
+# Decoys: order number and logo (reveals word-for-word as in 1-6), and the padlock on the sign-in page.
+# The follow-up page address is also a red flag, not counted in R.
+# LO-01 line "A logo or familiar name proves nothing" (GDD §5) is in layer 2.
+id: berlin-08-payment-failed-lookalike
+chapter: berlin
+role: standard
+pattern: card-phishing-payment-failed
+theme: shop-payment
+twin_of: berlin-06-payment-failed
+learning_objectives: [LO-02, LO-03, LO-05]
+difficulty: 3
+is_fraud: true
+device: email
+brands: [thimble-pine]
+cast: []
+pressure:
+  timer: true
+  levers: [urgency, fear]
+
+message:
+  sender: { display: "Thimble & Pine", detail: "orders@thimbleandpine.example-account.test" }
+  subject: "Payment failed for order TP-51907"
+  body: |
+    Hello,
+
+    We couldn't take payment for your order TP-51907. The card on your account may have expired.
+
+    Please update your payment method in your account within 48 hours, or we'll cancel the order: thimbleandpine.example-account.test/account/orders/TP-51907
+
+    Thimble & Pine customer care
+  request: log_in
+  references: ["TP-51907"]
+  image: { alt: "Thimble & Pine logo" }
+
+inspectables:
+  - target: sender.detail
+    reveal: "orders@thimbleandpine.example-account.test. Read the end: the owner part is example-account.test. Thimble & Pine's own domain is thimbleandpine.example."
+    red_flag: true
+    type: sender
+  - target: link
+    reveal: "thimbleandpine.example-account.test/account/orders/TP-51907. Read the end: the owner part is example-account.test, not thimbleandpine.example. The real name at the start is borrowed."
+    red_flag: true
+    type: link
+  - target: reference
+    reveal: "Shows an order number in Thimble & Pine's format, as a real shop email would. Look-alike emails carry them too, so it can't prove anything either way. Your account at thimbleandpine.example shows your real orders."
+    red_flag: false
+    type: reference
+  - target: image
+    reveal: "Shows the Thimble & Pine logo, as a real shop email would. Logos are easy to copy, so it can't prove anything either way."
+    red_flag: false
+    type: logo
+
+actions:
+  - id: tap_update_card
+    label: "Update your card through the link"
+    kind: open_link
+    next_beat: sign_in_page
+    pressure_target: true
+  - id: open_shop_check
+    label: "Open Thimble & Pine yourself and check"
+    kind: verify_in_app
+    outcome: no_notice_in_account
+  - id: report_lookalike_email
+    label: "Report it as phishing"
+    kind: report
+    outcome: lookalike_email_reported
+  - id: ignore_lookalike_email
+    label: "Ignore it"
+    kind: ignore
+    outcome: lookalike_email_ignored
+
+beats:
+  - id: sign_in_page
+    device: browser
+    message:
+      page: { address: "thimbleandpine.example-account.test/login", title: "Thimble & Pine · Sign in" }
+      body: "Sign in to update your payment method. Then enter your card number, expiry date and security code."
+      request: log_in
+    inspectables:
+      - target: page.address
+        reveal: "The address bar still ends in example-account.test. Thimble & Pine's site is thimbleandpine.example."
+        red_flag: true
+        type: page_address
+      - target: page.info
+        reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
+        red_flag: false
+        type: padlock
+    actions:
+      - id: sign_in_enter_card
+        label: "Sign in and enter your card details"
+        kind: enter_details
+        outcome: account_and_card_stolen
+        pressure_target: true
+      - id: close_sign_in_page
+        label: "Close the page"
+        kind: ignore
+        outcome: left_sign_in_page
+
+outcomes:
+  account_and_card_stolen:
+    narrative: "\"Thank you, your order is on its way!\" Next morning: a €212 card payment to a shop you've never heard of, and an email saying your Thimble & Pine password was changed."
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: call_bank_known_number, category: secure }
+      - { step: change_password, category: secure }
+      - { step: report_to_police_online, category: report }
+      - { step: reply_ask_money_back, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  no_notice_in_account:
+    narrative: "You open thimbleandpine.example yourself. Your account shows no order TP-51907 and no payment notice."
+  lookalike_email_reported:
+    narrative: "Reported. Your mail app moves it to junk and warns other users about the sender."
+  lookalike_email_ignored:
+    narrative: "Forty-eight hours pass. Nothing is cancelled, because there was nothing to cancel."
+  left_sign_in_page:
+    narrative: "You close the page without typing anything. Nothing happens."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "The sender and link both end in example-account.test, not thimbleandpine.example."
+    what_works: "Open Thimble & Pine yourself and check."
+  layer2:
+    message_flags:
+      - "The same 48-hour deadline a real shop might use. Deadlines appear on genuine emails too, so the addresses were the tell, not the deadline."
+      - "It names an order number but no item or price, and the order isn't in your account."
+      - "A sign-in page from an email link that then asks for your full card number, expiry and security code."
+    notes: "A logo or familiar name proves nothing. Scammers copy them perfectly. The padlock on the sign-in page only means the connection is encrypted, not who runs the site."
+  device_tip: "On a real phone, press and hold the button or link to preview the address. Read the end of the address: the owner is the last two parts of the name before the first \"/\", not the name at the start."
+  habit_card: read-the-link
+  already_clicked:
+    clicked: "Close the page and type nothing. Delete the email or report it as phishing."
+    entered_details: "Block your card in your banking app, call your bank on the number on your card, and change your Thimble & Pine password from the real site, plus anywhere you reused it."
+  sources: [es-incibe-streaming-renewal-2024, es-incibe-streaming-extension-2023, pl-cert-phishing-kb-2026, ch-ncsc-links-2025, pt-gnr-phishing]

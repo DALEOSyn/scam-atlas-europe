@@ -148,16 +148,19 @@ The player sees **stars per scenario** and a **stamp per chapter**. Points and t
 - **Position on always-verify:** verifying everything is a sound real-world habit, so it earns ★★★ on every scenario. But it shows no evidence of spotting anything, so it stays at **bronze**. Silver and gold need spotted red flags; gold also needs calibration.
 
 ### 7.2 Strategy check (Berlin, §17)
-**Assumptions (v3.1):**
-- **Standard fraud:** 4 scenarios, each with 2 red flags and 2 decoys, max 15 + 4 = 19.
-  - In 1-3, 1-7 and 1-8 the sender and the link are the red flags.
-  - In 1-5 the sender is a decoy (a spoofed Kettle sender ID), there is no link, and the red flags are the code request and the deadline.
-- **Genuine:** 3 scenarios, max 15 each, with 2 checkable details each: 1-1 sender + pick-up code; 1-2 sender + meeting time; 1-6 sender + link.
+**Assumptions (v3.2, re-run at T-2.4b against the authored Berlin YAML, final state with `request` checkable):**
+- **R counts the scheduled beats only** (the opening message and each scored boss beat; `redFlagCount` in the engine). Red flags on a page reached only through an engage (`page.address` in 1-3, 1-7, 1-8) are taggable and count toward "spotted" for players who get there, but are not in R. Decoys there (the padlock) count toward the 2-decoy rule.
+- **Standard fraud:** 4 scenarios, each with 2 red flags in R, max 15 + 4 = 19.
+  - In 1-3, 1-7 and 1-8 the sender and the link are the red flags. Decoys on the message: 1-3 and 1-7 the tracking number; 1-8 the order number and logo. Each also has the padlock on its engage page.
+  - In 1-5 the sender is a decoy (a spoofed Kettle sender name), there is no link, and the red flags are **the private mobile number** the code is to be texted to and **the request** (pass on the code). Decoys: sender name, request number. The 10-minute deadline is a layer-2 text flag, not a checkable (T-2.4b ruling 2).
+- **Genuine:** 3 scenarios, max 15 each. Own checkable details: 1-1 sender, tracking number, pick-up code (3, parity with its twin 1-3); 1-2 sender, meeting time (2); 1-6 sender, link, order number, logo (4, parity with its twin 1-8). 9 in total.
 - **Boss:** 3 beats, max 51.
   - 4 red flags: beat 1 link, beat 2 sender and link, beat 3 the request.
-  - 3 decoys: beat 1 sender ID, beat 2 logo, beat 3 caller ID (it shows "Larchwick Bank").
+  - 6 decoys: beat 1 sender name and tracking number; beat 2 logo; beat 3 caller ID (it shows "Larchwick Bank"), the number the caller quotes ("the number on your card"), and the case number.
+- **Minimum checkables** (`mix.min_checkables`) apply per scheduled beat: 3 on every fraud beat, 2 on every genuine message.
 - **Sender-or-link decoys:** 1-5 and the boss = 2 = ceil(5/3) ✓.
 - **Totals:** max = 4×19 + 3×15 + 51 = **172**. R = 8 + 4 = 12, so silver needs spotted ≥ ceil(12/3) = **4** and gold needs ≥ ceil(24/3) = **8**.
+- **Interim, only if `request` checkables were not to land:** R = 10 (1-5 and boss beat 3 lose their request flag), max = 170 (1-5's tag cap drops to +2), silver 4, gold 7. Not to be shipped: T-2.3 lands before merge.
 
 | # | Strategy | Points arithmetic | Pts | Rating | Spotted (correct − wrong) | Stamp |
 |---|---|---|---|---|---|---|
@@ -166,8 +169,8 @@ The player sees **stars per scenario** and a **stamp per chapter**. Points and t
 | 3 | Ideal + always verify, incl. calling Adaeze about 1-2 (off-focus) | same; 1 off-focus check | 172 | 100% | 12 | Silver |
 | 4 | Careful reporter: correct tags, reports fraud, proceeds on genuine | 4×(10+4) + (3×10+6) + 45 | 137 | 79.7% | 12 | Silver |
 | 5 | Ideal but reports Adaeze's message once | 172 − 15 − 5 | 152 | 88.4% | 12 | Silver |
-| 6 | Tag everything + always verify | all bonuses void: 60 + 45 + 45 | 150 | 87.2% | 12 − (8 + 3 + 6) = −5 | Bronze |
-| 6a | **Random single tag** per scenario/beat + always verify (expected) | 150 + 4×(½×2) + (⅙×6) | ≈155 | ≈90.1% | 3.67 − (3.33 + 3) ≈ −2.7 | Bronze (silver only if all 7 fraud tags hit, ≈1 in 96) |
+| 6 | Tag everything + always verify | all bonuses void: 60 + 45 + 45 | 150 | 87.2% | 12 − (6 + 6 + 9) = −9 | Bronze |
+| 6a | **Random single tag** per scenario/beat + always verify (expected) | 150 + 2×(⅔+⅔+½+½) + (1/18×6) | ≈155 | ≈90.1% | 3.58 − (3.42 + 3) ≈ −2.8 | Bronze (silver only if all 7 fraud tags hit, 1 in 162) |
 | 6b | **Always tag sender + link** + always verify | 150 + 4 (1-3) + 4 (1-7) + 4 (1-8); 1-5 and boss void | 162 | 94.2% | 9 − (1 + 2 + 4) = 2 | Bronze |
 | 7 | Check everything, no tags, always verify | 60 + 45 + 45 | 150 | 87.2% | 0 | Bronze |
 | 8 | Blind always-verify | 60 + 45 + 45 | 150 | 87.2% | 0 | Bronze |
@@ -176,13 +179,16 @@ The player sees **stars per scenario** and a **stamp per chapter**. Points and t
 | 11 | Blind always-dismiss | 40 + 30 + 10 + 10 + 0 | 90 | 52.3% | 0 | Bronze |
 | 12 | Trust everything, perfect damage control | 45 + 4×9 + 9 (boss: beats 0, damage control once) | 90 | 52.3% | 0 | Bronze |
 
-Row 6a in detail:
-- Expected correct tags = 4×½ (standard frauds) + ½ + ⅔ + ½ (boss beats) = 3.67.
-- Wrong tags = 7 fraud tags − 3.67 = 3.33, plus 3 tags on genuine messages.
+Row 6a in detail (T-2.4b re-run, checkables as authored):
+- Hit chance per fraud tag = red flags ÷ checkables on that beat: 1-3 ⅔, 1-7 ⅔, 1-8 ½ (2 of 4), 1-5 ½ (2 of 4); boss beat 1 ⅓, beat 2 ⅔, beat 3 ¼ (1 of 4).
+- Expected correct tags = 7/3 (standard frauds) + 5/4 (boss beats) ≈ 3.58.
+- Wrong tags = 7 fraud tags − 3.58 ≈ 3.42, plus 3 tags on genuine messages.
+- The boss bonus survives only if all 3 beat tags hit (1/18), so it adds 6/18 ≈ 0.33 in expectation.
+- Rows 6 and 6a changed with the extra decoys (more decoys make blind tagging worse); rows 1–5, 6b and 7–12 are unchanged. QA re-runs 6a/6b in the Phase 3 balancing pass as planned.
 
 **What the numbers show:**
 - No button-mashing strategy reaches silver **in expectation**, with or without pause.
-- The one exception is luck. A random single-tagger reaches exactly silver's threshold only if every fraud tag hits, in about 1 in 96 runs. Even then, they have tagged the right detail 7 times.
+- The one exception is luck. A random single-tagger reaches exactly silver's threshold only if every fraud tag hits, in about 1 in 162 runs. Even then, they have tagged the right detail 7 times.
 - Row 6b is the closest systematic strategy, at 2 of the 4 needed. Its margin depends on the sender-or-link decoy rule and on genuine messages having their own sender and link details. The validator enforces the first; QA re-runs rows 6a and 6b for every chapter at the Phase 3 balancing pass.
 - A high rating alone (up to 94%) never earns silver. Gold needs both spotting and calibration.
 
@@ -357,12 +363,12 @@ The decoy reveal rule (docs/CONTENT_GUIDE.md) is applied to every Home decoy and
 ## 17. Chapter 1 — Berlin
 - **Goal:** check deliveries in the official app you open yourself.
 - **Shape:** slot 1, difficulty 1–3. 8 scored scenarios: 3 genuine (37.5%) and 5 fraud. Plus 1 drill and 1 arc beat.
-- **Patterns** (pending the brief): `smishing-parcel-fee`, fake customs fee, and for the boss `multichannel-support-callback` (parcel → customs invoice → fake bank fraud-team call). Plus 2 callbacks: 0-2 credential phishing on a shop pretext, and 0-4 Kettle account takeover.
+- **Patterns** (pending the brief): `smishing-parcel-fee`, fake customs fee, and for the boss `multichannel-support-callback` (parcel → customs invoice → fake bank fraud-team call). Plus 2 callbacks: `card-phishing-payment-failed` (1-6 genuine twin, 1-8; calls back 0-2's look-alike sign-in page and 0-5's card typed into a fake page, now on a shop pretext), and 0-4 Kettle account takeover (`messenger-account-takeover-code`, 1-5).
 - **Flavour:** German in-world text (`lang="de"`, inline translation), lockers, the courier **Trundle**, the shop **Thimble & Pine**, neighbour **Jonas**.
 - **Parcel-themed scored scenarios:** 4 of 8 (1-1, 1-3, 1-7, boss), never adjacent.
 - **Pressure parity:** timer or pusher on 2 of 3 genuine (67%) vs 4 of 5 fraud (80%), a 13-point gap ✓. Every timer is 60 s (the slot-1 length), genuine or fraud; boss beats are 40 s.
 - **Difficulty parity:** genuine scenarios at difficulty 1 (1-1), 2 (1-2) and 3 (1-6), matching the fraud range 1–3 ✓.
-- **Decoys:** 2 per fraud scenario. The sender or link is a decoy in 1-5 (spoofed Kettle sender ID) and in the boss (beat 1 sender ID, beat 3 caller ID): 2 of 5 = ceil(5/3) ✓.
+- **Decoys:** at least 2 per fraud scenario (as authored: 1-3 and 1-7 two, 1-8 three, 1-5 two, boss six; counts in §7.2). The sender or link is a decoy in 1-5 (spoofed Kettle sender name) and in the boss (beat 1 sender name, beat 3 caller ID): 2 of 5 = ceil(5/3) ✓.
 
 | # | Half | Scenario (candidate) | Device | Truth | Diff | Pressure | LOs |
 |---|---|---|---|---|---|---|---|
@@ -387,7 +393,7 @@ The decoy reveal rule (docs/CONTENT_GUIDE.md) is applied to every Home decoy and
 - **Boss beat 3 (1-9), per `docs/patterns/multichannel-support-callback.md` §8:**
   - The caller does **not** ask for the customs invoice to be paid. The request is the code or the in-app approval "to stop the charge". Any number shown is masked or from a range reserved for fiction (Red Line 3); spoofing is never shown, only that it happens.
   - **The code SMS or approval prompt is part of beat 3, not an interrupt.** The scenario-writer picks one variant: a Larchwick code SMS (default; `message.request: share_code`) or a Larchwick approval prompt (`message.request: approve`). It shows as a notification banner inside the call screen, with no actions of its own, so it can't be reported and can never count as "genuine message reported" for silver or gold. Its text says the code or approval is **for a payment**, not a cancellation. That text is the reveal of beat 3's single `request` inspectable (`red_flag: true`). It is not a separate inspectable, so R doesn't change.
-  - **Red flag:** the request (read out a code or approve in the app). **Decoy:** the caller ID showing "Larchwick Bank", which may even be the bank's real number. Re-checked: §7.2 is unchanged (beat 3: 1 red flag, 1 decoy; boss 4 red flags and 3 decoys; R = 12; the boss is still one of the 2 sender-or-link-decoy scenarios).
+  - **Red flag:** the request (read out a code or approve in the app). **Decoys:** the caller ID showing "Larchwick Bank", which may even be the bank's real number; the number the caller quotes as "the number on your card"; the case number. Re-checked at T-2.4b: beat 3 has 1 red flag and 3 decoys; the boss has 4 red flags and 6 decoys; R = 12; the boss is still one of the 2 sender-or-link-decoy scenarios (§7.2).
   - **Actions on beat 3** (≤ 5): Hang up (`hang_up`, pressure target: no), Read out the code (`share_code`, pressure target) or Approve in the app (`approve_prompt`), depending on the variant.
   - **"What now?" after hanging up:** `call_back_known` on the number on the Larchwick card or in the Larchwick app you open yourself = **verify** (★★★); "Call back this number" (the number that just called) = `call_number_in_message` (engage); `report`; "Leave it there" = dismiss (★★).
     - "Call back this number" caps the beat at ★★. The game doesn't play out who answers: that number may be the bank's real one shown on a faked caller ID, so the player can't know whose line it really is. The engage step returns to "What now?" with the note "You can't tell whose line that number really is. Use the number on your card." A verify after that still scores ★★ (engage cap).
@@ -398,6 +404,17 @@ The decoy reveal rule (docs/CONTENT_GUIDE.md) is applied to every Home decoy and
   - Beats keep arriving even after a beat-1 verify, so skilled players see the whole boss.
 - **Red Line 8 check:** every Berlin scenario is SMS, email, messenger, browser or call. There is no customs *letter*: the customs fee arrives by SMS (1-7) and as an emailed invoice (boss beat 2).
 - The delivery-card QR candidate is held as a swap for 1-5 if research doesn't support the Kettle-code callback. If used, the card is only a `letter` carrying a QR code, and the lesson is checking the QR destination (LO-02).
+
+**T-2.4b rulings (game-designer, 2026-11-18):**
+1. **§7.2 numbers for the final state are confirmed** with `request` checkable on 1-5 and boss beat 3: max 172, R = 12, silver spotted ≥ 4, gold ≥ 8. The writer's TODO inspectables are added when T-2.3 lands, before merge. R counts scheduled beats only; flags on engage pages count toward spotted but not R (§7.2).
+2. **1-5: the private mobile number is the checkable red flag, plus the request; the deadline is a layer-2 text flag.** General rule: **a deadline is never a checkable red flag.** Honest deadlines appear on genuine messages too (1-6's 48 h), so a taggable deadline would either be a tell or punish calibration. Deadlines are taught as pressure (LO-04) in layer 2 and through the timer.
+3. **Extra decoys accepted.** 1-1 keeps 3 checkables (count parity with its twin 1-3, so the list length never hints at the verdict). The boss keeps 6 decoys: every visible element is a Check button anyway (§5), and a quoted "number on your card" or a case number answered with the filler "Nothing unusual here" would mislead, so authored decoy reveals are better. §7.2 re-run: rows 6 and 6a change (both still bronze; lucky silver now 1 in 162); 6b unchanged at spotted 2. QA re-runs 6a/6b in the Phase 3 pass as planned.
+4. **Second callback is `card-phishing-payment-failed` (1-6/1-8). Accepted.** 1-8 is a look-alike sign-in page on a shop pretext that then asks for the card, so it is the "0-2 credential phishing on a shop pretext" callback, filed under the brief that covers it. §17 Patterns line updated. Gold's off-focus rule is unaffected (1-6 is high stakes).
+5. **One layer 1 for the whole boss, from beat 3. Accepted** (beat 3 is the climax and the new pattern; the customs-fee flags are in layer 2). **Condition:** the engine currently renders one "You chose" line per boss beat below 3 stars, which could reach 14 + 17 + 22 = 53 words, while the validator counts one line (39). Rule: **a boss shows at most one "You chose" line in layer 1**, for the beat with the fewest stars; on a tie, the latest such beat (closest to the tell). Per-beat choices go in layer 2 next to each beat's outcome. Hand-off to `frontend-engineer` (engine) and `ux-artist` (UI_SPEC §8.1 wording).
+6. **Habit-card examples reviewed and reworded** (`content/habit_cards.yaml`). Rule: **a habit-card example uses only material the player has already seen where the card first appears, or none; it never names a later scenario's pretext or domain, and never puts a scam domain into a genuine debrief.** `read-the-link` (first shown at 0-2; also 1-4 drill and 1-8 fraud) uses 0-2's own hosts. `open-it-yourself` (first shown at 1-3; also genuine 1-6) uses the 0-2 "mailbox full" pretext with no domain, and now also shows the genuine path (a real problem is there too, and you fix it there), which fits 1-6.
+7. **English TRUNDLE pusher in a German thread: accepted for merge, schema addition requested (CR-14).** A language switch inside one sender's thread could read as a language tell, which §6/`language_never_red_flag` rules out. When CR-14 lands, the scenario-writer makes the boss pusher German with a translation.
+8. **1-8 look-alike: change to the "real name first" form `thimbleandpine.example-account.test`** (owner part `example-account.test`). Reason: 1-3 and 1-7 already use brand-plus-word hosts, so 1-8 at difficulty 3 needs a subtler shape; this repeats 0-4/0-6's trick in Berlin just before the boss's beat 1 uses it, which is reinforcement, not a spoiler. `ux-artist` registers it in `brands.yaml`; the scenario-writer updates the sender, link, page address, reveals ("Read the end"), tell and device tip ("one extra word" no longer fits).
+9. **Boss beat 3 load (40 s: transcript, code banner, Jonas at 100 s = 10 s into the beat, caller pusher at 115 s): accepted for merge, the paper-playtest gate stays.** Mitigations already in place: translation and pause freeze the timer, first expiry adds 20 s, screen-reader announcements coalesce, and no score depends on timers. My prediction is that it sits at the limit. If QA finds overload, the pre-agreed fallback applies: Jonas arrives when "What now?" opens (needs an interrupt trigger from `frontend-engineer`); do not move him by `at_seconds` alone, because a fast player could finish the boss before he arrives and lose the payoff.
 
 ## 18. Chapters 2–10 (map owned by `fraud-researcher`)
 **2 Amsterdam (slot 2, diff 2–3).**
@@ -476,6 +493,9 @@ Requests to `frontend-engineer`:
 - **CR-11** Per-chapter validation of all `mix` rules (balance.yaml), including pressure parity, theme share, `approve_prompt` only on fraud, no comply on low-stakes genuine, and Alex lines ≤ 25 words.
 - **CR-12** `content/cast.yaml` (id, name, role, known-channel contact).
 - **CR-13** Red-line linter: decode every QR asset; fail unless it is non-decodable or decodes to a `.invalid` string.
+- **CR-14** (T-2.4b) Pusher messages accept optional `lang` and `translation`, with the same inline translation toggle as messages (0 s, freezes the timer). Not a merge blocker for Berlin.
+- **CR-15** (T-2.4b) Boss layer 1 shows at most one "You chose" line (fewest stars; tie → latest beat). Per-beat choice lines move to layer 2. Keep the validator's single-line `choice_worst` count.
+- **CR-16** (T-2.4b, only if QA triggers the §17 ruling 9 fallback) An interrupt trigger `on: what_now` so an interrupt arrives when the "What now?" step opens.
 
 ## 20. Hand-offs
 - **frontend-engineer:** §3–§9, §14, CR-01 to CR-13, `balance.yaml` v3.

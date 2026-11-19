@@ -15,6 +15,7 @@ export const SOURCE_HOST_ALLOWLIST: readonly string[] = [
   'bund.de',
   'polizei-beratung.de',
   'verbraucherzentrale.de',
+  'vzhh.de',
   // France
   'gouv.fr',
   'cybermalveillance.gouv.fr',

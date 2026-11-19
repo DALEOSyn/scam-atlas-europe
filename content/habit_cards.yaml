@@ -1,18 +1,21 @@
 # Habit cards (GDD §11, UI_SPEC §9.1): one per learning objective.
 # STUB for T-2.2: titles from docs/LEARNING_OBJECTIVES.md; the game-designer owns the wording.
+# Example rule (GDD §17 T-2.4b ruling 6): an example uses only material the player has already seen where
+# the card first appears (or none); never a later scenario's pretext or domain; never a scam domain in a
+# card shown on a genuine debrief (a drill about a quoted scam, like 1-4, is not a genuine debrief).
 cards:
   - id: read-the-link
     lo: LO-02
     title: "Read the link before you tap"
-    habit: "Hold or hover to see where a link goes. A brand name in the address is not enough."
-    example: "trundle-zoll.example is not trundle.example."
+    habit: "Hold or hover to see where a link goes, then read the end of the address: that part names the owner. A brand name anywhere else proves nothing."
+    example: "waymarker-it-support.example has Waymarker in it, but Waymarker's own address is waymarker-network.example."
     already_clicked: "Close the page. If you typed anything, change that password or block that card now."
   - id: open-it-yourself
     lo: LO-03
     title: "Open it yourself"
     habit: "Go to the app or the address you already know, not the link in the message."
-    example: "A parcel fee? Open the courier's app yourself and check the tracking."
-    already_clicked: "Block your card in your banking app and call your bank on the number on your card."
+    example: "\"Mailbox full\"? Open your mail yourself. If storage really is full, it says so there, and you can fix it there."
+    already_clicked: "Typed a password? Change it from the real site. Gave card details? Block your card in your banking app and call your bank on the number on your card."
   - id: who-really-sent
     lo: LO-01
     title: "Who really sent this?"
@@ -43,3 +46,15 @@ cards:
     habit: "Before acting on an odd request, check with someone you trust, on a contact you already have. And be that someone for others."
     example: "\"IT\" is chasing you on three channels? Message Adaeze from the staff directory first."
     already_clicked: "Tell someone now, even if it feels awkward. Early help limits the damage."
+  - id: codes-are-only-for-you
+    lo: LO-05
+    title: "Codes are only for you"
+    habit: "A code sent to your phone is a key. Never pass it on or type it into a page from a message, whoever asks. Read what the code says it is for."
+    example: "The code text says it registers your account on a new device, and you aren't setting one up? Then it isn't for you to pass on."
+    already_clicked: "Passed a code on? Secure that account now from the real app, and warn your contacts another way."
+  - id: hang-up-call-back
+    lo: LO-08
+    title: "Hang up, call back"
+    habit: "An unexpected call from your bank, the police or any official? Hang up, then call back on a number you find yourself. Caller ID proves nothing."
+    example: "The phone shows your bank's name? End the call, then dial the number on the back of your card."
+    already_clicked: "Read out a code or approved something? Call your bank now on the number on your card and ask it to block the card and stop or recall the payment."

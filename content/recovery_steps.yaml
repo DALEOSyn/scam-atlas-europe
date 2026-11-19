@@ -46,3 +46,5 @@ steps:
     label: "Tell IT through Waymarker Desk, opened yourself"
   - id: change_password_sign_out
     label: "Change the password and sign out other sessions"
+  - id: call_bank_stop_payment
+    label: "Call your bank on the number on your card and ask it to stop or reverse the payment"

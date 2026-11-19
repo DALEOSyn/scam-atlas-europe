@@ -1,0 +1,102 @@
+# 1-6 Thimble & Pine: "Payment for your order failed. Update it in your account within 48 h or the
+# order is cancelled" (GDD §17). Genuine, high stakes (the request is enter_details), difficulty 3,
+# honest timer 60 (slot length). Genuine twin of berlin-08-payment-failed-lookalike.
+# Brief: card-phishing-payment-failed §7 (matches a real order, usual sender, update in your account,
+# the same notice is there when you open the shop yourself; a deadline alone doesn't make it fake).
+# GDD §17 notes: no separate proceed action. verify_in_app ★★★, update via the link (comply) ★,
+# ignore 0 (order cancelled), report 0 and −5.
+# Twin parity: the reference and logo reveals are word-for-word the same as in 1-8; the sender and
+# link reveals follow the same pattern (address, owner part, the shop's own domain).
+id: berlin-06-payment-failed
+chapter: berlin
+role: standard
+pattern: card-phishing-payment-failed
+theme: shop-payment
+twin_of: berlin-08-payment-failed-lookalike
+learning_objectives: [LO-03, LO-17]
+difficulty: 3
+is_fraud: false
+stakes: high
+device: email
+brands: [thimble-pine]
+cast: []
+pressure:
+  timer: true
+  levers: [urgency]
+  honest_deadline: "Order held 48 hours"
+
+message:
+  sender: { display: "Thimble & Pine", detail: "orders@thimbleandpine.example" }
+  subject: "Payment failed for order TP-48213"
+  body: |
+    Hello,
+
+    We couldn't take payment for your order TP-48213 (desk lamp, €34.90). The card on your account may have expired.
+
+    Please update your payment method in your account within 48 hours, or we'll cancel the order: thimbleandpine.example/account/orders/TP-48213
+
+    Thimble & Pine customer care
+  request: enter_details
+  references: ["TP-48213"]
+  image: { alt: "Thimble & Pine logo" }
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: orders@thimbleandpine.example. Read the end: the owner part is thimbleandpine.example, Thimble & Pine's own domain. That isn't proof on its own, so weigh it with what the email asks for."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: link
+    reveal: "It fits: thimbleandpine.example/account/orders/TP-48213. Read the end: the owner part is thimbleandpine.example, Thimble & Pine's own site. That isn't proof on its own, so weigh it with what the email asks for."
+    red_flag: false
+    type: link
+    reassures: true
+  - target: reference
+    reveal: "Shows an order number in Thimble & Pine's format, as a real shop email would. Look-alike emails carry them too, so it can't prove anything either way. Your account at thimbleandpine.example shows your real orders."
+    red_flag: false
+    type: reference
+  - target: image
+    reveal: "Shows the Thimble & Pine logo, as a real shop email would. Logos are easy to copy, so it can't prove anything either way."
+    red_flag: false
+    type: logo
+
+actions:
+  - id: update_via_link
+    label: "Update your card through the link"
+    kind: enter_details
+    outcome: card_updated_via_link
+    pressure_target: true
+  - id: open_shop_update
+    label: "Open Thimble & Pine yourself and check"
+    kind: verify_in_app
+    outcome: card_updated_in_account
+  - id: report_payment_email
+    label: "Report it as phishing"
+    kind: report
+    outcome: payment_email_reported
+  - id: ignore_payment_email
+    label: "Ignore it"
+    kind: ignore
+    outcome: order_cancelled
+
+outcomes:
+  card_updated_in_account:
+    narrative: "You open thimbleandpine.example yourself. Your account shows the same notice: \"Payment failed, order TP-48213.\" You add your new card, and the lamp ships tomorrow."
+  card_updated_via_link:
+    narrative: "The link opens your real Thimble & Pine account. You add your new card and the lamp ships. It worked this time, because the email was real."
+  payment_email_reported:
+    narrative: "Reported. Two days later: \"Order TP-48213 cancelled: no payment received.\" The lamp goes back on the shelf."
+  order_cancelled:
+    narrative: "Two days later: \"Order TP-48213 cancelled: no payment received.\" Your desk stays dark."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "It matched your order; your account shows the same notice."
+    what_works: "Update it in the shop yourself."
+  layer2:
+    message_flags: []
+    notes: "Why it was safe to act: you really had ordered that lamp, the email named it and the price, and the same notice was waiting in your account. The 48-hour deadline was honest: real shops cancel unpaid orders. Updating through the link worked this time, but opening the shop yourself works every time, including when an email only looks like this one."
+  device_tip: "On a real phone, open the shop's app or type its address yourself and look at your orders, instead of tapping the button in the email."
+  habit_card: open-it-yourself
+  sources: [es-incibe-streaming-renewal-2024, pl-cert-phishing-kb-2026, de-bsi-protect-phishing]

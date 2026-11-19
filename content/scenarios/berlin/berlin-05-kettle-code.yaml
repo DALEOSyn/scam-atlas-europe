@@ -1,0 +1,121 @@
+# 1-5 Callback to 0-4: "Your Kettle account will be deleted. Send us the 6-digit code we just texted
+# you" (GDD §17). Fraud, difficulty 3, timer 60 (slot length). Brief: the pattern below
+# §2 (code request shape), §3 red flags 1–4, §5 recovery.
+# The real Kettle code text arrives first as a banner (no actions, not checkable). It says the code
+# registers Kettle on a new device (brief §3 red flag 3: read what the code is for). The banner is the
+# evidence, not the tell; the request reveal quotes it (design ruling QA L1).
+# Sender-or-link decoy: the sender name "Kettle" (the real code and the request arrive under the same
+# name). No link.
+# Red flags (GDD §17 T-2.4b ruling 2): the private mobile number the code is to be texted to (brief §3
+# red flag 1; §7 "a real service never asks you to send it a code by chat or SMS reply") and the request
+# (its checkable is the ask sentence in the body; the reveal quotes the banner).
+# The 10-minute deadline is a layer-2 text flag: a deadline is never a checkable red flag.
+# Decoys: sender name, request number.
+id: berlin-05-kettle-code
+chapter: berlin
+role: standard
+pattern: messenger-account-takeover-code
+theme: account-security
+learning_objectives: [LO-05, LO-01]
+difficulty: 3
+is_fraud: true
+device: sms
+brands: [kettle]
+cast: [mateus]
+pressure:
+  timer: true
+  levers: [urgency, fear]
+
+banner:
+  device: sms
+  message:
+    sender: { display: "Kettle" }
+    body: "Kettle-Code: 318 640. Mit diesem Code wird Ihr Kettle-Konto auf einem neuen Gerät registriert. Geben Sie ihn an niemanden weiter."
+    lang: de
+    translation: "Kettle code: 318 640. This code registers your Kettle account on a new device. Don't give it to anyone."
+    request: none
+
+message:
+  sender: { display: "Kettle", detail: "Sender name: Kettle" }
+  body: |
+    Kettle: Für Ihr Konto liegt ein Löschantrag vor (Antrag K-7710). Waren Sie das nicht? Dann senden Sie den 6-stelligen Code, den wir Ihnen gerade geschickt haben, innerhalb von 10 Minuten per SMS an +49 1•• •••• ••90. Sonst wird Ihr Konto mit allen Chats gelöscht.
+  lang: de
+  translation: "Kettle: We have received a request to delete your account (request K-7710). Wasn't that you? Then text the 6-digit code we just sent you to +49 1•• •••• ••90 within 10 minutes. Otherwise your account and all your chats will be deleted."
+  request: share_code
+  ask:
+    text: "senden Sie den 6-stelligen Code, den wir Ihnen gerade geschickt haben"
+    translation: "text the 6-digit code we just sent you"
+  references: ["K-7710"]
+  phone_numbers: ["+49 1•• •••• ••90"]
+  l10n_note: "German in-world text is intentional (Berlin chapter); the English translation is shown inline."
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows the sender name Kettle, the same name as the code text above, as a real Kettle text would. Any sender can set this name, so it can't prove anything either way."
+    red_flag: false
+    type: sender
+  - target: reference
+    reveal: "Shows a request number, K-7710, as a real notice might. Anyone can make one up, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: phone_number
+    reveal: "+49 1•• •••• ••90, a private mobile number. Kettle doesn't collect codes by text, at this number or any other."
+    red_flag: true
+    type: phone_number
+  - target: request
+    reveal: "It asks you to pass on the code Kettle just texted you. The code text itself says what that code does: \"This code registers your Kettle account on a new device. Don't give it to anyone.\" The code text is real. Being asked to pass the code on is the tell."
+    red_flag: true
+    type: request
+
+actions:
+  - id: text_code
+    label: "Text the code to that number"
+    kind: share_code
+    outcome: kettle_registered_elsewhere
+    pressure_target: true
+  - id: open_kettle_check
+    label: "Open Kettle yourself and check your account"
+    kind: verify_in_app
+    outcome: kettle_account_fine
+  - id: report_code_text
+    label: "Report the text as spam"
+    kind: report
+    outcome: code_text_reported
+  - id: delete_code_text
+    label: "Delete the text"
+    kind: delete
+    outcome: code_text_deleted
+
+outcomes:
+  kettle_registered_elsewhere:
+    narrative: "A minute later Kettle signs you out: \"Your account is now registered on another phone.\" That evening Mateus emails: \"Did you just ask me for €300 on Kettle?\""
+    recovery:
+      - { step: reregister_app_own_number, category: stop }
+      - { step: turn_on_two_step, category: secure }
+      - { step: warn_contacts, category: warn }
+      - { step: report_to_police_online, category: report }
+      - { step: reply_to_sender, category: harmful }
+      - { step: wait_and_see, category: harmful }
+    sets_flags: [kettle_code_shared]
+  kettle_account_fine:
+    narrative: "Kettle opens as normal. No deletion request, no notice, and your phone is the only device on the account."
+  code_text_reported:
+    narrative: "Reported. Your phone files the text under spam."
+  code_text_deleted:
+    narrative: "Deleted. Ten minutes pass. Your Kettle account and every chat are still there."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "It wanted the code that was sent to you."
+    what_works: "Never pass a code on; open Kettle yourself."
+  layer2:
+    message_flags:
+      - "Codes are only for the person who started the sign-in. No real service asks you to text one back."
+      - "A 10-minute deletion threat: a deadline meant to stop you checking."
+    notes: "The name \"Kettle\" proved nothing: the real code and the request arrived under the same sender name. Read what a code says it is for. Turning on two-step verification (a PIN in the app's settings) makes a stolen code much less useful."
+  device_tip: "In your real messaging app, find Settings › Linked devices and the two-step PIN now, so you know where they are if you ever need them."
+  habit_card: codes-are-only-for-you
+  already_clicked:
+    shared_code: "Open Kettle. If it has signed you out, set it up again with your own number (it can take a while). Then turn on the two-step PIN, warn your contacts another way straight away, and report it to the police."
+  sources: [nl-politie-whatsapp-takeover-2024, de-vzn-ghost-pairing-2026, pl-cert-phishing-kb-2026, ie-ncsc-phishing-guide]

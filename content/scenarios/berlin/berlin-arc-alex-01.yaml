@@ -1,0 +1,58 @@
+# Arc beat, slot 1 (GDD §10.1, §17): Alex on Wordswap, "Your German is better than you think!"
+# Friendship only (GDD §10.1). No warning sign yet. Unscored; arc points are banked silently.
+# Options per GDD §10.1 slot 1: Chat back → reply · Close the app → ignore (a first close pauses
+# the arc; Alex messages once more next chapter, engine arc.ts).
+# Debrief: arc variant, no verdict, no stars. Layer 1 words per GDD §10.2 slot-1 example.
+# Alex's line is ≤ 25 words (balance: arc_line_max_words): generic small talk only.
+id: berlin-arc-alex-01
+chapter: berlin
+role: arc
+arc_slot: 1
+learning_objectives: [LO-14]
+is_fraud: true
+device: messenger
+brands: [wordswap]
+cast: [alex]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Alex", detail: "Wordswap practice partner" }
+  from_cast: alex
+  body: |
+    Hallo! Your German is better than you think! Want to swap phrases? I'll teach you Berlin slang, you help me with English idioms.
+  request: reply
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows Alex, a practice partner on Wordswap you met this week, as any profile would. A profile name can't prove anything either way."
+    red_flag: false
+    type: sender
+
+actions:
+  - id: chat_back_alex
+    label: "Chat back"
+    kind: reply
+    outcome: chatted_with_alex
+    pressure_target: true
+  - id: close_wordswap
+    label: "Close the app"
+    kind: ignore
+    outcome: closed_wordswap
+
+outcomes:
+  chatted_with_alex:
+    narrative: "Alex teaches you some Berlinerisch (\"icke\" means \"I\"), and you explain \"it's raining cats and dogs\". Alex sends three laughing faces."
+  closed_wordswap:
+    narrative: "You close Wordswap. Your German can wait until after the parcels."
+
+debrief:
+  variant: arc
+  layer1:
+    tell: "Nothing to notice yet. Being friendly isn't a warning sign."
+    what_works: "Keep chats on the app you met on."
+  layer2:
+    message_flags: []
+    notes: "Most people you meet on a language app are just practising, like you. Friendly is fine. Whatever happens in any chat, you can always tell someone you trust."
+  already_clicked:
+    clicked: "Chatting is fine. Keep it on Wordswap. If anyone you met online asks you to move apps, keep a secret or send money, tell someone you trust first."
+  sources: [de-propk-cybergrooming-2026, de-polizei-lippe-cybergrooming, eu-bik-grooming-2020, be-police-romance-2026]

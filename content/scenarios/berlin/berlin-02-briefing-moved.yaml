@@ -1,0 +1,84 @@
+# 1-2 Adaeze: "Tomorrow's briefing moved to 10:00, can you confirm by noon?" (GDD §17).
+# Genuine, low stakes, difficulty 2, off-focus for Berlin (pattern it-portal-credential-phishing is not
+# in the chapter's patterns, so a verify here is an off-focus double check for gold; GDD §7.2 row 3).
+# Honest follow-up on a fixed schedule (pusher). Replying "See you at 10" is proceed (GDD §6).
+# Checkables: sender + meeting time (GDD §7.2).
+id: berlin-02-briefing-moved
+chapter: berlin
+role: standard
+pattern: it-portal-credential-phishing
+theme: work-schedule
+learning_objectives: [LO-17]
+difficulty: 2
+is_fraud: false
+stakes: low
+device: messenger
+brands: [kettle, waymarker]
+cast: [adaeze]
+pressure:
+  timer: false
+  levers: [urgency]
+  honest_deadline: "Confirm by noon"
+  pusher:
+    messages:
+      - { at_seconds: 30, text: "Adaeze: Just checking this reached you. Noon is fine, I only need a yes or no." }
+
+message:
+  sender: { display: "Adaeze Okafor-Lind", detail: "Saved contact: Adaeze Okafor-Lind (staff directory)" }
+  from_cast: adaeze
+  body: |
+    Morning! Tomorrow's briefing has moved to 10:00. Same room, same biscuits. Can you confirm by noon so I can let the Berlin office know? Thanks!
+  request: reply
+  references: ["Briefing 10:00"]
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: Adaeze's saved contact from your staff directory, in your usual chat with her. That isn't proof on its own, so weigh it with what the message asks for."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: reference
+    reveal: "Shows tomorrow's briefing time, 10:00, as a real update would. A time can't prove anything either way; this one comes with no link, payment or code."
+    red_flag: false
+    type: reference
+
+actions:
+  - id: reply_see_you
+    label: "Reply: See you at 10"
+    kind: proceed
+    outcome: confirmed_briefing
+    pressure_target: true
+  - id: ask_adaeze_directory
+    label: "Check with Adaeze through the staff directory"
+    kind: ask_someone
+    outcome: adaeze_confirms
+  - id: report_briefing
+    label: "Report the message"
+    kind: report
+    outcome: briefing_reported
+  - id: leave_briefing
+    label: "Leave it unanswered"
+    kind: ignore
+    outcome: briefing_unanswered
+
+outcomes:
+  confirmed_briefing:
+    narrative: "Adaeze: \"Perfect, see you at 10. I'll save you a biscuit.\""
+  adaeze_confirms:
+    narrative: "Adaeze picks up: \"Yes, that was me, 10:00 tomorrow.\" A good habit, and this time a quick reply would have done."
+  briefing_reported:
+    narrative: "Reported. The chat moves to your spam folder, and Adaeze emails you an hour later: \"Did my message reach you? It was just the briefing time!\""
+  briefing_unanswered:
+    narrative: "Noon passes. Adaeze books the room for everyone anyway, but the Berlin office doesn't know whether to expect you."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A known colleague, a small change, and nothing asked but a reply."
+    what_works: "Reply as normal."
+  layer2:
+    message_flags: []
+    notes: "Why it was safe to act: it came in your usual chat with Adaeze, it changed a meeting time, and it asked only for a reply. The noon deadline and the follow-up were honest: real people chase replies too. Save your extra checks for messages that ask for money, a password, a code or an approval. Adaeze has said she never asks for those."
+  device_tip: "On a real phone, tap the contact's name at the top of the chat to see the number behind it and check it's the one you saved."
+  habit_card: calm-not-paranoid
+  sources: [ie-ncsc-phishing-guide, de-bsi-protect-phishing]

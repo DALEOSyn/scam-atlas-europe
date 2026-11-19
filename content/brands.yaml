@@ -190,6 +190,7 @@ brands:
     lookalike_examples:
       - "thimble-and-pine-sale.example"
       - "thimbleandpine-outlet.example"
+      - "thimbleandpine.example-account.test"   # real name first, different owner (owner part: example-account.test) (Berlin 1-8, difficulty 3)
     trademark_search: "web-checked 2026-11-18; formal TMview/EUIPO pending before G4"
     status: draft
 

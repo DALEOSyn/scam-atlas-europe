@@ -1,0 +1,129 @@
+# 1-3 "Address incomplete. Update within 12 h" from a mobile number with a look-alike link (GDD §17).
+# Fraud, difficulty 1, no timer. Twin of berlin-01-locker-code. Brief: smishing-parcel-fee §2–§3
+# ("address incomplete" variant, de-vzn-smishing), red flags 3 and 4.
+# Red flags (R): sender (private mobile number) and link (look-alike). The follow-up page address is
+# also a red flag but is not counted in R (engine counts scheduled beats only).
+# Decoys: tracking number (same reveal text as 1-1 and the boss) and the page padlock.
+id: berlin-03-address-incomplete
+chapter: berlin
+role: standard
+pattern: smishing-parcel-fee
+theme: parcel
+twin_of: berlin-01-locker-code
+learning_objectives: [LO-01, LO-02, LO-03]
+difficulty: 1
+is_fraud: true
+device: sms
+brands: [trundle]
+cast: []
+pressure:
+  timer: false
+  levers: [urgency, fear]
+
+message:
+  sender: { display: "+49 1•• •••• ••37", detail: "Mobile number: +49 1•• •••• ••37" }
+  body: |
+    Trundle: Ihre Sendung TR-77D1-08 konnte nicht zugestellt werden, weil die Adresse unvollständig ist. Bitte aktualisieren Sie sie innerhalb von 12 Std., sonst geht das Paket zurück an den Absender: trundle-redelivery.example/adresse
+  lang: de
+  translation: "Trundle: Your parcel TR-77D1-08 could not be delivered because the address is incomplete. Please update it within 12 hours, or the parcel goes back to the sender: trundle-redelivery.example/adresse"
+  request: open_link
+  references: ["TR-77D1-08"]
+  l10n_note: "German in-world text is intentional (Berlin chapter); the English translation is shown inline."
+
+inspectables:
+  - target: sender.detail
+    reveal: "+49 1•• •••• ••37, a private mobile number. Trundle's texts come from the sender name TRUNDLE."
+    red_flag: true
+    type: sender
+  - target: link
+    reveal: "trundle-redelivery.example. The owner part is trundle-redelivery.example, not trundle.example. A brand name inside an address proves nothing."
+    red_flag: true
+    type: link
+  - target: reference
+    reveal: "Shows a tracking number in Trundle's format, as a real Trundle text would. Look-alike texts carry them too, so it can't prove anything either way. The Trundle app you open yourself shows which parcels are yours."
+    red_flag: false
+    type: reference
+
+actions:
+  - id: tap_update_address
+    label: "Tap the link and update the address"
+    kind: open_link
+    next_beat: address_page
+    pressure_target: true
+  - id: open_trundle_app
+    label: "Open the Trundle app yourself"
+    kind: verify_in_app
+    outcome: app_no_problem
+  - id: report_address_text
+    label: "Report the text as spam"
+    kind: report
+    outcome: address_text_reported
+  - id: delete_address_text
+    label: "Delete the text"
+    kind: delete
+    outcome: address_text_deleted
+
+beats:
+  - id: address_page
+    device: browser
+    message:
+      page: { address: "trundle-redelivery.example/adresse", title: "Trundle · Adresse bestätigen" }
+      body: |
+        Bitte bestätigen Sie Ihre Adresse und zahlen Sie die Neuzustellung von 0,99 EUR mit Ihrer Karte.
+      lang: de
+      translation: "Please confirm your address and pay the EUR 0.99 redelivery with your card."
+      request: enter_details
+    inspectables:
+      - target: page.address
+        reveal: "The address bar still says trundle-redelivery.example. Trundle's site is trundle.example."
+        red_flag: true
+        type: page_address
+      - target: page.info
+        reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
+        red_flag: false
+        type: padlock
+    actions:
+      - id: enter_address_card
+        label: "Enter your address and card details"
+        kind: enter_details
+        outcome: card_details_stolen
+        pressure_target: true
+      - id: close_address_page
+        label: "Close the page"
+        kind: ignore
+        outcome: left_address_page
+
+outcomes:
+  card_details_stolen:
+    narrative: "The page says \"Thank you! Delivery tomorrow.\" No parcel comes. Two days later, three payments you don't recognise appear on your card."
+    recovery:
+      - { step: block_card_in_bank_app, category: stop }
+      - { step: call_bank_known_number, category: secure }
+      - { step: report_to_police_online, category: report }
+      - { step: reply_ask_money_back, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  app_no_problem:
+    narrative: "The Trundle app shows your one parcel this week, the adapter set, delivered to the locker. No address problem, no 12-hour deadline."
+  address_text_reported:
+    narrative: "Reported. Your phone files the text under spam."
+  address_text_deleted:
+    narrative: "Deleted. Twelve hours pass, and nothing goes back anywhere."
+  left_address_page:
+    narrative: "You close the page without typing anything. Nothing happens."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A private mobile number and a link that isn't trundle.example."
+    what_works: "Open the Trundle app yourself."
+  layer2:
+    message_flags:
+      - "A 12-hour deadline and a threat to send the parcel back: pressure to act before you check."
+      - "It sends you to a page to type your address and card. Your courier's own app shows real delivery problems."
+  device_tip: "On a real phone, press and hold a link to see the full address before you open it. Read the part just before .de, .com and so on."
+  habit_card: open-it-yourself
+  already_clicked:
+    clicked: "Close the page and type nothing. Don't install anything it offers. Delete the text or report it as spam."
+    entered_details: "Block your card in your banking app now, then call your bank on the number on your card and ask about disputing the payments."
+    paid: "Block your card in your banking app now, call your bank on the number on your card, and report it to the police."
+  sources: [de-vzn-smishing, de-vz-paketdienst-sms, eu-enisa-etl-2026, ch-ncsc-links-2025]

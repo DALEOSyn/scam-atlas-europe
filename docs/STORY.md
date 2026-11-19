@@ -1,7 +1,7 @@
 # Story bible — Scam Atlas: Europe
 
-Owners: `game-designer` + `learning-psychologist` (psychology sections), `scenario-writer` (voice) · Status: **v1.3 (T-S1; sceptic and learning-psychologist PASS on v1.2, plus final polish; aligned to the reviewed Amsterdam §22.1 and Paris §23.13 story beats and the producer answers; v1.4 draft: Madrid §3.4 and Warsaw §3.5 aligned to the GDD §24.2 and §25.2 specs, review round 2 with rulings R13 and R17)** · Last update: 2026-11-19
-Related: `docs/PLAN.md` Phase 3 track S, `docs/DECISIONS.md` D-S1, `docs/GDD.md` §2, §10, §15–§18, §22–§25, `content/cast.yaml`, `content/habit_cards.yaml`, `docs/patterns/MAP.md`, `docs/ART_DIRECTION.md` (S2, to come), `docs/PSYCHOLOGY.md` (sources for the principles named here).
+Owners: `game-designer` + `learning-psychologist` (psychology sections), `scenario-writer` (voice) · Status: **v1.3 (T-S1; sceptic and learning-psychologist PASS on v1.2, plus final polish; aligned to the reviewed Amsterdam §22.1 and Paris §23.13 story beats and the producer answers; v1.4 draft: Madrid §3.4 and Warsaw §3.5 aligned to the GDD §24.2 and §25.2 specs, review round 2 with rulings R13 and R17; Rome §3.6 and Lisbon §3.7 aligned to the GDD §26.2 and §27.2 specs, in review)** · Last update: 2026-11-19
+Related: `docs/PLAN.md` Phase 3 track S, `docs/DECISIONS.md` D-S1, `docs/GDD.md` §2, §10, §15–§18, §22–§27, `content/cast.yaml`, `content/habit_cards.yaml`, `docs/patterns/MAP.md`, `docs/ART_DIRECTION.md` (S2, to come), `docs/PSYCHOLOGY.md` (sources for the principles named here).
 
 > This file states no fraud facts. Patterns per city come from `docs/patterns/MAP.md` and the chapter specs. Every chapter's scams live **only in device scenarios**, which carry the debrief (Red Line 4). Scenes carry people, places and habits. Sample lines are drafts: the `scenario-writer` owns the final wording, within the rules in §4. The If-then lines in §3 are the exception: they are reviewed wording and are reused word for word (§4.4).
 
@@ -69,13 +69,13 @@ From "I'm the inspector, I'd never fall for that" to "anyone can be caught, and 
 | Madrid | **Lucía Herrera** (34), night-shift nurse, your host; partner **Andrés** (36), teacher | Both capable; tiredness is the risk, not ability | Lucía: warm, calm, thinking, relieved · Andrés: worried, laughing, proud |
 | Warsaw | **Kasia Wójcik** (23), music student, Waymarker volunteer (Mateus is the fallible one); her Kettle account is taken over off screen (GDD §25), never her fault. Contact only: **Ola** (fellow volunteer, saved as "Ola (volunteers)"; never drawn) | Capable seller | warm, focused, laughing, calm, worried (placed beat only) |
 | Rome | **Signora Bruna Esposito** (72), B&B owner, Teo's postcard pen-pal of 40 years; grandson **Davide** (19); granddaughter **Giulia** (22, abroad, video only) | Bruna capable and leads; Davide falls (GDD §15) | Bruna: warm, calm, thinking, proud · Davide: sheepish, worried, relieved · Giulia: laughing, relieved |
-| Lisbon | **Beatriz Ferreira** (20), Mateus's sister, room-hunting before her master's (not "Inês": that name belongs to Paris's Inès Roussel) | Capable once she slows down | laughing, worried, thinking, relieved |
+| Lisbon | **Beatriz Ferreira** (20), Mateus's sister, room-hunting before her master's (not "Inês": that name belongs to Paris's Inès Roussel). Contact only: **Leonor** (the genuine host, "Leonor (host)" in the Roostwell app; her name is borrowed in the boss, never her fault; never drawn) | Capable once she slows down; never falls (GDD §27) | laughing, worried, thinking, relieved |
 | Dublin | **Declan Byrne** (52), made redundant after 22 years at a warehouse; daughter **Róisín** (18), starting college | Declan tempted, checks; Róisín supportive | Declan: worried, thinking, sheepish, laughing · Róisín: worried, warm, proud |
 | Stockholm | **Jamal Haddad** (38), hospital lab technician, three weeks in Sweden; daughter **Lina** (12); upstairs neighbour **Birgitta Lind** (70), retired teacher, Adaeze's aunt | Jamal capable: a new everything is the risk, not ability; he brings his own lab know-how. Birgitta capable and teaches | Jamal: thinking, worried, proud · Lina: laughing · Birgitta: laughing, calm, proud |
 
 Any shop, studio or workshop name visible in art must be registered in `brands.yaml` first; until then, scenes describe them without names (Ruchelune is requested in GDD §23.10).
 
-**Name register (no name used twice for different people):** Teo, Noor, Adaeze, Mateus, Alex, Jonas, Mia, Sanne, Solène, Bastien, Inès (Roussel, Paris), Margaux (directory only), Lucía, Andrés, Kasia, Ola (contact only, Warsaw), Bruna, Davide, Giulia, Beatriz, Declan, Róisín, Jamal, Lina, Birgitta. Scam-side names (e.g. "Maître Vellacourt", "N. Vardoulec", "R. ••••", "K. ••••", "Olvarde Custodia SL" and "Larchwick Reserva" (Madrid), "TREMOLIK" and "Votelark" (Warsaw)) are never cast and must not reuse a cast first name. New locals check this list first.
+**Name register (no name used twice for different people):** Teo, Noor, Adaeze, Mateus, Alex, Jonas, Mia, Sanne, Solène, Bastien, Inès (Roussel, Paris), Margaux (directory only), Lucía, Andrés, Kasia, Ola (contact only, Warsaw), Bruna, Davide, Giulia, Beatriz, Leonor (contact only, Lisbon), Declan, Róisín, Jamal, Lina, Birgitta. Scam-side names (e.g. "Maître Vellacourt", "N. Vardoulec", "R. ••••", "K. ••••", "Olvarde Custodia SL" and "Larchwick Reserva" (Madrid), "TREMOLIK" and "Votelark" (Warsaw), "J. Ashdale" and "Vellastri Tutela Srl" (Rome, pending BRAND_CHECK), "casa.alfama", "Roostwell Deals" and the borrowed payee "Leonor Brito" (Lisbon)) are never cast and must not reuse a cast first name. New locals check this list first.
 
 ---
 
@@ -176,34 +176,38 @@ Each block lists the patterns from MAP.md or the chapter spec (the scene never s
 - **Invitation:** Kasia: "I'm selling half my flat before I move. Want to see how to do it safely?"
 - **Safety:** shows a confident expert falling and recovering; no teasing from others.
 
-### 3.6 Rome (map no. 6)
+### 3.6 Rome (map no. 6) — scene content per GDD §26.2 (spec in review)
 - **Habit cards / LOs on the Atlas page:** `call-the-number-you-know` (LO-07), `hang-up-call-back` (LO-08), `ask-someone` (LO-18; family code word), `stop-the-damage-first` (LO-16).
-- **Patterns:** "police" or bank calls with spoofed caller ID (Teo's call); family-emergency message from a "new number" or with a cloned voice (Davide falls). Scenarios end at the call or transfer; no in-person pickups (MAP.md).
-- **Locals:** Bruna, Davide, Giulia (video); Teo (video).
+- **Patterns (GDD §26):** "police" or bank calls with a spoofed caller ID (6-3, 6-7, boss); a family-emergency call from a new number with a voice that sounds like Teo (6-4) or Giulia (Davide's drill 6-6); a "new number" text (6-8). Chapter habit: "Verify through a number you already know. Caller ID and a familiar voice prove nothing." Scenarios end at the call or transfer; no in-person pickups. No voice note in a chat is played (calls only); voices are illustration and transcript, never audio.
+- **Locals:** Bruna, Davide, Giulia (video only); Teo (phone and video only).
 - **Human problem:** Giulia is in her first year abroad; Bruna misses her, Davide covers the B&B between exams, and the whole family worries about her being far away.
-- **Arrival:** a small B&B with a lemon tree. Bruna: "Teo's grandchild! Forty years of postcards and finally a visitor." Davide: "Nonna has told every guest about you. Sorry in advance."
-- **Turn (no scam content):** Teo and Bruna on a video call, like old friends. Bruna: "Giulia calls every Sunday. I still worry every Monday." Teo (optional closing line): "That's the job, Bruna. So we keep in touch, on the numbers we know."
-- **Resolution (after every Rome debrief):**
-  - Bruna (calm), past-tense story told only now, after the police-call debrief: "A caller once said he was police. I said I'd ring the station myself. He hung up first."
+- **Arrival** (before 6-1; calm): a small B&B with a lemon tree. Bruna (warm): "Teo's grandchild! Forty years of postcards and finally a visitor." Davide (laughing): "Nonna has told every guest about you. Sorry in advance."
+- **Turn** (stop point, after 6-3; worried → calm; no scam content): Teo and Bruna on a video call, like old friends. Bruna (worried): "Giulia calls every Sunday. I still worry every Monday." Teo (warm): "That's the job, Bruna. So we keep in touch, on the numbers we know." Bruna (calm), last: "Then you'll ring me on mine, old man."
+- **Placed beat `rome-giulia-safe`** (after drill 6-6; worried → relieved; `sensitive: true`): Giulia on video (laughing, relieved): "I was in a lecture the whole time! Phone on silent." Bruna (calm): "Everyone's safe. The bank first, then the rest." True in every branch: the drill always ends with Davide having called his bank. *(Giulia's line moved here from the v1.3 resolution, so the impersonated person is shown safe straight after the fall, §5.7.)*
+- **Resolution** (after the boss debrief; relieved; `sensitive: true`):
+  - Bruna (calm), past-tense story, placed after every Rome police debrief (§4.2 rule 7): "A caller once said he was police. I said I'd ring the station myself. He hung up first."
   - Davide (sheepish): "It sounded exactly like Giulia. I didn't even think."
-  - Bruna (calm), one panel: "Of course not. They made it sound like her. That's the trick, not you. We called the bank straight away." (20 words)
-  - Giulia on video, laughing with relief: "I was in a lecture the whole time!"
+  - Bruna (calm): "Of course not. They made it sound like her. That's the trick, not you. We called the bank straight away." (20 words)
   - Teo on video proposes the code word: "Let's have a family code word for calls and voice messages. Both families. And it stays in the family."
-  - The If-then panel makes six panels in total (the cap).
-- **If-then panel (Davide):** "If someone I love asks for money by call, voice note or new number, then I call their known number and ask for our word." (25 words, at the cap; the suggested longer version was 33. Hanging up is shown in the scenario, not repeated here.)
+  - **Variant `rome_bank_called`** (story-only flag, set by every boss fall outcome; DECISIONS R17 approach): one panel before Davide's line, Bruna (calm): "The bank was called straight away, the right first step. We'll see what it can do." No refund promise. With it the resolution is six panels (the cap).
+- **If-then panel (Davide, phone at the ear):** "If someone I love asks for money by call, voice note or new number, then I call their known number and ask for our word." (25 words, at the cap; unchanged. "Voice note" stays as a general cue although no Rome scenario plays one: GDD §26.11 Q2.) Extra line under it: "A voice can be copied. A number you already have can't."
 - **Invitation:** Bruna: "Teo says you'd like Rome. My B&B has a room, and the lemon tree has opinions."
+- **Arc:** arc slot N for the play position (§1.4), placed in the morning between 6-2 and 6-3, away from the family-money debriefs (GDD §26.11 Q1).
 - **Content note:** "This chapter includes a family-emergency story and a lost payment. Everyone ends up safe. You can pause or skip any story scene."
-- **Safety:** no amount shown in scenes; the bank "is on it", with no refund promise (§5). Older characters lead, the 19-year-old falls (GDD §15).
+- **Safety:** no amount shown in scenes; the bank "is on it", with no refund promise (§5). Older characters lead, the 19-year-old falls (GDD §15). The code word is an extra, never the main check (GDD §26.1).
 
-### 3.7 Lisbon (map no. 7)
-- **Habit cards / LOs on the Atlas page:** LO-10 "Stay on the platform", LO-11 "Check before you pay" (card ids set by the chapter spec), `read-the-link` (LO-02; the QR destination).
-- **Patterns:** holiday and student rental scams (fake listing site, off-platform payment links, platform-login phishing); tampered parking-meter QR; fake shop. Needs a fictional rental-platform brand in `brands.yaml`.
-- **Locals:** Beatriz; Mateus (home city).
-- **Human problem:** rooms near the university are scarce and expensive; Beatriz has hunted for six weeks and fears losing the next good one.
-- **Arrival:** a tiled street, Mateus's family kitchen. Mateus: "Mum's cooking, so you're staying for dinner. No arguments." Beatriz: "Six weeks of room-hunting. Everything good goes in an hour."
-- **Turn:** Beatriz (laughing): "I think I've found one! Near the faculty, with a balcony." Mateus (thinking): "Great. Let's look at it properly before anyone pays anything." (Order-safe: Mateus does not mention Warsaw.)
-- **Resolution:** Beatriz (relieved): "Booked through the app, viewing on Saturday. Nothing paid outside it." Mateus: "And I type the parking address myself now. No stickers for me."
-- **If-then panel (Beatriz):** "If a host wants me to chat, pay or log in outside the app, then I stay in the app I opened myself."
+### 3.7 Lisbon (map no. 7) — scene content per GDD §27.2 (spec in review)
+- **Habit cards / LOs on the Atlas page:** `stay-on-the-platform` (LO-10), `check-before-you-pay` (LO-11, new card, GDD §27.10), `read-the-link` (LO-02; the QR destination).
+- **Patterns (GDD §27):** holiday and student rental scams, digital vectors only (a fake listing site from a social ad, a host sending an off-platform payment page, a new-number "host" with bank details, platform-login and card phishing); tampered parking-meter QR sticker and a fake parking slip with a QR (the lesson is the destination). The v1.3 "fake shop" is dropped. Chapter habit: "Book, message and pay inside the app you opened yourself. Pay parking in the app you installed, and read where a QR code goes." Fictional brands: Roostwell (rental platform) and Kerbello (parking app), pending BRAND_CHECK.
+- **Locals:** Beatriz; Mateus (home city). Contact only: **Leonor**, the genuine host, shown as "Leonor (host)" inside the Roostwell app; her name is borrowed by a scam number in the boss (never her fault); never drawn, never in a scene. Mateus's mum is mentioned, never drawn or named.
+- **Human problem:** rooms near the university are scarce and expensive; Beatriz has hunted for six weeks and fears losing the next good one. You need your own bed from Thursday too.
+- **Arrival** (before 7-1; calm): a tiled street, then Mateus's family kitchen. Mateus (laughing): "Mum's cooking, so you're staying for dinner. No arguments." Beatriz (worried): "Six weeks of room-hunting. Everything good goes in an hour." Mateus (calm): "And from Thursday the cousins invade, so you need a bed too. We'll hunt together."
+- **Turn** (stop point, after 7-3; laughing → thinking): Beatriz (laughing): "I think I've found one! Near the faculty, with a balcony." Mateus (thinking): "Great. Let's look at it properly before anyone pays anything." (Order-safe: no other city mentioned.) Drill 7-4 (Beatriz's two rooms; she asks you) follows directly. Beatriz never falls.
+- **Resolution** (after the boss debrief; relieved): Beatriz (relieved): "Booked through the app, viewing on Saturday. Nothing paid outside it." Mateus (laughing): "And I pay parking in the app now. No stickers for me." *(Was "I type the parking address myself" in v1.3; the habit is the installed app.)*
+  - **Variant `lisbon_acted_fast`** (story-only flag, set by every boss fall outcome): one panel before the If-then, Mateus (calm): "You acted straight away, the right first step. We'll see what can still be stopped." No refund promise.
+- **If-then panel (Beatriz):** "If a host wants me to chat, pay or log in outside the app, then I stay in the app I opened myself." (Unchanged.) Extra line under it: "Parking too: the app you installed, never a sticker."
+- **Arc:** arc slot N for the play position (§1.4), placed between 7-6 and 7-7.
+- **Safety:** money theme only; no content note proposed (as Madrid). Beatriz is capable and slows down.
 - **Invitation:** Mateus: "Come home with me. My sister's room-hunting and could use a second pair of eyes."
 
 ### 3.8 Dublin (map no. 8)

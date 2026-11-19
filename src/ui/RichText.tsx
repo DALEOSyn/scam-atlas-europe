@@ -136,10 +136,14 @@ export function RichText({ text }: { text: string }) {
   );
 }
 
-/** Plain text (labels, "You chose" lines) with CR-45 inline language spans as `<span lang>`; no other markup. */
+/**
+ * Plain text (labels, "You chose" lines) with CR-45 inline language spans as `<span lang>`; no other markup.
+ * One inline wrapper (QA B1, CR-45 round 3): inside a flex button (`.action`, `.option`) the label stays a
+ * single flex item, so a span mid-label flows and wraps with the text around it instead of becoming a column.
+ */
 export function LangText({ text }: { text: string }) {
   return (
-    <>
+    <span data-lang-text="">
       {langPieces(text).map((p, i) =>
         p.lang ? (
           <span key={i} lang={p.lang} data-lang-span="">
@@ -149,6 +153,6 @@ export function LangText({ text }: { text: string }) {
           p.text
         ),
       )}
-    </>
+    </span>
   );
 }

@@ -148,3 +148,37 @@ for (const width of [320, 1280]) {
     expect(await done(page)).toMatchObject({ stars: 3, points: 15 });
   });
 }
+
+test('CR-45 at 320px (QA B1, round 3): a label with a language span mid-label flows as one text, not side-by-side columns', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await open(page, 'fx-cr45-dialled-call');
+  const button = page.locator('[data-action="delete_text"]');
+  await button.scrollIntoViewIfNeeded();
+  await expect(button.locator('[lang="es"]')).toHaveText('aviso de seguridad');
+  const layout = await button.evaluate((b) => {
+    // The flex button has one flex item: the label's single inline wrapper.
+    const kids = [...b.children].map((c) => ({ tag: c.tagName, wrapper: c.hasAttribute('data-lang-text') }));
+    const wrapper = b.querySelector('[data-lang-text]');
+    const nodes = wrapper ? [...wrapper.childNodes] : [];
+    const rectsOf = (n: Node | undefined) => {
+      if (!n) return [];
+      const r = document.createRange();
+      r.selectNodeContents(n);
+      return [...r.getClientRects()].map((x) => ({ left: x.left, right: x.right, top: x.top }));
+    };
+    return { kids, lead: rectsOf(nodes[0]), span: rectsOf(nodes[1]), tail: rectsOf(nodes[2]), height: b.getBoundingClientRect().height };
+  });
+  expect(layout.kids).toEqual([{ tag: 'SPAN', wrapper: true }]);
+  const lineStart = Math.min(...layout.lead.map((r) => r.left));
+  // Flowing text: the span starts on the leading text's line, right after it, and the label wraps back to the
+  // line start on a later line (in the broken layout each piece was its own column, right of the one before).
+  const [lead, span] = [layout.lead[0], layout.span[0]];
+  expect(span?.top).toBe(lead?.top);
+  expect(span?.left).toBeCloseTo(lead?.right ?? 0, 0);
+  expect(layout.tail.length).toBeGreaterThan(0);
+  expect([...layout.span, ...layout.tail].some((r) => Math.abs(r.left - lineStart) < 2 && r.top > (lead?.top ?? 0))).toBe(true);
+  // A few lines of text, not a tall stack of narrow columns.
+  expect(layout.height).toBeLessThan(160);
+  await noOverflow(page);
+  await axeClean(page);
+});

@@ -45,7 +45,7 @@ actions:
   - { id: call_text_number, label: "Call the number in the text", kind: call_number_in_message, next_beat: security_line, pressure_target: true }
   - { id: open_app, label: "Open the Larchwick app yourself", kind: verify_in_app, outcome: app_fine }
   - { id: report_text, label: "Report the text", kind: report, outcome: text_reported }
-  - { id: delete_text, label: "Delete it", kind: delete, outcome: text_deleted }
+  - { id: delete_text, label: "Delete the {lang:es}aviso de seguridad{/lang} text unread", translation: "security notice", kind: delete, outcome: text_deleted }
 
 beats:
   - id: security_line

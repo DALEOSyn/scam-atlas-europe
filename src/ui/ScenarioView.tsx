@@ -7,22 +7,26 @@
  * damage control; never on interrupts, tags, translation or Take a breath. The engine's state.log
  * feeds the polite announcer (timer thresholds, stress changes, new messages), coalesced there.
  */
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import { useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'preact/hooks';
 import type { Scenario } from '../content/schema.ts';
 import { recoveryStepFeedback, recoveryStepLabel } from '../content/recoverySteps.ts';
 import { useScenarioRunner } from '../engine/hooks.ts';
 import type { RecoveryOption } from '../engine/recovery.ts';
 import type { ScenarioResult } from '../engine/result.ts';
+import type { Settings } from '../engine/save.ts';
+import type { TimerMode } from '../engine/timer.ts';
 import type { CheckableView, RunnerContext, RunnerLogEntry, RunnerState, RunnerView } from '../engine/runner.ts';
 import { t } from '../i18n/index.ts';
 import { AnnounceContext } from './Announcer.tsx';
 import { CheckCard, CheckContext, DetailsList, type CheckApi } from './check/Check.tsx';
-import { DeviceView, deviceHeading } from './devices/Device.tsx';
+import { channelKind, DeviceView, deviceHeading } from './devices/Device.tsx';
+import { Translate } from './devices/parts.tsx';
 import type { CallStage } from './devices/types.ts';
 import { BreathPanel, formatTime, Hud } from './Hud.tsx';
 import { Icon } from './Icon.tsx';
 import { deadlineText, WHAT_NOW_KEYS } from './labels.ts';
 import { RichText } from './RichText.tsx';
+import { SettingsPanel } from './Settings.tsx';
 import { unrevealedTargets, words } from './text.ts';
 import styles from './ScenarioView.module.css';
 
@@ -35,6 +39,10 @@ export interface ScenarioViewProps {
   onCallLines?: (v: 'auto' | 'step') => void;
   alwaysTranslate?: boolean;
   onQuit?: () => void;
+  /** In-game Settings (QA M7): the saved settings and where changes go. */
+  settings?: Settings;
+  defaultTimer?: TimerMode;
+  onSettings?: (next: Settings) => void;
 }
 
 function useDesk(): boolean {
@@ -56,14 +64,18 @@ export function linePace(text: string): number {
   return Math.max(1.5, 0.3 * words(text));
 }
 
-function logAnnouncement(e: RunnerLogEntry): { category: 3 | 4 | 5; text: string } | null {
+function logAnnouncement(s: Scenario, e: RunnerLogEntry): { category: 3 | 4 | 5; text: string; key?: string } | null {
   switch (e.type) {
     case 'beat_arrived':
       return e.beatId === 'start' ? null : { category: 5, text: t('announce_new_message') };
     case 'pusher':
       return { category: 5, text: t('announce_pusher', { text: e.text }) };
-    case 'interrupt':
-      return { category: 5, text: t('announce_interrupt') };
+    case 'interrupt': {
+      // Its own slot: never coalesced into "2 new messages" or replaced by a pusher (QA M3).
+      const def = s.interrupts.find((i) => i.id === e.id);
+      const from = def?.message.sender?.display;
+      return { category: 5, key: 'interrupt', text: def && from ? t('announce_interrupt_from', { kind: channelKind(def.device), from }) : t('announce_interrupt') };
+    }
     case 'timer':
       return { category: 3, text: t(e.what === 'half' ? 'announce_timer_half' : e.what === 'ten_left' ? 'announce_timer_ten' : e.what === 'escalated' ? 'announce_timer_escalated' : 'announce_timer_expired') };
     case 'stress':
@@ -157,7 +169,7 @@ function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recover
 }
 
 /** One scenario from arrival to the end of damage control. Give it a `key` to restart. */
-export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines = 'auto', onCallLines, alwaysTranslate = false, onQuit }: ScenarioViewProps) {
+export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines = 'auto', onCallLines, alwaysTranslate = false, onQuit, settings, defaultTimer = 'standard', onSettings }: ScenarioViewProps) {
   const runner = useScenarioRunner(scenario, ctx);
   const { view, state } = runner;
   const announce = useContext(AnnounceContext);
@@ -185,10 +197,21 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
   useEffect(() => {
     if (runner.result && !reported.current) {
       reported.current = true;
+      announce.flush();
       announce.assertive(t('announce_scenario_ended'));
       onDone(runner.state, runner.result);
     }
   }, [runner.result, runner.state, onDone, announce]);
+  // The last beat is over (its consequence, damage control or the closing interrupt step): nothing of
+  // the scenario's timer, stress or message news is announced any more (QA m5).
+  const ended = view.phase === 'damage_control' || view.phase === 'interrupt' || view.phase === 'done' || (view.phase === 'consequence' && state.schedule.length <= state.groups.length);
+  const endedRef = useRef(false);
+  useEffect(() => {
+    if (ended && !endedRef.current) {
+      endedRef.current = true;
+      announce.flush();
+    }
+  }, [ended, announce]);
 
   // ---- announcer: state.log → polite queue (UI_SPEC §10.5). Stale items from the last screen go (QA B6).
   useEffect(() => {
@@ -200,12 +223,12 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
     const fresh = state.log.slice(logSeen.current);
     logSeen.current = state.log.length;
     for (const e of fresh) {
-      const a = logAnnouncement(e);
-      // Once the scenario has ended, timer/stress/message news is stale (QA B6).
-      if (a && (a.category <= 2 || !runner.result)) announce.polite(a.category, a.text, a.category === 5 ? (n) => t('announce_new_messages', { count: n }) : undefined);
+      const a = logAnnouncement(scenario, e);
+      // Once the scenario has ended, timer/stress/message news is stale (QA B6, m5); a closing interrupt still needs its answer.
+      if (a && (!endedRef.current || a.key === 'interrupt')) announce.polite(a.category, a.text, a.category === 5 && !a.key ? (n) => t('announce_new_messages', { count: n }) : undefined, a.key);
       if (e.type === 'timer' && e.what === 'escalated') setChip(t('timer_escalated_chip', { seconds: ctx.balance.timers.escalation_extra_seconds }));
     }
-  }, [state.log, announce, ctx.balance.timers.escalation_extra_seconds, runner.result]);
+  }, [state.log, announce, ctx.balance.timers.escalation_extra_seconds, scenario]);
   useEffect(() => {
     if (!chip) return undefined;
     const id = setTimeout(() => setChip(null), 1500);
@@ -244,12 +267,97 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
 
   // ---- focus (UI_SPEC §10.3)
   const focusKey = `${view.phase}:${beat?.id ?? ''}`;
+  const interruptHeading = (id: string) => document.getElementById(`interrupt-${id}-h`);
   useEffect(() => {
     if (view.phase === 'playing') deviceHeadingRef.current?.focus();
     else if (view.phase === 'what_now') whatNowRef.current?.focus();
     else if (view.phase === 'consequence') consequenceRef.current?.focus();
+    // The closing "New notification" step (ruling QA M6): its message is the only thing on screen.
+    else if (view.phase === 'interrupt' && view.interrupts[0]) interruptHeading(view.interrupts[0].id)?.focus();
     // damage_control focuses its own heading.
   }, [focusKey]);
+  // QA M4: answering an interrupt removes its buttons; focus goes back to the message the player is
+  // dealing with (device heading, or "What now?") instead of falling to <body>. Layout effect: same commit.
+  const answered = useRef(false);
+  useLayoutEffect(() => {
+    if (!answered.current) return;
+    answered.current = false;
+    const nextInterrupt = view.interrupts[0];
+    if (view.phase === 'interrupt' && nextInterrupt) interruptHeading(nextInterrupt.id)?.focus();
+    else if (view.phase === 'playing') deviceHeadingRef.current?.focus();
+    else if (view.phase === 'what_now') whatNowRef.current?.focus();
+  }, [view.interrupts.length, view.phase]);
+  const answerInterrupt = (id: string, actionId: string) => {
+    answered.current = true;
+    runner.answerInterrupt(id, actionId);
+  };
+  // "View" on the interrupt banner (UI_SPEC §2.3): the player asks for it, so focus may move there.
+  const viewInterrupt = (id: string) => {
+    const h = interruptHeading(id);
+    if (typeof h?.scrollIntoView === 'function') h.scrollIntoView({ block: 'start', behavior: 'auto' });
+    h?.focus();
+  };
+
+  // ---- Settings (QA M7): a modal dialog; the timer is frozen while it is open (UI_SPEC §6.1).
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const settingsReturn = useRef<HTMLElement | null>(null);
+  const openSettings = () => {
+    settingsReturn.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    runner.freeze('settings', true);
+    setSettingsOpen(true);
+  };
+  const closeSettings = useCallback(() => {
+    setSettingsOpen(false);
+    runner.freeze('settings', false);
+    const el = settingsReturn.current;
+    if (el) setTimeout(() => (el.isConnected ? el.focus() : deviceHeadingRef.current?.focus()), 0);
+  }, [runner.freeze]);
+
+  // ---- "Jump to your options" (QA M6): a sticky bar at the bottom of the screen on phones while the
+  // tray is out of view; it moves focus to the tray. Hidden on the desk (the rail is always in view).
+  const [trayInView, setTrayInView] = useState(true);
+  const showJumpRef = useRef(false);
+  useEffect(() => {
+    const el = optionsRef.current;
+    if (!el || typeof IntersectionObserver !== 'function') return undefined;
+    const io = new IntersectionObserver((entries) => setTrayInView(entries.some((x) => x.isIntersecting)), { threshold: 0 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+  // Scroll padding for the sticky HUD and the jump bar (UI_SPEC §1.3), measured: a focused element is
+  // never hidden under them (WCAG 2.4.11).
+  const hudRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const root = typeof document !== 'undefined' ? document.documentElement : null;
+    const el = hudRef.current;
+    if (!root) return undefined;
+    const apply = () => {
+      const h = el ? Math.ceil(el.getBoundingClientRect().height) : 0;
+      root.style.setProperty('--hud-h-live', `${h}px`);
+      root.style.scrollPaddingTop = `${h + 8}px`;
+    };
+    apply();
+    const ro = el && typeof ResizeObserver === 'function' ? new ResizeObserver(apply) : null;
+    if (el) ro?.observe(el);
+    return () => {
+      ro?.disconnect();
+      root.style.removeProperty('--hud-h-live');
+      root.style.scrollPaddingTop = '';
+    };
+  }, [view.phase === 'playing' || view.phase === 'what_now']);
+  useEffect(() => {
+    const root = typeof document !== 'undefined' ? document.documentElement : null;
+    if (!root) return undefined;
+    root.style.scrollPaddingBottom = showJumpRef.current ? '72px' : '';
+    return () => {
+      root.style.scrollPaddingBottom = '';
+    };
+  });
+  const jumpToOptions = () => {
+    const el = optionsRef.current;
+    if (typeof el?.scrollIntoView === 'function') el.scrollIntoView({ block: 'start', behavior: 'auto' });
+    el?.focus();
+  };
 
   // ---- Check
   const items = useMemo(() => {
@@ -307,6 +415,9 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
 
   const card = openItem ? <CheckCard item={openItem} visibleText={visible(openItem)} sender={sender} modal={modal} onTag={doTag} onClose={closeCard} /> : null;
   const live = view.phase === 'playing' || view.phase === 'what_now';
+  const blocked = modal || settingsOpen;
+  const showJump = !desk && live && !trayInView;
+  showJumpRef.current = showJump;
 
   return (
     <div class={styles.play}>
@@ -321,7 +432,8 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
         {t('skip_to_options')}
       </a>
       {live ? (
-        <div inert={modal}>
+        // The wrapper is what sticks: a sticky <header> inside a block of its own height cannot (QA M5).
+        <div class={styles.hudWrap} inert={blocked} ref={hudRef}>
           <Hud
             view={view}
             progress={progress}
@@ -336,13 +448,30 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
               onTimeLeft: () => view.timer && announce.polite(2, t('timer_value_low', { time: formatTime(view.timer.remaining) })),
               onQuit: () => onQuit?.(),
               onOpen: (open) => runner.freeze('pause_menu', open),
+              onSettings: settings && onSettings ? openSettings : undefined,
             }}
           />
         </div>
       ) : null}
-      <main class={beat ? styles.main : `${styles.main} ${styles.solo}`} inert={modal}>
+      <main class={beat ? styles.main : `${styles.main} ${styles.solo}`} inert={blocked}>
         <CheckContext.Provider value={api}>
           <div class={view.stress.state === 'overwhelmed' ? `${styles.stage} ${styles.vignette}` : styles.stage}>
+            {/* Device banner for an interrupt (UI_SPEC §2.3, QA M3): focus never moves by itself; "View" brings it in. */}
+            {live
+              ? view.interrupts.map((i) => (
+                  <div key={i.id} class={styles.interruptBanner} role="group" aria-label={t('banner_title')} data-interrupt-banner={i.id}>
+                    <p class={styles.interruptBannerText}>
+                      <strong>
+                        {channelKind(i.device)}
+                        {i.message.sender ? ` · ${i.message.sender.display}` : ''}
+                      </strong>
+                    </p>
+                    <button type="button" class={styles.small} onClick={() => viewInterrupt(i.id)} aria-label={t('interrupt_view_named', { from: i.message.sender?.display ?? channelKind(i.device) })}>
+                      {t('interrupt_view')}
+                    </button>
+                  </div>
+                ))
+              : null}
             {view.pause.open ? <BreathPanel onBack={runner.endPause} /> : null}
             {beat ? (
               <DeviceView
@@ -391,20 +520,22 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                 {t('interrupt_title')}
               </h2>
               {view.interrupts.map((i) => (
-                <div key={i.id} class={styles.interrupt}>
-                  <p class={styles.interruptMeta}>
-                    {t(i.device === 'email' ? 'banner_kind_email' : i.device === 'messenger' ? 'banner_kind_chat' : i.device === 'call' ? 'banner_kind_call' : 'banner_kind_sms')}
+                <div key={i.id} class={styles.interrupt} data-interrupt={i.id}>
+                  <h3 class={styles.interruptMeta} id={`interrupt-${i.id}-h`} tabIndex={-1}>
+                    {channelKind(i.device)}
                     {i.message.sender ? ` · ${i.message.sender.display}` : ''}
-                  </p>
+                  </h3>
                   {i.message.body ? (
-                    <p class={styles.interruptBody}>
+                    <p class={styles.interruptBody} lang={i.message.lang}>
                       <RichText text={i.message.body} />
                     </p>
                   ) : null}
+                  {/* Foreign text gets the same Translate toggle as messages and pushers (QA M1). */}
+                  <Translate message={i.message} id={`interrupt-translation-${i.id}`} onFreeze={onTranslation} alwaysOpen={alwaysTranslate} />
                   <ul class={styles.actions}>
                     {i.actions.map((a) => (
                       <li key={a.id}>
-                        <button type="button" class={styles.action} onClick={() => runner.answerInterrupt(i.id, a.id)}>
+                        <button type="button" class={styles.action} data-interrupt-action={a.id} onClick={() => answerInterrupt(i.id, a.id)}>
                           {a.label}
                         </button>
                       </li>
@@ -413,6 +544,11 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                 </div>
               ))}
             </aside>
+          ) : null}
+          {showJump ? (
+            <button type="button" class={styles.jump} onClick={jumpToOptions} data-jump="">
+              {t('jump_to_options')}
+            </button>
           ) : null}
           <section id="options" class={styles.tray} aria-labelledby={view.phase === 'consequence' ? 'consequence-h' : 'actions-h'} tabIndex={-1} ref={optionsRef}>
             {/* No empty "Your options" during the consequence step: its own heading labels the panel (QA F4). */}
@@ -482,8 +618,15 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                 </h3>
                 <p class={styles.caption}>
                   <Icon name="info" />
-                  <span>{view.consequenceDeadline ? deadlineText(view.consequenceDeadline) : <RichText text={view.consequence ?? ''} />}</span>
+                  <span>{view.consequenceDeadline ? deadlineText(view.consequenceDeadline, scenario.pressure.honest_deadline) : <RichText text={view.consequence ?? ''} />}</span>
                 </p>
+                {/* Boss "already checked" (ruling QA fun note a), after the beat's narrative. */}
+                {view.consequenceCovered ? (
+                  <p class={styles.caption} data-covered="">
+                    <Icon name="seal" />
+                    <span>{t('boss_covered')}</span>
+                  </p>
+                ) : null}
                 {/* Interrupts answered during this beat (QA M3): their outcome, after the beat's own. */}
                 {view.consequenceAsides.map((n, i) => (
                   <p key={i} class={styles.caption} data-aside="">
@@ -498,6 +641,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                 </button>
               </div>
             ) : null}
+            {view.phase === 'interrupt' ? <p class={styles.note}>{t('interrupt_closing')}</p> : null}
             {view.phase === 'damage_control' && view.recovery ? (
               // The outcome was the caption of the consequence step just before; not repeated here (ruling 2026-11-19).
               <DamageControl view={view.recovery} onDone={runner.submitRecovery} />
@@ -506,6 +650,9 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
         </CheckContext.Provider>
       </main>
       {!desk && card ? card : null}
+      {settingsOpen && settings && onSettings ? (
+        <SettingsPanel settings={settings} defaultTimer={defaultTimer} onChange={onSettings} onClose={closeSettings} modal inScenario />
+      ) : null}
       <p id="check-hint" class={styles.vh}>
         {t('check_hint')}
       </p>

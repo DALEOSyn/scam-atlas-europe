@@ -145,7 +145,8 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   min-width: 0;
-  overflow-wrap: anywhere;
+  /* A name breaks only when it can't fit on a line of its own (QA m2: no "Kettl/e"). */
+  overflow-wrap: break-word;
 }
 .avatar {
   flex: none;
@@ -244,6 +245,13 @@
   justify-self: start;
   align-self: flex-start;
 }
+/* The game focus ring, like every other control (QA m6). */
+.textButton:focus-visible,
+.translateToggle:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+  box-shadow: 0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-w)) var(--color-focus-halo);
+}
 .translate {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -313,6 +321,33 @@
 }
 .bannerBody {
   margin: 0;
+  /* Banner text is prose (codes, long German compounds), never a host: it wraps anywhere rather than
+     clip or scroll (QA m2). */
+  overflow-wrap: anywhere;
+}
+/* Muted earlier texts of the thread (ruling QA L5): not checkable, links as plain text. */
+.earlierSep {
+  margin: 0;
+  align-self: center;
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+  font-weight: var(--fw-bold);
+}
+.earlier {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-1);
+  justify-items: start;
+}
+.earlier .bubbleIn {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: var(--color-text-muted);
+  background: var(--color-surface-sunken);
+}
+.earlierWhen {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
 }
 
 /* Mail */
@@ -547,6 +582,14 @@
   display: none;
 }
 @media (max-width: 319px) {
+  /* Two-row chat header: the name gets the full width under the avatar (QA m2). */
+  .chatHead {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .chatHead > .inert {
+    display: none;
+  }
   .addrPrefix,
   .addrPath {
     display: none;
@@ -563,7 +606,6 @@
   /* Text containers whose checkables hold hosts: the owner part never wraps, so the container
      scrolls sideways; the checkable inside it is the focusable control. */
   .body,
-  .bannerBody,
   .transcript li,
   .bubbleIn,
   .notification,

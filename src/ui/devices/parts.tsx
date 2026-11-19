@@ -130,6 +130,8 @@ export function Translate({
   id?: string;
 }) {
   const [open, setOpen] = useState(alwaysOpen);
+  // "Always show translations" changed in Settings: follow it (QA M7).
+  useEffect(() => setOpen(alwaysOpen), [alwaysOpen]);
   // Each open translation holds one freeze; ScenarioView counts them.
   useEffect(() => {
     if (!open) return undefined;

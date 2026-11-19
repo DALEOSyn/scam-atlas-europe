@@ -28,6 +28,8 @@ export interface HudMenu {
   onTimeLeft: () => void;
   onQuit: () => void;
   onOpen: (open: boolean) => void;
+  /** Opens Settings (QA M7); absent when there is nowhere to save them. */
+  onSettings?: (() => void) | undefined;
 }
 
 export function Hud({ view, progress, chip, timersOff, onPause, menu }: { view: RunnerView; progress: { index: number; total: number } | null; chip: string | null; timersOff: boolean; onPause: () => void; menu: HudMenu }) {
@@ -113,6 +115,19 @@ export function Hud({ view, progress, chip, timersOff, onPause, menu }: { view: 
           <button type="button" class={styles.menuItem} aria-pressed={menu.callLines === 'step'} onClick={() => menu.onCallLines(menu.callLines === 'step' ? 'auto' : 'step')}>
             {t('menu_call_lines_step')}
           </button>
+          {menu.onSettings ? (
+            <button
+              type="button"
+              class={styles.menuItem}
+              data-menu="settings"
+              onClick={() => {
+                toggle(false);
+                menu.onSettings?.();
+              }}
+            >
+              {t('menu_settings')}
+            </button>
+          ) : null}
           <button type="button" class={styles.menuItem} onClick={menu.onQuit}>
             {t('menu_quit')}
           </button>

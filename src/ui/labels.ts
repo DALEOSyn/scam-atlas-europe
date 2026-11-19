@@ -24,10 +24,11 @@ const ELEMENT_KEYS: Record<string, MessageKey> = {
   request: 'element_request',
 };
 
-export function elementLabel(target: string): string {
+export function elementLabel(target: string, device?: string): string {
   const base = target.replace(/#(\d)$/, '');
   const n = /#(\d)$/.exec(target)?.[1];
-  const label = t(ELEMENT_KEYS[base] ?? 'element_other');
+  // The ask (ruling QA L1): "What the caller asks" on a call, "What the message asks" elsewhere.
+  const label = t(base === 'request' && device === 'call' ? 'element_request_call' : (ELEMENT_KEYS[base] ?? 'element_other'));
   return n ? `${label} ${n}` : label;
 }
 
@@ -47,7 +48,8 @@ export const WHAT_NOW_KEYS: Record<WhatNowBuiltin, MessageKey> = {
   done: 'what_now_done',
 };
 
-/** The timer-expiry line (consequence caption and layer 2 "What happened"). */
-export function deadlineText(line: 'fake' | 'fake_fell' | 'real'): string {
-  return t(line === 'fake' ? 'deadline_fake' : line === 'fake_fell' ? 'deadline_fake_fell' : 'deadline_real');
+/** The timer-expiry line (consequence caption and layer 2 "What happened"); genuine: with the message's own deadline. */
+export function deadlineText(line: 'fake' | 'fake_fell' | 'genuine', honestDeadline?: string | null): string {
+  if (line === 'genuine') return honestDeadline ? t('deadline_genuine', { deadline: honestDeadline }) : t('deadline_genuine_plain');
+  return t(line === 'fake' ? 'deadline_fake' : 'deadline_fake_fell');
 }

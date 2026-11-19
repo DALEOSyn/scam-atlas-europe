@@ -319,3 +319,65 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* HUD: the wrapper sticks (the header inside it fills it). Sticky at every height (UI_SPEC §1.1, QA M5). */
+.hudWrap {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-hud);
+}
+/* Interrupt banner inside the device layer (UI_SPEC §2.3, QA M3): stays under the HUD while the player
+   reads, until the interrupt is answered. "View" brings the message into view. */
+.interruptBanner {
+  position: sticky;
+  top: calc(var(--hud-h-live, var(--hud-h)) + var(--space-2));
+  z-index: var(--z-toast);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: var(--border-w-strong) solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-2);
+}
+.interruptBannerText {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: break-word;
+  font-size: var(--fs-sm);
+}
+h3.interruptMeta:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+/* "Jump to your options" (QA M6): sticks to the bottom of the screen while the tray is out of view. */
+.jump {
+  position: sticky;
+  bottom: max(var(--space-2), env(safe-area-inset-bottom));
+  z-index: var(--z-toast);
+  justify-self: stretch;
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-4);
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font: inherit;
+  font-weight: var(--fw-bold);
+  box-shadow: var(--shadow-2);
+  cursor: pointer;
+}
+.jump:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+  box-shadow: 0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-w)) var(--color-focus-halo);
+}
+@media (min-width: 1024px) {
+  .jump {
+    display: none;
+  }
+}

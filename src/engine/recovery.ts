@@ -56,16 +56,21 @@ export function scoreRecovery(b: RecoveryTable, options: readonly RecoveryOption
   return { points, picks: scored, lo16, stars: points >= 6 ? 1 : 0 };
 }
 
-/** Which "Already clicked?" situation fits what the player did (UI_SPEC §8.2 item 3). */
-export type AlreadySituation = 'clicked' | 'entered_details' | 'paid';
+/**
+ * Which "Already clicked?" situation fits what the player did (UI_SPEC §8.2 item 3). Severity
+ * (ruling QA m10): paid > shared_code > entered_details > clicked.
+ */
+export type AlreadySituation = 'clicked' | 'entered_details' | 'shared_code' | 'paid';
 
 const PAID: readonly ActionKind[] = ['pay', 'pay_unprotected'];
-const ENTERED: readonly ActionKind[] = ['enter_details', 'share_code', 'approve_prompt', 'install_or_remote'];
+const SHARED: readonly ActionKind[] = ['share_code', 'approve_prompt'];
+const ENTERED: readonly ActionKind[] = ['enter_details', 'install_or_remote'];
 const CLICKED: readonly ActionKind[] = ['open_link', 'scan_qr_and_open', 'call_number_in_message', 'reply'];
 
 /** The most serious situation among the actions taken; undefined if the player never engaged. */
 export function situationOf(kinds: readonly ActionKind[]): AlreadySituation | undefined {
   if (kinds.some((k) => PAID.includes(k))) return 'paid';
+  if (kinds.some((k) => SHARED.includes(k))) return 'shared_code';
   if (kinds.some((k) => ENTERED.includes(k))) return 'entered_details';
   if (kinds.some((k) => CLICKED.includes(k))) return 'clicked';
   return undefined;
@@ -81,7 +86,7 @@ export function alreadyClickedLine(
 ): { situation: AlreadySituation; text: string } | undefined {
   const ac = s.debrief.already_clicked;
   if (!ac) return undefined;
-  const order: AlreadySituation[] = situation ? [situation, 'paid', 'entered_details', 'clicked'] : ['clicked', 'entered_details', 'paid'];
+  const order: AlreadySituation[] = situation ? [situation, 'paid', 'shared_code', 'entered_details', 'clicked'] : ['clicked', 'entered_details', 'shared_code', 'paid'];
   for (const k of order) {
     const text = ac[k];
     if (text) return { situation: k, text };

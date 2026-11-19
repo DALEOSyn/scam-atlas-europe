@@ -8,7 +8,7 @@ import type { Action, ActionClass, ActionKind, Balance, Inspectable, Scenario } 
 export type Truth = 'fraud' | 'legit_high' | 'legit_low';
 
 /** The parts of balance.yaml the star table needs. */
-export type ScoringTable = Pick<Balance, 'action_kinds' | 'stars' | 'points' | 'tutorial_grace'>;
+export type ScoringTable = Pick<Balance, 'action_kinds' | 'stars' | 'points' | 'tutorial_grace' | 'timer_expiry'>;
 
 /** Every part of balance.yaml the engine reads (validated at build time by balanceSchema). */
 export type EngineBalance = Pick<
@@ -26,6 +26,7 @@ export type EngineBalance = Pick<
   | 'pushers'
   | 'stress'
   | 'tutorial_grace'
+  | 'timer_expiry'
 >;
 
 export function truthOf(s: Pick<Scenario, 'is_fraud' | 'stakes'>): Truth {
@@ -117,7 +118,7 @@ export function graceFor(
 }
 
 export function scoreGroup(
-  b: Pick<Balance, 'stars' | 'points' | 'tutorial_grace'>,
+  b: Pick<Balance, 'stars' | 'points' | 'tutorial_grace' | 'timer_expiry'>,
   truth: Truth,
   decision: Decision | undefined,
   opts: { engagedOnFraud: boolean; timerExpired: boolean; /** Chapter slot, for tutorial grace. */ slot?: number },
@@ -142,6 +143,11 @@ export function scoreGroup(
   if (grace) {
     stars = grace.stars;
     points = grace.points;
+  }
+  // Ruling QA L4: running out of game time on a genuine high-stakes message is not dropping it.
+  if (expired && truth === 'legit_high') {
+    stars = b.timer_expiry.genuine_high.stars;
+    points = b.timer_expiry.genuine_high.points;
   }
   // (an authored override, if any, comes last: see above)
   if (!expired && decision?.override !== undefined) points = decision.override;

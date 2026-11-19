@@ -219,7 +219,7 @@ describe('CR-14: pusher view carries lang and translation', () => {
     const raw = rawFraud('p1', { pressure: { timer: false, levers: ['urgency'], pusher: { messages: [{ at_seconds: 5, text: 'Heute zahlen!', lang: 'de', translation: 'Pay today!' }] } } });
     const s = scenario(raw);
     const st = run(s, ctx(), [tick(1), tick(1), tick(1), tick(1), tick(1), tick(1)]);
-    expect(viewOf(s, ctx(), st).pusherMessages).toEqual([{ text: 'Heute zahlen!', at: 5, lang: 'de', translation: 'Pay today!', beatId: 'start', device: 'sms', sender: 'Trundle' }]);
+    expect(viewOf(s, ctx(), st).pusherMessages).toEqual([{ index: 0, text: 'Heute zahlen!', at: 5, lang: 'de', translation: 'Pay today!', beatId: 'start', device: 'sms', sender: 'Trundle' }]);
   });
 });
 

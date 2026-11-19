@@ -17,7 +17,7 @@ export interface CheckableBeat {
   device: Device;
   message: Message;
   inspectables: Inspectable[];
-  /** In-beat notification; its text is the `request` checkable. */
+  /** In-beat notification (displayed; no checkables). */
   banner?: BannerLike | undefined;
 }
 
@@ -25,6 +25,8 @@ export interface CheckableItem {
   /** Stable key `${beatId}|${target}` used for checks and tags. */
   key: string;
   beatId: string;
+  /** The beat's device ("What the caller asks" on a call). */
+  device: Device;
   /** e.g. sender.detail, link#2 */
   target: string;
   /** What the element shows (for "You see"), when the message has it. */
@@ -46,7 +48,7 @@ function nth<T>(list: readonly T[] | undefined, target: string): T | undefined {
 }
 
 /** What the player sees for a checkable (address-bar host, number, file name…). */
-export function shownText(device: Device, m: Message, target: string, links: readonly string[], banner?: BannerLike): string | undefined {
+export function shownText(device: Device, m: Message, target: string, links: readonly string[]): string | undefined {
   const base = target.replace(/#\d$/, '');
   switch (base) {
     case 'sender.detail':
@@ -85,7 +87,7 @@ export function shownText(device: Device, m: Message, target: string, links: rea
     case 'image':
       return m.image?.alt;
     case 'request':
-      return banner?.message.body ?? banner?.message.subject;
+      return m.ask?.text;
     default:
       return device === 'call' ? m.sender?.detail : undefined;
   }
@@ -95,11 +97,12 @@ export function shownText(device: Device, m: Message, target: string, links: rea
 export function checkablesOf(beat: CheckableBeat): CheckableItem[] {
   const transcript = beat.message.transcript?.map((l) => l.text).join('\n');
   const links = [...linksIn(beat.message.body), ...linksIn(transcript)];
-  return deriveCheckables(beat.device, beat.message, beat.banner).map((target) => ({
+  return deriveCheckables(beat.device, beat.message).map((target) => ({
     key: keyOf(beat.id, target),
     beatId: beat.id,
+    device: beat.device,
     target,
-    shown: shownText(beat.device, beat.message, target, links, beat.banner),
+    shown: shownText(beat.device, beat.message, target, links),
     reveal: inspectableFor(beat, target)?.reveal,
   }));
 }

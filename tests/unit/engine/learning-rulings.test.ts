@@ -51,8 +51,11 @@ describe('L4 tutorial grace: slot 0 against slot 1', () => {
     }
   });
 
-  it('a timer running out is not a choice: no grace', () => {
-    expect(scoreGroup(B, 'legit_high', undefined, { engagedOnFraud: false, timerExpired: true, slot: 0 })).toMatchObject({ stars: 0, points: 0 });
+  it('a timer running out is not a choice: no grace; on genuine high stakes it scores ★ and 5 in every slot (ruling QA L4)', () => {
+    for (const slot of [0, 1, 5]) {
+      expect(scoreGroup(B, 'legit_high', undefined, { engagedOnFraud: false, timerExpired: true, slot })).toMatchObject({ stars: 1, points: 5 });
+    }
+    expect(scoreGroup(B, 'legit_low', undefined, { engagedOnFraud: false, timerExpired: true, slot: 0 })).toMatchObject({ stars: 2, points: 10 });
     expect(graceFor(B, undefined, 'report', 'legit_low')).toBeUndefined();
   });
 

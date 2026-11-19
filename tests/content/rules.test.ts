@@ -473,29 +473,56 @@ describe('"What now?" extras and banners (GDD §6, §17 1-9)', () => {
     withActions.banner = { device: 'sms', message: { body: 'x', request: 'none' }, actions: [] };
     expect(schemaErrors(withActions).join('\n')).toMatch(/banner/);
   });
-  it('a banner adds the beat\'s request checkable; its reveal is the request inspectable (GDD §17 1-9 beat 3)', () => {
+  it('the request checkable comes only from message.ask; a banner adds none (ruling QA L1)', async () => {
     const r = callFraud();
     msg(r).request = 'share_code';
+    msg(r).body = 'Your account is locked. Send us the 6-digit code we just texted you: trundle-zoll.example/p/1';
+    msg(r).ask = { text: 'Send us the 6-digit code we just texted you' };
     r.banner = { device: 'sms', message: { sender: { display: 'Larchwick' }, body: 'Code 4471 approves a payment of EUR 900.', request: 'none' } };
-    (r.inspectables as Raw[]).push({ target: 'request', reveal: 'The code is for a payment, not a cancellation.', red_flag: true, type: 'request' });
+    (r.inspectables as Raw[]).push({ target: 'request', reveal: 'The code text says it approves a payment.', red_flag: true, type: 'request' });
     expect(schemaErrors(r)).toEqual([]);
     const parsed = scenarioSchema.parse(r);
-    expect(deriveCheckables(parsed.device, parsed.message, parsed.banner)).toContain('request');
-    expect(deriveCheckables(parsed.device, parsed.message)).not.toContain('request');
+    expect(deriveCheckables(parsed.device, parsed.message)).toContain('request');
+    const { checkablesOf } = await import('../../src/engine/inspect.ts');
+    expect(checkablesOf({ ...parsed, id: 'start' }).find((c) => c.target === 'request')?.shown).toBe('Send us the 6-digit code we just texted you');
 
-    const noBanner = callFraud();
-    msg(noBanner).request = 'share_code';
-    (noBanner.inspectables as Raw[]).push({ target: 'request', reveal: 'x', red_flag: true });
-    expect(schemaErrors(noBanner).join('\n')).toMatch(/"request" is not visible .*needs a banner/);
+    const bannerOnly = callFraud();
+    msg(bannerOnly).request = 'share_code';
+    bannerOnly.banner = r.banner;
+    (bannerOnly.inspectables as Raw[]).push({ target: 'request', reveal: 'x', red_flag: true, type: 'request' });
+    expect(schemaErrors(bannerOnly).join('\n')).toMatch(/"request" is not visible .*message\.ask/);
+
+    const notVerbatim = structuredClone(r);
+    msg(notVerbatim).ask = { text: 'Send the code' + ' now' };
+    expect(schemaErrors(notVerbatim).join('\n')).toMatch(/ask.text must be copied verbatim/);
+
+    const noReveal = structuredClone(r);
+    noReveal.inspectables = (r.inspectables as Raw[]).filter((i) => i.target !== 'request');
+    expect(schemaErrors(noReveal).join('\n')).toMatch(/needs an inspectable with target: request and type: request/);
 
     const wrongType = structuredClone(r);
     const last = (wrongType.inspectables as Raw[]).at(-1);
     if (last) last.type = 'sender';
     expect(schemaErrors(wrongType).join('\n')).toMatch(/a request checkable has type: request/);
 
-    const asksNothing = structuredClone(r);
-    msg(asksNothing).request = 'none';
-    expect(schemaErrors(asksNothing).join('\n')).toMatch(/needs message.request on the same beat/);
+    const payAsk = structuredClone(r);
+    msg(payAsk).request = 'pay';
+    expect(schemaErrors(payAsk).join('\n')).toMatch(/ask is only for messages whose request is share_code or approve/);
+
+    const foreign = structuredClone(r);
+    msg(foreign).lang = 'de';
+    msg(foreign).translation = 'Send us the code.';
+    expect(schemaErrors(foreign).join('\n')).toMatch(/ask.translation is required/);
+    msg(foreign).ask = { text: 'Send us the 6-digit code we just texted you', translation: 'Send it' + ' today' };
+    expect(schemaErrors(foreign).join('\n')).toMatch(/ask.translation must be copied verbatim/);
+
+    const caller: Raw = rawFraud();
+    caller.device = 'call';
+    msg(caller).body = undefined;
+    msg(caller).transcript = [{ speaker: 'caller', text: 'Read me the code to stop the payment.' }, { speaker: 'you', text: 'Which code?' }];
+    msg(caller).request = 'share_code';
+    msg(caller).ask = { text: 'Which code?' };
+    expect(schemaErrors(caller).join('\n')).toMatch(/ask.text must be copied verbatim .*caller line/);
 
     const emptyBanner = structuredClone(r);
     emptyBanner.banner = { device: 'sms', message: { sender: { display: 'Larchwick' }, request: 'none' } };

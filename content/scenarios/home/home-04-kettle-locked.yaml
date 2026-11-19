@@ -126,5 +126,5 @@ debrief:
   habit_card: pressure-is-the-tell
   already_clicked:
     clicked: "Close the page and type nothing. If anything downloaded or you installed something, run a security scan or ask for help."
-    entered_details: "Open Kettle's linked devices and log out any you don't know. Turn on two-step verification, warn your contacts and report it to the police."
+    shared_code: "Open Kettle's linked devices and log out any you don't know. Turn on two-step verification, warn your contacts and report it to the police."
   sources: [de-vzn-ghost-pairing-2026, pl-cert-vote-takeover-2026, nl-politie-whatsapp-takeover-2024, pl-cert-phishing-kb-2026, ie-ncsc-phishing-guide]

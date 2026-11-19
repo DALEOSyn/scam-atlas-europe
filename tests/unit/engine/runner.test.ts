@@ -123,11 +123,11 @@ describe('runner: timers, Calm mode and freezing', () => {
     expect(expired.phase).toBe('consequence');
     const v = viewOf(s, ctx(), expired);
     expect(v.consequenceTimerExpired).toBe(true);
-    expect(v.consequenceDeadline).toBe('real');
+    expect(v.consequenceDeadline).toBe('genuine');
     const after = step(s, ctx(), expired, { type: 'continue' });
     expect(after.phase).toBe('done');
     const d = debriefOf(s, after, resultOf(s, B, after), seen);
-    expect(d.layer2.deadline).toBe('real');
+    expect(d.layer2.deadline).toBe('genuine');
   });
 
   it('no timer expiry: no deadline caption', () => {

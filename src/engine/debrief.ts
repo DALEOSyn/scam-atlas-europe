@@ -20,12 +20,17 @@ export interface DebriefFlag {
   /** Bound checkable, when there is one. */
   target?: string;
   beatId?: string;
-  /** Sender flags carry "Even a familiar sender name can be faked." (UI_SPEC §8.2, LI-3). */
-  senderCaveat: boolean;
+  /**
+   * Sender flags carry a caveat (UI_SPEC §8.2, LI-3; ruling QA m9): `name` = "Even a familiar sender name
+   * can be faked."; `number` when the sender shows a phone number ("If it had shown the company's name
+   * instead, that wouldn't prove it real either."). null on other flags.
+   */
+  senderCaveat: 'name' | 'number' | null;
 }
 
 export interface DebriefWrongTag {
   beatId: string;
+  device: Device;
   target: string;
   /** Reveal text, or undefined for the neutral filler. */
   reveal: string | undefined;
@@ -105,9 +110,11 @@ export interface DebriefData {
     /**
      * Timer expiry line under "What happened", gated like the consequence caption: `fake` on fraud
      * ("The deadline was fake…"), `fake_fell` on fraud after a fall (no "Nothing happened", QA m1),
-     * `real` on genuine ("Time ran out. This one was genuine…"), else null.
+     * `genuine` on genuine ("Time's up in the game, not in real life…", ruling QA L4), else null.
      */
     deadline: DeadlineLine;
+    /** pressure.honest_deadline, for the genuine line's {deadline}. */
+    honestDeadline: string | null;
     /**
      * "Your other choices": the other beats' lines below ★★★, in beat order (CR-15), each with its
      * beat's stars. When layer 1 shows no line (after a fall, or ★★★ displayed with a lower beat) the
@@ -119,7 +126,7 @@ export interface DebriefData {
     /** "You spotted {marked} of {could} you could mark." */
     spotted: { marked: number; could: number };
     deviceTip: string | null;
-    alreadyClicked: { clicked?: string; entered_details?: string; paid?: string } | null;
+    alreadyClicked: { clicked?: string; entered_details?: string; shared_code?: string; paid?: string } | null;
     habitCard: string | null;
     pressureCallout: PressureCallout;
     /** Authored levers, the answer for the optional "Which pressure did they use?" tap. */
@@ -128,13 +135,21 @@ export interface DebriefData {
     notes: string | null;
     safeguardingLine: string | null;
     /** Points breakdown for "How the stars and points were worked out" (null on arc). */
-    points: { base: number; tagBonus: number; tagBonusVoided: boolean; recovery: number | null; total: number; max: number } | null;
+    points: { base: number; tagBonus: number; tagBonusVoided: boolean; recovery: number | null; total: number; max: number; bossFallCap: boolean } | null;
   };
 }
 
 const SENDER_TARGETS = /^(?:sender\.detail|caller_id)$/;
 /** Decoy types that look the same on a real call or message (ruling L2). */
 const FAIR_INSTINCT_TYPES: ReadonlySet<string> = new Set(['caller_id', 'sender', 'logo']);
+
+/** A sender that shows a phone number, not a name (ruling QA m9). */
+const PHONE_DISPLAY = /^[+\d][\d\s•.-]*$/u;
+
+export function senderCaveatOf(target: string, display: string | undefined): 'name' | 'number' | null {
+  if (!SENDER_TARGETS.test(target)) return null;
+  return display && PHONE_DISPLAY.test(display.trim()) ? 'number' : 'name';
+}
 
 /** Decide the pressure callout given what the game has already shown (save.callouts). */
 export function pressureCalloutFor(
@@ -171,10 +186,10 @@ export function debriefOf(
       const tagged = st.tags.includes(`${id}|${ins.target}`);
       could++;
       if (tagged) marked++;
-      flags.push({ text: ins.reveal, status: tagged ? 'marked' : 'not_marked', target: ins.target, beatId: id, senderCaveat: SENDER_TARGETS.test(ins.target) });
+      flags.push({ text: ins.reveal, status: tagged ? 'marked' : 'not_marked', target: ins.target, beatId: id, senderCaveat: senderCaveatOf(ins.target, beat.message.sender?.display) });
     }
   }
-  for (const text of d.layer2.message_flags) flags.push({ text, status: 'in_message', senderCaveat: false });
+  for (const text of d.layer2.message_flags) flags.push({ text, status: 'in_message', senderCaveat: null });
 
   const wrongTags: DebriefWrongTag[] = st.tags.flatMap((key) => {
     const [beatId = '', target = ''] = key.split('|');
@@ -185,7 +200,7 @@ export function debriefOf(
     const correct = !!ins && ins.red_flag && (s.is_fraud || ins.context === 'quoted');
     if (correct) return [];
     const fairInstinct = s.is_fraud && !!ins && !ins.red_flag && ins.context !== 'quoted' && FAIR_INSTINCT_TYPES.has(ins.type ?? 'other');
-    return [{ beatId, target, reveal: ins?.reveal, type: ins?.type, fairInstinct }];
+    return [{ beatId, device: beat.device, target, reveal: ins?.reveal, type: ins?.type, fairInstinct }];
   });
 
   // Drills are unscored teaching moments (GDD §4): no stars, points or "You chose" line, like arc beats (QA E2).
@@ -232,10 +247,15 @@ export function debriefOf(
       // answered come right after the beat they arrived in (QA M3).
       narratives: [
         ...new Set(
-          st.groups.flatMap((g, i) => [...(g.outcome && s.outcomes[g.outcome] ? [s.outcomes[g.outcome]?.narrative ?? ''] : []), ...interruptNarratives(s, st, i)]),
+          [
+            ...st.groups.flatMap((g, i) => [...(g.outcome && s.outcomes[g.outcome] ? [s.outcomes[g.outcome]?.narrative ?? ''] : []), ...interruptNarratives(s, st, i)]),
+            // An after_beat interrupt answered in its own step at the end (ruling QA M6).
+            ...interruptNarratives(s, st, st.groups.length),
+          ],
         ),
       ],
       deadline: r.timerExpired ? deadlineLine(s.is_fraud, r.fell) : null,
+      honestDeadline: s.pressure.honest_deadline ?? null,
       youChoseOther,
       flags,
       wrongTags,
@@ -250,7 +270,7 @@ export function debriefOf(
       safeguardingLine: d.safeguarding_line ?? null,
       points: unscored
         ? null
-        : { base: r.base, tagBonus: r.tagBonus, tagBonusVoided: r.tagBonusVoided, recovery: r.fell ? (r.recovery?.points ?? 0) : null, total: r.points, max: r.maxPoints },
+        : { base: r.base, tagBonus: r.tagBonus, tagBonusVoided: r.tagBonusVoided, recovery: r.fell ? (r.recovery?.points ?? 0) : null, total: r.points, max: r.maxPoints, bossFallCap: r.bossFallCap },
     },
   };
 }

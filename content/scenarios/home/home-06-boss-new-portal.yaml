@@ -222,4 +222,5 @@ debrief:
   already_clicked:
     clicked: "Close the page and type nothing. If anything downloaded or you installed something, run a security scan or ask for help."
     entered_details: "Change your password from the real Waymarker Desk now, sign out other sessions, and tell IT through Waymarker Desk straight away, even if it feels awkward."
+    shared_code: "Change your password from the real Waymarker Desk now, sign out other sessions, and tell IT through Waymarker Desk straight away, even if it feels awkward."
   sources: [eu-enisa-etl-2026, es-incibe-mailbox-full-2022, pl-cert-fake-consultants, ch-ncsc-fake-support-2024, eu-epc-threats-2025, pl-cert-phishing-kb-2026]

@@ -29,9 +29,12 @@ describe('damage control (GDD §9)', () => {
     expect(orderOptions(options, 'home-04')).toEqual(a);
     expect([...a].sort((x, y) => x.step.localeCompare(y.step))).toEqual([...options].sort((x, y) => x.step.localeCompare(y.step)));
   });
-  it('already clicked: the player\'s own situation first (clicked, entered details, paid)', () => {
+  it('already clicked: the player\'s own situation first (paid > shared code > entered details > clicked)', () => {
     expect(situationOf(['open_link'])).toBe('clicked');
-    expect(situationOf(['open_link', 'share_code'])).toBe('entered_details');
+    expect(situationOf(['open_link', 'share_code'])).toBe('shared_code');
+    expect(situationOf(['approve_prompt', 'enter_details'])).toBe('shared_code');
+    expect(situationOf(['open_link', 'enter_details'])).toBe('entered_details');
+    expect(situationOf(['share_code', 'pay'])).toBe('paid');
     expect(situationOf(['open_link', 'enter_details', 'pay'])).toBe('paid');
     expect(situationOf(['verify_in_app'])).toBeUndefined();
     const s = { debrief: { already_clicked: { clicked: 'Close it.', paid: 'Block your card.' } } } as Parameters<typeof alreadyClickedLine>[0];

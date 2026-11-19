@@ -10,7 +10,7 @@
  */
 import type { Device, Message } from './schema.ts';
 
-/** A notification shown inside a beat (code SMS, approval prompt): its text is the beat's `request` checkable. */
+/** A notification shown inside a beat (code SMS, approval prompt). Displayed only: it adds no checkables. */
 export interface BannerLike {
   device: Device;
   message: Message;
@@ -57,11 +57,11 @@ function numbered(base: string, count: number): string[] {
 }
 
 /**
- * Checkables of a message in reading order. A beat's banner (GDD §17 1-9 beat 3: the code SMS that
- * says what the code is for) is where the message's request is shown on its own, so it adds the
- * `request` checkable (its text is the "You see"). The banner has no other checkables.
+ * Checkables of a message in reading order. The `request` checkable comes only from the message's
+ * own `ask` (the sentence asking for the code or approval; design ruling 2026-11-19, QA L1). A
+ * beat's banner (the genuine code text) is evidence, not the tell: it adds no checkables.
  */
-export function deriveCheckables(device: Device, m: Message, banner?: BannerLike): string[] {
+export function deriveCheckables(device: Device, m: Message): string[] {
   const out: string[] = [];
   if (m.sender) out.push(device === 'call' ? 'caller_id' : 'sender.detail');
   if (m.letterhead) out.push('letterhead');
@@ -81,6 +81,6 @@ export function deriveCheckables(device: Device, m: Message, banner?: BannerLike
     if (m.payee.iban) out.push('payee.iban');
   }
   if (m.image) out.push('image');
-  if (banner) out.push('request');
+  if (m.ask) out.push('request');
   return out;
 }

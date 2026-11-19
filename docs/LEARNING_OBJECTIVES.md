@@ -1,6 +1,6 @@
 # Learning objectives — Scam Atlas: Europe
 
-Owner: `game-designer` · Status: v3 for G1 · Last update: 2026-11-18
+Owner: `game-designer` · Status: v3.1 (v3 for G1, plus the LO-13 ruling) · Last update: 2026-11-19
 
 Every mechanic, scenario and reward must point at one or more LO ids below (see GDD §13). Each objective describes a behaviour the game can **observe**: an action `kind`, a red flag the player tags, or the steps they choose in damage control.
 
@@ -25,7 +25,7 @@ Every mechanic, scenario and reward must point at one or more LO ids below (see 
 | LO-10 | Keeps a marketplace or rental deal on the platform and refuses off-platform payment or "safe delivery" links. | `check_with_platform` or dismiss instead of `open_link` / `enter_details`. | *Stay on the platform* | 5, 7 |
 | LO-11 | Checks an online shop, rental listing or offer (real domain, listing on the genuine platform, independent reviews) before paying, and pays inside the platform or with buyer protection. | `check_official_list` on fraud. `pay_protected` (3 stars) rather than `pay_unprotected` (1 star) on genuine offers. | *Check before you pay* | 7 |
 | LO-12 | Turns down "easy money" offers arriving by message or social media: task platforms (sites or apps) that ask for deposits, and money-mule offers that want your banking-app login, card details or account access. Never hands these over. If already involved, changes the login, calls the bank on a known number, and tells a trusted adult. | Dismisses or reports the offer, or `ask_someone`. Does not `enter_details` / `pay` on the task platform. In the Noor scenario, advises her not to share her login or card details. | *Easy money costs you* | 2, 10 |
-| LO-13 | Checks an investment offer against the regulator's warning list, and rejects guaranteed returns, celebrity endorsements and fee-charging "recovery" services. | `check_official_list`; dismisses or reports recovery offers. | *If it's guaranteed, it's not* | 8, 10 |
+| LO-13 | Checks an investment firm on the regulator's register (and warning list), contacts it only through the register's details, and rejects high returns sold as guaranteed, celebrity endorsements and fee-charging "recovery" services. Never treats "not on the warning list" as safe. | `check_official_list`; dismisses or reports recovery offers. | *If it's guaranteed and high, it's not* | 8, 10 |
 | LO-14 | Spots friendship-based manipulation (moves chat off-platform, asks for secrecy, cannot be verified, steers to money) and tells a trusted adult. | `verify_identity`, `ask_someone` or `report` on arc beats. Declines money requests. | *A real friend never needs your money* | arc 1–10 (GDD §10) |
 | LO-15 | Refuses remote access or installs requested by unsolicited "support", and contacts support through the official channel. | Does not pick `install_or_remote`; `verify_in_app` / `call_back_known`. | *Nobody needs your screen* | 9, 10 |
 | LO-16 | After a mistake, first stops the damage (the right first step depends on the scam: block the card, or change the stolen password), then secures, reports and warns. Never pays to "get money back". | Damage-control points ≥ 6 **and** the first pick has category `stop` *for that scenario*. | *Stop the damage first* | all |
@@ -47,3 +47,6 @@ Every mechanic, scenario and reward must point at one or more LO ids below (see 
 - LO-09 reframed to cover callers and QR logins.
 - LO-04 is unscored.
 - LO-16 stop-step categories are now set per scenario.
+
+## Changes in v3.1 (2026-11-19, producer ruling on GDD §28.11 Q2)
+- LO-13 is register-first: the firm must be on the regulator's register and contacted on the register's details; a clean warning list proves nothing. Habit card renamed *If it's guaranteed and high, it's not* (id `if-its-guaranteed-and-high-its-not`, GDD §28.10).

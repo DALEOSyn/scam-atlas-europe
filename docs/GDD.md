@@ -1389,10 +1389,10 @@ Shared rules: action order follows the validator (`action_order`); labels ≤ 8 
 - **Debrief L1 (≈18):** tell "A number that isn't your card's, in your bank's real thread." · what works "Don't call it. Open your app, or call your card's number." Layer 2:
   - "A logo or familiar name proves nothing. Scammers copy them perfectly, even into a real thread." (LO doc standard line.)
   - **The register line (M5), word for word:** "Since September 2026, Spanish phone companies must block texts under sender names that aren't registered. Even so, a text in your bank's real thread is no proof."
-  - **"If you'd called"** (for players who stopped at the text): "A recorded menu, then a 'security department' that won't ask for your passwords, and wants you to move your money to a 'safe' account. That move is the scam."
+  - **"Behind that number"** (true whether or not the player called; was "If you'd called", Madrid QA round): "Behind that number: a recorded menu, then a 'security department' that won't ask for your passwords, and wants you to move your money to a 'safe' account. That move is the scam."
   - Device tip: "On a real phone, a text can sit right under your bank's genuine messages. Check in the app you open yourself."
   - `already_clicked`: `clicked` "Called the number? Hang up, then call the number on your card and tell your bank what happened." · `paid` "Moved money? Call your bank now on the number on your card and ask it to try to stop or recall the transfer. Keep the texts and the call log."
-- Habit card `who-really-sent` (first Madrid showing).
+- Habit card `hang-up-call-back` (producer ruling, Madrid QA round, 2026-11-19: its already-clicked line fits a call that led to a transfer; was `who-really-sent`, whose "change that password" line doesn't). `who-really-sent` is no longer shown in a Madrid debrief; it stays on the atlas page.
 
 **4-4 `madrid-04-lucia-slept-on-it`** (drill, unscored) · messenger with a quoted sms · cast Lucía · `pattern: bank-safe-account-call`
 - **Message:** Lucía's saved contact "Lucía (Madrid)". "Just woke up. This came in overnight, in my real Larchwick chat. My rule: nothing big till I've slept. Slept now 😄 What would you check?" Quoted text (`context: quoted`): "LARCHWICK: New sign-in to your account from a new device. Not you? Call us immediately on 9•• ••• •52."

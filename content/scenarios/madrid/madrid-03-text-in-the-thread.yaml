@@ -154,7 +154,7 @@ debrief:
       - "Behind that number: a recorded menu, then a \"security department\" that won't ask for your passwords, and wants you to move your money to a \"safe\" account. That move is the scam."
     notes: "A logo or familiar name proves nothing. Scammers copy them perfectly, even into a real thread. Since September 2026, Spanish phone companies must block texts under sender names that aren't registered. Even so, a text in your bank's real thread is no proof."
   device_tip: "On a real phone, a text can sit right under your bank's genuine messages. Check in the app you open yourself."
-  habit_card: who-really-sent
+  habit_card: hang-up-call-back   # producer ruling (Madrid QA): its already-clicked line fits a call that led to a transfer
   already_clicked:
     clicked: "Called the number? Hang up, then call the number on your card and tell your bank what happened."
     paid: "Moved money? Call your bank now on the number on your card and ask it to try to stop or recall the transfer. Keep the texts and the call log."

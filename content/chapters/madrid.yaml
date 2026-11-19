@@ -7,9 +7,8 @@
 # 4-7, boss; bank-text 4-3, 4-6, 4-8 (never adjacent); pressure parity genuine 2/3 (4-2, 4-6) vs fraud 4/5
 # (4-3, 4-5, 4-7, boss); genuine at difficulty 2, 3 and 4; sender-or-link decoys in 4-3, 4-5, 4-7, 4-8, boss.
 # Stop point after 4-3 (am/pm split). The arc beat sits between 4-7 and 4-8.
-# Story scenes (GDD §24.2, STORY §3.4: madrid-arrival, madrid-turn, madrid-resolution, variant flag
-# madrid_money_moved set by the boss's fall outcomes) come in a separate ticket; add
-# `scenes: { arrival: madrid-arrival, turn: madrid-turn, resolution: madrid-resolution }` with them.
+# Story scenes (GDD §24.2, STORY §3.4; T-S4e): madrid-arrival, madrid-turn (stop point), madrid-resolution
+# (variant flag madrid_money_moved, set by the boss's fall outcomes). Order: Arrival, intro and card, 4-1.
 # Help card: "Where to report and get help" (Spain), wording in the Madrid sources page in docs/patterns
 # ("Spain help card"); real bodies are named only there and on the help screen (Red Line 1). It never
 # mentions the sender register (ruling M5 / R10: that line is in 4-3 layer 2 only).
@@ -32,3 +31,7 @@ rules:
   items:
     - "Questions about your account? Call us on 9•• ••• •00 or open the Larchwick app."
 atlas_cards: [hang-up-call-back, who-really-sent, pressure-is-the-tell]
+scenes:
+  arrival: madrid-arrival
+  turn: madrid-turn
+  resolution: madrid-resolution

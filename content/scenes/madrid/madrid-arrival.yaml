@@ -1,0 +1,25 @@
+# Madrid arrival (GDD §24.2 beat 1, STORY §3.4; calm): before the chapter intro and its pinned card
+# (CR-27), then 4-1. Caption on the street backdrop first, then the kitchen: Lucía home from her night
+# shift, Andrés and the flat savings (the human problem). No message, number, amount or bank word.
+id: madrid-arrival
+chapter: madrid
+slot: arrival
+panels:
+  - backdrop: madrid-street
+    crop: centre
+    caption: "Madrid. Your hosts' spare room, and the Atlas page to write."
+    alt: "Ochre and cream apartment buildings with shutters, balconies and geraniums."
+  - backdrop: madrid-kitchen
+    crop: left
+    speaker: lucia
+    expression: warm
+    line: "Coffee's there. I'm going to sleep for a year."
+    alt: "Lucía in the kitchen, smiling, with a coffee cup."
+  - backdrop: madrid-kitchen
+    crop: right
+    speaker: andres
+    expression: laughing
+    flip: true
+    with: { id: lucia, expression: calm }
+    line: "Every euro is saved for the flat. Even this coffee is in a spreadsheet."
+    alt: "Andrés laughing in the kitchen; Lucía listens, calm."

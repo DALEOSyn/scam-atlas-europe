@@ -1,0 +1,26 @@
+# Brussels arrival (GDD §30.2 beat 1, STORY §3.10; calm; 2 panels): before the chapter intro and Adaeze's rule
+# card (CR-27), then 10-1. Waymarker's office: plain boxes of freshly printed Atlas covers (no printer's name),
+# the desk with the laptop and the small projector. The human problem is the Open Evening in two days and a
+# laptop that won't behave (STORY §4.2 rule 3); no pop-up, caller, number or screen is shown (GDD §30.2).
+# Adaeze's line word for word; the second panel is the spec's caption over Teo (laughing) and Noor. The art has
+# no door, so the alt says only what the right-hand crop shows (desk, high window, big plant).
+# Not sensitive: the chapter content note is shown on the map; the ending and feelings scenes carry it.
+id: brussels-arrival
+chapter: brussels
+slot: arrival
+panels:
+  - backdrop: brussels-office
+    crop: left
+    speaker: adaeze
+    expression: thinking
+    caption: "Brussels. Waymarker's office, full of boxes."
+    line: "Two days to the Open Evening. The laptop and I are not friends."
+    alt: "Adaeze, thinking, by stacked boxes and a noticeboard, near a desk with a laptop and a small projector."
+  - backdrop: brussels-office
+    crop: right
+    speaker: teo
+    expression: laughing
+    flip: true
+    with: { id: noor, expression: calm }
+    caption: "Teo and Noor arrive with one suitcase too many."
+    alt: "Teo laughing beside a big plant under the high window; Noor listens, calm, holding her phone, screen turned away."

@@ -1,0 +1,31 @@
+# Madrid turn (GDD §24.2 beat 2, STORY §3.4; worried → calm): stop point, after 4-3, before drill 4-4.
+# Andrés's worry is the deposit itself, never a bank message (the v1.3 "bank's been texting" line is cut,
+# STORY §4.2 rule 2). Lucía's rule is the last serious line; Andrés's joke answers it, so the scene ends on
+# a laugh, never on worried (STORY §5.3).
+id: madrid-turn
+chapter: madrid
+slot: turn
+panels:
+  - backdrop: madrid-kitchen
+    crop: right
+    speaker: andres
+    expression: worried
+    flip: true
+    caption: "Afternoon."
+    line: "Next week we send the deposit for the flat. Biggest transfer of our lives. I keep checking the app."
+    alt: "Andrés in the kitchen, looking worried."
+  - backdrop: madrid-kitchen
+    crop: left
+    speaker: lucia
+    expression: calm
+    with: { id: andres, expression: calm }
+    line: "After nights, my rule: no big decisions until I've slept. Not one."
+    alt: "Lucía, calm, with her coffee cup; Andrés listens, calm."
+  - backdrop: madrid-kitchen
+    crop: right
+    speaker: andres
+    expression: laughing
+    flip: true
+    with: { id: lucia, expression: warm }
+    line: "So I'll make the decisions. Kidding."
+    alt: "Andrés laughing in the kitchen; Lucía listens, smiling."

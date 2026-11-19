@@ -20,6 +20,7 @@ import { DemoField, SimPill, SimulatedForm } from '../SimulatedForm.tsx';
 import { hostParts, segmentMessage } from '../text.ts';
 import { qrMountText } from '../../engine/inspect.ts';
 import { castMember } from '../../content/cast.ts';
+import { balance } from '../../content/balance.ts';
 import { Avatar, BrandBar, ChatBody, Chips, LaptopFrame, MessageBody, PhoneFrame, Segments, Translate } from './parts.tsx';
 import { QrGraphic } from './QrGraphic.tsx';
 import type { DeviceProps } from './types.ts';
@@ -321,9 +322,14 @@ function Chat(p: DeviceProps) {
           <Avatar name={display} />
         )}
         <span class={styles.chatTitle}>
-          <Checkable target="sender.detail">
+          {/* CR-40: the forwarder (a cast member) is never checkable; the forwarded sender is. */}
+          {m.forwarded ? (
             <strong>{display}</strong>
-          </Checkable>
+          ) : (
+            <Checkable target="sender.detail">
+              <strong>{display}</strong>
+            </Checkable>
+          )}
           <span class={styles.muted}>{p.device === 'sms' ? t('sms_sub') : t('chat_sub')}</span>
         </span>
       </div>
@@ -369,7 +375,7 @@ function Chat(p: DeviceProps) {
                 </div>
               ))}
             <div class={styles.bubbleIn}>
-              <ChatBody message={m} quoted={new Set(p.quoted ?? [])} />
+              {m.forwarded ? <Forwarded m={m} /> : <ChatBody message={m} quoted={new Set(p.quoted ?? [])} />}
               <Chips items={segs.leftover} />
               {m.image && p.device !== 'messenger' ? <ImageBox alt={m.image.alt} /> : null}
               {m.payee ? <BankDetails m={m} /> : null}
@@ -392,6 +398,41 @@ function Chat(p: DeviceProps) {
         )}
       </div>
     </PhoneFrame>
+  );
+}
+
+/**
+ * CR-40: a message a cast member forwards (advice scenarios): their own words as plain text (never checkable), then
+ * the forwarded message as a quoted card: "Forwarded from {app}", its sender (checkable `forwarded.sender`) and its
+ * body, where claims, the ask and references are highlighted as in any message.
+ */
+function Forwarded({ m }: { m: Message }) {
+  const f = m.forwarded;
+  if (!f) return null;
+  const app = brandById(f.app);
+  const inner: Message = { ...m, body: f.body, transcript: undefined, lang: undefined, translation: undefined, forwarded: undefined };
+  const segs = segmentMessage(inner);
+  return (
+    <>
+      {m.body ? (
+        <div class={styles.body}>
+          <RichText text={m.body} />
+        </div>
+      ) : null}
+      <figure class={styles.forwarded} data-forwarded="">
+        <figcaption class={styles.forwardedHead}>
+          <span class={styles.muted}>{t('forwarded_from', { app: app?.name ?? f.app })}</span>
+          <Checkable target="forwarded.sender" name={f.sender.detail ? `${f.sender.display} · ${f.sender.detail}` : f.sender.display}>
+            <strong>{f.sender.display}</strong>
+            {f.sender.detail ? <span class={styles.muted}> · {f.sender.detail}</span> : null}
+          </Checkable>
+        </figcaption>
+        <blockquote class={styles.forwardedBody}>
+          <Segments segs={segs.body} />
+        </blockquote>
+        <Chips items={segs.leftover} />
+      </figure>
+    </>
   );
 }
 
@@ -686,12 +727,50 @@ function AddressText({ address }: { address: string }) {
   );
 }
 
+/** Kinds whose class is dismiss (balance action_kinds): the overlay's "Close" picks the beat's one dismiss action (CR-42). */
+const DISMISS_KINDS = new Set(Object.entries(balance.action_kinds).filter(([, v]) => v.class === 'dismiss').map(([k]) => k));
+
+/**
+ * CR-42: a browser warning drawn over the page as a game-styled panel (the Waymarker training frame, the game's own
+ * tokens): no operating-system, browser or security-product look, no real icons, no sound, no fullscreen, no
+ * leave-page prompt, no countdown of its own (the beat timer is the only clock). Its text is the beat's message text
+ * (phone numbers and claims are checkable); "Close" picks the beat's dismiss action. Not a dialog: the page, the
+ * Details list and the action tray stay reachable.
+ */
+function BrowserOverlay({ m, actions, canAct, onAct }: { m: Message; actions: readonly ActionView[]; canAct: boolean; onAct: (id: string) => void }) {
+  const o = m.page?.overlay;
+  if (!o) return null;
+  const segs = segmentMessage({ ...m, body: o.body, transcript: undefined });
+  const close = actions.find((a) => DISMISS_KINDS.has(a.kind));
+  return (
+    <section class={styles.overlay} aria-labelledby="page-overlay-h" data-page-overlay="">
+      <div class={styles.overlayPanel}>
+        <SimPill />
+        <h3 id="page-overlay-h" class={styles.overlayTitle}>
+          {o.title}
+        </h3>
+        <div class={styles.body}>
+          <Segments segs={segs.body} />
+        </div>
+        <Chips items={segs.leftover} />
+        {close ? (
+          <button type="button" class={styles.overlayClose} data-overlay-close="" aria-disabled={!canAct} onClick={() => canAct && onAct(close.id)}>
+            {t('overlay_close')}
+          </button>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
 function Browser(p: DeviceProps) {
   const m = p.message;
   const page = m.page;
   const form = !!FORM_KINDS[m.request];
   const brand = brandForName(page?.title);
   const segs = segmentMessage(m);
+  // CR-42: under a warning overlay the page's own text is backdrop, not message text (never checkable).
+  const overlay = !!page?.overlay;
   return (
     <LaptopFrame label={form ? t('region_browser_training') : t('region_browser')}>
       <div class={styles.browser}>
@@ -709,12 +788,29 @@ function Browser(p: DeviceProps) {
           {brand ? <BrandBar brand={brand} title={page?.title ?? brand.name} /> : null}
           <div class={styles.pageBody}>
             {!brand && page?.title ? <h3 class={styles.pageTitle}>{page.title}</h3> : null}
-            <MessageBody message={m} />
-            <Chips items={segs.leftover} />
+            {overlay ? (
+              m.body ? (
+                <>
+                  {/* Sceptic nb7: screen readers get the backdrop as one labelled note, never as checkable text. */}
+                  <p class={styles.vh} data-overlay-behind="">
+                    {t('overlay_page_behind')} <RichText text={m.body} />
+                  </p>
+                  <div class={styles.body} aria-hidden="true">
+                    <RichText text={m.body} />
+                  </div>
+                </>
+              ) : null
+            ) : (
+              <>
+                <MessageBody message={m} />
+                <Chips items={segs.leftover} />
+              </>
+            )}
             {m.image ? <ImageBox alt={m.image.alt} /> : null}
             <Translate message={m} onFreeze={p.onTranslation} alwaysOpen={p.alwaysTranslate} />
             {form ? <TrainingForm m={m} actions={p.actions} canAct={p.canAct} onAct={p.onAct} idPrefix="page" /> : null}
           </div>
+          {overlay ? <BrowserOverlay m={m} actions={p.actions} canAct={p.canAct} onAct={p.onAct} /> : null}
         </div>
       </div>
     </LaptopFrame>

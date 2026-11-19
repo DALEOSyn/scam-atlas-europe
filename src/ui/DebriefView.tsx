@@ -19,7 +19,8 @@ import styles from './DebriefView.module.css';
 export interface DebriefViewProps {
   data: DebriefData;
   onContinue: () => void;
-  onAgain: () => void;
+  /** Absent for the arc finale's steps (CR-43): a replay would bank its arc points twice. */
+  onAgain?: (() => void) | undefined;
   /** Arc debriefs (GDD §10.2): "Tell me now", behind a confirmation. Absent once the arc is closed. */
   onTellMeNow?: (() => void) | undefined;
 }
@@ -135,6 +136,12 @@ export function DebriefView({ data, onContinue, onAgain, onTellMeNow }: DebriefV
         {l1.nextTime ? <p>{nextTimeText(l1.nextTime, lookup)}</p> : null}
         {arc && l2.safeguardingLine ? <p>{l2.safeguardingLine}</p> : null}
         {l1.stars !== null ? <Stars n={l1.stars} /> : null}
+        {/* CR-40: after bad advice, the authored line without blame (psych M1), below the stars (R22); never "You fell". */}
+        {l1.adviceLine ? (
+          <p data-advice-line="">
+            <RichText text={l1.adviceLine} />
+          </p>
+        ) : null}
         {best ? <p class={styles.best}>{t(l1.bestLine === 'acted' ? 'outcome_best_acted' : 'outcome_best')}</p> : null}
         {ac ? (
           <p>
@@ -158,9 +165,11 @@ export function DebriefView({ data, onContinue, onAgain, onTellMeNow }: DebriefV
           <button type="button" class={styles.primary} onClick={onContinue}>
             {t('app_continue')}
           </button>
-          <button type="button" class={styles.secondary} onClick={onAgain}>
-            {t('app_again')}
-          </button>
+          {onAgain ? (
+            <button type="button" class={styles.secondary} onClick={onAgain}>
+              {t('app_again')}
+            </button>
+          ) : null}
           {arc && onTellMeNow && !confirm ? (
             <button type="button" class={styles.secondary} ref={tellButton} onClick={() => setConfirm(true)}>
               {t('tell_me_now')}

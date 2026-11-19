@@ -36,6 +36,7 @@ action_kinds:
   pay_protected:          { class: proceed, los: [LO-11] }
   pause:                  { class: meta,    los: [LO-04] }       # unscored, see pause
   start_transfer:         { class: step,    los: [] }            # CR-18: opens the banking beat; never scored, never decisive, no cap (GDD §6)
+  advise_comply:          { class: comply,  los: [] }            # CR-40: bad advice in an advice scenario: scores 0 like a fall, but is not a fall (no damage control, no stress); fraud and advice scenarios only
 
 # ---------------------------------------------------------------------------
 # Stars (0–3) per class x truth. Points = stars x 5, with the two exceptions below.

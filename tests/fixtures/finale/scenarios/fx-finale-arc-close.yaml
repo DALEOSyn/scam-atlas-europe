@@ -1,0 +1,51 @@
+# Test fixture (CR-43): the close beat. Alex sends nothing new; both options lead to the reveal. Not game content.
+id: fx-finale-arc-close
+chapter: fxfinale
+role: arc
+finale: close
+learning_objectives: [LO-14]
+is_fraud: true
+device: messenger
+brands: [wordswap]
+cast: [alex]
+setup: "The Open Evening is tomorrow. You open your chat with Alex one more time."
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Alex", detail: "Wordswap profile" }
+  from_cast: alex
+  body: "Hope your trip is going well!"
+  request: none
+  earlier:
+    - { when: "Last week", body: "Thanks for the chat about the market." }
+
+inspectables:
+  - target: sender.detail
+    reveal: "A profile picture and a name. Both can be borrowed, so they can't prove anything either way."
+    red_flag: false
+
+actions:
+  - { id: photo_check, label: "Do a photo check on Alex's picture", kind: verify_identity, outcome: same_picture }
+  - { id: report_profile, label: "Report the profile", kind: report, outcome: reported_profile }
+
+outcomes:
+  same_picture:
+    narrative: "The photo check finds the same picture on other profiles."
+    reveal: true
+    sets_flags: [arc_told_someone]
+  reported_profile:
+    narrative: "You report the profile. The photo check runs as part of the report."
+    reveal: true
+    sets_flags: [arc_told_someone]
+
+debrief:
+  variant: arc
+  layer1:
+    tell: "Same picture, other names."
+    what_works: "A photo check and a trusted person beat a feeling."
+  layer2:
+    message_flags: []
+    notes: "A clean photo check doesn't prove a profile is real: pictures can be made with AI. Telling someone is what works."
+  already_clicked:
+    paid: "Sent money already? Stop paying, call your bank on the number on your card, and keep the chat history."
+  sources: [be-police-romance-2026]

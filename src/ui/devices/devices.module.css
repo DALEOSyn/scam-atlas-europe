@@ -1246,3 +1246,76 @@
   font-size: var(--fs-sm);
   overflow-wrap: break-word;
 }
+
+/* CR-40: a forwarded message inside the forwarder's bubble (a quoted card, game tokens only). */
+.forwarded {
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2) var(--space-3);
+  border-inline-start: 3px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: var(--radius-xs);
+}
+.forwardedHead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-2);
+}
+.forwardedBody {
+  margin: 0;
+  overflow-wrap: break-word;
+}
+
+/*
+ * CR-42: a browser warning drawn over the page, in the game's training frame (simulation colours and the
+ * SIMULATION pill): no OS dialog, browser chrome or security-product look, no icons, no animation.
+ */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--space-3);
+  background: var(--color-scrim);
+  overflow: auto;
+}
+.overlayPanel {
+  width: min(100%, 28rem);
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 2px dashed var(--color-sim-border);
+  border-radius: var(--radius-md, 8px);
+}
+.overlayTitle {
+  margin: 0;
+  font-size: var(--text-lg, 1.125rem);
+}
+.overlayClose {
+  justify-self: start;
+  min-height: 44px;
+  min-width: 44px;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 8px);
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.overlayClose:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.overlayClose[aria-disabled='true'] {
+  /* Sceptic nb7: visibly unavailable without dimming the text below AA: no fill, a dashed border, no pointer. */
+  cursor: not-allowed;
+  background: transparent;
+  border-style: dashed;
+  font-weight: 400;
+}

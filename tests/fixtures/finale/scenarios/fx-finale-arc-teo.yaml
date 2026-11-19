@@ -1,0 +1,74 @@
+# Test fixture (CR-40, CR-43): Teo's chat. You advise Teo; he never sends money. The photo check plays the reveal.
+# R22: every outcome ends in the reveal. Not game content.
+id: fx-finale-arc-teo
+chapter: fxfinale
+role: arc
+finale: teo
+learning_objectives: [LO-14, LO-18]
+is_fraud: true
+device: messenger
+brands: [kettle, swaploft]
+cast: [teo]
+advice: { for: teo }
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Grandpa Teo", detail: "Saved contact: Grandpa Teo" }
+  from_cast: teo
+  body: "Nice person from my language app. Wants to show me a trading app. Is this normal?"
+  request: reply
+  forwarded:
+    app: swaploft
+    sender: { display: "Robin", detail: "Profile with one picture" }
+    body: "Teo, your postcard stories are lovely. I've been making a little extra trading on my phone. Want me to show you? Just between us."
+  ask: { text: "Want me to show you? Just between us." }
+  claims:
+    - text: "I've been making a little extra trading on my phone."
+
+inspectables:
+  - target: forwarded.sender
+    reveal: "A friendly profile. A picture and a name can be borrowed, so they can't prove anything either way."
+    red_flag: false
+  - target: claim
+    reveal: "An easy-money invitation from someone met online."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "A secret, and an offer to show him how. Tell someone instead."
+    red_flag: true
+    type: request
+
+actions:
+  - { id: little_cant_hurt, label: "A little can't hurt", kind: advise_comply, outcome: teo_asks, pressure_target: true }
+  - { id: photo_check_teo, label: "Do a photo check on Robin's picture together", kind: verify_identity, outcome: same_picture }
+  - { id: tell_report, label: "Tell him to report the profile", kind: report, outcome: reported }
+  - { id: stop_replying, label: "Tell him to stop replying", kind: ignore, outcome: stopped }
+
+outcomes:
+  teo_asks:
+    narrative: "Teo: \"Hmm. I'll ask Adaeze too.\" Adaeze runs a photo check with him."
+    reveal: true
+  same_picture:
+    narrative: "Teo: \"Well. That settles it.\""
+    reveal: true
+    sets_flags: [arc_told_someone]
+  reported:
+    narrative: "Teo reports the profile. The photo check runs as part of the report."
+    reveal: true
+    sets_flags: [arc_told_someone]
+  stopped:
+    narrative: "Teo stops replying. Later he runs a photo check anyway."
+    reveal: true
+
+debrief:
+  variant: arc
+  layer1:
+    tell: "Praise, a secret, and an easy-money invitation."
+    what_works: "Do a photo check and tell someone."
+  layer2:
+    message_flags: []
+    notes: "A clean photo check doesn't prove a profile is real: pictures can be made with AI. Telling someone is what works."
+  advice_line: "Teo asked, and that was the smart bit. With an offer like this, the answer is always no."
+  already_clicked:
+    clicked: "Already replying to someone like this? Stop, keep the chat, and tell someone you trust."
+  sources: [be-police-romance-2026]

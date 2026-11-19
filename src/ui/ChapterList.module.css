@@ -119,3 +119,41 @@
   outline: var(--focus-ring-w) solid var(--color-focus);
   outline-offset: var(--focus-ring-offset);
 }
+
+/* CR-43(b): the reveal card: one portrait on three profile cards. */
+.reveal {
+  display: grid;
+  gap: var(--space-2);
+  margin-block: var(--space-3);
+}
+.revealGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+  max-width: 28rem;
+}
+.revealProfile {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 8px);
+  background: var(--color-surface);
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+.revealProfile img {
+  width: 100%;
+  max-width: 96px;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+.revealBlank {
+  display: block;
+  width: 100%;
+  max-width: 96px;
+  aspect-ratio: 4 / 5;
+  background: var(--color-surface-sunken);
+}

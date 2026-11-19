@@ -4,7 +4,7 @@
  * hook persists after every scenario (balance session.save_points).
  */
 import type { Chapter, Scenario } from '../content/schema.ts';
-import { applyArcBeat, setFlags } from './arc.ts';
+import { applyArcBeat, bankArcPoints, setFlags } from './arc.ts';
 import { betterStamp, nextIndex, recordOf, sequenceOf, summarise, type ChapterSummary } from './chapter.ts';
 import { pressureCalloutFor } from './debrief.ts';
 import { demonstratedLos, recordHabits } from './habits.ts';
@@ -49,11 +49,14 @@ export function commitScenario(
   s: Scenario,
   st: RunnerState,
   r: ScenarioResult,
+  /** CR-43(f): the sequence index the scenario played at, when it is not the chapter's own (an arc slot from another chapter). */
+  seqIndex?: number,
 ): SaveState {
   const p = chapterProgress(save, chapter.city);
   const run = p.run ?? { index: 0, records: [], flags: [] };
   const seq = sequenceOf(chapter);
-  const at = seq.findIndex((e) => e.id === s.id);
+  const own = seq.findIndex((e) => e.id === s.id);
+  const at = own >= 0 ? own : (seqIndex ?? -1);
   // A replay inside the run keeps the best attempt per scenario (producer decision), never just the latest.
   const record = recordOf(r, s.pattern);
   const previous = run.records.find((x) => x.id === s.id);
@@ -68,6 +71,8 @@ export function commitScenario(
   };
   let arc = save.arc;
   if (s.role === 'arc' && s.arc_slot !== undefined) arc = applyArcBeat(arc, s.arc_slot, r, st.groups[0]?.decision?.kind);
+  // CR-43: the finale's scenarios bank their points (damage control after a fall) as arc points, never a chapter score.
+  if (s.role === 'arc' && s.finale !== undefined) arc = bankArcPoints(arc, r.points);
   const habits = recordHabits(save.habits, demonstratedLos(s, b, st, r), s.id, s.difficulty);
 
   return {

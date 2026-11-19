@@ -483,15 +483,15 @@ Checked in headless Chromium: the fragment switch works in `<img>`, the halo sep
 
 ---
 
-## 16. Open questions
+## 16. Open questions: producer answers (2026-11-19)
 
-1. **"No AI-generated images" (Roman / sceptic):** confirm that SVG written element by element as code by the agent team is allowed, and that the ban covers image-generation models and auto-vectorised rasters (§12.4).
-2. **Map coastline (sceptic):** is hand-simplifying from public-domain geographic data acceptable, or must the coastline be freehand? And may the map drop internal borders (§8.1), which needs a UI_SPEC §9.3 change?
-3. **Mateus `thinking` (game-designer):** STORY uses it twice (Warsaw turn, Lisbon turn) but his list lacks it; added here.
-4. **`calm` as everyone's base face (game-designer, psychologist):** adds no cost and gives avatars, listeners and the video wall a neutral face. Agree?
-5. **New backdrop `home-library-cafe` for interlude I1** (not in the STORY §7 hand-off); I2 uses the video-call panel. Agree?
-6. **Trundle locker in `berlin-courtyard` (sceptic):** show the unmodified Trundle mark on the locker, or keep it unbranded as in the sample? Trundle is spoofed in Berlin scenarios; a genuine mark in the scene is soil, not a scam artefact, but the sceptic decides.
-7. **Fictional celebrities in Dublin ads (game-designer, sceptic):** drawn with the rig under §4.8? They need their own resemblance check because the scam pattern imitates real endorsements.
-8. **Samples folder:** keep until G3 for reviewers, then delete? (Excluded from precache either way.)
-9. **Human illustrator later?** The rig and specs allow a human artist to replace files one by one without schema changes; Roman may decide at G3.
-10. `redline:lint` could not be run in this worktree: `node_modules` is missing (`tsx: not found`). A manual scan of the three samples against the deny- and warnlists and for URLs, scripts, `foreignObject` and `image` found nothing. Run `npm ci && npm run redline:lint` before merge.
+1. **AI-generated images:** SVG written element by element as code by the agent team is allowed. The ban covers image-generation models and auto-vectorised rasters (§12.4).
+2. **Map coastline:** hand-simplifying from public-domain geographic data is acceptable. Keep the dotted internal borders from UI_SPEC §9.3; no UI_SPEC change.
+3. **Mateus `thinking`:** accepted.
+4. **`calm` as everyone's base face:** accepted.
+5. **Backdrop `home-library-cafe` for I1:** accepted; I2 uses the video-call panel.
+6. **Trundle locker in `berlin-courtyard`:** stays unbranded, as in the sample. No brand mark appears in any scene.
+7. **Fictional celebrities in Dublin ads:** parked until the Dublin chapter spec, with their own resemblance check.
+8. **Samples folder:** kept until G3 for reviewers, then deleted. Excluded from precache.
+9. **Human illustrator:** optional later; Roman may decide at G3.
+10. `redline:lint` was run by the producer on this branch: OK.

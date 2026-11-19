@@ -587,6 +587,197 @@ brands:
     trademark_search: "web-checked 2026-11-19; TMview/EUIPO and INPI-PT pending before G4"
     status: draft
 
+  # -------------------------------------------------------------------------------------------
+  # Dublin (GDD §28.10, BRAND_CHECK DS2-DS7, DS10, DS12). Fairmeasure (the in-world regulator) is
+  # registered by frontend-engineer with the `register` field (engine branch), not here.
+  - id: postwick
+    name: "Postwick"
+    kind: other
+    sector: social network (genuine platform where scam ads appear)
+    role_in_game: >
+      Dublin: the feed where the fake "Money Today with Orla" ad and other investment ads appear (8-2,
+      drill 8-4), and where the player reports an ad. Reusable later (Brussels' DM). The platform itself is
+      genuine; the ads on it are the scam.
+    domain: postwick.example
+    app_name: "Postwick app"
+    known_channels: "Postwick app (in-game) and the typed address postwick.example. No phone number shown."
+    palette:
+      primary: "#6B2737"       # wine
+      on_primary: "#FFFFFF"    # 10.66:1
+      accent: "#F6D9A8"        # sand; on primary 7.82:1
+      text_on_light: "#6B2737"
+    logo: { lockup: public/brands/postwick.svg, mark: public/brands/postwick-mark.svg }
+    typography: "Rounded sans, extra-bold, lowercase 'postwick'."
+    rationale:
+      name: "A village name used as a coined brand ('post' + 'wick'). Replaces Natterly (BRAND_CHECK DS3: an exact-name social app exists); spare Chatterbrook."
+      colour_shape: >
+        Wine and sand, a small fan of three post cards with an avatar dot and two lines. Social networks
+        cluster on bright blue, black, a camera gradient, bright yellow, red-orange and purple; their marks
+        are letters, a camera, a bird, a ghost, a note or a speech bubble. No letter, no bubble, no camera,
+        no page-with-folded-corner (a document-app look). Kettle (messenger, tomato) stays clearly apart.
+      typography: "Lowercase rounded sans."
+    checked_against: ["Facebook", "Instagram", "X (Twitter)", "Threads", "TikTok", "Snapchat", "LinkedIn", "Reddit", "Pinterest", "YouTube", "Bluesky", "Mastodon", "BeReal", "Natterly (BRAND_CHECK DS3)", "Natter (former UK social network)", "Google Docs (folded-page icon, avoided)", "Kettle (in-game)", "G4 watch: wallet apps whose icons stack cards (Apple Wallet, Google Wallet, Samsung Wallet, PayPal, Curve); the mark is a fan of post cards with an avatar dot and text bars, not payment cards, and must stay so"]
+    web_check: "Low (BRAND_CHECK DS3): a village near Norwich; no app, company or brand."
+    lookalike_examples: []
+    trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"
+    status: draft
+
+  - id: ellisfen
+    name: "Ellisfen Invest"
+    short_name: "Ellisfen"
+    kind: other
+    sector: authorised investment firm (genuine, in-world)
+    role_in_game: >
+      Dublin: a genuine firm on Fairmeasure's register. The boss's clone copies its name and look from a
+      look-alike address and a new phone number; the player checks the register's own contact details.
+    domain: ellisfen.example
+    known_channels: "The contact details on Fairmeasure's register entry (in-game) and the typed address ellisfen.example. No phone number shown."
+    palette:
+      primary: "#5E4A12"       # bronze
+      on_primary: "#FFFFFF"    # 8.52:1
+      accent: "#F3E6C4"        # cream; on primary 6.87:1
+      text_on_light: "#5E4A12"
+    logo: { lockup: public/brands/ellisfen.svg, mark: public/brands/ellisfen-mark.svg }
+    typography: "Serif (Georgia-style), semibold, 'Ellisfen Invest'."
+    rationale:
+      name: "Coined ('Ellis' + 'fen', a wetland). Replaces Tollmere Invest (BRAND_CHECK DS6: one sound from a real UK investment manager); Brackwater rejected."
+      colour_shape: >
+        Bronze and cream, three reeds of different heights on a ground line. Investment firms and brokers
+        cluster on navy, green, red, black and gold-on-black, with ships, bulls, shields, crests, pillars
+        and rising-arrow charts. No arrow, no bull, no ship, no shield or crest, no pillar.
+      typography: "Plain bookish serif; no all-caps or monogram."
+    checked_against: ["Vanguard", "Fidelity", "BlackRock", "Schroders", "Davy", "Irish Life", "Zurich", "Aviva", "Trade Republic", "eToro", "Revolut", "Tollymore Investment Partners (BRAND_CHECK DS6)", "Breakwater Investment Management"]
+    web_check: "Low (BRAND_CHECK DS6): no hit for Ellisfen."
+    lookalike_examples:
+      - "ellisfen-invest.example"    # the boss's clone (scam-only)
+    trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"
+    status: draft
+
+  - id: quorvex
+    name: "Quorvex"
+    sector: online "trading platform" (scam-only)
+    role_in_game: >
+      Dublin: the fake platform behind the "Money Today with Orla" ad and the cold "adviser" call
+      ("Quorvex Invest" / "Quorvex Wealth"; contact "Ciarán (Quorvex Wealth)"). Training pages only.
+    domain: quorvex-invest.example
+    rationale:
+      name: "Coined. Kept by BRAND_CHECK DS4 (closest hits are different words); alternatives Brivantis, Zentrallo."
+      colour_shape: "No mark drawn: the page shows the name as plain text in the device's neutral page style, so no palette or shape can echo a real broker or exchange."
+    checked_against: ["Qorvex (game character)", "Qoronex Ltd", "Quorionex (broker listing)", "QuiverX"]
+    web_check: "Low-Medium, keep (BRAND_CHECK DS4). Re-check before G4."
+    lookalike_examples: []
+    trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"
+    status: draft
+
+  - id: glimmerfund
+    name: "Glimmerfund"
+    sector: online "investment platform" (scam-only; Alex arc only)
+    role_in_game: >
+      The platform Alex steers the player towards in arc slots 5-9 (GDD §28.5). Never in a chapter
+      scenario. Training pages only.
+    domain: glimmerfund.example
+    rationale:
+      name: "Coined. Kept by BRAND_CHECK DS5; never shorten to 'Glimmer'. Alternatives Ashlight Trade, Brightmoor Yield."
+      colour_shape: "No mark drawn: plain text in the device's neutral page style."
+    checked_against: ["Glimmer (investor profile)", "Gimmelfund (startup directory)"]
+    web_check: "Low-Medium, keep (BRAND_CHECK DS5)."
+    lookalike_examples: []
+    trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"
+    status: draft
+
+  - id: backhaven-recovery
+    name: "Backhaven Recovery"
+    sector: '"recovery agency" (scam-only)'
+    role_in_game: >
+      Dublin 8-3 (and Brussels ending C): offers to get lost money back for a fee. Training pages only.
+    domain: backhaven-recovery.example
+    rationale:
+      name: "Coined. Kept by BRAND_CHECK DS7 (no hit); alternatives Retrievo Partners, Reclaimly."
+      colour_shape: "No mark drawn: plain text in the device's neutral page style; never styled like a law firm, regulator or police unit."
+    checked_against: ["Backstage Recovery (US trademark, different word)", "backup and restore software"]
+    web_check: "Low (BRAND_CHECK DS7)."
+    lookalike_examples: []
+    trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"
+    status: draft
+
+  - id: brindlecove-bonds
+    name: "Brindlecove Bonds"
+    sector: bond seller named on the in-world warning list (scam-only; drill 8-4)
+    role_in_game: >
+      Dublin drill 8-4: one of Declan's two ads; the firm appears on Fairmeasure's warning list. Name
+      only; no domain, no mark.
+    rationale:
+      name: "Coined. Replaces Harbourline Bonds (BRAND_CHECK DS10: close to real bond sellers in an accused role). Spare Skarvlund Bonds."
+      colour_shape: "Not drawn; name only."
+    checked_against: ["Harborline Ltd", "Harbour Asset Management", "Harbour Investment Partners"]
+    web_check: "Low (BRAND_CHECK DS10): no hit."
+    lookalike_examples: []
+    trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"
+    status: draft
+
+  - id: orla-fennick
+    name: "Orla Fennick"
+    sector: fictional TV presenter (scam prop only)
+    role_in_game: >
+      Dublin 8-2: the face borrowed by a fake investment ad on the page "Money Today with Orla" (spare
+      "The Savings Hour with Orla"). Always illustrated, never photo-realistic, no likeness of any real
+      presenter. Registered so the name is cleared; she is never cast and never in a scene.
+    rationale:
+      name: "Coined surname. Replaces Cormac Tierlan (BRAND_CHECK DS2: one letter from a famous Irish TV host in the same role); Dara Quillan rejected."
+      colour_shape: "No mark. Her ad picture is a device-layer illustration drawn with the cast rig (ART_DIRECTION §4.8) when 8-2's image slot is specced; no studio set, channel ident or broadcaster colours."
+    checked_against: ["Tommy Tiernan (BRAND_CHECK DS2)", "Irish broadcasters named Orla (other surnames)", "Dara Quilty", "Dara Ó Briain"]
+    web_check: "Low (BRAND_CHECK DS2): no presenter or public figure named Fennick."
+    lookalike_examples: []
+    trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"
+    status: draft
+
+  # -------------------------------------------------------------------------------------------
+  # Stockholm (GDD §29.10, BRAND_CHECK DS8, DS10).
+  - id: kindhand
+    name: "Kindhand Support"
+    short_name: "Kindhand"
+    kind: tech
+    sector: '"helper" app (non-functional; scam prop only)'
+    role_in_game: >
+      Stockholm: the app a fake support caller asks the player to install (named in a call only; the call
+      stops at the request). Reused by Brussels' boss; if a store page or link is shown it uses
+      kindhand-support.example. The app never does anything in the game.
+    domain: kindhand-support.example
+    palette:
+      primary: "#1E6B52"       # jade
+      on_primary: "#FFFFFF"    # 6.40:1
+      accent: "#FBD9C4"        # peach; on primary 4.82:1 (non-text)
+      text_on_light: "#1E6B52"
+    logo: { lockup: public/brands/kindhand.svg, mark: public/brands/kindhand-mark.svg }
+    typography: "System sans, bold, 'Kindhand Support'."
+    rationale:
+      name: "Coined ('kind' + 'hand'). Kept by BRAND_CHECK DS8 (no remote-access or support app of that name); alternatives Handover Help, Assistwell."
+      colour_shape: >
+        Jade and peach, a plain life ring. Remote-access and support apps use blue or red-orange with double
+        arrows, linked diamonds, monitors or a hand on a screen (GDD §29.10). No arrow, no monitor or screen,
+        no hand, no diamond, no headset.
+      typography: "Plain sans, title case."
+    checked_against: ["TeamViewer", "AnyDesk", "Quick Assist", "Chrome Remote Desktop", "RustDesk", "Splashtop", "Zoho Assist", "GoTo Resolve / LogMeIn", "ConnectWise ScreenConnect", "Kind Hands (NZ childcare; hand cream)", "KindConnect", "G4 watch: remote-support tools that use a life-ring or lifebuoy icon or 'Rescue' naming (LogMeIn Rescue, BeyondTrust Remote Support, help-desk suites with a lifebuoy mark); BRAND_CHECK BR4 conditions apply: no red, orange or blue ring with white, no Rescue/SOS/Assist wording, no arrows or screens"]
+    web_check: "Low (BRAND_CHECK DS8)."
+    lookalike_examples: []
+    trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"
+    status: draft
+
+  - id: skarvlund-trygg
+    name: "Skarvlund Trygg AB"
+    sector: payee company name (scam-only; Stockholm boss)
+    role_in_game: >
+      The payee named in the boss's signing banner (beat 2). Name only; no domain, no mark. Always "AB",
+      never "Ltd".
+    rationale:
+      name: "Coined stem 'Skarvlund' + the common word 'trygg' (safe). Chosen over Norrvik Trygg AB for zero overlap (BRAND_CHECK DS10)."
+      colour_shape: "Not drawn; name only."
+    checked_against: ["Norrvik (Dutch webshop)", "Norrviken Fastigheter AB", "Trygg-Hansa (insurer; 'trygg' is a common word)"]
+    web_check: "Low (BRAND_CHECK DS10): no hit for Skarvlund."
+    lookalike_examples: []
+    trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"
+    status: draft
+
 # Not yet registered (request ux-artist before writing these scenarios): streaming service (0-4 now
 # uses Kettle, so possibly not needed), utility company (Rome), in-world regulator warning list
-# (Dublin), remote-support tool (finale).
+# (Dublin; Fairmeasure, registered in the engine branch).

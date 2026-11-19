@@ -211,9 +211,9 @@ Device-layer pictures (profile pictures of non-cast personas, the "fictional cel
 | Davide | calm, sheepish, worried, relieved, **+ laughing** (Rome arrival, GDD §26.2) | `x-calm-phone-ear` (shared pose: Rome If-then, calling the known number) |
 | Giulia | calm, laughing, relieved | `x-laughing-wave` (video) |
 | Beatriz | calm, laughing, worried, thinking, relieved | — |
-| Declan | calm, worried, thinking, sheepish, laughing, **+ proud** (+, `game-designer` to confirm) | — |
+| Declan | calm, worried, thinking, sheepish, laughing, **+ proud** (+, `game-designer` to confirm) | `x-calm-phone-look` (shared pose: Dublin If-then, looking the firm up on the register himself) |
 | Róisín | calm, worried, warm, proud | — |
-| Jamal | calm, thinking, worried, proud | — |
+| Jamal | calm, thinking, worried, proud | `x-calm-phone-ear` (shared pose: Stockholm If-then, calling the bank on its own number) |
 | Lina | calm, laughing | — |
 | Birgitta | calm, laughing, proud | — |
 
@@ -251,8 +251,8 @@ Allowed cues: building typology, roof shapes, window rhythm, materials, plants, 
 | `rome-bnb` | Rome all scenes | small B&B courtyard: ochre and cream plaster, green shutters, a few warmly lit windows (sun-light, so dusk stays warm in this sensitive chapter), terracotta roof edge and pots, an arched green door with a blank plate, a little table with two cups, a lemon tree in a big pot at the left edge (trunk and canopy outside x 79–819 in the head band) | ancient monuments, religious symbols (no wall shrine), any sign or house number |
 | `lisbon-street` | Lisbon arrival | steep street: one facade with an **original**, low-contrast tile (sage square, stone diamond, sage dot) on its top floor and ground floor only (plain plaster through the head band), a rose plaster house with small iron balconies above the head band, laundry on a line at the top, stepped pavement on the right | trams or funiculars in livery, copies of historic tile designs |
 | `lisbon-kitchen` | Lisbon arrival (second panel), turn, resolution | family kitchen: a frieze of the same original tile high on the wall (y 34–94, above the head band), stove with a steaming pot and a pan, sage cupboards, a window with herbs, a table with bread and oranges, a fridge, terracotta floor | product packaging, any label |
-| `dublin-hall` | Dublin all scenes | community hall, folding chairs, tea table, blank noticeboard | parish, club or council emblems, flags |
-| `stockholm-courtyard` | Stockholm all scenes | snowy courtyard, warm-red and ochre facades, lit windows with unadorned candle arches (a plain stepped row of lights, no religious symbol, star or figure), bikes under snow | e-ID or bank pictograms, flags |
+| `dublin-hall` | Dublin all scenes | community-centre hall: cream walls, three tall arched windows, warm pendant lamps (sun-light shades, so dusk stays warm), a small blank noticeboard with plain cards at the left edge (outside the faces), a tea table with an urn, cups and a tray of biscuits, a stack of folding chairs at the right edge, a radiator, wooden floor | parish, club or council emblems, flags, any lettering on cards |
+| `stockholm-courtyard` | Stockholm all scenes | snowy courtyard: warm-red and ochre facades, warm lit windows, plain stepped candle arches (seven lights on a stepped wooden base, no star or figure) in the top-floor windows only, above the head band (the ochre building's top floor raised 24 units in review so its arches end above y 120); a door with a lit fanlight, a bare tree at the left edge, bikes under snow at the right, pale blue snow (luminance ≤ 0.80) | e-ID or bank pictograms, flags |
 | `brussels-office` | Brussels arrival, turn | small office, plain boxes, no mark, projector, plants | **never EU-styled: no blue-and-gold stars**, no institution buildings |
 | `brussels-hall` | I3, Open Evening, resolution part 2 | hall with chairs, a plain video wall (portrait tiles), bunting in game colours | EU or national styling, sponsor boards |
 

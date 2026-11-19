@@ -103,3 +103,30 @@ cast:
     role: "Genuine host of the Graça studio (Lisbon)"
     known_channel: { label: "Roostwell app", detail: "Leonor (host)" }
     notes: "Contact only (GDD §27.10): never drawn, never in a scene. Her name is borrowed by the boss's Kettle number (never her fault); no surname on screen."
+  # Dublin (GDD §28.10, story bible §3.8).
+  - id: declan
+    name: "Declan Byrne"
+    role: "Made redundant after 22 years, planning what's next (Dublin)"
+    known_channel: { label: "Saved contact", detail: "Declan (clinic)" }
+    notes: "52; tempted and checks, never falls; dignified and in charge of his choices. Speaks the Dublin If-then line (looking the firm up himself: phone-look)."
+  - id: roisin
+    name: "Róisín Byrne"
+    role: "Declan's daughter, first year at college (Dublin)"
+    known_channel: { label: "Saved contact", detail: "Róisín (clinic)" }
+    notes: "18; supportive, never the parent."
+  # Stockholm (GDD §29.10, story bible §3.9). Floor plan: you stay in Birgitta's spare room; Jamal and Lina live downstairs.
+  - id: birgitta
+    name: "Birgitta Lind"
+    role: "Retired teacher, Adaeze's aunt (Stockholm)"
+    known_channel: { label: "Saved contact", detail: "Birgitta (fika host)" }
+    notes: "70; capable and teaches ('Be polite to people. Hang up on requests.')."
+  - id: jamal
+    name: "Jamal Haddad"
+    role: "Hospital lab technician, new in Stockholm"
+    known_channel: { label: "Saved contact", detail: "Jamal (downstairs)" }
+    notes: "38; being new is the risk, not ability; hangs up in every drill branch. Speaks the Stockholm If-then line (calling the bank: phone-ear)."
+  - id: lina
+    name: "Lina Haddad"
+    role: "Jamal's daughter, 12 (Stockholm)"
+    known_channel: { label: "Saved contact", detail: "Lina (downstairs)" }
+    notes: "Messages are small talk only; never money, codes or e-ID."

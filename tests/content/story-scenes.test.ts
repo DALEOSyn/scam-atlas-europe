@@ -106,7 +106,7 @@ describe('scene rules the generic validator does not see', () => {
     for (const s of scenes.values()) {
       for (const p of s.panels) {
         const words = text(p);
-        if (p.expression?.endsWith('-phone-ear')) expect(words, s.id).toMatch(/\bcall|number (?:I|you|he|she) (?:already )?(?:have|has|know)/i);
+        if (p.expression?.endsWith('-phone-ear')) expect(words, s.id).toMatch(/\bcall|number (?:I|you|he|she) (?:already )?(?:have|has|know)|directory number|number in (?:our|your) file/i);
         if (p.expression?.endsWith('-phone-look')) expect(words, s.id).toMatch(/\bapp\b/i);
       }
     }

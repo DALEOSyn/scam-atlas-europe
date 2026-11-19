@@ -159,7 +159,7 @@ test('CR-43/44, ending C: reveal card, damage control, recovery offer, timeline,
   await expect(page.getByText("The hall is ready. Let's talk before the guests arrive.")).toBeVisible();
   await press(page, 'Continue');
   await expect(page.getByText('You were kind to someone who turned out not to exist.')).toBeVisible();
-  await expect(page.getByText('Good thing I asked you.')).toHaveCount(0);
+  await expect(page.getByText('Asking was the smart bit.')).toHaveCount(0);
   // R25(5), CR-51: the close beat's photo check set arc_checked, so the checked line plays.
   await storyUntil(page, "text=And you checked before anything else. That's what works.");
   await storyUntil(page, '[data-postcard-pick]');
@@ -206,7 +206,7 @@ test('CR-40/43, ending A: Teo forwards a profile; "A little can\'t hurt" shows t
   await press(page, 'Continue');
   await timeline(page);
   await press(page, 'Continue');
-  await expect(page.getByText('Same picture, different name. Good thing I asked you.')).toBeVisible();
+  await expect(page.getByText('Same picture, different name. Asking was the smart bit.')).toBeVisible();
   await expect(page.getByText('You were kind to someone who turned out not to exist.')).toHaveCount(0);
   // R28: "A little can't hurt" did not help Teo: the player's own early report is the line, never "you helped him".
   await storyUntil(page, "text=And you reported yours early. That's what works.");

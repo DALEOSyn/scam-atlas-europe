@@ -92,7 +92,7 @@ const run = (st: State) =>
 const runLines = (st: State) => run(st).flatMap((s) => s.panels.map((p) => p.line).filter((l): l is string => !!l));
 const label = (st: State) => `${st.ending} invested=${st.invested} told=${st.told} checked=${st.checked} helped=${st.helped} bank=${st.bank}`;
 
-const TEO_A = ['Same picture, different name.', 'Good thing I asked you.'];
+const TEO_A = ['Same picture, different name.', 'Asking was the smart bit.'];
 const R_LINE = 'Sometimes you just want to know. Asking is never wrong.';
 const C_KIND = 'You were kind to someone who turned out not to exist. The lie was theirs, not yours.';
 const C_RECOVERY = 'Stop paying, call the bank on the number on your card, and keep the chats. The Help link shows who else can help.';

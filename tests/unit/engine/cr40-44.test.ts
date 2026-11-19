@@ -422,7 +422,7 @@ describe('CR-43(d): resolution scenes keyed to the arc ending', () => {
     expect(lines([ARC_TOLD_SOMEONE], 'A')).not.toContain(helped);
     expect(lines([ARC_TOLD_SOMEONE], 'A')).toContain("And you reported yours early. That's what works.");
     expect(lines([], 'A_prime')).toContain("You stepped back early, and you never sent any money. Next time, telling someone too makes it even easier.");
-    expect(lines([ARC_TOLD_SOMEONE, 'arc_helped_teo'], 'A_prime')).toEqual(["Same picture, different name. Good thing I asked you.", helped]);
+    expect(lines([ARC_TOLD_SOMEONE, 'arc_helped_teo'], 'A_prime')).toEqual(["Same picture, different name. Asking was the smart bit.", helped]);
   });
   it('the epigraph is the panel marked epigraph (Adaeze\'s last line)', () => {
     expect(epigraphOf([get('fx-finale-open'), get('fx-finale-evening')])).toEqual({

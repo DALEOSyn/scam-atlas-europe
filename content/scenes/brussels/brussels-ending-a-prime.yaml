@@ -1,6 +1,6 @@
 # Brussels ending A′ (GDD §30.6, STORY §3.10 part 1; sensitive; 3 panels of 4): the arc closed by a second
 # Close at slot 1, with nothing in. Plays after Teo's chat (the reveal inside it) and the timeline.
-# Teo's fixed line "Same picture, different name. Good thing I asked you." is split over two panels, word for
+# Teo's fixed line "Same picture, different name. Asking was the smart bit." is split over two panels, word for
 # word, to show "sheepish, then proud" (STORY §3.10).
 # Psych note (GDD §30.14 item 9, learning-psychologist on T-3.13): the line without arc_helped_teo shows only to a
 # player who told nobody, and says what they did: "You stepped back early, and you never sent any money. Next
@@ -29,7 +29,7 @@ panels:
     crop: left
     speaker: teo
     expression: proud
-    line: "Good thing I asked you."
+    line: "Asking was the smart bit."
     alt: "Teo, proud, by the stacked boxes and the noticeboard."
   - backdrop: brussels-office
     crop: centre

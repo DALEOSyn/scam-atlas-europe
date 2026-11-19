@@ -10,7 +10,7 @@
 # No "you told someone" line: R players have arc_told_someone only if Teo's chat or an arc slot decided by
 # asking someone set it (CR-51), and the R line says what they did in other words (R22(2)), true for every R
 # player whatever the flags. No "You stepped back early…" line (that is A′ only; psych note, GDD §30.14 item 9).
-# Teo's fixed line "Same picture, different name. Good thing I asked you." is split over two panels, word for
+# Teo's fixed line "Same picture, different name. Asking was the smart bit." is split over two panels, word for
 # word, to show "sheepish, then proud" (STORY §3.10).
 id: brussels-ending-r
 chapter: brussels
@@ -31,7 +31,7 @@ panels:
     speaker: teo
     expression: proud
     unless_flag: alex_invested
-    line: "Good thing I asked you."
+    line: "Asking was the smart bit."
     alt: "Teo, proud, by the stacked boxes and the noticeboard."
   - backdrop: brussels-office
     crop: left

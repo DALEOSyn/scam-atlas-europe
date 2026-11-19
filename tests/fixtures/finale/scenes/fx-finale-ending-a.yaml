@@ -9,7 +9,7 @@ unless_flag: alex_invested
 panels:
   - speaker: teo
     expression: proud
-    line: "Same picture, different name. Good thing I asked you."
+    line: "Same picture, different name. Asking was the smart bit."
     alt: "Teo, proud, holding up his phone."
   - speaker: teo
     expression: warm

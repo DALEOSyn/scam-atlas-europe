@@ -1,6 +1,6 @@
 # Brussels ending A (GDD §30.6, STORY §3.10 part 1; sensitive; 3 panels of 4): the player reported the profile
 # at an arc slot up to 6, with nothing in. Plays after Teo's chat (the reveal inside it) and the timeline.
-# Teo's fixed line "Same picture, different name. Good thing I asked you." is split over two panels, word for
+# Teo's fixed line "Same picture, different name. Asking was the smart bit." is split over two panels, word for
 # word, to show "sheepish, then proud" (STORY §3.10). It is true in every branch of Teo's chat: he asked you.
 # Psych note (GDD §30.14 item 9): every A player already reported earlier, so the "never too late to start"
 # line is not in this scene (it is in A′ only, and gated there).
@@ -26,7 +26,7 @@ panels:
     crop: left
     speaker: teo
     expression: proud
-    line: "Good thing I asked you."
+    line: "Asking was the smart bit."
     alt: "Teo, proud, by the stacked boxes and the noticeboard."
   - backdrop: brussels-office
     crop: centre

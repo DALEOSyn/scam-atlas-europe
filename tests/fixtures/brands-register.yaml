@@ -1,5 +1,6 @@
 # Test-only brand registry entries for CR-38 (the Fairmeasure register). Merged into content/brands.yaml by
-# the e2e harness (vite.harness.config.ts) and by the unit tests; never shipped. Names from GDD §28.10
+# the e2e harness (vite.harness.config.ts) and by the unit tests, replacing shipped entries with the same id
+# (Dublin ships ellisfen and brindlecove-bonds since T-3.10); never shipped. Names from GDD §28.10
 # (BRAND_CHECK DS6, DS10); the address is invented and the phone is masked (Red Lines 1 and 3).
 brands:
   - id: ellisfen
@@ -7,7 +8,7 @@ brands:
     sector: "investment firm (genuine, authorised in-world)"
     domain: ellisfen.example
     register: { status: authorised, address: "3 Quillon Street, Dublin", phone: "+353 1 ••• ••42" }
-  - id: brindlecove
+  - id: brindlecove-bonds
     name: "Brindlecove Bonds"
     sector: "scam-only (drill 8-4, on the warning list)"
     register: { status: warning_list }

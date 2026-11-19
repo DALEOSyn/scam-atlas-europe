@@ -105,3 +105,10 @@ cards:
     habit: "Never install an app or share your screen for someone who contacted you. Hang up and contact the company yourself, through its own app, card or website."
     example: "A 'support' caller wants you to install a helper app and read out its code? Hang up and open the company's own app yourself."
     already_clicked: "Installed something for them? Turn on airplane mode, call your bank from another phone if you can, change your passwords from another device, and get the device checked."
+  # Dublin (GDD §28.10, LO-13 v3.1). First shown at 8-2; the example uses no scam domain or firm name.
+  - id: if-its-guaranteed-and-high-its-not
+    lo: LO-13
+    title: "If it's guaranteed and high, it's not"
+    habit: "Before you pay, look the firm up yourself on the regulator's register, and contact it only through the details the register gives. Not on the register? Don't pay, even if the warning list is clean. If you're asked to pay to get your money out, or back: stop."
+    example: "A famous face recommends a platform in an ad? Find the firm on the register yourself. Not there? Don't pay."
+    already_clicked: "Paid already? Stop paying, call your bank now on the number on your card, keep the chats, and report the firm. Ignore anyone who offers to get it back for a fee."

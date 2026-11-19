@@ -1,0 +1,128 @@
+# 8-8 Fairmeasure replies to your report (GDD §28.4 8-8; recovery-scam, the in-focus genuine twin of 8-3 and of
+# boss beat 3). Genuine, low stakes, difficulty 5, calm (no timer). You started it: the report you and Declan
+# made after drill 8-4. Interrupt (Noor, small talk) at 15 s.
+# Checkables (G, 4): sender ("It fits", the regulator's own address, a reply to your report), reference ("It
+# fits"), link ("It fits"), request (asks for nothing: the ask is what it tells a reader who paid to do, CR-30).
+id: dublin-08-regulator-reply
+chapter: dublin
+role: standard
+pattern: recovery-scam
+theme: recovery
+twin_of: dublin-03-recovery-offer
+learning_objectives: [LO-13, LO-17]
+difficulty: 5
+is_fraud: false
+stakes: low
+player_started: true
+device: email
+brands: [fairmeasure]
+cast: [noor]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Fairmeasure", detail: "reports@fairmeasure.example" }
+  subject: "Your report: FM-•••• 118"
+  body: |
+    Thank you for your report about "State-backed savings bond". The firm behind it is not authorised, and we have added it to our warning list.
+
+    We will never contact you to recover money and never charge a fee. If you paid anything, contact your bank and the police.
+
+    Our warnings: fairmeasure.example/warnings
+
+    Fairmeasure · Consumer reports
+  request: none
+  ask: { text: "If you paid anything, contact your bank and the police." }
+  references: ["Your report: FM-•••• 118"]
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: fairmeasure.example, the regulator's own address, replying to a report you made. That isn't proof on its own, so weigh it with what it asks: nothing."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: link
+    reveal: "It fits: fairmeasure.example, the regulator's own address."
+    red_flag: false
+    type: link
+    reassures: true
+  - target: reference
+    reveal: "It fits: your report's number."
+    red_flag: false
+    type: reference
+    reassures: true
+  - target: request
+    reveal: "Asks for nothing: no fee, no login, no call."
+    red_flag: false
+    type: request
+
+actions:
+  - id: read_and_file
+    label: "Read it and file it"
+    kind: proceed
+    outcome: report_reply_filed
+    pressure_target: true
+  - id: open_fairmeasure_site
+    label: "Open Fairmeasure's site yourself to check"
+    kind: check_official_list
+    outcome: warning_is_there
+  - id: report_fairmeasure_reply
+    label: "Report the email"
+    kind: report
+    outcome: fairmeasure_reply_reported
+  - id: delete_fairmeasure_reply
+    label: "Delete it"
+    kind: ignore
+    outcome: fairmeasure_reply_deleted
+
+interrupts:
+  - id: noor_irish_tea
+    at_seconds: 15
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Noor", detail: "Saved contact: Noor" }
+      from_cast: noor
+      body: "inspector. is it true irish tea is stronger. Grandad says yes"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Noor's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what she asks for: a tea verdict."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_tea_verdict
+        label: "Reply: stronger, and more of it"
+        kind: proceed
+        outcome: noor_tea_reply
+        pressure_target: true
+      - id: report_tea_verdict
+        label: "Report the message"
+        kind: report
+        outcome: noor_tea_reported
+
+outcomes:
+  report_reply_filed:
+    narrative: "You file it. Declan, reading over your shoulder: \"So the 'state' one was nothing of the sort. Good job we checked.\""
+  warning_is_there:
+    narrative: "You open Fairmeasure's site yourself, not from the email. The warning about the \"State-backed savings bond\" is there."
+  fairmeasure_reply_reported:
+    narrative: "Reported. Later you open Fairmeasure's site yourself: the warning is there, and so was the reply to your report."
+  fairmeasure_reply_deleted:
+    narrative: "Deleted. Nothing was asked of you, so nothing is lost."
+  noor_tea_reply:
+    narrative: "Noor: \"told him. he says he knew. he always knows\""
+  noor_tea_reported:
+    narrative: "You reported it. Careful is good; this one really was Noor, asking about tea."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "The regulator you wrote to, asking for nothing."
+    what_works: "Reading it was right."
+  layer2:
+    message_flags: []
+    notes: "A real regulator never charges you to get money back. Remember that if a \"recovery\" offer ever comes."
+  device_tip: "On a real phone, open the regulator's website yourself to see its warnings, rather than following a link in an email."
+  habit_card: calm-not-paranoid
+  sources: [ie-cbi-avoiding-scams, ie-cbi-fraud-landscape-2025, ie-bpfi-recovery-2024, ie-cbi-unauthorised-firms]

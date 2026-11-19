@@ -54,9 +54,25 @@ cast:
     role: "Apprentice designer, Ruchelune (17)"
     known_channel: { label: "Saved contact", detail: "Inès (Ruchelune)" }
     notes: "Capable: spots the plumber fake herself (drill 3-3); her name is used in 3-5. Never the one who falls."
-  # Warsaw (GDD §25.9, STORY §3.5). Ola (5-2) is a saved contact only, never cast (no from_cast, never drawn).
+  # Madrid (GDD §24.10, story bible §3.4). Neither is ever impersonated; their money is never in a scored scenario.
+  - id: lucia
+    name: "Lucía Herrera"
+    role: "Night-shift nurse, your host (Madrid)"
+    known_channel: { label: "Saved contact", detail: "Lucía (Madrid)" }
+    notes: "Capable; tiredness is the risk, not ability. Her own near-miss is drill 4-4 (she slept on a text, then checked on the number on her card). Speaks the Madrid If-then line (phone at the ear)."
+  - id: andres
+    name: "Andrés"
+    role: "Teacher, your host (Madrid)"
+    known_channel: { label: "Saved contact", detail: "Andrés (Madrid)" }
+    notes: "Lucía's partner; saving for the deposit on their first flat. Never impersonated."
+  # Warsaw (GDD §25.9, story bible §3.5).
   - id: kasia
     name: "Kasia Wójcik"
     role: "Music student, Waymarker volunteer (Warsaw)"
     known_channel: { label: "Saved contact", detail: "Kasia (Warsaw)" }
-    notes: "Selling half her flat before she moves. Her real Kettle account is taken over in 5-6 while she is at rehearsal (never her fault, never shown how); she is never the one who falls."
+    notes: "Selling half her flat before she moves. Her real Kettle account is taken over in 5-6 while she is at rehearsal (never her fault, never shown how). She is never the one who falls."
+  - id: ola
+    name: "Ola"
+    role: "Fellow Waymarker volunteer (Warsaw)"
+    known_channel: { label: "Saved contact", detail: "Ola (volunteers)" }
+    notes: "Contact only (GDD §25.9): never drawn, never in a scene, no lines outside 5-2. Her real account is taken over in 5-2."

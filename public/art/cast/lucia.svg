@@ -1,0 +1,42 @@
+<!-- Scam Atlas: Europe. Cast portrait: Lucía Herrera, dark hair in a loose bun, a small hearing aid, cream cardigan, holding a coffee cup; expression groups, calm by default. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300" role="img" aria-labelledby="lu-t"><title id="lu-t">Lucía Herrera</title>
+<style>.x{display:none}.x-default{display:inline}.x:target{display:inline}.x:target~.x-default{display:none}</style>
+<defs><path id="lu-sil" d="M34 300C34 242 66 202 120 198C174 202 206 242 206 300ZM70 125a50 56 0 1 0 100 0a50 56 0 1 0 -100 0ZM60 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM160 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM68 122C62 78 90 58 120 58C150 58 178 78 172 122C168 100 154 86 132 84C118 92 98 94 84 92C76 100 70 110 68 122ZM140 64a20 20 0 1 0 40 0a20 20 0 1 0 -40 0ZM176 120Q186 112 186 124V140Q186 146 178 144ZM166 116Q172 104 182 116L180 122Z"/></defs>
+<use href="#lu-sil" fill="#fffaf0" stroke="#fffaf0" stroke-width="10" stroke-linejoin="round"/>
+<g stroke="#2b2433" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M34 300C34 242 66 202 120 198C174 202 206 242 206 300Z" fill="#f1e4c8"/>
+<path d="M156 206C182 218 200 250 202 300H170Z" fill="#ddcca9" stroke="none"/>
+<rect x="104" y="166" width="32" height="34" rx="10" fill="#93603a"/>
+<path d="M100 200Q120 222 140 200L136 300H104Z" fill="#8fae8b"/>
+<path d="M98 200L104 300M142 200L136 300" fill="none"/>
+<path d="M93 240a3 3 0 1 0 6 0a3 3 0 1 0 -6 0ZM95 266a3 3 0 1 0 6 0a3 3 0 1 0 -6 0Z" fill="#ddcca9" stroke-width="2"/>
+<path d="M60 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0ZM160 130a10 14 0 1 0 20 0a10 14 0 1 0 -20 0Z" fill="#b07548"/>
+<path d="M140 64a20 20 0 1 0 40 0a20 20 0 1 0 -40 0Z" fill="#2a2220"/><path d="M148 58Q160 50 172 60M146 70Q160 64 174 72" fill="none" stroke="#4a3326" stroke-width="2"/>
+<path d="M70 125a50 56 0 1 0 100 0a50 56 0 1 0 -100 0Z" fill="#b07548"/>
+<path d="M88 168C100 180 140 180 152 168C146 178 134 184 120 184C106 184 94 178 88 168Z" fill="#93603a" stroke="none"/>
+<path d="M68 122C62 78 90 58 120 58C150 58 178 78 172 122C168 100 154 86 132 84C118 92 98 94 84 92C76 100 70 110 68 122Z" fill="#2a2220"/>
+<path d="M80 108Q78 128 84 146M160 106Q164 124 158 140" fill="none" stroke="#2a2220" stroke-width="3"/>
+<path d="M178 118Q184 116 184 124V138Q184 143 180 142Q177 140 177 134V122Q177 119 178 118Z" fill="#f1e4c8" stroke-width="2"/><path d="M180 118Q177 108 169 113Q163 118 166 128" fill="none" stroke-width="2.5"/><path d="M163.5 129a2.5 2.5 0 1 0 5 0a2.5 2.5 0 1 0 -5 0Z" fill="#f1e4c8" stroke-width="1.5"/>
+<path d="M111 142a9 10 0 1 0 18 0a9 10 0 1 0 -18 0Z" fill="#93603a" stroke="none"/>
+<path d="M156 300H198C194 278 184 262 168 254L146 262C150 274 152 288 156 300Z" fill="#f1e4c8"/>
+<path d="M168 226Q180 226 180 236Q180 244 168 244" fill="none" stroke-width="3"/>
+<path d="M136 220H170V240Q170 254 153 254Q136 254 136 240Z" fill="#c8714f"/>
+<path d="M126 252C126 244 136 240 148 242L172 246C178 252 176 262 168 264L136 264C130 264 126 260 126 252Z" fill="#b07548"/>
+<path d="M138 250L156 252M138 257L156 258" stroke="#93603a" stroke-width="2"/>
+</g>
+<g id="x-warm" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M90 102Q101 96 112 100M128 100Q139 96 150 102" stroke-width="2.5"/><path d="M94 127Q101 119 108 127M132 127Q139 119 146 127" stroke-width="3"/><path d="M106 162Q120 174 134 162" stroke-width="3"/><path d="M83 148a7 4 0 1 0 14 0a7 4 0 1 0 -14 0ZM143 148a7 4 0 1 0 14 0a7 4 0 1 0 -14 0Z" fill="#c98468" stroke="none" opacity=".6"/>
+</g>
+<g id="x-thinking" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M90 98Q101 89 112 96M128 105Q139 104 150 105" stroke-width="2.5"/><path d="M94 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0ZM132 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0Z" fill="#fffdf8" stroke-width="2"/><path d="M100.8 121a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0ZM138.8 121a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0Z" fill="#2b2433" stroke="none"/><path d="M117 166L131 163" stroke-width="3"/><g transform="matrix(-1 0 0 1 240 0)"><path d="M146 300H196C188 260 172 224 156 204C150 198 140 196 132 198Z" fill="#f1e4c8" stroke-width="3"/><path d="M108 192C108 180 118 176 128 178L142 184C148 190 146 200 138 202L118 202C112 202 108 198 108 192Z" fill="#b07548" stroke-width="3"/><path d="M118 186L132 188M118 194L132 195" stroke="#93603a" stroke-width="2"/></g>
+</g>
+<g id="x-relieved" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M90 100Q101 95 112 100M128 100Q139 95 150 100" stroke-width="2.5"/><path d="M94 123Q101 130 108 123M132 123Q139 130 146 123" stroke-width="3"/><path d="M109 163Q120 170 131 163" stroke-width="3"/><path d="M40 300C44 272 66 252 100 244L108 264C90 272 80 286 80 300Z" fill="#f1e4c8" stroke-width="3"/><path d="M98 240C108 232 128 236 136 244C140 252 134 262 124 262L106 262C96 258 92 246 98 240Z" fill="#b07548" stroke-width="3"/><path d="M110 246L130 248M108 254L128 256" stroke="#93603a" stroke-width="2"/>
+</g>
+<g id="x-calm-phone-ear" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M90 105Q101 100 112 104M128 104Q139 100 150 105" stroke-width="2.5"/><path d="M94 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0ZM132 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0Z" fill="#fffdf8" stroke-width="2"/><path d="M97.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0ZM135.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0Z" fill="#2b2433" stroke="none"/><path d="M111 164Q120 168 129 164" stroke-width="3"/><path d="M40 300C36 254 46 206 70 172L92 180C80 208 76 256 78 300Z" fill="#fffaf0" stroke="#fffaf0" stroke-width="13"/><g transform="translate(8 12) rotate(-15 67 120)"><path d="M57 104a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v32a6 6 0 0 1-6 6h-8a6 6 0 0 1-6-6ZM52 150C48 136 56 126 68 126C78 128 82 140 78 152C74 164 56 164 52 150Z" fill="#fffaf0" stroke="#fffaf0" stroke-width="13"/></g><path d="M40 300C36 254 46 206 70 172L92 180C80 208 76 256 78 300Z" fill="#f1e4c8" stroke-width="3"/><g transform="translate(8 12) rotate(-15 67 120)"><path d="M57 104a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v32a6 6 0 0 1-6 6h-8a6 6 0 0 1-6-6Z" fill="#5d6672" stroke-width="3"/><path d="M52 150C48 136 56 126 68 126C78 128 82 140 78 152C74 164 56 164 52 150Z" fill="#b07548" stroke-width="3"/></g>
+</g>
+<g id="x-calm" class="x x-default" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round" fill="none">
+<path d="M90 105Q101 100 112 104M128 104Q139 100 150 105" stroke-width="2.5"/><path d="M94 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0ZM132 124a7 5.5 0 1 0 14 0a7 5.5 0 1 0 -14 0Z" fill="#fffdf8" stroke-width="2"/><path d="M97.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0ZM135.8 124a3.2 3.2 0 1 0 6.4 0a3.2 3.2 0 1 0 -6.4 0Z" fill="#2b2433" stroke="none"/><path d="M111 164Q120 168 129 164" stroke-width="3"/>
+</g>
+</svg>

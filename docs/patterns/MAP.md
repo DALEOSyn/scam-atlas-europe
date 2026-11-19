@@ -119,6 +119,12 @@ Source ids refer to `content/sources.research.yaml` (to be merged into `content/
   - The cases in the sources mostly involve older people. Older characters must still be shown as capable: "gran" spots at least one tell herself, or is the one who checks. Her near-miss comes from the script (a continuous call, fear for a grandchild), not from age or confusion.
   - Elsewhere in the game, a **younger** character also falls for a family-emergency script, for example the "Hi Mum" message in Amsterdam or a cloned-voice call. That shows the lever is fear for someone you love, which works at any age.
   - No mocking, and no "silly old people" framing.
+- **T-3.8r update (2026-11-19):** briefs `spoofed-authority-call.md` and `cloned-voice-family-emergency.md`; per-beat table in `ch6-rome-sources.md`. New Italian official sources:
+  - a ministry brochure on spoofing and voice cloning, including an Italian case where a minister's voice was cloned [it-mur-smishing-vishing];
+  - the regulator's blocking of calls from abroad that fake Italian numbers (fixed from 19 Aug 2025, mobile from 19 Nov 2025; national spoofing still possible) [it-agcom-antispoofing-2025];
+  - central-bank victim steps (bank, Polizia Postale, *reclamo*, ABF) [it-bdi-truffe-cyber];
+  - the ESAs factsheet in Italian (relative impersonation, "clonazione vocale", fake audio, spoofed numbers, family safe word) [eu-esas-ai-scams-factsheet-it].
+  - **Voice note ruling:** official sources speak of fake *audio*, not voice notes in a chat specifically. Davide's voice clip is allowed with the tell on "new number + money + no call" (Low–Medium); a call is the safer variant. Confidence unchanged: High (call scripts) / Medium (voice cloning). The Italian police sites refused automated access, so no police page was read directly.
 
 ### Ch 7 — Lisbon → **Adjust (Medium)**
 - **Holiday / student rental (promote to lead):**
@@ -139,6 +145,15 @@ Source ids refer to `content/sources.research.yaml` (to be merged into `content/
 - **Dropped (Red Line 8):** the phone-payment-app ATM trick. Its decisive step is carried out in person at an ATM, so it is out of scope. [pt-deco-mbway-2021] is now cited only in the out-of-scope row of the missing-patterns table.
 - **Why only Medium:** the Portugal-specific sources are news reports of police statements. The PSP and GNR originals were not fetched, and the Banco de Portugal pages were unreachable this session.
 - **Habit:** book, message and pay only inside the platform's app or site you opened yourself; never log in or pay via a link the "host" sends; check for stickers over QR codes and type the official address instead [pt-dn-psp-airbnb-2026], [de-evz-rental-fraud], [ie-ncsc-qr-guide].
+- **T-3.8r update (2026-11-19):** briefs `rental-offplatform-payment.md` and `qr-sticker-parking.md`; per-beat table in `ch7-lisbon-sources.md`.
+  - **New sources:**
+    - Banco de Portugal's consumer brochure: don't use links, type the bank address, contact the bank at once, report to PSP, GNR or PJ [pt-bdp-ficaadica-2023];
+    - a GNR warning (Apr 2026, via RTP: fake listings with real photos, deposit pressure, check the account holder's name; 725 cases in 2025) [pt-rtp-gnr-rentals-2026];
+    - the PSP and CNCS traveller campaign (2025, via DN) [pt-dn-psp-cncs-campaign-2025];
+    - DECO on fake QR codes [pt-deco-qrishing-2024];
+    - an official municipal warning about parking-machine QR stickers in Luxembourg [lu-vdl-parking-qr].
+  - [de-evz-rental-fraud] was re-opened and confirms platform-login phishing ("looks as if it has been sent by the platform operators").
+  - Still **Medium**: the Portugal-specific facts are news reports of police statements, and the CNCS, PSP and GNR originals were not fetched.
 
 ### Ch 8 — Dublin: investment / crypto ads, recovery scams → **Confirm (High)**
 - **Evidence:**

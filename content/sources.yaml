@@ -30,6 +30,8 @@
 #                berlin-arc-alex-01 | arc   (Alex friendship-manipulation arc beats, GDD §10; added T-2.4b, 2026-11-18)
 #                messenger-family-impersonation | task-job-scam   (chapter 2 Amsterdam briefs; added phase 3, 2026-11-19)
 #                ceo-fraud-bec | payment-detail-change   (chapter 3 Paris briefs; added phase 3, 2026-11-19)
+#                spoofed-authority-call | cloned-voice-family-emergency   (chapter 6 Rome briefs; T-3.8r, 2026-11-19)
+#                rental-offplatform-payment | qr-sticker-parking   (chapter 7 Lisbon briefs; T-3.8r, 2026-11-19)
 #                bank-safe-account-call | marketplace-collect-payment-link | hijacked-friend-payment-code
 #                  (chapters 4 Madrid and 5 Warsaw briefs; added T-3.6r, 2026-11-19)
 #              An empty list means provenance only: not cited directly, kept because another entry's
@@ -69,7 +71,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [email-phishing-credential, it-portal-credential-phishing, task-job-scam, marketplace-collect-payment-link, MAP-ch0, MAP-ch7, MAP-ch8, MAP-ch10, MAP-missing, MAP-crosscutting, campaign-catalogue]
+    used_for: [email-phishing-credential, it-portal-credential-phishing, task-job-scam, MAP-ch0, MAP-ch7, MAP-ch8, MAP-ch10, MAP-missing, MAP-crosscutting, campaign-catalogue, rental-offplatform-payment, marketplace-collect-payment-link]
     notes: "Fraud is 'the fastest-growing area of organised crime'. Investment fraud especially prevalent, increasingly via ads on very large online platforms. Romance and tech-support among most common typologies reported by Member States. AI-assisted impersonation of bank helpdesk and law-enforcement staff. Malvertising for fake accommodation/merchandise listings. Minors drawn into laundering via 'get-rich' social-media schemes. Victims 'relentlessly re-victimised'. Publication date from eu-eucrim-iocta-2026. T-R.1 re-read (catalogue): 'financial sexual extortion continues to surge'; offenders target children on gaming platforms; violent online networks groom children (8-17) with love-bombing; voice chat bots pre-screen victims 'at industrial volume'; infostealers 'a key enabler'; SIM swapping mentioned only in passing (collectives); minors may launder by renting out wallets or receiving crypto 'gifts'. NOT found: ticket or charity scams, 'deepfake' by name."
 
   - id: eu-eucrim-iocta-2026
@@ -135,7 +137,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [email-phishing-credential, it-portal-credential-phishing, messenger-family-impersonation, marketplace-collect-payment-link, MAP-ch2, MAP-ch5, MAP-ch6, MAP-ch10, MAP-missing, MAP-crosscutting, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue, ceo-fraud-bec, payment-detail-change]
+    used_for: [email-phishing-credential, it-portal-credential-phishing, messenger-family-impersonation, MAP-ch2, MAP-ch5, MAP-ch6, MAP-ch7, MAP-ch10, MAP-missing, MAP-crosscutting, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue, ceo-fraud-bec, payment-detail-change, spoofed-authority-call, cloned-voice-family-emergency, rental-offplatform-payment, marketplace-collect-payment-link]
     notes: "Covers impersonation incl. voice cloning/deepfakes of relatives and banks; celebrity investment ads; dating-to-investment; phishing inserted into existing email threads; marketplace deals moving the victim off-platform to a fake bank login. Advice: pause; verify via known numbers; family safe word; check regulator warning lists (IOSCO I-SCAN); never install remote-access software; contact the bank at once; beware 'recovery' offers. Notes AI removes grammar errors, so polish is not proof."
 
   - id: eu-epc-threats-2025
@@ -146,7 +148,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 3
-    used_for: [email-phishing-credential, messenger-account-takeover-code, it-portal-credential-phishing, multichannel-support-callback, messenger-family-impersonation, task-job-scam, bank-safe-account-call, hijacked-friend-payment-code, MAP-ch2, MAP-ch4, MAP-ch6, MAP-ch7, MAP-ch9, MAP-ch10, MAP-missing, campaign-catalogue, ceo-fraud-bec, payment-detail-change]
+    used_for: [email-phishing-credential, messenger-account-takeover-code, it-portal-credential-phishing, multichannel-support-callback, messenger-family-impersonation, task-job-scam, MAP-ch2, MAP-ch4, MAP-ch6, MAP-ch7, MAP-ch9, MAP-ch10, MAP-missing, campaign-catalogue, ceo-fraud-bec, payment-detail-change, spoofed-authority-call, cloned-voice-family-emergency, qr-sticker-parking, bank-safe-account-call, hijacked-friend-payment-code]
     notes: "Social engineering increasingly targets people rather than technology. Covers: spoofed sender names/numbers; messages that give a phone number instead of a link; 'safe account' scams; call-then-home-visit; fake remote support; task scams with small early payouts; recovery scams; cloned voices in family-emergency scams; QR swaps on letters, invoices and EV chargers; victims asked to approve login QR codes sent via messaging apps; money mules. Read to char 100000 of ~130000. Re-read 2026-11-19 (Paris briefs), full text incl. chars 100000-130011: targets shifting to 'company executives, employees (through CEO fraud)' (p.6); AI produces 'voice and video impersonating well-known persons (e.g. CEO fraud)' (p.6) and deepfakes 'impersonate executives' (p.22); 'a particular increase in business email compromise' (p.22); invoicing exposed to 'APP fraud or IBAN manipulation' incl. QR tampering on invoices (p.7, p.17); fraudsters instruct victims 'to ignore or dismiss alerts' (p.23, bank alerts in general, not VOP specifically). VOP mentioned only as a new scheme with no fraud cases yet (p.8). No passage on VOP limits or on matching-name accounts."
 
   - id: eu-ec-ipr-vop-2025
@@ -157,7 +159,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [messenger-family-impersonation, MAP-ch2, MAP-crosscutting, payment-detail-change]
+    used_for: [messenger-family-impersonation, MAP-ch2, MAP-crosscutting, payment-detail-change, cloned-voice-family-emergency, rental-offplatform-payment]
     notes: "From 2025-10-09, euro-area payment providers must offer free payee verification (name vs IBAN) before a transfer. Non-euro EU states later (see eu-ecb-ipr)."
 
   - id: eu-ecb-ipr
@@ -168,7 +170,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [messenger-family-impersonation, MAP-ch2, MAP-ch3, MAP-crosscutting, campaign-catalogue, payment-detail-change]
+    used_for: [messenger-family-impersonation, MAP-ch2, MAP-ch3, MAP-crosscutting, campaign-catalogue, payment-detail-change, cloned-voice-family-emergency]
     notes: "Verification of Payee results: match / close match / no match / other. Applies to standard and instant credit transfers, free of charge. Deadlines: euro area 2025-10-09; non-euro Member States 2027-07-09. Re-opened 2026-11-19: confirms the four results, 'informs payers of any discrepancies between the payment account identifier given and the name of the intended payee', free of charge, both deadlines. (2027-01-09 on the same page is the non-euro deadline for receiving instant payments, not for VoP.) Does not describe what the payer sees."
 
   - id: eu-eba-ecb-fraud-2025
@@ -190,7 +192,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en, rental-offplatform-payment]
     notes: "29 centres in all EU Member States plus Norway and Iceland. Free, confidential help with cross-border purchases and travel problems with a trader based in another covered country."
 
   - id: eu-eccnet-online-fraud
@@ -247,6 +249,17 @@ sources:
     tier: 1
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
     notes: "Added in rework (finding 4). Lists 116 111 'helpline for children' and 116 006 'helpline for crime victims'. The 116 numbers are 'usable in most EU countries (though coverage is not yet EU-wide)'. No per-country list."
+
+  - id: eu-dec-2007-116
+    publisher: European Commission (EUR-Lex)
+    title: "Commission Decision 2007/116/EC of 15 February 2007 on reserving the national numbering range beginning with '116' for harmonised numbers for harmonised services of social value"
+    url: https://eur-lex.europa.eu/eli/dec/2007/116(1)/oj/eng
+    published: 2007-02-17 (OJ L 49; amended, consolidated version 2023-03-06 not opened)
+    accessed: 2026-11-19
+    region: EU
+    tier: 1
+    used_for: [WHERE_TO_REPORT]
+    notes: "Recital 3: the harmonised numbers 'should be freephone numbers, without this meaning that operators would be obliged to carry calls to 116 numbers at their own expense'. Art. 4(d): no payment or payment commitment as a prerequisite to use the service. Not an obligation that the call is free, so it does NOT back 'free' for any single 116 line; check each country's page."
 
   - id: chi-116111-eu
     publisher: Child Helpline International (NGO)
@@ -345,8 +358,8 @@ sources:
     accessed: 2026-11-18
     region: DE
     tier: 3
-    used_for: [MAP-ch7, MAP-missing, campaign-catalogue]
-    notes: "Tier fixed in rework (was 1): national consumer centre publication, even though ECC-Net itself is EU-level. Fake landlords abroad, deposits before viewing, platform-phishing emails. Habit: never pay before viewing or signing; stay on the platform; avoid irreversible transfer methods."
+    used_for: [MAP-ch7, MAP-missing, campaign-catalogue, rental-offplatform-payment]
+    notes: "Re-opened 2026-11-19 (T-3.8r): 'The email looks as if it has been sent by the platform operators'; recipients are asked to 'register on the portal by clicking on a link' and the access details they enter are intercepted; fake landlords abroad; deposits before viewing ('Never pay in advance'); 'Only book directly through the platform. Do not pay by bank transfer' (meta description); fake escrow via well-known money-transfer brands; report dubious offers to the portal operator; victims contact the police at once; card/direct-debit payers ask the bank about a chargeback (deadlines apply). Tier fixed in rework (was 1): national consumer centre publication, even though ECC-Net itself is EU-level. Fake landlords abroad, deposits before viewing, platform-phishing emails. Habit: never pay before viewing or signing; stay on the platform; avoid irreversible transfer methods."
 
   # ---------------------------------------------------------------- Switzerland (non-EU, supporting)
   - id: ch-ncsc-links-2025
@@ -380,7 +393,7 @@ sources:
     accessed: 2026-11-18
     region: IE
     tier: 2
-    used_for: [email-phishing-credential, MAP-ch7, WHERE_TO_REPORT, campaign-catalogue]
+    used_for: [email-phishing-credential, MAP-ch7, WHERE_TO_REPORT, campaign-catalogue, qr-sticker-parking]
     notes: "Scam QR codes placed over legitimate ones at parking payment points; QR codes in emails. Red flags: a sticker or non-tamper-proof code; preview doesn't match the official site; pay-now-to-avoid-a-fine pressure. Reporting: local Garda station. phishing@ncsc.gov.ie appears ONLY here, scoped to 'if you suspect a QR code is fake' (or contact the impersonated organisation). Rework (finding 9): not presented as a general reporting address."
 
   - id: ie-ncsc-mobile-scam-2024
@@ -436,7 +449,7 @@ sources:
     region: IE
     tier: 3
     used_for: [MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
-    notes: "Recovery scams: an upfront 'retainer' or 'processing' fee to get lost money back; losses of EUR 1,000-10,000 seen. Genuine recovery never needs a fee."
+    notes: "Recovery scams: an upfront 'retainer' or 'processing' fee to get lost money back; losses of EUR 1,000-10,000 seen. Player wording: 'Anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam.'"
 
   # ---------------------------------------------------------------- France
   - id: fr-cybermalveillance-fiche-hameconnage
@@ -447,7 +460,7 @@ sources:
     accessed: 2026-11-18
     region: FR
     tier: 2
-    used_for: [email-phishing-credential, it-portal-credential-phishing, MAP-ch0, WHERE_TO_REPORT, help-where-to-report-en, ceo-fraud-bec, payment-detail-change]
+    used_for: [email-phishing-credential, it-portal-credential-phishing, MAP-ch0, WHERE_TO_REPORT, help-where-to-report-en, ceo-fraud-bec, payment-detail-change, spoofed-authority-call]
     notes: "Contact the organisation directly via known details; hover over links or type the address; a single changed character signals a fake. Victim steps incl. bank opposition, changing every reused password, keeping evidence, filing a complaint. Reporting: Signal Spam, Phishing Initiative, Info Escroqueries 0 805 805 817."
 
   - id: fr-bdf-osmp-2024
@@ -504,7 +517,7 @@ sources:
     accessed: 2026-11-18
     region: NL
     tier: 3
-    used_for: [messenger-account-takeover-code, messenger-family-impersonation, hijacked-friend-payment-code, MAP-ch2, WHERE_TO_REPORT, campaign-catalogue]
+    used_for: [messenger-account-takeover-code, messenger-family-impersonation, MAP-ch2, WHERE_TO_REPORT, campaign-catalogue, cloned-voice-family-emergency, hijacked-friend-payment-code]
     notes: "Re-opened 2026-11-19: form version 20250901; adds excuses (stranded abroad, phone broken so no banking), evidence to gather, bank first, and the bank-data request procedure for non-bank fraud (within 13 months). Does NOT mention voice messages or AI voices. The criminal poses as a friend or relative via a hacked or fake account or a 'new number', asks urgently for money, often with a second request; mostly WhatsApp, also SMS, email, Snapchat, Telegram. Habit: call or speak to the person; ask a question only they'd know; check account details against known ones. A police report-preparation form."
 
   - id: nl-betaalvereniging-friend-in-need-2020
@@ -583,7 +596,7 @@ sources:
     accessed: 2026-11-18
     region: IT
     tier: 3
-    used_for: [MAP-ch6, messenger-family-impersonation, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    used_for: [MAP-ch6, messenger-family-impersonation, spoofed-authority-call, cloned-voice-family-emergency, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
     notes: "Fake police, lawyer or doctor calls about a relative's accident or arrest, with a collector sent to the home; fake grandchild calls; fake utility technicians; spoofed bank numbers. Advice: call 112 or the relative on a known number; never hand over money or valuables; police never ask for money."
 
   - id: it-carabinieri-21-arresti-2025
@@ -594,7 +607,7 @@ sources:
     accessed: 2026-11-18
     region: IT
     tier: 3
-    used_for: [MAP-ch6, campaign-catalogue]
+    used_for: [MAP-ch6, spoofed-authority-call, campaign-catalogue]
     notes: "33 frauds May 2024-Jan 2025 across 7 regions. Fake Carabinieri or lawyers claim a son or grandson caused a crash and demand 'bail' in cash or gold, collected at home. Callers keep the line open so victims can't check. T-R.1: cited in the catalogue's 'Excluded' table (home collection is offline)."
 
   # ---------------------------------------------------------------- Portugal
@@ -617,7 +630,7 @@ sources:
     accessed: 2026-11-18
     region: PT
     tier: 4
-    used_for: [MAP-ch7, MAP-missing, campaign-catalogue]
+    used_for: [MAP-ch7, MAP-missing, campaign-catalogue, rental-offplatform-payment]
     notes: "News citing PSP: 4,553 fake-rental fraud cases 2023-2025 (~1,500 a year). The original PSP release was not fetched."
 
   - id: pt-dn-psp-airbnb-2026
@@ -628,7 +641,7 @@ sources:
     accessed: 2026-11-18
     region: PT
     tier: 4
-    used_for: [MAP-ch7, MAP-missing, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    used_for: [MAP-ch7, MAP-missing, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue, rental-offplatform-payment]
     notes: "News: PSP warns of rising holiday-accommodation scams. Red flags: paying or communicating off-platform; links sent by the 'host'; requests for direct bank transfers. Report to the PSP."
 
   - id: pt-portugalpost-gnr-quishing-2026
@@ -639,7 +652,7 @@ sources:
     accessed: 2026-11-18
     region: PT
     tier: 4
-    used_for: [MAP-ch7, campaign-catalogue]
+    used_for: [MAP-ch7, campaign-catalogue, qr-sticker-parking]
     notes: "News: GNR (2026-03-24) warns of stickers over QR codes on menus, fake parking-fine notices and posters. Verify fines on the municipality's official portal."
 
   - id: pt-deco-mbway-2021
@@ -684,7 +697,7 @@ sources:
     accessed: 2026-11-18
     region: SE
     tier: 3
-    used_for: [multichannel-support-callback, MAP-ch9, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    used_for: [multichannel-support-callback, MAP-ch9, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue, spoofed-authority-call]
     notes: "Campaign 'Dare to be rude' (21 Sep-11 Oct 2026, aimed at 60+). Vishing often starts with an SMS that gives a number to call. Hang up; don't call numbers from texts; never log in with e-ID at a caller's request; police never collect cards or valuables at home. 112 / 114 14."
 
   # ---------------------------------------------------------------- Belgium
@@ -707,7 +720,7 @@ sources:
     accessed: 2026-11-18
     region: BE
     tier: 2
-    used_for: [MAP-ch7, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    used_for: [MAP-ch7, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue, qr-sticker-parking]
     notes: "Stickers over official QR codes on EV chargers. Check for an overlay sticker; inspect the URL. Report to the local police; Card Stop 078 170 170 if bank details were shared."
 
   - id: be-police-romance-2026
@@ -741,7 +754,7 @@ sources:
     accessed: 2026-11-18
     region: DE
     tier: 2
-    used_for: [MAP-ch6, MAP-missing, messenger-family-impersonation, campaign-catalogue, ceo-fraud-bec]
+    used_for: [MAP-ch6, MAP-missing, messenger-family-impersonation, campaign-catalogue, ceo-fraud-bec, cloned-voice-family-emergency]
     notes: "Explains voice cloning (text-to-speech and voice conversion; seconds-to-hours of audio needed). Fake voices used in fraud calls, e.g. CEO fraud triggering a transfer. Audible tells: metallic sound, mispronunciation, monotone or odd emphasis, reply delay. Countermeasure: awareness. Does NOT mention calls impersonating relatives; older (2022) and quality is improving, so tells are not to be taught as reliable."
 
   # ================================================ T-2.5 additions (chapters 0-1 briefs + help screen), all opened 2026-11-18
@@ -819,7 +832,7 @@ sources:
     accessed: 2026-11-18
     region: PL
     tier: 2
-    used_for: [it-portal-credential-phishing, multichannel-support-callback, bank-safe-account-call, help-where-to-report-en, campaign-catalogue]
+    used_for: [it-portal-credential-phishing, multichannel-support-callback, help-where-to-report-en, campaign-catalogue, spoofed-authority-call, WHERE_TO_REPORT, bank-safe-account-call]
     notes: "English gloss: 'Fake consultants'. Callers posing as bank or institution staff; caller ID and caller names can be spoofed; 'safe account' transfers; requests to install remote-access software. Advice: hang up and call back on the number from the official site or app; never let anyone remotely control your device."
 
   # ---------------------------------------------------------------- Spain (T-2.5)
@@ -1336,7 +1349,7 @@ sources:
     accessed: "2026-11-19"
     region: DE
     tier: 3
-    used_for: [multichannel-support-callback]
+    used_for: [multichannel-support-callback, spoofed-authority-call]
     notes: "Fraudsters claim a push-TAN will stop suspicious debits, but it authorises transfers; being asked by phone for passwords or TANs is always a sign of fraud; banks generally don't call unprompted."
 
   # ================================================ Phase 3, chapter 2 (Amsterdam) briefs: messenger-family-impersonation, task-job-scam
@@ -1352,7 +1365,7 @@ sources:
     accessed: 2026-11-19
     region: NL
     tier: 3
-    used_for: [messenger-family-impersonation]
+    used_for: [messenger-family-impersonation, cloned-voice-family-emergency]
     notes: "English gloss: 'Is someone you know messaging you for money? Never pay before you've called the old number'. A message in the name of someone you know (often family) says they have a new number and you can delete the old one, then asks for money for an urgent problem; sometimes it starts with an SMS asking you to continue on the messenger. New numbers are usually prepaid; the profile photo is often copied from social media; sometimes the real account is hacked. AI VOICE: scammers used to refuse a call; now they can imitate the person's voice with AI (in calls; voice notes NOT mentioned). Red flags: haste, promise to repay quickly, refusal to call or meet (may change with AI). Advice: look up the person's number in your own contacts and call it; agree with family how you reach each other in an emergency; agree a code word or special question for payments; turn on two-step login; share less online. If paid: bank at once, Fraudehelpdesk, police report."
 
   - id: nl-fraudehelpdesk-takeover-alert-2026
@@ -1429,7 +1442,7 @@ sources:
     accessed: 2026-11-19
     region: NL
     tier: 3
-    used_for: [messenger-family-impersonation]
+    used_for: [messenger-family-impersonation, cloned-voice-family-emergency]
     notes: "English gloss: 'I want to report help-request fraud'. In many cases you can report online (button to the online form for friend-in-need fraud). Not online if you report for someone else, if your identity was misused to defraud others, or if your own messenger account was taken over and misused: then contact the police. Prepare: export the chat, screenshot profile/photo/number, fill in the help form (nl-politie-hulpvraagfraude-2025). Report the chat to the messenger LAST, because the chat disappears after reporting it there. After reporting you may, under conditions, request the account holder's name and address (links to Betaalvereniging). Lists 0900-8844 (non-emergency) and 112. DigiD and age limits not mentioned."
 
   - id: nl-politie-ik-ben-opgelicht
@@ -1473,7 +1486,7 @@ sources:
     accessed: 2026-11-19
     region: NL
     tier: 3
-    used_for: [messenger-family-impersonation]
+    used_for: [messenger-family-impersonation, cloned-voice-family-emergency]
     notes: "Banking association's consumer page. Messages, usually via the messenger, from 'someone you know' asking to pay something or lend money; may come from a hacked real number or a 'new number' message (sometimes with the contact's photo); the scam may continue days later. Payment via a PAYMENT-REQUEST LINK or an IBAN. Red flags: payment request by text even from a familiar number; refusal to call or video (lost phone, new number not set up for calls, quiet train carriage); pressure ('vrijwel altijd een teken van bedrog'). Advice: call on a number you already know before paying; ask control questions not answerable from chats or social media; or call another close contact; don't use payment links before speaking to the person; 2FA and a voicemail PIN. If paid: bank first (forward the message with the link/IBAN), online police report, Fraudehelpdesk. No AI voice. Older page (2023) but consistent with 2025-26 sources."
 
   - id: nl-veiligbankieren-meld-fraude
@@ -1495,7 +1508,7 @@ sources:
     accessed: 2026-11-19
     region: NL
     tier: 3
-    used_for: [messenger-family-impersonation]
+    used_for: [messenger-family-impersonation, cloned-voice-family-emergency]
     notes: "English gloss: 'Police warn about voice cloning'. OLDER (2023) and based on a newspaper article, so supporting only. Police and Fraudehelpdesk warn that AI can imitate a relative's (e.g. child's) voice in a PHONE CALL claiming an emergency and urgent need for money; losses cited are abroad, no Dutch case count. Advice: Fraudehelpdesk suggests a family code word; experts note a code word can be forgotten under stress, so be suspicious of any money request and ask detailed questions. Voice notes NOT mentioned."
 
   - id: nl-veiliginternetten-hulpvraag
@@ -1506,7 +1519,7 @@ sources:
     accessed: 2026-11-19
     region: NL
     tier: 3
-    used_for: [messenger-family-impersonation]
+    used_for: [messenger-family-impersonation, cloned-voice-family-emergency]
     notes: "Government awareness platform (footer: ministry, NCSC and ECP); tier 3 kept conservative because the platform is a joint public-private initiative. A 'family member or friend' with a new number and a convincing profile photo; numbers and photos collected online; chats a while, then needs a loan; payment via a PAYMENT-REQUEST LINK or to SOMEONE ELSE'S account. A messenger call that is hung up quickly, then 'I couldn't hear you'. Advice: call the number you already saved; if you call the new number, ask something only the real person knows; 'Niet gebeld = geen geld'. If affected: online police report; Fraudehelpdesk."
 
   - id: nl-veiliginternetten-voice-cloning
@@ -1517,7 +1530,7 @@ sources:
     accessed: 2026-11-19
     region: NL
     tier: 3
-    used_for: [messenger-family-impersonation]
+    used_for: [messenger-family-impersonation, cloned-voice-family-emergency, campaign-catalogue]
     notes: "AI plus a short recording can make fake audio imitating someone you know or your bank, to ask for money or data; 'Als je een bekende stem hoort, ben je sneller geneigd iemand te vertrouwen'. Advice: hang up and call back on a number you know; ask something only that person can answer; share less personal info online. No code word; no victim steps beyond noting voice cloning without consent is punishable as identity fraud."
 
   - id: nl-veiliginternetten-thuiswerk-2025
@@ -1774,9 +1787,462 @@ sources:
     accessed: "2026-11-19"
     region: FR
     tier: 3
-    used_for: [ceo-fraud-bec]
+    used_for: [ceo-fraud-bec, cloned-voice-family-emergency]
     notes: "Case: a site manager of a French industrial group got a video call from someone presenting as the group's chief executive; 'l'apparence physique et la voix de l'individu à l'écran correspondant bien à celles du dirigeant'; he was asked for a transfer of funds for a supposed acquisition. Surprised by the unusual request, he ended the call and alerted management 'through the usual channels'; it was a 'tentative d'escroquerie par hypertrucage associant le visage et la voix du dirigeant'. Recommendations are general (train staff, report AI incidents to the DGSI); the flash does not itself prescribe a callback. One case, no prevalence figure."
 
+  # ================================================ T-3.8r additions (Rome + Lisbon briefs, verified help list), all opened 2026-11-19
+
+  # ---------------------------------------------------------------- EU (T-3.8r)
+  - id: eu-esas-ai-scams-factsheet-it
+    publisher: EBA, EIOPA, ESMA
+    title: "Frodi e truffe finanziarie online nel mondo dell'IA (IT edition of 'Online financial frauds and scams in an AI world')"
+    url: https://eba.europa.eu/sites/default/files/2026-01/fa63af9a-bafd-4821-baee-48c7c8fb6490/Online%20financial%20frauds%20and%20scams%20in%20an%20AI%20world_IT.pdf
+    published: 2025 (EU Publications Office; ISBN 978-92-9407-263-4)
+    accessed: 2026-11-19
+    region: EU
+    tier: 1
+    used_for: [spoofed-authority-call, cloned-voice-family-emergency, MAP-ch6, campaign-catalogue]
+    notes: "Italian edition of eu-esas-ai-scams-factsheet-nl. Danger signs include contact from 'qualcuno che finge di essere un familiare' (p.2); 'Presta attenzione alla clonazione vocale' (p.2); AI can 'creare video, immagini o audio falsi che imitano la voce' ('deepfake', p.6) - fake AUDIO in general, not only live calls; 'Il chiamante potrebbe utilizzare un numero falsificato' (p.6); 'Concorda con la tua famiglia una parola sicura' (p.5); victims: inform the bank at once through official channels and report to the police or national financial authority (p.4). Host eba.europa.eu (no www) as opened."
+
+  # ---------------------------------------------------------------- Italy (T-3.8r)
+  - id: it-agcom-antispoofing-2025
+    publisher: AGCOM (Autorità per le garanzie nelle comunicazioni)
+    title: "Attuazione delibera 106/25/CONS - esiti Tavolo Tecnico"
+    url: https://www.agcom.it/sites/default/files/media/allegato/2025/attuazione%20delibera%20106-25-cons%20%E2%80%93%20esiti%20Tavolo%20Tecnico.pdf
+    published: n/d (2025; refers to meetings up to 2025-07-29 and to 2025-08-19 as a future date)
+    accessed: 2026-11-19
+    region: IT
+    tier: 3
+    used_for: [spoofed-authority-call, MAP-ch6, campaign-catalogue]
+    notes: "Telecom regulator. International carriers must block calls from abroad that show an Italian fixed-line number (from 2025-08-19) or an Italian mobile number not roaming abroad (from 2025-11-19), plus non-geographic and unassigned numbers. Spoofing is 'in larga parte' from abroad, but national spoofing remains possible (e.g. unverified CLI on VoIP traffic) and measures for it were still under review. Use only as: 'Since 2025, phone companies must block calls from abroad that show an Italian number. Even so, a number on your screen proves nothing.' State the rule, never its effect."
+
+  - id: it-mur-smishing-vishing
+    publisher: Ministero dell'Università e della Ricerca (MUR), 'Cyber Sapere' series (copy hosted by the University of Parma)
+    title: "Cyber Sapere - Brochure 2: Smishing and Vishing (EN)"
+    url: https://www.unipr.it/sites/default/files/2026-07/MUR_Brochure_2-Smishing_and_Vishing_EN.pdf
+    published: n/d (latest case cited Oct 2025; file path 2026-07)
+    accessed: 2026-11-19
+    region: IT
+    tier: 3
+    used_for: [spoofed-authority-call, cloned-voice-family-emergency, MAP-ch6, campaign-catalogue]
+    notes: "Ministry awareness brochure. 'Criminals may use phone number falsification techniques known as spoofing'; attackers pose as 'a bank, an authority or even your own institution'; voices can be recorded from brief answers or silent calls and 'manipulated with voice cloning techniques'; Feb 2025 Italian case: AI-cloned voice of a government minister used to describe false emergencies and ask for large sums. Advice: end suspicious calls; 'Use the organization's official contact details to call the interlocutor back'; flag the SMS/call with the device's report function. Does not mention family emergencies, voice messages or code words. Host is a university mirroring the ministry file; an Italian copy is on it.polito.it."
+
+  - id: it-bdi-truffe-cyber
+    publisher: Banca d'Italia
+    title: "Cosa fare se si è stati vittima di truffe o frodi"
+    url: https://www.bancaditalia.it/focus/cybersicurezza/truffe-cyber/index.html
+    published: n/d (page metadata last modified 2024-07-01)
+    accessed: 2026-11-19
+    region: IT
+    tier: 3
+    used_for: [spoofed-authority-call, cloned-voice-family-emergency, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    notes: "Central bank consumer page. Steps: tell your bank or payment provider at once ('avvertire subito il proprio istituto finanziario'); report the crime to the Polizia Postale e delle comunicazioni (offices or its other channels; details at commissariatodips.it); written complaint (reclamo) to the bank (reply within 15 working days for payment services); then an esposto to the Banca d'Italia or the Arbitro Bancario Finanziario (complaint to the bank first). Does not mention spoofing or voice cloning."
+
+  - id: it-bdi-educazione-cyber
+    publisher: Banca d'Italia
+    title: "Conoscenza dei rischi e cybersicurezza degli utenti"
+    url: https://www.bancaditalia.it/focus/cybersicurezza/educazione-cyber/index.html
+    published: n/d (page metadata last modified 2024-07-01)
+    accessed: 2026-11-19
+    region: IT
+    tier: 3
+    used_for: [spoofed-authority-call, MAP-ch6]
+    notes: "Vishing: 'finti operatori contattano la vittima per sottrargli dati bancari o della carta di credito'; smishing via SMS and messaging. No spoofing, fake police, voice cloning or 'safe account' text on this page."
+
+  - id: it-open-roma-finti-poliziotti-2026
+    publisher: Open (news; citing Adnkronos)
+    title: "La truffa delle telefonate dei finti agenti di Polizia che sta colpendo Roma"
+    url: https://www.open.online/2026/05/29/truffe-telefoniche-roma-finti-poliziotti-ia/
+    published: 2026-05-29
+    accessed: 2026-11-19
+    region: IT
+    tier: 4
+    used_for: [spoofed-authority-call, cloned-voice-family-emergency, MAP-ch6]
+    notes: "NEWS, supporting only. Two Rome cases (May 2026): repeated calls from fake police officers ('your car was used in robberies'), then valuables taken in person (offline part: NOT depicted, Red Line 8). Adnkronos reported that the gang used AI to clone the husband's voice in one case; not confirmed by any official statement in the article. No spoofed-number detail, no advice. Use only as context that fake-police calls are current in Rome; do not cite for the AI voice claim on screen."
+
+  - id: it-minori-114-2024
+    publisher: Centro nazionale di documentazione e analisi per l'infanzia e l'adolescenza (minori.gov.it), on the Department for Family Policies
+    title: "Servizio 114, lanciata la terza edizione della campagna di comunicazione"
+    url: https://www.minori.gov.it/en/print/8849
+    published: 2024-05-10
+    accessed: 2026-11-19
+    region: IT
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "114 - Emergenza infanzia: free ('gratuito'), 'attivo 24 ore al giorno', by phone, chat, app and WhatsApp; for children and teenagers in distress or danger (abuse, violence) and the adults who look after them; owned by the Department for Family Policies. It is a child-emergency line, not a general listening line; no official Italian page found for 116 111."
+
+  - id: it-telefonoamico-home
+    publisher: Telefono Amico Italia (NGO)
+    title: "Telefono Amico Italia (home page)"
+    url: https://www.telefonoamico.it/
+    published: n/d (page metadata modified 2026-08-31)
+    accessed: 2026-11-19
+    region: IT
+    tier: 4
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Operator's own site, help screen only. 02 2327 2327 'tutti i giorni 24 ore su 24'; the service is free ('in modo completamente gratuito'), the number is a Milan landline (normal call cost not stated); WhatsApp 324 011 72 52, daily 18-21; for 'chiunque si trovi in stato di crisi o emergenza emozionale'; imminent danger: 112 or 118. No official (government) page listing it was found this session."
+
+  # ---------------------------------------------------------------- Portugal (T-3.8r)
+  - id: pt-rtp-gnr-rentals-2026
+    publisher: RTP (public broadcaster; reporting a GNR warning)
+    title: "GNR alerta para burlas no arrendamento de casas de férias"
+    url: https://www.rtp.pt/noticias/pais/gnr-alerta-para-burlas-no-arrendamento-de-casas-de-ferias_n1734248
+    published: 2026-04-16
+    accessed: 2026-11-19
+    region: PT
+    tier: 4
+    used_for: [rental-offplatform-payment, MAP-ch7, campaign-catalogue]
+    notes: "NEWS of a GNR warning. Fake listings use photos of real homes, below-market prices, to get an immediate deposit ('sinal') with no visit; often detected months later. GNR advice: be wary of irresistible deals; visit in person; search whether the photos appear elsewhere with other contacts or prices; ask for the advertiser's identification; check that the account holder matches the name given; don't give in to 'many interested' pressure. GNR figures: 725 home purchase/rental scams in 2025 (762 in 2024); Lisboa district 86. Designer context only; the GNR original was not fetched."
+
+  - id: pt-dn-psp-cncs-campaign-2025
+    publisher: Diário de Notícias (reporting a joint PSP, CNCS and platform communiqué)
+    title: "Airbnb, PSP e Centro Cibersegurança reforçam alerta contra fraudes na reserva de férias"
+    url: https://www.dn.pt/sociedade/airbnb-psp-e-centro-ciberseguran%C3%A7a-lan%C3%A7am-campanha-para-manter-viajantes-seguros-no-ciberespa%C3%A7o
+    published: 2025-06-05
+    accessed: 2026-11-19
+    region: PT
+    tier: 4
+    used_for: [rental-offplatform-payment, MAP-ch7, campaign-catalogue]
+    notes: "NEWS. Joint tips (not attributed to one body): offers 'demasiado boa para ser verdade', especially on social media, and pressure to decide fast; don't click unexpected links; never pay holiday rentals by direct bank transfer; use trusted platforms, different passwords and two-factor authentication; report any suspected scam. PSP: keep all communications (numbers, messages, emails, receipts, screenshots) and 'denuncie de imediato o crime à PSP'. CNCS: people lower their guard on holiday; awareness resources on its site. The URL's accented characters are percent-encoded (UTF-8); the page was opened at the unencoded form."
+
+  - id: pt-bdp-ficaadica-2023
+    publisher: Banco de Portugal
+    title: "5 tips for staying safer online #toptip (brochure, phase 2, EN)"
+    url: https://www.bportugal.pt/sites/default/files/anexos/pdf-boletim/brochuraficaadica_fase2_en.pdf
+    published: "2023"
+    accessed: 2026-11-19
+    region: PT
+    tier: 3
+    used_for: [rental-offplatform-payment, qr-sticker-parking, WHERE_TO_REPORT, help-where-to-report-en, MAP-ch7, campaign-catalogue]
+    notes: "Central bank. Don't click links from unknown sources; type your home-banking address rather than use a link; don't enter confidential data on sites whose authenticity isn't guaranteed; be cautious of bargains; accepting a 'money request' authorises a transfer from your account; never share payment-app access data or authentication codes. Victim: contact your bank or payment provider immediately; 'Report the situation to the nearest police authority (PSP, GNR or PJ)'; request cancellation of your access credentials. No QR or rental text."
+
+  - id: pt-deco-qrishing-2024
+    publisher: DECO PROteste (Portuguese consumer association)
+    title: "Burla com QR code (qrishing): como evitar"
+    url: https://www.deco.proteste.pt/tecnologia/telemoveis/dicas/burla-qr-code-qrishing-como-evitar
+    published: 2024-07-18
+    accessed: 2026-11-19
+    region: PT
+    tier: 3
+    used_for: [qr-sticker-parking, MAP-ch7, campaign-catalogue]
+    notes: "A fake code leads to a site that 'se parece com um site seguro e legítimo' where people type personal or bank details. Tips: be wary of codes in public places or from unknown sources; check the address matches the site you expect; never enter bank details or passwords on unfamiliar sites. No parking-meter or sticker example; no victim steps."
+
+  - id: pt-deco-queixa-eletronica-2025
+    publisher: DECO PROteste
+    title: "Denuncie crimes online sem ter de ir à esquadra"
+    url: https://www.deco.proteste.pt/familia-consumo/cidadania/noticias/denuncia-crimes-online-sem-ter-ir-esquadra
+    published: 2025-11-03 (updated 2026-05-29)
+    accessed: 2026-11-19
+    region: PT
+    tier: 3
+    used_for: [WHERE_TO_REPORT]
+    notes: "Describes the public 'Queixa Eletrónica' portal (queixaselectronicas.mai.gov.pt); identification of the complainant is mandatory. The crime list quoted in the body does not include fraud or computer crime (fraud appears only in the summary). The portal itself refused automated access (robots), so its scope for online fraud is UNVERIFIED: do not list it on the help screen yet."
+
+  - id: pt-gov-emergency-contacts-2026
+    publisher: Governo de Portugal (gov.pt, Guias)
+    title: "Contactos de emergência em Portugal"
+    url: https://www.gov.pt/guias/contactos-de-emergencia-em-portugal
+    published: 2026-04-29 (updated)
+    accessed: 2026-11-19
+    region: PT
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Lists 'Linha de Apoio à Criança - 116 111' (support for children to talk about their problems; 24 hours; free calls). 112 is the single European emergency number. No emotional-support line, 116 006 or cybercrime contact on this page."
+
+  - id: pt-gov-sns24-psych-2022
+    publisher: Governo de Portugal (gov.pt, news)
+    title: "Linha de aconselhamento psicológico do SNS 24 disponível em inglês"
+    url: https://www.gov.pt/noticias/linha-de-aconselhamento-psicologico-do-sns-24-disponivel-em-ingles
+    published: 2022-04-22
+    accessed: 2026-11-19
+    region: PT
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "SNS 24 psychological counselling line on 808 24 24 24, now also in English. Cost and hours NOT stated on this page; the menu option number is not stated. Older (2022)."
+
+  - id: pt-gov-1411-2025
+    publisher: Governo de Portugal (portugal.gov.pt)
+    title: "Nova linha de prevenção do suicídio entra em funcionamento"
+    url: https://portugal.gov.pt/gc25/comunicacao/noticias/nova-linha-de-prevencao-do-suicidio-entra-em-funcionamento
+    published: 2025-09-10
+    accessed: 2026-11-19
+    region: PT
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "New prevention line 1411 for people in risk situations, integrated in SNS 24 but autonomous, answered by psychologists and mental-health nurses; coordinated by SPMS; started 2025-09-10. Cost and hours not stated. Crisis line: shown only as a role-crisis row, never as support."
+
+  - id: pt-deco-1411-2025
+    publisher: DECO PROteste (Portuguese consumer association)
+    title: "Linha de prevenção do suicídio funciona 24 horas por dia"
+    url: https://www.deco.proteste.pt/saude/saude-mental/noticias/linha-prevencao-suicidio-funciona-24-horas-por-dia
+    published: 2025-09-09
+    accessed: 2026-11-19
+    region: PT
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Consumer body, not the operator. 1411: 'Todos os dias do ano, 24 horas por dia'; 'O serviço é gratuito'; answered by clinical and health psychologists and specialist mental-health nurses; starts 10 September. Backs 'free, day and night' on the crisis row; confirm on an SNS 24 page at G3."
+
+  # ---------------------------------------------------------------- Netherlands (T-3.8r)
+  - id: nl-nltimes-booking-phishing-2026
+    publisher: NL Times (news; reporting Fraudehelpdesk figures)
+    title: "Fraudehelpdesk sees sharp rise in phishing attacks tied to Booking.com"
+    url: https://nltimes.nl/2026/09/05/fraudehelpdesk-sees-sharp-rise-phishing-attacks-tied-bookingcom
+    published: 2026-09-05
+    accessed: 2026-11-19
+    region: NL
+    tier: 4
+    used_for: [rental-offplatform-payment, MAP-ch7, campaign-catalogue]
+    notes: "NEWS, supporting only. Fraudehelpdesk: 1,072 reports of booking-site phishing in Jan-Jun 2026, nearly ten times a year earlier, over 90% about one platform; aimed at personal data or passwords; criminals increasingly hold very personal information (linked to data breaches); guests get messages that seem to come from the place they booked, usually asking for an extra payment. Designer context only; the Fraudehelpdesk original was not found."
+
+  - id: nl-rijksoverheid-kindertelefoon
+    publisher: Rijksoverheid (Government of the Netherlands)
+    title: "Wat kan ik doen bij vermoedens van kindermishandeling?"
+    url: https://www.rijksoverheid.nl/onderwerpen/kindermishandeling/vraag-en-antwoord/doen-bij-vermoedens-van-kindermishandeling
+    published: 2011-05-24 (last modified 2025-08-15)
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "De Kindertelefoon: 'Het telefoonnummer is: 0800 0432' (gratis), for children who want to talk about problems. Hours and 116 111 not stated."
+
+  - id: nl-nji-bellen-chatten
+    publisher: Nederlands Jeugdinstituut (NJI)
+    title: "Met wie kan ik bellen of chatten?"
+    url: https://www.nji.nl/kennis/welbevinden/met-wie-kan-ik-bellen-of-chatten
+    published: n/d (footer 2026)
+    accessed: 2026-11-19
+    region: NL
+    tier: 4
+    used_for: [WHERE_TO_REPORT]
+    notes: "National youth knowledge institute (foundation); supporting only. De Kindertelefoon 0800-0432, ages 8-18, daily 11:00-21:00; De Luisterlijn for over-18s, calls day and night (no number on the page); 113 Zelfmoordpreventie 0800-0113, day and night. 116 111 not on the page."
+
+  - id: nl-kerkrade-luisterlijn
+    publisher: Gemeente Kerkrade (municipality)
+    title: "De Luisterlijn now available on new phone number 088 0767 000"
+    url: https://en.kerkrade.nl/de-luisterlijn-nu-bereikbaar-op-nieuw-telefoonnummer-088-0767-000
+    published: n/d
+    accessed: 2026-11-19
+    region: NL
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Municipal notice: De Luisterlijn on 088 0767 000, reachable 24 hours a day; callers pay 'only the normal calling rate' and the number does not appear on the bill. Undated: re-check on the operator's own site before G3."
+
+  # ---------------------------------------------------------------- Germany (T-3.8r)
+  - id: de-gesundbund-krisen-2026
+    publisher: Bundesministerium für Gesundheit (gesund.bund.de)
+    title: "Anlaufstellen bei psychischen Krisen"
+    url: https://gesund.bund.de/wege-im-gesundheitswesen/erwachsenenleben/psychische-gesundheit/anlaufstellen-bei-psychischen-krisen
+    published: 2026-04-23 (Stand)
+    accessed: 2026-11-19
+    region: DE
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Federal health portal: 'Besonders leicht zugänglich, kostenlos und rund um die Uhr erreichbar ist die Telefonseelsorge unter der Nummer 116 123.' Email and chat via the TelefonSeelsorge website."
+
+  - id: de-hilfeinfo-onlinewache
+    publisher: Bundesministerium der Justiz und für Verbraucherschutz (hilfe-info.de)
+    title: "Filing a criminal complaint by computer or smartphone (Onlinewache)"
+    url: https://www.hilfe-info.de/Webs/hilfeinfo/EN/KnowYourRights/Strafverfahren/Anzeige/Onlinewache/Onlinewache_node.html
+    published: n/d (footer 2026)
+    accessed: 2026-11-19
+    region: DE
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "'In most Länder, the police offer the possibility to file criminal complaints online' (13 Länder linked; Bavaria, Saarland and Thuringia offer a police contact form instead). Not suitable when evidence must be secured or cases are complex. You get a confirmation with a file number. Gives +49 116 116 as the emergency number for blocking stolen payment cards. No age rule stated."
+
+  # ---------------------------------------------------------------- France (T-3.8r)
+  - id: fr-santefr-lignes-ecoute
+    publisher: Santé.fr (public health information service, Ministry of Health)
+    title: "Lignes d'écoute (trouver de l'aide en santé mentale)"
+    url: https://www.sante.fr/trouver-aide-sante-mentale/selon-votre-profil/lignes-ecoute
+    published: n/d
+    accessed: 2026-11-19
+    region: FR
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "SOS Amitié 09 72 39 40 50 (7j/7, 24h/24, anonymous and free) for people in distress; 3114 suicide prevention (24/7, free); Fil Santé Jeunes 0 800 235 236 (12-25, 9h-23h, free); 3018 (young people facing online or school harassment, 9h-23h, free); 116 006 victim support (7j/7 9h-19h, free; from outside mainland France +33 1 80 52 33 76); 116 000 missing children. No 116 111 found. Page text truncated at the end."
+
+  - id: fr-solidarites-numeros-2025
+    publisher: Ministère des Solidarités (solidarites.gouv.fr)
+    title: "Agressions, (cyber)harcèlement, violences : si tu as besoin d'aide, des numéros existent"
+    url: https://www.solidarites.gouv.fr/agressions-cyberharcelement-violences-si-tu-besoin-daide-des-numeros-existent
+    published: 2022-09-05 (updated 2025-11-07)
+    accessed: 2026-11-19
+    region: FR
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "For young people: 119 (children in danger, free, 24h/24 7j/7); 3018 (online violence and cyberharassment, free, anonymous, confidential, 7j/7 9h-23h); 17 or 112 for immediate danger; 114 by SMS for deaf or hard-of-hearing people."
+
+  # ---------------------------------------------------------------- Spain (T-3.8r)
+  - id: es-sanidad-024
+    publisher: Ministerio de Sanidad
+    title: "024. Línea de atención a la conducta suicida"
+    url: https://www.sanidad.gob.es/linea024/home.htm
+    published: n/d
+    accessed: 2026-11-19
+    region: ES
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "024 is 'gratuito, confidencial y disponible las 24 horas del día, los 365 días del año', national; for people with suicidal thoughts or behaviour and their relatives. A crisis line, not a general emotional-support line; minors not mentioned. 112 for imminent danger."
+
+  - id: es-caib-116111
+    publisher: Govern de les Illes Balears (Oficina Balear de la Infancia y la Adolescencia)
+    title: "Teléfono 116 111 de ayuda a la infancia"
+    url: https://www.caib.es/sites/obia/es/telefono_de_ayuda_a_la_infancia_116111/
+    published: n/d
+    accessed: 2026-11-19
+    region: ES
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Regional government page: 116 111, a 24/7 phone service giving minors specific, personal and confidential help, managed with Fundación ANAR. Cost not stated on this page. REGIONAL source: national coverage is inferred from the operator, not from a national authority page."
+
+  - id: es-anar-116111-carta
+    publisher: Fundación ANAR (NGO, operator)
+    title: "Carta de servicio telefónico 116111"
+    url: https://www.anar.org/wp-content/uploads/2023/03/CARTA-DE-SERVICIO-TELEFONICO-116111-F_ANAR.pdf
+    published: n/d (file 2023-03)
+    accessed: 2026-11-19
+    region: ES
+    tier: 4
+    used_for: [WHERE_TO_REPORT]
+    notes: "Operator document (the copy opened is the Comunitat Valenciana service charter): 'El número 116111 es gratuito y confidencial'; 'Funciona las 24 horas del día todos los días del año'; for minors. Supporting the regional government page."
+
+  # ---------------------------------------------------------------- Poland (T-3.8r)
+  - id: pl-gov-cyfryzacja-116-2025
+    publisher: Ministerstwo Cyfryzacji (gov.pl)
+    title: "Dwie linie pomocy, jeden cel - rusza ogólnopolska kampania Ministerstwa Cyfryzacji"
+    url: https://www.gov.pl/web/cyfryzacja/dwie-linie-pomocy-jeden-cel-rusza-ogolnopolska-kampania-ministerstwa-cyfryzacji
+    published: 2025-10-27
+    accessed: 2026-11-19
+    region: PL
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "116 111 for children and young people (run by Fundacja Dajemy Dzieciom Siłę) and 116 123 for adults (Niebieska Linia IPZ PTP): both 'bezpłatne, anonimowe i dostępne 24/7', by phone, chat or online form."
+
+  - id: pl-policja-oszukany
+    publisher: Policja (policja.pl; document publisher and date not shown)
+    title: "W jaki sposób możesz zostać oszukany"
+    url: https://www.policja.pl/download/1/295275/Wjakisposobmozeszzostaoszukany.pdf
+    published: n/d
+    accessed: 2026-11-19
+    region: PL
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Hosted on the national police site. If you gave account details to a fraudster: 'natychmiast skontaktuj się ze swoim bankiem lub instytucją finansową'; if you suspect fraud: 'skontaktuj się z Policją'; file a crime notification. No card-blocking number or CERT mention."
+
+  # ---------------------------------------------------------------- Ireland (T-3.8r)
+  - id: ie-hse-urgent-help
+    publisher: HSE (Health Service Executive)
+    title: "Get urgent help (mental health)"
+    url: https://www2.hse.ie/mental-health/services-support/get-urgent-help/
+    published: last reviewed 2025-05-28 (next review 2028-05-28)
+    accessed: 2026-11-19
+    region: IE
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Samaritans freephone 116 123, 24 hours, confidential, non-judgmental; Childline freephone 1800 66 66 66 (chat online any time); Text About It: text HELLO to 50808, free, 24 hours. 116 111 not mentioned."
+
+  # ---------------------------------------------------------------- Sweden (T-3.8r)
+  - id: se-ki-nasp-hjalplinjer
+    publisher: NASP, Karolinska Institutet (national centre for suicide research and prevention)
+    title: "Hjälplinjer och stöd"
+    url: https://ki.se/nasp/information-och-stod/hjalplinjer-och-stod
+    published: 2026-09-11 (updated)
+    accessed: 2026-11-19
+    region: SE
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "BRIS Barnens telefon 116 111, 'dygnet runt alla dagar'; Mind Självmordslinjen 90101, open around the clock; Jourhavande medmänniska 08-702 16 80, daily 21-06. Cost and ages not stated. 116 123 not mentioned."
+
+  - id: se-krisinformation-phone-numbers
+    publisher: Krisinformation.se (Swedish government crisis-information service)
+    title: "Important phone numbers"
+    url: https://www.krisinformation.se/en/finding-help-and-services/important-phone-numbers
+    published: n/d ('Updated' label without a date)
+    accessed: 2026-11-19
+    region: SE
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Jourhavande medmänniska 08-702 16 80 'every night between 9 pm and 6 am'; Mind Självmordslinjen 90101, for people thinking about suicide or worried about a loved one, chat also available; BRIS support line for children 116 111, 'Open 24 hours a day'. No cost stated for any of these (only Teletal is called free). The page names no publisher in the fetched text; krisinformation.se is run by the Swedish Civil Contingencies Agency (not re-checked on the page)."
+
+  - id: se-polisen-bedragerier-anmalan
+    publisher: Polisen
+    title: "Bedrägerier (polisanmälan)"
+    url: https://polisen.se/utsatt-for-brott/polisanmalan/bedrageri/bedragerier/
+    published: 2023-09-25 (last modified 2024-01-10)
+    accessed: 2026-11-19
+    region: SE
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Some crimes can be reported online with a Swedish personal or coordination number; otherwise call 114 14 or visit a police station; 112 if the crime is happening now. No bank or card-blocking step on this page or on the card-fraud subpage."
+
+  # ---------------------------------------------------------------- Belgium (T-3.8r)
+  - id: be-febelfin-fraudstop-2026
+    publisher: Febelfin (Belgian financial sector federation)
+    title: "Fraudstop: one central phone number for anyone who suspects online fraud"
+    url: https://febelfin.be/en/press-room/fraude-veiligheid/fraudstop-one-central-phone-number-for-anyone-who-suspects-online-fraud
+    published: 2026-06-22
+    accessed: 2026-11-19
+    region: BE
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Fraudstop on 078 170 170 (the number already known for Card Stop), 24/7: potential victims of online fraud can have their digital banking applications blocked via their bank; depending on the bank, via an automated message or a transfer to the bank's fraud department. Cost not stated. Some local police pages still show Card Stop's old 070 344 344 (police.be zone 5329, opened 2026-11-19): do not use the old number."
+
+  - id: be-police-autres-numeros
+    publisher: Police locale (police.be, zone 5329)
+    title: "Autres numéros d'urgence"
+    url: https://www.police.be/5329/node/280
+    published: n/d
+    accessed: 2026-11-19
+    region: BE
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "107 Télé-Accueil: free, anonymous, 24/7, anyone who needs to talk; 103 Écoute-Enfants: free, anonymous listening line for young people; 0800 32 123 suicide prevention line (free, 24/7); 116 000 Child Focus. Lists Card Stop as 070 344 344, which is OUTDATED (see be-febelfin-fraudstop-2026)."
+
+  - id: be-police-ecoute-enfants
+    publisher: Police locale (police.be, zone 5300)
+    title: "Écoute-Enfants"
+    url: https://www.police.be/5300/contact/numeros-durgence/ecoute-enfants
+    published: n/d
+    accessed: 2026-11-19
+    region: BE
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "103: 'Numéro d'appel gratuit accessible de 10h00 à 24h00, tous les jours', anonymous, for children and teenagers in difficulty (adults may also call); from anywhere in Belgium."
+
+  - id: be-brussels-hulpdiensten
+    publisher: be.brussels (Brussels-Capital Region portal)
+    title: "Hulp- en wachtdiensten"
+    url: https://be.brussels/nl/hulp-sociaal-gezondheid/noodhulp-en-preventie/hulp-en-wachtdiensten
+    published: n/d
+    accessed: 2026-11-19
+    region: BE
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Tele-Onthaal 106 (Dutch-speaking), Télé-Accueil 107 (French-speaking), Awel 102 (youth), Zelfmoordlijn 1813, Card Stop +32 (0)78 170 170. Cost and hours not stated on this page."
+
+  - id: be-vlaanderen-awel
+    publisher: Vlaamse overheid (vlaanderen.be)
+    title: "Awel"
+    url: https://www.vlaanderen.be/gezin/kinderen/jeugdhulp/awel
+    published: n/d
+    accessed: 2026-11-19
+    region: BE
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Awel listens to all children and young people; 'via het gratis nummer 102'; phone daily 16:00-22:00 except Sundays and public holidays; chat daily 18:00-22:00 (same exception); 'Awel werkt volledig anoniem'. No age range given."
+
+  # ---------------------------------------------------------------- Luxembourg (T-3.8r, supporting for Lisbon QR)
+  - id: lu-vdl-parking-qr
+    publisher: Ville de Luxembourg (City of Luxembourg)
+    title: "On-street parking: beware of phishing scam"
+    url: https://www.vdl.lu/en/node/197283
+    published: n/d
+    accessed: 2026-11-19
+    region: LU
+    tier: 3
+    used_for: [qr-sticker-parking, MAP-ch7, campaign-catalogue]
+    notes: "Municipal warning: stickers reading 'pay by phone' with a fake QR code were stuck over the legitimate QR code on parking ticket machines; users were asked to enter personal details. Advice: pay only with the city's official parking app; ignore other payment options shown on machines; check the explanatory sticker on the back. No URL-check or reporting advice."
   # ---------------------------------------------------------------- Phase 3, chapters 4-5 (Madrid, Warsaw research, T-3.6r, 2026-11-19)
   # Every entry below was opened on 2026-11-19. Pattern labels: bank-safe-account-call (Madrid),
   # marketplace-collect-payment-link and hijacked-friend-payment-code (Warsaw).

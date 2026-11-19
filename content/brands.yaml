@@ -480,20 +480,21 @@ brands:
     trademark_search: "web-checked 2026-11-19; INPI, company directory and TMview pending before G4"
     status: draft
 
-  # Warsaw (GDD §25.9, T-3.7). Both kept by BRAND_CHECK MW3 and MW4 (docs/patterns/BRAND_CHECK.md).
+  # Warsaw (GDD §25.9; T-3.7 and story art T-S6a). Kept by BRAND_CHECK MW3 (Votelark) and MW4 (TREMOLIK).
   - id: votelark
     name: "Votelark"
-    sector: online voting page the scammer invents (scam-only)
+    sector: online "school contest" voting page (scam-only)
     role_in_game: >
-      A "school contest" voting page in Warsaw 5-2 that asks for your phone number and then the code you
-      get: the code really registers your Kettle account on a new device. Training pages only. Real
-      institutions do run online votes, so the tell is the code banner, never "votes are fake".
+      Warsaw callback 5-2: a "vote for my little sister's band" page that asks for your phone number and then
+      the code you get; the code really registers your Kettle account on a new device. Training pages only;
+      never a real service. Real institutions do run online votes, so the tell is the code banner, never
+      "votes are fake".
     domain: votelark-vote.example
     rationale:
-      name: "Coined: 'vote' + 'lark' (a songbird; a bit of fun). No hits (BRAND_CHECK MW3)."
-      colour_shape: "Not drawn; generic training page with text only."
-    checked_against: ["Vote Owl", "VOTEism", "Votemar", "ActiVote", "Lark (office suite)"]
-    web_check: "Low. No exact hit (BRAND_CHECK MW3)."
+      name: "Coined: 'vote' + 'lark' (a songbird, light and playful). No exact hit (BRAND_CHECK MW3); alternatives Cheerpoll, Tunepoll."
+      colour_shape: "No mark drawn: the page shows the name as plain text in the device's neutral page style, so no palette or shape can echo a real voting or contest site."
+    checked_against: ["Vote Owl", "VOTEism", "Votemar", "ActiVote", "Lark (office suite)", "Real school-contest and poll apps (BRAND_CHECK MW1-MW4)"]
+    web_check: "Low. Keep (BRAND_CHECK MW3)."
     lookalike_examples: []
     trademark_search: "web-checked 2026-11-19; formal TMview/EUIPO pending before G4"
     status: draft
@@ -502,13 +503,13 @@ brands:
     name: "TREMOLIK"
     sector: online music shop (merchant name only)
     role_in_game: >
-      The merchant name on the Larchwick code confirmation in Warsaw 5-6 and drill 5-7 ("Confirm payment ·
-      €249.00 · to TREMOLIK"). Never a real shop; no domain, no address, no logo.
+      The merchant name on the Larchwick payment-code confirmation in 5-6 and drill 5-7 ("Confirm payment ·
+      €249.00 · to TREMOLIK"). A fictional online music shop; no domain, no address, never drawn.
     rationale:
-      name: "Coined from 'tremolo' (a music term). No company or shop found (BRAND_CHECK MW4)."
-      colour_shape: "Not drawn; text only on the bank confirmation."
-    checked_against: ["Tremach Sp. z o.o.", "tremolo (guitar-effect listings)"]
-    web_check: "Low. No exact hit (BRAND_CHECK MW4)."
+      name: "Coined from 'tremolo' (a music term). No company or shop found (BRAND_CHECK MW4); no alternatives kept (both earlier ones were too close to a real retailer and a real festival)."
+      colour_shape: "No mark: shown only as a payee name in Larchwick's own confirmation style."
+    checked_against: ["Tremach Sp. z o.o.", "tremolo (guitar-effect listings)", "Polish music retailers and festivals (BRAND_CHECK MW1-MW4)"]
+    web_check: "Low. Keep (BRAND_CHECK MW4)."
     lookalike_examples: []
     trademark_search: "web-checked 2026-11-19; formal TMview/EUIPO pending before G4"
     status: draft

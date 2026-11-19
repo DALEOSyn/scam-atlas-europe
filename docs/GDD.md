@@ -2977,7 +2977,7 @@ Plays after the boss's debrief and damage control, before the resolution. Unscor
 - **Choice wording per slot (psych M3)**, by the kind the player chose there:
   - `pay`: "Alex asked for money, and you sent some."
   - `reply` (asked how to join, moved chats, kept the secret, said it's probably normal): "Alex pushed, and you went along."
-  - `ignore` (changed the subject, stayed on Wordswap, closed the app): "You changed the subject."
+  - `ignore` (changed the subject, stayed on Wordswap, closed the app): "You stepped back from it."
   - `ask_someone`: "You asked someone." · `report`: "You reported it." · `check_official_list` / `verify_identity`: "You checked."
 - **Never** "you fell", "you were fooled", "mistake", a count of falls, a score per slot, or any amount. Validator (CR-43(c)): these words and any currency amount are rejected in timeline strings.
 

@@ -28,13 +28,17 @@ runner.check(beatId, target);      // Check tool (first check of an element cost
 runner.tag(beatId, target, on);    // "Mark as suspicious" (only after a check; no cost)
 runner.whatNow(choiceId);          // "What now?" after hanging up: built-ins or what_now.extra ids
 runner.pause(); runner.endPause(); // Take a breath (auto-closes after 5 s)
-runner.freeze('translation', on);  // freeze reasons: pause_menu, settings, help, debrief, take_a_breath, translation
+runner.freeze('translation', on);  // freeze reasons: pause_menu, settings, help, debrief, take_a_breath, translation, call_lines
 runner.answerInterrupt(id, actionId);
-runner.continueBoss();             // after a boss beat's consequence
+runner.continueConsequence();      // after the consequence step (every resolved beat with a narrative or expired timer)
 runner.submitRecovery(stepIds);    // damage control
 runner.result                      // ScenarioResult once view.phase === 'done'
 ```
 `RunnerView` fields: `phase` (`playing | what_now | consequence | damage_control | done`), `beat` (device, message, actions with `styled` for the pressure style, `banner`), `thread`, `checkables` (`shown`, `reveal` once checked, or `undefined` = show "Nothing unusual here"; `checked`, `tagged`), `checkedCount` (the only number the list may show), `waitingBeats`, `interrupts`, `pusherMessages`, `timer` (null when timers are off), `stress`, `pause`, `whatNow` (`choices`, `note`), `consequence`, `recovery`.
+
+`pusherMessages` items are `PusherMessageView { text, at, lang?, translation? }` (CR-14: a pusher in another language carries an inline translation; the UI renders it like any translated message).
+
+The UI holds the `call_lines` freeze while a call rings and while transcript lines are still being revealed at reading pace (or in step mode), so the call timer only runs while the player can act.
 
 The state's `log` lists announcement-worthy events (`beat_arrived`, `pusher`, `interrupt`, `timer` half / ten_left / escalated / expired, `stress` state change) for the screen-reader announcer (coalescing and the 15 s minimum are the UI's job).
 
@@ -53,16 +57,25 @@ The state's `log` lists announcement-worthy events (`beat_arrived`, `pusher`, `i
 - **Genuine reported** = report decided on a genuine scenario + reported genuine interrupts. Banners have no actions, so they can never count.
 - **Double checks:** a verify-class action on a low-stakes genuine scenario; off-focus when its `pattern` is not in the chapter's `patterns`.
 - **Chapter runs:** `beginChapter` starts `run = { index, records, flags: [] }`; `runIndex` is clamped to the sequence length. Echo flags (`snake_case`) live in `run.flags`, per chapter run, so a replay starts clean; only `role: arc` scenarios write global arc flags. A replayed scenario keeps the best record by points. `summarise` exposes `spottedShown = clamp(spotted, 0, R)` for "x of R".
+- **Check and tag** are accepted only in phase `playing`; `view.checkables` is empty in every other phase (no checks after hanging up, in "What now?", consequence or damage control).
+- **Corrupt run (QA E8):** `beginChapter(save, city, chapter?)` restarts the run when the saved index is beyond 1 + the furthest recorded scenario of the chapter's sequence (tampered saves only).
+- **Consequence step:** after every resolved beat group that has an outcome narrative or an expired timer (also the last one), the phase is `consequence`; `continue` goes to the next boss beat, damage control or `done` (layer-1 ruling 2026-11-19).
+- **Debrief data (T-2.3):** `drill` (unscored drill) and `fell` (the player fell; the UI shows "This could happen to anyone." only then). `layer1.verdict` is null when unscored (arc, drill). CR-15: `layer1.youChose` holds at most one line, for the boss beat with the fewest stars (tie → latest beat); other lines are in `layer2.youChoseOther`. After a fall `layer1.youChose` is empty and the lead line opens `layer2.youChoseOther`. `layer2.narratives` and `layer2.deadline` (`fake` on fraud, `real` on genuine, gated by `is_fraud` like `view.consequenceDeadline`) feed "What happened"; they are not in layer 1.
+- **Choice lines:** `choiceLineText(line, lookup)` (`src/engine/choiceText.ts`) is the one source of the rendered "You chose" text, used by DebriefView and by the validator's `choiceLines()` / `layer1Slot()`.
 - **Pause** (Take a breath) works only in `playing` and `what_now`. Interrupts are hidden during consequence and damage control. `checkedCount` counts the current beat only.
 - **Unlocking:** home → Berlin → free choice of slots 2–9 → finale when all of those exist and are finished. Never score-gated.
 - **Save:** key `scam-atlas-europe:save`, `version: 1`. Unknown or corrupt data → fresh save; a newer version → read-only for the session (never overwritten); every field sanitised separately; storage errors are swallowed and the game runs in memory. `useSave` writes outside the state updater; `useScenarioRunner` clamps each tick to at most 1 s (`clampDt`), so a backgrounded tab cannot expire a timer in one jump.
-- **No Zod at runtime:** runtime code imports only types from `src/content/schema.ts`; shared regexes live in `src/content/constants.ts`. An ESLint `no-restricted-imports` rule and `tests/unit/bundle-guard.test.ts` enforce it (shell about 29 KB gzipped).
+- **No Zod at runtime:** runtime code imports only types from `src/content/schema.ts`; shared regexes live in `src/content/constants.ts`. An ESLint `no-restricted-imports` rule and `tests/unit/bundle-guard.test.ts` enforce it (shell about 47 KB gzipped after T-2.3). `npm run test:bundle` runs after the build (in `check` and CI) with `BUNDLE_REQUIRED=1`, so a missing `dist/` fails, and checks the 300 KB gzipped shell budget.
 - **i18n:** `format()` supports ICU `plural` (Intl.PluralRules, `other` branch required by the catalogue schema), e.g. `waiting_beats`.
 
 ## Content contract additions (schema)
 - `what_now: { call_back_label?, outcomes?: { call_back_known?, report?, done? }, extra: [{ id, label, kind, note? | outcome? }] }` (max 3 extras, exactly one of `note` (engage) or `outcome` (verify class)) on the opening or a beat; needs a `hang_up` action with an `outcome`. Interrupts cannot have `what_now`.
 - Boss beats may set `timer_seconds` (scheduled beats only).
 - Validator (`scripts/lib/rules.ts`): layer-1 budget = authored (+ `safeguarding_line` on arc) + fixed overhead + `choice_worst` (2 + longest label of any action, including What-now extras, that can leave the scenario below ★★★; 6 if timed). Action labels are capped at 8 words.
-- `banner: { device, message }` on the opening or a beat: a notification with no actions, not checkable on its own.
+- `banner: { device, message }` on the opening or a beat: a notification with no actions and a required `body`. A beat with a banner gets the `request` checkable (the banner's text, e.g. the code SMS or approval prompt); inspectables on `request` need a banner, `type: request` and a `message.request` other than `none`.
+- Pusher messages may carry `lang` + `translation` (CR-14), validated like message translations.
+- Outcome `recovery` entries may carry their own `feedback` (scenario-specific harmful-pick line; `RecoveryOption.feedback`), which overrides the shared one. Shared lines in `content/recovery_steps.yaml` stay generic because steps are reused across scenarios.
+- `content/recovery_steps.yaml` steps may carry `feedback` (a non-blaming line shown when the player picks the step in damage control); the validator requires it on every `harmful` step.
+- `brands.yaml` is emitted to the runtime as a projection `{ id, name, short_name?, mark? }` only.
 - Boss beats: either scheduled (`arrives_after`) or reached by `next_beat`, never both; at least one scheduled.
 - Runtime YAML for scenarios and chapters is emitted after Zod parsing (`scripts/lib/yaml-module.ts`), so schema defaults apply.

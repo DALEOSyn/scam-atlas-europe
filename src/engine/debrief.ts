@@ -47,23 +47,42 @@ export type PressureCallout = 'first_any' | 'first_genuine' | null;
 
 export interface DebriefData {
   variant: 'standard' | 'arc';
+  /** Drills are unscored teaching moments: no verdict chip, stars or "You chose" (QA, drill layout). */
+  drill: boolean;
+  /** The player fell for it (a fall's decisive action): "This could happen to anyone" is shown then. */
+  fell: boolean;
   layer1: {
-    /** null on arc beats (no verdict line). */
+    /** null on arc beats and drills (no verdict line). */
     verdict: 'fraud' | 'genuine' | null;
     tell: string;
     whatWorks: string;
     /**
-     * "You chose" lines (UI_SPEC §8.1), one per scored beat group below 3 stars
-     * (standard: at most one; boss: per beat). Empty on arc debriefs.
+     * The "You chose" line (UI_SPEC §8.1): at most ONE line in layer 1 (CR-15). A boss shows the
+     * line of the beat with the fewest stars (tie → the latest beat); the other beats' lines are in
+     * layer2.youChoseOther. Empty when everything scored ★★★, on arc debriefs and drills, and after
+     * a fall: then the kind line takes the slot (layer-1 ruling 2026-11-19).
      */
     youChose: ChoiceLine[];
     /** null on arc beats and drills (no stars, no points). */
     stars: number | null;
     alreadyClicked: { situation: AlreadySituation; text: string } | null;
-    /** On fraud timer expiry: "The deadline was fake. Nothing happened." */
-    deadlineWasFake: boolean;
   };
   layer2: {
+    /**
+     * "What happened": outcome narratives in order (boss: one per beat), said once (QA E4). They are
+     * first shown in the consequence step, never in layer 1 (layer-1 ruling 2026-11-19).
+     */
+    narratives: string[];
+    /**
+     * Timer expiry line under "What happened", gated like the consequence caption: `fake` on fraud
+     * ("The deadline was fake…"), `real` on genuine ("Time ran out. This one was genuine…"), else null.
+     */
+    deadline: 'fake' | 'real' | null;
+    /**
+     * "Your other choices": the other beats' lines below ★★★, in beat order (CR-15). After a fall the
+     * lead line that layer 1 no longer shows comes first.
+     */
+    youChoseOther: ChoiceLine[];
     flags: DebriefFlag[];
     wrongTags: DebriefWrongTag[];
     /** "You spotted {marked} of {could} you could mark." */
@@ -80,8 +99,6 @@ export interface DebriefData {
     /** Points breakdown for "How the stars and points were worked out" (null on arc). */
     points: { base: number; tagBonus: number; tagBonusVoided: boolean; recovery: number | null; total: number; max: number } | null;
   };
-  /** Outcome narratives in order (boss: one per beat). */
-  narratives: string[];
 }
 
 const SENDER_TARGETS = /^(?:sender\.detail|caller_id)$/;
@@ -138,24 +155,36 @@ export function debriefOf(
 
   // Drills are unscored teaching moments (GDD §4): no stars, points or "You chose" line, like arc beats (QA E2).
   const unscored = arc || s.role === 'drill';
-  const youChose = unscored ? [] : st.groups.flatMap((g, i) => {
-    const beat = r.beats[i];
-    const line = beat && beat.scored ? choiceLine(s, g, beat) : null;
-    return line ? [line] : [];
-  });
+  const lines = unscored
+    ? []
+    : st.groups.flatMap((g, i) => {
+        const beat = r.beats[i];
+        const line = beat && beat.scored ? choiceLine(s, g, beat) : null;
+        return line && beat ? [{ line, stars: beat.stars }] : [];
+      });
+  const lead = layerOneChoice(lines);
+  // After a fall the kind line takes the layer-1 slot; the lead line opens "Your other choices".
+  const youChose = lead && !r.fell ? [lead.line] : [];
+  const others = lines.filter((x) => x !== lead).map((x) => x.line);
+  const youChoseOther = lead && r.fell ? [lead.line, ...others] : others;
 
   return {
     variant: d.variant,
+    drill: s.role === 'drill',
+    fell: r.fell,
     layer1: {
-      verdict: arc ? null : s.is_fraud ? 'fraud' : 'genuine',
+      verdict: unscored ? null : s.is_fraud ? 'fraud' : 'genuine',
       tell: d.layer1.tell,
       whatWorks: d.layer1.what_works,
       youChose,
       stars: unscored ? null : r.stars,
       alreadyClicked: alreadyClickedLine(s, r.situation) ?? null,
-      deadlineWasFake: s.is_fraud && r.timerExpired,
     },
     layer2: {
+      // A boss can reach the same outcome on several beats: say it once (QA E4).
+      narratives: [...new Set(r.outcomes.flatMap((o) => (s.outcomes[o] ? [s.outcomes[o].narrative] : [])))],
+      deadline: r.timerExpired ? (s.is_fraud ? 'fake' : 'real') : null,
+      youChoseOther,
       flags,
       wrongTags,
       spotted: { marked, could },
@@ -171,9 +200,14 @@ export function debriefOf(
         ? null
         : { base: r.base, tagBonus: r.tagBonus, tagBonusVoided: r.tagBonusVoided, recovery: r.fell ? (r.recovery?.points ?? 0) : null, total: r.points, max: r.maxPoints },
     },
-    // A boss can reach the same outcome on several beats: say it once (QA E4).
-    narratives: [...new Set(r.outcomes.flatMap((o) => (s.outcomes[o] ? [s.outcomes[o].narrative] : [])))],
   };
+}
+
+/** CR-15: the beat with the fewest stars leads layer 1; on a tie the latest beat. */
+export function layerOneChoice<T extends { stars: number }>(lines: readonly T[]): T | undefined {
+  let best: T | undefined;
+  for (const x of lines) if (!best || x.stars <= best.stars) best = x;
+  return best;
 }
 
 /** Label of an authored action or What-now extra anywhere in the scenario. */

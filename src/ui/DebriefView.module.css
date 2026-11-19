@@ -1,0 +1,207 @@
+.debrief {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: var(--space-4);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  color: var(--color-text);
+}
+.layer1,
+.layer2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+}
+.layer1 p,
+.layer2 p {
+  margin: 0;
+}
+.h1 {
+  margin: 0;
+  font-size: var(--fs-xl);
+  line-height: var(--lh-snug);
+}
+.h1:focus-visible,
+.layer2 h2:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+.noShame {
+  display: block;
+  margin-bottom: var(--space-2);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-regular);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-sm);
+  vertical-align: baseline;
+}
+.scam {
+  background: var(--color-flag-bg);
+  color: var(--color-flag-text);
+}
+.genuine {
+  background: var(--color-ok-bg);
+  color: var(--color-ok-text);
+}
+.stars {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-stamp-gold);
+}
+.stars span {
+  margin-left: var(--space-2);
+  color: var(--color-text);
+}
+.best {
+  font-weight: var(--fw-bold);
+}
+.link {
+  min-height: var(--tap-min);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-link);
+  font: inherit;
+  text-decoration: underline;
+  text-align: left;
+  cursor: pointer;
+}
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.primary,
+.secondary {
+  min-height: 48px;
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-pill);
+  font: inherit;
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+}
+.primary {
+  border: 0;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+.secondary {
+  border: var(--border-w) solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+.primary:focus-visible,
+.secondary:focus-visible,
+.link:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+.layer2 h2 {
+  margin: 0 0 var(--space-2);
+  font-size: var(--fs-lg);
+}
+.flags {
+  list-style: none;
+  margin: 0 0 var(--space-2);
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+}
+.flags li {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+.flags svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--color-flag);
+}
+.status {
+  color: var(--color-text-muted);
+}
+.already {
+  margin: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+}
+.already dt {
+  font-weight: var(--fw-bold);
+}
+.already dd {
+  margin: 0;
+}
+.yours {
+  padding-left: var(--space-3);
+  border-left: 3px solid var(--color-accent);
+}
+.habitCard {
+  background: var(--color-surface);
+  border: var(--border-w) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-1);
+}
+.habitCard h3 {
+  margin: 0;
+}
+.label {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.example {
+  color: var(--color-text-muted);
+}
+.callout {
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken);
+}
+.points summary {
+  min-height: var(--tap-min);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* xxs (< 320 px): hosts in the tell break only at dots, so the heading steps down a size (QA B7). */
+@media (max-width: 319px) {
+  .h1 {
+    font-size: var(--fs-md);
+  }
+}
+
+/* Layer 2 at narrow widths (QA F1): every box can shrink, so an owner part that does not fit
+   overflows its own box (which then scrolls and becomes focusable) instead of the page. */
+.layer2 section,
+.layer2 li,
+.layer2 dl,
+.layer2 dd,
+.layer2 p {
+  min-width: 0;
+}
+.flags li > span {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Under 360 px an identifier in the h1 steps down a size so the domain is less likely to be cut (QA F2). */
+@media (max-width: 359px) {
+  .h1 [data-host] {
+    font-size: 0.8em;
+  }
+}

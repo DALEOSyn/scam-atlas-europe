@@ -47,7 +47,11 @@ export interface RunnerContext {
   stress: number;
 }
 
-export type FreezeReason = 'pause_menu' | 'settings' | 'help' | 'debrief' | 'take_a_breath' | 'translation';
+/**
+ * `call_lines`: a call is ringing or its lines are still being revealed (UI_SPEC §3.4: the beat timer
+ * starts only after the last line of the beat is shown).
+ */
+export type FreezeReason = 'pause_menu' | 'settings' | 'help' | 'debrief' | 'take_a_breath' | 'translation' | 'call_lines';
 export type Phase = 'playing' | 'what_now' | 'consequence' | 'damage_control' | 'done';
 /** Built-in "What now?" choices (GDD §6): call_back_known = verify, report = report, done = dismiss. */
 export type WhatNowBuiltin = 'call_back_known' | 'report' | 'done';
@@ -290,8 +294,12 @@ function resolveGroup(s: Scenario, ctx: RunnerContext, st: RunnerState, g: Group
   const fell = !done.timerExpired && done.decision !== undefined && isFall(done.decision.cls, st.truth);
   if (fell) next = setStress(ctx, next, next.stress + ctx.balance.stress.on_fall);
 
+  // The consequence step (GDD §3 step 4, UI_SPEC §7) follows every resolved beat that has a narrative
+  // or an expired timer, also the last one, before damage control or the debrief (layer-1 ruling
+  // 2026-11-19: the narrative is not part of debrief layer 1).
   const moreScheduled = next.schedule.length > next.groups.length;
-  if (moreScheduled) return { ...next, phase: 'consequence' };
+  const narrative = done.outcome ? s.outcomes[done.outcome]?.narrative : undefined;
+  if (moreScheduled || narrative || done.timerExpired) return { ...next, phase: 'consequence' };
   return enterDamageControlOrDone(s, next);
 }
 
@@ -530,7 +538,8 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
     }
 
     case 'check': {
-      if (st.phase !== 'playing' && st.phase !== 'what_now') return st;
+      // After hanging up the call is gone: nothing left on screen to check (QA, T-2.1 carry-over).
+      if (st.phase !== 'playing') return st;
       if (!checkableBeatIds(st).includes(ev.beatId)) return st;
       const beat = beatById(s, ev.beatId);
       if (!beat || !checkablesOf(beat).some((c) => c.target === ev.target)) return st;
@@ -544,7 +553,7 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
     }
 
     case 'tag': {
-      if (st.phase !== 'playing' && st.phase !== 'what_now') return st;
+      if (st.phase !== 'playing') return st;
       if (!checkableBeatIds(st).includes(ev.beatId)) return st;
       const key = keyOf(ev.beatId, ev.target);
       if (!st.checks.includes(key)) return st; // you can't tag what you haven't looked at
@@ -632,6 +641,13 @@ export interface CheckableView {
   tagged: boolean;
 }
 
+export interface PusherMessageView {
+  text: string;
+  at: number;
+  lang?: string | undefined;
+  translation?: string | undefined;
+}
+
 export interface RunnerView {
   phase: Phase;
   /** The beat on screen (null between boss beats and after the end). */
@@ -644,15 +660,22 @@ export interface RunnerView {
   waitingBeats: string[];
   /** Arrived interrupts not yet answered. */
   interrupts: { id: string; device: Device; message: Message; actions: ActionView[] }[];
-  pusherMessages: { text: string; at: number }[];
+  /** Sender follow-ups fired so far; `lang`/`translation` for in-world foreign text (CR-14). */
+  pusherMessages: PusherMessageView[];
   timer: { remaining: number; length: number; expiries: number; frozen: boolean } | null;
   stress: { value: number; state: StressState };
   pause: { open: boolean; available: boolean; cooldownLeft: number };
   whatNow: WhatNowView | null;
   /** Narrative of the last resolved beat (boss consequence step, damage control intro). */
   consequence: string | null;
-  /** The last beat ended by timer expiry with no outcome: show "The deadline was fake. Nothing happened." (QA E1). */
+  /** The last beat ended by timer expiry with no outcome (QA E1). */
   consequenceTimerExpired: boolean;
+  /**
+   * Which caption that expiry gets: `fake` on fraud ("The deadline was fake. Nothing happened."),
+   * `real` on a genuine scenario ("Time ran out. This one was genuine, and its deadline was real.").
+   * null when the timer did not end the beat.
+   */
+  consequenceDeadline: 'fake' | 'real' | null;
   recovery: { options: RecoveryOption[]; pick: number } | null;
 }
 
@@ -674,7 +697,7 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
         banner: cur.banner ? { device: cur.banner.device, message: cur.banner.message } : null,
       }
     : null;
-  const checkables: CheckableView[] = cur
+  const checkables: CheckableView[] = cur && st.phase === 'playing'
     ? checkablesOf(cur).map((c) => {
         const checked = st.checks.includes(c.key);
         return { ...c, reveal: checked ? c.reveal : undefined, checked, tagged: st.tags.includes(c.key) };
@@ -708,7 +731,7 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
       }),
     pusherMessages: st.pushers.fired.flatMap((f) => {
       const m = messages[f.index];
-      return m ? [{ text: m.text, at: f.at }] : [];
+      return m ? [{ text: m.text, at: f.at, lang: m.lang, translation: m.translation }] : [];
     }),
     timer: st.timer && live ? { remaining: st.timer.remaining, length: st.timer.length, expiries: st.timer.expiries, frozen: frozen(st) } : null,
     stress: { value: st.stress, state },
@@ -730,6 +753,7 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
         : null,
     consequence: last?.outcome ? (s.outcomes[last.outcome]?.narrative ?? null) : null,
     consequenceTimerExpired: !!last && last.timerExpired && !last.outcome,
+    consequenceDeadline: !!last && last.timerExpired && !last.outcome ? (s.is_fraud ? 'fake' : 'real') : null,
     recovery: st.phase === 'damage_control' && st.recovery ? { options: st.recovery.options, pick: ctx.balance.recovery.pick } : null,
   };
 }

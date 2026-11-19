@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { gzipSync } from 'node:zlib';
 import { join, resolve } from 'node:path';
 import { ROOT } from './helpers.ts';
 
@@ -21,9 +22,25 @@ describe('runtime bundle has no Zod', () => {
     expect(offenders).toEqual([]);
   });
 
-  it.runIf(existsSync(resolve(ROOT, 'dist/assets')))('the built JS (when present) contains no Zod', () => {
+  /** `npm run test:bundle` (after `npm run build`, in `check` and CI) sets BUNDLE_REQUIRED so a missing dist fails. */
+  const required = process.env['BUNDLE_REQUIRED'] === '1';
+  const built = existsSync(resolve(ROOT, 'dist/assets'));
+
+  it.runIf(required)('dist/assets exists (build ran first)', () => {
+    expect(built).toBe(true);
+  });
+
+  it.runIf(built)('the built JS (when present) contains no Zod', () => {
     const dir = resolve(ROOT, 'dist/assets');
     const js = readdirSync(dir).filter((f) => f.endsWith('.js'));
     for (const f of js) expect(readFileSync(join(dir, f), 'utf8'), f).not.toMatch(/_zod|ZodError/);
+  });
+
+  it.runIf(built)('the shell JS loaded by index.html stays under 300 KB gzipped', () => {
+    const html = readFileSync(resolve(ROOT, 'dist/index.html'), 'utf8');
+    const entries = [...html.matchAll(/<script[^>]+src="[^"]*?(assets\/[^"]+\.js)"/g), ...html.matchAll(/<link[^>]+rel="modulepreload"[^>]+href="[^"]*?(assets\/[^"]+\.js)"/g)].map((m) => m[1] ?? '');
+    expect(entries.length).toBeGreaterThan(0);
+    const total = entries.reduce((n, f) => n + gzipSync(readFileSync(resolve(ROOT, 'dist', f))).length, 0);
+    expect(total).toBeLessThan(300 * 1024);
   });
 });

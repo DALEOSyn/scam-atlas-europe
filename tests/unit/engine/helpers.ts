@@ -16,7 +16,16 @@ export function ctx(over: Partial<RunnerContext> & { timerMode?: TimerMode; push
 
 /** Run events in order from the start. */
 export function run(s: Scenario, c: RunnerContext, events: RunnerEvent[]): RunnerState {
-  return events.reduce((st, ev) => step(s, c, st, ev), startScenario(s, c));
+  return events.reduce((st, ev) => settle(s, c, step(s, c, st, ev)), startScenario(s, c));
+}
+
+/**
+ * The player presses Continue on the FINAL consequence step (after the last beat), as the UI does.
+ * Consequences between boss beats stay explicit ({ type: 'continue' }) in the tests.
+ */
+export function settle(s: Scenario, c: RunnerContext, st: RunnerState): RunnerState {
+  const last = st.phase === 'consequence' && st.schedule.length <= st.groups.length;
+  return last ? step(s, c, st, { type: 'continue' }) : st;
 }
 
 export function play(s: Scenario, c: RunnerContext, events: RunnerEvent[]) {

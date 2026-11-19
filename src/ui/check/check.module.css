@@ -1,0 +1,279 @@
+/* Check (UI_SPEC §4). Affordances use box-shadow and ::after, never outline (outline = focus ring). */
+.checkable {
+  position: relative;
+  display: inline;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0 1px;
+  margin: 0;
+  text-align: inherit;
+  cursor: pointer;
+  border-radius: var(--radius-xs);
+  -webkit-touch-callout: none;
+  user-select: none;
+  /* Inline target still reaches the 44 px minimum through the hit area below (WCAG 2.5.8 needs 24). */
+}
+.checkable::before {
+  content: '';
+  position: absolute;
+  inset: -12px -2px;
+}
+.checkable:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+  box-shadow: 0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-w)) var(--color-focus-halo);
+}
+/* Check mode on (or mouse hover): a dashed affordance plus a small magnifier badge. Same on every element. */
+.mode::after,
+.checkable:hover::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border: 2px dashed var(--color-accent);
+  border-radius: var(--radius-xs);
+  pointer-events: none;
+}
+.mode:focus-visible {
+  outline-offset: 6px;
+}
+.badge {
+  display: inline-block;
+  vertical-align: -3px;
+  margin-left: 2px;
+  width: 16px;
+  height: 16px;
+}
+.hold {
+  position: absolute;
+  left: 0;
+  top: -1.6em;
+  font-size: var(--fs-xs);
+  background: var(--color-surface);
+  color: var(--color-text);
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-xs);
+  white-space: nowrap;
+}
+.vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.mono {
+  font-family: var(--font-mono);
+  overflow-wrap: anywhere;
+}
+
+/* Card */
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-sheet);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: var(--color-scrim);
+}
+.card {
+  position: relative;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: var(--border-w) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-2);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+}
+.sheet {
+  width: min(100%, 560px);
+  max-height: var(--sheet-max-h);
+  overflow: auto;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  box-shadow: var(--shadow-3);
+  padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+}
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.cardHead h2 {
+  margin: 0;
+  font-size: var(--fs-lg);
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+.close {
+  min-height: var(--tap-min);
+  min-width: var(--tap-min);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-3);
+  border: var(--border-w) solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+.facts {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+}
+.anatomy {
+  margin: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-1);
+}
+.anatomy dt {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.anatomy dd {
+  margin: 0 0 var(--space-1);
+}
+.ownerNote {
+  margin: 0;
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+.reveal {
+  margin: 0;
+}
+.tag {
+  min-height: var(--tap-min);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-3);
+  border: var(--border-w) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-weight: var(--fw-bold);
+  cursor: pointer;
+  width: 100%;
+}
+.tag[aria-pressed='true'] {
+  box-shadow: inset 0 0 0 2px var(--color-text);
+  background: var(--color-surface-sunken);
+}
+
+/* Details list */
+.details {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+}
+.detailsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.detailsToggle,
+.modeToggle,
+.row {
+  min-height: var(--tap-min);
+  border: var(--border-w) solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken);
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+}
+.detailsToggle {
+  flex: 1 1 min(14rem, 100%);
+  min-width: 0;
+  font-weight: var(--fw-bold);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.modeToggle[aria-pressed='true'] {
+  box-shadow: inset 0 0 0 2px var(--color-accent);
+  font-weight: var(--fw-bold);
+}
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+}
+.list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+  padding-bottom: var(--space-3);
+  border-bottom: var(--border-w) solid var(--color-border-subtle);
+}
+.row {
+  width: 100%;
+  min-width: 0;
+  background: var(--color-surface);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2px;
+}
+.rowLabel {
+  font-weight: var(--fw-bold);
+}
+.rowValue {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+.rowState {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--fs-sm);
+  color: var(--color-ok);
+}
+.detailsToggle:focus-visible,
+.modeToggle:focus-visible,
+.row:focus-visible,
+.tag:focus-visible,
+.close:focus-visible,
+.cardHead h2:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* xxs (< 320 px, e.g. 375 px at 200% zoom): hosts may break only at dots, so long labels get a
+   smaller monospace size instead of a hyphen break; the card header wraps. */
+@media (max-width: 319px) {
+  .mono {
+    font-size: var(--fs-xs);
+  }
+  .cardHead {
+    flex-wrap: wrap;
+  }
+  /* A Details row (a button) scrolls sideways if an owner part in it does not fit. */
+  .row {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+}

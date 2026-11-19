@@ -1,149 +1,128 @@
 /**
- * Minimal scenario and debrief screens over the engine API (src/engine).
- * Device-specific UIs (mail, SMS, call, browser, QR, bank, auth, letter)
- * replace MessageCard in T-2.3; they consume the same `useScenarioRunner` view.
+ * One scenario on screen: HUD, the device stage, notifications and interrupts, and the action tray
+ * ("Your options"), driven by the engine's useScenarioRunner view (docs/ENGINE.md).
+ *
+ * Accessibility (UI_SPEC §10): skip link "Skip to your options"; focus moves to the device heading on
+ * arrival and on every new beat, to "What now?" after hanging up, to the consequence caption and to
+ * damage control; never on interrupts, tags, translation or Take a breath. The engine's state.log
+ * feeds the polite announcer (timer thresholds, stress changes, new messages), coalesced there.
  */
-import { useEffect, useRef, useState } from 'preact/hooks';
-import type { Device, Message, Scenario } from '../content/schema.ts';
-import { habitCard } from '../content/habitCards.ts';
-import { recoveryStepLabel } from '../content/recoverySteps.ts';
-import type { DebriefData } from '../engine/debrief.ts';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'preact/hooks';
+import type { Scenario } from '../content/schema.ts';
+import { recoveryStepFeedback, recoveryStepLabel } from '../content/recoverySteps.ts';
 import { useScenarioRunner } from '../engine/hooks.ts';
+import type { RecoveryOption } from '../engine/recovery.ts';
 import type { ScenarioResult } from '../engine/result.ts';
-import type { CheckableView, RunnerContext, RunnerState, RunnerView, WhatNowBuiltin } from '../engine/runner.ts';
-import { t, type MessageKey } from '../i18n/index.ts';
+import type { CheckableView, RunnerContext, RunnerLogEntry, RunnerState, RunnerView } from '../engine/runner.ts';
+import { t } from '../i18n/index.ts';
+import { AnnounceContext } from './Announcer.tsx';
+import { CheckCard, CheckContext, DetailsList, type CheckApi } from './check/Check.tsx';
+import { DeviceView, deviceHeading } from './devices/Device.tsx';
+import type { CallStage } from './devices/types.ts';
+import { BreathPanel, formatTime, Hud } from './Hud.tsx';
+import { Icon } from './Icon.tsx';
+import { WHAT_NOW_KEYS } from './labels.ts';
+import { RichText } from './RichText.tsx';
+import { unrevealedTargets, words } from './text.ts';
 import styles from './ScenarioView.module.css';
 
-/** Plain-text rendering of whatever parts the message has. Content is text only (never HTML). */
-function MessageCard({ device, message }: { device: Device; message: Message }) {
-  return (
-    <article class={styles.device} data-device={device} lang={message.lang}>
-      {message.sender ? (
-        <p class={styles.sender}>
-          <span class={styles.label} lang="en">{t('scenario_from')}: </span>
-          <strong>{message.sender.display}</strong>
-          {message.sender.detail ? <span class={styles.detail}> {message.sender.detail}</span> : null}
-        </p>
-      ) : null}
-      {message.page ? <p class={styles.sender}>{message.page.address}</p> : null}
-      {message.letterhead ? <p class={styles.sender}>{message.letterhead}</p> : null}
-      {message.subject ? <p class={styles.subject}>{message.subject}</p> : null}
-      {message.body ? <p class={styles.body}>{message.body}</p> : null}
-      {message.transcript?.map((l, i) => (
-        <p key={i} class={styles.body}>
-          {l.text}
-        </p>
-      ))}
-      {message.translation ? (
-        <p class={styles.detail} lang="en">
-          <span class={styles.label}>{t('scenario_translation')}: </span>
-          {message.translation}
-        </p>
-      ) : null}
-    </article>
-  );
+export interface ScenarioViewProps {
+  scenario: Scenario;
+  ctx: RunnerContext;
+  onDone: (state: RunnerState, result: ScenarioResult) => void;
+  progress?: { index: number; total: number } | null;
+  callLines?: 'auto' | 'step';
+  onCallLines?: (v: 'auto' | 'step') => void;
+  alwaysTranslate?: boolean;
+  onQuit?: () => void;
 }
 
-const ELEMENT_KEYS: Record<string, MessageKey> = {
-  'sender.detail': 'element_sender',
-  caller_id: 'element_caller_id',
-  link: 'element_link',
-  attachment: 'element_attachment',
-  reference: 'element_reference',
-  phone_number: 'element_phone_number',
-  'qr.destination': 'element_qr',
-  'page.address': 'element_page_address',
-  'page.info': 'element_page_info',
-  'payee.name_check': 'element_payee_name',
-  'payee.iban': 'element_payee_iban',
-  'prompt.service': 'element_prompt',
-  'prompt.where': 'element_prompt',
-  'prompt.device': 'element_prompt',
-  'prompt.when': 'element_prompt',
-  'prompt.number': 'element_prompt',
-  letterhead: 'element_letterhead',
-  image: 'element_image',
-};
-
-export function elementLabel(target: string): string {
-  const base = target.replace(/#(\d)$/, '');
-  const n = /#(\d)$/.exec(target)?.[1];
-  const label = t(ELEMENT_KEYS[base] ?? 'element_other');
-  return n ? `${label} ${n}` : label;
+function useDesk(): boolean {
+  const q = '(min-width: 1024px)';
+  const get = () => typeof matchMedia !== 'function' || matchMedia(q).matches;
+  const [desk, setDesk] = useState(get);
+  useEffect(() => {
+    if (typeof matchMedia !== 'function') return undefined;
+    const m = matchMedia(q);
+    const on = () => setDesk(m.matches);
+    m.addEventListener('change', on);
+    return () => m.removeEventListener('change', on);
+  }, []);
+  return desk;
 }
 
-/** "Details you can check": the primary keyboard and screen-reader path (UI_SPEC §4.6). Never shows a total. */
-function DetailsList({ items, checked, onCheck, onTag }: {
-  items: CheckableView[];
-  checked: number;
-  onCheck: (c: CheckableView) => void;
-  onTag: (c: CheckableView, on: boolean) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div>
-      <button type="button" class={styles.secondary} aria-expanded={open} aria-controls="details-list" onClick={() => setOpen(!open)}>
-        {t('details_toggle', { checked })}
-      </button>
-      <ul id="details-list" class={styles.details} hidden={!open}>
-        {items.map((c) => (
-          <li key={c.key}>
-            <button type="button" class={styles.secondary} data-check={c.target} onClick={() => onCheck(c)}>
-              {t('check_item', { element: elementLabel(c.target) })}
-              {c.shown ? <span> · {c.shown}</span> : null}
-            </button>
-            {c.checked ? (
-              <>
-                <p class={styles.reveal}>{c.reveal ?? t('check_nothing_unusual')}</p>
-                <button type="button" class={styles.secondary} aria-pressed={c.tagged} data-tag={c.target} onClick={() => onTag(c, !c.tagged)}>
-                  {c.tagged ? t('tag_marked') : t('tag_mark')}
-                </button>
-              </>
-            ) : null}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+/** Reading pace for call lines (UI_SPEC §3.4): max(1.5 s, 0.3 s × words). */
+export function linePace(text: string): number {
+  return Math.max(1.5, 0.3 * words(text));
 }
 
-function formatTime(seconds: number): string {
-  const s = Math.ceil(seconds);
-  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+function logAnnouncement(e: RunnerLogEntry): { category: 3 | 4 | 5; text: string } | null {
+  switch (e.type) {
+    case 'beat_arrived':
+      return e.beatId === 'start' ? null : { category: 5, text: t('announce_new_message') };
+    case 'pusher':
+      return { category: 5, text: t('announce_pusher', { text: e.text }) };
+    case 'interrupt':
+      return { category: 5, text: t('announce_interrupt') };
+    case 'timer':
+      return { category: 3, text: t(e.what === 'half' ? 'announce_timer_half' : e.what === 'ten_left' ? 'announce_timer_ten' : e.what === 'escalated' ? 'announce_timer_escalated' : 'announce_timer_expired') };
+    case 'stress':
+      return { category: 4, text: t(e.state === 'calm' ? 'stress_calm' : e.state === 'tense' ? 'stress_tense' : 'stress_overwhelmed') };
+  }
 }
-
-function Hud({ view, onPause }: { view: RunnerView; onPause: () => void }) {
-  const stressKey: MessageKey = view.stress.state === 'calm' ? 'stress_calm' : view.stress.state === 'tense' ? 'stress_tense' : 'stress_overwhelmed';
-  return (
-    <div class={styles.hud}>
-      {view.timer ? (
-        <p role="timer" aria-live="off" aria-label={t('timer_label')}>
-          {t('timer_value', { time: formatTime(view.timer.remaining) })}
-          {view.timer.frozen ? <span class={styles.visuallyHidden}> {t('timer_paused')}</span> : null}
-        </p>
-      ) : null}
-      <p role="meter" aria-label={t('stress_label')} aria-valuemin={0} aria-valuemax={100} aria-valuenow={view.stress.value} aria-valuetext={t(stressKey)}>
-        {t(stressKey)}
-      </p>
-      <button type="button" class={styles.secondary} aria-disabled={!view.pause.available} onClick={() => view.pause.available && onPause()}>
-        {view.pause.available ? t('pause') : t('pause_cooldown', { seconds: Math.ceil(view.pause.cooldownLeft) })}
-      </button>
-    </div>
-  );
-}
-
-const WHAT_NOW_KEYS: Record<WhatNowBuiltin, MessageKey> = {
-  call_back_known: 'what_now_call_back_known',
-  report: 'what_now_report',
-  done: 'what_now_done',
-};
 
 function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recovery']>; onDone: (picks: string[]) => void }) {
   const [picks, setPicks] = useState<string[]>([]);
+  const [submitted, setSubmitted] = useState(false);
+  const heading = useRef<HTMLHeadingElement>(null);
+  const feedbackHeading = useRef<HTMLHeadingElement>(null);
+  useEffect(() => heading.current?.focus(), []);
+  useEffect(() => {
+    if (submitted) feedbackHeading.current?.focus();
+  }, [submitted]);
   const toggle = (step: string) => setPicks((p) => (p.includes(step) ? p.filter((x) => x !== step) : p.length < view.pick ? [...p, step] : p));
+  const move = (i: number, by: -1 | 1) =>
+    setPicks((p) => {
+      const j = i + by;
+      if (j < 0 || j >= p.length) return p;
+      const next = [...p];
+      [next[i], next[j]] = [next[j] as string, next[i] as string];
+      return next;
+    });
+  const byStep = new Map<string, RecoveryOption>(view.options.map((o) => [o.step, o]));
+  if (submitted) {
+    return (
+      <section class={styles.panel} aria-labelledby="damage-feedback-heading">
+        <h3 id="damage-feedback-heading" ref={feedbackHeading} tabIndex={-1}>
+          {t('damage_feedback_title')}
+        </h3>
+        <ol class={styles.feedback}>
+          {picks.map((step) => {
+            const harmful = byStep.get(step)?.category === 'harmful';
+            return (
+              <li key={step}>
+                <span class={styles.feedbackHead}>
+                  <Icon name={harmful ? 'info' : 'seal'} />
+                  <span>
+                    <strong>{harmful ? t('damage_doesnt_help') : t('damage_helps')}</strong> {recoveryStepLabel(step)}
+                  </span>
+                </span>
+                {harmful && (byStep.get(step)?.feedback ?? recoveryStepFeedback(step)) ? <p>{byStep.get(step)?.feedback ?? recoveryStepFeedback(step)}</p> : null}
+              </li>
+            );
+          })}
+        </ol>
+        <button type="button" class={styles.primary} onClick={() => onDone(picks)}>
+          {t('app_continue')}
+        </button>
+      </section>
+    );
+  }
   return (
-    <section aria-labelledby="damage-heading">
-      <h3 id="damage-heading">{t('damage_title')}</h3>
+    <section class={styles.panel} aria-labelledby="damage-heading">
+      <h3 id="damage-heading" ref={heading} tabIndex={-1}>
+        {t('damage_title')}
+      </h3>
       <p>{t('damage_sub')}</p>
       <p>{t('damage_prompt')}</p>
       <ul class={styles.actions}>
@@ -151,289 +130,376 @@ function DamageControl({ view, onDone }: { view: NonNullable<RunnerView['recover
           const i = picks.indexOf(o.step);
           return (
             <li key={o.step}>
-              <button type="button" class={styles.action} aria-pressed={i >= 0} data-step={o.step} onClick={() => toggle(o.step)}>
-                {i >= 0 ? `${t('damage_order', { n: i + 1 })} ` : ''}
-                {recoveryStepLabel(o.step)}
+              <button type="button" class={styles.option} aria-pressed={i >= 0} data-step={o.step} onClick={() => toggle(o.step)}>
+                {i >= 0 ? <span class={styles.order}>{t(i === 0 ? 'damage_first' : i === 1 ? 'damage_second' : 'damage_third')}</span> : null}
+                <span>{recoveryStepLabel(o.step)}</span>
               </button>
+              {i >= 0 && picks.length > 1 ? (
+                <span class={styles.moves}>
+                  <button type="button" class={styles.small} aria-disabled={i === 0} onClick={() => move(i, -1)} aria-label={t('damage_move_up_named', { step: recoveryStepLabel(o.step) })}>
+                    {t('damage_move_up')}
+                  </button>
+                  <button type="button" class={styles.small} aria-disabled={i === picks.length - 1} onClick={() => move(i, 1)} aria-label={t('damage_move_down_named', { step: recoveryStepLabel(o.step) })}>
+                    {t('damage_move_down')}
+                  </button>
+                </span>
+              ) : null}
             </li>
           );
         })}
       </ul>
       <p role="status">{t('damage_counter', { chosen: picks.length, total: view.pick })}</p>
-      <button type="button" class={styles.primary} aria-disabled={picks.length < view.pick} onClick={() => picks.length >= view.pick && onDone(picks)}>
+      <button type="button" class={styles.primary} aria-disabled={picks.length < view.pick} onClick={() => picks.length >= view.pick && setSubmitted(true)}>
         {t('damage_done')}
       </button>
     </section>
   );
 }
 
-export interface ScenarioViewProps {
-  scenario: Scenario;
-  ctx: RunnerContext;
-  onDone: (state: RunnerState, result: ScenarioResult) => void;
-}
-
 /** One scenario from arrival to the end of damage control. Give it a `key` to restart. */
-export function ScenarioView({ scenario, ctx, onDone }: ScenarioViewProps) {
+export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines = 'auto', onCallLines, alwaysTranslate = false, onQuit }: ScenarioViewProps) {
   const runner = useScenarioRunner(scenario, ctx);
-  const { view } = runner;
-  const heading = useRef<HTMLHeadingElement>(null);
-  const beatId = view.beat?.id ?? view.phase;
-  useEffect(() => heading.current?.focus(), [scenario.id, beatId]);
+  const { view, state } = runner;
+  const announce = useContext(AnnounceContext);
+  const desk = useDesk();
+  const deviceHeadingRef = useRef<HTMLHeadingElement>(null);
+  const whatNowRef = useRef<HTMLHeadingElement>(null);
+  const consequenceRef = useRef<HTMLHeadingElement>(null);
+  const optionsRef = useRef<HTMLElement>(null);
+  const [checkMode, setCheckMode] = useState(false);
+  const [openTarget, setOpenTarget] = useState<string | null>(null);
+  const returnEl = useRef<HTMLElement | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const [chip, setChip] = useState<string | null>(null);
+  const beat = view.beat;
+  // Translations freeze the timer while any of them is open (UI_SPEC §4.8).
+  const openTranslations = useRef(0);
+  const onTranslation = (open: boolean) => {
+    openTranslations.current = Math.max(0, openTranslations.current + (open ? 1 : -1));
+    runner.freeze('translation', openTranslations.current > 0);
+    if (open) announce.polite(2, t('translation_shown'));
+  };
+
+  // ---- result
   const reported = useRef(false);
   useEffect(() => {
     if (runner.result && !reported.current) {
       reported.current = true;
+      announce.assertive(t('announce_scenario_ended'));
       onDone(runner.state, runner.result);
     }
-  }, [runner.result, runner.state, onDone]);
+  }, [runner.result, runner.state, onDone, announce]);
 
-  const beat = view.beat;
-  const title = beat ? (beat.message.sender?.display ?? beat.message.page?.title ?? beat.message.page?.address ?? t('scenario_message')) : t('consequence_title');
+  // ---- announcer: state.log → polite queue (UI_SPEC §10.5). Stale items from the last screen go (QA B6).
+  useEffect(() => {
+    announce.reset();
+    return () => announce.reset();
+  }, [announce]);
+  const logSeen = useRef(0);
+  useEffect(() => {
+    const fresh = state.log.slice(logSeen.current);
+    logSeen.current = state.log.length;
+    for (const e of fresh) {
+      const a = logAnnouncement(e);
+      // Once the scenario has ended, timer/stress/message news is stale (QA B6).
+      if (a && (a.category <= 2 || !runner.result)) announce.polite(a.category, a.text, a.category === 5 ? (n) => t('announce_new_messages', { count: n }) : undefined);
+      if (e.type === 'timer' && e.what === 'escalated') setChip(t('timer_escalated_chip', { seconds: ctx.balance.timers.escalation_extra_seconds }));
+    }
+  }, [state.log, announce, ctx.balance.timers.escalation_extra_seconds, runner.result]);
+  useEffect(() => {
+    if (!chip) return undefined;
+    const id = setTimeout(() => setChip(null), 1500);
+    return () => clearTimeout(id);
+  }, [chip]);
+  useEffect(() => {
+    if (view.pause.open) announce.polite(2, t('pause_panel'));
+  }, [view.pause.open, announce]);
+  useEffect(() => {
+    if (!toast) return undefined;
+    const id = setTimeout(() => setToast(null), 4000);
+    return () => clearTimeout(id);
+  }, [toast]);
+
+  // ---- call stage (UI_SPEC §3.4): ringing → answered → lines at reading pace; timer frozen until the last line.
+  const isCall = beat?.device === 'call';
+  const [callState, setCallState] = useState<CallStage | null>(null);
+  const call: CallStage | null =
+    isCall && beat
+      ? { ...(callState && callState.beatId === beat.id ? callState : { beatId: beat.id, answered: false, shown: 0, ended: false, step: callLines === 'step' }), ended: view.phase === 'what_now' }
+      : null;
+  const lines = beat?.message.transcript ?? [];
+  const revealing = !!call && !call.ended && (!call.answered || call.shown < lines.length);
+  useEffect(() => {
+    runner.freeze('call_lines', revealing);
+  }, [revealing]);
+  useEffect(() => {
+    if (!call || !call.answered || call.ended || call.step || call.shown >= lines.length || view.pause.open) return undefined;
+    const id = setTimeout(() => setCallState({ ...call, shown: call.shown + 1 }), linePace(lines[call.shown - 1]?.text ?? '') * 1000);
+    return () => clearTimeout(id);
+    // Only stage changes restart the line timer; engine ticks must not (QA B1).
+  }, [call?.beatId, call?.shown, call?.answered, call?.ended, call?.step, view.pause.open, lines.length]);
+  const answer = () => beat && setCallState({ beatId: beat.id, answered: true, shown: 1, ended: false, step: callLines === 'step' });
+  const hangUpAction = beat?.actions.find((a) => a.kind === 'hang_up');
+  const ringing = !!call && !call.answered && !call.ended;
+
+  // ---- focus (UI_SPEC §10.3)
+  const focusKey = `${view.phase}:${beat?.id ?? ''}`;
+  useEffect(() => {
+    if (view.phase === 'playing') deviceHeadingRef.current?.focus();
+    else if (view.phase === 'what_now') whatNowRef.current?.focus();
+    else if (view.phase === 'consequence') consequenceRef.current?.focus();
+    // damage_control focuses its own heading.
+  }, [focusKey]);
+
+  // ---- Check
+  const items = useMemo(() => {
+    let list = view.checkables;
+    // Elements not on screen yet (a ringing call, unrevealed lines) are not listed (no free preview, QA B3).
+    if (call && !call.answered) list = list.filter((c) => c.target === 'caller_id');
+    else if (call && beat) {
+      const hidden = unrevealedTargets(beat.message, call.ended ? Infinity : call.shown);
+      list = list.filter((c) => c.beatId !== beat.id || !hidden.has(c.target));
+    }
+    return list;
+  }, [view.checkables, call?.answered, call?.shown, call?.ended, beat]);
+  const itemMap = useMemo(() => new Map(items.map((c) => [c.target, c])), [items]);
+  const sender = beat?.message.sender;
+  const visible = useCallback(
+    (c: CheckableView): string => {
+      if (c.target === 'sender.detail' || c.target === 'caller_id') return sender?.display ?? c.shown ?? '';
+      if (c.target === 'page.info') return t('page_info_visible');
+      return c.shown ?? '';
+    },
+    [sender],
+  );
+  const doCheck = (c: CheckableView) => {
+    if (!c.checked && view.timer && ctx.balance.timers.inspect_cost_seconds > 0) setChip(t('timer_cost_chip', { seconds: ctx.balance.timers.inspect_cost_seconds }));
+    runner.check(c.beatId, c.target);
+  };
+  const doTag = (c: CheckableView, on: boolean) => {
+    runner.tag(c.beatId, c.target, on);
+    announce.polite(2, on ? t('tag_announce_on') : t('tag_announce_off'));
+  };
+  const closeCard = useCallback(() => {
+    setOpenTarget(null);
+    const el = returnEl.current;
+    if (el) setTimeout(() => el.focus(), 0);
+  }, []);
+  const api: CheckApi = {
+    items: itemMap,
+    checkMode,
+    visible,
+    open: (target, el) => {
+      const c = itemMap.get(target);
+      if (!c) return;
+      returnEl.current = el;
+      doCheck(c);
+      setToast(null); // the touch hint never sits on top of the sheet (QA B10)
+      setOpenTarget(target);
+    },
+    hint: () => setToast(t('check_touch_hint')),
+  };
+  const openItem = openTarget ? itemMap.get(openTarget) : undefined;
+  useEffect(() => {
+    if (openTarget && !openItem) setOpenTarget(null);
+  }, [openTarget, openItem]);
+  const modal = !!openItem && !desk;
+
+  const card = openItem ? <CheckCard item={openItem} visibleText={visible(openItem)} sender={sender} modal={modal} onTag={doTag} onClose={closeCard} /> : null;
+  const live = view.phase === 'playing' || view.phase === 'what_now';
+
   return (
-    <section class={styles.scenario} aria-labelledby="scenario-heading">
-      <h2 id="scenario-heading" ref={heading} tabIndex={-1} class={beat ? styles.visuallyHidden : undefined}>
-        {title}
-      </h2>
-      <Hud view={view} onPause={runner.pause} />
-      {view.pause.open ? (
-        <div class={styles.breath}>
-          <p role="status">{t('pause_panel')}</p>
-          <p>{t('pause_copy')}</p>
-          <button type="button" class={styles.secondary} onClick={runner.endPause}>
-            {t('pause_back')}
-          </button>
+    <div class={styles.play}>
+      <a
+        href="#options"
+        class={styles.skip}
+        onClick={(e) => {
+          e.preventDefault();
+          optionsRef.current?.focus();
+        }}
+      >
+        {t('skip_to_options')}
+      </a>
+      {live ? (
+        <div inert={modal}>
+          <Hud
+            view={view}
+            progress={progress}
+            chip={chip}
+            timersOff={ctx.settings.timerMode === 'off'}
+            onPause={runner.pause}
+            menu={{
+              checkMode,
+              onCheckMode: setCheckMode,
+              callLines,
+              onCallLines: (v) => onCallLines?.(v),
+              onTimeLeft: () => view.timer && announce.polite(2, t('timer_value_low', { time: formatTime(view.timer.remaining) })),
+              onQuit: () => onQuit?.(),
+              onOpen: (open) => runner.freeze('pause_menu', open),
+            }}
+          />
         </div>
       ) : null}
-      {view.thread.map((m) => (
-        <MessageCard key={m.id} device={m.device} message={m.message} />
-      ))}
-      {beat ? <MessageCard device={beat.device} message={beat.message} /> : null}
-      {beat?.banner ? (
-        <aside aria-label={t('banner_title')}>
-          <MessageCard device={beat.banner.device} message={beat.banner.message} />
-        </aside>
-      ) : null}
-      {view.pusherMessages.length > 0 ? (
-        <ul class={styles.pushers} aria-label={t('pusher_from')}>
-          {view.pusherMessages.map((p, i) => (
-            <li key={i}>{p.text}</li>
-          ))}
-        </ul>
-      ) : null}
-      {view.waitingBeats.length > 0 ? <p>{t('waiting_beats', { count: view.waitingBeats.length })}</p> : null}
-      {view.interrupts.map((i) => (
-        <aside key={i.id} aria-label={t('interrupt_title')}>
-          <MessageCard device={i.device} message={i.message} />
-          <ul class={styles.actions}>
-            {i.actions.map((a) => (
-              <li key={a.id}>
-                <button type="button" class={styles.action} onClick={() => runner.answerInterrupt(i.id, a.id)}>
-                  {a.label}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </aside>
-      ))}
-      {beat && view.checkables.length > 0 ? (
-        <DetailsList
-          items={view.checkables}
-          checked={view.checkedCount}
-          onCheck={(c) => runner.check(c.beatId, c.target)}
-          onTag={(c, on) => runner.tag(c.beatId, c.target, on)}
-        />
-      ) : null}
-      {beat && view.phase === 'playing' ? (
-        <>
-          <h3>{t('scenario_choose')}</h3>
-          <ul class={styles.actions}>
-            {beat.actions.map((a) => (
-              <li key={a.id}>
-                <button type="button" class={a.styled ? `${styles.action} ${styles.styled}` : styles.action} data-action={a.id} onClick={() => runner.act(a.id)}>
-                  {a.label}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </>
-      ) : null}
-      {view.whatNow ? (
-        <>
-          <h3>{t('what_now_title')}</h3>
-          {view.whatNow.note ? <p role="status">{view.whatNow.note}</p> : null}
-          <ul class={styles.actions}>
-            {view.whatNow.choices.map((c) => (
-              <li key={c.id}>
-                <button type="button" class={styles.action} onClick={() => runner.whatNow(c.id)}>
-                  {c.label ?? (c.builtin ? t(WHAT_NOW_KEYS[c.builtin]) : c.id)}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </>
-      ) : null}
-      {view.phase === 'consequence' || view.phase === 'damage_control' ? (
-        view.consequenceTimerExpired ? <p>{t('deadline_fake')}</p> : view.consequence ? <p>{view.consequence}</p> : null
-      ) : null}
-      {view.phase === 'consequence' ? (
-        <button type="button" class={styles.primary} onClick={runner.continueBoss}>
-          {t('app_continue')}
-        </button>
-      ) : null}
-      {view.recovery ? <DamageControl view={view.recovery} onDone={runner.submitRecovery} /> : null}
-    </section>
-  );
-}
-
-export interface DebriefViewProps {
-  data: DebriefData;
-  onContinue: () => void;
-  onAgain: () => void;
-}
-
-const STATUS_KEYS: Record<DebriefData['layer2']['flags'][number]['status'], MessageKey> = {
-  marked: 'debrief_marked',
-  not_marked: 'debrief_not_marked',
-  in_message: 'debrief_in_message',
-};
-
-export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
-  const heading = useRef<HTMLHeadingElement>(null);
-  const [more, setMore] = useState(false);
-  useEffect(() => heading.current?.focus(), []);
-  const { layer1: l1, layer2: l2 } = data;
-  const ac = l2.alreadyClicked;
-  const card = habitCard(l2.habitCard ?? undefined);
-  const best = l1.stars === 3 && l1.youChose.length === 0;
-  return (
-    <section class={styles.scenario} aria-labelledby="outcome-heading">
-      <h2 id="outcome-heading" ref={heading} tabIndex={-1}>
-        {t('outcome_title')}
-      </h2>
-      {data.narratives.map((n, i) => (
-        <p key={i}>{n}</p>
-      ))}
-      {l1.deadlineWasFake ? <p>{t('deadline_fake')}</p> : null}
-      {l1.stars !== null ? (
-        <p>
-          <strong>{t('outcome_stars', { stars: l1.stars })}</strong>
-          {best ? ` ${t('outcome_best')}` : null}
-        </p>
-      ) : null}
-      <h2>{t('debrief_title')}</h2>
-      <p>
-        {l1.verdict ? <strong>{l1.verdict === 'fraud' ? t('debrief_verdict_fraud') : t('debrief_verdict_genuine')} </strong> : null}
-        {l1.tell}
-      </p>
-      <p>
-        <strong>{t('debrief_what_works')} </strong>
-        {l1.whatWorks}
-      </p>
-      {l1.youChose.map((c, i) => (
-        <p key={i}>
-          {c.kind === 'timer' ? t('you_chose_timer') : t('you_chose', { label: c.kind === 'action' ? c.label : t(WHAT_NOW_KEYS[c.choice]) })}
-        </p>
-      ))}
-      {l1.alreadyClicked ? (
-        <p>
-          <strong>{t('habit_card_already_clicked')} </strong>
-          {l1.alreadyClicked.text}
-        </p>
-      ) : null}
-      <p>{t('debrief_no_shame')}</p>
-      <button type="button" class={styles.secondary} aria-expanded={more} aria-controls="debrief-more" onClick={() => setMore(!more)}>
-        {t('debrief_more')}
-      </button>
-      <div id="debrief-more" hidden={!more}>
-        {l2.flags.length > 0 ? (
-          <>
-            <h3>{t('debrief_red_flags')}</h3>
-            <ul>
-              {l2.flags.map((f, i) => (
-                <li key={i}>
-                  {f.text} <span>({t(STATUS_KEYS[f.status])})</span>
-                  {f.senderCaveat ? <span> {t('debrief_sender_caveat')}</span> : null}
-                </li>
+      <main class={beat ? styles.main : `${styles.main} ${styles.solo}`} inert={modal}>
+        <CheckContext.Provider value={api}>
+          <div class={view.stress.state === 'overwhelmed' ? `${styles.stage} ${styles.vignette}` : styles.stage}>
+            {view.pause.open ? <BreathPanel onBack={runner.endPause} /> : null}
+            {beat ? (
+              <DeviceView
+                key={beat.id}
+                beatId={beat.id}
+                device={beat.device}
+                message={beat.message}
+                banner={beat.banner}
+                scenario={scenario}
+                thread={view.thread}
+                pushers={view.pusherMessages}
+                actions={beat.actions}
+                canAct={view.phase === 'playing'}
+                onAct={runner.act}
+                onTranslation={onTranslation}
+                alwaysTranslate={alwaysTranslate}
+                call={call}
+                onAnswer={answer}
+                onDecline={hangUpAction ? () => runner.act(hangUpAction.id) : null}
+                onNextLine={() =>
+                  // Functional update: two quick presses before a re-render still reveal two lines.
+                  call && setCallState((prev) => {
+                    const base = prev && prev.beatId === call.beatId ? prev : call;
+                    return { ...base, shown: Math.min(base.shown + 1, lines.length) };
+                  })
+                }
+                heading={deviceHeading(beat.device, beat.message)}
+                headingRef={deviceHeadingRef}
+              />
+            ) : null}
+            {view.waitingBeats.length > 0 && live ? (
+              <p class={styles.waiting} role="note">
+                {t('waiting_beats', { count: view.waitingBeats.length })}
+              </p>
+            ) : null}
+            {toast ? (
+              <p class={styles.toast} role="status">
+                {toast}
+              </p>
+            ) : null}
+          </div>
+          {/* Interrupts: a distinct container; focus never moves to them (UI_SPEC §2.3). */}
+          {view.interrupts.length > 0 ? (
+            <aside class={styles.interrupts} aria-labelledby="interrupts-h">
+              <h2 id="interrupts-h" class={styles.interruptsTitle}>
+                {t('interrupt_title')}
+              </h2>
+              {view.interrupts.map((i) => (
+                <div key={i.id} class={styles.interrupt}>
+                  <p class={styles.interruptMeta}>
+                    {t(i.device === 'email' ? 'banner_kind_email' : i.device === 'messenger' ? 'banner_kind_chat' : i.device === 'call' ? 'banner_kind_call' : 'banner_kind_sms')}
+                    {i.message.sender ? ` · ${i.message.sender.display}` : ''}
+                  </p>
+                  {i.message.body ? (
+                    <p class={styles.interruptBody}>
+                      <RichText text={i.message.body} />
+                    </p>
+                  ) : null}
+                  <ul class={styles.actions}>
+                    {i.actions.map((a) => (
+                      <li key={a.id}>
+                        <button type="button" class={styles.action} onClick={() => runner.answerInterrupt(i.id, a.id)}>
+                          {a.label}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ))}
-            </ul>
-            <p>{t('debrief_spotted', l2.spotted)}</p>
-          </>
-        ) : null}
-        {l2.wrongTags.length > 0 ? (
-          <ul>
-            {l2.wrongTags.map((w) => (
-              <li key={`${w.beatId}|${w.target}`}>
-                {elementLabel(w.target)}: {t('debrief_wrong_tag')}
-              </li>
-            ))}
-          </ul>
-        ) : null}
-        {l2.pressureCallout ? <p>{t(l2.pressureCallout === 'first_any' ? 'callout_first_any' : 'callout_first_genuine')}</p> : null}
-        {l2.points ? (
-          <p>
-            {t('debrief_points_detail', {
-              total: l2.points.total,
-              max: l2.points.max,
-              base: l2.points.base,
-              bonus: l2.points.tagBonus,
-              recovery: l2.points.recovery ?? 0,
-            })}
-          </p>
-        ) : null}
-      </div>
-      {l2.deviceTip ? (
-        <>
-          <h3>{t('debrief_device_tip')}</h3>
-          <p>{l2.deviceTip}</p>
-        </>
-      ) : null}
-      {card ? (
-        <section class={styles.habitCard} aria-labelledby="habit-card-title" data-habit-card={card.id}>
-          <p class={styles.label}>{t('debrief_habit')}</p>
-          <h3 id="habit-card-title">{card.title}</h3>
-          <p>{card.habit}</p>
-          <p class={styles.detail}>{card.example}</p>
-          <p>
-            <strong>{t('habit_card_already_clicked')} </strong>
-            {card.already_clicked}
-          </p>
-        </section>
-      ) : null}
-      {ac ? (
-        <>
-          <h3>{t('debrief_already_clicked')}</h3>
-          <dl>
-            {ac.clicked ? (
-              <>
-                <dt>{t('debrief_clicked')}</dt>
-                <dd>{ac.clicked}</dd>
-              </>
+            </aside>
+          ) : null}
+          <section id="options" class={styles.tray} aria-labelledby={view.phase === 'consequence' ? 'consequence-h' : 'actions-h'} tabIndex={-1} ref={optionsRef}>
+            {/* No empty "Your options" during the consequence step: its own heading labels the panel (QA F4). */}
+            {view.phase !== 'consequence' ? (
+              <h2 id="actions-h" class={styles.trayTitle}>
+                {t('your_options')}
+              </h2>
             ) : null}
-            {ac.entered_details ? (
-              <>
-                <dt>{t('debrief_entered_details')}</dt>
-                <dd>{ac.entered_details}</dd>
-              </>
+            {/* Desk: the Check card and the Details list scroll inside the rail; the actions below stay pinned (QA B4). */}
+            <div class={styles.trayScroll}>
+            {desk && card ? card : null}
+            {view.phase === 'playing' && items.length > 0 && !ringing ? (
+              <DetailsList
+                items={items}
+                checkedCount={items.filter((c) => c.checked).length}
+                visible={visible}
+                sender={sender}
+                checkMode={checkMode}
+                onCheckMode={setCheckMode}
+                onCheck={doCheck}
+                onTag={doTag}
+              />
             ) : null}
-            {ac.paid ? (
-              <>
-                <dt>{t('debrief_paid')}</dt>
-                <dd>{ac.paid}</dd>
-              </>
+            </div>
+            {beat && view.phase === 'playing' ? (
+              ringing ? (
+                <p class={styles.note}>{t('call_answer_first')}</p>
+              ) : (
+                <ul class={styles.actions}>
+                  {beat.actions.map((a) => (
+                    <li key={a.id}>
+                      <button type="button" class={a.styled ? `${styles.action} ${styles.pressure}` : styles.action} data-action={a.id} onClick={() => runner.act(a.id)}>
+                        {a.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )
             ) : null}
-          </dl>
-        </>
-      ) : null}
-      {l2.safeguardingLine ? <p>{l2.safeguardingLine}</p> : null}
-      <div class={styles.footer}>
-        <button type="button" class={styles.primary} onClick={onContinue}>
-          {t('app_continue')}
-        </button>
-        <button type="button" class={styles.secondary} onClick={onAgain}>
-          {t('app_again')}
-        </button>
-      </div>
-    </section>
+            {view.whatNow ? (
+              <div class={styles.panel}>
+                <h3 id="what-now-h" ref={whatNowRef} tabIndex={-1}>
+                  {t('what_now_title')}
+                </h3>
+                <p class={styles.note}>{t('what_now_intro')}</p>
+                {view.whatNow.note ? (
+                  <p class={styles.whatNowNote} role="status">
+                    <Icon name="info" />
+                    <span>{view.whatNow.note}</span>
+                  </p>
+                ) : null}
+                <ul class={styles.actions}>
+                  {view.whatNow.choices.map((c) => (
+                    <li key={c.id}>
+                      <button type="button" class={styles.action} data-what-now={c.id} onClick={() => runner.whatNow(c.id)}>
+                        {c.label ?? (c.builtin ? t(WHAT_NOW_KEYS[c.builtin]) : c.id)}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            {view.phase === 'consequence' ? (
+              <div class={styles.panel}>
+                <h3 id="consequence-h" ref={consequenceRef} tabIndex={-1}>
+                  {t('consequence_title')}
+                </h3>
+                <p class={styles.caption}>
+                  <Icon name="info" />
+                  <span>{view.consequenceDeadline ? t(view.consequenceDeadline === 'fake' ? 'deadline_fake' : 'deadline_real') : <RichText text={view.consequence ?? ''} />}</span>
+                </p>
+                <button type="button" class={styles.primary} onClick={runner.continueConsequence}>
+                  {t('app_continue')}
+                </button>
+              </div>
+            ) : null}
+            {view.phase === 'damage_control' && view.recovery ? (
+              // The outcome was the caption of the consequence step just before; not repeated here (ruling 2026-11-19).
+              <DamageControl view={view.recovery} onDone={runner.submitRecovery} />
+            ) : null}
+          </section>
+        </CheckContext.Provider>
+      </main>
+      {!desk && card ? card : null}
+      <p id="check-hint" class={styles.vh}>
+        {t('check_hint')}
+      </p>
+    </div>
   );
 }

@@ -10,6 +10,12 @@
  */
 import type { Device, Message } from './schema.ts';
 
+/** A notification shown inside a beat (code SMS, approval prompt): its text is the beat's `request` checkable. */
+export interface BannerLike {
+  device: Device;
+  message: Message;
+}
+
 /** Every target name the engine knows (for the red-line linter's non-domain list). */
 export const CHECKABLE_TARGETS = [
   'sender.detail',
@@ -30,20 +36,32 @@ export const CHECKABLE_TARGETS = [
   'prompt.number',
   'letterhead',
   'image',
+  'request',
 ] as const;
 
 /** Hosts on the reserved TLDs, with an optional path; e-mail addresses are not links. */
-const LINK_RE = /(?<![\w.@-])(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:example|test|invalid)(?:\/[^\s"'<>]*)?/gi;
+export const LINK_SOURCE = String.raw`(?<![\w.@-])(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+(?:example|test|invalid)(?:\/[^\s"'<>]*)?`;
+const LINK_RE = new RegExp(LINK_SOURCE, 'gi');
+
+/** A link match without trailing sentence punctuation. */
+export function trimLink(raw: string): string {
+  return raw.replace(/[.,;:!?)]+$/, '');
+}
 
 export function linksIn(text: string | undefined): string[] {
-  return text ? [...text.matchAll(LINK_RE)].map((m) => m[0].replace(/[.,;:!?)]+$/, '')) : [];
+  return text ? [...text.matchAll(LINK_RE)].map((m) => trimLink(m[0])) : [];
 }
 
 function numbered(base: string, count: number): string[] {
   return Array.from({ length: count }, (_, i) => (i === 0 ? base : `${base}#${i + 1}`));
 }
 
-export function deriveCheckables(device: Device, m: Message): string[] {
+/**
+ * Checkables of a message in reading order. A beat's banner (GDD §17 1-9 beat 3: the code SMS that
+ * says what the code is for) is where the message's request is shown on its own, so it adds the
+ * `request` checkable (its text is the "You see"). The banner has no other checkables.
+ */
+export function deriveCheckables(device: Device, m: Message, banner?: BannerLike): string[] {
   const out: string[] = [];
   if (m.sender) out.push(device === 'call' ? 'caller_id' : 'sender.detail');
   if (m.letterhead) out.push('letterhead');
@@ -63,5 +81,6 @@ export function deriveCheckables(device: Device, m: Message): string[] {
     if (m.payee.iban) out.push('payee.iban');
   }
   if (m.image) out.push('image');
+  if (banner) out.push('request');
   return out;
 }

@@ -1,17 +1,21 @@
-/* Placeholder tokens until ux-artist delivers design tokens (T-1.6). Contrast checked AA. */
-:root {
-  --bg: #0f1b2d;
-  --fg: #f4f6fa;
-  --accent: #f5c542;
-  --surface: #ffffff;
-  --on-surface: #14202e;
-  --muted-on-surface: #4a5868;
-  color-scheme: dark;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  line-height: 1.5;
+/* Base styles over the design tokens (src/styles/tokens.css, UI_SPEC). No web fonts. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html {
+  font-family: var(--font-ui);
+  line-height: var(--lh-body);
+  /* Focused elements stay clear of the sticky HUD (UI_SPEC §1.3). */
+  scroll-padding-top: calc(var(--hud-h) + var(--space-4));
 }
 body {
   margin: 0;
-  background: var(--bg);
-  color: var(--fg);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: var(--fs-md);
+}
+[hidden] {
+  display: none !important;
 }

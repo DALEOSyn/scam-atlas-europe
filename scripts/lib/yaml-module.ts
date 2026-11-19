@@ -10,7 +10,7 @@
  */
 import { isAbsolute, relative, resolve, sep } from 'node:path';
 import { parse } from 'yaml';
-import { chapterSchema, scenarioSchema } from '../../src/content/schema.ts';
+import { brandsFileSchema, chapterSchema, scenarioSchema } from '../../src/content/schema.ts';
 
 /** True when `file` lies inside `dir` (any platform's separators). */
 export function isInside(dir: string, file: string): boolean {
@@ -26,7 +26,21 @@ export function yamlModuleData(file: string, code: string, scenariosDir: string,
   const raw: unknown = parse(code);
   if (isInside(scenariosDir, file)) return scenarioSchema.parse(raw);
   if (isInside(chaptersDir, file)) return chapterSchema.parse(raw);
+  if (resolve(file) === resolve(scenariosDir, '..', 'brands.yaml')) return brandProjection(raw);
   return raw;
+}
+
+/**
+ * The runtime needs only what devices show: id, names and logo files. Review-only fields
+ * (rationale, checked_against, web_check, which may name real brands) never reach the bundle.
+ */
+export function brandProjection(raw: unknown): { id: string; name: string; short_name?: string; mark?: string }[] {
+  return brandsFileSchema.parse(raw).brands.map((b) => ({
+    id: b.id,
+    name: b.name,
+    ...(b.short_name ? { short_name: b.short_name } : {}),
+    ...(b.logo?.mark ? { mark: b.logo.mark.replace(/^public\//, '') } : {}),
+  }));
 }
 
 /** ES module source for a YAML import. */

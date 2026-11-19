@@ -1,0 +1,37 @@
+.host {
+  overflow-wrap: normal;
+}
+.nowrap {
+  white-space: nowrap;
+}
+.owner {
+  font-weight: var(--fw-bold);
+  color: var(--address-strong);
+}
+/* Owner part boxed in the Check card (UI_SPEC §4.4): a border, never an outline. */
+.boxed {
+  border: var(--border-w-strong) solid currentColor;
+  border-radius: var(--radius-xs);
+  padding: 0 var(--space-1);
+  font-weight: var(--fw-bold);
+}
+.vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+/* Owner part outside controls: never wraps; scrolls sideways inside itself when it does not fit. */
+.ownerScroll {
+  display: inline-block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  vertical-align: bottom;
+}
+.ownerScroll:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: 1px;
+}

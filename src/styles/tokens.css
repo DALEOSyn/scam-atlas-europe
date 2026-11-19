@@ -347,6 +347,21 @@
 }
 
 /* ------------------------------------------------------------------------- */
+/* 4b. Avatar tints (UI_SPEC §2.5): neutral warm greys and pastels for initials avatars,  */
+/* picked by a hash of the display name. Never semantic colours. Text on all of them is   */
+/* --p-ink-900 (contrast ≥ 11:1), in both themes. Added by frontend-engineer (T-2.3).      */
+/* ------------------------------------------------------------------------- */
+:root {
+  --avatar-1: #e7e0f0;
+  --avatar-2: #e3d9c6;
+  --avatar-3: #dce5df;
+  --avatar-4: #e9dcd3;
+  --avatar-5: #d9e1ea;
+  --avatar-6: #ede3c9;
+  --avatar-text: #1c1f2e;
+}
+
+/* ------------------------------------------------------------------------- */
 /* 5. Motion                                                                  */
 /* ------------------------------------------------------------------------- */
 :root {

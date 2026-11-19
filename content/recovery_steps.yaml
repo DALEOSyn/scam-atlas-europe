@@ -1,5 +1,9 @@
 # Damage-control options (CR-07). Each scenario outcome lists {step, category};
 # the category (stop, secure, report, warn, harmful) depends on the scenario.
+# feedback: shown after damage control when the step was a harmful pick (GDD §9): why it hurts and
+# what works instead, never a judgement of the person. Steps are shared across scenarios, so keep
+# these lines generic; a scenario outcome can override one with its own `feedback` on the
+# {step, category} entry. Every harmful step needs a line here or in the scenario.
 steps:
   - id: block_card_in_bank_app
     label: "Block your card in your banking app"
@@ -15,10 +19,13 @@ steps:
     label: "Warn your contacts that messages from you may be fake"
   - id: reply_ask_money_back
     label: "Reply to the scammer and ask for your money back"
+    feedback: "Asking for your money back feels fair, but it tells the scammer the number is live and invites a second scam. Contact your bank or the service yourself, on a number or app you already know."
   - id: pay_recovery_service
     label: "Pay a recovery service that promises to get the money back"
+    feedback: "Wanting the money back is natural, and \"recovery\" offers are aimed at exactly that hope. Anyone who wants a fee up front to recover money is another scam. Your bank and the police are free."
   - id: wait_and_see
     label: "Wait and see whether anything happens"
+    feedback: "Hoping it was nothing is a very human reaction. But the first minutes matter most: acting now limits what a scammer can still do with what they got."
   - id: tell_it_team
     label: "Tell your IT team straight away, through the contact you already have"
   - id: sign_out_everywhere
@@ -31,8 +38,10 @@ steps:
     label: "Don't read out codes or approve payments for anyone who calls about it"
   - id: reply_to_sender
     label: "Reply to the message and ask them to undo it"
+    feedback: "Replying feels like a way to fix it, but the sender is the scammer, and they won't undo anything. Secure the account yourself, then report it."
   - id: keep_quiet
     label: "Keep it to yourself and hope nobody notices"
+    feedback: "Feeling embarrassed is normal, and it is what scammers count on. Telling the right people fast (your bank, your IT team or the service) is what limits the damage."
   - id: tell_it_via_desk
     label: "Tell IT through Waymarker Desk, opened yourself"
   - id: change_password_sign_out

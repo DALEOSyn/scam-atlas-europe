@@ -34,7 +34,8 @@ export interface ScenarioRunner {
   endPause: () => void;
   freeze: (reason: FreezeReason, on: boolean) => void;
   answerInterrupt: (interruptId: string, actionId: string) => void;
-  continueBoss: () => void;
+  /** Continue from the consequence step: the next boss beat, damage control or the debrief. */
+  continueConsequence: () => void;
   submitRecovery: (picks: string[]) => void;
 }
 
@@ -77,7 +78,7 @@ export function useScenarioRunner(scenario: Scenario, ctx: RunnerContext, now: (
     endPause: () => dispatch({ type: 'pause_end' }),
     freeze: (reason, on) => dispatch({ type: 'freeze', reason, on }),
     answerInterrupt: (interruptId, actionId) => dispatch({ type: 'interrupt_act', interruptId, actionId }),
-    continueBoss: () => dispatch({ type: 'continue' }),
+    continueConsequence: () => dispatch({ type: 'continue' }),
     submitRecovery: (picks) => dispatch({ type: 'recovery', picks }),
   };
 }

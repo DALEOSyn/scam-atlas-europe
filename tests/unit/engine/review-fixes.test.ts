@@ -59,7 +59,9 @@ describe('#3 "You chose" on a fall after an engage names the fall', () => {
     });
     const { st, r } = play(s, ctx(), [act('tap_link'), act('enter_card'), { type: 'recovery', picks: ['wait_and_see'] }]);
     expect(r.fell).toBe(true);
-    expect(debriefOf(s, st, r, none).layer1.youChose).toEqual([{ beatId: 'start', kind: 'action', label: 'Continue to pay' }]);
+    const d = debriefOf(s, st, r, none);
+    expect(d.layer1.youChose).toEqual([]); // after a fall the kind line takes the slot
+    expect(d.layer2.youChoseOther).toEqual([{ beatId: 'start', kind: 'action', label: 'Continue to pay' }]);
   });
 });
 

@@ -26,19 +26,22 @@ describe('App: Check, tag, debrief layer 2, chapter stamp, save', () => {
     fireEvent.click(toggle);
     expect(toggle.getAttribute('aria-expanded')).toBe('true');
     // Tagging is only offered after checking.
-    expect(screen.queryByRole('button', { name: 'Mark as suspicious' })).toBeNull();
+    expect(screen.queryByRole('button', { name: /^Mark as suspicious/ })).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: /Check Sender/ }));
     fireEvent.click(screen.getByRole('button', { name: /Check Link in the message/ }));
     expect(screen.getByText(/private phone, not the courier/)).toBeTruthy();
-    const tags = screen.getAllByRole('button', { name: 'Mark as suspicious' });
-    expect(tags).toHaveLength(2);
+    const tags = screen.getAllByRole('button', { name: /^Mark as suspicious: / });
+    expect(tags.map((b) => b.getAttribute('aria-label'))).toEqual(['Mark as suspicious: Sender', 'Mark as suspicious: Link in the message']);
     for (const b of tags) fireEvent.click(b);
-    expect(screen.getAllByRole('button', { name: 'Marked suspicious' }).every((b) => b.getAttribute('aria-pressed') === 'true')).toBe(true);
+    // The label stays the same (QA N1); the state is aria-pressed.
+    expect(screen.getAllByRole('button', { name: /^Mark as suspicious: / }).every((b) => b.getAttribute('aria-pressed') === 'true')).toBe(true);
     expect(screen.getByRole('button', { name: 'Details you can check · 2 checked' })).toBeTruthy();
 
     fireEvent.click(screen.getByRole('button', { name: /Open the Trundle app yourself/ }));
-    await waitFor(() => screen.getByRole('heading', { name: 'Debrief' }));
-    expect(screen.getByText('3 of 3 stars.')).toBeTruthy();
+    await waitFor(() => screen.getByRole('heading', { level: 3, name: 'What happened' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    await waitFor(() => screen.getByRole('heading', { level: 1, name: /This was a scam/ }));
+    expect(screen.getByRole('img', { name: '3 of 3 stars' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'More' }));
     expect(screen.getByText('You spotted 2 of 2 you could mark.')).toBeTruthy();
     expect(screen.getByText(/Points 19 of 19/)).toBeTruthy();

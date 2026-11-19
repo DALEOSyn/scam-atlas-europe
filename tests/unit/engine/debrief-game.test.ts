@@ -16,9 +16,12 @@ describe('debrief data (UI_SPEC §8)', () => {
     const { st, r } = play(s, ctx(), [act('tap_link'), act('enter_card'), { type: 'recovery', picks: ['block_card_in_bank_app', 'call_bank_known_number', 'report_to_police_online'] }]);
     const d = debriefOf(s, st, r, none);
     expect(d.layer1).toMatchObject({ verdict: 'fraud', tell: s.debrief.layer1.tell, stars: 1, alreadyClicked: { situation: 'paid', text: 'Block your card.' } });
-    expect(d.layer1.youChose).toEqual([{ beatId: 'start', kind: 'action', label: 'Enter card details' }]);
+    // After a fall the kind line takes the layer-1 slot; the line opens "Your other choices" (ruling 2026-11-19).
+    expect(d.fell).toBe(true);
+    expect(d.layer1.youChose).toEqual([]);
+    expect(d.layer2.youChoseOther).toEqual([{ beatId: 'start', kind: 'action', label: 'Enter card details' }]);
     expect(d.layer2.points).toMatchObject({ recovery: 9, total: 9, max: 19 });
-    expect(d.narratives).toEqual(['Unknown payments appear.']);
+    expect(d.layer2.narratives).toEqual(['Unknown payments appear.']);
   });
 
   it('layer 2 marks flags, lists wrong tags, counts what you could mark (visited beats only)', () => {

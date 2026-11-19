@@ -181,7 +181,26 @@ export const pressureSchema = z
     levers: z.array(z.enum(LEVERS)).default([]),
     /** Authored follow-ups from the sender (CR-05; balance pushers.schedule: authored). */
     pusher: z
-      .object({ messages: z.array(z.object({ at_seconds: z.number().int().positive(), text: z.string().min(1) }).strict()).min(1) })
+      .object({
+        messages: z
+          .array(
+            z
+              .object({
+                at_seconds: z.number().int().positive(),
+                text: z.string().min(1),
+                /** CR-14: in-world language of the follow-up, with its inline translation (like message lang/translation). */
+                lang: z.string().regex(/^[a-z]{2}(?:-[A-Z]{2})?$/, 'lang is a BCP 47 tag such as de or pt-PT').optional(),
+                translation: z.string().min(1).optional(),
+              })
+              .strict()
+              .superRefine((m, ctx) => {
+                if (m.lang && m.lang !== 'en' && !m.translation) {
+                  ctx.addIssue({ code: 'custom', path: ['translation'], message: `pusher text in lang "${m.lang}" needs an inline translation` });
+                }
+              }),
+          )
+          .min(1),
+      })
       .strict()
       .optional(),
     /** Genuine messages only: the real deadline ("Locker holds your parcel 7 days"). */
@@ -265,8 +284,10 @@ export type WhatNow = z.infer<typeof whatNowSchema>;
 
 /**
  * A notification shown inside the beat (e.g. the code SMS or approval prompt
- * during a call, GDD §17 1-9). It has no actions of its own, is not checkable
- * on its own, and can never be reported (so never a "genuine message reported").
+ * during a call, GDD §17 1-9). It has no actions of its own and can never be
+ * reported (so never a "genuine message reported"). It needs a body: that text
+ * is the beat's `request` checkable (src/content/checkables.ts), whose authored
+ * reveal says what the code or approval is really for.
  */
 export const bannerSchema = z
   .object({ device: z.enum(['sms', 'messenger', 'auth', 'banking', 'email']), message: messageSchema })
@@ -314,7 +335,19 @@ export const outcomeSchema = z
     narrative: z.string().min(1),
     /** CR-07: damage-control options for this outcome, each with its category for THIS scenario. */
     recovery: z
-      .array(z.object({ step: snakeId, category: z.enum(RECOVERY_CATEGORIES) }).strict())
+      .array(
+        z
+          .object({
+            step: snakeId,
+            category: z.enum(RECOVERY_CATEGORIES),
+            /**
+             * Optional harmful-pick feedback for THIS scenario. Steps are shared across scenarios, so the line
+             * in recovery_steps.yaml stays generic; put anything scenario-specific (who to tell) here.
+             */
+            feedback: z.string().min(1).optional(),
+          })
+          .strict(),
+      )
       .optional(),
     sets_flags: z.array(flagName).optional(),
     /** Arc scenarios only, e.g. { alex_invested: 50 }. */
@@ -427,10 +460,11 @@ export const scenarioSchema = z
       inspectables: Inspectable[];
       actions: Action[];
       what_now?: WhatNow | undefined;
+      banner?: { device: Device; message: Message } | undefined;
       path: (string | number)[];
       fraud: boolean;
     }[] = [
-      { id: 'start', device: s.device, message: s.message, inspectables: s.inspectables, actions: s.actions, what_now: s.what_now, path: [], fraud: s.is_fraud },
+      { id: 'start', device: s.device, message: s.message, inspectables: s.inspectables, actions: s.actions, what_now: s.what_now, banner: s.banner, path: [], fraud: s.is_fraud },
       ...s.beats.map((b, i) => ({ ...b, path: ['beats', i], fraud: s.is_fraud })),
       ...s.interrupts.map((b, i) => ({ ...b, path: ['interrupts', i], fraud: b.is_fraud })),
     ];
@@ -451,12 +485,21 @@ export const scenarioSchema = z
       for (const part of DEVICE_PARTS[b.device]) {
         if (b.message[part] === undefined) issue([...b.path, 'message', part], `a ${b.device} message needs ${part}`);
       }
-      const visible = new Set(deriveCheckables(b.device, b.message));
+      const visible = new Set(deriveCheckables(b.device, b.message, b.banner));
       b.inspectables.forEach((ins, i) => {
         if (!visible.has(ins.target)) {
-          issue([...b.path, 'inspectables', i, 'target'], `"${ins.target}" is not visible in this ${b.device} message (checkables: ${[...visible].join(', ')})`);
+          const hint = ins.target === 'request' ? ' (a request checkable needs a banner on the beat that shows what the code or approval is for)' : '';
+          issue([...b.path, 'inspectables', i, 'target'], `"${ins.target}" is not visible in this ${b.device} message (checkables: ${[...visible].join(', ')})${hint}`);
+        }
+        // GDD §17 1-9 beat 3: the banner text is the reveal of the beat's single `request` inspectable.
+        if (ins.target === 'request' && ins.type !== undefined && ins.type !== 'request') {
+          issue([...b.path, 'inspectables', i, 'type'], 'a request checkable has type: request');
+        }
+        if (ins.target === 'request' && b.message.request === 'none') {
+          issue([...b.path, 'inspectables', i, 'target'], 'a request checkable needs message.request on the same beat (e.g. share_code or approve), not none');
         }
       });
+      if (b.banner && !b.banner.message.body) issue([...b.path, 'banner', 'message', 'body'], 'a banner needs a body: its text is the beat\'s request checkable');
       if (b.what_now) {
         const hangUp = b.actions.find((a) => a.kind === 'hang_up');
         if (!hangUp) issue([...b.path, 'what_now'], 'what_now needs a hang_up action on the same beat');
@@ -573,7 +616,22 @@ export type CastMember = z.infer<typeof castMemberSchema>;
 
 /** content/recovery_steps.yaml (CR-07). Categories are assigned per scenario outcome. */
 export const recoveryStepsFileSchema = z
-  .object({ steps: z.array(z.object({ id: snakeId, label: z.string().min(1) }).strict()) })
+  .object({
+    steps: z.array(
+      z
+        .object({
+          id: snakeId,
+          label: z.string().min(1),
+          /**
+           * Shown after damage control when the step was picked and is harmful in that scenario (GDD §9):
+           * why it hurts and what works instead, never a judgement of the person. Required for every step
+           * any outcome lists as `harmful` (scripts/lib/rules.ts).
+           */
+          feedback: z.string().min(1).optional(),
+        })
+        .strict(),
+    ),
+  })
   .strict();
 
 /** content/habit_cards.yaml: one card per learning objective (GDD §11, UI_SPEC §9.1). */

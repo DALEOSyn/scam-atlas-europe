@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { chapterRules, choiceWorst, scenarioRules, LAYER1_OVERHEAD, wordCount } from '../../scripts/lib/rules.ts';
+import { anyFall, BEST_LINE_WORDS, chapterRules, choiceLines, choiceWorst, layer1Slot, scenarioRules, LAYER1_OVERHEAD, wordCount } from '../../scripts/lib/rules.ts';
 import { deriveCheckables, linksIn } from '../../src/content/checkables.ts';
 import { scenarioSchema, type Scenario } from '../../src/content/schema.ts';
-import { rawFraud, rawGenuine, realRegistries, scenario, validChapter } from './fixtures.ts';
+import { rawFraud, rawGenuine, realRegistries, ROOT, scenario, validChapter } from './fixtures.ts';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 type Raw = Record<string, unknown>;
 const reg = realRegistries();
@@ -138,14 +140,42 @@ describe('per-scenario rules (scenarioRules)', () => {
   describe('words', () => {
     it('debrief layer 1 counts the fixed copy and the worst "You chose" line towards the 40-word limit', () => {
       const r = rawFraud();
-      // rawFraud's longest below-3-star label is "Enter card details" (3 words) → "You chose: …" = 5.
+      // rawFraud's longest non-fall line below ★★★ is "You chose: Open the link." (5); "Enter card details"
+      // is a fall, where the kind line takes the slot instead.
       expect(choiceWorst(scenario(r), reg.balance)).toBe(5);
-      const budget = reg.balance.session.debrief_layer1_max_words - LAYER1_OVERHEAD.standard - 5;
+      // The ★★★ line "That is the habit that works." (6) takes the same slot, so the slot costs max(5, 5, 6).
+      const budget = reg.balance.session.debrief_layer1_max_words - LAYER1_OVERHEAD.standard - BEST_LINE_WORDS;
       const tell = (n: number) => Array.from({ length: n }, () => 'word').join(' ');
       (r.debrief as Raw).layer1 = { tell: tell(budget - 1), what_works: 'Open it.' };
-      expect(errorsOf(r).join('\n')).toMatch(/debrief\.layer1 is 41 words in the worst case \(authored 22 \+ fixed 14 \+ "You chose" 5\)/);
+      expect(errorsOf(r).join('\n')).toMatch(/debrief\.layer1 is 41 words in the worst case \(authored 21 \+ fixed 14 \+ slot 6: the ★★★ line\)/);
       (r.debrief as Raw).layer1 = { tell: tell(budget - 2), what_works: 'Open it.' };
       expect(errorsOf(r)).toEqual([]);
+    });
+    it('BEST_LINE_WORDS and LAYER1_OVERHEAD match the catalogue strings they count', () => {
+      const ui = JSON.parse(readFileSync(resolve(ROOT, 'content/i18n/en/ui.json'), 'utf8')) as Record<string, string>;
+      expect(wordCount(ui['outcome_best'])).toBe(BEST_LINE_WORDS);
+      expect(BEST_LINE_WORDS).toBe(6);
+      // "This was a scam:" 4 + "What works:" 2 + "Already clicked or paid? See what to do" 8.
+      expect(LAYER1_OVERHEAD.standard).toBe(Math.max(wordCount(ui['debrief_verdict_fraud']), wordCount(ui['debrief_verdict_genuine'])) + wordCount(ui['debrief_what_works']) + wordCount(ui['debrief_already_link']));
+      expect(LAYER1_OVERHEAD).toEqual({ standard: 14, arc: 10 });
+      expect(wordCount(ui['debrief_no_shame'])).toBe(5);
+    });
+    it('slot after a fall: a fall label never counts (the kind line replaces it); non-fall labels do', () => {
+      const r = rawFraud();
+      const enter = (r.beats as Raw[])[0]?.actions as Raw[];
+      enter[0] = { ...enter[0], label: 'Type in every single card detail they asked' }; // 8 words, a fall
+      expect(anyFall(scenario(r), reg.balance)).toBe(true);
+      expect(choiceWorst(scenario(r), reg.balance)).toBe(5);
+      expect(layer1Slot(scenario(r), reg.balance)).toEqual({ words: 6, source: 'the ★★★ line' });
+      // A long engage label (not a fall) does take the slot.
+      actions(r)[0] = { ...actions(r)[0], label: 'Open the link they sent you right now' };
+      expect(layer1Slot(scenario(r), reg.balance)).toEqual({ words: 10, source: '"You chose: Open the link they sent you right now."' });
+    });
+    it('slot without any fall: no kind line; the exact rendered "You chose" text is counted', () => {
+      const g = rawGenuine();
+      expect(anyFall(scenario(g), reg.balance)).toBe(false);
+      for (const line of choiceLines(scenario(g), reg.balance)) expect(line).toMatch(/^You chose: .+\.$|^You let the timer run out\.$/);
+      expect(layer1Slot(scenario(g), reg.balance).words).toBeGreaterThanOrEqual(BEST_LINE_WORDS);
     });
     it('choice_worst counts the timer line, engage labels and "What now?" extras', () => {
       const timed = rawFraud('t1', { pressure: { timer: true, levers: [] } });
@@ -231,6 +261,26 @@ describe('per-scenario rules (scenarioRules)', () => {
       expect(errs).toMatch(/offer 5–6 options \(has 3\)/);
       expect(errs).toMatch(/at least 2 harmful/);
       expect(errs).toMatch(/one option must be the stop step/);
+    });
+    it('a harmful step needs a non-blaming feedback line (GDD §9)', () => {
+      const r = rawFraud();
+      (r.outcomes as Record<string, Raw>).stolen = {
+        narrative: 'x',
+        recovery: [
+          { step: 'block_card_in_bank_app', category: 'stop' },
+          { step: 'call_bank_known_number', category: 'secure' },
+          { step: 'report_to_police_online', category: 'report' },
+          { step: 'change_password', category: 'harmful' },
+          { step: 'keep_quiet', category: 'harmful' },
+        ],
+      };
+      const errs = errorsOf(r).join('\n');
+      expect(errs).toMatch(/harmful step "change_password" needs a feedback line/);
+      expect(errs).not.toMatch(/"keep_quiet" needs a feedback line/);
+      // A scenario can give its own line for a shared step (steps are reused across scenarios).
+      const recovery = (r.outcomes as Record<string, Raw>).stolen?.recovery as Raw[];
+      recovery[3] = { step: 'change_password', category: 'harmful', feedback: 'Scenario-specific line.' };
+      expect(errorsOf(r).join('\n')).not.toMatch(/needs a feedback line/);
     });
   });
 });
@@ -418,6 +468,48 @@ describe('"What now?" extras and banners (GDD §6, §17 1-9)', () => {
     const withActions = callFraud();
     withActions.banner = { device: 'sms', message: { body: 'x', request: 'none' }, actions: [] };
     expect(schemaErrors(withActions).join('\n')).toMatch(/banner/);
+  });
+  it('a banner adds the beat\'s request checkable; its reveal is the request inspectable (GDD §17 1-9 beat 3)', () => {
+    const r = callFraud();
+    msg(r).request = 'share_code';
+    r.banner = { device: 'sms', message: { sender: { display: 'Larchwick' }, body: 'Code 4471 approves a payment of EUR 900.', request: 'none' } };
+    (r.inspectables as Raw[]).push({ target: 'request', reveal: 'The code is for a payment, not a cancellation.', red_flag: true, type: 'request' });
+    expect(schemaErrors(r)).toEqual([]);
+    const parsed = scenarioSchema.parse(r);
+    expect(deriveCheckables(parsed.device, parsed.message, parsed.banner)).toContain('request');
+    expect(deriveCheckables(parsed.device, parsed.message)).not.toContain('request');
+
+    const noBanner = callFraud();
+    msg(noBanner).request = 'share_code';
+    (noBanner.inspectables as Raw[]).push({ target: 'request', reveal: 'x', red_flag: true });
+    expect(schemaErrors(noBanner).join('\n')).toMatch(/"request" is not visible .*needs a banner/);
+
+    const wrongType = structuredClone(r);
+    const last = (wrongType.inspectables as Raw[]).at(-1);
+    if (last) last.type = 'sender';
+    expect(schemaErrors(wrongType).join('\n')).toMatch(/a request checkable has type: request/);
+
+    const asksNothing = structuredClone(r);
+    msg(asksNothing).request = 'none';
+    expect(schemaErrors(asksNothing).join('\n')).toMatch(/needs message.request on the same beat/);
+
+    const emptyBanner = structuredClone(r);
+    emptyBanner.banner = { device: 'sms', message: { sender: { display: 'Larchwick' }, request: 'none' } };
+    expect(schemaErrors(emptyBanner).join('\n')).toMatch(/a banner needs a body/);
+  });
+});
+
+describe('CR-14: pusher messages can carry lang and translation', () => {
+  it('a foreign-language pusher needs its inline translation', () => {
+    const ok = rawFraud();
+    ok.pressure = { timer: true, levers: ['urgency'], pusher: { messages: [{ at_seconds: 20, text: 'Letzte Erinnerung: heute zahlen.', lang: 'de', translation: 'Last reminder: pay today.' }] } };
+    expect(schemaErrors(ok)).toEqual([]);
+    const missing = rawFraud();
+    missing.pressure = { timer: true, levers: ['urgency'], pusher: { messages: [{ at_seconds: 20, text: 'Letzte Erinnerung.', lang: 'de' }] } };
+    expect(schemaErrors(missing).join('\n')).toMatch(/pusher text in lang "de" needs an inline translation/);
+    const en = rawFraud();
+    en.pressure = { timer: true, levers: ['urgency'], pusher: { messages: [{ at_seconds: 20, text: 'Reminder.', lang: 'en' }] } };
+    expect(schemaErrors(en)).toEqual([]);
   });
 });
 

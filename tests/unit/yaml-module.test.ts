@@ -42,7 +42,16 @@ describe('runtime scenario data carries schema defaults (vite content plugin)', 
   });
 
   it('other YAML is passed through unchanged', () => {
-    expect(yamlModuleData(resolve(ROOT, 'content/brands.yaml'), 'a: 1\n', SCENARIOS)).toEqual({ a: 1 });
+    expect(yamlModuleData(resolve(ROOT, 'content/habit_cards.yaml'), 'a: 1\n', SCENARIOS)).toEqual({ a: 1 });
+  });
+
+  it('brands.yaml ships only id, names and the mark file (no review-only fields in the bundle)', () => {
+    const file = resolve(ROOT, 'content/brands.yaml');
+    const data = yamlModuleData(file, readFileSync(file, 'utf8'), SCENARIOS) as Record<string, unknown>[];
+    expect(data.length).toBeGreaterThan(0);
+    for (const b of data) expect(Object.keys(b).every((k) => ['id', 'name', 'short_name', 'mark'].includes(k))).toBe(true);
+    expect(data.find((b) => b.id === 'kettle')).toMatchObject({ name: 'Kettle', mark: 'brands/kettle-mark.svg' });
+    expect(JSON.stringify(data)).not.toMatch(/checked_against|rationale|web_check/);
   });
 
   it('isInside is separator- and prefix-safe', () => {

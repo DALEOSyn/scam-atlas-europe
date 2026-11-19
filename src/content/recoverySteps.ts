@@ -4,7 +4,12 @@
  */
 import data from '../../content/recovery_steps.yaml';
 
-const steps = (data as { steps: { id: string; label: string }[] }).steps;
+const steps = (data as { steps: { id: string; label: string; feedback?: string }[] }).steps;
+
+/** GDD §9 feedback for a harmful pick: why it hurts and what works instead (no blame). */
+export function recoveryStepFeedback(id: string): string | undefined {
+  return steps.find((s) => s.id === id)?.feedback;
+}
 
 export function recoveryStepLabel(id: string): string {
   return steps.find((s) => s.id === id)?.label ?? id.replace(/_/g, ' ');

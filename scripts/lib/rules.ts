@@ -10,13 +10,17 @@
  *   `status: draft` chapters, so chapters can be written incrementally.
  */
 import { deriveCheckables } from '../../src/content/checkables.ts';
-import { classOf, starsFor, truthOf } from '../../src/engine/scoring.ts';
+import { classOf, isFall, starsFor, truthOf } from '../../src/engine/scoring.ts';
+import { choiceLineText } from '../../src/engine/choiceText.ts';
+import type { ChoiceLine } from '../../src/engine/debrief.ts';
+import { lookup } from '../../src/i18n/index.ts';
 import {
   HIGH_STAKES_REQUESTS,
   LANGUAGE_TYPES,
   NEVER_PROOF_TYPES,
   SCORED_ROLES,
   type Action,
+  type ActionClass,
   type Balance,
   type CastMember,
   type Chapter,
@@ -31,6 +35,8 @@ export interface Registries {
   balance: Balance;
   cast: Map<string, CastMember>;
   recoverySteps: Set<string>;
+  /** Steps with a harmful-pick feedback line (GDD §9); undefined skips the check. */
+  recoveryFeedback?: Set<string> | undefined;
   habitCards: Map<string, HabitCard>;
   /** Known learning objectives (docs/LEARNING_OBJECTIVES.md); undefined skips the check. */
   los?: Set<string> | undefined;
@@ -46,13 +52,24 @@ export interface RuleResult {
   warnings: string[];
 }
 
+/** Word count of a catalogue string (content/i18n/en/ui.json); 0 when the key does not exist yet. */
+function wcKey(key: string): number {
+  return wordCount(lookup(key));
+}
+
 /**
  * Fixed copy around the authored layer-1 text (UI_SPEC §8.1), counted towards
- * session.debrief_layer1_max_words: the verdict chip ("This was a scam:", 4),
- * the "What works:" label (2) and the already-clicked line ("Already clicked
- * or paid? See what to do", 8). Arc debriefs have no verdict.
+ * session.debrief_layer1_max_words, read from the catalogue: the verdict chip (the longer of
+ * "This was a scam:" / "This was genuine:"), the "What works:" label and the already-clicked line.
+ * Arc debriefs have no verdict: "The habit:" and the arc already-clicked line.
  */
-export const LAYER1_OVERHEAD = { standard: 4 + 2 + 8, arc: 2 + 8 } as const;
+export const LAYER1_OVERHEAD = {
+  standard: Math.max(wcKey('debrief_verdict_fraud'), wcKey('debrief_verdict_genuine')) + wcKey('debrief_what_works') + wcKey('debrief_already_link'),
+  arc: wcKey('debrief_the_habit') + wcKey('debrief_already_link_arc'),
+} as const;
+
+/** "That is the habit that works." (ui.json `outcome_best`): the ★★★ line in the layer-1 slot. */
+export const BEST_LINE_WORDS = wcKey('outcome_best');
 
 export function wordCount(text: string | undefined): number {
   return text ? text.trim().split(/\s+/u).filter((w) => /[\p{L}\p{N}]/u.test(w)).length : 0;
@@ -105,12 +122,6 @@ export function isDecoy(i: Inspectable): boolean {
 
 /** UI_SPEC §8.1: action labels are capped so the "You chose" line stays short. */
 export const ACTION_LABEL_MAX_WORDS = 8;
-/** "You chose: " (2) + the timer line "You let the timer run out." (6 words in total). */
-const YOU_CHOSE_PREFIX = 2;
-const TIMER_LINE_WORDS = 6;
-/** Built-in "What now?" choices that can leave a beat below ★★★ (content/i18n/en/ui.json: what_now_report, what_now_done). */
-const WHAT_NOW_BUILTIN_WORDS = { report: 3, done: 1 } as const;
-
 function whatNowsOf(s: Scenario): [string, NonNullable<Scenario['what_now']>][] {
   const out: [string, NonNullable<Scenario['what_now']>][] = [];
   if (s.what_now) out.push(['opening message', s.what_now]);
@@ -118,31 +129,81 @@ function whatNowsOf(s: Scenario): [string, NonNullable<Scenario['what_now']>][] 
   return out;
 }
 
-/**
- * choice_worst (UI_SPEC §8.1): the longest "You chose" line this scenario can produce. Every action (and
- * "What now?" extra or built-in) that can leave it below 3 stars counts, engage actions included; plus
- * the timer line when the scenario has a timer.
- */
-export function choiceWorst(s: Scenario, balance: Registries['balance']): number {
+/** Class of each built-in "What now?" choice (docs/ENGINE.md). */
+const WHAT_NOW_BUILTIN_CLASS = { call_back_known: 'verify', report: 'report', done: 'dismiss' } as const;
+
+/** Does the scenario have an action that is a fall (comply or proceed on fraud)? */
+export function anyFall(s: Scenario, balance: Registries['balance']): boolean {
   const truth = truthOf(s);
-  const below3 = (kind: Action['kind']) => {
-    const c = classOf(balance, kind);
-    if (c === 'meta') return false;
-    if (c === 'engage') return true;
-    const st = starsFor(balance, c, truth);
+  return beatsOf(s)
+    .filter((b) => !b.interrupt)
+    .some((b) => b.actions.some((a) => isFall(classOf(balance, a.kind), truth)));
+}
+
+/**
+ * Every "You chose" line this scenario can put in the layer-1 slot, as the exact text
+ * choiceLineText() renders (src/engine/choiceText.ts, shared with DebriefView). Counted: every action,
+ * "What now?" extra and built-in that can leave it (or a boss beat) below 3 stars and is NOT a fall
+ * (after a fall the kind line takes the slot), engage actions included; the timer line when timed.
+ * Optional catalogue lines are included as soon as their keys exist (L1–L4 follow-ups):
+ * you_chose_whatnow_* (via choiceLineText), you_chose_report_genuine / _dismiss_genuine /
+ * _dismiss_started on genuine scenarios, and next_time_after_hang_up on a boss with a dismiss on fraud.
+ */
+export function choiceLines(s: Scenario, balance: Registries['balance']): string[] {
+  const truth = truthOf(s);
+  const below3 = (cls: ReturnType<typeof classOf>) => {
+    if (cls === 'meta' || isFall(cls, truth)) return false;
+    if (cls === 'engage') return true;
+    const st = starsFor(balance, cls, truth);
     return typeof st === 'number' ? st < 3 : true;
   };
-  const labels: string[] = [];
+  const lines: ChoiceLine[] = [];
+  const classes = new Set<string>();
+  if (s.pressure.timer) lines.push({ beatId: 'start', kind: 'timer' });
   for (const b of beatsOf(s).filter((x) => !x.interrupt)) {
-    for (const a of b.actions) if (below3(a.kind)) labels.push(a.label);
+    for (const a of b.actions) {
+      const cls = classOf(balance, a.kind);
+      if (below3(cls)) {
+        lines.push({ beatId: b.where, kind: 'action', label: a.label });
+        classes.add(cls);
+      }
+    }
   }
-  let worst = s.pressure.timer ? TIMER_LINE_WORDS : 0;
-  for (const l of labels) worst = Math.max(worst, YOU_CHOSE_PREFIX + wordCount(l));
   for (const [, wn] of whatNowsOf(s)) {
-    for (const x of wn.extra) if (below3(x.kind)) worst = Math.max(worst, YOU_CHOSE_PREFIX + wordCount(x.label));
-    worst = Math.max(worst, YOU_CHOSE_PREFIX + Math.max(WHAT_NOW_BUILTIN_WORDS.report, WHAT_NOW_BUILTIN_WORDS.done));
+    for (const x of wn.extra) if (below3(classOf(balance, x.kind))) lines.push({ beatId: 'what_now', kind: 'action', label: x.label });
+    for (const [choice, cls] of Object.entries(WHAT_NOW_BUILTIN_CLASS) as [keyof typeof WHAT_NOW_BUILTIN_CLASS, ActionClass][]) {
+      if (below3(cls)) {
+        lines.push({ beatId: 'what_now', kind: 'what_now', choice });
+        classes.add(cls);
+      }
+    }
   }
-  return worst;
+  const texts = lines.map((c) => choiceLineText(c, lookup));
+  const optional = (key: string, when: boolean) => {
+    const text = when ? lookup(key) : undefined;
+    if (text) texts.push(text);
+  };
+  optional('you_chose_report_genuine', truth !== 'fraud' && classes.has('report'));
+  optional('you_chose_dismiss_genuine', truth !== 'fraud' && classes.has('dismiss'));
+  optional('you_chose_dismiss_started', truth !== 'fraud' && classes.has('dismiss'));
+  optional('next_time_after_hang_up', s.role === 'boss' && truth === 'fraud' && classes.has('dismiss'));
+  return texts;
+}
+
+/** The longest "You chose" line (words), see choiceLines(). */
+export function choiceWorst(s: Scenario, balance: Registries['balance']): number {
+  return Math.max(0, ...choiceLines(s, balance).map(wordCount));
+}
+
+/**
+ * The layer-1 slot (layer-1 ruling 2026-11-19): it holds ONE of the ★★★ line, the kind line (after a
+ * fall, instead of any choice line) or a "You chose" line, so it costs the longest of them.
+ */
+export function layer1Slot(s: Scenario, balance: Registries['balance']): { words: number; source: string } {
+  const candidates: { words: number; source: string }[] = [{ words: BEST_LINE_WORDS, source: 'the ★★★ line' }];
+  if (anyFall(s, balance)) candidates.push({ words: wcKey('debrief_no_shame'), source: 'the kind line after a fall' });
+  for (const text of choiceLines(s, balance)) candidates.push({ words: wordCount(text), source: `"${text}"` });
+  return candidates.reduce((a, b) => (b.words > a.words ? b : a));
 }
 
 export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
@@ -305,16 +366,21 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
     if (scoredBeats > max) errors.push(`a boss has at most ${max} scored beats (has ${scoredBeats}); mark later beats scored: false`);
   }
 
-  // Debrief layer 1 word budget (UI_SPEC §8.1): fixed + authored + the worst-case "You chose" line.
-  const overhead = LAYER1_OVERHEAD[s.debrief.variant];
-  const arcDebrief = s.debrief.variant === 'arc';
-  const authored = wordCount(s.debrief.layer1.tell) + wordCount(s.debrief.layer1.what_works) + (arcDebrief ? wordCount(s.debrief.safeguarding_line) : 0);
-  const choice = arcDebrief ? 0 : choiceWorst(s, balance);
-  const words = authored + overhead + choice;
-  if (words > session.debrief_layer1_max_words) {
-    errors.push(
-      `debrief.layer1 is ${words} words in the worst case (authored ${authored} + fixed ${overhead} + "You chose" ${choice}); the limit is ${session.debrief_layer1_max_words}`,
-    );
+  // Debrief layer 1 word budget (UI_SPEC §8.1, layer-1 ruling 2026-11-19). Outcome narratives and
+  // deadline_fake are shown in the consequence step, not in layer 1, so they count 0.
+  {
+    const arcDebrief = s.debrief.variant === 'arc';
+    const overhead = LAYER1_OVERHEAD[s.debrief.variant];
+    const authored = wordCount(s.debrief.layer1.tell) + wordCount(s.debrief.layer1.what_works) + (arcDebrief ? wordCount(s.debrief.safeguarding_line) : 0);
+    const slot = arcDebrief
+      ? { words: anyFall(s, balance) ? wcKey('debrief_no_shame') : 0, source: 'the kind line after a fall' }
+      : layer1Slot(s, balance);
+    const words = authored + overhead + slot.words;
+    if (words > session.debrief_layer1_max_words) {
+      errors.push(
+        `debrief.layer1 is ${words} words in the worst case (authored ${authored} + fixed ${overhead} + slot ${slot.words}: ${slot.source}); the limit is ${session.debrief_layer1_max_words}`,
+      );
+    }
   }
 
   // Damage control (CR-07).
@@ -334,6 +400,11 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
     const ids = o.recovery.map((r) => r.step);
     for (const id of ids) if (!reg.recoverySteps.has(id)) errors.push(`outcomes.${key}.recovery: unknown step "${id}" (content/recovery_steps.yaml)`);
     if (new Set(ids).size !== ids.length) errors.push(`outcomes.${key}.recovery: duplicate steps`);
+    for (const r of o.recovery) {
+      if (r.category === 'harmful' && !r.feedback && reg.recoveryFeedback && !reg.recoveryFeedback.has(r.step)) {
+        errors.push(`outcomes.${key}.recovery: harmful step "${r.step}" needs a feedback line (here or in content/recovery_steps.yaml; GDD §9: why it hurts, what works instead, no blame)`);
+      }
+    }
     const harmful = o.recovery.filter((r) => r.category === 'harmful').length;
     if (o.recovery.length < pick + 2 || o.recovery.length > pick + 3) errors.push(`outcomes.${key}.recovery: offer ${pick + 2}–${pick + 3} options (has ${o.recovery.length})`);
     if (harmful < 2) errors.push(`outcomes.${key}.recovery: include at least 2 harmful options (has ${harmful})`);

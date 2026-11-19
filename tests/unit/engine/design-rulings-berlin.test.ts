@@ -212,7 +212,7 @@ describe('5. message.earlier (QA L5)', () => {
     expect(issues(mail).join('\n')).not.toMatch(/earlier/);
     const call = structuredClone(boss()) as unknown as Raw;
     ((call.beats as Raw[]).find((b) => b.id === 'support_call')?.message as Raw).earlier = earlier;
-    expect(issues(call).join('\n')).toMatch(/earlier \(thread history\) is for sms, messenger and email messages only/);
+    expect(issues(call).join('\n')).toMatch(/earlier \(thread history\) is for sms, messenger, marketplace and email messages only/);
     const foreign = rawFraud();
     (foreign.message as Raw).earlier = [{ when: 'Gestern', body: 'Ihr Paket ist unterwegs.', lang: 'de' }];
     expect(issues(foreign).join('\n')).toMatch(/needs an inline translation/);

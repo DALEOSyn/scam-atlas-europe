@@ -1,0 +1,77 @@
+# CR-34: code then confirm. Sending the payment code opens the bank app's confirmation (code_confirm);
+# Confirm is the fall, Decline or "Decline and call" score ★★ (ruling R18).
+id: fx-cr34-code-confirm
+chapter: fixtures
+role: standard
+pattern: messenger-account-takeover-code
+theme: payment-code
+learning_objectives: [LO-05, LO-07]
+difficulty: 4
+is_fraud: true
+device: messenger
+brands: [kettle, larchwick]
+pressure: { timer: true, levers: [affection, urgency] }
+
+message:
+  sender: { display: "Kasia (Warsaw)", detail: "Saved contact: Kasia (Warsaw)" }
+  body: "Help! My card's been declined at the music shop. Can you send me a 6-digit payment code from your Larchwick app? I'll pay you back tonight, promise."
+  request: share_code
+  ask: { text: "Can you send me a 6-digit payment code from your Larchwick app?" }
+  claims: [{ text: "My card's been declined at the music shop." }]
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows Kasia's saved contact, as a real message from her would. An account can be taken over, so it can't prove anything either way."
+    red_flag: false
+  - target: claim
+    reveal: "An excuse for asking. Real cards do get declined, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "A payment code from your banking app pays from your account once you confirm. Never send it to anyone."
+    red_flag: true
+    type: request
+
+actions:
+  - { id: send_code, label: "Make a code and send it to her", kind: share_code, next_beat: code_confirm, pressure_target: true }
+  - { id: call_kasia, label: "Call Kasia's saved number", kind: call_back_known, outcome: kasia_safe }
+  - { id: report_chat, label: "Report the chat", kind: report, outcome: reported }
+  - { id: ignore_it, label: "Ignore it", kind: ignore, outcome: left }
+
+beats:
+  - id: code_confirm
+    device: banking
+    message:
+      payee: { name: "TREMOLIK", amount: "€249.00", code_confirm: true }
+      request: pay
+    inspectables:
+      - target: payee.name
+        reveal: "Not Kasia: a shop you're not in."
+        red_flag: true
+    actions:
+      - { id: confirm_payment, label: "Confirm", kind: pay, outcome: paid_shop, pressure_target: true }
+      - { id: decline_call, label: "Decline and call Kasia", kind: call_back_known, outcome: kasia_safe }
+      - { id: decline, label: "Decline", kind: ignore, outcome: declined }
+
+outcomes:
+  paid_shop:
+    narrative: "'Thanks!!' Then: 'It didn't go through, can you send one more?'"
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: tell_real_person, category: warn }
+      - { step: keep_evidence, category: secure }
+      - { step: reply_ask_money_back, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  kasia_safe: { narrative: "Kasia: 'Strings? I'm in rehearsal. Someone's in my Kettle!'" }
+  reported: { narrative: "Reported. Now call Kasia on her number so she can get her account back." }
+  left: { narrative: "The chat goes quiet." }
+  declined: { narrative: "You decline. Nothing leaves your account." }
+
+debrief:
+  layer1: { tell: "Her real chat, but a code from your bank app.", what_works: "Never send a code. Call her." }
+  device_tip: "Read who gets the money before you confirm anything in your app."
+  habit_card: codes-are-only-for-you
+  already_clicked:
+    shared_code: "Sent a code? If the app asks you to confirm, don't. If you already confirmed, call your bank now."
+  sources: [eu-ebf-cyberscams]

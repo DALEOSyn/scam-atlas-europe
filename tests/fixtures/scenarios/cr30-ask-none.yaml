@@ -1,0 +1,46 @@
+# CR-30: an ask on `request: none` (the sentence telling the reader what to do) is the request checkable.
+id: fx-cr30-ask-none
+chapter: fixtures
+role: standard
+pattern: smishing-parcel-fee
+theme: parcel
+learning_objectives: [LO-03, LO-17]
+difficulty: 2
+is_fraud: false
+stakes: low
+device: sms
+brands: [trundle]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Trundle", detail: "TRUNDLE" }
+  body: "Trundle: your return label is ready in the app. Print your label and drop it at a Trundle locker by Friday. trundle.example/returns"
+  request: none
+  ask: { text: "Print your label and drop it at a Trundle locker by Friday." }
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: the short sender name Trundle always uses. That isn't proof on its own, so weigh it with what it asks: to post a parcel."
+    red_flag: false
+    reassures: true
+  - target: request
+    reveal: "Asks you to post the parcel. No card, no login, nothing to pay."
+    red_flag: false
+    type: request
+
+actions:
+  - { id: print_label, label: "Print the label", kind: proceed, outcome: posted, pressure_target: true }
+  - { id: check_app, label: "Check the return in the Trundle app", kind: verify_in_app, outcome: posted }
+  - { id: report_it, label: "Report the text", kind: report, outcome: reported }
+  - { id: ignore_it, label: "Ignore it for now", kind: ignore, outcome: later }
+
+outcomes:
+  posted: { narrative: "The locker takes the parcel. Done." }
+  reported: { narrative: "You reported a real return label." }
+  later: { narrative: "The app reminds you once more on Thursday." }
+
+debrief:
+  layer1: { tell: "A label you asked for, nothing to pay.", what_works: "Posting it was right." }
+  device_tip: "Open the courier's app yourself to see your returns."
+  habit_card: calm-not-paranoid
+  sources: [eu-europol-phishing-leaflet]

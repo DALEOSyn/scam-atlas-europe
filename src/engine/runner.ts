@@ -98,6 +98,13 @@ export interface GroupState {
    * the next scheduled beat is held (CR-18(e)): it arrives only after the banking card closes.
    */
   transferBeat?: string | undefined;
+  /**
+   * CR-34: the payment code shared in this group (a share_code with next_beat into the bank app's
+   * confirmation). Non-terminal; caps the group at points.code_then_confirm.star_cap (★★, ruling R18).
+   */
+  codeShared?: { id: string; label: string } | undefined;
+  /** CR-31: scenario-clock time the group's current call started (the on-call bar's mm:ss); undefined off a call. */
+  callSince?: number | undefined;
 }
 
 export interface InterruptState {
@@ -241,8 +248,9 @@ function newTimer(s: Scenario, ctx: RunnerContext, device: Device, scheduled: bo
   return len === null ? null : startTimer(len);
 }
 
-function newGroup(s: Scenario, beatId: string): GroupState {
+function newGroup(s: Scenario, beatId: string, at = 0): GroupState {
   const b = s.beats.find((x) => x.id === beatId);
+  const device = beatId === 'start' ? s.device : b?.device;
   return {
     beatId,
     current: beatId,
@@ -261,6 +269,8 @@ function newGroup(s: Scenario, beatId: string): GroupState {
     pausedUnderPressure: false,
     checkedBefore: [],
     transferBeat: undefined,
+    codeShared: undefined,
+    callSince: device === 'call' ? at : undefined,
   };
 }
 
@@ -466,8 +476,10 @@ function moveToBeat(s: Scenario, ctx: RunnerContext, st: RunnerState, g: GroupSt
   const beat = s.beats.find((b) => b.id === beatId);
   if (!beat) return st;
   const firstVisit = !g.visited.includes(beatId);
-  const g2: GroupState = { ...g, current: beatId, visited: firstVisit ? [...g.visited, beatId] : g.visited };
   const prev = storyBeat(s, g.current);
+  // CR-31: a call keeps running while the player follows it into the bank app (start_transfer from a call).
+  const callSince = beat.device === 'call' ? (prev?.device === 'call' ? g.callSince : st.clock) : via === 'start_transfer' && prev?.device === 'call' ? g.callSince : undefined;
+  const g2: GroupState = { ...g, current: beatId, visited: firstVisit ? [...g.visited, beatId] : g.visited, callSince };
   // A call beat runs on its own call length. [P] Amsterdam QA p (2-7): when a call leads into a non-call
   // beat, that beat starts a fresh slot-length timer (the call kept its own 30 s); further follow-ups keep
   // the running timer.
@@ -661,16 +673,27 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
         // The call is over: its follow-ups stop with it (QA M2). Its after_beat interrupts wait until the
         // "What now?" choice is made (CR-27 ruling): resolveGroup marks them due.
         return { ...withGroup(next, { ...g2, pendingOutcome: action.outcome }), phase: 'what_now', timer: null, pushers: stopPushers(next.pushers) };
+      } else if (action.kind === 'share_code' && action.next_beat !== undefined) {
+        // CR-34: the code is shared, but the bank app still asks to confirm. Non-terminal and never decisive:
+        // the confirmation's own action decides, and the group is capped at ★ whatever comes next.
+        g2 = { ...g2, codeShared: g2.codeShared ?? { id: action.id, label: action.label } };
       } else if (isSetupStep(beat, action, cls, st.truth)) {
         // GDD §6 / §16 ruling 2: proceeding from a setup beat (an opener that asks nothing) is not the
         // decisive action. Recording it would let a timer expiry on the next beat score as that proceed
         // (QA T-2.8 M1), and would end LO-01/LO-04 credit (checks and pauses "before deciding") early.
       } else {
-        if (cls === 'engage' && !g2.firstEngage) g2 = { ...g2, firstEngage: { id: action.id, label: action.label } };
+        // CR-31(b), ruling R16: a start_transfer with `cap: engage` (following a fraud caller's steps into
+        // your own bank app) counts as an engage for the cap and the "You chose" line; it still never decides.
+        const engages = cls === 'engage' || (action.kind === 'start_transfer' && action.cap === 'engage');
+        if (engages && !g2.firstEngage) g2 = { ...g2, firstEngage: { id: action.id, label: action.label } };
+        // CR-35: on a scheduled boss beat, an engage with an outcome (no next_beat) ends the group: it decides,
+        // at the engage cap (★★). Elsewhere (arc beats, standard scenarios) an engage keeps its old behaviour.
+        const bossBeatEnd = s.role === 'boss' && cls === 'engage' && action.outcome !== undefined && st.schedule.some((x) => x.beatId === beat.id);
+        const terminalEngage = ctx.balance.points.engage_on_fraud.terminal || bossBeatEnd;
         g2 = {
           ...g2,
-          decision: mergeDecision(g.decision, decisionOf(ctx.balance, action), st.truth, ctx.balance.points.engage_on_fraud.terminal),
-          engagedOnFraud: g.engagedOnFraud || (cls === 'engage' && st.truth === 'fraud'),
+          decision: mergeDecision(g.decision, decisionOf(ctx.balance, action), st.truth, terminalEngage),
+          engagedOnFraud: g.engagedOnFraud || (engages && st.truth === 'fraud'),
         };
       }
       // Verify shows the truth: the deadline pressure is over for this group (sceptic T-2.1 #2).
@@ -776,7 +799,7 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
       if (next.phase !== 'playing') return next;
       if (!next.arrived.includes(nextBeat.beatId)) next = { ...next, arrived: [...next.arrived, nextBeat.beatId] };
       const beat = s.beats.find((b) => b.id === nextBeat.beatId);
-      next = { ...next, groups: [...next.groups, newGroup(s, nextBeat.beatId)], timer: beat ? newTimer(s, ctx, beat.device, true, beat.timer_seconds) : null };
+      next = { ...next, groups: [...next.groups, newGroup(s, nextBeat.beatId, next.clock)], timer: beat ? newTimer(s, ctx, beat.device, true, beat.timer_seconds) : null };
       // This beat's follow-ups are timed from now, when it is on screen (QA M2).
       next = { ...next, pushers: armBeat(ctx.balance, pusherPlanOf(s), next.pushers, nextBeat.beatId, next.clock, stressState(ctx.balance, next.stress)) };
       next = arriveDue(ctx, next);
@@ -854,6 +877,8 @@ export function senderBeatBefore(s: Scenario, g: Pick<GroupState, 'visited'>, be
 export interface PusherMessageView {
   /** Index in the authored list (stable key). */
   index: number;
+  /** CR-21: the beat the follow-up is bound to (`beat:`), if any. CR-31 shows those of the banking beat in the on-call bar. */
+  boundTo?: string | undefined;
   text: string;
   at: number;
   /** The scheduled beat it belongs to, and that beat's channel and sender (QA M2). */
@@ -902,7 +927,25 @@ export interface RunnerView {
   consequenceAsides: string[];
   /** The beat that just ended was "already checked" (boss covered_by, ruling QA fun note a). */
   consequenceCovered: boolean;
-  recovery: { options: RecoveryOption[]; pick: number } | null;
+  /** CR-32: `forCast` is the cast id whose damage control it is (outcome `recovery_for`), else null. */
+  recovery: { options: RecoveryOption[]; pick: number; forCast: string | null } | null;
+  /**
+   * CR-31: the on-call bar over a banking beat reached by start_transfer from a call: "On a call · {caller} ·
+   * mm:ss". `seconds` since the call started (scenario clock); `hangUp` lists the banking beat's own
+   * verify, report and dismiss actions (verify first), which the bar's Hang up control points to: no new path.
+   */
+  onCall: { caller: string; callBeatId: string; seconds: number; hangUp: string[] } | null;
+}
+
+/**
+ * CR-31: the call the player followed into the bank app, if the group's current beat is the banking beat
+ * opened by start_transfer from a call beat.
+ */
+export function callBehind(s: Scenario, g: Pick<GroupState, 'current' | 'visited' | 'transferBeat'>): BeatLike | undefined {
+  if (g.transferBeat === undefined || g.current !== g.transferBeat) return undefined;
+  const at = g.visited.indexOf(g.current);
+  const prev = at > 0 ? storyBeat(s, g.visited[at - 1] ?? '') : undefined;
+  return prev?.device === 'call' && prev.actions.some((a) => a.kind === 'start_transfer' && a.next_beat === g.current) ? prev : undefined;
 }
 
 /** The timer-expiry line (consequence caption and layer 2 "What happened", UI_SPEC §7). */
@@ -977,7 +1020,7 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
           // message: channel and sender of the most recently visited beat of the group that has a sender
           // (engine review follow-up c), else the group's scheduled beat (sceptic T-3.3).
           const ob = bound && !hasSender(bound) ? (senderBeatBefore(s, g, bound.id) ?? storyBeat(s, g.beatId)) : bound;
-          return m && ob ? [{ index: f.index, text: m.text, at: f.at, lang: m.lang, translation: m.translation, beatId: ob.id, device: ob.device, sender: ob.message.sender?.display ?? '' }] : [];
+          return m && ob ? [{ index: f.index, boundTo: m.beat, text: m.text, at: f.at, lang: m.lang, translation: m.translation, beatId: ob.id, device: ob.device, sender: ob.message.sender?.display ?? '' }] : [];
         })
       : [],
     timer: st.timer && live ? { remaining: st.timer.remaining, length: st.timer.length, expiries: st.timer.expiries, frozen: frozen(st), coachMark: st.freezes.includes('coach_mark') } : null,
@@ -1003,6 +1046,30 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
     consequenceDeadline: !st.tail && !!last && last.timerExpired && !last.outcome ? deadlineLine(s.is_fraud, st.groups.some((x) => groupFell(x, st.truth))) : null,
     consequenceCovered: st.phase === 'consequence' && !st.tail && !!last && coveredDecision(s, st.groups, last).covered,
     consequenceAsides: st.phase !== 'consequence' ? [] : st.tail ? interruptNarratives(s, st, st.groups.length) : last ? interruptNarratives(s, st, st.groups.indexOf(last)) : [],
-    recovery: st.phase === 'damage_control' && st.recovery ? { options: st.recovery.options, pick: ctx.balance.recovery.pick } : null,
+    recovery: st.phase === 'damage_control' && st.recovery ? { options: st.recovery.options, pick: ctx.balance.recovery.pick, forCast: recoveryForOf(s, st) } : null,
+    onCall: onCallOf(s, ctx, st, live && st.phase === 'playing' ? g : undefined),
   };
+}
+
+/** CR-32: whose damage control it is: the `recovery_for` of the outcome that opened it (the last fallen group's). */
+function recoveryForOf(s: Scenario, st: RunnerState): string | null {
+  for (const g of [...st.groups].reverse()) {
+    const id = g.outcome ? s.outcomes[g.outcome]?.recovery_for : undefined;
+    if (id !== undefined) return id;
+  }
+  return null;
+}
+
+function onCallOf(s: Scenario, ctx: RunnerContext, st: RunnerState, g: GroupState | undefined): RunnerView['onCall'] {
+  if (!g) return null;
+  const call = callBehind(s, g);
+  const bank = call ? storyBeat(s, g.current) : undefined;
+  if (!call || !bank) return null;
+  const rank = { verify: 0, report: 1, dismiss: 2 } as Partial<Record<ActionClass, number>>;
+  const hangUp = bank.actions
+    .map((a) => ({ id: a.id, r: rank[classOf(ctx.balance, a.kind)] }))
+    .filter((x): x is { id: string; r: number } => x.r !== undefined)
+    .sort((a, b) => a.r - b.r)
+    .map((x) => x.id);
+  return { caller: call.message.sender?.display ?? '', callBeatId: call.id, seconds: Math.max(0, st.clock - (g.callSince ?? st.clock)), hangUp };
 }

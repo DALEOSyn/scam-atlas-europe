@@ -66,11 +66,11 @@ describe('CR-17 (a): message.ask on pay, enter_details and reply from slot 2', (
   it('exempts banking beats (their payee is the checkable)', () => {
     expect(chapterWith(2, [rawTransfer()])).not.toMatch(/CR-17/);
   });
-  it('an ask is allowed on pay, enter_details and reply only (plus share_code / approve)', () => {
+  it('an ask is allowed on pay, enter_details and reply (plus share_code / approve; CR-30: call, log_in, open_link, none), never on scan_qr or install', () => {
     const raw = rawTransfer();
     expect(schemaErrors(raw)).toEqual([]);
     const none = clone(raw);
-    (none.message as Raw).request = 'open_link';
+    (none.message as Raw).request = 'install';
     expect(schemaErrors(none).join('\n')).toMatch(/ask is only for messages whose request is/);
   });
 });

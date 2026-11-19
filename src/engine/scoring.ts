@@ -127,7 +127,14 @@ export function scoreGroup(
   b: Pick<Balance, 'stars' | 'points' | 'tutorial_grace' | 'timer_expiry'>,
   truth: Truth,
   decision: Decision | undefined,
-  opts: { engagedOnFraud: boolean; timerExpired: boolean; /** Chapter slot, for tutorial grace. */ slot?: number },
+  opts: {
+    engagedOnFraud: boolean;
+    timerExpired: boolean;
+    /** Chapter slot, for tutorial grace. */
+    slot?: number;
+    /** CR-34: a payment code was shared in the group (points.code_then_confirm.star_cap). */
+    codeShared?: boolean;
+  },
 ): GroupScore {
   // Expiry scores as dismiss only when nothing was decided yet: a verify (or any decision) before the
   // deadline keeps its own score (sceptic T-2.1 #2).
@@ -135,8 +142,10 @@ export function scoreGroup(
   const cls: ActionClass = expired ? b.stars.timer_expiry : (decision?.cls ?? b.stars.timer_expiry);
   const raw = starsFor(b, cls, truth);
   let stars = typeof raw === 'number' ? raw : raw === 'non_terminal' ? b.points.engage_on_fraud.star_cap : 0;
-  const capped = opts.engagedOnFraud && truth === 'fraud';
-  if (capped) stars = Math.min(stars, b.points.engage_on_fraud.star_cap);
+  const codeCapped = !!opts.codeShared && truth === 'fraud';
+  const capped = (opts.engagedOnFraud || codeCapped) && truth === 'fraud';
+  if (opts.engagedOnFraud && truth === 'fraud') stars = Math.min(stars, b.points.engage_on_fraud.star_cap);
+  if (codeCapped) stars = Math.min(stars, b.points.code_then_confirm.star_cap);
   const fell = !expired && isFall(cls, truth);
   if (fell) return { cls, stars: 0, points: 0, fell, timerExpired: expired, capped };
   let points = stars * b.points.per_star;

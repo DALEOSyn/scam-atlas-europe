@@ -55,6 +55,20 @@ export function linksIn(text: string | undefined): string[] {
   return text ? [...text.matchAll(LINK_RE)].map((m) => trimLink(m[0])) : [];
 }
 
+/** CR-33: the listing card as it reads ("Rucksack · €35.00"). */
+export function listingText(m: Pick<Message, 'listing'>): string | undefined {
+  return m.listing ? `${m.listing.title} · ${m.listing.price}` : undefined;
+}
+
+/**
+ * The message's references in reading order. CR-33: a marketplace listing card is the first one
+ * (checkable `reference`), so `message.references` then continue as reference#2, reference#3 …
+ */
+export function referencesOf(m: Pick<Message, 'listing' | 'references'>): string[] {
+  const card = listingText(m);
+  return [...(card ? [card] : []), ...(m.references ?? [])];
+}
+
 function numbered(base: string, count: number): string[] {
   return Array.from({ length: count }, (_, i) => (i === 0 ? base : `${base}#${i + 1}`));
 }
@@ -78,13 +92,14 @@ export function deriveCheckables(device: Device, m: Message): string[] {
   const transcript = m.transcript?.map((l) => l.text).join('\n');
   out.push(...numbered('link', linksIn(m.body).length + linksIn(transcript).length));
   out.push(...numbered('attachment', m.attachments?.length ?? 0));
-  out.push(...numbered('reference', m.references?.length ?? 0));
+  out.push(...numbered('reference', referencesOf(m).length));
   out.push(...numbered('phone_number', m.phone_numbers?.length ?? 0));
   if (m.qr) out.push('qr.destination');
   if (m.payee) {
     if (device === 'banking') {
       // CR-18(c): a payment-request page runs no name check; its payee name is a plain checkable.
-      out.push(m.payee.payment_request ? 'payee.name' : 'payee.name_check');
+      // CR-34: so does the confirmation after a payment code ("to {name}").
+      out.push(m.payee.payment_request || m.payee.code_confirm ? 'payee.name' : 'payee.name_check');
       if (m.payee.iban) out.push('payee.iban');
     } else if (m.payee.iban) {
       // CR-22: a bank-details card in an email or chat. No name check outside the bank app.

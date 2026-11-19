@@ -30,8 +30,13 @@ export async function readAll(scene: Locator) {
     await next.click();
     await expect(scene.locator('li[tabindex="-1"]').last()).toBeFocused();
   }
-  const broken = await scene.locator('img').evaluateAll((imgs) => (imgs as HTMLImageElement[]).filter((i) => !i.complete || i.naturalWidth === 0).map((i) => i.getAttribute('src')));
-  expect(broken).toEqual([]);
+  // Images can still be loading under a parallel run: wait for them, then fail with the broken srcs listed.
+  await expect
+    .poll(() => scene.locator('img').evaluateAll((imgs) => (imgs as HTMLImageElement[]).filter((i) => !i.complete || i.naturalWidth === 0).map((i) => i.getAttribute('src'))), {
+      message: 'every portrait and backdrop of the scene has loaded',
+      timeout: 15_000,
+    })
+    .toEqual([]);
   // Let the last panel's fade-in finish, so contrast is measured on the end state.
   await scene.page().waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running'));
 }

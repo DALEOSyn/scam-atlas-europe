@@ -420,3 +420,142 @@ Same method and limits as above (web, app-store and company-directory check via 
 2. **Replace the host handle casa.alfama → casa.velarim** (Medium), including the `/casa-alfama` path.
 3. **Keep:** Roostwell (watch item; spares Tilestay, Hearthlane), Roostwell Deals, Vellastri Tutela Srl / "Velastri Tutela" (spare Corvessa Tutela Srl), J. Ashdale, Leonor Brito.
 4. **Before G4:** Registro Imprese and UIBM (IT), RNPC and INPI-PT (PT), and TMview for all kept names. This check is not trademark or legal clearance.
+
+---
+
+# Dublin and Stockholm names (chapters 8 and 9), checked 2026-11-19
+
+**Owner:** fraud-researcher · **Searched:** 2026-11-19 · **Status:** draft for sceptic review · roles from `docs/GDD.md` §28.10 and §29.10 (branch in /home/user/sae-dsspec).
+
+## Method and limits (Dublin / Stockholm)
+- Same method as above: one web search index (US-based), which surfaced app-store listings, company directories (UK Companies House, Swedish ratsit/krafman, CB Insights, Crunchbase), Wikipedia and Irish news. One page was opened (Trustpilot, DS10).
+- **No trademark register, no Irish CRO / CBI register search, no Swedish Bolagsverket / Finansinspektionen register search, no WHOIS.** Before G4 a human checks those and TMview.
+- **People:** the Paris test, made **strictest for the fictional celebrity**: no real person with the name, and no real public figure in the same role whose name is one letter or one sound away.
+- **Domains:** `.example` hosts are reserved (RFC 2606); the check is about the names.
+
+## Summary (Dublin / Stockholm)
+| # | Name (role) | Closest hits | Risk | Recommendation |
+|---|---|---|---|---|
+| DS1 | **Fairmeasure** (in-world financial regulator; genuine; look-alike `fairmeasure-claims.example`) | no hit; only "fairness measures" in machine-learning papers | Low | **Keep** |
+| DS2 | **Cormac Tierlan** (fictional TV presenter in a fake investment ad) | no "Tierlan" anywhere; but **Tommy Tiernan**, a famous Irish TV presenter (his own chat show), is one letter away in surname and in the same role; real Irish broadcasters named Cormac also exist | **Medium** (strictest test fails) | **Rename** → **Orla Fennick** |
+| DS2 | Orla Fennick (alternative) | no "Fennick" presenter; Orla is a common first name (several broadcasters with other surnames) | Low | **Use** |
+| DS2 | Dara Quillan (alternative) | **Dara Quilty**, a real Irish radio broadcaster, is close; Dara Ó Briain is a famous Irish presenter | Medium | **Don't use** |
+| DS3 | **Natterly** (fictional social network where scam ads appear) | **Natterly**: an exact-name social / AI-chat app on the Japanese App Store; a "Natterly" company on StackShare and SaaSworthy; **Natter**, a former UK social network (Wikipedia) and a current "natter." app | **High** | **Rename** → **Postwick** |
+| DS3 | Postwick (alternative) | a village near Norwich (UK); no app, company or brand found | Low | **Use** |
+| DS3 | Chatterbrook (alternative) | no exact hit; "Chatter Social" app is near | Low–Medium | Spare |
+| DS4 | **Quorvex** (scam-only trading platform) | no exact hit; "Qorvex" (a game character), Qoronex Ltd, "Quorionex" (a broker listing on a broker-review site), QuiverX | Low–Medium | **Keep** |
+| DS5 | **Glimmerfund** (scam-only, Alex arc platform) | no exact hit; "Glimmer" (an Austin investor profile on CB Insights), "Gimmelfund" | Low–Medium | **Keep** |
+| DS6 | **Tollmere Invest** (genuine authorised firm; impersonated by the clone `tollmere-invest.example`) | **Tollymore Investment Partners LLP**: a real UK investment manager (Companies House OC423323; investor letters in finance press), one sound away, same sector | **Medium–High** | **Rename** → **Ellisfen Invest** |
+| DS6 | Ellisfen Invest (alternative) | no hit (only Ellisfield, a place, and the name Ellisif) | Low | **Use** |
+| DS6 | Brackwater Invest (alternative) | **Breakwater Investment Management / Breakwater Investments** (real investment firms) | Medium | **Don't use** |
+| DS7 | **Backhaven Recovery** (scam-only "recovery agency") | no hit (only backup or recovery software pages) | Low | **Keep** |
+| DS8 | **Kindhand** / "Kindhand Support" (fictional helper app, scam prop) | no exact hit; "Kind Hands" (an NZ childcare centre; a hand-cream product); "KindConnect" app; no remote-access or support app named Kindhand | Low | **Keep** |
+| DS9 | Cast: **Declan Byrne**, **Róisín Byrne** (Dublin) | common Irish names; a Dublin university academic named Declan Byrne and a Maynooth researcher named Róisín Byrne (private individuals); no notable person | Low | **Keep** (genuine characters, never accused) |
+| DS9 | Cast: **Birgitta Lind** (Stockholm) | no person found under the exact name (only Birgitta Lindström / Lindqvist on Wikipedia; "Gitta Lind", a German singer, is a different name) | Low | **Keep** |
+| DS9 | Cast: **Jamal Haddad**, **Lina Haddad** (Stockholm) | a corporate "Jamal Haddad" on a stock-insider site and an NGO staff page (private individuals); no notable person; Haddad is a very common surname | Low | **Keep** |
+| DS10 (extra) | **Harbourline Bonds** (drill 8-4; named on the in-world **warning list**) | no exact hit; Harborline Ltd (UK), Harbour Asset Management bond funds (NZ), Harbour Investment Partners (corporate bonds press release) | Medium (an accused name close to real bond sellers) | **Replace** → **Brindlecove Bonds** |
+| DS11 | **Fairmeasure Claims Ltd** (boss beat 3 fraud payee, borrowing the regulator's name) | no exact hit; UK claims firms **Fair Claims Limited**, Fair Claims Accident Management Ltd, Fairclaim Assist Ltd, Claim Fair Ltd | Low–Medium | **Keep** (the coined "Fairmeasure" leads); spare **Fairmeasure Restitution Ltd** |
+| DS12 | **"Money Today with Cormac"** (8-2 scam ad page) | no exact show; "Money Today" is a generic phrase used by finance titles (not opened); Irish consumer and broadcaster money features have other names | Low (the name follows DS2) | **Rename with DS2** → "Money Today with Orla"; spare "The Savings Hour with Orla" |
+| DS10 (extra) | **Norrvik Trygg AB** (boss beat 2 payee) | no exact hit; **Norrvik** (a Dutch panel webshop, norrvik.nl); Norrviken Fastigheter AB; "Trygg" echoes the insurer Trygg-Hansa, but it is a common Swedish word ("safe") | Low–Medium | **Keep**, or **Skarvlund Trygg AB** for zero overlap |
+
+## DS1. Fairmeasure: Low, keep
+- **Searched:** `"Fairmeasure"`.
+- **Hits:** none as a name; results were "fairness measures" (machine-learning fairness papers, a GitHub page).
+- **Assessment:** the in-world regulator must never look like a real one; the name doesn't. Alternatives (Truebalance, Steadweight) were not searched, because they aren't needed.
+
+## DS2. Cormac Tierlan: Medium, rename → Orla Fennick
+- **Searched:** `"Cormac Tierlan" OR "Tierlan"`; `"Cormac" presenter RTÉ OR "TV presenter" "Tierlan" OR "Tiernan" Cormac`; `"Orla Fennick" OR "Fennick" presenter OR Ireland`; `"Dara Quillan" OR "Quillan" presenter Ireland`.
+- **Hits:**
+  - "Tierlan": no person, brand or place. Results drifted to Tiernan and Tierney.
+  - **The Tommy Tiernan Show** (Wikipedia): Tommy Tiernan is a well-known Irish TV presenter. "Tierlan" is one letter from "Tiernan".
+  - Real broadcasters named Cormac (e.g. Cormac Ó hEadhra on RTÉ radio; Cormac Battle, Wikipedia) have different surnames.
+  - **Dara Quilty** (Irish radio broadcaster: https://www.hotpress.com/music/dara-quilty-finishes-irish-radio-career-top-imro-22790856) is close to "Dara Quillan". Dara Ó Briain is a famous Irish presenter.
+  - "Fennick": no presenter or public figure. Irish broadcasters named Orla (Orla O'Donnell, Orla Chennaoui) have unrelated surnames.
+- **Assessment:**
+  - In 8-2 the character is a TV presenter whose face sells a fake investment. Real Irish public figures are impersonated in exactly such ads, so a near-homophone of a famous Irish TV host's surname, in the same role, fails the strictest test, even though the first name differs.
+  - **Orla Fennick** passes: no person found, and the surname is coined.
+  - The illustration must not resemble any real Irish presenter (ux-artist).
+- **Knock-on:** rename the ad page to "Money Today with Orla" (or another neutral title).
+
+## DS3. Natterly: High, rename → Postwick
+- **Searched:** `"Natterly" app OR social OR company`; `"Natterly" social network app`; `"Postwick" OR "Chatterbrook" app OR social network`; `"Postwick" company OR app OR brand`.
+- **Hits:**
+  - **Natterly**: a social / AI voice-conversation app on the Japanese App Store (https://apps.apple.com/jp/app/natterly-%E3%83%8A%E3%82%BF%E3%83%AA%E3%83%BC-ai%E3%81%A8%E3%81%AEsns-%E9%9F%B3%E5%A3%B0%E4%BC%9A%E8%A9%B1/id6737235306); company pages https://stackshare.io/companies/natterly and https://www.saasworthy.com/product/natterly.
+  - **Natter** (former UK social network, https://en.wikipedia.org/wiki/Natter_(social_network)); a current "natter." app; "Nattergram".
+  - Postwick: no company, app or brand. It is a village name, and searches returned only "Post…" products (Postworks, Postify).
+- **Assessment:** an exact-name social app exists. The game shows scam ads *on* this network, so players could link a real app with scam ads. Rename. **Postwick** (`postwick.example`) has no product collision. Chatterbrook is a spare (near "Chatter Social").
+
+## DS4. Quorvex: Low–Medium, keep
+- **Searched:** `"Quorvex"`.
+- **Hits:** no exact hit. Near forms: Qorvex (a game character), Qoronex Ltd (Crunchbase), "Quorionex" (a broker profile on a broker-review site: https://www.fastbull.com/brokersview/brokers/quorionex), QuiverX (crypto), Quantvex.
+- **Assessment:** the coined form is distinct. The closest finance hit is a different word. Keep; re-check before G4.
+
+## DS5. Glimmerfund: Low–Medium, keep
+- **Searched:** `"Glimmerfund" OR "Glimmer Fund"`.
+- **Hits:** no exact hit. Nearest: a "Glimmer" investor profile (https://www.cbinsights.com/investor/glimmer-austin), "Gimmelfund" (startup directory), unrelated funds.
+- **Assessment:** keep. It appears only in the arc, as a scam platform. Don't shorten it to "Glimmer".
+
+## DS6. Tollmere Invest: Medium–High, rename → Ellisfen Invest
+- **Searched:** `"Tollmere" OR "Tollmere Invest"`; `"Tollymore Investment Partners"`; `"Brackwater Invest" OR "Ellisfen" OR "Brackwater" investment`; `"Ellisfen"`.
+- **Hits:**
+  - **Tollymore Investment Partners LLP**: UK investment manager (https://pay.company-information.service.gov.uk/company/OC423323), with investor letters and returns coverage in the finance press (e.g. https://hedgefundalpha.com/strategies/tollymore-generates-20-per-annum-returns-since-inception/). Tollymore is also a well-known forest park in Northern Ireland.
+  - Breakwater Investment Management / Breakwater Investments (real) for "Brackwater".
+  - "Ellisfen": no hit (Ellisfield, a place; Ellisif, a name).
+- **Assessment:** "Tollmere Invest" is one sound from a real investment firm, in the same sector, and it is the firm the boss **clones**. That would show a real manager's near-name on a scam email and call. Rename to **Ellisfen Invest**: `ellisfen.example` (genuine) and `ellisfen-invest.example` (clone). Brackwater: don't use.
+
+## DS7. Backhaven Recovery: Low, keep
+- **Searched:** `"Backhaven" OR "Backhaven Recovery"`.
+- **Hits:** none; only backup and restore software pages and "Backstage Recovery" (a US trademark, different word).
+- **Assessment:** keep for 8-3 and the Brussels ending C.
+
+## DS8. Kindhand: Low, keep
+- **Searched:** `"Kindhand" app OR support OR remote`; `"Kindhand"`.
+- **Hits:** no remote-access, screen-sharing or support app named Kindhand. "Kind Hands" is an NZ childcare centre and a hand-cream product. The remote-support results were products with unrelated names (listed in search only, not used).
+- **Assessment:** keep. The icon rule in GDD §29.10 (nothing like a real remote-access icon) still applies.
+
+## DS9. Cast names: Low, keep
+- **Searched:** `"Declan Byrne" OR "Róisín Byrne" Dublin`; `"Birgitta Lind" OR "Jamal Haddad" Stockholm`; `"Jamal Haddad" OR "Lina Haddad"`; `"Birgitta Lind"`.
+- **Hits:**
+  - Declan Byrne: a Dublin university academic in medical gerontology (https://www.tcd.ie/medicine/medical-gerontology/staff/medical-gerontology/dgbyrne/).
+  - Róisín Byrne: a Maynooth research-archive author.
+  - Jamal Haddad: a corporate insider listing (https://ca.marketscreener.com/insider/JAMAL-HADDAD-A0TMNL/) and an NGO staff page.
+  - Birgitta Lind: only a Swedish phone-directory search page. "Gitta Lind" (German singer, Wikipedia) is a different name.
+  - None of these is a notable public figure.
+- **Assessment:** these are common names, and the characters are genuine and never accused or impersonated as scammers (Declan and Jamal are targeted, not fraudsters). Keep. The Byrne surname is shared by the two Dublin cast members, which is intended (father and daughter).
+
+## DS10. Extra names on accused or fraud-account roles
+- **Harbourline Bonds (drill 8-4, on the in-world warning list): Medium, replace.**
+  - Searched: `"Harbourline Bonds" OR "Harbourline" investment OR finance`; `"Skarvlund" OR "Brindlecove"`.
+  - Hits: Harborline Limited (UK, https://open.endole.co.uk/insight/company/13943058-harborline-limited); Harbour Asset Management's bond funds (NZ); a "Harbour Investment Partners" corporate-bond press release.
+  - The drill says this name is on a regulator's warning list. That is an accusation close to real bond sellers' names. Replace with **Brindlecove Bonds** (no hit).
+- **Norrvik Trygg AB (boss beat 2 payee in the signing banner): Low–Medium, keep or replace.**
+  - Searched: `"Norrvik Trygg" OR "Norrvik" AB`; opened https://www.trustpilot.com/review/norrvik.nl (a Dutch webshop selling panels).
+  - Also: Norrviken Fastigheter AB (Sweden). "Trygg" is a common word but also starts the name of a large Swedish insurer.
+  - No exact company. Acceptable. For zero overlap use **Skarvlund Trygg AB** (no hit).
+
+## DS11. Fairmeasure Claims Ltd: Low–Medium, keep (spare Fairmeasure Restitution Ltd)
+- **Searched:** `"Fairmeasure Claims" OR "Fair Measure Claims" Ltd`.
+- **Hits:**
+  - No exact company.
+  - UK claims-management firms with "Fair" + "Claim": **Fair Claims Limited** (https://pay.company-information.service.gov.uk/company/06528713), Fair Claims Accident Management Ltd, Fairclaim Assist Ltd, Claim Fair Ltd.
+- **Assessment:**
+  - On screen it is the holder of a fraud account (bank-details card). The coined "Fairmeasure" separates it from those firms, and borrowing the in-world regulator's name is the scam's point. Keep.
+  - If the sceptic wants no "Fair… Claims" echo, use **Fairmeasure Restitution Ltd** (spare; not searched separately beyond the stem, which has no hits, DS1).
+  - In Irish company format "Ltd" is right.
+
+## DS12. "Money Today with Cormac": rename with DS2
+- **Searched:** `"Money Today" TV show OR programme OR magazine Ireland OR UK`.
+- **Hits:** no Irish or UK show called "Money Today". The results were other money programmes and features (RTÉ, the CCPC, newspaper podcasts) with different names. "Money Today" is a generic phrase that finance publications abroad also use (from general knowledge, not opened).
+- **Assessment:** the page name carries the presenter's name, so it follows DS2 → **"Money Today with Orla"**. Spare: **"The Savings Hour with Orla"** (generic; no show found under that title in the same query family). The detail "Sponsored · page created 2 weeks ago" stays.
+
+## DS10 spares, restated for the sceptic
+- Harbourline Bonds → **Brindlecove Bonds** (primary replacement; no hit). A second spare is **Skarvlund Bonds**, which reuses the no-hit stem.
+- Norrvik Trygg AB → **Skarvlund Trygg AB** (no hit for "Skarvlund"). It keeps the real Swedish "AB" company format, as the sceptic asked. Keep "AB", never "Ltd", for the Swedish payee.
+
+## Actions for ux-artist / scenario-writer (Dublin / Stockholm)
+1. **Rename Natterly → Postwick** (High): `postwick.example`.
+2. **Rename Tollmere Invest → Ellisfen Invest** (Medium–High): `ellisfen.example`, clone `ellisfen-invest.example`, and the clone's display names.
+3. **Rename Cormac Tierlan → Orla Fennick** (Medium, strictest test), and the ad page title. Never use Dara Quillan.
+4. **Replace Harbourline Bonds → Brindlecove Bonds** (Medium). Optional: Norrvik Trygg AB → Skarvlund Trygg AB. Keep Fairmeasure Claims Ltd (spare Fairmeasure Restitution Ltd). The ad page becomes "Money Today with Orla" (spare "The Savings Hour with Orla").
+5. **Keep:** Fairmeasure, Quorvex, Glimmerfund, Backhaven Recovery, Kindhand, and the cast names Declan Byrne, Róisín Byrne, Birgitta Lind, Jamal Haddad, Lina Haddad.
+6. **Before G4:** CRO and the Central Bank register (IE), Bolagsverket and Finansinspektionen (SE), and TMview for all kept names. This check is not trademark or legal clearance.

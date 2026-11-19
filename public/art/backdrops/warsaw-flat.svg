@@ -19,6 +19,8 @@
 <path d="M0 500H960M0 524H960M160 470V500M420 470V500M700 470V500M60 500V524M300 500V524M580 500V524M840 500V524" stroke="#b49c7a" stroke-width="3"/>
 <rect x="760" y="140" width="170" height="330" rx="4" fill="#d6bf98"/>
 <path d="M760 230H930M760 320H930M760 410H930" stroke="#b9a88f" stroke-width="6"/>
+<path d="M818 216a62 40 0 1 0 124 0a62 40 0 1 0 -124 0Z" fill="#f3d08a" opacity=".3"/>
+<rect x="876" y="220" width="8" height="8" fill="#5d6672"/><rect x="868" y="226" width="24" height="4" rx="2" fill="#5d6672"/><path d="M862 221Q862 205 880 205Q898 205 898 221Z" fill="#f3d08a"/><path d="M862 221H898" stroke="#d9a441" stroke-width="3"/>
 <rect x="776" y="392" width="40" height="18" rx="2" fill="#f1e4c8"/><rect x="866" y="304" width="22" height="16" rx="3" fill="#8fae8b"/>
 <path d="M600 466h150a14 14 0 0 0 0 -28h-150a14 14 0 0 0 0 28Z" fill="#c8714f"/><path d="M592 452a8 14 0 1 0 16 0a8 14 0 1 0 -16 0Z" fill="#a95c3e"/>
 </svg>

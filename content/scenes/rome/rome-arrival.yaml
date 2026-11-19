@@ -1,0 +1,23 @@
+# Rome arrival (GDD §26.2 beat 1, STORY §3.6; calm): before the chapter intro and Teo's rule card (CR-27),
+# then 6-1. A small B&B courtyard with the lemon tree (left crop: the tree stands at the left edge of
+# rome-bnb). Bruna leads; Davide laughs. No scam content, no amount, nothing about calls yet.
+# Not sensitive: the chapter's content note opens before the sensitive scenes (STORY §5.6).
+id: rome-arrival
+chapter: rome
+slot: arrival
+panels:
+  - backdrop: rome-bnb
+    crop: left
+    speaker: bruna
+    expression: warm
+    flip: true
+    caption: "Rome. A small B&B with a lemon tree."
+    line: "Teo's grandchild! Forty years of postcards and finally a visitor."
+    alt: "Signora Bruna smiling by the lemon tree in the B&B courtyard."
+  - backdrop: rome-bnb
+    crop: centre
+    speaker: davide
+    expression: laughing
+    with: { id: bruna, expression: warm }
+    line: "Nonna has told every guest about you. Sorry in advance."
+    alt: "Davide laughing by the little courtyard table; Bruna listens, smiling."

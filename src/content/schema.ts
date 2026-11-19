@@ -73,6 +73,8 @@ export const RECOVERY_CATEGORIES = ['stop', 'secure', 'report', 'warn', 'harmful
 export const INSPECTABLE_TYPES = [
   'sender', 'link', 'qr', 'payee', 'caller_id', 'padlock', 'page_address', 'logo', 'display_name', 'attachment',
   'reference', 'phone_number', 'letterhead', 'prompt', 'image', 'request', 'claim', 'video', 'spelling', 'grammar', 'language', 'other',
+  // CR-36: the "Sounds like {name}" voice label on a call (always neutral). CR-37: how a QR code is attached.
+  'voice', 'qr_mount',
 ] as const;
 export const LANGUAGE_TYPES: readonly (typeof INSPECTABLE_TYPES)[number][] = ['spelling', 'grammar', 'language'];
 export const NEVER_PROOF_TYPES: readonly (typeof INSPECTABLE_TYPES)[number][] = ['logo', 'display_name'];
@@ -100,6 +102,15 @@ const fictionalAddress = (what: string) =>
     .min(1)
     .refine((v) => FICTIONAL_HOST.test(addressHost(v)), `${what} must be a lowercase host ending in .example, .test or .invalid (Red Line 3)`);
 
+/** CR-37: how a QR code is attached. */
+export const QR_MOUNTS = ['printed', 'sticker'] as const;
+/** CR-37: devices whose QR code is on a physical surface, so `qr.mount` applies. */
+export const QR_MOUNT_DEVICES: readonly Device[] = ['qr', 'letter'];
+/** CR-37 (Lisbon): from this chapter slot, every qr / letter beat with a QR code sets `qr.mount` (parity). */
+export const CR37_FROM_SLOT = 7;
+/** CR-39(b): devices that can show a QR code (a chat message carries one in a bubble). */
+export const QR_DEVICES: readonly Device[] = ['qr', 'letter', 'messenger'];
+
 /** QR codes may only resolve to an in-game route (Red Line 3). */
 export const QR_PAYLOAD_RE = /^\/qr\/[a-z0-9]+(?:-[a-z0-9]+)*$/;
 export const qrSchema = z
@@ -108,8 +119,20 @@ export const qrSchema = z
     /** Host shown on the destination chip ("QR code · opens trundle-redelivery.example"). */
     destination: fictionalAddress('qr.destination'),
     caption: z.string().min(1).optional(),
+    /**
+     * CR-37: how the code is attached, on `qr` and `letter` beats: printed on the surface, or a sticker over the
+     * printed code. Checkable `qr.mount` (after qr.destination) when set. "Printed" is never proof; a sticker
+     * may be a red flag. Required on every qr / letter QR beat from slot CR37_FROM_SLOT (rules.ts), for parity.
+     */
+    mount: z.enum(QR_MOUNTS).optional(),
+    /**
+     * CR-37 (S1): what a printed code is printed on, for the text "Printed on the {surface}" (e.g. "panel" on a
+     * parking meter). Without it: "Printed on it" (qr) or "Printed on the letter" (letter). Needs `mount: printed`.
+     */
+    surface: z.string().regex(/^[a-z][a-z' -]{0,29}$/u, 'surface is a short lower-case noun such as panel or poster').optional(),
   })
-  .strict();
+  .strict()
+  .refine((q) => q.surface === undefined || q.mount === 'printed', { message: 'surface names what a printed code is printed on: it needs mount: printed (CR-37)', path: ['surface'] });
 
 export const senderSchema = z
   .object({
@@ -199,6 +222,12 @@ export const messageSchema = z
       .strict()
       .optional(),
     transcript: z.array(z.object({ speaker: z.enum(['caller', 'you']), text: z.string().min(1) }).strict()).optional(),
+    /**
+     * CR-36: the voice label on a call, "Sounds like {cast name}" under the caller ID once answered (the cast
+     * id is in the scenario's cast and in content/cast.yaml). Checkable `voice` after `caller_id`, always
+     * neutral: a voice can be copied, so it never proves anything either way. Call only. Never audio.
+     */
+    voice: z.object({ sounds_like: slug }).strict().optional(),
     /** CR-20: a recorded-message call. The header says "Recorded message" and "you" lines are not shown. Call only. */
     recorded: z.boolean().optional(),
     /**
@@ -322,6 +351,11 @@ export const messageSchema = z
   });
 export type Message = z.infer<typeof messageSchema>;
 
+/** "It fits…" opens reassuring reveals; never on details that cannot prove anything (CR-36 RM2, CR-37 LS2). */
+export function startsWithItFits(reveal: string): boolean {
+  return /^\s*it fits\b/iu.test(reveal);
+}
+
 /**
  * Message parts that only some devices render (CR-19 … CR-26). Returns [path under message, error].
  * Pure; shared by the scenario schema (beats, interrupts) and banners.
@@ -331,6 +365,9 @@ export function deviceOnlyIssues(device: Device, m: Message): [(string | number)
   if (m.sender?.new_contact && device !== 'messenger') out.push([['sender', 'new_contact'], 'new_contact (the "Not in your contacts" banner) is for messenger chats (CR-19)']);
   if (m.sender?.new_contact && !m.sender.detail) out.push([['sender', 'detail'], 'a new contact shows its number: sender.detail is required (CR-19)']);
   if (m.recorded && device !== 'call') out.push([['recorded'], 'recorded is for call beats (CR-20)']);
+  if (m.voice && device !== 'call') out.push([['voice'], 'voice (the "Sounds like" label) is for call beats (CR-36)']);
+  if (m.qr && !QR_DEVICES.includes(device)) out.push([['qr'], `a QR code is shown on ${QR_DEVICES.join(', ')} beats, not on ${device} (CR-39(b))`]);
+  if (m.qr?.mount && !QR_MOUNT_DEVICES.includes(device)) out.push([['qr', 'mount'], `qr.mount (how the code is attached) is for ${QR_MOUNT_DEVICES.join(' and ')} beats (CR-37)`]);
   if (m.video && device !== 'call') out.push([['video'], 'video is for call beats (CR-24)']);
   if (m.account && device !== 'banking') out.push([['account'], 'account (whose money it is) is for banking beats (CR-26)']);
   if (m.bank && device !== 'banking') out.push([['bank'], 'bank (the bank app header) is for banking beats (CR-27)']);
@@ -581,11 +618,37 @@ export const interruptSchema = z
   .strict()
   .refine((i) => (i.at_seconds === undefined) !== (i.after_beat === undefined), 'an interrupt has exactly one of at_seconds or after_beat');
 
+/** CR-38: what the Fairmeasure register shows for a firm. */
+export const REGISTER_RESULTS = ['authorised', 'not_listed', 'warning_list'] as const;
+export type RegisterResult = (typeof REGISTER_RESULTS)[number];
+/** A masked phone number hides at least 4 digits behind bullets (Red Line 3), e.g. "+353 1 ••• ••42". */
+export const MASKED_PHONE_RE = /(?:•[^•]*){4}/u;
+
+/** CR-38: the register's own contact details for an authorised firm; masked phone (Red Line 3). */
+const registerContact = {
+  address: z.string().min(1).optional(),
+  phone: z.string().min(1).refine((v) => MASKED_PHONE_RE.test(v), 'the register\'s phone number hides at least 4 digits behind • (Red Line 3)').optional(),
+};
+
+/**
+ * CR-38: the Fairmeasure result card a `check_official_list` outcome opens. `firm` is the name looked up;
+ * address and phone only for `authorised` (the register's own details, as in content/brands.yaml).
+ */
+export const registerCardSchema = z
+  .object({ firm: z.string().min(1), result: z.enum(REGISTER_RESULTS), ...registerContact })
+  .strict()
+  .superRefine((r, ctx) => {
+    if (r.result !== 'authorised' && (r.address || r.phone)) ctx.addIssue({ code: 'custom', path: ['result'], message: 'address and phone are shown for authorised firms only (CR-38)' });
+  });
+export type RegisterCard = z.infer<typeof registerCardSchema>;
+
 export const outcomeSchema = z
   .object({
     narrative: z.string().min(1),
     /** CR-45: English translation of the narrative's inline language span(s) (`{lang:es}¡Genial!{/lang}`). */
     translation: z.string().min(1).optional(),
+    /** CR-38: the Fairmeasure result card (check_official_list outcomes only). */
+    register: registerCardSchema.optional(),
     /** CR-07: damage-control options for this outcome, each with its category for THIS scenario. */
     recovery: z
       .array(
@@ -809,6 +872,26 @@ export const scenarioSchema = z
         if (ins.target === 'video' && ins.type !== undefined && ins.type !== 'video') issue([...b.path, 'inspectables', i, 'type'], 'a video checkable has type: video');
         if (ins.type === 'claim' && !/^claim(?:#2)?$/.test(ins.target)) issue([...b.path, 'inspectables', i, 'type'], 'type: claim is only for the claim / claim#2 checkables');
         if (ins.type === 'video' && ins.target !== 'video') issue([...b.path, 'inspectables', i, 'type'], 'type: video is only for the video checkable');
+        // CR-36 (RM2): the voice is neutral everywhere: never a red flag, never "It fits" (a voice can be copied).
+        if (ins.target === 'voice') {
+          if (ins.type !== undefined && ins.type !== 'voice') issue([...b.path, 'inspectables', i, 'type'], 'a voice checkable has type: voice');
+          if (ins.red_flag) issue([...b.path, 'inspectables', i, 'red_flag'], 'the voice is never a red flag: a voice can be copied, so it proves nothing either way (CR-36, RM2)');
+          if (startsWithItFits(ins.reveal)) issue([...b.path, 'inspectables', i, 'reveal'], 'a voice reveal never starts with "It fits": a voice can be copied (CR-36, RM2)');
+        }
+        if (ins.type === 'voice' && ins.target !== 'voice') issue([...b.path, 'inspectables', i, 'type'], 'type: voice is only for the voice checkable');
+        // CR-37 (LS2): how the code is attached is never "It fits"; only a sticker can be a red flag ("printed" is never proof).
+        if (ins.target === 'qr.mount') {
+          if (ins.type !== undefined && ins.type !== 'qr_mount') issue([...b.path, 'inspectables', i, 'type'], 'a qr.mount checkable has type: qr_mount');
+          if (ins.red_flag && b.message.qr?.mount !== 'sticker') issue([...b.path, 'inspectables', i, 'red_flag'], 'qr.mount can be a red flag only when the code is a sticker (CR-37)');
+          if (startsWithItFits(ins.reveal)) issue([...b.path, 'inspectables', i, 'reveal'], 'a qr.mount reveal never starts with "It fits": printed is never proof (CR-37, LS2)');
+        }
+        if (ins.type === 'qr_mount' && ins.target !== 'qr.mount') issue([...b.path, 'inspectables', i, 'type'], 'type: qr_mount is only for the qr.mount checkable');
+      });
+      // CR-36: the voice label always carries its lesson (RM2), never the neutral filler.
+      if (b.message.voice && !b.inspectables.some((ins) => ins.target === 'voice')) issue([...b.path, 'inspectables'], 'a call with voice needs an inspectable with target: voice (its reveal: a voice can be copied, CR-36)');
+      // CR-37, CR-39(b): scanning needs a code on the same beat.
+      b.actions.forEach((a, i) => {
+        if (a.kind === 'scan_qr_and_open' && !b.message.qr) issue([...b.path, 'actions', i, 'kind'], 'scan_qr_and_open needs a QR code on the same beat (message.qr)');
       });
       if (b.banner && !b.banner.message.body) issue([...b.path, 'banner', 'message', 'body'], 'a banner needs a body: it is displayed on the beat');
       if (b.what_now) {
@@ -910,6 +993,16 @@ export const scenarioSchema = z
       const via = storyBeats.flatMap((x) => x.actions.filter((a) => a.next_beat === b.id).map((a) => a.kind));
       if (via.some((k) => k !== 'share_code')) issue([...b.path, 'message', 'payee', 'code_confirm'], `the code confirmation "${b.id}" is reached only by share_code actions (CR-34)`);
       if (b.actions.some((a) => a.next_beat !== undefined)) issue([...b.path, 'actions'], `the code confirmation "${b.id}" ends the beat: its actions have outcomes, not next_beat (CR-34)`);
+    }
+    // CR-38: the Fairmeasure result card is what you see when you look the firm up yourself.
+    for (const [key, o] of Object.entries(s.outcomes)) {
+      if (!o.register) continue;
+      const via = beats.flatMap((b) => [
+        ...b.actions.filter((a) => a.outcome === key).map((a) => a.kind),
+        ...(b.what_now?.extra ?? []).filter((x) => x.outcome === key).map((x) => x.kind),
+        ...Object.values(b.what_now?.outcomes ?? {}).filter((x) => x === key).map(() => 'what_now' as const),
+      ]);
+      if (via.some((k) => k !== 'check_official_list')) issue(['outcomes', key, 'register'], 'a register result card is reached only by check_official_list actions (CR-38)');
     }
     // CR-32: damage control for a cast member, in a drill.
     for (const [key, o] of Object.entries(s.outcomes)) {
@@ -1624,6 +1717,17 @@ export const brandSchema = z
     notes: z.string().optional(),
     /** Stub entries awaiting the ux-artist brand registry (T-1.6). */
     placeholder: z.boolean().default(false),
+    /**
+     * CR-38: the firm's entry with Fairmeasure, the in-world regulator: on the register of authorised firms
+     * (with the register's own contact details) or on the warning list. Read by the regulator view.
+     */
+    register: z
+      .object({ status: z.enum(['authorised', 'warning_list']), ...registerContact })
+      .strict()
+      .superRefine((r, ctx) => {
+        if (r.status !== 'authorised' && (r.address || r.phone)) ctx.addIssue({ code: 'custom', path: ['status'], message: 'contact details are listed for authorised firms only (CR-38)' });
+      })
+      .optional(),
   })
   .strict();
 export const brandsFileSchema = z

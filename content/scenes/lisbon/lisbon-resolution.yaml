@@ -1,0 +1,47 @@
+# Lisbon resolution (GDD §27.2 beat 3, STORY §3.7; relieved; 2 panels + If-then): after the boss debrief.
+# Variant lisbon_acted_fast (story-only, set by every boss fall outcome: login_typed_b1, transfer_sent_b2,
+# card_typed_b3; L-M1): the first panel of the resolution, before Beatriz's line. True for each fall; no
+# refund promise (STORY §4.2 rule 5, §5.4). Leonor (the real host) is never drawn and never in a scene; the
+# boss shows her in-app follow-up after a fall too (R20).
+# Beatriz never falls; her real room is booked through the app in every branch (GDD §27.2).
+# If-then (Beatriz), word for word from STORY §3.7, with the extra line under it (L-M2). The panel models the
+# habit with the shared pose calm-phone-look (ART_DIRECTION §1.2.2, §4.4): phone in hand, screen turned away,
+# staying in the app she opened herself.
+# Map invitation (Mateus, STORY §3.7) is not built yet (ENGINE "Not in S3").
+# Not sensitive: money theme only, no content note proposed (STORY §3.7, as Madrid).
+id: lisbon-resolution
+chapter: lisbon
+slot: resolution
+panels:
+  - backdrop: lisbon-kitchen
+    crop: right
+    speaker: mateus
+    expression: calm
+    flip: true
+    if_flag: lisbon_acted_fast
+    line: "You acted straight away, the right first step. We'll see what can still be stopped."
+    alt: "Mateus, calm, in the family kitchen."
+  - backdrop: lisbon-kitchen
+    crop: left
+    speaker: beatriz
+    expression: relieved
+    caption: "That evening, in the kitchen."
+    line: "Booked through the app, viewing on Saturday. I'll pay in the app, after I've seen it."
+    alt: "Beatriz, relieved, at the kitchen table with bread and oranges."
+  - backdrop: lisbon-kitchen
+    crop: right
+    speaker: mateus
+    expression: laughing
+    flip: true
+    with: { id: beatriz, expression: calm }
+    line: "And I pay parking in the app now. No stickers for me."
+    alt: "Mateus laughing in the kitchen; Beatriz listens, calm."
+  - backdrop: lisbon-kitchen
+    crop: centre
+    speaker: beatriz
+    expression: calm-phone-look
+    if_then:
+      cue: "If a host wants me to chat, pay or log in outside the app,"
+      action: "then I stay in the app I opened myself."
+      extra: "Parking too: pay in the app you installed, and read where a code goes."
+    alt: "Beatriz, calm, phone in hand, screen turned away, in the kitchen under the tile frieze."

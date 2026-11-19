@@ -1,0 +1,115 @@
+# 7-5 A meter's own printed code (GDD §27.4; genuine twin of 7-2 and 7-7, pattern qr-sticker-parking).
+# Genuine, low stakes, difficulty 4, honest timer 40 s with the honest deadline "Maximum stay 2 hours";
+# interrupt (Mateus) at 15 s. Its destination is zonelet.example (LS2 "It fits").
+# CR-37 (the QR mount field) is not built: "printed" is in the camera caption only (never a checkable, never proof).
+# Checkables (G, 2): QR destination (It fits), reference (zone and price, neutral).
+id: lisbon-05-printed-meter
+chapter: lisbon
+role: standard
+pattern: qr-sticker-parking
+theme: parking
+twin_of: lisbon-02-meter-sticker
+learning_objectives: [LO-02, LO-17]
+difficulty: 4
+is_fraud: false
+stakes: low
+device: qr
+setup: "Next morning, another street, another meter. Its screen is on."
+brands: [zonelet]
+cast: [mateus, beatriz]
+pressure:
+  timer: true
+  levers: []
+  honest_deadline: "Maximum stay 2 hours"
+
+message:
+  qr: { payload: /qr/lisbon-meter-printed, destination: zonelet.example, caption: "Printed on the meter's panel", mount: printed, surface: panel }
+  body: "Zonelet · ZONA 2 · €1,20/h · Digitalize para pagar na app."
+  lang: pt-PT
+  translation: "Zonelet · ZONE 2 · €1.20/h · Scan to pay in the app."
+  request: scan_qr
+  references: ["ZONA 2 · €1,20/h"]
+  l10n_note: "Portuguese in-world text on the meter is intentional (Lisbon chapter); the English translation is shown inline."
+
+inspectables:
+  - target: qr.destination
+    reveal: "It fits: zonelet.example, the parking app's own address. That isn't proof on its own, so weigh it with what it asks: to pay in the app."
+    red_flag: false
+    type: qr
+    reassures: true
+  - target: reference
+    reveal: "The zone and price on the meter. A sticker could copy them, so they can't prove anything either way. Check where the code goes."
+    red_flag: false
+    type: reference
+
+actions:
+  - id: scan_printed
+    label: "Scan and open zonelet.example"
+    kind: proceed
+    outcome: paid_zone2
+    pressure_target: true
+  - id: open_zonelet_printed
+    label: "Open the Zonelet app yourself"
+    kind: verify_in_app
+    outcome: paid_zone2_app
+  - id: report_printed
+    label: "Report the meter's code"
+    kind: report
+    outcome: printed_reported
+  - id: leave_printed
+    label: "Leave it, risk a notice"
+    kind: ignore
+    outcome: printed_left
+
+interrupts:
+  - id: mateus_saturday
+    at_seconds: 15
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Mateus", detail: "Saved contact: Mateus" }
+      from_cast: mateus
+      body: "Beatriz booked her viewing in the app. Saturday! 🙂"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Mateus's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what he asks for: nothing, it's news."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_saturday
+        label: "Reply: great news!"
+        kind: proceed
+        outcome: mateus_saturday_thanks
+        pressure_target: true
+      - id: report_saturday
+        label: "Report the message"
+        kind: report
+        outcome: mateus_saturday_reported
+
+outcomes:
+  paid_zone2:
+    narrative: "It opens the Zonelet app at Zone 2. You pay €1.20 there."
+  paid_zone2_app:
+    narrative: "You open the Zonelet app yourself: Zone 2, €1.20. Paid."
+  printed_reported:
+    narrative: "You report the meter's code. Zonelet replies: \"That's our own printed code, it opens our app.\" You pay in the app."
+  printed_left:
+    narrative: "You leave it. Two hours later there's a parking notice on the windscreen, a real one."
+  mateus_saturday_thanks:
+    narrative: "Mateus: \"She's already planning the furniture 😄\""
+  mateus_saturday_reported:
+    narrative: "You reported it. Careful is good; this one really was Mateus, sharing good news."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "This code opens Zonelet's own address."
+    what_works: "Scanning was fine; so was the app."
+  layer2:
+    message_flags: []
+    notes: "Same street furniture as yesterday. The difference is the address: zonelet.example, Zonelet's own. A sticker is a reason to look closer, but the address decides. A QR code is a link: read the address it shows before you open it."
+  device_tip: "On a real phone, your camera usually shows the address first: read the end of it before you tap."
+  habit_card: calm-not-paranoid
+  sources: [lu-vdl-parking-qr, ie-ncsc-qr-guide, pt-deco-qrishing-2024]

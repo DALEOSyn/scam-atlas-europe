@@ -1,0 +1,39 @@
+# Chapter 7 — Lisbon. GDD §27. Slot 7, difficulty 3–5, boss 5. 8 scored scenarios (3 genuine = 37.5%),
+# plus 1 drill (7-4, Beatriz) and 1 arc beat (Alex; the engine plays arc slot N by play position).
+# Goal: book, message and pay inside the app you opened yourself; pay parking in the app you installed,
+# and read where a QR code goes.
+# New patterns: rental-offplatform-payment (7-1 genuine twin, 7-3, 7-6, 7-8 genuine twin, boss) and
+# qr-sticker-parking (7-2, 7-5 genuine twin, 7-7). No callbacks.
+# Mix (GDD §27.1): truth G F F · G F F G F(boss) (max run 2); themes rental 7-1, 7-3, 7-6, boss;
+# parking 7-2, 7-5, 7-7; email 7-8 (never adjacent); pressure parity genuine 2/3 (7-1, 7-5 honest
+# timers) vs fraud 4/5 (7-2, 7-3, 7-6, boss); genuine at difficulty 3, 4 and 5.
+# CR-37 (the QR mount field) is not built yet: the fallback is used (sticker described in 7-2's body and caption,
+# R 13, silver 5, gold 9; GDD §27.7 note).
+# Story scenes (GDD §27.2, STORY §3.7): arrival before the intro, the turn at the stop point after 7-3
+# (drill 7-4 follows), resolution after the boss debrief (variant lisbon_acted_fast, set by every boss fall
+# outcome, opens it). No placed beat. No content note proposed (money theme only, as Madrid).
+# Map invitation (Mateus, STORY §3.7) is not built yet (ENGINE "Not in S3").
+# The Portugal "Where to report and get help" card wording is on the Lisbon sources page in docs/patterns.
+slot: 7
+city: lisbon
+name: "Lisbon"
+status: complete
+patterns: [rental-offplatform-payment, qr-sticker-parking]
+callbacks: []
+lo_focus: [LO-10, LO-11, LO-02, LO-05, LO-03, LO-06, LO-18, LO-16, LO-17, LO-14]
+scenario_order:
+  am: [lisbon-01-graca-studio, lisbon-02-meter-sticker, lisbon-03-alfama-ad]
+  pm: [lisbon-04-beatriz-two-rooms, lisbon-05-printed-meter, lisbon-06-host-partner-page, lisbon-arc-alex-07, lisbon-07-parking-slip, lisbon-08-city-tax-email, lisbon-09-boss-thursday-flat]
+boss: lisbon-09-boss-thursday-flat
+arc_beat: lisbon-arc-alex-07
+intro: "Lisbon: you're at Mateus's family home for two nights. From Thursday his cousins arrive, so you need your own place for the rest of the week. Beatriz, his sister, is hunting a room before her master's."
+rules:
+  title: "Mateus's Lisbon rules"
+  items:
+    - "Book and pay in the Roostwell app. Never by a link or a transfer someone sends."
+    - "Pay parking in the Zonelet app, or read where the code goes before you open it."
+atlas_cards: [stay-on-the-platform, check-before-you-pay, read-the-link]
+scenes:
+  arrival: lisbon-arrival
+  turn: lisbon-turn
+  resolution: lisbon-resolution

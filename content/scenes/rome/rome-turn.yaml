@@ -1,0 +1,26 @@
+# Rome turn (GDD §26.2 beat 2, STORY §3.6; worried → calm): the stop point, after 6-3. Teo and Bruna on a
+# video call, like old friends: Bruna in her courtyard, Teo on video (ART_DIRECTION §7.6). No scam content.
+# Teo's "on the numbers we know" is a general habit, never wrong on the genuine 6-5 that follows.
+# Ends calm, on Bruna (STORY §3.6: "Bruna (calm), last").
+id: rome-turn
+chapter: rome
+slot: turn
+panels:
+  - backdrop: rome-bnb
+    crop: centre
+    speaker: bruna
+    expression: worried
+    caption: "Bruna on a video call with Teo."
+    line: "Giulia calls every Sunday. I still worry every Monday."
+    alt: "Bruna at the courtyard table, looking worried."
+  - video: true
+    speaker: teo
+    expression: warm
+    line: "That's the job, Bruna. So we keep in touch, on the numbers we know."
+    alt: "Teo on a video call, smiling warmly."
+  - backdrop: rome-bnb
+    crop: centre
+    speaker: bruna
+    expression: calm
+    line: "Then you'll ring me on mine, old man."
+    alt: "Bruna, calm, at the courtyard table with two cups."

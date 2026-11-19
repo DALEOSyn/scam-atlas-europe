@@ -10,6 +10,7 @@ const ELEMENT_KEYS: Record<string, MessageKey> = {
   reference: 'element_reference',
   phone_number: 'element_phone_number',
   'qr.destination': 'element_qr',
+  'qr.mount': 'element_qr_mount',
   'page.address': 'element_page_address',
   'page.info': 'element_page_info',
   'payee.name_check': 'element_name_check',
@@ -23,6 +24,7 @@ const ELEMENT_KEYS: Record<string, MessageKey> = {
   letterhead: 'element_letterhead',
   image: 'element_image',
   video: 'element_video',
+  voice: 'element_voice',
   claim: 'element_claim',
   request: 'element_request',
 };

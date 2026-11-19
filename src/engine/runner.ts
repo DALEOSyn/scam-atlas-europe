@@ -20,7 +20,7 @@
  * - The clock and timer freeze while any freeze reason is active (pause menu,
  *   settings, help, debrief, Take a breath, an expanded translation).
  */
-import type { Action, ActionClass, ActionKind, Message, Device, Scenario, WhatNow } from '../content/schema.ts';
+import type { Action, ActionClass, ActionKind, Message, Device, RegisterCard, Scenario, WhatNow } from '../content/schema.ts';
 import { callDirectionOf } from '../content/callDirection.ts';
 import type { CheckableBeat } from './inspect.ts';
 import { checkablesOf, keyOf } from './inspect.ts';
@@ -53,7 +53,7 @@ export interface RunnerContext {
  * starts only after the last line of the beat is shown).
  */
 /** `coach_mark`: a coach mark is open (GDD §8, CR-23: the first payee-name check). */
-export type FreezeReason = 'pause_menu' | 'settings' | 'help' | 'debrief' | 'take_a_breath' | 'translation' | 'call_lines' | 'coach_mark' | 'setup';
+export type FreezeReason = 'pause_menu' | 'settings' | 'help' | 'debrief' | 'take_a_breath' | 'translation' | 'call_lines' | 'coach_mark' | 'setup' | 'register';
 /**
  * `interrupt`: an `after_beat` interrupt still waits for an answer at the end of the scenario (ruling
  * QA M6): its own "New notification" step before the debrief.
@@ -479,7 +479,9 @@ function moveToBeat(s: Scenario, ctx: RunnerContext, st: RunnerState, g: GroupSt
   const firstVisit = !g.visited.includes(beatId);
   const prev = storyBeat(s, g.current);
   // CR-31: a call keeps running while the player follows it into the bank app (start_transfer from a call).
-  const callSince = beat.device === 'call' ? (prev?.device === 'call' ? g.callSince : st.clock) : via === 'start_transfer' && prev?.device === 'call' ? g.callSince : undefined;
+  // CR-39(a): or onto a Gatewren prompt the caller asked for (an auth beat reached from the call).
+  const followsCall = prev?.device === 'call' && ((via === 'start_transfer' && beat.device === 'banking') || beat.device === 'auth');
+  const callSince = beat.device === 'call' ? (prev?.device === 'call' ? g.callSince : st.clock) : followsCall ? g.callSince : undefined;
   const g2: GroupState = { ...g, current: beatId, visited: firstVisit ? [...g.visited, beatId] : g.visited, callSince };
   // A call beat runs on its own call length. [P] Amsterdam QA p (2-7): when a call leads into a non-call
   // beat, that beat starts a fresh slot-length timer (the call kept its own 30 s); further follow-ups keep
@@ -932,6 +934,8 @@ export interface RunnerView {
   consequenceAsides: string[];
   /** The beat that just ended was "already checked" (boss covered_by, ruling QA fun note a). */
   consequenceCovered: boolean;
+  /** CR-38: the Fairmeasure result card of the last outcome (check_official_list), if it names one. */
+  consequenceRegister: RegisterCard | null;
   /** CR-32: `forCast` is the cast id whose damage control it is (outcome `recovery_for`), else null. */
   recovery: { options: RecoveryOption[]; pick: number; forCast: string | null } | null;
   /**
@@ -944,13 +948,21 @@ export interface RunnerView {
 
 /**
  * CR-31: the call the player followed into the bank app, if the group's current beat is the banking beat
- * opened by start_transfer from a call beat.
+ * opened by start_transfer from a call beat. CR-39(a): or the auth beat (a Gatewren prompt) the player
+ * opened from a call beat by any of its actions ("Open Gatewren as he asks").
  */
 export function callBehind(s: Scenario, g: Pick<GroupState, 'current' | 'visited' | 'transferBeat'>): BeatLike | undefined {
-  if (g.transferBeat === undefined || g.current !== g.transferBeat) return undefined;
+  const cur = storyBeat(s, g.current);
+  if (!cur) return undefined;
   const at = g.visited.indexOf(g.current);
   const prev = at > 0 ? storyBeat(s, g.visited[at - 1] ?? '') : undefined;
-  return prev?.device === 'call' && prev.actions.some((a) => a.kind === 'start_transfer' && a.next_beat === g.current) ? prev : undefined;
+  if (prev?.device !== 'call') return undefined;
+  if (cur.device === 'banking') {
+    if (g.transferBeat === undefined || g.current !== g.transferBeat) return undefined;
+    return prev.actions.some((a) => a.kind === 'start_transfer' && a.next_beat === g.current) ? prev : undefined;
+  }
+  if (cur.device === 'auth') return prev.actions.some((a) => a.next_beat === g.current) ? prev : undefined;
+  return undefined;
 }
 
 /** The timer-expiry line (consequence caption and layer 2 "What happened", UI_SPEC §7). */
@@ -1051,6 +1063,7 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
     consequenceTimerExpired: !st.tail && !!last && last.timerExpired && !last.outcome,
     consequenceDeadline: !st.tail && !!last && last.timerExpired && !last.outcome ? deadlineLine(s.is_fraud, st.groups.some((x) => groupFell(x, st.truth))) : null,
     consequenceCovered: st.phase === 'consequence' && !st.tail && !!last && coveredDecision(s, st.groups, last).covered,
+    consequenceRegister: st.phase === 'consequence' && !st.tail && last?.outcome ? (s.outcomes[last.outcome]?.register ?? null) : null,
     consequenceAsides: st.phase !== 'consequence' ? [] : st.tail ? interruptNarratives(s, st, st.groups.length) : last ? interruptNarratives(s, st, st.groups.indexOf(last)) : [],
     recovery: st.phase === 'damage_control' && st.recovery ? { options: st.recovery.options, pick: ctx.balance.recovery.pick, forCast: recoveryForOf(s, st) } : null,
     onCall: onCallOf(s, ctx, st, live && st.phase === 'playing' ? g : undefined),

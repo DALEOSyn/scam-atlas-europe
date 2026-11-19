@@ -84,3 +84,9 @@ cards:
     habit: "Keep the deal and the money inside the marketplace app you opened yourself. If you've been paid, it shows there. Receiving money never needs your card details or bank login."
     example: "A buyer you've never met says they've paid and sends a link to collect it? Open Swaploft yourself: real payments show there."
     already_clicked: "Typed card details? Block the card in your banking app now and call your bank on the number on your card. Typed a bank login? Call the bank and change the password from the real app."
+  - id: check-before-you-pay
+    lo: LO-11
+    title: "Check before you pay"
+    habit: "Before you pay for a stay, a room or an offer, find it yourself in the platform's app or site, and pay there, where you're protected. Too cheap, 'many people interested' or 'can't show it' are reasons to slow down."
+    example: "A great flat in an ad? Search for it in the Roostwell app yourself. If you can't find it there, don't pay for it."
+    already_clicked: "Paid outside the app? Call your bank now on the number on your card; for a card payment, ask about a chargeback. Report the listing in the app."

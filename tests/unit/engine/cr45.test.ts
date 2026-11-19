@@ -10,12 +10,12 @@ import { join, resolve } from 'node:path';
 import { readYaml } from '../../../scripts/lib/content.ts';
 import { callDirectionOf, inferredDirection } from '../../../src/content/callDirection.ts';
 import { firstLang, langMarkupIssues, langPieces, stripLang } from '../../../src/content/inlineLang.ts';
-import { scenarioSchema, type Scenario } from '../../../src/content/schema.ts';
+import { chapterSchema, scenarioSchema, type Scenario } from '../../../src/content/schema.ts';
 import { debriefOf } from '../../../src/engine/debrief.ts';
 import { expiryDismissOf } from '../../../src/engine/result.ts';
 import { clickedViaOf } from '../../../src/engine/recovery.ts';
 import { viewOf } from '../../../src/engine/runner.ts';
-import { scoreGroup } from '../../../src/engine/scoring.ts';
+import { classOf, scoreGroup } from '../../../src/engine/scoring.ts';
 import { logAnnouncement } from '../../../src/ui/ScenarioView.tsx';
 import { ROOT, rawFraud, rawGenuine, scenario } from '../../content/fixtures.ts';
 import { act, B, ctx, play, run, tick, type Raw } from './helpers.ts';
@@ -199,6 +199,60 @@ describe('item 6: timer expiry on a genuine beat (ruling R21)', () => {
     expect(scoreGroup(B, 'legit_low', undefined, { engagedOnFraud: false, timerExpired: true, expiryDismiss: ds })).toMatchObject({ stars: 2, points: 3, timerExpired: true });
     const verify = { cls: 'verify' as const, kind: 'ask_someone' as const, actionId: 'v' };
     expect(scoreGroup(B, 'legit_high', verify, { engagedOnFraud: false, timerExpired: true, expiryDismiss: ds })).toMatchObject({ stars: 3, points: 15 });
+  });
+});
+
+describe('shipped content (after merging CR-36…39, Rome and Lisbon)', () => {
+  const cities = readdirSync(join(ROOT, 'content', 'scenarios'));
+  const shipped = cities.flatMap((c) => readdirSync(join(ROOT, 'content', 'scenarios', c)).filter((f) => f.endsWith('.yaml')).map((f) => content(`${c}/${f}`)));
+  const slotOf = new Map(readdirSync(join(ROOT, 'content', 'chapters')).map((f) => [f.replace(/\.yaml$/, ''), chapterSchema.parse(readYaml(join(ROOT, 'content', 'chapters', f))).slot]));
+
+  it('call beats: only Rome 6-7 officer_line is dialled; every other call (incl. CR-36 voice calls) rings', () => {
+    const dirs = shipped.flatMap((s) => s.beats.filter((b) => b.device === 'call').map((b) => `${s.id}/${b.id}:${callDirectionOf(s, b.id)}`));
+    expect(dirs.filter((d) => d.endsWith(':outgoing'))).toEqual(['rome-07-police-text/officer_line:outgoing']);
+    expect(dirs.length).toBeGreaterThan(5);
+  });
+
+  it('scheduled call beats announce "Incoming call from …", never "New message."', () => {
+    for (const s of shipped) {
+      for (const b of s.beats.filter((x) => x.device === 'call' && x.arrives_after !== undefined)) {
+        expect([s.id, b.id, logAnnouncement(s, { type: 'beat_arrived', beatId: b.id, at: 0 } as never)?.text.startsWith('Incoming call from ')]).toEqual([s.id, b.id, true]);
+      }
+    }
+  });
+
+  /** Expiry on the opening message, played in the chapter's slot: [stars, points] (R21 changes marked). */
+  const EXPIRY: Record<string, [number, number]> = {
+    'amsterdam-05-warehouse-interview': [2, 10],
+    'berlin-06-payment-failed': [0, 0], // R21: was ★, 5
+    'home-03-password-reset': [1, 5], // slot 0 grace: "Close the page" scores ★, 5
+    'lisbon-01-graca-studio': [0, 0], // R21: was ★, 5
+    'lisbon-05-printed-meter': [2, 10],
+    'paris-01-rent-close-match': [0, 0], // R21: was ★, 5
+    'paris-06-solene-urgent': [0, 0], // R21: was ★, 5
+    'rome-01-breakfast-till-ten': [2, 10],
+    'rome-02-teo-calls-you': [2, 10],
+    'rome-05-laundry': [0, 0], // R21: was ★, 5
+    'warsaw-01-rucksack-sold': [2, 10],
+    'warsaw-04-kasia-twelve-euros': [0, 0], // R21: was ★, 5
+  };
+
+  it('R21 on every timed genuine scenario: expiry scores its dismiss option, never more', () => {
+    const timed = shipped.filter((s) => !s.is_fraud && s.pressure.timer && s.role !== 'arc');
+    const got: Record<string, [number, number]> = {};
+    for (const s of timed) {
+      const slot = slotOf.get(s.chapter) ?? 1;
+      const c = ctx({ slot });
+      const expired = play(s, c, expire).r.beats[0];
+      if (!expired) throw new Error(s.id);
+      expect([s.id, expired.timerExpired]).toEqual([s.id, true]);
+      got[s.id] = [expired.stars, expired.points];
+      for (const a of s.actions.filter((x) => classOf(B, x.kind) === 'dismiss' && x.outcome !== undefined)) {
+        const chosen = play(s, c, [act(a.id)]).r.beats[0];
+        expect([s.id, a.id, expired.stars <= (chosen?.stars ?? 0), expired.points <= (chosen?.points ?? 0)]).toEqual([s.id, a.id, true, true]);
+      }
+    }
+    expect(got).toEqual(EXPIRY);
   });
 });
 

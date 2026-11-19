@@ -165,6 +165,38 @@ export function isBankBrand(b: Brand): boolean {
   return /\bbank\b/iu.test(b.sector ?? '');
 }
 
+/**
+ * CR-38: a Fairmeasure result card agrees with the register in content/brands.yaml (`register` on a brand):
+ * an authorised firm is on the register and shows the register's own address and phone; a warning-list firm
+ * is on the warning list; a firm "not on the register" has no entry at all.
+ */
+export function registerCardIssues(s: Scenario, brands: Map<string, Brand>): string[] {
+  const out: string[] = [];
+  const entryOf = (firm: string) => [...brands.values()].find((b) => b.register && (b.name === firm || b.short_name === firm));
+  for (const [key, o] of Object.entries(s.outcomes)) {
+    const card = o.register;
+    if (!card) continue;
+    const at = `outcomes.${key}.register`;
+    const b = entryOf(card.firm);
+    if (card.result === 'not_listed') {
+      if (b) out.push(`${at}: "${card.firm}" is ${b.register?.status === 'authorised' ? 'on the register' : 'on the warning list'} in content/brands.yaml, not "not_listed" (CR-38)`);
+      continue;
+    }
+    if (!b || b.register?.status !== card.result) {
+      out.push(`${at}: "${card.firm}" must be a brand with register.status: ${card.result} in content/brands.yaml (CR-38)`);
+      continue;
+    }
+    if (card.result === 'authorised') {
+      for (const k of ['address', 'phone'] as const) {
+        const want = b.register[k];
+        if (want !== undefined && card[k] !== want) out.push(`${at}.${k}: shows the register's own ${k} for "${card.firm}": "${want}" (CR-38)`);
+        if (want === undefined && card[k] !== undefined) out.push(`${at}.${k}: the register lists no ${k} for "${card.firm}" in content/brands.yaml (CR-38)`);
+      }
+    }
+  }
+  return out;
+}
+
 /** Validate a single scenario object (already parsed) against schema + registries. */
 export function checkScenario(
   file: string,
@@ -213,6 +245,7 @@ export function checkScenario(
     else if (!s.brands.includes(id)) report.errors.push(`${file}: ${b.where}: message.app.brand "${id}" must be in the scenario's brands (CR-33)`);
     if (brand && b.message.notice && b.message.sender?.display !== brand.name) report.errors.push(`${file}: ${b.where}: a notice comes from the app itself: sender.display must be "${brand.name}" (CR-33)`);
   }
+  report.errors.push(...registerCardIssues(s, brands).map((e) => `${file}: ${e}`));
   report.errors.push(...unregisteredHostIssues(s, registeredHosts(brands)).map((e) => `${file}: ${e}`));
   return s;
 }

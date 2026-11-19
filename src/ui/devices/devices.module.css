@@ -717,6 +717,60 @@
   font-size: var(--fs-sm);
   text-align: center;
 }
+/* CR-37: how the code is attached. Printed: flat on the panel. Sticker: a raised label with a lifted corner. */
+.qrPrinted,
+.qrSticker {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+}
+.qrSticker {
+  padding: var(--space-2);
+  background: var(--p-paper-0);
+  border: 2px dashed var(--p-ink-600);
+  border-radius: var(--radius-sm);
+  box-shadow: 3px 4px 0 var(--p-ink-600);
+  transform: rotate(-3deg);
+}
+.qrSticker::after {
+  content: '';
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 22px;
+  height: 22px;
+  background: linear-gradient(135deg, var(--p-paper-0) 50%, var(--p-ink-300) 50%);
+  border-top-left-radius: var(--radius-sm);
+}
+@media (prefers-reduced-motion: reduce) {
+  .qrSticker {
+    transform: none;
+  }
+}
+.qrMount {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--p-paper-0);
+  color: var(--p-ink-900);
+  font-size: var(--fs-sm);
+  overflow-wrap: anywhere;
+}
+/* CR-39(b): a QR code inside a chat bubble (no camera, no viewfinder). */
+.qrInChat {
+  justify-items: start;
+  margin-top: var(--space-2);
+}
+.qrChatCode {
+  display: inline-block;
+  padding: var(--space-2);
+  background: var(--p-paper-0);
+  border-radius: var(--radius-sm);
+  line-height: 0;
+}
+.qrInChat .qrChip {
+  border: var(--border-w) solid var(--color-border);
+}
 .qrChip {
   margin: 0;
   padding: var(--space-2) var(--space-3);

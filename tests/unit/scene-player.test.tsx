@@ -277,6 +277,15 @@ describe('App: scenes around scenarios (retrofit hooks)', () => {
     }
   };
 
+  /** CR-27: the chapter intro (h1 = chapter name, the intro, Start) on every fresh chapter start. */
+  const passIntro = async (name = 'Berlin') => {
+    const h = await screen.findByRole('heading', { level: 1, name });
+    const intro = h.closest('[data-chapter-intro]') as HTMLElement | null;
+    expect(intro).not.toBeNull();
+    await waitFor(() => expect(document.activeElement).toBe(h));
+    fireEvent.click(within(intro as HTMLElement).getByRole('button', { name: 'Start' }));
+  };
+
   it('arrival → scenario → placed beat → resolution → chapter end with the postcard; scenes are saved as seen', async () => {
     const mem = memory();
     render(<App chapters={[chapter]} load={async () => ex} sceneRefs={refs} store={createStore(mem)} />);
@@ -284,6 +293,9 @@ describe('App: scenes around scenarios (retrofit hooks)', () => {
     await screen.findByText('Panel 1 of 3');
     expect(screen.getByRole('heading', { level: 1 }).textContent).toContain('Berlin · Arrival');
     await finishScene();
+    // CR-27: the intro comes after the Arrival scene and before the first scenario.
+    expect(await screen.findByText(chapter.intro)).toBeTruthy();
+    await passIntro();
     fireEvent.click(await screen.findByRole('button', { name: /Calm preset/ }));
     fireEvent.click(await screen.findByRole('button', { name: /Open the Trundle app yourself/ }));
     fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
@@ -329,6 +341,7 @@ describe('App: scenes around scenarios (retrofit hooks)', () => {
     await screen.findByRole('heading', { level: 1, name: 'Before this story scene' });
     fireEvent.click(screen.getByRole('button', { name: 'Show the scene' }));
     await finishScene();
+    await passIntro();
     fireEvent.click(await screen.findByRole('button', { name: /Calm preset/ }));
     fireEvent.click(await screen.findByRole('button', { name: /Open the Trundle app yourself/ }));
     fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
@@ -366,6 +379,7 @@ describe('App: scenes around scenarios (retrofit hooks)', () => {
     render(<App chapters={[plain]} load={async () => ex} sceneRefs={[]} store={createStore(mem)} />);
     expect(screen.queryByRole('button', { name: 'Waymarker Atlas' })).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+    await passIntro();
     await screen.findByRole('button', { name: /Calm preset/ });
     expect(screen.queryByText(/Panel 1 of/)).toBeNull();
   });
@@ -381,6 +395,7 @@ describe('App: scenes around scenarios (retrofit hooks)', () => {
     const interlude: SceneRef = { folder: 'interludes', id: 'interlude-cafe', load: async () => fixtureScene('interludes', 'interlude-cafe') };
     render(<App chapters={chapters} load={async () => ({ ...ex, id: 'home-00-example' })} sceneRefs={[interlude]} store={createStore(mem)} />);
     fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+    await passIntro('Madrid');
     fireEvent.click(await screen.findByRole('button', { name: /Calm preset/ }));
     fireEvent.click(await screen.findByRole('button', { name: /Open the Trundle app yourself/ }));
     fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
@@ -408,7 +423,8 @@ describe('App: scenes around scenarios (retrofit hooks)', () => {
     const sensitive = (id: string, note: string): SceneRef => ({ folder: 'interludes', id, load: async () => ({ ...fixtureScene('interludes', 'interlude-cafe'), id, sensitive: true, content_note: note }) });
     const refs = [sensitive('interlude-one', 'Note for the first interlude.'), sensitive('interlude-two', 'Note for the second interlude.')];
     render(<App chapters={chapters} load={async () => ({ ...ex, id: 'home-00-example' })} sceneRefs={refs} store={createStore(mem)} />);
-    const playThrough = async () => {
+    const playThrough = async (city: string) => {
+      await passIntro(city);
       const first = await screen.findByRole('button', { name: /Calm preset|Open the Trundle app yourself/ });
       const wasTiming = /Calm preset/.test(first.textContent ?? '');
       fireEvent.click(first);
@@ -419,7 +435,7 @@ describe('App: scenes around scenarios (retrofit hooks)', () => {
       fireEvent.click(await screen.findByRole('button', { name: 'Back to the chapters' }));
     };
     fireEvent.click(screen.getByRole('button', { name: 'Start' }));
-    await playThrough();
+    await playThrough('Madrid');
     await screen.findByRole('heading', { level: 1, name: 'Before this story scene' });
     expect(screen.getByText('Note for the first interlude.')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Skip this scene' }));
@@ -427,7 +443,7 @@ describe('App: scenes around scenarios (retrofit hooks)', () => {
     // Play Rome again: on the way back the second interlude is due, and its note is shown too.
     const rome = (await screen.findAllByRole('button', { name: /Rome/ }))[0] as HTMLElement;
     fireEvent.click(rome);
-    await playThrough();
+    await playThrough('Rome');
     await screen.findByRole('heading', { level: 1, name: 'Before this story scene' });
     expect(screen.getByText('Note for the second interlude.')).toBeTruthy();
   });

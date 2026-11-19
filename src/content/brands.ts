@@ -11,12 +11,28 @@ export interface BrandMark {
   short_name?: string;
   /** Path under public/, e.g. brands/kettle-mark.svg */
   mark?: string;
+  /** CR-27: sub-brands (e.g. Larchwick Pro), id and name only. */
+  sub_brands?: { id: string; name: string }[];
 }
 
 const brands = data as BrandMark[];
 
 export function brandById(id: string): BrandMark | undefined {
   return brands.find((b) => b.id === id);
+}
+
+/**
+ * CR-27: the brand for an app header, by brand id or sub-brand id. A sub-brand keeps its parent's id
+ * (palette tokens `--brand-<id>-*`) and mark, with the sub-brand's name as `name` and no short name.
+ */
+export function headerBrand(id: string): BrandMark | undefined {
+  const own = brandById(id);
+  if (own) return own;
+  for (const b of brands) {
+    const sub = b.sub_brands?.find((x) => x.id === id);
+    if (sub) return { id: b.id, name: sub.name, ...(b.mark ? { mark: b.mark } : {}) };
+  }
+  return undefined;
 }
 
 /**

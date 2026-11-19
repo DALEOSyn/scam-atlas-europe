@@ -35,6 +35,7 @@ import { defaultTimerMode, type TimerMode } from './engine/timer.ts';
 import { t } from './i18n/index.ts';
 import { AnnouncerProvider } from './ui/Announcer.tsx';
 import { ChapterDone, type BossLesson } from './ui/ChapterDone.tsx';
+import { ChapterIntro } from './ui/ChapterIntro.tsx';
 import { ChapterList, type ChapterListFocus, type ChapterRow } from './ui/ChapterList.tsx';
 import { DebriefView } from './ui/DebriefView.tsx';
 import { ArcReveal } from './ui/ArcReveal.tsx';
@@ -59,6 +60,8 @@ type Screen =
   | { kind: 'playing'; scenario: Scenario; attempt: number; progress: Progress }
   | { kind: 'debrief'; scenario: Scenario; data: DebriefData; progress: Progress }
   | { kind: 'stop'; done: number; total: number; left: number }
+  /** CR-27: the chapter intro, on every chapter start from its first scenario (after the Arrival scene). */
+  | { kind: 'intro'; chapter: Chapter }
   | { kind: 'reveal'; timeline: { slot: number; tell: string }[] }
   | { kind: 'chapter_done'; summary: ChapterSummary; city: string; postcard: { ifThen: IfThen; backdrop?: string | undefined } | null; boss: BossLesson | null }
   /** A story scene (S3). `then` runs after it ends (finished or skipped). */
@@ -350,7 +353,10 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
     const p = chapterProgress(started, c.city);
     const fresh = !p.run || (p.run.index === 0 && p.run.records.length === 0);
     if (fresh) notedRuns.current.delete(c.city);
-    if (fresh && arrivalSceneId(c)) return void playScene(arrivalSceneId(c), () => void next(currentSave(), c), c);
+    // CR-27: a fresh run shows the chapter intro (its rules) before the first scenario, after the Arrival scene.
+    const intro = () => setScreen({ kind: 'intro', chapter: c });
+    if (fresh && arrivalSceneId(c)) return void playScene(arrivalSceneId(c), intro, c);
+    if (fresh) return intro();
     void next(started, c);
   };
 
@@ -559,6 +565,7 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
           onTellMeNow={screen.data.variant === 'arc' && !save.arc.closed ? () => void onTellMeNow(screen.data) : undefined}
         />
       ) : null}
+      {screen.kind === 'intro' ? <ChapterIntro name={screen.chapter.name} intro={screen.chapter.intro} onStart={() => void next(currentSave(), screen.chapter)} /> : null}
       {screen.kind === 'stop' ? <StopScreen done={screen.done} total={screen.total} left={screen.left} onKeepGoing={keepGoing} onBack={toChapters} /> : null}
       {screen.kind === 'reveal' ? <ArcReveal timeline={screen.timeline} onContinue={() => void next(save)} /> : null}
       {screen.kind === 'chapter_done' ? <ChapterDone summary={screen.summary} city={screen.city} postcard={screen.postcard} boss={screen.boss} onBack={() => void toMap()} /> : null}

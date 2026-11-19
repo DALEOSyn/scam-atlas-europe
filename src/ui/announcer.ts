@@ -21,6 +21,14 @@ export interface Pending {
   text: string;
   /** Category 5: how many messages this item stands for. */
   count: number;
+  /** CR-27 (WCAG 3.1.2): a part of `text` in another language, e.g. a French follow-up quoted in "New message: …". */
+  foreign?: Foreign | undefined;
+}
+
+/** A quoted part of an announcement in another language (rendered as <span lang>). */
+export interface Foreign {
+  text: string;
+  lang: string;
 }
 
 export interface QueueState {
@@ -31,16 +39,18 @@ export interface QueueState {
 
 export const EMPTY_QUEUE: QueueState = { pending: [], lastSlow: null };
 
-export function enqueue(q: QueueState, category: Category, text: string, coalesce?: (count: number) => string, key?: string): QueueState {
+export function enqueue(q: QueueState, category: Category, text: string, coalesce?: (count: number) => string, key?: string, foreign?: Foreign): QueueState {
   const same = (p: Pending) => p.category === category && p.key === key;
   const prev = q.pending.find(same);
   const count = category === 5 && prev && key === undefined ? prev.count + 1 : 1;
-  const item: Pending = { category, key, text: count > 1 && coalesce ? coalesce(count) : text, count };
+  const merged = count > 1 && coalesce;
+  // A coalesced summary ("2 new messages.") quotes nothing, so it carries no foreign part.
+  const item: Pending = { category, key, text: merged ? coalesce(count) : text, count, ...(!merged && foreign && text.includes(foreign.text) ? { foreign } : {}) };
   return { ...q, pending: [...q.pending.filter((p) => !same(p)), item] };
 }
 
 /** The next item to announce at `now` (seconds), if any is due. */
-export function nextAnnouncement(q: QueueState, now: number, minInterval: number): { queue: QueueState; say: string | null } {
+export function nextAnnouncement(q: QueueState, now: number, minInterval: number): { queue: QueueState; say: string | null; foreign?: Foreign | undefined } {
   const ready = q.pending
     .filter((p) => p.category <= 2 || q.lastSlow === null || now - q.lastSlow >= minInterval)
     .sort((a, b) => a.category - b.category || (a.key === undefined ? 1 : 0) - (b.key === undefined ? 1 : 0));
@@ -49,6 +59,7 @@ export function nextAnnouncement(q: QueueState, now: number, minInterval: number
   return {
     queue: { pending: q.pending.filter((p) => p !== first), lastSlow: first.category >= 3 ? now : q.lastSlow },
     say: first.text,
+    foreign: first.foreign,
   };
 }
 
@@ -60,4 +71,12 @@ export function dropSlow(q: QueueState): QueueState {
 /** Drop everything pending: the scenario ended (QA m5); nothing of it may be announced later. */
 export function flushAll(q: QueueState): QueueState {
   return { ...q, pending: [] };
+}
+
+/** Split an announcement around its foreign part: [before, foreign, after], or null when there is none. */
+export function splitForeign(text: string, foreign: Foreign | undefined): [string, Foreign, string] | null {
+  if (!foreign) return null;
+  const at = text.indexOf(foreign.text);
+  if (at < 0) return null;
+  return [text.slice(0, at), foreign, text.slice(at + foreign.text.length)];
 }

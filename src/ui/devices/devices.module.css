@@ -1042,3 +1042,16 @@
 .letter .link {
   color: var(--letter-ink);
 }
+
+/* CR-27: a quoted message inside a chat bubble (context: quoted), with its attachment chips inside. */
+.chatQuote {
+  display: block;
+  margin: var(--space-2) 0;
+  padding: var(--space-1) 0 var(--space-1) var(--space-3);
+  border-left: 3px solid var(--color-border);
+  white-space: pre-wrap;
+}
+.chatQuote > ul {
+  margin-top: var(--space-2);
+  white-space: normal;
+}

@@ -8,7 +8,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { habitCard } from '../content/habitCards.ts';
 import type { ChoiceLine, DebriefData, DebriefWrongTag, OtherChoice } from '../engine/debrief.ts';
-import { choiceLineText, nextTimeText } from '../engine/choiceText.ts';
+import { choiceLineText, choicePathText, nextTimeText } from '../engine/choiceText.ts';
 import { lookup, t, type MessageKey } from '../i18n/index.ts';
 import { deviceHeading } from './devices/Device.tsx';
 import { Icon } from './Icon.tsx';
@@ -201,6 +201,15 @@ export function DebriefView({ data, onContinue, onAgain, onTellMeNow }: DebriefV
                 <li key={i}>{otherChoiceText(c)}</li>
               ))}
             </ul>
+          </section>
+        ) : null}
+        {l2.choicePaths.length > 0 ? (
+          // CR-27: the whole path where an engage came before the final choice.
+          <section aria-labelledby="choice-path-h" data-choice-path="">
+            <h2 id="choice-path-h">{t('debrief_choice_path')}</h2>
+            {l2.choicePaths.map((c, i) => (
+              <p key={i}>{choicePathText(c, lookup)}</p>
+            ))}
           </section>
         ) : null}
         {flagged || l2.wrongTags.length > 0 ? (

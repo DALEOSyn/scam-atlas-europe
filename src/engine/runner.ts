@@ -106,8 +106,12 @@ export interface InterruptState {
   at: number;
   /** Arrives when this beat's call or message ends (ruling QA M6). */
   afterBeat?: string | undefined;
-  /** …and only after that beat's "What now?" choice (Amsterdam QA q). */
+  /** …and only after that beat's "What now?" choice (Amsterdam QA q). Since CR-27 every after_beat interrupt waits for it. */
   afterWhatNow?: boolean | undefined;
+  /** CR-27: deliver an after_beat interrupt after a fall too (`show`), or drop it (`skip`, the default). */
+  onFall?: 'show' | 'skip' | undefined;
+  /** CR-27: dropped because the player fell (on_fall: skip). Never arrives, never answered. */
+  skipped?: boolean | undefined;
   /** The beat ended without "What now?": arrives at the next beat, or before the debrief. */
   due?: boolean | undefined;
   arrived: boolean;
@@ -276,7 +280,7 @@ export function startScenario(s: Scenario, ctx: RunnerContext): RunnerState {
     arrived: ['start'],
     groups: [newGroup(s, 'start')],
     pushers: startPushers(ctx.balance, pusherPlanOf(s), ctx.settings.pushers, stressState(ctx.balance, stress)),
-    interrupts: s.interrupts.map((i) => ({ id: i.id, at: i.at_seconds ?? Infinity, afterBeat: i.after_beat, afterWhatNow: i.after_what_now, arrived: false, actionId: undefined, outcome: undefined })),
+    interrupts: s.interrupts.map((i) => ({ id: i.id, at: i.at_seconds ?? Infinity, afterBeat: i.after_beat, afterWhatNow: i.after_what_now, onFall: i.on_fall, arrived: false, actionId: undefined, outcome: undefined })),
     checks: [],
     tags: [],
     pause: { open: false, closesAt: 0, cooldownUntil: 0, uses: 0 },
@@ -351,6 +355,9 @@ function resolveGroup(s: Scenario, ctx: RunnerContext, st: RunnerState, g: Group
   let next = withGroup({ ...st, timer: null, pushers: stopPushers(st.pushers), interrupts: markDue(st.interrupts, done.visited) }, done);
   const fell = !done.timerExpired && done.decision !== undefined && isFall(done.decision.cls, st.truth);
   if (fell) next = setStress(ctx, next, next.stress + ctx.balance.stress.on_fall);
+  // CR-27: after a fall, after_beat interrupts not flagged `on_fall: show` are dropped (no "Have a good
+  // long weekend!" right after damage control). Already answered ones stay.
+  if (fell) next = { ...next, interrupts: skipOnFall(next.interrupts) };
 
   // The consequence step (GDD §3 step 4, UI_SPEC §7) follows every resolved beat that has a narrative
   // or an expired timer, also the last one, before damage control or the debrief (layer-1 ruling
@@ -363,7 +370,12 @@ function resolveGroup(s: Scenario, ctx: RunnerContext, st: RunnerState, g: Group
 }
 
 function markDue(list: readonly InterruptState[], beats: readonly string[]): InterruptState[] {
-  return list.map((i) => (i.afterBeat !== undefined && !i.arrived && beats.includes(i.afterBeat) ? { ...i, due: true } : i));
+  return list.map((i) => (i.afterBeat !== undefined && !i.arrived && !i.skipped && beats.includes(i.afterBeat) ? { ...i, due: true } : i));
+}
+
+/** CR-27: the player fell. after_beat interrupts still to come (not arrived) are dropped unless `on_fall: show`. */
+export function skipOnFall(list: readonly InterruptState[]): InterruptState[] {
+  return list.map((i) => (i.afterBeat !== undefined && !i.arrived && i.onFall !== 'show' ? { ...i, due: false, skipped: true } : i));
 }
 
 function arriveInterrupt(ctx: RunnerContext, st: RunnerState, id: string): RunnerState {
@@ -377,7 +389,7 @@ function arriveInterrupt(ctx: RunnerContext, st: RunnerState, id: string): Runne
 
 /** Due after_beat interrupts arrive now. */
 function arriveDue(ctx: RunnerContext, st: RunnerState): RunnerState {
-  return st.interrupts.filter((i) => i.due && !i.arrived).reduce((acc, i) => arriveInterrupt(ctx, acc, i.id), st);
+  return st.interrupts.filter((i) => i.due && !i.arrived && !i.skipped).reduce((acc, i) => arriveInterrupt(ctx, acc, i.id), st);
 }
 
 /** The scenario is over: an after_beat interrupt still unanswered gets its own step first (ruling QA M6). */
@@ -413,10 +425,14 @@ export function isCovered(s: Scenario, groups: readonly GroupState[], g: GroupSt
   return groups.some((h) => h !== g && covers.includes(h.beatId) && h.resolved && h.decision?.cls === 'verify');
 }
 
-/** A report or dismiss on a covered beat scores as verify; a fall stays a fall, a timer stays a timer. */
+/**
+ * A report or dismiss on a covered beat scores as verify; a fall stays a fall, a timer stays a timer.
+ * CR-27: an engage on fraud in the beat (e.g. "Call back the number he gave") is never covered: the beat
+ * is capped at ★★ anyway, so the "You'd already checked… that was enough" caption would contradict it.
+ */
 export function coveredDecision(s: Scenario, groups: readonly GroupState[], g: GroupState): { decision: GroupState['decision']; covered: boolean } {
   const d = g.decision;
-  if (!d || g.timerExpired || (d.cls !== 'report' && d.cls !== 'dismiss') || !isCovered(s, groups, g)) return { decision: d, covered: false };
+  if (!d || g.timerExpired || g.engagedOnFraud || (d.cls !== 'report' && d.cls !== 'dismiss') || !isCovered(s, groups, g)) return { decision: d, covered: false };
   return { decision: { ...d, cls: 'verify' }, covered: true };
 }
 
@@ -642,11 +658,9 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
         g2 = { ...g2, pausedUnderPressure: activeGroup(next)?.pausedUnderPressure ?? g2.pausedUnderPressure };
       } else if (action.kind === 'hang_up' && (beat.device === 'call' || beat.what_now) && action.outcome !== undefined) {
         // GDD §6: hanging up is not terminal; "What now?" with the dialler open.
-        // The call is over: its follow-ups stop with it (QA M2); its after_beat interrupts arrive now (ruling QA M6).
-        let ended: RunnerState = { ...withGroup(next, { ...g2, pendingOutcome: action.outcome }), phase: 'what_now', timer: null, pushers: stopPushers(next.pushers) };
-        // An interrupt marked after_what_now waits for the choice (Amsterdam QA q); resolveGroup marks it due.
-        for (const i of ended.interrupts) if (i.afterBeat !== undefined && !i.afterWhatNow && !i.arrived && g2.visited.includes(i.afterBeat)) ended = arriveInterrupt(ctx, ended, i.id);
-        return ended;
+        // The call is over: its follow-ups stop with it (QA M2). Its after_beat interrupts wait until the
+        // "What now?" choice is made (CR-27 ruling): resolveGroup marks them due.
+        return { ...withGroup(next, { ...g2, pendingOutcome: action.outcome }), phase: 'what_now', timer: null, pushers: stopPushers(next.pushers) };
       } else if (isSetupStep(beat, action, cls, st.truth)) {
         // GDD §6 / §16 ruling 2: proceeding from a setup beat (an opener that asks nothing) is not the
         // decisive action. Recording it would let a timer expiry on the next beat score as that proceed
@@ -813,6 +827,9 @@ export interface CheckableView {
   reveal: string | undefined;
   checked: boolean;
   tagged: boolean;
+  /** CR-27: language of `shown` when it is message text in another language, and its English translation. */
+  lang?: string | undefined;
+  translation?: string | undefined;
 }
 
 /** A beat that speaks with a sender of its own (not a page and not the banking app). */

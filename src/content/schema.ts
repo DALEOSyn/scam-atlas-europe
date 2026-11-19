@@ -186,6 +186,11 @@ export const messageSchema = z
       })
       .strict()
       .optional(),
+    /**
+     * CR-27: the bank app shown in the banking header, a brand id or a sub-brand id from content/brands.yaml
+     * (e.g. `larchwick-pro` → "Larchwick Pro"). Banking only. Default: the player's bank (Larchwick).
+     */
+    bank: z.object({ brand: slug }).strict().optional(),
     /** CR-26: whose money it is, on banking beats ("Ruchelune · current account"). */
     account: z.object({ nickname: z.string().min(1) }).strict().optional(),
     prompt: z
@@ -287,6 +292,7 @@ export function deviceOnlyIssues(device: Device, m: Message): [(string | number)
   if (m.recorded && device !== 'call') out.push([['recorded'], 'recorded is for call beats (CR-20)']);
   if (m.video && device !== 'call') out.push([['video'], 'video is for call beats (CR-24)']);
   if (m.account && device !== 'banking') out.push([['account'], 'account (whose money it is) is for banking beats (CR-26)']);
+  if (m.bank && device !== 'banking') out.push([['bank'], 'bank (the bank app header) is for banking beats (CR-27)']);
   const p = m.payee;
   if (p && device !== 'banking') {
     // CR-22: the "Bank details" card. No name check outside the bank app.
@@ -486,6 +492,12 @@ export const interruptSchema = z
      * while the player is still choosing. Without "What now?" it changes nothing.
      */
     after_what_now: z.boolean().default(false),
+    /**
+     * CR-27: with after_beat, what happens when the player fell for something in this scenario (a fall is
+     * followed by damage control). `skip` (default): the interrupt is not delivered, so a cheerful
+     * "Have a good weekend!" never lands right after losing money. `show`: delivered as usual.
+     */
+    on_fall: z.enum(['show', 'skip']).default('skip'),
     is_fraud: z.boolean(),
     ...beatBody,
   })
@@ -566,6 +578,12 @@ export const scenarioSchema = z
     arc_slot: z.number().int().min(1).max(9).optional(),
     /** The player started this (reset link they requested, their own sign-in): in-message action is proceed. */
     player_started: z.boolean().default(false),
+    /**
+     * Scene-setting line shown above the first beat (e.g. a boss's "18:40, the last working day…").
+     * Placeholder added by scenario-writer for Paris T-3.5 rework; engine branch CR-27 adds the same field
+     * and renders it (coordinator reconciles at merge). Not rendered yet on this branch.
+     */
+    setup: z.string().min(1).optional(),
     learning_objectives: z.array(loId).min(1),
     difficulty: z.number().int().min(1).max(5).optional(),
     is_fraud: z.boolean(),
@@ -638,6 +656,7 @@ export const scenarioSchema = z
         issue(['interrupts', i, 'after_beat'], `after_beat "${b.after_beat}" is not a beat id`);
       }
       if (b.after_what_now && b.after_beat === undefined) issue(['interrupts', i, 'after_what_now'], 'after_what_now needs after_beat');
+      if (b.on_fall === 'show' && b.after_beat === undefined) issue(['interrupts', i, 'on_fall'], 'on_fall is for after_beat interrupts (at_seconds interrupts arrive on the clock)');
     });
     const beatIds = new Set<string>(['start']);
     s.beats.forEach((b, i) => {

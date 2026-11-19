@@ -130,8 +130,42 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
       el.focus();
       if (typeof el.scrollIntoView === 'function') el.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'nearest' });
     } else if (f.kind === 'reply') replies.current[f.i]?.focus();
-    else heading.current?.focus();
+    else {
+      heading.current?.focus();
+      // CR-27 (STATUS follow-up): on open at 320×568 the sticky footer covered the end of the first panel.
+      // Scroll just enough to lift the panel's end above the footer, as long as the heading stays in view.
+      const first = items.current[0];
+      const foot = footerRef.current;
+      const h = heading.current;
+      if (view === 'panels' && shown === 1 && first && foot && h && typeof window.scrollBy === 'function') {
+        const overlap = first.getBoundingClientRect().bottom - foot.getBoundingClientRect().top;
+        const room = h.getBoundingClientRect().top;
+        if (overlap > 0 && room > 0) window.scrollBy(0, Math.min(overlap, room));
+      }
+    }
   }, [view, shown, picked]);
+
+  // CR-27: bottom room = the footer's measured height (scroll padding and the panel list), so a scrolled-to
+  // or focused panel is never under the sticky footer.
+  const footerRef = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const el = footerRef.current;
+    const root = typeof document !== 'undefined' ? document.documentElement : null;
+    if (!el || !root) return undefined;
+    const apply = () => {
+      const fh = Math.ceil(el.getBoundingClientRect().height);
+      root.style.setProperty('--scene-footer-h', `${fh}px`);
+      root.style.scrollPaddingBottom = `${fh}px`;
+    };
+    apply();
+    const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(apply) : null;
+    ro?.observe(el);
+    return () => {
+      ro?.disconnect();
+      root.style.removeProperty('--scene-footer-h');
+      root.style.scrollPaddingBottom = '';
+    };
+  }, [view]);
 
   // A scene with no visible panel (all variants off, or only a flip without a postcard) ends at once.
   useEffect(() => {
@@ -268,7 +302,7 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
             );
           })}
         </ol>
-        <div class={styles.footer}>
+        <div class={styles.footer} ref={footerRef}>
           <button
             type="button"
             class={styles.primary}

@@ -33,6 +33,24 @@ export interface CheckableItem {
   shown: string | undefined;
   /** Authored reveal, or undefined for the neutral filler. */
   reveal: string | undefined;
+  /**
+   * CR-27 (WCAG 3.1.2): the language of `shown` when it is message text in another language (the ask, a
+   * claim, an attachment name), from message.lang. Undefined for English and for language-neutral details.
+   */
+  lang?: string | undefined;
+  /** CR-27: the authored English translation of `shown` (ask.translation, claims[].translation), if any. */
+  translation?: string | undefined;
+}
+
+/** Targets whose shown text is the message's own words, so it carries the message language. */
+const WORDS_TARGETS = new Set(['request', 'claim', 'attachment']);
+
+/** Language and translation of a checkable's shown text (CR-27). */
+export function shownLanguage(m: Message, target: string): { lang?: string; translation?: string } {
+  const base = target.replace(/#\d$/, '');
+  if (!m.lang || m.lang === 'en' || !WORDS_TARGETS.has(base)) return {};
+  const translation = base === 'request' ? m.ask?.translation : base === 'claim' ? nth(m.claims, target)?.translation : undefined;
+  return { lang: m.lang, ...(translation ? { translation } : {}) };
 }
 
 export const keyOf = (beatId: string, target: string): string => `${beatId}|${target}`;
@@ -109,6 +127,7 @@ export function checkablesOf(beat: CheckableBeat): CheckableItem[] {
     target,
     shown: shownText(beat.device, beat.message, target, links),
     reveal: inspectableFor(beat, target)?.reveal,
+    ...shownLanguage(beat.message, target),
   }));
 }
 

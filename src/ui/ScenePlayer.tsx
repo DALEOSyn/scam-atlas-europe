@@ -152,6 +152,8 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
     if (f.kind === 'panel') {
       const el = items.current[f.i];
       if (!el) return;
+      // CR-29: a tighter art cap is for the newest panel only; earlier panels go back to the CSS cap.
+      items.current.slice(0, f.i).forEach((li) => li && liftArtCap(li));
       el.focus({ preventScroll: true });
       revealPanel(el, footerRef.current, prefersReducedMotion() ? 'auto' : 'smooth');
     } else if (f.kind === 'reply') replies.current[f.i]?.focus();
@@ -163,6 +165,45 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
       if (view === 'panels' && shown === 1 && first) revealOnOpen(headRef.current, first, footerRef.current);
     }
   }, [view, shown, picked]);
+
+  // CR-29: a rotation (or any width change) lifts every inline art cap, which was measured for the old
+  // viewport, and reveals the newest panel again for the new one (on open: the heading row first). A
+  // height-only resize (a mobile address bar collapsing) keeps the caps: nothing was measured wrongly.
+  const shownRef = useRef(shown);
+  shownRef.current = shown;
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+    let width = window.innerWidth;
+    let frame = 0;
+    const relayout = () => {
+      items.current.forEach((li) => li && liftArtCap(li));
+      cancelAnimationFrame(frame);
+      // After the new layout (and the footer's new measured height) is in place.
+      frame = requestAnimationFrame(() => {
+        const n = shownRef.current;
+        const li = items.current[n - 1];
+        if (!li) return;
+        if (n === 1) revealOnOpen(headRef.current, li, footerRef.current);
+        else revealPanel(li, footerRef.current, 'auto');
+      });
+    };
+    const onResize = () => {
+      if (window.innerWidth === width) return;
+      width = window.innerWidth;
+      relayout();
+    };
+    const onRotate = () => {
+      width = window.innerWidth;
+      relayout();
+    };
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onRotate);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onRotate);
+    };
+  }, []);
 
   // A scene with no visible panel (all variants off, or only a flip without a postcard) ends at once.
   useEffect(() => {
@@ -322,9 +363,10 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
 const REVEAL_MARGIN = 8;
 
 /**
- * CR-28 (T-S4b QA M1): scroll so the panel's figcaption (its text, postcard or flip card) ends above the
- * sticky footer's top edge. When the whole panel fits between the viewport top and the footer, it is shown
- * whole; when it is taller than that room, the caption end wins over the top of the art. Before this,
+ * CR-28 (T-S4b QA M1), CR-29 round 2: when the whole panel fits between the viewport top and the sticky
+ * footer, scroll so all of it (picture and caption, whichever ends lower) is above the footer's top edge;
+ * when it is taller than that room, the figcaption's end (its text, postcard or flip card) wins over the
+ * top of the art. Before this,
  * `scrollIntoView({ block: 'nearest' })` showed the art and left the caption under the footer.
  */
 export function revealPanel(li: HTMLElement, footer: HTMLElement | null, behavior: ScrollBehavior): void {
@@ -333,30 +375,50 @@ export function revealPanel(li: HTMLElement, footer: HTMLElement | null, behavio
   const bottomEdge = (footer ? footer.getBoundingClientRect().top : window.innerHeight) - REVEAL_MARGIN;
   // CR-28 round 2: a panel taller than the room between the viewport top and the footer gets a tighter
   // art cap (down to 88 px), so the focused panel is fully on screen with its caption.
+  const room = bottomEdge - REVEAL_MARGIN;
   const li0 = li.getBoundingClientRect();
-  shrinkArt(li, li0.bottom - li0.top - (bottomEdge - REVEAL_MARGIN));
-  const top = li.getBoundingClientRect().top;
-  const capEnd = cap.getBoundingClientRect().bottom;
-  // Down by what the caption runs under the footer; else up to show the panel's top, as long as the
-  // caption end still clears the footer.
-  let dy = capEnd > bottomEdge ? capEnd - bottomEdge : 0;
-  if (dy === 0 && top < REVEAL_MARGIN) dy = Math.max(top - REVEAL_MARGIN, capEnd - bottomEdge);
+  shrinkArt(li, li0.bottom - li0.top - room);
+  const r = li.getBoundingClientRect();
+  // CR-29 round 2: the end to bring above the footer is the whole panel's (picture or caption, whichever
+  // ends lower: side by side, the picture can be the taller one) when the panel fits; only when it does
+  // not does the caption end win.
+  const end = r.bottom - r.top <= room ? r.bottom : cap.getBoundingClientRect().bottom;
+  // Down by what that end runs under the footer; else up to show the panel's top, as long as the end
+  // still clears the footer.
+  let dy = end > bottomEdge ? end - bottomEdge : 0;
+  if (dy === 0 && r.top < REVEAL_MARGIN) dy = Math.max(r.top - REVEAL_MARGIN, end - bottomEdge);
   if (Math.abs(dy) >= 1) window.scrollBy({ top: dy, behavior });
 }
 
 /** The smallest a panel's art may get on a short screen (px). */
 const OPEN_ART_MIN = 88;
 
-/** Lower a panel's art cap by `excess` px (plus 2 px for rounding), never under 88 px. */
-function shrinkArt(li: HTMLElement, excess: number): void {
+/** The inline art cap, a custom property on the panel's li (read by `.art` and, side by side, `.figure`). */
+const ART_CAP = '--art-max-h';
+
+/**
+ * Lower a panel's art cap by `excess` px (plus 2 px for rounding), never under 88 px. The art keeps its
+ * 4:3 shape and is centred (CSS), so the whole picture scales down; nothing is cropped (CR-29). When the
+ * art sits beside a taller caption (short landscape screens), a smaller picture would not make the panel
+ * shorter, so the cap is not applied.
+ */
+export function shrinkArt(li: HTMLElement, excess: number): void {
   if (excess <= 0) return;
   const art = li.querySelector<HTMLElement>('[role="img"]');
   if (!art) return;
   const h = art.getBoundingClientRect().height;
   const target = Math.max(OPEN_ART_MIN, Math.floor(h - excess - 2));
   if (target >= h) return;
-  art.style.minHeight = `${OPEN_ART_MIN}px`;
-  art.style.maxHeight = `${target}px`;
+  const before = li.getBoundingClientRect().height;
+  li.style.setProperty(ART_CAP, `${target}px`);
+  li.dataset['artCapped'] = '';
+  if (li.getBoundingClientRect().height >= before - 0.5) liftArtCap(li);
+}
+
+/** Back to the CSS cap (CR-29): once a panel is no longer the newest, or after a resize or rotation. */
+export function liftArtCap(li: HTMLElement): void {
+  li.style.removeProperty(ART_CAP);
+  delete li.dataset['artCapped'];
 }
 
 /**

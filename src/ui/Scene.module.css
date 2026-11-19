@@ -115,6 +115,7 @@
   }
 }
 .panel {
+  --art-max-h: max(160px, min(50dvh, calc(100dvh - var(--scene-footer-h, 64px) - 13rem)));
   border-radius: var(--radius-md);
   /* Room for the sticky footer when the browser scrolls a panel into view (CR-28: its measured height). */
   scroll-margin-bottom: calc(var(--scene-footer-h, var(--tap-min)) + var(--space-2));
@@ -137,10 +138,15 @@
 .art {
   position: relative;
   aspect-ratio: 4 / 3;
-  min-height: 160px;
   /* CR-28 (T-S4b QA M1): on short screens the art leaves room for the caption above the sticky footer
-     (viewport − footer − about 13rem of text), never under 160 px; the scroll on Next does the rest. */
-  max-height: max(160px, min(50dvh, calc(100dvh - var(--scene-footer-h, 64px) - 13rem)));
+     (viewport − footer − about 13rem of text), never under 160 px; the scroll on Next does the rest.
+     CR-29: the cap is one value (`--art-max-h`, set on the panel; the scene player lowers it inline for the
+     newest panel only, never under 88 px). The width follows it, so a capped picture keeps its 4:3 shape,
+     scales down whole and sits centred in the column, never cropped or left-aligned. */
+  width: min(100%, calc(var(--art-max-h) * 4 / 3));
+  justify-self: center;
+  min-height: min(160px, var(--art-max-h));
+  max-height: var(--art-max-h);
   overflow: hidden;
   border-radius: var(--radius-md);
   border: var(--border-w-strong) solid var(--color-border);
@@ -400,10 +406,14 @@
 }
 /* Short landscape screens (720×450): one heading row. The title steps down and may wrap inside its own
    column; Help and Skip keep one row beside it, in the smaller type. The 44 px targets stay. */
-@media (min-width: 600px) and (max-height: 520px) {
+@media (min-width: 600px) and (max-height: 520px), (orientation: landscape) and (max-height: 520px) {
   .head {
+    flex-direction: row;
     flex-wrap: nowrap;
     align-items: flex-start;
+  }
+  .chrome .help {
+    flex: none;
   }
   .head > :first-child {
     flex: 1 1 auto;
@@ -420,5 +430,54 @@
   .chrome .skip {
     padding-inline: var(--space-3);
     font-size: var(--fs-sm);
+  }
+}
+/* CR-29 (Paris story-scenes QA): landscape phones (568×320, 640×360). Picture and caption sit side by side,
+   so the panel is as tall as the taller of the two and the whole picture stays on screen (no head cut off
+   by the viewport). The art may use the height above the footer. */
+@media (orientation: landscape) and (max-height: 520px) {
+  .panel {
+    --art-max-h: max(88px, calc(100dvh - var(--scene-footer-h, 64px) - 2rem));
+  }
+  .figure {
+    grid-template-columns: min(30%, calc(var(--art-max-h) * 4 / 3)) minmax(0, 1fr);
+    align-items: start;
+  }
+  .shell {
+    padding: var(--space-2) var(--space-3) var(--space-12);
+  }
+  .scene {
+    gap: var(--space-2);
+  }
+  .footer {
+    padding-block: var(--space-1) calc(var(--space-1) + env(safe-area-inset-bottom, 0px));
+  }
+  /* Shorter text blocks beside the picture: tighter padding and line height, the postcard without its
+     tall minimum. */
+  .caption {
+    padding: var(--space-2) var(--space-3);
+    line-height: var(--lh-snug);
+  }
+  .postcard {
+    margin-top: var(--space-1);
+  }
+  /* Rehearsal options in one row of equal columns (each still a 44 px target), so every answer looks
+     equal; a label that wraps makes the whole row taller, never one button. */
+  .options {
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+  }
+  .options > li {
+    display: grid;
+  }
+  .postcardFace {
+    min-height: 0;
+    padding: var(--space-3) calc(var(--space-3) + 48px) var(--space-3) var(--space-3);
+  }
+  /* The picture keeps 4:3 beside the caption: its column sets the width, the height follows (no 160 px
+     minimum here, which squashed the box and cropped the backdrop at the sides). */
+  .figure > .art {
+    width: 100%;
+    min-height: 0;
   }
 }

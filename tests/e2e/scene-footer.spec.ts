@@ -50,14 +50,36 @@ async function measure(page: Page) {
       headBottom: Math.ceil(head.bottom),
       art: Math.round(li.querySelector('[role="img"]')?.getBoundingClientRect().height ?? 0),
       liH: Math.round(li.getBoundingClientRect().height),
+      // CR-29: revealed panels before the newest one, with their art box, column width and inline cap.
+      earlier: lis.slice(0, -1).map((x) => {
+        const a = x.querySelector('[role="img"]')?.getBoundingClientRect();
+        return { n: Number(x.dataset['panel']), artW: Math.round(a?.width ?? 0), colW: Math.round(x.getBoundingClientRect().width), capped: 'artCapped' in x.dataset || x.style.getPropertyValue('--art-max-h') !== '' };
+      }),
+      newestArtTop: Math.floor(li.querySelector('[role="img"]')?.getBoundingClientRect().top ?? 0),
+      liBottom: Math.ceil(li.getBoundingClientRect().bottom),
+      artRatio: (() => {
+        const a = li.querySelector('[role="img"]')?.getBoundingClientRect();
+        return a && a.height > 0 ? a.width / a.height : 0;
+      })(),
     };
   });
 }
 
+/** Portrait phones where the art spans the column (CR-29 item 4 checks earlier panels there). */
+// 375×667 is left out on purpose: there the CSS cap (50dvh) is below the column width × 3/4, so every
+// picture is a centred 4:3 box narrower than the column by design, capped or not.
+const FULL_WIDTH = new Set(['320×568', '360×640']);
+/** Short landscape screens: picture and caption side by side (CR-29). */
+const SIDE_BY_SIDE = new Set(['568×320', '640×360', '720×450']);
+
 for (const size of [
   { width: 320, height: 568 },
+  { width: 360, height: 640 },
   { width: 375, height: 667 },
   { width: 720, height: 450 },
+  // CR-29: landscape phones (picture and caption side by side).
+  { width: 568, height: 320 },
+  { width: 640, height: 360 },
 ]) {
   test(`every authored scene at ${size.width}×${size.height}: heading row in view on open, focus on screen, the newest caption above the footer (${IDS.length} scenes)`, async ({ page }) => {
     test.setTimeout(120_000);
@@ -103,6 +125,19 @@ for (const size of [
         if (m.focusBottom > m.footTop && m.focusTag === 'H1') bad.push(`${at}: h1 runs under the footer`);
         if (m.capTop < 0) bad.push(`${at}: caption starts ${-m.capTop} px above the viewport`);
         if (m.under > 0) bad.push(`${at}: caption ${m.under} px under the footer`);
+        // CR-29: the newest panel's whole picture is on screen after Next (no head cut off at the top).
+        const key = `${size.width}×${size.height}`;
+        if (SIDE_BY_SIDE.has(key)) {
+          // CR-29 round 2: after Next the whole newest panel (picture and caption) ends above the footer.
+          if (m.panel > 1 && m.liBottom > m.footTop) bad.push(`${at}: panel ends ${Math.ceil(m.liBottom - m.footTop)} px under the footer`);
+          // The picture keeps 4:3 beside the caption.
+          if (Math.abs(m.artRatio - 4 / 3) > 0.03) bad.push(`${at}: picture ratio ${m.artRatio.toFixed(3)}, not 4:3`);
+        } else if (m.panel > 1 && m.newestArtTop < 0) bad.push(`${at}: picture top ${m.newestArtTop} above the viewport`);
+        // CR-29: a tighter art cap is for the newest panel only; earlier panels are back to the column width.
+        for (const e of m.earlier) {
+          if (e.capped) bad.push(`${at}: earlier panel ${e.n} keeps an inline art cap`);
+          if (FULL_WIDTH.has(`${size.width}×${size.height}`) && Math.abs(e.artW - e.colW) > 2) bad.push(`${at}: earlier panel ${e.n} art ${e.artW} px wide in a ${e.colW} px column`);
+        }
         if ((await next.textContent())?.trim() !== 'Next') break;
         await next.click();
       }
@@ -111,3 +146,28 @@ for (const size of [
     expect(bad).toEqual([]);
   });
 }
+
+test('CR-29: a rotation mid-scene (640×360 → 360×640) lifts the caps and reveals the newest panel again', async ({ page }) => {
+  await page.setViewportSize({ width: 640, height: 360 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto(`${HARNESS_URL}/?view=real&id=home-resolution`);
+  await expect(page.locator('li[data-panel="1"]')).toBeVisible();
+  await page.locator('[data-scene="next"]').click();
+  await expect(page.locator('li[data-panel="2"]')).toBeFocused();
+  await page.setViewportSize({ width: 360, height: 640 });
+  const settle = () => page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(r)))));
+  await settle();
+  const m = await page.evaluate(() => {
+    const li = document.querySelector<HTMLElement>('li[data-panel="2"]');
+    const cap = li?.querySelector('figcaption')?.getBoundingClientRect();
+    const foot = document.querySelector('[data-scene="next"]')?.parentElement?.getBoundingClientRect();
+    const capped = [...document.querySelectorAll<HTMLElement>('li[data-panel]')].filter((x) => x !== li && x.style.getPropertyValue('--art-max-h') !== '').length;
+    return li && cap && foot ? { capBottom: cap.bottom, capTop: cap.top, footTop: foot.top, capped, focused: document.activeElement === li } : null;
+  });
+  expect(m).not.toBeNull();
+  if (!m) return;
+  expect(m.capped).toBe(0);
+  expect(m.focused).toBe(true);
+  expect(m.capTop).toBeGreaterThanOrEqual(0);
+  expect(m.capBottom).toBeLessThanOrEqual(m.footTop);
+});

@@ -1,0 +1,164 @@
+# 4-8 "We've paused your card" with a look-alike link, in the real Larchwick thread (GDD §24.4; BSA's
+# "older chain", brief §2, §6: a text link to a fake bank login). Fraud, difficulty 4, no timer (the
+# chapter's calm fraud), interrupt (Noor, small talk). Levers fear, authority.
+# R 1: the link (owner part larchwick-secure.example, registered look-alike; it says "your app" but opens
+# a web page). D 3: the LARCHWICK sender in the thread (M1, the sender-or-link decoy), the card's real
+# last digits, and the request (real banks do send you to the app: the one ordinary request, §24.7 row 6c).
+# paused_page: a read-only training page with user ID and password only (researcher M-B, option 1: no
+# card or code fields). Not in R. Closing it and opening the app yourself is ★★ (engage cap).
+id: madrid-08-card-paused-link
+chapter: madrid
+role: standard
+pattern: bank-safe-account-call
+theme: bank-text
+learning_objectives: [LO-02, LO-03, LO-01, LO-05]
+difficulty: 4
+is_fraud: true
+device: sms
+brands: [larchwick, thimble-pine, kettle]
+cast: [noor]
+pressure: { timer: false, levers: [fear, authority] }
+
+message:
+  sender: { display: "LARCHWICK", detail: "Sender name: LARCHWICK (in your Larchwick thread)" }
+  body: "LARCHWICK: For your security we've paused your card ending 17 after an unusual payment. Check it and turn it back on in your Larchwick app: larchwick-secure.example/app"
+  request: log_in
+  ask: { text: "Check it and turn it back on in your Larchwick app" }
+  references: ["your card ending 17"]
+  earlier:
+    - { when: "Yesterday 18:12", body: "LARCHWICK: Card payment of €18.60 at MERCADO PUESTO 14." }
+    - { when: "Today 10:41", body: "LARCHWICK: A transfer of €2,940.00 to ES•• •••• 0417 is being processed. Not you? Call us now to stop it: 9•• ••• •14." }
+    - { when: "Today 15:20", body: "LARCHWICK: Code 4••••• to confirm your payment of €24.90 to THIMBLE & PINE. Enter it on the payment page. Valid 5 minutes. Never share this code with anyone. Not you? Call us on 9•• ••• •00." }
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows LARCHWICK, in the same thread as your real Larchwick texts, as a real one would. A sender name can be faked so a text lands in the real thread, so it can't prove anything either way. Judge what it asks."
+    red_flag: false
+    type: sender
+  - target: link
+    reveal: "larchwick-secure.example. Read the end: the owner part is larchwick-secure.example, not larchwick-bank.example, where your real app and site live. It says \"your app\" but opens a web page."
+    red_flag: true
+    type: link
+  - target: reference
+    reveal: "Knows the last digits of your card. Details like these aren't hard to find out, so they can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: request
+    reveal: "Asks you to check your card in your Larchwick app. Real banks do send you to the app, so it can't prove anything either way. Judge where the link goes."
+    red_flag: false
+    type: request
+
+actions:
+  - id: open_paused_link
+    label: "Open the link"
+    kind: open_link
+    next_beat: paused_page
+    pressure_target: true
+  - id: open_app_paused
+    label: "Open the Larchwick app yourself"
+    kind: verify_in_app
+    outcome: card_active
+  - id: report_paused_text
+    label: "Report the text"
+    kind: report
+    outcome: paused_text_reported
+  - id: delete_paused_text
+    label: "Delete it"
+    kind: delete
+    outcome: paused_text_deleted
+
+beats:
+  - id: paused_page
+    device: browser
+    message:
+      page: { address: "larchwick-secure.example/app", title: "Larchwick · Turn your card back on" }
+      body: "Log in to check the payment and turn your card back on. User ID and password."
+      request: log_in
+    inspectables:
+      - target: page.address
+        reveal: "The address bar still ends in larchwick-secure.example. Larchwick's real site is larchwick-bank.example, and this isn't the app."
+        red_flag: true
+        type: page_address
+      - target: page.info
+        reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
+        red_flag: false
+        type: padlock
+    actions:
+      - id: log_in_paused_page
+        label: "Log in"
+        kind: enter_details
+        outcome: login_typed
+        pressure_target: true
+      - id: close_open_app_paused
+        label: "Close it and open the app yourself"
+        kind: verify_in_app
+        outcome: card_active
+      - id: close_paused_page
+        label: "Close the page"
+        kind: ignore
+        outcome: paused_page_closed
+
+interrupts:
+  - id: noor_madrid
+    at_seconds: 15
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Noor", detail: "Saved contact: Noor" }
+      from_cast: noor
+      body: "inspector!! how's Madrid, eaten anything good?"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Noor's saved contact, in your usual chat with her. That isn't proof on its own, so weigh it with what she asks for: nothing but news."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_noor_lentils
+        label: "Reply: lentils, and they were great"
+        kind: proceed
+        outcome: noor_jealous
+        pressure_target: true
+      - id: report_noor_madrid
+        label: "Report the message"
+        kind: report
+        outcome: noor_madrid_reported
+
+outcomes:
+  login_typed:
+    narrative: "\"Thank you. Your card will be active again shortly.\" Nothing changes in your real app."
+    recovery:
+      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: change_password, category: secure }
+      - { step: report_police_copy_to_bank, category: report }
+      - { step: wait_and_see, category: harmful }
+      - { step: reply_to_sender, category: harmful }
+  card_active:
+    narrative: "You open the Larchwick app yourself. Your card is active. Nothing is paused."
+  paused_text_reported:
+    narrative: "Reported. Your phone files the text under spam. Your card works as usual."
+  paused_text_deleted:
+    narrative: "Deleted. Your card works as usual."
+  paused_page_closed:
+    narrative: "You close the page without typing anything. Your card works as usual."
+  noor_jealous:
+    narrative: "Noor: \"not fair. send me photos!!\""
+  noor_madrid_reported:
+    narrative: "You reported it. Careful is good; this one really was Noor, asking about your trip."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "In the real thread, real card digits, but a look-alike link."
+    what_works: "Open the Larchwick app yourself."
+  layer2:
+    message_flags: []
+    notes: "Same thread, same name as this morning's fake. Texts can carry a different number to call, or a link. Either way, go to the app or the card yourself."
+  device_tip: "On a real phone, press and hold a link to preview it, and open your bank's app from your home screen instead."
+  habit_card: read-the-link
+  already_clicked:
+    entered_details: "Typed your login? Call Larchwick now on the number on your card, then change your password from the real app."
+    clicked: "Opened the link but typed nothing? Close it. Then check your card in the app you open yourself."
+  sources: [es-incibe-sms-banks-2022]

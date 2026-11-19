@@ -1,0 +1,366 @@
+# 4-9 Boss: the evening alone (GDD §24.6; bank-safe-account-call). 22:15, Lucía on her night shift,
+# Andrés asleep. Beats are scammer-driven and arrive whatever the player did. Theme bank-call.
+# Beat 1 (sms, start, 40 s): in the real Larchwick thread (earlier: the 4-6 code text and the 4-8 "paused
+#   card" text, so the thread visibly holds real and fake together). €1,950 transfer, "call our security
+#   department" on a number that isn't the card's. R: phone number, request. D: sender (M1, the
+#   sender-or-link decoy), the masked account, "Never share your codes" (claim).
+#   No engage on boss beats (§16 ruling 4): "Call the number and follow their steps" is the pay.
+# Beat 2 (call, +45 s, 40 s, covered_by start): caller ID "Larchwick Bank" (M2, the sender-or-link decoy).
+#   R: "please don't hang up" (claim#2), the request. D: caller ID, "I won't ask for your passwords" (M4).
+#   "Open the app and follow their steps" is start_transfer with cap: engage (ruling R16, CR-31(b)): the
+#   beat's best after it is ★★; the engine's standard "You chose" line names it (psych CR review: no
+#   custom line, no conditional layer-2 line; one fixed layer-2 sentence true for every player instead).
+#   Line 1 is "calling about the €1,950 transfer" (not the spec's "You didn't call us back"), so it stays
+#   true after a beat-1 fall, when the player did call.
+#   boss_reserve: the player's own Larchwick app with the call on the line (CR-31 bar; caller lines are
+#   beat-bound follow-ups). Payee "Olvarde Custodia SL" (brand-checked company holder, BRAND_CHECK MW1,
+#   shown in full, CONTENT_GUIDE payee rule): match on the name the caller dictated (P3 + M6: neutral).
+#   scored: false only for the validator's 3-scored-beat count (it counts the banking sub-beat); the
+#   engine scores it inside beat 2's group (CR-18(e)), as Paris 3-9 and Amsterdam 2-9.
+# Beat 3 (sms, +45 s, 40 s, covered_by start + security_call): "move your balance to the security reserve
+#   tonight", same number as beat 1. Reads true whether or not money moved at beat 2. Design combination
+#   (fraud-researcher): not a separately sourced step; no debrief presents it as a known sequence.
+#   R: phone number, request. D: sender.
+# Interrupt after beat 3 (genuine, Andrés, Spanish with translation), never after a fall (on_fall: skip).
+# Every fall: the same six steps (engine merges and caps at 6) and the story-only flag madrid_money_moved.
+# No refund promise; no depiction of how caller IDs or sender names are faked.
+id: madrid-09-boss-reserve
+chapter: madrid
+role: boss
+pattern: bank-safe-account-call
+theme: bank-call
+learning_objectives: [LO-08, LO-01, LO-04, LO-03, LO-16]
+difficulty: 4
+is_fraud: true
+device: sms
+setup: "22:15. Lucía has left for her night shift; Andrés has gone to bed early before school. You're on the sofa with your phone."
+brands: [larchwick, thimble-pine, kettle]
+cast: [andres, lucia]
+pressure:
+  timer: true
+  levers: [authority, fear, urgency, helpfulness]
+  pusher:
+    messages:
+      - { at_seconds: 20, beat: security_call, text: "Are you in the app yet? Every minute counts." }
+      - { at_seconds: 5, beat: boss_reserve, text: "New payee. Type the name exactly: Olvarde Custodia SL. That's our reserve partner." }
+      - { at_seconds: 14, beat: boss_reserve, text: "Amount: your full balance." }
+      - { at_seconds: 24, beat: boss_reserve, text: "When it says the name matches, confirm. Quickly." }
+
+message:
+  sender: { display: "LARCHWICK", detail: "Sender name: LARCHWICK (in your Larchwick thread)" }
+  body: "LARCHWICK: We've detected a transfer of €1,950.00 from your account to ES•• •••• 2268. If it wasn't you, call our security department now: 9•• ••• •61. Never share your codes."
+  request: call
+  ask: { text: "If it wasn't you, call our security department now" }
+  claims: [{ text: "Never share your codes." }]
+  references: ["ES•• •••• 2268"]
+  phone_numbers: ["9•• ••• •61"]
+  earlier:
+    - { when: "Today 15:20", body: "LARCHWICK: Code 4••••• to confirm your payment of €24.90 to THIMBLE & PINE. Enter it on the payment page. Valid 5 minutes. Never share this code with anyone. Not you? Call us on 9•• ••• •00." }
+    - { when: "Today 17:48", body: "LARCHWICK: For your security we've paused your card ending 17 after an unusual payment. Check it and turn it back on in your Larchwick app: larchwick-secure.example/app" }
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows LARCHWICK, in the same thread as your real Larchwick texts, as a real one would. A sender name can be faked so a text lands in the real thread, so it can't prove anything either way. Judge what it asks."
+    red_flag: false
+    type: sender
+  - target: reference
+    reveal: "An account ending 2268. Real and fake alerts both show a masked account, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: phone_number
+    reveal: "9•• ••• •61: a number given in the text. It isn't the number on your card, which ends 00. Calling it reaches whoever sent the text."
+    red_flag: true
+    type: phone_number
+  - target: claim
+    reveal: "Good advice that real texts give too. A fake can copy it, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "Asks you to call a number it gives you about a payment you don't recognise. Don't use a number a text gives you: check in your own app, or call the number on your card."
+    red_flag: true
+    type: request
+
+actions:
+  - id: call_follow_steps_b1
+    label: "Call the number and follow their steps"
+    kind: pay
+    outcome: moved_on_text_call
+    pressure_target: true
+  - id: open_app_b1
+    label: "Open the Larchwick app yourself"
+    kind: verify_in_app
+    outcome: app_no_transfer_then_ring
+  - id: call_card_b1
+    label: "Call the number on your card"
+    kind: call_back_known
+    outcome: card_line_then_ring
+  - id: report_b1
+    label: "Report the text"
+    kind: report
+    outcome: b1_reported_ring
+  - id: delete_b1
+    label: "Delete it"
+    kind: delete
+    outcome: b1_deleted_ring
+
+beats:
+  - id: security_call
+    device: call
+    arrives_after: 45
+    timer_seconds: 40
+    covered_by: [start]
+    message:
+      sender: { display: "Larchwick Bank", detail: "Saved contact: Larchwick Bank, the number on your card" }
+      transcript:
+        - { speaker: caller, text: "Larchwick security department, calling about the €1,950 transfer from your account." }
+        - { speaker: caller, text: "We've paused it, but your account is exposed. I won't ask for your passwords or codes; the bank never does." }
+        - { speaker: you, text: "Can I call you back on the number on my card?" }
+        - { speaker: caller, text: "Please don't hang up, or the transfer goes through." }
+        - { speaker: caller, text: "Open your Larchwick app now and I'll guide you to move your balance to our security reserve account until it's safe." }
+      request: pay
+      ask: { text: "Open your Larchwick app now and I'll guide you to move your balance to our security reserve account until it's safe." }
+      claims:
+        - { text: "I won't ask for your passwords or codes; the bank never does." }
+        - { text: "Please don't hang up, or the transfer goes through." }
+    inspectables:
+      - target: caller_id
+        reveal: "Shows Larchwick Bank, the number on your card, as a real call would. A number on screen can be faked to show the same, so it can't prove anything either way. Judge what the caller asks."
+        red_flag: false
+        type: caller_id
+      - target: claim
+        reveal: "Says the bank never asks for passwords or codes. Real banks say this, and a fake caller can say it too, so it can't prove anything either way. Judge what you're asked to do."
+        red_flag: false
+        type: claim
+      - target: claim#2
+        reveal: "Wants you to stay on the line so you can't check. A real bank is fine with you hanging up and calling back."
+        red_flag: true
+        type: claim
+      - target: request
+        reveal: "Asks you to move your money to another account to keep it safe. No real bank does that, however it's explained. That request is the scam."
+        red_flag: true
+        type: request
+    actions:
+      - id: follow_steps_boss
+        label: "Open the app and follow their steps"
+        kind: start_transfer
+        next_beat: boss_reserve
+        cap: engage
+        pressure_target: true
+      - id: hang_up_boss_call
+        label: "Hang up"
+        kind: hang_up
+        outcome: boss_call_left
+    what_now:
+      call_back_label: "Call the number on your card"
+      outcomes:
+        call_back_known: card_line_no_move
+        report: boss_call_reported
+        done: boss_call_left
+      extra:
+        - id: open_app_after_boss_call
+          label: "Open the Larchwick app yourself"
+          kind: verify_in_app
+          outcome: app_balance_as_it_was
+        - id: call_back_this_number_boss
+          label: "Call back this number"
+          kind: call_number_in_message
+          note: "That's the number that just called. It can show the bank's real number, so you can't tell whose line it is. Use the number on your card."
+
+  - id: boss_reserve
+    device: banking
+    scored: false   # see header: inside beat 2's group (CR-18(e)); marked only for the validator's 3-scored-beat count
+    message:
+      account: { nickname: "Your current account" }
+      payee: { name: "Olvarde Custodia SL", iban: "ES•• •••• •••• •••• •••• 5590", name_check: match, amount: "€3,215.28" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "Name matches: the account is held by Olvarde Custodia SL, the name the caller gave you. That shows whose account it is. It can't show the call is real, and no real bank asks you to move money to keep it safe."
+        red_flag: false
+        type: payee
+      - target: payee.iban
+        reveal: "An account you've never paid, typed as the caller read it out. Real new payees look the same here, so it can't prove anything either way."
+        red_flag: false
+        type: payee
+    actions:
+      - id: confirm_send_boss
+        label: "Confirm and send €3,215.28"
+        kind: pay
+        outcome: sent_to_custodia
+        pressure_target: true
+      - id: hang_up_call_card_boss
+        label: "Hang up and call your card's number"
+        kind: call_back_known
+        outcome: card_line_no_move
+      - id: hang_up_report_boss
+        label: "Hang up and report it"
+        kind: report
+        outcome: boss_call_reported
+      - id: hang_up_cancel_boss
+        label: "Hang up and cancel"
+        kind: ignore
+        outcome: boss_reserve_cancelled
+
+  - id: reserve_text
+    device: sms
+    arrives_after: 45
+    timer_seconds: 40
+    covered_by: [start, security_call]
+    message:
+      sender: { display: "LARCHWICK", detail: "Sender name: LARCHWICK (in your Larchwick thread)" }
+      body: "LARCHWICK: Your account is still at risk. Move your balance to the security reserve tonight to protect it. Your agent's direct line: 9•• ••• •61."
+      request: pay
+      ask: { text: "Move your balance to the security reserve tonight to protect it." }
+      phone_numbers: ["9•• ••• •61"]
+      earlier:
+        - { when: "Today 17:48", body: "LARCHWICK: For your security we've paused your card ending 17 after an unusual payment. Check it and turn it back on in your Larchwick app: larchwick-secure.example/app" }
+        - { when: "Today 22:15", body: "LARCHWICK: We've detected a transfer of €1,950.00 from your account to ES•• •••• 2268. If it wasn't you, call our security department now: 9•• ••• •61. Never share your codes." }
+    inspectables:
+      - target: sender.detail
+        reveal: "Shows LARCHWICK, in the same thread as your real Larchwick texts, as a real one would. A sender name can be faked so a text lands in the real thread, so it can't prove anything either way. Judge what it asks."
+        red_flag: false
+        type: sender
+      - target: phone_number
+        reveal: "9•• ••• •61, the same number as the first text tonight. It isn't the number on your card, which ends 00. Calling it reaches whoever sent the text."
+        red_flag: true
+        type: phone_number
+      - target: request
+        reveal: "Moving your money \"to protect it\" is the scam, in a text as on a call."
+        red_flag: true
+        type: request
+    actions:
+      - id: call_agent_move_b3
+        label: "Call the agent and move your balance"
+        kind: pay
+        outcome: moved_on_agent_line
+        pressure_target: true
+      - id: call_card_b3
+        label: "Call the number on your card"
+        kind: call_back_known
+        outcome: card_line_b3
+      - id: open_app_b3
+        label: "Open the Larchwick app yourself"
+        kind: verify_in_app
+        outcome: app_b3
+      - id: report_b3
+        label: "Report the text"
+        kind: report
+        outcome: b3_reported
+      - id: delete_b3
+        label: "Delete it"
+        kind: delete
+        outcome: b3_deleted
+
+interrupts:
+  - id: andres_buenas_noches
+    after_beat: reserve_text
+    on_fall: skip   # the default, set explicitly: no cheerful good night right after a loss (CR-27)
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Andrés (Madrid)", detail: "Saved contact: Andrés (Madrid)" }
+      from_cast: andres
+      body: "¿Aún no te has dormido? Lucía dice que su turno está tranquilo esta noche 🙂 Buenas noches."
+      lang: es
+      translation: "Still up? Lucía says her shift's quiet tonight 🙂 Good night."
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Andrés's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what he asks for: nothing, he's saying good night."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_buenas_noches
+        label: "Reply: {lang:es}¡buenas noches!{/lang}"
+        translation: "good night!"
+        kind: proceed
+        outcome: andres_good_night
+        pressure_target: true
+      - id: report_buenas_noches
+        label: "Report the message"
+        kind: report
+        outcome: andres_good_night_reported
+
+outcomes:
+  moved_on_text_call:
+    narrative: "You call 9•• ••• •61. A calm voice guides you, step by step in your own app, to move €3,215.28 to a \"security reserve\". \"Done. Your money is safe now.\""
+    sets_flags: [madrid_money_moved]
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: keep_call_evidence, category: secure }
+      - { step: report_police_copy_to_bank, category: report }
+      - { step: call_back_text_number, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  sent_to_custodia:
+    narrative: "Sent to Olvarde Custodia SL. \"Perfect. Your money is safe with our reserve partner. Don't use the app tonight.\" The line goes dead."
+    sets_flags: [madrid_money_moved]
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: keep_call_evidence, category: secure }
+      - { step: report_police_copy_to_bank, category: report }
+      - { step: call_back_caller_number, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  moved_on_agent_line:
+    narrative: "You call the \"direct line\". The same calm voice guides you to move whatever is in your account to the \"security reserve\". \"Done. Sleep well.\""
+    sets_flags: [madrid_money_moved]
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: keep_call_evidence, category: secure }
+      - { step: report_police_copy_to_bank, category: report }
+      - { step: call_back_text_number, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  app_no_transfer_then_ring:
+    narrative: "You open the Larchwick app yourself. No transfer. Balance as it was. Then your phone rings: \"Larchwick Bank\"."
+  card_line_then_ring:
+    narrative: "Larchwick, on the number on your card: \"No such transfer. We'd never ask you to move money, and the number on your card, or the one in your app, is the way to reach us.\" As you hang up, your phone rings: \"Larchwick Bank\"."
+  b1_reported_ring:
+    narrative: "Reported. Your phone files the text under spam. Then your phone rings: \"Larchwick Bank\"."
+  b1_deleted_ring:
+    narrative: "Deleted. Then your phone rings: \"Larchwick Bank\"."
+  card_line_no_move:
+    narrative: "Larchwick, on the number on your card: \"We didn't call you, and we'd never ask you to move money. If anything has already left, we'll try to stop it now.\""
+  app_balance_as_it_was:
+    narrative: "You open the Larchwick app yourself. Nothing pending, no transfer in progress."
+  boss_call_reported:
+    narrative: "Reported. Keep a note of the time and what was said: your bank and the police can use them."
+  boss_call_left:
+    narrative: "You hang up and leave it there. Nothing has left your account on this call."
+  boss_reserve_cancelled:
+    narrative: "You hang up and cancel. Nothing more leaves your account."
+  card_line_b3:
+    narrative: "Larchwick, on the number on your card: \"There's no security reserve, and that isn't our number. Please don't call it. If anything has already left, we'll try to stop it now.\""
+  app_b3:
+    narrative: "You open the Larchwick app yourself. No warning, no \"reserve\". Just your account."
+  b3_reported:
+    narrative: "Reported. Your phone files the text under spam."
+  b3_deleted:
+    narrative: "Deleted. The thread goes quiet."
+  andres_good_night:
+    narrative: "Andrés: \"😴 {lang:es}Hasta mañana.{/lang}\""
+    translation: "See you tomorrow."
+  andres_good_night_reported:
+    narrative: "You reported it. Careful is good; this one really was Andrés, saying good night."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Text, \"bank\" call, text: all wanting your money moved."
+    what_works: "Hang up. Call the number on your card."
+  layer2:
+    message_flags:
+      - "First text: a number that isn't your card's, in the real thread."
+      - "The call: \"No passwords needed\" and \"don't hang up\" came with the real request: move your money. Following a caller's steps into your own app is already the risky part, even if you hang up before sending."
+      - "If you opened the app during the call: a name check can match simply because you typed the name the caller gave you."
+      - "Second text: same number, same request, back in the thread."
+    notes: "Most calls from your bank are what they seem. When one asks you to move money, read out a code, or stay on the line, hang up and call the number on your card."
+  device_tip: "On a real phone, end the call yourself, then dial the number on the back of your card. Don't use redial or the call log."
+  habit_card: hang-up-call-back
+  already_clicked:
+    clicked: "Called the number? Hang up, then call the number on your card and tell your bank what happened."
+    paid: "Moved money? Call your bank now on the number on your card and ask it to try to stop or recall the transfer. Keep the texts and the call log."
+    headings: { clicked: "Called the number they gave", paid: "Moved your money" }   # CR-45: beat 1's "Call the number and follow their steps" is a pay, so the auto heading fell back to "Clicked the link"; paid: QA re-check
+  sources: [es-incibe-smishing-bank-callback-2025, es-bde-sms-callerid-spoofing-2022, es-incibe-sms-banks-2022, es-bde-vishing-2020, ch-ncsc-double-phishing-2026, it-carabinieri-21-arresti-2025, pl-cert-fake-consultants, fr-bdf-osmp-2024, eu-eba-ecb-fraud-2025, eu-epc-threats-2025, eu-ecb-ipr, es-bde-msr2025-fraude]

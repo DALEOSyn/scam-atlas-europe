@@ -1,0 +1,85 @@
+# 4-1 Andrés: "Dinner at nine, are you in?" (GDD §24.4). Genuine, low stakes, difficulty 2, calm.
+# Off-focus for Madrid: its pattern (family impersonation by chat) is not in the chapter's patterns or
+# callbacks, so calling Andrés to check is an off-focus double check that costs gold (as Berlin 1-2;
+# GDD §24.7 row 2). Checkables (G, 2): sender + request.
+# Language: a message body takes lang + translation for the whole message (CR-45 inline spans are for
+# action labels and outcome narratives only, e.g. "¡Genial!" below), so
+# Andrés writes the whole message in Spanish with the spec's English as the inline translation (GDD §24.1
+# flavour rule; the spec had an English body with a Spanish greeting). Never a red flag.
+id: madrid-01-dinner-at-nine
+chapter: madrid
+role: standard
+pattern: messenger-family-impersonation
+theme: home
+learning_objectives: [LO-17]
+difficulty: 2
+is_fraud: false
+stakes: low
+device: messenger
+brands: [kettle]
+cast: [andres, lucia]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Andrés (Madrid)", detail: "Saved contact: Andrés (Madrid)" }
+  from_cast: andres
+  body: |
+    ¡Buenos días! Lucía duerme hasta las tres después de sus turnos de noche, así que la cocina es tuya, pero sin hacer ruido 🙂 Esta noche hago lentejas. ¿Cenamos a las nueve, te apuntas?
+  lang: es
+  translation: "Good morning! Lucía's asleep till three after her night shifts, so the kitchen's yours, quietly 🙂 I'm cooking lentils tonight. Dinner at nine, are you in?"
+  request: reply
+  ask: { text: "¿Cenamos a las nueve, te apuntas?", translation: "Dinner at nine, are you in?" }
+  l10n_note: "Spanish in-world text is intentional (Madrid chapter); the English translation is shown inline. 'Lentejas' (lentils) is a home-cooking staple; keep a homely dish in other locales."
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: Andrés's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what he asks for: whether you're in for dinner."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: request
+    reveal: "Asks whether you'll be in for dinner. No money, no code, no link."
+    red_flag: false
+    type: request
+
+actions:
+  - id: reply_im_in
+    label: "Reply: I'm in, thanks!"
+    kind: proceed
+    outcome: lentils_at_nine
+    pressure_target: true
+  - id: call_andres_check
+    label: "Call Andrés first to check"
+    kind: call_back_known
+    outcome: andres_puzzled
+  - id: report_dinner
+    label: "Report the message"
+    kind: report
+    outcome: dinner_reported
+  - id: leave_dinner
+    label: "Don't answer"
+    kind: ignore
+    outcome: dinner_unanswered
+
+outcomes:
+  lentils_at_nine:
+    narrative: "Andrés: \"{lang:es}¡Genial!{/lang} Nine o'clock. Come hungry.\""
+    translation: "Great!"
+  andres_puzzled:
+    narrative: "Andrés, puzzled but cheerful: \"Yes, it's me. Lentils at nine!\" A good habit, and this time a quick reply would have done."
+  dinner_reported:
+    narrative: "Reported. Andrés knocks on your door at lunchtime: \"Did my message reach you? It was only about dinner!\""
+  dinner_unanswered:
+    narrative: "No reply. At nine Andrés cooks for two, and puts a plate aside for you anyway."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Your host, asking about dinner. Nothing else."
+    what_works: "Reply as normal."
+  layer2:
+    message_flags: []
+    notes: "Most messages are fine. Save your checks for ones that ask for money, codes or a login."
+  device_tip: "On a real phone, tap the contact's name at the top of the chat to see the number behind it and check it's the one you saved."
+  habit_card: calm-not-paranoid
+  sources: [nl-politie-hulpvraagfraude-2025, ie-ncsc-phishing-guide, de-bsi-protect-phishing]

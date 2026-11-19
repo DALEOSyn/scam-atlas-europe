@@ -1,0 +1,102 @@
+# 4-2 A REAL Larchwick card-team call (GDD §24.4; genuine twin of 4-5, pattern bank-safe-account-call).
+# Genuine, low stakes (a yes or no), difficulty 3, call timer 30 s. Ruling R9: answering "no, that wasn't
+# me" (proceed) and hanging up to call the number on the card (verify) both earn ★★★.
+# Checkables (G, 5; parity with 4-5 and 4-7): caller ID (M2 neutral), the held payment (neutral), the
+# "we'll never ask" claim (M4: one neutral wording on genuine and fraud), the card's number quoted on the
+# call (M3 neutral; GDD §24.7 row 6d needs it as digits with a phone_numbers entry), the request.
+# Hang up opens "What now?": the card's number (verify), report, Done ("Leave it there").
+id: madrid-02-real-card-call
+chapter: madrid
+role: standard
+pattern: bank-safe-account-call
+theme: bank-call
+twin_of: madrid-05-reserve-account-call
+learning_objectives: [LO-17, LO-08]
+difficulty: 3
+is_fraud: false
+stakes: low
+device: call
+setup: "Mid-morning. Your phone rings."
+brands: [larchwick]
+pressure:
+  timer: true
+  levers: []
+  honest_deadline: "None: the payment stays held until you answer, on a call or in the app"
+
+message:
+  sender: { display: "Larchwick Bank", detail: "Saved contact: Larchwick Bank, the number on your card" }
+  transcript:
+    - { speaker: caller, text: "Hello, Larchwick Bank's card team. We've held a card payment of €212.00 to an online shop as a precaution." }
+    - { speaker: caller, text: "We'll never ask for your PIN, passwords or codes, or ask you to move money." }
+    - { speaker: caller, text: "Was it you? Just yes or no." }
+    - { speaker: caller, text: "If you'd rather check, hang up and call us on the number on your card, 9•• ••• •00." }
+  request: reply
+  ask: { text: "Was it you? Just yes or no." }
+  claims: [{ text: "We'll never ask for your PIN, passwords or codes, or ask you to move money." }]
+  references: ["Card payment of €212.00, held"]
+  phone_numbers: ["9•• ••• •00"]
+
+inspectables:
+  - target: caller_id
+    reveal: "Shows Larchwick Bank, the number on your card, as a real call would. A number on screen can be faked to show the same, so it can't prove anything either way. Judge what the caller asks."
+    red_flag: false
+    type: caller_id
+  - target: reference
+    reveal: "A card payment you didn't make, held. A fake call can describe a payment too, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: phone_number
+    reveal: "9•• ••• •00, the number on the back of your card. A call can quote it, so it can't prove the call is real, but calling that number reaches Larchwick."
+    red_flag: false
+    type: phone_number
+  - target: claim
+    reveal: "Says the bank never asks for passwords or codes, or to move money. Real banks say this, and a fake caller can say it too, so it can't prove anything either way. Judge what you're asked to do."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "Asks only whether the payment was yours, yes or no. Nothing to move, no code, no app steps, and you're free to hang up and call back."
+    red_flag: false
+    type: request
+
+actions:
+  - id: answer_not_me
+    label: "Answer: no, that wasn't me"
+    kind: proceed
+    outcome: card_blocked_new_card
+    pressure_target: true
+  - id: hang_up_card_team
+    label: "Hang up"
+    kind: hang_up
+    outcome: held_payment_later
+
+what_now:
+  outcomes:
+    report: real_call_reported
+    done: held_payment_later
+  extra:
+    - id: call_card_after_real_call
+      label: "Call the number on your card"
+      kind: call_back_known
+      outcome: same_team_same_answer
+
+outcomes:
+  card_blocked_new_card:
+    narrative: "\"Thanks. We've blocked that card. Your new card is in the app's Cards tab. Nothing else to do.\""
+  same_team_same_answer:
+    narrative: "Same team, same answer: the payment was held and the card is blocked. \"Calling back is always fine.\""
+  real_call_reported:
+    narrative: "You report the call. Later the app asks you to confirm the held payment wasn't yours: that call was real."
+  held_payment_later:
+    narrative: "Later the app asks you to confirm the held payment wasn't yours. You tap \"Not me\"."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Just a yes or no, and fine with a call-back."
+    what_works: "Answering or calling back: both fine."
+  layer2:
+    message_flags: []
+    notes: "Why it was safe: it asked nothing you'd regret (no code, no money moved, no app steps), and it offered the number on your card. The bank's name on screen proved nothing either way; what it asked for did. When a call asks you to act, hang up and call the number on your card."
+  device_tip: "On a real phone, end the call yourself, then dial the number on the back of your card. Don't use redial or the call log."
+  habit_card: calm-not-paranoid
+  sources: [es-bde-sms-callerid-spoofing-2022, es-incibe-smishing-bank-callback-2025]

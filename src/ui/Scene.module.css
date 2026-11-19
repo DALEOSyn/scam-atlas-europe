@@ -105,6 +105,8 @@
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-6);
   max-width: 560px;
+  /* CR-27: room for the sticky footer under the last panel (its measured height). */
+  padding-bottom: var(--scene-footer-h, 0px);
 }
 @media (min-width: 1024px) {
   .panels {

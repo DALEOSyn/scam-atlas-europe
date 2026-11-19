@@ -11,7 +11,7 @@ import { t } from '../../i18n/index.ts';
 import { Checkable } from '../check/Check.tsx';
 import { Icon } from '../Icon.tsx';
 import { Host, RichText, spokenNumber } from '../RichText.tsx';
-import { isMasked, segmentMessage, words, type Segment } from '../text.ts';
+import { isMasked, quotedSplit, segmentMessage, words, type Segment } from '../text.ts';
 import styles from './devices.module.css';
 
 export function PhoneFrame({ label, children, brand }: { label: string; children: ComponentChildren; brand?: string }) {
@@ -144,6 +144,14 @@ export function Chips({ items }: { items: { target: string; text: string }[] }) 
 }
 
 /**
+ * How long an auto-expanded translation ("Always show translations") freezes the timer: reading pace,
+ * max(1.5 s, 0.3 s × words), as for call lines (UI_SPEC §3.4). CR-27.
+ */
+export function translationHoldSeconds(text: string): number {
+  return Math.max(1.5, 0.3 * words(text));
+}
+
+/**
  * Inline Translate toggle (UI_SPEC §4.8): free, freezes the timer while open, never a checkable,
  * never inside a Check card.
  */
@@ -159,22 +167,44 @@ export function Translate({
   id?: string;
 }) {
   const [open, setOpen] = useState(alwaysOpen);
+  /** Expanded by the "Always show translations" setting, not by the player's own tap. */
+  const [auto, setAuto] = useState(alwaysOpen);
   // "Always show translations" changed in Settings: follow it (QA M7).
-  useEffect(() => setOpen(alwaysOpen), [alwaysOpen]);
-  // Each open translation holds one freeze; ScenarioView counts them.
   useEffect(() => {
-    if (!open) return undefined;
+    setOpen(alwaysOpen);
+    setAuto(alwaysOpen);
+  }, [alwaysOpen]);
+  const shown = !!message.translation && !!message.lang && message.lang !== 'en';
+  // Each open translation holds one freeze; ScenarioView counts them. CR-27 (Paris QA, bank-card timer stuck
+  // at "0:01 left"): a translation the setting keeps open freezes only for its reading time, then the timer
+  // runs again; before, it held the freeze for as long as it was on screen, so a French follow-up arriving
+  // on the bank card stopped the timer for good. A toggle with nothing to translate never freezes.
+  useEffect(() => {
+    if (!open || !shown) return undefined;
     onFreeze(true);
-    return () => onFreeze(false);
-  }, [open]);
-  if (!message.translation || !message.lang || message.lang === 'en') return null;
+    let held = true;
+    const release = () => {
+      if (!held) return;
+      held = false;
+      onFreeze(false);
+    };
+    const id = auto ? setTimeout(release, translationHoldSeconds(message.translation ?? '') * 1000) : undefined;
+    return () => {
+      if (id !== undefined) clearTimeout(id);
+      release();
+    };
+  }, [open, auto, shown]);
+  if (!shown) return null;
   return (
     <div class={styles.translate} lang="en">
-      <button type="button" class={styles.translateToggle} aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}>
+      <button type="button" class={styles.translateToggle} aria-expanded={open} aria-controls={id} onClick={() => {
+          setOpen(!open);
+          setAuto(false);
+        }}>
         {open ? t('translate_hide') : t('translate_show')}
       </button>
       <div id={id} hidden={!open} class={styles.translation}>
-        <span class={styles.translationLabel}>{t('scenario_translation')}</span> <RichText text={message.translation} />
+        <span class={styles.translationLabel}>{t('scenario_translation')}</span> <RichText text={message.translation ?? ''} />
       </div>
     </div>
   );
@@ -196,6 +226,57 @@ export function MessageBody({ message, collapse = false }: { message: Message; c
           {more ? t('show_less') : t('show_more')}
         </button>
       ) : null}
+    </>
+  );
+}
+
+/** Attachment chips (file name and size), checkable like in the mail device. `only`: these targets. */
+export function AttachmentChips({ message, only, skip }: { message: Message; only?: ReadonlySet<string>; skip?: ReadonlySet<string> }) {
+  const list = (message.attachments ?? []).map((a, i) => ({ a, target: i === 0 ? 'attachment' : `attachment#${i + 1}` })).filter((x) => (!only || only.has(x.target)) && !skip?.has(x.target));
+  if (list.length === 0) return null;
+  return (
+    <ul class={styles.chips}>
+      {list.map(({ a, target }) => (
+        <li key={target}>
+          <Checkable target={target} class={styles.attachment}>
+            <Icon name="attach" />
+            <span>{a.name}</span>
+            {a.size ? <span class={styles.muted}>{a.size}</span> : null}
+          </Checkable>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/**
+ * A chat bubble's body (CR-27): when part of it quotes someone else's message (`context: quoted`
+ * inspectables), that part is a quote block inside the bubble, with the quoted attachment chips drawn
+ * inside it. Other attachments follow the body. Without a quote it is the plain body.
+ */
+export function ChatBody({ message, quoted }: { message: Message; quoted: ReadonlySet<string> }) {
+  const segs = segmentMessage(message);
+  const split = message.body ? quotedSplit(message.body, segs.body, quoted) : null;
+  const quotedFiles = new Set((message.attachments ?? []).map((_, i) => (i === 0 ? 'attachment' : `attachment#${i + 1}`)).filter((x) => quoted.has(x)));
+  if (!split) {
+    return (
+      <>
+        <MessageBody message={message} />
+        <AttachmentChips message={message} />
+      </>
+    );
+  }
+  return (
+    <>
+      <div class={styles.body} lang={message.lang} id="message-body">
+        {split.before.length ? <Segments segs={split.before} /> : null}
+        <blockquote class={styles.chatQuote} data-quoted="">
+          <Segments segs={split.quote} />
+          <AttachmentChips message={message} only={quotedFiles} />
+        </blockquote>
+        {split.after.length ? <Segments segs={split.after} /> : null}
+      </div>
+      <AttachmentChips message={message} skip={quotedFiles} />
     </>
   );
 }

@@ -36,12 +36,14 @@ export function yamlModuleData(file: string, code: string, scenariosDir: string,
  * The runtime needs only what devices show: id, names and logo files. Review-only fields
  * (rationale, checked_against, web_check, which may name real brands) never reach the bundle.
  */
-export function brandProjection(raw: unknown): { id: string; name: string; short_name?: string; mark?: string }[] {
+export function brandProjection(raw: unknown): { id: string; name: string; short_name?: string; mark?: string; sub_brands?: { id: string; name: string }[] }[] {
   return brandsFileSchema.parse(raw).brands.map((b) => ({
     id: b.id,
     name: b.name,
     ...(b.short_name ? { short_name: b.short_name } : {}),
     ...(b.logo?.mark ? { mark: b.logo.mark.replace(/^public\//, '') } : {}),
+    // CR-27: sub-brand names for the banking header (message.bank.brand), id and name only.
+    ...(b.sub_brands?.length ? { sub_brands: b.sub_brands.map((x) => ({ id: x.id, name: x.name })) } : {}),
   }));
 }
 

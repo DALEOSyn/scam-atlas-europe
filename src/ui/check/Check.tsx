@@ -184,9 +184,18 @@ export function CheckFacts({ item, visibleText, sender }: { item: CheckableView;
       ) : (
         <dl class={styles.anatomy}>
           <dt>{t('check_you_see')}</dt>
-          <dd class={mono}>
+          {/* CR-27 (WCAG 3.1.2): message text in another language keeps its lang; its translation follows, in English. */}
+          <dd class={mono} lang={item.lang}>
             <Value target={item.target} text={visibleText} />
           </dd>
+          {item.lang && item.translation ? (
+            <>
+              <dt>{t('check_translation')}</dt>
+              <dd lang="en" data-check-translation="">
+                <RichText text={item.translation} />
+              </dd>
+            </>
+          ) : null}
           {isAddress(item.target) && item.shown ? (
             <>
               <dt>{t('check_goes_to')}</dt>
@@ -303,7 +312,7 @@ export function DetailsList({
           <li key={c.key}>
             <button type="button" class={styles.row} data-check-row={c.target} onClick={() => onCheck(c)} aria-expanded={c.checked}>
               <span class={styles.rowLabel}>{t('check_item', { element: elementLabel(c.target, c.device) })}</span>
-              <span class={isIdentifier(c.target) ? `${styles.rowValue} ${styles.mono}` : styles.rowValue}>
+              <span class={isIdentifier(c.target) ? `${styles.rowValue} ${styles.mono}` : styles.rowValue} lang={c.lang}>
                 <Value target={c.target} text={visible(c)} />
               </span>
               {c.checked ? (

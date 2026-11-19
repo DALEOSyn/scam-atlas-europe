@@ -15,6 +15,14 @@ const consequenceHeading = (page: Page) => page.getByRole('heading', { level: 3,
  * The consequence step after every resolved scenario (layer-1 ruling 2026-11-19): focus lands on its
  * heading with the outcome caption right after it; Continue goes on to damage control or the debrief.
  */
+/** CR-27: a fresh chapter run opens on the chapter intro (h1 = chapter name, focused; one Start button). */
+async function passIntro(page: Page, chapter = 'Home', axe = false) {
+  const intro = page.locator('[data-chapter-intro]');
+  await expect(intro.getByRole('heading', { level: 1, name: chapter })).toBeFocused();
+  if (axe) await axeClean(page);
+  await intro.getByRole('button', { name: 'Start' }).click();
+}
+
 async function passConsequence(page: Page, axe = false) {
   await expect(consequenceHeading(page)).toBeFocused();
   // No empty "Your options" heading during this step (QA F4).
@@ -98,6 +106,7 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
   await expect(page.getByRole('heading', { level: 1, name: 'Scam Atlas: Europe' })).toBeVisible();
   await axeClean(page);
   await page.getByRole('button', { name: 'Start' }).click();
+  await passIntro(page, 'Home', true);
 
   // 0-1 genuine welcome email on the laptop mail device: Check card + tag, then the verify habit.
   await expect(page.getByRole('region', { name: 'Laptop: Mail' })).toBeVisible();
@@ -219,6 +228,7 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
 test('tutorial 0-2: fall on the training page, damage control feedback, blame-free debrief', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
+  await passIntro(page);
   await page.getByRole('button', { name: /Report the email as phishing/ }).click();
   await passConsequence(page);
   // Tutorial grace (ruling L4): reporting a genuine message in Home scores ★ with a kind line, never a bare label.
@@ -284,6 +294,7 @@ for (const vp of [
     await page.goto('/');
     const noHScroll = async () => expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
     await page.getByRole('button', { name: 'Start' }).click();
+    await passIntro(page);
     const firstAction = page.getByRole('button', { name: /Find the pack/ });
     await page.getByRole('button', { name: /Details you can check/ }).click();
     await page.locator('[data-check="link"]').click();
@@ -346,6 +357,7 @@ async function reachBossCall(page: Page) {
   await page.goto('/');
   // Reach 0-6 beat 3 quickly with timers on (Standard).
   await page.getByRole('button', { name: 'Start' }).click();
+  await passIntro(page);
   await page.getByRole('button', { name: /Find the pack in Waymarker Desk yourself/ }).click();
   await continueToNext(page);
   await page.getByRole('button', { name: /Open Waymarker mail yourself/ }).click();
@@ -424,6 +436,7 @@ test('1440x900: with every detail checked, hidden text stays inside the scrollin
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
+  await passIntro(page);
   await page.getByRole('button', { name: /Details you can check/ }).click();
   const rows = page.locator('[data-check-row]');
   const n = await rows.count();
@@ -440,6 +453,11 @@ test('keyboard only: skip link, Check from the Details list, tag, act, debrief (
   await page.goto('/');
   await page.keyboard.press('Tab');
   await expect(page.getByRole('button', { name: 'Start' })).toBeFocused();
+  await page.keyboard.press('Enter');
+  // CR-27: the chapter intro, keyboard only: the h1 has focus, Tab reaches Start.
+  await expect(page.getByRole('heading', { level: 1, name: 'Home' })).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(page.locator('[data-chapter-intro]').getByRole('button', { name: 'Start' })).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page.getByRole('heading', { name: 'Email from Adaeze Okafor-Lind' })).toBeFocused();
   // The skip link is the first stop on the page (before the HUD) and moves focus to "Your options".
@@ -484,6 +502,7 @@ test('keyboard only: skip link, Check from the Details list, tag, act, debrief (
 test('reload mid-chapter offers Continue and resumes at the next scenario', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
+  await passIntro(page);
   await page.getByRole('button', { name: /Find the pack in Waymarker Desk yourself/ }).click();
   await passConsequence(page);
   await expect(debriefHeading(page)).toBeVisible();
@@ -521,6 +540,7 @@ test('start screen: Chapters list, Settings page; Start continues the next unfin
   const saved = await page.evaluate(() => localStorage.getItem('scam-atlas-europe:save'));
   expect(JSON.parse(saved ?? '{}')).toMatchObject({ settings: { alwaysTranslate: true } });
   await page.getByRole('button', { name: 'Start' }).click();
+  await passIntro(page);
   await expect(page.getByRole('heading', { name: 'Email from Adaeze Okafor-Lind' })).toBeFocused();
 });
 
@@ -528,6 +548,7 @@ test('in a scenario: sticky HUD, Settings dialog from the menu, Jump to your opt
   await page.setViewportSize({ width: 375, height: 560 });
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
+  await passIntro(page);
   await expect(page.getByRole('heading', { name: 'Email from Adaeze Okafor-Lind' })).toBeFocused();
   await page.evaluate(() => window.scrollTo(0, 0));
 
@@ -563,6 +584,7 @@ test('0-3: "Go to your inbox", then the reset email\'s timer runs out twice → 
   await page.clock.install();
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
+  await passIntro(page);
   await page.getByRole('button', { name: /Find the pack in Waymarker Desk yourself/ }).click();
   await continueToNext(page);
   await page.getByRole('button', { name: /Open Waymarker mail yourself/ }).click();

@@ -205,3 +205,71 @@ export function unrevealedTargets(m: Pick<Message, 'body' | 'transcript' | 'refe
   const visible = new Set([...targets(segs.body), ...segs.transcript.slice(0, shown).flatMap(targets)]);
   return new Set(segs.transcript.slice(shown).flatMap(targets).filter((x) => !visible.has(x)));
 }
+
+/** Offset each segment's text in the string it was cut from (segments are contiguous). */
+function withOffsets(segs: readonly Segment[]): { seg: Segment; start: number; end: number }[] {
+  let at = 0;
+  return segs.map((seg) => {
+    const start = at;
+    at += seg.text.length;
+    return { seg, start, end: at };
+  });
+}
+
+/** Cut segments to the [from, to) character range of the text they were cut from. */
+function sliceSegments(segs: readonly Segment[], from: number, to: number): Segment[] {
+  const out: Segment[] = [];
+  for (const { seg, start, end } of withOffsets(segs)) {
+    if (seg.kind === 'check') {
+      // An inline checkable is never split: it goes where it starts.
+      if (start >= from && start < to) out.push(seg);
+      continue;
+    }
+    const a = Math.max(start, from);
+    const b = Math.min(end, to);
+    if (a < b) out.push({ kind: 'text', text: seg.text.slice(a - start, b - start) });
+  }
+  return out;
+}
+
+function trimSegments(segs: Segment[], side: 'start' | 'end' | 'both'): Segment[] {
+  const out = [...segs];
+  if (side !== 'end') {
+    const f = out[0];
+    if (f?.kind === 'text') out[0] = { kind: 'text', text: f.text.replace(/^\s+/u, '') };
+  }
+  if (side !== 'start') {
+    const l = out[out.length - 1];
+    if (l?.kind === 'text') out[out.length - 1] = { kind: 'text', text: l.text.replace(/\s+$/u, '') };
+  }
+  return out.filter((x) => x.kind === 'check' || x.text.length > 0);
+}
+
+/**
+ * CR-27: the part of a body that quotes someone else's message (e.g. the email Inès's mum got), for a
+ * quote block inside the chat bubble. The quote is every paragraph (blank-line separated) holding an
+ * inline checkable whose inspectable has `context: quoted`, from the first such paragraph to the last.
+ * Returns the body split in three, or null when no inline checkable is quoted.
+ */
+export function quotedSplit(body: string, segs: readonly Segment[], quoted: ReadonlySet<string>): { before: Segment[]; quote: Segment[]; after: Segment[] } | null {
+  if (quoted.size === 0 || !body) return null;
+  const hits = withOffsets(segs).filter((x) => x.seg.kind === 'check' && quoted.has(x.seg.target));
+  if (hits.length === 0) return null;
+  const paras: { start: number; end: number }[] = [];
+  const sep = /\n\s*\n/gu;
+  let at = 0;
+  for (const m of body.matchAll(sep)) {
+    paras.push({ start: at, end: m.index });
+    at = m.index + m[0].length;
+  }
+  paras.push({ start: at, end: body.length });
+  const inQuote = paras.filter((p) => hits.some((h) => h.start >= p.start && h.start < p.end));
+  const first = inQuote[0];
+  const last = inQuote[inQuote.length - 1];
+  if (!first || !last) return null;
+  return {
+    before: trimSegments(sliceSegments(segs, 0, first.start), 'end'),
+    quote: trimSegments(sliceSegments(segs, first.start, last.end), 'both'),
+    after: trimSegments(sliceSegments(segs, last.end, body.length), 'start'),
+  };
+}

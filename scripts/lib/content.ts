@@ -11,7 +11,7 @@ import { isAllowedSourceHost } from './source-hosts.ts';
 import { svgSafetyIssues } from './svg-safety.ts';
 import { artIssues, castListIssues } from './art.ts';
 import { castByChapter, loadScenes, sceneRules, sceneSetRules, sceneWarnings } from './scenes.ts';
-import { chapterRules, padlockRevealIssues, scenarioRules, unregisteredHostIssues, type Registries } from './rules.ts';
+import { beatsOf, chapterRules, padlockRevealIssues, scenarioRules, unregisteredHostIssues, type Registries } from './rules.ts';
 import {
   balanceSchema,
   brandsFileSchema,
@@ -191,6 +191,12 @@ export function checkScenario(
     else if (b.placeholder) {
       (opts.strict ? report.errors : report.warnings).push(`${file}: brands: "${id}" is still a placeholder brand`);
     }
+  }
+  // CR-27: a banking header brand must be a registered brand or sub-brand.
+  const bankIds = new Set([...brands.values()].flatMap((b) => [b.id, ...(b.sub_brands ?? []).map((x) => x.id)]));
+  for (const b of beatsOf(s)) {
+    const id = b.message.bank?.brand;
+    if (id && !bankIds.has(id)) report.errors.push(`${file}: ${b.where}: message.bank.brand "${id}" is not a brand or sub-brand id in content/brands.yaml`);
   }
   report.errors.push(...unregisteredHostIssues(s, registeredHosts(brands)).map((e) => `${file}: ${e}`));
   return s;

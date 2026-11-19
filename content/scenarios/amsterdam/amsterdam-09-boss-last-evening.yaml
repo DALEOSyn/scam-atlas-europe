@@ -15,8 +15,7 @@
 #   ask Adaeze (verify), "Call back this number" (engage note), report, leave it there.
 # Interrupt after beat 3 (genuine): the real Mateus from his saved contact.
 # Damage control: the same six steps for every fall in the boss, so the merged list stays at six (QA Q1).
-# Interrupt timing: the engine delivers an after_beat interrupt as "What now?" opens; delivering it after
-# the choice needs an engine change (QA Q7, reported).
+# Interrupt timing: real_mateus_landed uses after_what_now, so it arrives after the "What now?" choice (QA Q7).
 # Layer 1: the producer's wording (tell "Two strangers wanting money first: one as a job, one as Mateus.",
 # what works "Asked to pay first? Check it yourself, on a number or site you already know.") is 27 words;
 # with the fixed copy (14) and the shortest possible slot line (7, "Next time: call a number you know.")
@@ -229,6 +228,7 @@ beats:
 interrupts:
   - id: real_mateus_landed
     after_beat: mateus_voice_call
+    after_what_now: true
     is_fraud: false
     device: messenger
     message:

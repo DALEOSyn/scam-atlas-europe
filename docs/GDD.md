@@ -2020,7 +2020,7 @@ Row notes:
 - **Row 12:** one well-recovered fall to a cloned voice still reaches gold (as Warsaw row 11). Recorded for R15 (`stamps.gold.max_falls` parked).
 
 ### 26.8 Rome reveal rulings
-- **RM1. Caller ID is neutral everywhere**, saved contact or official-looking number, genuine or fraud (as M2). Never "It fits" on a caller ID.
+- **RM1. Caller ID is neutral everywhere**, saved contact or official-looking number, genuine or fraud (as M2). Never "It fits" on a caller ID. **A number the player dialled from a message** (6-7 `officer_line`) is the exception in kind, not in rule: its reveal is about the number's source (it came from the text, so it reaches whoever sent it), never about what the screen shows; it may be a red flag on that basis (T-3.8 round 1, sceptic note).
 - **RM2. Voice (CR-36) is neutral everywhere:** "Sounds like {name}. A voice can be copied from a short recording, so it can't prove anything either way." Never a red flag, never "It fits", and never about sound quality (CVF §3).
 - **RM3. A number you don't have saved, claiming to be someone you do know, is a red flag when it asks for money** (6-4, 6-8). On a genuine "new number" without a money request it would be neutral (none in Rome).
 - **RM4. "Stay on the line" and "don't call your bank / my phone" claims are red flags; reassurances ("you're not in trouble") are neutral.**

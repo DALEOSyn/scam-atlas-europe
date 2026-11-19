@@ -1,0 +1,24 @@
+<!-- Scam Atlas: Europe. City backdrop: a Dublin community-centre hall set up for a money clinic, cream walls, tall windows, warm pendant lamps, a blank noticeboard with plain cards at the left edge, a tea table with an urn, cups and a tray of biscuits, stacked folding chairs, a wooden floor; no lettering, no emblem, no flag, no logo. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="dh-t"><title id="dh-t">A community hall with a tea table, an urn, biscuits and stacked chairs</title>
+<defs><linearGradient id="dh-air" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfdde6"/><stop offset="1" stop-color="#d9e6f6"/></linearGradient>
+<g id="dh-win"><rect width="110" height="250" rx="6" fill="#f6efe2"/><path d="M10 240V64Q10 12 55 12Q100 12 100 64V240Z" fill="url(#dh-air)"/><path d="M10 200H100V240H10Z" fill="#9db58a"/></g>
+<g id="dh-lamp"><path d="M0 0V40" stroke="#5d6672" stroke-width="3"/><path d="M-22 64Q-22 38 0 38Q22 38 22 64Z" fill="#f3d08a"/><path d="M-22 64H22" stroke="#d9a441" stroke-width="3"/></g>
+</defs>
+<rect width="960" height="540" fill="#f1e4c8"/>
+<rect width="960" height="22" fill="#e7d3b0"/>
+<rect y="380" width="960" height="90" fill="#e7d3b0"/><path d="M0 380H960" stroke="#d6bf98" stroke-width="6"/>
+<use href="#dh-win" x="250" y="60"/><use href="#dh-win" x="430" y="60"/><use href="#dh-win" x="610" y="60"/>
+<use href="#dh-lamp" x="200" y="0"/><use href="#dh-lamp" x="480" y="0"/><use href="#dh-lamp" x="760" y="0"/>
+<rect x="14" y="150" width="64" height="150" rx="4" fill="#c98f2e"/><rect x="20" y="156" width="52" height="138" rx="2" fill="#d9a441"/>
+<rect x="26" y="166" width="22" height="28" rx="2" fill="#f6efe2"/><rect x="44" y="212" width="22" height="18" rx="2" fill="#e3a6a0"/><rect x="28" y="246" width="24" height="30" rx="2" fill="#cfdde6"/>
+<rect x="580" y="390" width="250" height="14" rx="4" fill="#8a6a4f"/><rect x="594" y="404" width="10" height="66" rx="3" fill="#8a6a4f"/><rect x="806" y="404" width="10" height="66" rx="3" fill="#8a6a4f"/>
+<path d="M584 404H826V430H584Z" fill="#e3a6a0"/>
+<path d="M640 390V344Q640 334 652 334H690Q702 334 702 344V390Z" fill="#b8b4a6"/><path d="M648 334Q671 318 694 334Z" fill="#9c978a"/><path d="M702 368h12v6h-12Z" fill="#9c978a"/>
+<path d="M726 390h18v-14h-18ZM750 390h18v-14h-18ZM774 390h18v-14h-18Z" fill="#fffaf0"/>
+<path d="M600 390h34l-4 -6h-26Z" fill="#c4cab9"/><path d="M603 380a5 5 0 1 0 10 0a5 5 0 1 0 -10 0ZM615 379a5 5 0 1 0 10 0a5 5 0 1 0 -10 0ZM609 372a5 5 0 1 0 10 0a5 5 0 1 0 -10 0Z" fill="#c98f2e"/>
+<rect y="470" width="960" height="70" fill="#c9b28f"/>
+<path d="M0 500H960M0 522H960M120 470V500M360 470V500M600 470V500M840 470V500M240 500V522M480 500V522M720 500V522" stroke="#b49c7a" stroke-width="3"/>
+<rect x="876" y="300" width="52" height="40" rx="8" fill="#8fa3b5"/><rect x="886" y="310" width="32" height="18" rx="4" fill="#7a8c9c"/><path d="M880 340V352M924 340V352" stroke="#7a8c9c" stroke-width="5"/><g fill="#8fa3b5"><rect x="864" y="350" width="74" height="7" rx="3"/><rect x="864" y="360" width="74" height="7" rx="3"/><rect x="864" y="370" width="74" height="7" rx="3"/></g>
+<path d="M872 370V470M930 370V470" stroke="#7a8c9c" stroke-width="5"/>
+<rect x="120" y="420" width="120" height="40" rx="6" fill="#ddcca9"/><path d="M134 420V460M150 420V460M166 420V460M182 420V460M198 420V460M214 420V460" stroke="#c4cab9" stroke-width="3"/>
+</svg>

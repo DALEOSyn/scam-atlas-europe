@@ -115,10 +115,12 @@ cards:
     example: "A famous face recommends a platform in an ad? Find the firm on the register yourself. Not there? Don't pay."
     already_clicked: "Paid already? Stop paying, call your bank now on the number on your card, keep the chats, and report the firm. Ignore anyone who offers to get it back for a fee."
   # Brussels (GDD §30.11, LO-14; T-3.12). First shown in the finale block (close beat and Teo's chat); the
-  # example uses no scam name, platform or amount.
+  # example uses no scam name, platform or amount. Sourced to be-fsma-dating-platforms-2026 (another app; steering
+  # to money; never send money to someone only met online) and be-police-romance-2026 (photo check). Cards have no
+  # sources field; the citations are on the close beat and Teo's chat.
   - id: a-real-friend-never-needs-your-money
     lo: LO-14
     title: "A real friend never needs your money"
-    habit: "Someone you've only met online moves you to another app, wants secrets, or steers you to money? Tell someone you trust, do a photo check, and never send money."
+    habit: "Someone you've only met online moves you to another app or steers you to money? Tell someone you trust, do a photo check, and never send money."
     example: "A new online friend's 'easy profits' come with an invitation? Ask someone before you reply."
-    already_clicked: "Sent money already? Stop paying, call your bank on the number on your card, and keep the chat history. Ignore anyone who offers to get it back for a fee."
+    already_clicked: "Sent money already? Stop paying, tell someone you trust, call your bank on the number on your card, and keep the chat history. Ignore anyone who offers to get it back for a fee."

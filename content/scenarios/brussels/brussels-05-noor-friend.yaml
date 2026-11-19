@@ -8,7 +8,8 @@
 # "her banking login and passcodes") can't be authored per scenario (labels are shared; feedback is for harmful
 # steps only), so it lives in layer 2, in MMR §7 order.
 # "After the picks (every branch)": the engine has no narrative after damage control, so Noor's closing line
-# opens layer 2 (as Rome 6-6) and closes the other branch's outcome. No consequence sentence here (BX7: it
+# opens layer 2 (as Rome 6-6). Both branches run the same damage control (psych 2, round 1): "it'll blow over"
+# gets Noor's "I don't think it will. Help me pick what she does first?". No consequence sentence here (BX7: it
 # lives in 10-4 only).
 id: brussels-05-noor-friend
 chapter: brussels
@@ -25,7 +26,7 @@ pressure: { timer: false, levers: [] }
 message:
   sender: { display: "Noor", detail: "Saved contact: Noor" }
   from_cast: noor
-  body: "One more thing. My friend from football already sent hers last night. She's really worried now. What should she do first?"
+  body: "One more thing. My friend from football already sent her login and card details last night. She's really worried now. What should she do first?"
   request: reply
   ask: { text: "What should she do first?" }
 
@@ -67,7 +68,19 @@ outcomes:
         category: harmful
         feedback: "If anyone pressures you to keep going, that's a reason to get help now."
   noor_not_so_sure:
-    narrative: "Noor: \"I don't think it will. She's telling her mum tonight. They'll call the bank together, go to the police, and report the account. And I'm warning the team chat.\""
+    narrative: "Noor: \"I don't think it will. Help me pick what she does first?\""
+    recovery_for: { label: "Noor's friend", voiced_by: noor }
+    recovery:
+      - { step: stop_sharing, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: change_password, category: secure }
+      - step: keep_quiet
+        category: harmful
+        feedback: "She wants it to go away. But getting help early is the right move."
+      - step: one_more_to_end_it
+        category: harmful
+        feedback: "If anyone pressures you to keep going, that's a reason to get help now."
 
 debrief:
   variant: standard

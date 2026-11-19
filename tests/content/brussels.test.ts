@@ -45,6 +45,7 @@ const textOf = (s: Scenario): string => strings(s).join('\n');
 
 const CONSEQUENCE = "Letting someone use your account like this is a crime, and the account holder can be held responsible. If it's already happened, getting help early is the right move.";
 const PRESSURE = "If anyone pressures you to keep going, that's a reason to get help now.";
+const FRIEND_ALREADY = 'Sent money already? Stop paying, tell someone you trust, call your bank on the number on your card, and keep the chat history. Ignore anyone who offers to get it back for a fee.';
 const FINALE = ['brussels-arc-close', 'brussels-arc-recovery-offer', 'brussels-arc-teo'];
 const SCORED = ['brussels-01-print-invoice', 'brussels-02-poster-parcel', 'brussels-03-new-bank-details', 'brussels-04-noor-easy-money', 'brussels-06-desk-signin', 'brussels-07-it-desk-visit', 'brussels-08-mateus-new-number', 'brussels-09-boss-helpdesk'];
 
@@ -97,6 +98,11 @@ describe('Brussels chapter file (GDD §30.1, §30.11)', () => {
   it('passes the chapter rules with no mix issue (the finale is exempt from the callback cap, GDD §30.5)', () => {
     const res = chapterRules(brussels, 'brussels', [...scenarios.values()], realRegistries());
     expect(res).toEqual({ errors: [], warnings: [] });
+  });
+  it('the callback cap still applies to a chapter without arc_finale (sceptic 2)', () => {
+    const plain = { ...brussels, arc_finale: undefined };
+    const res = chapterRules(plain, 'brussels', [...scenarios.values()], realRegistries());
+    expect(res.errors.join('\n')).toMatch(/mix: 5 callbacks; at most 2/);
   });
   it('every Brussels scenario passes the per-scenario rules', () => {
     const reg = realRegistries({ flagsSet: new Set(['brussels_bank_called', ARC_TOLD_SOMEONE]) });
@@ -159,14 +165,14 @@ describe('Fall lists (GDD §9, §30.4 shared rule)', () => {
       for (const [key, o] of Object.entries(sc(id).outcomes)) if (o.recovery) expect(o.recovery, `${id} ${key}`).toContainEqual({ step: 'tell_trusted_adult', category: 'stop' });
     }
   });
-  it('the boss: every fall sets brussels_bank_called and offers the same six steps, with pay_to_unlock and let_caller_finish', () => {
-    const falls = Object.entries(sc('brussels-09-boss-helpdesk').outcomes).filter(([, o]) => o.recovery);
+  it('the boss: every fall sets brussels_bank_called; remote-access falls and the approved sign-in have their own steps', () => {
+    const o = sc('brussels-09-boss-helpdesk').outcomes;
+    const falls = Object.entries(o).filter(([, x]) => x.recovery);
     expect(falls.map(([k]) => k).sort()).toEqual(['logged_in_phone_off', 'pointer_moves_b1', 'pointer_moves_b2']);
-    for (const [, o] of falls) {
-      expect(o.sets_flags).toEqual(['brussels_bank_called']);
-      expect(o.recovery?.map((r) => r.step)).toEqual(['go_offline', 'call_bank_known_number', 'tell_trusted_adult', 'get_device_checked', 'let_caller_finish', 'pay_to_unlock']);
-    }
-    for (const [key, o] of Object.entries(sc('brussels-09-boss-helpdesk').outcomes)) if (!o.recovery) expect(o.sets_flags, key).toBeUndefined();
+    for (const [, x] of falls) expect(x.sets_flags).toEqual(['brussels_bank_called']);
+    for (const k of ['pointer_moves_b1', 'pointer_moves_b2']) expect(o[k]?.recovery?.map((r) => r.step)).toEqual(['go_offline', 'call_bank_known_number', 'tell_trusted_adult', 'get_device_checked', 'let_caller_finish', 'pay_to_unlock']);
+    expect(o['logged_in_phone_off']?.recovery?.map((r) => r.step)).toEqual(['call_bank_known_number', 'tell_trusted_adult', 'change_password', 'report_to_police_online', 'approve_again_to_cancel', 'wait_and_see']);
+    for (const [key, x] of Object.entries(o)) if (!x.recovery) expect(x.sets_flags, key).toBeUndefined();
   });
 });
 
@@ -254,12 +260,14 @@ describe('Drill 10-5: Noor\'s friend already said yes (CR-41)', () => {
   });
   it('the friend is never named or cast; Noor is the only cast member', () => {
     expect(s.cast).toEqual(['noor']);
-    expect(s.message.body).toBe('One more thing. My friend from football already sent hers last night. She\'s really worried now. What should she do first?');
+    expect(s.message.body).toBe('One more thing. My friend from football already sent her login and card details last night. She\'s really worried now. What should she do first?');
   });
-  it('Noor\'s closing line is told in every branch', () => {
+  it('both branches practise the same damage control; Noor\'s closing line opens layer 2', () => {
     const line = "She's telling her mum tonight. They'll call the bank together, go to the police, and report the account. And I'm warning the team chat.";
     expect(s.debrief.layer2.notes).toContain(line);
-    expect(s.outcomes['noor_not_so_sure']?.narrative).toContain(line);
+    expect(s.outcomes['noor_not_so_sure']?.narrative).toBe('Noor: "I don\'t think it will. Help me pick what she does first?"');
+    expect(s.outcomes['noor_not_so_sure']?.recovery).toEqual(help?.recovery);
+    expect(s.outcomes['noor_not_so_sure']?.recovery_for).toEqual(help?.recovery_for);
   });
 });
 
@@ -315,6 +323,14 @@ describe('Finale scenarios (GDD §30.6; CR-43, R22)', () => {
     expect(s.debrief.layer2.notes).toContain(`Anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam. ${m2} Call your bank straight away; it may be able to help.`);
     expect(s.outcomes['release_fee_paid']?.recovery_note).toBe(m2);
     expect(textOf(s)).not.toMatch(/\bagain\b|\btwice\b/i);
+    expect(s.debrief.already_clicked?.paid).toBe('Paid a fee already? Stop paying, tell someone you trust, call your bank on the number on your card, and keep the emails. Being targeted says nothing about you.');
+    expect(s.outcomes['backhaven_not_authorised']?.narrative).toContain("Fairmeasure's own page says it never contacts people to get their money back, and it can't recover lost money.");
+  });
+  it('the close beat and Teo\'s chat cite the FSMA dating-platform warning; Teo\'s chat has no "praise"', () => {
+    expect(sc('brussels-arc-close').debrief.already_clicked?.paid).toBe(FRIEND_ALREADY);
+    for (const id of ['brussels-arc-close', 'brussels-arc-teo']) expect(sc(id).debrief.sources).toContain('be-fsma-dating-platforms-2026');
+    expect(textOf(sc('brussels-arc-teo'))).not.toMatch(/praise/i);
+    expect(sc('brussels-arc-teo').debrief.sources).toContain('ie-ccpc-investment-scams');
   });
   it("Teo's chat names no platform, Teo never sends money, and the advice line is word for word", () => {
     const s = sc('brussels-arc-teo');
@@ -330,9 +346,9 @@ describe('Registries (GDD §30.11)', () => {
   const cast = yaml(join(CONTENT, 'cast.yaml')) as { cast: { id: string; name: string }[] };
   const steps = yaml(join(CONTENT, 'recovery_steps.yaml')) as { steps: { id: string; label: string; feedback?: string }[] };
   const cards = yaml(join(CONTENT, 'habit_cards.yaml')) as { cards: { id: string; lo: string; title: string; habit: string; example: string; already_clicked: string }[] };
-  it('Marrowby, Summer Euro Club and Capital Courant are registered; Robin and Sacha are not cast', () => {
+  it('Marrowby, Summer Euro Club and Weekfold are registered; Robin and Sacha are not cast', () => {
     const ids = brands.brands.map((b) => b.id);
-    for (const id of ['marrowby', 'summer-euro-club', 'capital-courant']) expect(ids).toContain(id);
+    for (const id of ['marrowby', 'summer-euro-club', 'weekfold']) expect(ids).toContain(id);
     expect(brands.brands.find((b) => b.id === 'marrowby')?.domain).toBeUndefined();
     expect(cast.cast.map((c) => c.name.split(' ')[0])).not.toContain('Robin');
     expect(cast.cast.map((c) => c.name.split(' ')[0])).not.toContain('Sacha');
@@ -340,11 +356,11 @@ describe('Registries (GDD §30.11)', () => {
   it('the three new recovery steps, word for word', () => {
     const by = new Map(steps.steps.map((x) => [x.id, x]));
     expect(by.get('stop_sharing')).toEqual({ id: 'stop_sharing', label: "Stop: don't move any money and don't share anything else" });
-    expect(by.get('one_more_to_end_it')).toEqual({ id: 'one_more_to_end_it', label: 'Do one more transfer so they leave you alone', feedback: PRESSURE });
+    expect(by.get('one_more_to_end_it')).toEqual({ id: 'one_more_to_end_it', label: 'Do one more transfer to make it stop', feedback: PRESSURE });
     expect(by.get('pay_to_unlock')).toEqual({
       id: 'pay_to_unlock',
       label: 'Pay the fee to unlock the screen',
-      feedback: "Paying only adds to the loss; the locked screen is part of the trick. It's safe to switch it off or unplug it. Go offline and call your bank.",
+      feedback: 'Paying only adds to the loss; the locked screen is part of the trick. Disconnect it from the internet and call your bank.',
     });
   });
   it('the new LO-14 habit card, and easy-money-costs-you keeps its habit sentence (R19(5))', () => {
@@ -353,9 +369,9 @@ describe('Registries (GDD §30.11)', () => {
       id: 'a-real-friend-never-needs-your-money',
       lo: 'LO-14',
       title: 'A real friend never needs your money',
-      habit: "Someone you've only met online moves you to another app, wants secrets, or steers you to money? Tell someone you trust, do a photo check, and never send money.",
+      habit: "Someone you've only met online moves you to another app or steers you to money? Tell someone you trust, do a photo check, and never send money.",
       example: "A new online friend's 'easy profits' come with an invitation? Ask someone before you reply.",
-      already_clicked: 'Sent money already? Stop paying, call your bank on the number on your card, and keep the chat history. Ignore anyone who offers to get it back for a fee.',
+      already_clicked: FRIEND_ALREADY,
     });
     const easy = cards.cards.find((c) => c.id === 'easy-money-costs-you');
     expect(easy?.habit).toBe("A real job pays you. If a 'job' wants a deposit, a top-up, a fee or a fine before you can earn or withdraw, or your ID copy before any contract, stop and talk to someone you trust.");

@@ -158,13 +158,13 @@ steps:
     label: "Add a bit more to see if the gains are real"
     feedback: "Wanting proof is natural, but more money only adds to the loss. The gains on screen were never real. Call your bank instead."
   # Brussels (GDD §30.11, T-3.12). stop_sharing and one_more_to_end_it serve drill 10-5 (Noor's friend, CR-41);
-  # pay_to_unlock serves the boss (a locked screen after a "support" call). Labels stay generic: real bodies are
+  # pay_to_unlock serves the boss (a locked screen after a "support" call; be-ccb-remote-access-2019, be-febelfin-helpdesk-fraud). Labels stay generic: real bodies are
   # named only on the Belgium help card.
   - id: stop_sharing
     label: "Stop: don't move any money and don't share anything else"
   - id: one_more_to_end_it
-    label: "Do one more transfer so they leave you alone"
+    label: "Do one more transfer to make it stop"
     feedback: "If anyone pressures you to keep going, that's a reason to get help now."
   - id: pay_to_unlock
     label: "Pay the fee to unlock the screen"
-    feedback: "Paying only adds to the loss; the locked screen is part of the trick. It's safe to switch it off or unplug it. Go offline and call your bank."
+    feedback: "Paying only adds to the loss; the locked screen is part of the trick. Disconnect it from the internet and call your bank."

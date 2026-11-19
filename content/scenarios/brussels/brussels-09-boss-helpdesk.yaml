@@ -4,8 +4,9 @@
 # (RAS §8): beat 1 "did a warning give me a number to call?", beat 2 "did someone who contacted me ask to get
 # onto my device?", beat 3 "did I start this sign-in?". A design combination (fraud-researcher): no debrief
 # presents the sequence as a known one.
-# Beat 1 (browser, start, 40 s; CR-42): a game-styled warning over a genuine news page (capital-courant.example,
-# GDD §30.11's alternative to brussels-daily.example; see brands.yaml). R: claim#2 (the countdown), the request
+# Beat 1 (browser, start, 40 s; CR-42): a game-styled warning over a genuine culture-listings page
+# (weekfold.example, "Weekfold": a coined name replacing brussels-daily.example and Capital Courant, sceptic S1;
+# brand check pending, see brands.yaml). R: claim#2 (the countdown), the request
 # (BX2). D: the page address, page info (the shared padlock line), phone_number
 # (BX3), claim. Close (the overlay's button) picks the one dismiss action.
 # Beat 2 (call, +45 s, 30 s, covered_by start): "Marrowby" (BR1: always "Marrowby, the card-blocking line").
@@ -21,7 +22,10 @@
 # brussels_bank_called (the resolution's opening panel, part 2).
 # Layer 1 tell shortened from GDD §30.7 ("A pop-up number, a 'card line' calling you, a sign-in you didn't
 # start.") to fit the 40-word budget with the longest "You chose" line; the what-works line is unchanged.
-# Damage control (merged, cap 6, exactly 2 harmful; RAS §6 order). Spec deviation (§30.4 shared rule,
+# Damage control (merged, cap 6, exactly 2 harmful; RAS §6 order). Beats 1-2 (remote access): go offline, bank,
+# trusted adult, device check; harmful let_caller_finish, pay_to_unlock. Beat 3 (an approved bank sign-in,
+# sceptic 3): bank, trusted adult, change password, police; harmful approve_again_to_cancel, wait_and_see. The
+# engine merges fallen beats in beat order and caps at 6, so a beat-1/2 fall keeps the remote-access list. Spec deviation (§30.4 shared rule,
 # "tell_trusted_adult is stop in every personal-money fall"; the player's own card and bank are at stake):
 # tell_trusted_adult joins as a stop step and change_password moves to layer 2 and already_clicked ("from
 # another device"). The step labels are shared, so the per-step wording of §30.7 ("turn off the laptop's wifi",
@@ -36,7 +40,7 @@ difficulty: 5
 is_fraud: true
 device: browser
 setup: "Late afternoon in Waymarker's office. IT has been and gone, and Teo and Noor have gone to the hotel. You're loading tomorrow's slides on the projector laptop."
-brands: [capital-courant, kindhand, marrowby, larchwick, gatewren, waymarker, kettle]
+brands: [weekfold, kindhand, marrowby, larchwick, gatewren, waymarker, kettle]
 cast: [noor]
 pressure:
   timer: true
@@ -47,8 +51,8 @@ pressure:
 
 message:
   page:
-    address: "capital-courant.example/culture"
-    title: "Capital Courant · Culture"
+    address: "weekfold.example/culture"
+    title: "Weekfold · Culture"
     overlay:
       title: "Security alert"
       body: "Virus detected. This computer is blocked to protect your data. Call Kindhand Support now on 02 ••• •• 17. You have 5 minutes before your files are deleted."
@@ -63,7 +67,7 @@ message:
 
 inspectables:
   - target: page.address
-    reveal: "A news site. Warnings like this can pop up on ordinary sites, so it can't prove anything either way."
+    reveal: "A listings site. Warnings like this can pop up on ordinary sites, so it can't prove anything either way."
     red_flag: false
     type: page_address
   - target: page.info
@@ -274,12 +278,12 @@ outcomes:
     narrative: "Gatewren: \"Logged in.\" Your phone is off. When you switch it back on, Larchwick has sent three alerts."
     sets_flags: [brussels_bank_called]
     recovery:
-      - { step: go_offline, category: stop }
       - { step: call_bank_known_number, category: stop }
       - { step: tell_trusted_adult, category: stop }
-      - { step: get_device_checked, category: secure }
-      - { step: let_caller_finish, category: harmful }
-      - { step: pay_to_unlock, category: harmful }
+      - { step: change_password, category: secure }
+      - { step: report_to_police_online, category: report }
+      - { step: approve_again_to_cancel, category: harmful }
+      - { step: wait_and_see, category: harmful }
   it_desk_closing_right:
     narrative: "You close the browser and ring the IT desk on its directory number: \"Closing it was exactly right. I'll check the laptop tomorrow anyway.\""
   warning_page_reported:
@@ -314,7 +318,7 @@ debrief:
       - "The \"card line\": the real card-blocking line never calls you first. A genuine bank employee never asks you to install remote-access software."
       - "The \"bank\": a sign-in you didn't start, and \"switch off your phone\". Keep your phone on and call your bank. If it's off, switch it back on first."
     notes: "With a helper app like that, they could see and do what you can. If it happened: turn off the laptop's wifi or unplug it, call your bank on the number on your card and ask it to block your card and banking app, change your passwords from another device, and have IT check the laptop. Tell someone you trust. Go to the police with screenshots, the numbers used and a short timeline. Where to report and get help (Belgium) is on the help screen."
-  device_tip: "On a real computer, a warning with a phone number is never the real thing: close the browser, or restart. On a real phone, hang up and dial the number on your card yourself."
+  device_tip: "On a real computer, a warning in your browser or a pop-up with a phone number is never the real thing: close the browser, or restart. On a real phone, hang up and dial the number on your card yourself."
   habit_card: nobody-needs-your-screen
   already_clicked:
     clicked: "Called the number but installed nothing? Hang up, close the browser, and tell your IT desk or someone you trust."

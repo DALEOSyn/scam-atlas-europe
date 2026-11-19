@@ -163,9 +163,9 @@ debrief:
   layer2:
     message_flags:
       - "\"Please? The desk is waiting\": a nudge to pay before you call."
-    notes: "A friend's name proves nothing. The name check didn't match, and his saved number reached the real Mateus. If you sent money, keep the chat and the payment details for your bank. Where to report and get help (Belgium) is on the help screen."
+    notes: "A friend's name proves nothing. The name check didn't match, and his saved number reached the real Mateus. If you sent money, keep the chat and the payment details for your bank and the police. Where to report and get help (Belgium) is on the help screen."
   device_tip: "On a real phone, call the person on the number you already have saved before you send anything, however small."
   habit_card: call-the-number-you-know
   already_clicked:
     paid: "Sent it already? Call your bank now on the number on your card and ask it to try to stop or recall the payment. Then call the real person on their saved number, and keep the chat."
-  sources: [nl-politie-hulpvraagfraude-2025, nl-veiliginternetten-hulpvraag, be-febelfin-vop-faq, eu-ec-ipr-vop-2025]
+  sources: [be-febelfin-help-request-fraud, be-police-hi-mom-smishing, nl-politie-hulpvraagfraude-2025, nl-veiliginternetten-hulpvraag, be-febelfin-vop-faq, eu-ec-ipr-vop-2025]

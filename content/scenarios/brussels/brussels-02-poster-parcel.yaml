@@ -180,4 +180,4 @@ debrief:
   already_clicked:
     clicked: "Opened the page but typed nothing? Close it and delete the text."
     entered_details: "Typed your card on the page? Block the card in your banking app, call your bank on the number on your card, and keep the text and the page address."
-  sources: [be-ccb-safeonweb-2025, be-febelfin-phishing-2025, de-vz-paketdienst-sms, ch-ncsc-links-2025]
+  sources: [be-ccb-safeonweb-2025, be-police-hi-mom-smishing, be-febelfin-phishing-2025, de-vz-paketdienst-sms, ch-ncsc-links-2025]

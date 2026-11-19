@@ -81,7 +81,7 @@ outcomes:
       - { step: pay_recovery_service, category: harmful }
       - { step: pay_last_fee, category: harmful }
   backhaven_not_authorised:
-    narrative: "You open the Fairmeasure register yourself. Backhaven Recovery: not authorised. Fairmeasure's own page says it never works with recovery firms and never charges fees to get money back."
+    narrative: "You open the Fairmeasure register yourself. Backhaven Recovery: not authorised. Fairmeasure's own page says it never contacts people to get their money back, and it can't recover lost money."
     register: { firm: "Backhaven Recovery", result: not_listed }
   backhaven_offer_reported:
     narrative: "Reported. Your mail app moves it to junk. Your bank and the police are where help really is."
@@ -98,5 +98,5 @@ debrief:
     notes: "Anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam. People who've lost money are often targeted on purpose afterwards, because scammers share victims' details. That says nothing about you. Call your bank straight away; it may be able to help. Where to report and get help (Belgium) is on the help screen."
   habit_card: stop-the-damage-first
   already_clicked:
-    paid: "Paid a fee already? Stop paying, call your bank on the number on your card, and keep the emails. It says nothing about you."
-  sources: [be-fsma-recovery-room, be-fsma-trading-platforms-2025, be-fsma-warnings-list, ie-bpfi-recovery-2024]
+    paid: "Paid a fee already? Stop paying, tell someone you trust, call your bank on the number on your card, and keep the emails. Being targeted says nothing about you."
+  sources: [be-fsma-recovery-room, be-fsma-trading-platforms-2025, be-fsma-warnings-list, be-fsma-dating-platforms-2026, ie-bpfi-recovery-2024]

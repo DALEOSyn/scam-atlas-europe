@@ -61,5 +61,5 @@ debrief:
     notes: "A clean photo check doesn't prove a profile is real: pictures can be made with AI. Telling someone is what works. Where to report and get help (Belgium) is on the help screen."
   habit_card: a-real-friend-never-needs-your-money
   already_clicked:
-    paid: "Sent money already? Stop paying, call your bank on the number on your card, and keep the chat history. Ignore anyone who offers to get it back for a fee."
-  sources: [be-police-romance-2026, eu-esas-ai-scams-factsheet-nl]
+    paid: "Sent money already? Stop paying, tell someone you trust, call your bank on the number on your card, and keep the chat history. Ignore anyone who offers to get it back for a fee."
+  sources: [be-police-romance-2026, be-fsma-dating-platforms-2026, eu-esas-ai-scams-factsheet-nl]

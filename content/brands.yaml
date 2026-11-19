@@ -848,24 +848,24 @@ brands:
     trademark_search: "web-checked 2026-11-19; TMview and the Belgian KBO/BCE pending before G4"
     status: draft
 
-  - id: capital-courant
-    name: "Capital Courant"
+  - id: weekfold
+    name: "Weekfold"
     kind: other
-    sector: news website (genuine in-world site; Brussels boss beat 1 shows a fake warning on it)
+    sector: culture-listings website (genuine in-world site; Brussels boss beat 1 shows a fake warning on it)
     role_in_game: >
-      A fictional Brussels culture-and-news site open on the projector laptop when a fake "virus" warning
-      covers it (GDD §30.7 beat 1). The site is genuine; the warning is not its own. No mark.
-    domain: capital-courant.example
+      A fictional what's-on and culture site open on the projector laptop when a fake "virus" warning covers
+      it (GDD §30.7 beat 1). The site is genuine; the warning is not its own. No mark.
+    domain: weekfold.example
     rationale:
       name: >
-        GDD §30.11's alternative to brussels-daily.example, chosen because "<city> Daily" is a common real
-        news-brand pattern and was not in BRAND_CHECK; "Capital Courant" is coined (French 'courant', current).
-        Needs a BRAND_CHECK pass (scenario-writer flag, T-3.12).
+        Coined ('week' + 'fold', a folded weekly listings sheet). Replaces brussels-daily.example and Capital
+        Courant (sceptic S1, T-3.12 round 1: "Capital" echoes a real Brussels daily). No city stem, no
+        "capital", "courant", "daily", "soir", "times", "news" or broadcaster wording.
       colour_shape: "No mark drawn: the page header is plain text in the browser device's neutral page style."
-    checked_against: []
-    web_check: "Not yet checked (T-3.12 flag): request BRAND_CHECK before merge."
+    checked_against: ["La Capitale / Sudinfo", "Bruzz", "The Brussels Times", "Le Soir", "La Libre Belgique", "DH (La Dernière Heure)", "De Standaard", "HLN (Het Laatste Nieuws)", "Het Nieuwsblad", "Metro (Belgium)", "RTBF", "VRT"]
+    web_check: "Not web-checked: no search tool was available to the scenario-writer in T-3.12 round 1. Compared by name only against the list above (no shared stem or sound). BRAND_CHECK web search requested before merge."
     lookalike_examples: []
-    trademark_search: "not yet checked; BRAND_CHECK requested (T-3.12)"
+    trademark_search: "pending (BRAND_CHECK web, TMview and KBO/BCE search requested, T-3.12 round 1)"
     status: draft
   # Scam-side names (GDD §30.11, BRAND_CHECK BR3): "Robin" and "Sacha" (the two other names on the Alex reveal
   # card; "Robin" is also the profile in Teo's chat) and "M. Ferreira" (10-8's payee name, borrowed from Mateus,

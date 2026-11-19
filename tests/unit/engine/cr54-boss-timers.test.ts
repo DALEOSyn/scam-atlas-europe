@@ -84,3 +84,26 @@ describe('CR-54: boss call beats match timers.boss_call_beat_by_slot (required)'
     }
   });
 });
+
+describe('CR-54 (sceptic nit): an unscheduled call sub-beat with timer_seconds is rejected', () => {
+  /** The fixture boss whose scheduled call (support_call) leads by next_beat to a second call beat, with or without its own timer. */
+  const withSubCall = (timer?: number): Raw => {
+    const b = structuredClone(boss()) as unknown as Raw;
+    const beats = b.beats as Raw[];
+    const call = beats.find((x) => x.id === 'support_call') as Raw;
+    (call.actions as Raw[]).push({ id: 'ask_who', label: 'Ask who is calling', kind: 'reply', next_beat: 'second_call' });
+    const sub = structuredClone(call);
+    sub.id = 'second_call';
+    delete sub.arrives_after;
+    delete sub.banner;
+    delete sub.what_now;
+    sub.actions = [{ id: 'hang_up_again', label: 'Hang up', kind: 'hang_up', outcome: 'hung_up' }];
+    if (timer !== undefined) sub.timer_seconds = timer;
+    beats.push(sub);
+    return b;
+  };
+  it('the engine starts no timer on a beat reached by next_beat, so the schema rejects timer_seconds there (an error, not a warning)', () => {
+    expect(parseErrors(withSubCall())).toBe('');
+    expect(parseErrors(withSubCall(40))).toMatch(/beats\.3\.timer_seconds: timer_seconds is for scheduled boss beats \(arrives_after\): .* the engine ignores it on a beat reached by next_beat/);
+  });
+});

@@ -1080,7 +1080,7 @@ export const scenarioSchema = z
         const reached = referencedBeats.has(b.id);
         if (b.arrives_after === undefined && !reached) issue(['beats', i, 'arrives_after'], 'boss beats arrive on a schedule: set arrives_after (or reach the beat with next_beat)');
         if (b.arrives_after !== undefined && reached) issue(['beats', i, 'arrives_after'], 'a scheduled boss beat cannot also be a next_beat target');
-        if (b.timer_seconds !== undefined && b.arrives_after === undefined) issue(['beats', i, 'timer_seconds'], 'timer_seconds is for scheduled boss beats (arrives_after)');
+        if (b.timer_seconds !== undefined && b.arrives_after === undefined) issue(['beats', i, 'timer_seconds'], 'timer_seconds is for scheduled boss beats (arrives_after): the timer starts only when a scheduled beat arrives, so the engine ignores it on a beat reached by next_beat (CR-54)');
       });
       if (!s.beats.some((b) => b.arrives_after !== undefined)) issue(['beats'], 'a boss needs at least one scheduled beat (arrives_after)');
     }

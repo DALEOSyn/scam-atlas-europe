@@ -8,7 +8,7 @@ import { advanceFinale, arcSlotForRun, bankArcPoints, enterFinale, finaleDone, f
 import { orderOptions, scoreRecovery, type RecoveryOption } from './engine/recovery.ts';
 import type { ChapterSummary } from './engine/chapter.ts';
 import { debriefOf, type DebriefData } from './engine/debrief.ts';
-import { beginChapter, carriedStress, chapterProgress, commitScenario, finishChapter, runFlags, runIndex } from './engine/game.ts';
+import { beginChapter, carriedStress, chapterProgress, commitScenario, finishChapter, runFlags, runIndex, sceneFlags } from './engine/game.ts';
 import { isStopPointAfter, messagesLeft, nextIndex, sequenceOf, unlockedChapters } from './engine/chapter.ts';
 import { useSave } from './engine/hooks.ts';
 import type { ScenarioResult } from './engine/result.ts';
@@ -273,10 +273,8 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
     const current = currentSave();
     // CR-43(d): a finale resolution scene keyed to other arc endings does not play (replays included).
     const ending = current.arc.finale?.ending ?? null;
-    // CR-43(d): in the finale, arc variables that are set (alex_invested above 0) count as flags for `if_flag`.
-    const arcVars = current.arc.finale ? Object.entries(current.arc.vars).filter(([, v]) => v === true || (typeof v === 'number' && v > 0)).map(([k]) => k) : [];
-    const flags = [...(c ? [...runFlags(current, c.city)] : [...current.flags]), ...arcVars];
-    if (!scenePlaysFor(scene, ending, new Set(flags))) return then();
+    const flags = sceneFlags(current, c?.city ?? null);
+    if (!scenePlaysFor(scene, ending, flags)) return then();
     let flip: FlipPick | null = null;
     let flipChoices: FlipPick[] | null = null;
     if (scene.panels.some((p) => p.flip_postcard)) {
@@ -309,7 +307,7 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
       flip,
       flipChoices,
       note,
-      flags,
+      flags: [...flags],
       ending,
       then: () => {
         update((sv) => ({ ...sv, story: markSeen(sv.story, scene.id) }));

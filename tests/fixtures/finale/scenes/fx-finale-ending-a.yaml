@@ -1,5 +1,6 @@
-# Test fixture (CR-43(d)): endings A and A-prime, and R without money in; one panel for R only. R22 (psych M1):
-# the told-someone line is gated on arc_told_someone, with a truthful variant for everyone else.
+# Test fixture (CR-43(d)): endings A and A-prime, and R without money in; one panel for R only. R28 (mirrors
+# content/scenes/brussels/brussels-ending-a*.yaml): "you helped him" is gated on arc_helped_teo (Teo's photo check or
+# report); otherwise A's early report, or A-prime's "never too late to start".
 id: fx-finale-ending-a
 chapter: fxfinale
 slot: resolution
@@ -17,11 +18,18 @@ panels:
     alt: "Teo smiling, putting his phone away."
   - speaker: adaeze
     expression: calm
-    if_flag: arc_told_someone
-    line: "And you told someone. That's what works."
+    if_flag: arc_helped_teo
+    line: "Teo asked you, and you helped him. That's what works."
     alt: "Adaeze, calm, nodding."
   - speaker: adaeze
     expression: calm
-    unless_flag: arc_told_someone
+    unless_flag: arc_helped_teo
+    if_arc_ending: [A]
+    line: "And you reported yours early. That's what works."
+    alt: "Adaeze, calm, nodding."
+  - speaker: adaeze
+    expression: calm
+    unless_flag: arc_helped_teo
+    if_arc_ending: [A_prime]
     line: "Telling someone early is what works. It's never too late to start."
     alt: "Adaeze, calm, nodding."

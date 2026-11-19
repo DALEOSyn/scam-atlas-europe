@@ -22,5 +22,10 @@ export const SPOTTED_EXPR_RE = /^ceil\((?:(\d+)\*)?R\/(\d+)\)$/;
 export const ARC_TOLD_SOMEONE = 'arc_told_someone';
 /** R25(5), CR-51: the close beat's solo photo check sets this instead of ARC_TOLD_SOMEONE ("You checked in the end."). */
 export const ARC_CHECKED = 'arc_checked';
+/**
+ * R28: the story flag Teo's chat sets on the photo check together and on the report (with ARC_TOLD_SOMEONE); endings
+ * A and A′ gate "Teo asked you, and you helped him." on it.
+ */
+export const ARC_HELPED_TEO = 'arc_helped_teo';
 /** CR-51: arc slots decided by these kinds set ARC_TOLD_SOMEONE. */
 export const ARC_TOLD_KINDS: readonly string[] = ['report', 'ask_someone'];

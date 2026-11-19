@@ -94,6 +94,16 @@ export function runFlags(save: SaveState, city: string): Set<string> {
   return new Set([...save.flags, ...(chapterProgress(save, city).run?.flags ?? [])]);
 }
 
+/**
+ * The flags a story scene sees (`if_flag` / `unless_flag`): the chapter run's flags with the game-wide arc flags (or
+ * only the game-wide ones outside a chapter), and in the finale the arc variables that are set (CR-43(d):
+ * alex_invested above 0 counts as a flag).
+ */
+export function sceneFlags(save: SaveState, city: string | null): Set<string> {
+  const arcVars = save.arc.finale ? Object.entries(save.arc.vars).filter(([, v]) => v === true || (typeof v === 'number' && v > 0)).map(([k]) => k) : [];
+  return new Set([...(city !== null ? runFlags(save, city) : save.flags), ...arcVars]);
+}
+
 /** The run's next index, clamped to the chapter's sequence (a corrupt or stale save never skips past the end). */
 export function runIndex(save: SaveState, chapter: Pick<Chapter, 'city' | 'scenario_order'>): number {
   const raw = chapterProgress(save, chapter.city).run?.index ?? 0;

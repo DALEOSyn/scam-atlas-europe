@@ -622,13 +622,10 @@ function ceilShare(expr: string, f: number): number {
 }
 
 /**
- * @param scenarios all scenarios whose `chapter` is this chapter's city
- * @param fileBase  the chapter file's base name (must equal city)
- */
-/**
  * R26(1), CR-54: a boss's scheduled call beats (the opening beat and every beat with arrives_after on the call device)
  * whose timer length differs from balance timers.boss_call_beat_by_slot for the chapter's slot. A boss without a
- * timer has none to check.
+ * timer has none to check. Unscheduled sub-beats (reached by next_beat) start no timer of their own; `timer_seconds`
+ * on one is a schema error (src/content/schema.ts, "timer_seconds is for scheduled boss beats").
  */
 export function bossCallBeatIssues(s: Scenario, slot: number, balance: { timers: Pick<Registries['balance']['timers'], 'call_beat' | 'boss_call_beat_by_slot'> }): string[] {
   if (s.role !== 'boss' || !s.pressure.timer) return [];
@@ -644,6 +641,10 @@ export function bossCallBeatIssues(s: Scenario, slot: number, balance: { timers:
   });
 }
 
+/**
+ * @param scenarios all scenarios whose `chapter` is this chapter's city
+ * @param fileBase  the chapter file's base name (must equal city)
+ */
 export function chapterRules(c: Chapter, fileBase: string, scenarios: Scenario[], reg: Registries): RuleResult {
   const errors: string[] = [];
   const mixIssues: string[] = [];

@@ -1019,9 +1019,14 @@ export function expiryDismissOf(s: Scenario, b: EngineBalance, g: Pick<GroupStat
   return later;
 }
 
-/** CR-50: the stars a group's timer expiry scores (R21: like the lowest deliberate dismiss option), as `resultOf` scores it. */
-export function expiryStarsOf(s: Scenario, b: EngineBalance, st: Pick<RunnerState, 'truth' | 'slot'>, g: GroupState): number {
-  return scoreGroup(b, st.truth, undefined, { engagedOnFraud: g.engagedOnFraud, timerExpired: true, slot: st.slot, codeShared: g.codeShared !== undefined, expiryDismiss: expiryDismissOf(s, b, g) }).stars;
+/**
+ * CR-50: the stars a group's timer expiry scores (R21: like the lowest deliberate dismiss option). Derived exactly as
+ * `resultOf` derives a beat's stars (`coveredDecision`, then `scoreGroup` with the group's own state), so the caption
+ * and the debrief can never disagree.
+ */
+export function expiryStarsOf(s: Scenario, b: EngineBalance, st: Pick<RunnerState, 'truth' | 'slot' | 'groups'>, g: GroupState): number {
+  const { decision } = coveredDecision(s, st.groups, g);
+  return scoreGroup(b, st.truth, decision, { engagedOnFraud: g.engagedOnFraud, timerExpired: g.timerExpired, slot: st.slot, codeShared: g.codeShared !== undefined, expiryDismiss: expiryDismissOf(s, b, g) }).stars;
 }
 
 function groupFell(g: GroupState, truth: Truth): boolean {

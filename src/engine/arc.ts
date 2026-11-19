@@ -107,7 +107,7 @@ export const LAST_ARC_SLOT = 9;
 /**
  * The arc slot that plays in a chapter at this play position (Home 0, Berlin 1, the middle chapters 2–9 in the
  * order first started; the finale 10 has none). CR-49 (R25(1)): the next arc beat is the lowest slot not yet
- * played, whatever the position, so interleaved runs (start Berlin, leave before its arc beat, finish Amsterdam)
+ * played, whatever the position, so interleaved runs (start Amsterdam, leave before its arc beat, finish Paris; the middle chapters unlock after Berlin)
  * still play the arc in order: slot 1 first, slot 9 last. After one "Close the app" at slot 1 (GDD §10.2) the
  * next arc beat is the slot-1 repeat, once (timeline exactly [1]); slot 2 is then skipped (accepted, R22, R25(2)).
  * Never above 9. null: no arc beat here (Home, the finale, a closed arc, every slot played). A replayed

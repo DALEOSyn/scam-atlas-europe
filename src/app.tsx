@@ -258,9 +258,11 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
       const line = city ? lines.get(city) : undefined;
       if (city && line) flip = { city, cityName: chapters.find((x) => x.city === city)?.name ?? city, ifThen: line };
     }
-    const gate = !!opts.replay || !notedRuns.current.has(scene.chapter);
+    // Interludes all share one chapter key, so each sensitive interlude gates on its own id.
+    const noteKey = scene.slot === 'interlude' ? scene.id : scene.chapter;
+    const gate = !!opts.replay || !notedRuns.current.has(noteKey);
     const note = scene.sensitive && gate ? (scene.content_note ?? chapterNote(c ?? undefined, current)) : null;
-    if (note && !opts.replay) notedRuns.current.add(scene.chapter);
+    if (note && !opts.replay) notedRuns.current.add(noteKey);
     const flags = c ? [...runFlags(current, c.city)] : [...current.flags];
     const home = scene.chapter === INTERLUDES ? null : (c ?? chapters.find((x) => x.city === scene.chapter) ?? null);
     setScreen({

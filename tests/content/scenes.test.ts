@@ -66,6 +66,8 @@ describe('scene schema (STORY §4.5)', () => {
       'Only 2 euros to pay.',
       // Evasions (sceptic T-S3 review).
       'Go to parcel-help dot example now.',
+      'Go to parcel\u200b.example now.',
+      'Go to parcel.\u2060example now.',
       'Type parcel help dot example slash pay.',
       'Write to user at parcel dot example.',
       'Open www . parcel . example today.',

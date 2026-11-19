@@ -974,11 +974,12 @@ const SCENE_ARTEFACTS: { re: RegExp; what: string }[] = [
 
 /**
  * Fold look-alike characters before matching: NFKC (full-width ０-９ ＋ ＠ ．, mathematical digits),
- * ideographic full stops, and defanged dots ("[.]", "(.)", "{dot}").
+ * zero-width and other format characters (removed), ideographic full stops, and defanged dots ("[.]", "(.)", "{dot}").
  */
 export function normaliseSceneText(text: string): string {
   return text
     .normalize('NFKC')
+    .replace(/\p{Cf}/gu, '')
     .replace(/[。．｡]/g, '.')
     .replace(/\s*[[({]\s*(?:\.|dot)\s*[\])}]\s*/giu, '.');
 }

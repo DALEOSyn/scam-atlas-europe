@@ -45,3 +45,14 @@ Example (home-01, `sender.detail`, owner part matches):
 - Every detail that looks the same on real and fake messages uses the neutral wording, genuine or fraud.
 - Padlock reveals use the shared wording exactly (validator).
 - `logo`, `display_name` and padlock details are never presented as proof (balance `mix.logo_or_sender_name_never_proof`, `padlock_never_reassurance_as_proof`).
+
+### Saved contacts on money requests (design ruling 1, GDD §22.8)
+A taken-over account shows the same saved contact as the real person. So from Amsterdam on, **"It fits" on a saved contact is allowed only when the message asks for nothing high-stakes** (Teo sharing a screenshot, Jonas saying where your parcel is, Mateus checking in). On any `pay`, `share_code`, `log_in`, `enter_details` or `approve` request, the saved contact uses the **neutral wording, genuine and fraud alike**:
+> Shows Jonas's saved contact, in your usual chat with him, as a real message from him would. An account can be taken over and show the same contact, so it can't prove anything either way. Judge the request.
+
+The same applies to links on a real payment-request domain (ruling 2): "larchwick-bank.example: Larchwick's own address. A payment request opens there whoever sent it, so it can't prove anything either way. The request page shows who gets the money."
+
+A **new number** is different from a saved contact, so its reveal states the fact on genuine and fraud alike and opens with the same words ("Not in your contacts: a new number, not X's saved one."); the request decides (ruling 3).
+
+### Payee names (sceptic, T-3.4 review)
+Scam payees are shown as an initial plus a masked surname (`R. ••••`, `K. ••••`). **Any genuine payment to a stranger outside the cast is masked the same way**, so masking never becomes a tell. Cast members keep their own names (Mateus Ferreira on his request page); a name typed from a saved contact is masked like the contact's surname (`Noor ••••`).

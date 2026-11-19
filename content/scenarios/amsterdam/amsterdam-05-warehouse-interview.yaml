@@ -1,0 +1,117 @@
+# 2-5 Thimble & Pine interview (GDD §22.3; brief task-job-scam §7 genuine twin). Genuine, low stakes,
+# difficulty 3, honest timer (slot length) with honest_deadline. The player started it: they applied
+# (chapter intro). Twin of amsterdam-02-id-photo (and mirrors 2-7).
+# Checkables (G): sender.detail and link "It fits" (owner part thimbleandpine.example, the shop's own
+# domain, and a job you applied for; low stakes, so allowed by CONTENT_GUIDE and ruling 1 §22.8),
+# reference neutral, claim (the pay) neutral, request (pick an interview time).
+# Pay rate: €15.50 an hour, above the 2026 adult minimum wage (source nl-rijksoverheid-minimumloon-2026, designer
+# context only; never shown as a statistic).
+# Showing ID in person on the first day is normal (TJ §3.8, §7): the tell is paying in, or an ID photo by chat.
+id: amsterdam-05-warehouse-interview
+chapter: amsterdam
+role: standard
+pattern: task-job-scam
+theme: job-offer
+twin_of: amsterdam-02-id-photo
+player_started: true                  # you applied (chapter intro)
+learning_objectives: [LO-17, LO-12]
+difficulty: 3
+is_fraud: false
+stakes: low
+device: email
+brands: [thimble-pine]
+cast: []
+pressure:
+  timer: true
+  levers: [urgency]
+  honest_deadline: "Reply by 17:00 today to get a Thursday slot"
+
+message:
+  sender: { display: "Thimble & Pine Jobs", detail: "jobs@thimbleandpine.example" }
+  subject: "Je sollicitatie: weekendmedewerker magazijn"
+  body: |
+    Hoi,
+
+    Bedankt voor je sollicitatie als weekendmedewerker magazijn (sollicitatie TP-J-3307). Kun je donderdag een videogesprek van 15 minuten doen, om 10:00 of 14:00? Laat het ons vandaag voor 17:00 weten.
+
+    Het loon is €15,50 per uur, maandelijks betaald op je rekening. Neem op je eerste werkdag je ID mee, voordat je begint.
+
+    Je sollicitatie vind je ook in je account: thimbleandpine.example/jobs/mijn-sollicitaties
+
+    Team Werving, Thimble & Pine
+  lang: nl
+  translation: "Hi, thanks for your application for weekend warehouse assistant (application TP-J-3307). Can you do a 15-minute video call on Thursday, at 10:00 or 14:00? Let us know by 17:00 today. The pay is €15.50 an hour, paid monthly into your account. Please have your ID with you on your first working day, before you start. You'll also find your application in your account: thimbleandpine.example/jobs/mijn-sollicitaties. Recruitment team, Thimble & Pine"
+  request: reply
+  ask:
+    text: "Kun je donderdag een videogesprek van 15 minuten doen, om 10:00 of 14:00?"
+    translation: "Can you do a 15-minute video call on Thursday, at 10:00 or 14:00?"
+  claims:
+    - text: "Het loon is €15,50 per uur, maandelijks betaald op je rekening."
+      translation: "The pay is €15.50 an hour, paid monthly into your account."
+  references: ["TP-J-3307"]
+  l10n_note: "Dutch in-world text is intentional (Amsterdam chapter); the English translation is shown inline. Pay rate checked for NL only; adapt or drop it if the setting changes."
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: jobs@thimbleandpine.example. Read the end: the owner part is thimbleandpine.example, Thimble & Pine's own domain, and you did apply there. That isn't proof on its own, so weigh it with what the email asks for."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: link
+    reveal: "It fits: thimbleandpine.example/jobs/mijn-sollicitaties. Read the end: the owner part is thimbleandpine.example, Thimble & Pine's own site. That isn't proof on its own, so weigh it with what the email asks for."
+    red_flag: false
+    type: link
+    reassures: true
+  - target: reference
+    reveal: "Shows an application number, TP-J-3307, as a real recruitment email would. Anyone can make one up, so it can't prove anything either way. Your account at thimbleandpine.example shows your real applications."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "Shows the pay: €15.50 an hour, paid to you monthly. Pay going to you is how a job should work, but a pay line on its own isn't proof either way."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "It asks you to pick an interview time. No money, no ID photo by chat: you show your ID in person when you start."
+    red_flag: false
+    type: request
+
+actions:
+  - id: reply_thursday
+    label: "Reply: Thursday 14:00 works"
+    kind: proceed
+    outcome: interview_booked
+    pressure_target: true
+  - id: check_application_account
+    label: "Check your application on Thimble & Pine's site"
+    kind: verify_in_app
+    outcome: application_checked
+  - id: report_interview_email
+    label: "Report the email"
+    kind: report
+    outcome: interview_email_reported
+  - id: leave_interview_email
+    label: "Leave it for now"
+    kind: ignore
+    outcome: interview_email_left
+
+outcomes:
+  interview_booked:
+    narrative: "\"Great, Thursday 14:00 it is. The video link follows tomorrow.\" One step closer to a weekend shift."
+  application_checked:
+    narrative: "You open thimbleandpine.example yourself. Your application says \"Invited to interview\", with the same two Thursday slots. A good habit, and this time a reply would have done. You pick 14:00."
+  interview_email_reported:
+    narrative: "Reported. The next morning your application says \"Interview slots closed\". It really was Thimble & Pine; you write to jobs@thimbleandpine.example to ask for a new slot."
+  interview_email_left:
+    narrative: "By the evening the Thursday slots have gone. Your application says \"Waiting for your reply\". You can still write to jobs@thimbleandpine.example for a new slot."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "You applied, it pays you, it asks nothing up front."
+    what_works: "Reply as normal."
+  layer2:
+    message_flags: []
+    notes: "Why it was safe to act: you applied for this job, the email came from Thimble & Pine's own domain, and it asked for an interview time, not money. The 17:00 deadline was honest: slots fill up. Showing your ID in person when you start a job is normal. The scam tells are paying in, or an ID photo demanded by chat from a recruiter you can't check."
+  device_tip: "On a real phone, you can always open the company's site or app yourself and check your application there."
+  habit_card: calm-not-paranoid
+  sources: [nl-fraudehelpdesk-baan-aangeboden, nl-fraudehelpdesk-vacature-alert-2025, nl-rijksoverheid-identificatieplicht-werkgever, nl-rijksoverheid-kopie-id]

@@ -321,7 +321,7 @@ describe('brand registry (T-1.8)', () => {
     const r = report();
     const brands = loadBrands(CONTENT, r);
     expect(r.errors).toEqual([]);
-    expect(brands.size).toBe(8);
+    expect(brands.size).toBe(10); // 8 + Amsterdam (T-3.4): klaverwerk, tallyfern
   });
 
   it('collects domain, sub-brand domains, email hosts and look-alikes incl. {host} objects', () => {

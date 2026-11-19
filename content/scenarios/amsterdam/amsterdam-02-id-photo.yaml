@@ -1,0 +1,113 @@
+# 2-2 "Easy work": send your ID (GDD §22.3; brief task-job-scam §3.2, §3.3, §3.8, §4, §7). Fraud,
+# difficulty 2, calm (no timer, no pusher). Dutch SMS with inline translation.
+# Red flags: sender.detail (a job offer you never asked for, from a private mobile number, TJ §3.2),
+# claim (high pay for little time, no experience, TJ §3.3), request (an ID photo by chat to a recruiter you
+# can't check, TJ §3.8). Decoys: the link to Klaverwerk's real site (naming a real site costs nothing;
+# producer answer 3) and the vacancy number.
+# Habit: look the agency up yourself (TJ §4). Showing ID when you start a real job is normal (twin 2-5).
+# Fall -> damage control (6, 2 harmful; GDD §22.3): report_id_copy and tell_trusted_adult as stop.
+id: amsterdam-02-id-photo
+chapter: amsterdam
+role: standard
+pattern: task-job-scam
+theme: job-offer
+learning_objectives: [LO-12, LO-01, LO-03]
+difficulty: 2
+is_fraud: true
+device: sms
+brands: [klaverwerk, kettle]
+cast: []
+pressure: { timer: false, levers: [greed, authority] }
+
+message:
+  sender: { display: "+31 6 •• •• •• 17", detail: "Mobile number +31 6 •• •• •• 17" }
+  body: |
+    Hoi! Ik ben recruiter bij Klaverwerk Staffing. Online producten beoordelen vanuit huis: €150 per dag voor één uur werk, geen ervaring nodig. Vacature KW-20417, zie klaverwerk-staffing.example. Stuur een foto van je ID via Kettle naar dit nummer om je aan te melden.
+  lang: nl
+  translation: "Hi! I'm a recruiter at Klaverwerk Staffing. Rating products online from home: €150 a day for one hour's work, no experience needed. Vacancy KW-20417, see klaverwerk-staffing.example. Send a photo of your ID on Kettle to this number to register."
+  request: enter_details
+  ask:
+    text: "Stuur een foto van je ID via Kettle naar dit nummer om je aan te melden."
+    translation: "Send a photo of your ID on Kettle to this number to register."
+  claims:
+    - text: "€150 per dag voor één uur werk, geen ervaring nodig"
+      translation: "€150 a day for one hour's work, no experience needed"
+  references: ["KW-20417"]
+  l10n_note: "Dutch in-world text is intentional (Amsterdam chapter); the English translation is shown inline."
+
+inspectables:
+  - target: sender.detail
+    reveal: "A private mobile number offering you a job, and you never applied to Klaverwerk. A job offer you didn't ask for is a common start of a job scam."
+    red_flag: true
+    type: sender
+  - target: link
+    reveal: "klaverwerk-staffing.example: Klaverwerk Staffing's own site. Naming a real company's site costs nothing, so it can't prove anything either way. Look it up yourself, not through the text."
+    red_flag: false
+    type: link
+  - target: reference
+    reveal: "Shows a vacancy number, KW-20417, as a real job text might. Anyone can make one up, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "€150 for one hour a day, no experience needed: pay far above normal for very little work. Too good to be true is a common job-scam sign."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "It asks for a photo of your ID by chat, to a number you can't check, before any interview or contract. A real employer checks your original ID when you start work, not by chat."
+    red_flag: true
+    type: request
+
+actions:
+  - id: send_id_photo
+    label: "Send a photo of your ID on Kettle"
+    kind: enter_details
+    outcome: id_photo_sent
+    pressure_target: true
+  - id: look_up_klaverwerk
+    label: "Look up Klaverwerk Staffing yourself"
+    kind: verify_in_app
+    outcome: klaverwerk_site_checked
+  - id: report_job_text
+    label: "Report the text as spam"
+    kind: report
+    outcome: job_text_reported
+  - id: delete_job_text
+    label: "Delete the text"
+    kind: delete
+    outcome: job_text_deleted
+
+outcomes:
+  id_photo_sent:
+    narrative: "\"Thanks! You're registered 😊 A mentor will message you soon.\" Your ID photo now sits in a stranger's chat, where it could be misused in your name. Reporting it quickly limits that."
+    recovery:
+      - { step: report_id_copy, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: keep_evidence, category: secure }
+      - { step: contact_fraud_helpline, category: report }
+      - step: reply_to_sender
+        category: harmful
+        feedback: "Asking them to delete it feels like it should work, but the sender is the scammer, and a reply only tells them you're listening. Report the ID copy and keep the chat instead."
+      - step: keep_quiet
+        category: harmful
+        feedback: "Feeling embarrassed is normal, and it's what scammers count on. There is no need to feel ashamed: telling a trusted adult and reporting the ID copy early is what limits the damage."
+  klaverwerk_site_checked:
+    narrative: "You type klaverwerk-staffing.example yourself. No product-rating jobs, and a notice: \"Klaverwerk never asks for money, and checks your ID itself when you start work, never through a chat app.\""
+  job_text_reported:
+    narrative: "Reported. Your phone files the text under spam."
+  job_text_deleted:
+    narrative: "Deleted. No more \"easy work\" from that number today."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A job you never applied for wants your ID by chat."
+    what_works: "Look the agency up yourself."
+  layer2:
+    message_flags:
+      - "It names a real agency and its site. Anyone can borrow a name; the agency's own site is where to check."
+    notes: "Showing your ID when you start a real job is normal: an employer checks the original before your first day. An ID photo sent by chat to a recruiter you can't check, for a job you never applied for, isn't."
+  device_tip: "On a real phone, type the company's address yourself or search for it, and use the contact details on its own site, not the ones in the message."
+  habit_card: easy-money-costs-you
+  already_clicked:
+    entered_details: "Sent your ID? Tell a parent or trusted adult, report the ID copy (see Where to report), keep the chat, and don't reply."
+  sources: [nl-fraudehelpdesk-vacature-alert-2025, nl-fraudehelpdesk-baan-aangeboden, nl-veiliginternetten-thuiswerk-2025, nl-rvig-cmi-id-copy, nl-rijksoverheid-identificatieplicht-werkgever, nl-rijksoverheid-kopie-id]

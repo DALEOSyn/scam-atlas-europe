@@ -1,0 +1,125 @@
+# 2-6 Mateus: boat-tour share (GDD §22.3; family-impersonation brief §7 genuine twin). Genuine,
+# high stakes (a payment), difficulty 3, honest pusher at 30 s. Twin of amsterdam-08-jonas-rent.
+# Money you agreed face to face, to his own name: the card's scope (requests you didn't agree in person)
+# doesn't apply. Checkables (G): sender.detail neutral (design ruling 1 §22.8: saved contact on a pay
+# request; same wording as 2-8), link neutral (ruling 2: real-domain payment-request links), reference
+# (the booking), request.
+# Banking beat: payment-request page (CR-18(c)); no payee check runs there; the payee name is the name on the
+# request (no bank-confirmed holder). Spec gap: GDD §22.3 lists only "Pay €18" and "Decline" on the banking beat, but CR-18(b)
+# requires a verify on every banking beat opened by start_transfer, so "Call Mateus on his work phone"
+# (call_back_known, ★★★) is added there with the same outcome as on the message.
+id: amsterdam-06-boat-tour-share
+chapter: amsterdam
+role: standard
+pattern: messenger-family-impersonation
+theme: friend-money
+twin_of: amsterdam-08-jonas-rent
+learning_objectives: [LO-17, LO-07]
+difficulty: 3
+is_fraud: false
+stakes: high
+device: messenger
+brands: [kettle, larchwick]
+cast: [mateus]
+pressure:
+  timer: false
+  levers: []
+  pusher:
+    messages:
+      - { at_seconds: 30, text: "No rush! I'm settling up with everyone tonight" }
+
+message:
+  sender: { display: "Mateus (work phone)", detail: "Saved contact: Mateus (work phone)" }
+  from_cast: mateus
+  body: |
+    Booked the canal boat we talked about at breakfast 🙂 Saturday 16:30, 4 tickets, €18 each. Pay me back through this request whenever: larchwick-bank.example/pay/MF-4418
+  request: pay
+  ask: { text: "Pay me back through this request whenever" }
+  references: ["Sat 16:30 · 4 tickets"]
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows Mateus's saved contact, in your usual chat with him, as a real message from him would. An account can be taken over and show the same contact, so it can't prove anything either way. Judge the request."
+    red_flag: false
+    type: sender
+  - target: link
+    reveal: "larchwick-bank.example: Larchwick's own address. A payment request opens there whoever sent it, so it can't prove anything either way. The request page shows the name on the request."
+    red_flag: false
+    type: link
+  - target: reference
+    reveal: "Shows the booking, Saturday 16:30, 4 tickets, as a real message about the boat would. Anyone can write booking details, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: request
+    reveal: "It asks you to pay €18 through a payment request, for a boat trip you agreed to face to face, with no deadline. Money you agreed in person is outside the habit's scope; a call never hurts."
+    red_flag: false
+    type: request
+
+actions:
+  - id: open_boat_request
+    label: "Open the request in the Larchwick app"
+    kind: start_transfer
+    next_beat: boat_request
+    pressure_target: true
+  - id: call_mateus_first
+    label: "Call Mateus on his saved work phone first"
+    kind: call_back_known
+    outcome: mateus_confirms
+  - id: report_boat_message
+    label: "Report the message"
+    kind: report
+    outcome: boat_message_reported
+  - id: ignore_boat_request
+    label: "Ignore the request"
+    kind: ignore
+    outcome: boat_request_ignored
+
+beats:
+  - id: boat_request
+    device: banking
+    message:
+      payee: { name: "Mateus Ferreira", amount: "€18.00", note: "Canal boat, Saturday", payment_request: true }
+      request: pay
+    inspectables:
+      - target: payee.name
+        reveal: "The request page names Mateus Ferreira as the one asking for the money. No bank name check runs on a request page, so this is the name on the request, not a bank-confirmed holder. It can't prove the message is from him."
+        red_flag: false
+        type: payee
+    actions:
+      - id: pay_18
+        label: "Pay €18"
+        kind: proceed
+        outcome: boat_paid
+        pressure_target: true
+      - id: call_mateus_from_request
+        label: "Call Mateus on his saved work phone"
+        kind: call_back_known
+        outcome: mateus_confirms
+      - id: decline_boat_request
+        label: "Decline the request"
+        kind: ignore
+        outcome: boat_request_declined
+
+outcomes:
+  boat_paid:
+    narrative: "Paid. Mateus: \"Got it, thanks! Wear a jumper, it's windy on the water.\""
+  mateus_confirms:
+    narrative: "Mateus picks up: \"Yes, that's me, no rush.\" A call never hurts, and this time paying straight away would have been fine too. You pay the €18."
+  boat_message_reported:
+    narrative: "Reported. Mateus, a bit puzzled: \"Did my request not come through? It's just the boat.\" It really was him."
+  boat_request_ignored:
+    narrative: "You leave it. On Saturday Mateus asks, a bit awkwardly, whether you still want to come."
+  boat_request_declined:
+    narrative: "You declined money you'd agreed to pay, and it really was Mateus. He messages: \"Did you mean to decline? It's just the boat.\""
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Money agreed in person, to the name you expected: fine to pay."
+    what_works: "A call never hurts."
+  layer2:
+    message_flags: []
+    notes: "Why it was safe: you agreed this at breakfast, the request page showed the name you expected, and nothing was urgent. The habit (a call on a number you already had) is for money requests you didn't agree in person. A payment-request page runs no bank name check: it shows the name on the request. If that isn't the person you agreed with, stop and call."
+  device_tip: "On a real phone, open the payment request and read who gets the money before you pay. If it's not the person you agreed with, stop and call them."
+  habit_card: calm-not-paranoid
+  sources: [nl-veiligbankieren-hulpvraag, nl-fraudehelpdesk-hulpvraag-campaign, be-febelfin-vop-faq]

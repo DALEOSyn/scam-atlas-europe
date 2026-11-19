@@ -241,8 +241,22 @@ countries:
     - id: nl-fraudehelpdesk
       name: "Fraudehelpdesk"
       body: "National reporting point for fraud. Gives advice and can refer you to the police."
-      checked: 2026-11-18
-      sources: [nl-fraudehelpdesk-police-pilot]
+      phones:
+        - number: "088 786 73 72"
+          label: "Advice and reporting (from abroad: +31 88 786 73 72)"
+      checked: 2026-11-19
+      sources: [nl-fraudehelpdesk-police-pilot, nl-fraudehelpdesk-contact-en, nl-rijksoverheid-fraudehelpdesk-contact]
+      review_note: "Phone number re-opened 2026-11-19 on Fraudehelpdesk's own English page (088 - 7867372; from abroad +31 88 7867372) and matches the government contact guide. Opening hours differ between the two pages, so none are shown."
+    - id: nl-cmi-id-copy
+      name: "Centraal Meldpunt Identiteitsfraude (RvIG)"
+      body: "Gave a copy of your ID to someone you don't trust? Report it here. You get an email reply within one day."
+      checked: 2026-11-19
+      sources: [nl-rvig-cmi-id-copy]
+    - id: nl-police-hulpvraagfraude
+      name: "Police: online report for help-request fraud"
+      body: "In many cases you can report online. Save the chat and screenshots first, and report the chat in the app last."
+      checked: 2026-11-19
+      sources: [nl-politie-aangifte-hulpvraagfraude]
     - id: nl-police-account-takeover
       name: "Police (aangifte)"
       body: "Report to the police. They publish a form to help you prepare a report if your messenger account was taken over."

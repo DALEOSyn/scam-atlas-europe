@@ -38,13 +38,18 @@ export function classOf(table: Pick<Balance, 'action_kinds'>, kind: ActionKind):
   return table.action_kinds[kind].class;
 }
 
-/** Stars for a class on a truth; undefined for unscored meta actions. */
+/** Classes that are never scored and never decide: pause (`meta`) and `start_transfer` (`step`, CR-18). */
+export function isUnscoredClass(cls: ActionClass): cls is 'meta' | 'step' {
+  return cls === 'meta' || cls === 'step';
+}
+
+/** Stars for a class on a truth; undefined for unscored classes (meta: pause; step: start_transfer). */
 export function starsFor(
   table: Pick<Balance, 'stars'>,
   cls: ActionClass,
   truth: Truth,
 ): number | 'non_terminal' | 'not_allowed' | undefined {
-  if (cls === 'meta') return undefined;
+  if (isUnscoredClass(cls)) return undefined;
   return table.stars[cls][truth];
 }
 
@@ -72,10 +77,11 @@ export interface Decision {
  * - Verify stands unless the follow-up is comply/proceed on fraud, or report on genuine.
  * - Engage on fraud never decides (it caps the group at ★★ instead; see `engagedOnFraud`).
  * - Meta (pause) never decides.
+ * - Step (`start_transfer`, CR-18) never decides and never caps: the banking beat's action decides.
  * - Otherwise the latest action decides.
  */
 export function mergeDecision(current: Decision | undefined, next: Decision, truth: Truth, engageTerminalOnFraud: boolean): Decision | undefined {
-  if (next.cls === 'meta') return current;
+  if (isUnscoredClass(next.cls)) return current;
   if (next.cls === 'engage' && truth === 'fraud' && !engageTerminalOnFraud) return current;
   if (current?.cls === 'verify') {
     const replaces = truth === 'fraud' ? next.cls === 'comply' || next.cls === 'proceed' : next.cls === 'report';

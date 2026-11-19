@@ -168,7 +168,7 @@ describe('4. after_beat interrupts (QA M6)', () => {
 
 describe('5. message.earlier (QA L5)', () => {
   const earlier = [{ when: 'Yesterday', body: 'Trundle: your parcel TR-1 is on its way. Track it at trundle.example/t/1', lang: 'en' }];
-  it('sms and messenger only, at most 3, never checkable', () => {
+  it('sms, messenger and email (CR-25) only, at most 3, never checkable', () => {
     const raw = rawFraud();
     (raw.message as Raw).earlier = earlier;
     expect(issues(raw)).toEqual([]);
@@ -179,7 +179,10 @@ describe('5. message.earlier (QA L5)', () => {
     expect(issues(four).join('\n')).toMatch(/earlier/);
     const mail = structuredClone(boss()) as unknown as Raw;
     ((mail.beats as Raw[]).find((b) => b.id === 'invoice')?.message as Raw).earlier = earlier;
-    expect(issues(mail).join('\n')).toMatch(/earlier \(thread history\) is for sms and messenger messages only/);
+    expect(issues(mail).join('\n')).not.toMatch(/earlier/);
+    const call = structuredClone(boss()) as unknown as Raw;
+    ((call.beats as Raw[]).find((b) => b.id === 'support_call')?.message as Raw).earlier = earlier;
+    expect(issues(call).join('\n')).toMatch(/earlier \(thread history\) is for sms, messenger and email messages only/);
     const foreign = rawFraud();
     (foreign.message as Raw).earlier = [{ when: 'Gestern', body: 'Ihr Paket ist unterwegs.', lang: 'de' }];
     expect(issues(foreign).join('\n')).toMatch(/needs an inline translation/);

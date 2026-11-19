@@ -14,6 +14,10 @@
  * scenario clock. A beat's follow-ups only run while its group is live: they
  * stop when the beat ends (resolved, or hung up) and never fire during the
  * fast-forward between boss beats.
+ *
+ * Beat-bound follow-ups (CR-21, `beat: <id>`) are timed from when that beat opens (also a follow-up
+ * beat reached by next_beat) and never fire if it is not reached. Arming them replaces any follow-ups
+ * of the same group still pending: the conversation has moved to that beat.
  */
 import type { Balance } from '../content/schema.ts';
 import type { StressState } from './stress.ts';
@@ -21,6 +25,8 @@ import type { StressState } from './stress.ts';
 export interface PusherMessage {
   at_seconds: number;
   text: string;
+  /** CR-21: bound to this beat; `at_seconds` counts from when it opens. */
+  beat?: string | undefined;
 }
 
 /** One follow-up placed on its beat: seconds after that beat's group starts. */
@@ -52,6 +58,10 @@ export function scaleFor(b: PusherTable, state: StressState): number {
  */
 export function planPushers(messages: readonly PusherMessage[], schedule: readonly { beatId: string; at: number }[]): PusherPlan[] {
   return messages.map((m) => {
+    if (m.beat !== undefined) {
+      // CR-21: a beat-bound follow-up. On a scheduled beat it is timed like that beat's own follow-ups.
+      return { beat: m.beat, offset: m.at_seconds };
+    }
     const owner = [...schedule].reverse().find((x) => x.at <= m.at_seconds) ?? schedule[0] ?? { beatId: 'start', at: 0 };
     return { beat: owner.beatId, offset: Math.max(0, m.at_seconds - owner.at) };
   });

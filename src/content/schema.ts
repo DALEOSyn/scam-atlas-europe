@@ -36,12 +36,16 @@ export const ACTION_KINDS = [
   'verify_in_app', 'call_back_known', 'check_official_list', 'check_with_platform', 'ask_someone', 'verify_identity',
   'report', 'block', 'ignore', 'delete', 'hang_up', 'deny_prompt', 'reply', 'open_link', 'call_number_in_message',
   'scan_qr_and_open', 'pay', 'pay_unprotected', 'enter_details', 'share_code', 'approve_prompt', 'install_or_remote',
-  'proceed', 'pay_protected', 'pause',
+  'proceed', 'pay_protected', 'pause', 'start_transfer',
 ] as const;
 export const actionKindSchema = z.enum(ACTION_KINDS);
 export type ActionKind = z.infer<typeof actionKindSchema>;
 
-export const ACTION_CLASSES = ['verify', 'report', 'dismiss', 'engage', 'comply', 'proceed', 'meta'] as const;
+/**
+ * `step` (CR-18, producer ruling 2026-11-19): `start_transfer` opens a `banking` beat. Non-terminal,
+ * never decisive, no star cap, no row in the star table: the banking beat's own action decides.
+ */
+export const ACTION_CLASSES = ['verify', 'report', 'dismiss', 'engage', 'comply', 'proceed', 'meta', 'step'] as const;
 export type ActionClass = (typeof ACTION_CLASSES)[number];
 
 /** GDD §8 pressure levers (CR-05). */
@@ -65,7 +69,7 @@ export const RECOVERY_CATEGORIES = ['stop', 'secure', 'report', 'warn', 'harmful
 /** CR-04 inspectable types. spelling/grammar/language may only be decoys; padlock is never proof. */
 export const INSPECTABLE_TYPES = [
   'sender', 'link', 'qr', 'payee', 'caller_id', 'padlock', 'page_address', 'logo', 'display_name', 'attachment',
-  'reference', 'phone_number', 'letterhead', 'prompt', 'image', 'request', 'spelling', 'grammar', 'language', 'other',
+  'reference', 'phone_number', 'letterhead', 'prompt', 'image', 'request', 'claim', 'video', 'spelling', 'grammar', 'language', 'other',
 ] as const;
 export const LANGUAGE_TYPES: readonly (typeof INSPECTABLE_TYPES)[number][] = ['spelling', 'grammar', 'language'];
 export const NEVER_PROOF_TYPES: readonly (typeof INSPECTABLE_TYPES)[number][] = ['logo', 'display_name'];
@@ -108,8 +112,24 @@ export const senderSchema = z
   .object({
     display: z.string().min(1),
     detail: z.string().min(1).optional(),
+    /**
+     * CR-19: a chat from a number that is not a saved contact. Messenger only. Shows the neutral
+     * "Not in your contacts · {detail}" banner on every unknown number, genuine or fraud (UI_SPEC §3.3).
+     */
+    new_contact: z.boolean().optional(),
   })
   .strict();
+
+/** The four payee-name check results (GDD §23.5, Reg. (EU) 2024/886): match, close match, no match, couldn't check. */
+export const NAME_CHECK_RESULTS = ['match', 'close_match', 'mismatch', 'unavailable'] as const;
+
+/** A verbatim quote from the message: the `ask` (request checkable) or a `claim` (CR-17). */
+const quoteSchema = z.object({ text: z.string().min(1), translation: z.string().min(1).optional() }).strict();
+
+/** Requests whose message may carry `ask` (share_code / approve since T-2.8; pay / enter_details / reply since CR-17). */
+export const ASK_REQUESTS: readonly (typeof REQUESTS)[number][] = ['share_code', 'approve', 'pay', 'enter_details', 'reply'];
+/** CR-17: from slot 2 on, these requests need `message.ask` on every scored non-banking beat, genuine or fraud. */
+export const CR17_ASK_REQUESTS: readonly (typeof REQUESTS)[number][] = ['pay', 'enter_details', 'reply'];
 
 export const messageSchema = z
   .object({
@@ -127,16 +147,44 @@ export const messageSchema = z
     phone_numbers: z.array(z.string().min(1)).optional(),
     qr: qrSchema.optional(),
     page: z.object({ address: fictionalAddress('page.address'), title: z.string().min(1).optional() }).strict().optional(),
+    /**
+     * Who gets the money. On a `banking` beat: the transfer form (payee name, IBAN, amount) and the
+     * payee-name check result (CR-23), or a payment-request page (`payment_request: true`, CR-18(c):
+     * "Request from <name> · amount · note", no check runs). On email / messenger: the "Bank details"
+     * card (CR-22), IBAN checkable only, no name check outside the bank app.
+     */
     payee: z
       .object({
         name: z.string().min(1),
         iban: z.string().min(1).optional(),
-        name_check: z.enum(['match', 'mismatch', 'close_match', 'unavailable']).optional(),
+        name_check: z.enum(NAME_CHECK_RESULTS).optional(),
+        /** The real account holder's name: shown on close match only, never on no match (CR-23). */
         holder: z.string().min(1).optional(),
+        /** Prefilled demo amount, e.g. "€84.00". */
+        amount: z.string().min(1).optional(),
+        /** Payment-request note ("Canal boat, Saturday"). Request pages only. */
+        note: z.string().min(1).optional(),
+        payment_request: z.boolean().optional(),
       })
       .strict()
       .optional(),
     transcript: z.array(z.object({ speaker: z.enum(['caller', 'you']), text: z.string().min(1) }).strict()).optional(),
+    /** CR-20: a recorded-message call. The header says "Recorded message" and "you" lines are not shown. Call only. */
+    recorded: z.boolean().optional(),
+    /**
+     * CR-24: a video call, shown as a stylised illustration of a fictional person plus the transcript.
+     * No photoreal image, no synthesised voice audio, no glitch effects. Call only. Checkable `video`.
+     */
+    video: z
+      .object({
+        /** A vector illustration in public/illustrations/ (content:validate checks the file exists). */
+        illustration: z.string().regex(/^public\/illustrations\/[a-z0-9-]+\.svg$/, 'video.illustration is an SVG at public/illustrations/<id>.svg'),
+        alt: z.string().min(1),
+      })
+      .strict()
+      .optional(),
+    /** CR-26: whose money it is, on banking beats ("Ruchelune · current account"). */
+    account: z.object({ nickname: z.string().min(1) }).strict().optional(),
     prompt: z
       .object({
         type: z.enum(['sign_in', 'signature', 'qr_login']),
@@ -154,9 +202,16 @@ export const messageSchema = z
     /**
      * The sentence that asks for the code or approval (design ruling 2026-11-19, QA L1): the beat's
      * `request` checkable. Copied verbatim from the body or one caller line; `translation` verbatim
-     * from message.translation when the message is not in English. share_code / approve only.
+     * from message.translation when the message is not in English. Requests in ASK_REQUESTS only
+     * (share_code, approve; CR-17: pay, enter_details, reply).
      */
-    ask: z.object({ text: z.string().min(1), translation: z.string().min(1).optional() }).strict().optional(),
+    ask: quoteSchema.optional(),
+    /**
+     * CR-17(b): what the sender claims (an offer, a promise, an excuse), verbatim from the body or one
+     * caller line, at most 2. Checkables `claim`, `claim#2` ("What they say" / "What the caller says").
+     * Authoring rule: a claim is never a deadline (T-2.4b ruling 2).
+     */
+    claims: z.array(quoteSchema).min(1).max(2).optional(),
     /**
      * Earlier texts in the same thread (ruling QA L5), oldest first, shown muted above today's message
      * under "Earlier". SMS and messenger only. Never checkable, no actions, links shown as plain text.
@@ -183,21 +238,60 @@ export const messageSchema = z
     if (m.lang && m.lang !== 'en' && !m.translation) {
       ctx.addIssue({ code: 'custom', path: ['translation'], message: `text in lang "${m.lang}" needs an inline translation` });
     }
+    const callerLines = (m.transcript ?? []).filter((l) => l.speaker === 'caller').map((l) => l.text);
+    const quoteRules = (q: { text: string; translation?: string | undefined }, path: (string | number)[], what: string) => {
+      if (!(m.body ?? '').includes(q.text) && !callerLines.some((l) => l.includes(q.text))) {
+        ctx.addIssue({ code: 'custom', path: [...path, 'text'], message: `${what}.text must be copied verbatim from the body or from one caller line of the transcript` });
+      }
+      if (m.lang && m.lang !== 'en') {
+        if (!q.translation) ctx.addIssue({ code: 'custom', path: [...path, 'translation'], message: `the message is in "${m.lang}": ${what}.translation is required` });
+        else if (!(m.translation ?? '').includes(q.translation)) ctx.addIssue({ code: 'custom', path: [...path, 'translation'], message: `${what}.translation must be copied verbatim from message.translation` });
+      }
+    };
     if (m.ask) {
       // A whole request, not a fragment like "the code" (sceptic T-2.8).
       if (m.ask.text.trim().split(/\s+/u).filter(Boolean).length < 4) ctx.addIssue({ code: 'custom', path: ['ask', 'text'], message: 'ask.text must be at least 4 words: the sentence that asks, not a fragment' });
-      const callerLines = (m.transcript ?? []).filter((l) => l.speaker === 'caller').map((l) => l.text);
-      if (!(m.body ?? '').includes(m.ask.text) && !callerLines.some((l) => l.includes(m.ask?.text ?? ''))) {
-        ctx.addIssue({ code: 'custom', path: ['ask', 'text'], message: 'ask.text must be copied verbatim from the body or from one caller line of the transcript' });
-      }
-      if (m.lang && m.lang !== 'en') {
-        if (!m.ask.translation) ctx.addIssue({ code: 'custom', path: ['ask', 'translation'], message: `the message is in "${m.lang}": ask.translation is required` });
-        else if (!(m.translation ?? '').includes(m.ask.translation)) ctx.addIssue({ code: 'custom', path: ['ask', 'translation'], message: 'ask.translation must be copied verbatim from message.translation' });
-      }
-      if (m.request !== 'share_code' && m.request !== 'approve') ctx.addIssue({ code: 'custom', path: ['ask'], message: 'ask is only for messages whose request is share_code or approve' });
+      quoteRules(m.ask, ['ask'], 'ask');
+      if (!ASK_REQUESTS.includes(m.request)) ctx.addIssue({ code: 'custom', path: ['ask'], message: `ask is only for messages whose request is ${ASK_REQUESTS.join(', ')}` });
+    }
+    (m.claims ?? []).forEach((c, i) => {
+      if (c.text.trim().split(/\s+/u).filter(Boolean).length < 3) ctx.addIssue({ code: 'custom', path: ['claims', i, 'text'], message: 'a claim is at least 3 words: what they say, not a fragment' });
+      quoteRules(c, ['claims', i], 'claims[]');
+      if (m.ask && (m.ask.text.includes(c.text) || c.text.includes(m.ask.text))) ctx.addIssue({ code: 'custom', path: ['claims', i, 'text'], message: 'a claim must not overlap the ask (they are separate checkables)' });
+    });
+    if (m.claims && m.claims.length === 2 && m.claims[0]?.text === m.claims[1]?.text) ctx.addIssue({ code: 'custom', path: ['claims', 1], message: 'duplicate claim' });
+    const p = m.payee;
+    if (p) {
+      // CR-23: the bank shows the holder's name on a close match only (Reg. (EU) 2024/886 Art. 5c), never on a no match.
+      if (p.name_check === 'close_match' && !p.holder) ctx.addIssue({ code: 'custom', path: ['payee', 'holder'], message: 'a close match shows the account holder: payee.holder is required' });
+      if (p.name_check !== 'close_match' && p.holder) ctx.addIssue({ code: 'custom', path: ['payee', 'holder'], message: 'payee.holder is shown only on a close match (never on match, no match or couldn\'t check)' });
+      if (p.payment_request && p.name_check) ctx.addIssue({ code: 'custom', path: ['payee', 'name_check'], message: 'no payee-name check runs on a payment-request page (CR-18(c))' });
+      if (p.note && !p.payment_request) ctx.addIssue({ code: 'custom', path: ['payee', 'note'], message: 'payee.note is for payment-request pages (payment_request: true)' });
     }
   });
 export type Message = z.infer<typeof messageSchema>;
+
+/**
+ * Message parts that only some devices render (CR-19 … CR-26). Returns [path under message, error].
+ * Pure; shared by the scenario schema (beats, interrupts) and banners.
+ */
+export function deviceOnlyIssues(device: Device, m: Message): [(string | number)[], string][] {
+  const out: [(string | number)[], string][] = [];
+  if (m.sender?.new_contact && device !== 'messenger') out.push([['sender', 'new_contact'], 'new_contact (the "Not in your contacts" banner) is for messenger chats (CR-19)']);
+  if (m.sender?.new_contact && !m.sender.detail) out.push([['sender', 'detail'], 'a new contact shows its number: sender.detail is required (CR-19)']);
+  if (m.recorded && device !== 'call') out.push([['recorded'], 'recorded is for call beats (CR-20)']);
+  if (m.video && device !== 'call') out.push([['video'], 'video is for call beats (CR-24)']);
+  if (m.account && device !== 'banking') out.push([['account'], 'account (whose money it is) is for banking beats (CR-26)']);
+  const p = m.payee;
+  if (p && device !== 'banking') {
+    // CR-22: the "Bank details" card. No name check outside the bank app.
+    if (device !== 'email' && device !== 'messenger' && device !== 'letter') out.push([['payee'], `payee is shown on banking beats, or as a bank-details card on email, messenger or letter, not on ${device} (CR-22)`]);
+    if (!p.iban) out.push([['payee', 'iban'], 'a bank-details card shows the IBAN: payee.iban is required (CR-22)']);
+    if (p.name_check || p.holder) out.push([['payee', 'name_check'], 'the payee-name check runs only in the bank app (banking beats), never on a bank-details card (CR-22)']);
+    if (p.payment_request || p.note) out.push([['payee', 'payment_request'], 'payment-request pages are banking beats (CR-18(c))']);
+  }
+  return out;
+}
 
 /** Message parts each device template needs. */
 export const DEVICE_PARTS: Record<Device, readonly (keyof Message)[]> = {
@@ -230,6 +324,11 @@ export const pressureSchema = z
                 /** CR-14: in-world language of the follow-up, with its inline translation (like message lang/translation). */
                 lang: z.string().regex(/^[a-z]{2}(?:-[A-Z]{2})?$/, 'lang is a BCP 47 tag such as de or pt-PT').optional(),
                 translation: z.string().min(1).optional(),
+                /**
+                 * CR-21: bound to a beat. `at_seconds` then counts from when that beat opens, and the
+                 * follow-up never fires if the beat is not reached (e.g. 2-7's "11 tasks to go" on top_up).
+                 */
+                beat: snakeId.optional(),
               })
               .strict()
               .superRefine((m, ctx) => {
@@ -543,7 +642,9 @@ export const scenarioSchema = z
         if (b.message[part] === undefined) issue([...b.path, 'message', part], `a ${b.device} message needs ${part}`);
       }
       const visible = new Set(deriveCheckables(b.device, b.message));
-      if (b.message.earlier && b.device !== 'sms' && b.device !== 'messenger') issue([...b.path, 'message', 'earlier'], 'earlier (thread history) is for sms and messenger messages only');
+      // CR-25: thread history on email too.
+      if (b.message.earlier && b.device !== 'sms' && b.device !== 'messenger' && b.device !== 'email') issue([...b.path, 'message', 'earlier'], 'earlier (thread history) is for sms, messenger and email messages only');
+      deviceOnlyIssues(b.device, b.message).forEach(([part, message]) => issue([...b.path, 'message', ...part], message));
       // An ask is the tell itself: it always has an authored reveal (no neutral filler; ruling QA L1).
       if (b.message.ask && !b.inspectables.some((ins) => ins.target === 'request' && ins.type === 'request')) {
         issue([...b.path, 'inspectables'], 'a message with an ask needs an inspectable with target: request and type: request');
@@ -560,6 +661,9 @@ export const scenarioSchema = z
         if (ins.target === 'request' && b.message.request === 'none') {
           issue([...b.path, 'inspectables', i, 'target'], 'a request checkable needs message.request on the same beat (e.g. share_code or approve), not none');
         }
+        // CR-17(b), CR-24: claim and video checkables carry their own type.
+        if (/^claim(?:#2)?$/.test(ins.target) && ins.type !== undefined && ins.type !== 'claim') issue([...b.path, 'inspectables', i, 'type'], 'a claim checkable has type: claim');
+        if (ins.target === 'video' && ins.type !== undefined && ins.type !== 'video') issue([...b.path, 'inspectables', i, 'type'], 'a video checkable has type: video');
       });
       if (b.banner && !b.banner.message.body) issue([...b.path, 'banner', 'message', 'body'], 'a banner needs a body: it is displayed on the beat');
       if (b.what_now) {
@@ -613,6 +717,63 @@ export const scenarioSchema = z
     for (const [key, o] of Object.entries(s.outcomes)) {
       if (o.arc_effects && s.role !== 'arc') issue(['outcomes', key, 'arc_effects'], 'arc_effects are for arc beats only');
     }
+
+    // CR-18(a), (b), (e): start_transfer opens a banking beat with a payee (class rules in scripts/lib/rules.ts).
+    const storyBeats = beats.filter((b) => b.path[0] !== 'interrupts');
+    const beatOf = (id: string) => storyBeats.find((b) => b.id === id);
+    const scheduledIds = new Set(['start', ...s.beats.filter((b) => b.arrives_after !== undefined).map((b) => b.id)]);
+    for (const b of beats) {
+      b.actions.forEach((a, i) => {
+        if (a.kind !== 'start_transfer') return;
+        const at = [...b.path, 'actions', i];
+        if (b.path[0] === 'interrupts') return issue(at, 'start_transfer is not offered on interrupts');
+        if (!SCORED_ROLES.includes(s.role)) issue(at, 'start_transfer is for standard and boss scenarios (CR-18(a))');
+        if (a.next_beat === undefined) return issue([...at, 'next_beat'], 'start_transfer opens the banking app: it needs next_beat to a banking beat, never an outcome (CR-18(b))');
+        const target = beatOf(a.next_beat);
+        if (target && (target.device !== 'banking' || !target.message.payee)) issue([...at, 'next_beat'], `start_transfer leads to a banking beat with a payee; "${a.next_beat}" is ${target.device === 'banking' ? 'missing message.payee' : `a ${target.device} beat`} (CR-18(b))`);
+        if (s.role === 'boss' && !scheduledIds.has(b.id)) issue(at, 'in a boss, start_transfer is offered on a scheduled beat only (start or arrives_after): one banking sub-beat per scheduled beat (CR-18(e))');
+        if (target?.device === 'banking' && target.actions.some((x) => x.kind === 'start_transfer')) issue([...at, 'next_beat'], `the banking beat "${target.id}" cannot chain another start_transfer (CR-18(e))`);
+      });
+    }
+    if (s.role === 'boss') {
+      // CR-18(e): a scheduled boss beat chains through start_transfer to exactly one banking sub-beat.
+      for (const id of scheduledIds) {
+        const b = beatOf(id);
+        if (!b) continue;
+        const subs = new Set(b.actions.filter((a) => a.kind === 'start_transfer' && a.next_beat !== undefined).map((a) => a.next_beat as string));
+        if (subs.size > 1) issue([...b.path, 'actions'], `beat "${id}" chains to ${subs.size} banking sub-beats; a scheduled boss beat chains to at most one (CR-18(e))`);
+      }
+      const owners = new Map<string, string>();
+      for (const id of scheduledIds) {
+        for (const a of beatOf(id)?.actions ?? []) {
+          if (a.kind !== 'start_transfer' || a.next_beat === undefined) continue;
+          const prev = owners.get(a.next_beat);
+          if (prev !== undefined && prev !== id) issue(['beats'], `the banking sub-beat "${a.next_beat}" is chained from two scheduled beats ("${prev}", "${id}"); each scheduled beat has its own (CR-18(e))`);
+          owners.set(a.next_beat, id);
+        }
+      }
+    }
+
+    // CR-21: beat-bound follow-ups name a follow-up beat; one beat's follow-ups are listed together, in time order.
+    const pushers = s.pressure.pusher?.messages ?? [];
+    let lastBeat: string | undefined;
+    const closed = new Set<string>();
+    pushers.forEach((m, i) => {
+      const path = ['pressure', 'pusher', 'messages', i, 'beat'];
+      if (m.beat === undefined) {
+        if (lastBeat !== undefined) issue(path, 'list unbound follow-ups before beat-bound ones (CR-21)');
+        return;
+      }
+      if (m.beat === 'start' || !s.beats.some((b) => b.id === m.beat)) issue(path, `"${m.beat}" is not a follow-up beat id (CR-21)`);
+      if (m.beat !== lastBeat) {
+        if (closed.has(m.beat)) issue(path, `follow-ups bound to "${m.beat}" must be listed together (CR-21)`);
+        if (lastBeat !== undefined) closed.add(lastBeat);
+        lastBeat = m.beat;
+      } else {
+        const prev = pushers[i - 1];
+        if (prev && prev.at_seconds >= m.at_seconds) issue(['pressure', 'pusher', 'messages', i, 'at_seconds'], `follow-ups bound to "${m.beat}" are listed in time order (CR-21)`);
+      }
+    });
 
     // Red Line 8: a letter is only ever the carrier of a QR code or URL; the scenario hinges on that digital
     // vector. Checked per letter beat: a later SMS link cannot stand in for the letter's own vector.

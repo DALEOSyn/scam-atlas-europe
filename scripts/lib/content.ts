@@ -392,6 +392,8 @@ export function validateContent(contentDir: string, opts: ValidateOptions = {}):
     report.warnings.push(...r.warnings.map((w) => `${file}: ${w}`));
   }
   for (const p of padlockRevealIssues(all)) report.errors.push(`${fileOf.get(p.id) ?? p.id}: ${p.message}`);
+  const publicRoot = join(contentDir, '..');
+  for (const s of all) for (const m of videoAssetIssues(s, publicRoot)) report.errors.push(`${fileOf.get(s.id) ?? s.id}: ${m}`);
   for (const [base, { file, chapter }] of chapters) {
     report.chapters?.set(chapter.city, chapter);
     const r = chapterRules(chapter, base, all.filter((s) => s.chapter === chapter.city), reg);
@@ -402,4 +404,15 @@ export function validateContent(contentDir: string, opts: ValidateOptions = {}):
     if (!chapters.has(s.chapter)) report.errors.push(`${fileOf.get(s.id) ?? s.id}: chapter "${s.chapter}" has no content/chapters/${s.chapter}.yaml`);
   }
   return report;
+}
+
+/** CR-24: every video-call illustration exists (an SVG drawn for the game; scanned as text by redline:lint). */
+export function videoAssetIssues(s: Scenario, root: string): string[] {
+  const out: string[] = [];
+  const beats = [{ id: 'start', message: s.message }, ...s.beats.map((b) => ({ id: b.id, message: b.message }))];
+  for (const b of beats) {
+    const path = b.message.video?.illustration;
+    if (path && !existsSync(join(root, path))) out.push(`beat "${b.id}": video.illustration "${path}" does not exist`);
+  }
+  return out;
 }

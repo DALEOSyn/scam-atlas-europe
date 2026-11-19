@@ -358,6 +358,7 @@
   "call_video_frame": "Video: {alt}",
   "heading_bank_request": "Banking app: payment request from {name}",
   "coach_frozen": "Paused while the tip is open",
+  "coach_frozen_short": "Paused: tip open",
   "heading_video_call": "Video call from {from}",
   "mail_quote_meta": "{from} · {when}"
 }

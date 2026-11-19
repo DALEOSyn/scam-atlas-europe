@@ -118,7 +118,7 @@ describe('CR-23: payee-name check result cards', () => {
     expect(coach.textContent).toContain("Doesn't match? Stop and call. Close match? Compare the name it shows with your own papers. Matches? It only shows whose account it is.");
     expect(onCoachMark).toHaveBeenCalledWith('payee_check', true);
     fireEvent.click(screen.getByRole('button', { name: 'Got it' }));
-    expect(onCoachMark).toHaveBeenLastCalledWith('payee_check', false);
+    expect(onCoachMark).toHaveBeenLastCalledWith('payee_check', false, true);
     expect(document.activeElement?.id).toBe('name-check-result-bank');
     cleanup();
     const again = render(<DeviceView {...props('banking', bankMessage({ name: 'R. ••••', name_check: 'mismatch' }), { coachMarks: ['payee_check'] })} />);
@@ -234,6 +234,10 @@ describe('ScenarioView on a payee-check beat', () => {
     fireEvent.click(container.querySelector('[data-action="start_transfer"]') as HTMLElement);
     await waitFor(() => expect(container.querySelector('[data-coach]')).toBeTruthy());
     await waitFor(() => expect(container.textContent).toContain('Paused while the tip is open'));
+    // Follow-up d: the visible label is short (one HUD row at 320 px); the full sentence is for screen readers.
+    const timerEl = container.querySelector('[role="timer"]') as HTMLElement;
+    const shortLabel = [...timerEl.querySelectorAll('span[aria-hidden="true"]')].find((el) => el.textContent === 'Paused: tip open');
+    expect(shortLabel).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Got it' }));
     expect(seen).toHaveBeenCalledWith('payee_check');
     expect(container.querySelector('[data-coach]')).toBeNull();
@@ -249,8 +253,23 @@ describe('ScenarioView on a payee-check beat', () => {
       else fireEvent.click(container.querySelector('[data-action="cancel_call"]') as HTMLElement);
       await waitFor(() => expect(container.querySelector('[data-coach]')).toBeNull());
       expect(container.textContent).not.toContain('Paused while the tip is open');
-      expect(seen).toHaveBeenCalledWith('payee_check');
+      // Engine review follow-up a: only "Got it" records the mark; a tip closed this way comes back.
+      expect(seen).not.toHaveBeenCalled();
       cleanup();
     }
+  });
+  it('a tip closed by a Check comes back on the next payee check (not recorded as seen)', async () => {
+    const seen = vi.fn();
+    const first = render(<ScenarioView scenario={scenario({ ...rawTransfer(), pressure: { timer: true, levers: [] } })} ctx={ctx({ pushers: false })} onDone={() => undefined} coachMarks={[]} onCoachMarkSeen={seen} />);
+    fireEvent.click(first.container.querySelector('[data-action="start_transfer"]') as HTMLElement);
+    await waitFor(() => expect(first.container.querySelector('[data-coach]')).toBeTruthy());
+    fireEvent.click(first.container.querySelector('[data-check="payee.iban"]') as HTMLElement);
+    await waitFor(() => expect(first.container.querySelector('[data-coach]')).toBeNull());
+    cleanup();
+    // The save is unchanged (seen not called), so the next payee check shows the tip again.
+    const next = render(<ScenarioView scenario={scenario({ ...rawTransfer(), pressure: { timer: true, levers: [] } })} ctx={ctx({ pushers: false })} onDone={() => undefined} coachMarks={[]} onCoachMarkSeen={seen} />);
+    fireEvent.click(next.container.querySelector('[data-action="start_transfer"]') as HTMLElement);
+    await waitFor(() => expect(next.container.querySelector('[data-coach]')).toBeTruthy());
+    expect(seen).not.toHaveBeenCalled();
   });
 });

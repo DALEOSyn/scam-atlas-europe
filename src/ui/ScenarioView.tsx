@@ -195,16 +195,20 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
     if (open) announce.polite(2, t('translation_shown'));
   };
 
-  // ---- coach marks (CR-23): the timer is frozen while one is open; once shown it is recorded for the game.
+  // ---- coach marks (CR-23): the timer is frozen while one is open. Only "Got it" records it as seen for the
+  // game; a mark closed by an action or a Check use is hidden for that beat only and comes back on the next
+  // payee check (engine review follow-up a).
   const [coachSeen, setCoachSeen] = useState<readonly string[]>(coachMarks);
   const coachSeenRef = useRef<readonly string[]>(coachMarks);
+  /** `<id>@<beat id>`: marks closed without "Got it", hidden on that beat only. */
+  const [coachHidden, setCoachHidden] = useState<readonly string[]>([]);
   /** The coach mark on screen, if any: any action or Check use closes it and lifts the freeze (sceptic T-3.3). */
   const coachOpen = useRef<string | null>(null);
   const onCoachMark = useCallback(
-    (id: string, open: boolean) => {
+    (id: string, open: boolean, gotIt = false) => {
       runner.freeze('coach_mark', open);
       coachOpen.current = open ? id : coachOpen.current === id ? null : coachOpen.current;
-      if (open || coachSeenRef.current.includes(id)) return;
+      if (!gotIt || coachSeenRef.current.includes(id)) return;
       coachSeenRef.current = [...coachSeenRef.current, id];
       setCoachSeen(coachSeenRef.current);
       onCoachMarkSeen?.(id);
@@ -213,8 +217,13 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
   );
 
   const closeCoach = () => {
-    if (coachOpen.current) onCoachMark(coachOpen.current, false);
+    const id = coachOpen.current;
+    if (!id) return;
+    if (beat) setCoachHidden((x) => [...x, `${id}@${beat.id}`]);
+    onCoachMark(id, false);
   };
+  /** What the device treats as already shown: seen for the game, plus marks closed on this beat. */
+  const deviceCoachMarks = beat ? [...coachSeen, ...coachHidden.filter((k) => k.endsWith(`@${beat.id}`)).map((k) => k.slice(0, k.lastIndexOf('@')))] : coachSeen;
   const doAct = (id: string) => {
     closeCoach();
     runner.act(id);
@@ -538,7 +547,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                 onNameCheck={onNameCheck}
                 onTranslation={onTranslation}
                 alwaysTranslate={alwaysTranslate}
-                coachMarks={coachSeen}
+                coachMarks={deviceCoachMarks}
                 onCoachMark={onCoachMark}
                 call={call}
                 onAnswer={answer}

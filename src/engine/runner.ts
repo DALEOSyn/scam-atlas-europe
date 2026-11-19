@@ -799,6 +799,25 @@ export interface CheckableView {
   tagged: boolean;
 }
 
+/** A beat that speaks with a sender of its own (not a page and not the banking app). */
+function hasSender(b: { device: Device; message: Message }): boolean {
+  return b.device !== 'banking' && !!b.message.sender;
+}
+
+/**
+ * Follow-up c: the beat a page-bound follow-up speaks for. Walks the group's visited beats backwards from
+ * `beatId` (the bound page) and returns the latest one with a sender; undefined when there is none.
+ */
+export function senderBeatBefore(s: Scenario, g: Pick<GroupState, 'visited'>, beatId: string): ReturnType<typeof storyBeat> {
+  const at = g.visited.lastIndexOf(beatId);
+  const before = at < 0 ? g.visited : g.visited.slice(0, at);
+  for (let i = before.length - 1; i >= 0; i--) {
+    const b = storyBeat(s, before[i] ?? '');
+    if (b && hasSender(b)) return b;
+  }
+  return undefined;
+}
+
 export interface PusherMessageView {
   /** Index in the authored list (stable key). */
   index: number;
@@ -922,8 +941,9 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
           const owner = plan[f.index]?.beat;
           const bound = ownsPusher(g, owner) && owner !== undefined ? storyBeat(s, owner) : undefined;
           // A follow-up bound to a banking beat or a page (CR-21) still comes from the person who sent the
-          // message: channel and sender of the group's scheduled beat (sceptic T-3.3).
-          const ob = bound && (bound.device === 'banking' || !bound.message.sender) ? storyBeat(s, g.beatId) : bound;
+          // message: channel and sender of the most recently visited beat of the group that has a sender
+          // (engine review follow-up c), else the group's scheduled beat (sceptic T-3.3).
+          const ob = bound && !hasSender(bound) ? (senderBeatBefore(s, g, bound.id) ?? storyBeat(s, g.beatId)) : bound;
           return m && ob ? [{ index: f.index, text: m.text, at: f.at, lang: m.lang, translation: m.translation, beatId: ob.id, device: ob.device, sender: ob.message.sender?.display ?? '' }] : [];
         })
       : [],

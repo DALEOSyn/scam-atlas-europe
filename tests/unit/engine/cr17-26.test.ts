@@ -15,7 +15,7 @@ import { deriveCheckables } from '../../../src/content/checkables.ts';
 import { chapterSchema, scenarioSchema, type Scenario } from '../../../src/content/schema.ts';
 import { checkablesOf } from '../../../src/engine/inspect.ts';
 import { resultOf } from '../../../src/engine/result.ts';
-import { holdingForTransfer, startScenario, step, transferFloor, viewOf } from '../../../src/engine/runner.ts';
+import { holdingForTransfer, senderBeatBefore, startScenario, step, transferFloor, viewOf } from '../../../src/engine/runner.ts';
 import { classOf, mergeDecision, scoreGroup, starsFor } from '../../../src/engine/scoring.ts';
 import { ROOT, rawFraud, rawGenuine, realRegistries, scenario } from '../../content/fixtures.ts';
 import { act, B, check, ctx, play, run, tag, tick, type Raw } from './helpers.ts';
@@ -432,6 +432,34 @@ describe('review fixes: pushers, waiting beats, follow-up channel', () => {
     expect(p?.device).toBe('email');
     expect(p?.sender).toBe('Solène Arbogast');
   });
+  it('follow-up c: a page-bound follow-up comes from the most recently visited beat with a sender', () => {
+    const raw = rawFraud();
+    (raw.actions as Raw[])[0] = { id: 'tap_link', label: 'Open the link', kind: 'open_link', next_beat: 'chat', pressure_target: true };
+    raw.beats = [
+      {
+        id: 'chat',
+        device: 'messenger',
+        message: { sender: { display: 'Trundle help desk', detail: 'help@trundle-zoll.example' }, body: 'Hi! Pay the fee on our page.', request: 'pay' },
+        inspectables: [{ target: 'sender.detail', reveal: 'Not Trundle.', red_flag: true }],
+        actions: [
+          { id: 'open_page', label: 'Open their page', kind: 'open_link', next_beat: 'fee_page', pressure_target: true },
+          { id: 'leave_chat', label: 'Leave the chat', kind: 'ignore', outcome: 'left' },
+        ],
+      },
+      ...(raw.beats as Raw[]),
+    ];
+    raw.pressure = { timer: false, levers: [], pusher: { messages: [{ at_seconds: 5, text: 'Paid yet?', beat: 'fee_page' }] } };
+    const s = scenario(raw);
+    const c = ctx({ timerMode: 'off' });
+    const st = run(s, c, [act('tap_link'), act('open_page'), tick(6)]);
+    const [p] = viewOf(s, c, st).pusherMessages;
+    expect(p?.text).toBe('Paid yet?');
+    expect(p?.device).toBe('messenger');
+    expect(p?.sender).toBe('Trundle help desk');
+    expect(p?.beatId).toBe('chat');
+    // Fallback: nothing visited with a sender before the page → the group's scheduled beat.
+    expect(senderBeatBefore(s, { visited: ['fee_page'] }, 'fee_page')).toBeUndefined();
+  });
   it('#3 the validator: a follow-up bound to a banking beat or a page must resolve to a chat sender', () => {
     const ok = rawFraud();
     ok.pressure = { timer: false, levers: [], pusher: { messages: [{ at_seconds: 5, text: 'Still there?', beat: 'fee_page' }] } };
@@ -516,6 +544,14 @@ describe('review fixes: schema (#5, #17) and SVG safety (#4)', () => {
     expect(msgs).toMatch(/links outside the file/);
     expect(msgs).toMatch(/url\(\) outside the file/);
     expect(svgSafetyIssues(bad).filter((i) => i.match.includes('#ok'))).toEqual([]);
+  });
+  it('follow-up b: svgSafetyIssues rejects <!DOCTYPE, <!ENTITY and @import', () => {
+    const bad = '<!DOCTYPE svg [<!ENTITY t "x">]><svg><style>@import "other.css";</style></svg>';
+    const msgs = svgSafetyIssues(bad).map((i) => i.message).join('\n');
+    expect(msgs).toMatch(/DOCTYPE/);
+    expect(msgs).toMatch(/ENTITY/);
+    expect(msgs).toMatch(/@import/);
+    expect(svgSafetyIssues('<svg><style>.x{display:none}</style></svg>')).toEqual([]);
   });
   it('#4 redline:lint fails on an embedded raster in any SVG under public/, and the shipped SVGs are clean', () => {
     const cfg = loadConfig();

@@ -633,7 +633,8 @@ export function nameCheckResultId(beatId: string): string {
 /**
  * A coach mark (UI_SPEC §4.5): a skippable note that never blocks the tray. While it is open the timer
  * is frozen (freeze reason `coach_mark`, GDD §8, CR-23). It closes on "Got it", on any card action and on
- * any use of the Check tool (ScenarioView closes it there); "Got it" returns focus to `returnTo`.
+ * any use of the Check tool (ScenarioView closes it there); "Got it" returns focus to `returnTo`. Only
+ * "Got it" records it as seen; a mark closed any other way comes back on the next payee check.
  */
 function CoachMark({ id, text, onCoachMark, returnTo }: { id: string; text: string; onCoachMark: DeviceProps['onCoachMark']; returnTo: () => void }) {
   // Layout effect: the freeze starts in the same commit that shows the mark, before any click can land.
@@ -654,7 +655,7 @@ function CoachMark({ id, text, onCoachMark, returnTo }: { id: string; text: stri
         onClick={() => {
           // Focus first: the button unmounts when the mark closes, and focus must not fall to <body>.
           returnTo();
-          onCoachMark(id, false);
+          onCoachMark(id, false, true);
         }}
       >
         {t('coach_got_it')}

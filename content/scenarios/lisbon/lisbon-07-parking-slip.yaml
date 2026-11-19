@@ -23,7 +23,7 @@ message:
   body: "Zona 3 · AA-••-12 · 14:22. Estacionamento não pago. Pague €12,00 em 24 horas para evitar uma sobretaxa de €60. Digitalize para pagar."
   lang: pt-PT
   translation: "Zone 3 · AA-••-12 · 14:22. Unpaid parking. Pay €12.00 within 24 hours to avoid a €60 surcharge. Scan to pay."
-  qr: { payload: /qr/lisbon-parking-slip, destination: zonelet-multas.example, caption: "Printed on the slip" }
+  qr: { payload: /qr/lisbon-parking-slip, destination: zonelet-multas.example, caption: "Printed on the slip", mount: printed }
   request: scan_qr
   references: ["Zona 3 · AA-••-12 · 14:22"]
   claims: [{ text: "para evitar uma sobretaxa de €60", translation: "to avoid a €60 surcharge" }]

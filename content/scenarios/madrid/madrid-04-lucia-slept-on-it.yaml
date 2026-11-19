@@ -1,0 +1,84 @@
+# 4-4 Drill: Lucía slept on it (GDD §24.4; bank-safe-account-call). Unscored. Lucía, from her saved
+# Kettle contact, shares a text that landed overnight in HER real Larchwick thread. She followed her rule
+# (nothing big until she's slept) and now asks what you'd check. Each pick gets a Lucía reply; no stars.
+# The quote sits inside her genuine message (context: quoted). Quoted red flag: the number in the text
+# (not the one on her card). Quoted decoy: the LARCHWICK sender in her real thread (M1; a quoted sender
+# isn't its own checkable, so it is the quote's reference). Drill tags never count.
+# The third pick is gentle: Lucía does the right thing anyway (psych: she is capable).
+id: madrid-04-lucia-slept-on-it
+chapter: madrid
+role: drill
+pattern: bank-safe-account-call
+learning_objectives: [LO-18, LO-01, LO-04]
+difficulty: 2
+is_fraud: false
+device: messenger
+brands: [kettle, larchwick]
+cast: [lucia]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Lucía (Madrid)", detail: "Saved contact: Lucía (Madrid)" }
+  from_cast: lucia
+  body: |
+    Just woke up. This came in overnight, in my real Larchwick chat. My rule: nothing big till I've slept. Slept now 😄 What would you check?
+
+    LARCHWICK: New sign-in to your account from a new device. Not you? Call us immediately on 9•• ••• •52.
+  request: reply
+  references: ["Sender LARCHWICK, in her Larchwick chat"]
+  phone_numbers: ["9•• ••• •52"]
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: Lucía's saved contact, in your usual chat with her. That isn't proof on its own, so weigh it with what she asks for: what you'd check, not money or a code."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: reference
+    reveal: "In Lucía's quote: LARCHWICK, in her real Larchwick thread, as a real text would be. A sender name can be faked so a text lands in the real thread, so it can't prove anything either way."
+    red_flag: false
+    type: sender
+    context: quoted
+  - target: phone_number
+    reveal: "In Lucía's quote: 9•• ••• •52, a number given in the text. It isn't the number on her card. Calling it reaches whoever sent the text."
+    red_flag: true
+    type: phone_number
+    context: quoted
+
+actions:
+  - id: say_open_app
+    label: "Don't call it. Open your Larchwick app yourself."
+    kind: proceed
+    outcome: lucia_app_checked
+    pressure_target: true
+  - id: say_call_card
+    label: "Call the number on your card."
+    kind: proceed
+    outcome: lucia_card_line
+  - id: say_call_text_number
+    label: "Call it: it's your bank's chat"
+    kind: reply
+    outcome: lucia_uses_card_anyway
+
+outcomes:
+  lucia_app_checked:
+    narrative: "Lucía: \"App says no new sign-in. Phew. Deleting it.\""
+  lucia_card_line:
+    narrative: "Lucía: \"Card line says no new sign-in. And to reach them, it's the number on my card or the one in the app, never one a text gives me.\""
+  lucia_uses_card_anyway:
+    narrative: "Lucía: \"Hmm. Texts can land in the real chat, can't they? I'll use the number on my card instead.\""
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Real bank chat, but not her card's number."
+    what_works: "Her rule worked: pause, then check in the app yourself."
+  layer2:
+    message_flags: []
+    notes: "Pausing is allowed. A real problem still shows when you open the app yourself or call the number on your card."
+  device_tip: "On a real phone, open your bank's app from your home screen, not from a text, and look for the sign-in or payment there."
+  habit_card: pressure-is-the-tell
+  already_clicked:
+    clicked: "Called a number a text gave you? Hang up and call the number on your card."
+    headings: { clicked: "Called the number they gave" }   # CR-45: the auto heading ("Clicked the link") fits no Madrid drill pick
+  sources: [es-incibe-smishing-bank-callback-2025, es-bde-sms-callerid-spoofing-2022]

@@ -89,6 +89,17 @@ steps:
   - id: wait_until_after_long_weekend
     label: "Wait until the office reopens after the long weekend"
     feedback: "Waiting for the office to reopen feels sensible, but the sooner you call, the better the chance of getting a transfer back. Call the bank now."
+  # Madrid (GDD §24.10, T-3.6). Labels stay generic: real bodies are named only on the Spain help card.
+  - id: keep_call_evidence
+    label: "Keep screenshots of the texts, the call log and the times"
+  - id: report_police_copy_to_bank
+    label: "Make a police report and give your bank a copy"
+  - id: call_back_caller_number
+    label: "Call back the number that called you and ask them to send it back"
+    feedback: "Wanting to fix it fast is natural, but the number that called you can be faked, so you can't tell whose line you'd reach. Call the number on your card instead."
+  - id: call_back_text_number
+    label: "Call the number from the text again and ask them to send it back"
+    feedback: "Wanting to fix it fast is natural, but that number came with the fake text, so it reaches whoever sent it. Call the number on your card instead."
   # Warsaw (GDD §25.9, T-3.7). Labels stay generic: real bodies are named only on the Poland help card.
   - id: report_buyer_in_app
     label: "Report the buyer with the app's own report button"
@@ -103,17 +114,9 @@ steps:
   - id: send_code_to_cancel
     label: "Send another code to cancel the payment"
     feedback: "A code only ever makes a payment; it can't cancel one. Call your bank on the number on your card instead."
-  # Rome (GDD §26.10, T-3.8). keep_call_evidence, call_back_caller_number and call_back_text_number are Madrid's steps (GDD §24.10,
-  # T-3.6), added here word for word because Rome may land first; keep one copy when both branches merge.
+  # Rome (GDD §26.10, T-3.8). Rome also uses Madrid's keep_call_evidence, call_back_caller_number and
+  # call_back_text_number (GDD §24.10, above); one copy kept at the merge.
   # Labels stay generic: real bodies are named only on the Italy help card.
-  - id: keep_call_evidence
-    label: "Keep screenshots of the texts, the call log and the times"
-  - id: call_back_caller_number
-    label: "Call back the number that called you and ask them to send it back"
-    feedback: "Wanting to fix it fast is natural, but the number that called you can be faked, so you can't tell whose line you'd reach. Call the number on your card instead."
-  - id: call_back_text_number
-    label: "Call the number from the text again and ask them to send it back"
-    feedback: "Wanting to fix it fast is natural, but that number came with the fake text, so it reaches whoever sent it. Call the number on your card instead."
   - id: report_number_in_app
     label: "Block and report the number in Kettle"
   # Lisbon (GDD §27.10). `report_sticker` is common sense (no PT source, QRP §5.4).

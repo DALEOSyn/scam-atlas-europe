@@ -1,0 +1,34 @@
+# Chapter 4 — Madrid. GDD §24. Slot 4, difficulty 2–4, boss 4. 8 scored scenarios (3 genuine = 37.5%),
+# plus 1 drill (4-4, Lucía) and 1 arc beat (Alex; the engine plays arc slot N by play position, STORY §1.4).
+# Habit: "No real bank asks you to move your money to keep it safe. Hang up, and call the number on your card."
+# New pattern: bank-safe-account-call (4-2 genuine twin, 4-3, 4-5, 4-8, boss). Callback:
+# multichannel-support-callback (4-7; 4-6 is its genuine twin). Off-focus genuine: 4-1 (Andrés).
+# Mix (GDD §24.1): truth G G F · F G F F F(boss) (max 3 in a row); themes home 4-1; bank-call 4-2, 4-5,
+# 4-7, boss; bank-text 4-3, 4-6, 4-8 (never adjacent); pressure parity genuine 2/3 (4-2, 4-6) vs fraud 4/5
+# (4-3, 4-5, 4-7, boss); genuine at difficulty 2, 3 and 4; sender-or-link decoys in 4-3, 4-5, 4-7, 4-8, boss.
+# Stop point after 4-3 (am/pm split). The arc beat sits between 4-7 and 4-8.
+# Story scenes (GDD §24.2, STORY §3.4: madrid-arrival, madrid-turn, madrid-resolution, variant flag
+# madrid_money_moved set by the boss's fall outcomes) come in a separate ticket; add
+# `scenes: { arrival: madrid-arrival, turn: madrid-turn, resolution: madrid-resolution }` with them.
+# Help card: "Where to report and get help" (Spain), wording in the Madrid sources page in docs/patterns
+# ("Spain help card"); real bodies are named only there and on the help screen (Red Line 1). It never
+# mentions the sender register (ruling M5 / R10: that line is in 4-3 layer 2 only).
+# No content note (ruling R11).
+slot: 4
+city: madrid
+name: "Madrid"
+status: complete
+patterns: [bank-safe-account-call]
+callbacks: [multichannel-support-callback]
+lo_focus: [LO-01, LO-02, LO-03, LO-04, LO-05, LO-08, LO-14, LO-16, LO-17, LO-18]
+scenario_order:
+  am: [madrid-01-dinner-at-nine, madrid-02-real-card-call, madrid-03-text-in-the-thread]
+  pm: [madrid-04-lucia-slept-on-it, madrid-05-reserve-account-call, madrid-06-real-code-for-you, madrid-07-cancellation-code, madrid-arc-alex-04, madrid-08-card-paused-link, madrid-09-boss-reserve]
+boss: madrid-09-boss-reserve
+arc_beat: madrid-arc-alex-04
+intro: "Madrid: you're staying in Lucía and Andrés's spare room while you write the Madrid page of the Atlas. Your travel allowance has just landed in your Larchwick account, so this week your phone is your wallet."
+rules:
+  title: "On the back of your Larchwick card"
+  items:
+    - "Questions about your account? Call us on 9•• ••• •00 or open the Larchwick app."
+atlas_cards: [hang-up-call-back, who-really-sent, pressure-is-the-tell]

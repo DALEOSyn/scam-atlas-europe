@@ -208,6 +208,13 @@ const HEADINGS: Record<string, Partial<Record<'clicked' | 'entered_details' | 's
   'lisbon-07-parking-slip': { clicked: "Scanned the QR code", entered_details: "Entered your details" },
   'lisbon-09-boss-thursday-flat': { entered_details: "Entered your details", paid: "Paid or gave card details" },
   'lisbon-arc-alex-07': { clicked: "Replied, moved to another app or kept a secret", paid: "Sent money" },
+  'madrid-03-text-in-the-thread': { clicked: "Called the number they gave", paid: "Moved your money" }, // paid authored (QA re-check)
+  'madrid-04-lucia-slept-on-it': { clicked: "Called the number they gave" }, // authored (auto: "Clicked the link")
+  'madrid-05-reserve-account-call': { clicked: "Followed the caller's steps", paid: "Moved your money" }, // both authored (clicked as Rome 6-4)
+  'madrid-07-cancellation-code': { shared_code: "Shared a code or approved a request" },
+  'madrid-08-card-paused-link': { clicked: "Clicked the link", entered_details: "Entered your details" },
+  'madrid-09-boss-reserve': { clicked: "Called the number they gave", paid: "Moved your money" }, // both authored (beat 1's call-and-follow is a pay)
+  'madrid-arc-alex-04': { clicked: "Replied, moved to another app or kept a secret", paid: "Sent money" },
   'paris-02-ceo-lookalike': { paid: "Paid or gave card details" },
   'paris-03-ines-plumber-rib': { paid: "Paid or gave card details" },
   'paris-05-salary-change': { entered_details: "Entered your details" },
@@ -335,10 +342,10 @@ describe('shipped content (after merging CR-36…44, Rome, Lisbon, Stockholm and
   const shipped = cities.flatMap((c) => readdirSync(join(ROOT, 'content', 'scenarios', c)).filter((f) => f.endsWith('.yaml')).map((f) => content(`${c}/${f}`)));
   const slotOf = new Map(readdirSync(join(ROOT, 'content', 'chapters')).map((f) => [f.replace(/\.yaml$/, ''), chapterSchema.parse(readYaml(join(ROOT, 'content', 'chapters', f))).slot]));
 
-  it('call beats: only Rome 6-7 officer_line and Stockholm 9-2 security_line are dialled; every other call (incl. CR-36 voice calls) rings', () => {
+  it('call beats: only Madrid 4-3 security_line, Rome 6-7 officer_line and Stockholm 9-2 security_line are dialled; every other call (incl. CR-36 voice calls) rings', () => {
     const dirs = shipped.flatMap((s) => s.beats.filter((b) => b.device === 'call').map((b) => `${s.id}/${b.id}:${callDirectionOf(s, b.id)}`));
-    // Both are reached only by "Call the number" in a text (call_number_in_message).
-    expect(dirs.filter((d) => d.endsWith(':outgoing')).sort()).toEqual(['rome-07-police-text/officer_line:outgoing', 'stockholm-02-pending-payment/security_line:outgoing']);
+    // All three are reached only by "Call the number" in a text (call_number_in_message).
+    expect(dirs.filter((d) => d.endsWith(':outgoing')).sort()).toEqual(['madrid-03-text-in-the-thread/security_line:outgoing', 'rome-07-police-text/officer_line:outgoing', 'stockholm-02-pending-payment/security_line:outgoing']);
     expect(dirs.length).toBeGreaterThan(5);
   });
 
@@ -361,6 +368,8 @@ describe('shipped content (after merging CR-36…44, Rome, Lisbon, Stockholm and
     'home-03-password-reset': [1, 5], // slot 0 grace: "Close the page" scores ★, 5
     'lisbon-01-graca-studio': [0, 0], // R21: was ★, 5
     'lisbon-05-printed-meter': [2, 10],
+    'madrid-02-real-card-call': [2, 10], // low stakes: as "Leave it there"
+    'madrid-06-real-code-for-you': [0, 0], // R21 via psych M1: the one-action opener has no dismiss, so the code text's "Leave it, buy the adapter later" counts
     'paris-01-rent-close-match': [0, 0], // R21: was ★, 5
     'paris-06-solene-urgent': [0, 0], // R21: was ★, 5
     'rome-01-breakfast-till-ten': [2, 10],

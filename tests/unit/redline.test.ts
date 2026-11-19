@@ -393,7 +393,9 @@ describe('T-1.8: brand registry and balance tables are linted', () => {
     expect(lintPaths(files, cfg)).toEqual([]);
     const scanned = lintPaths([resolve(ROOT, 'content')], cfg);
     expect(scanned).toEqual([]);
-  });
+    // Scans the whole content folder, like the real-content test above: 90 s budget until CR-47 speeds the linter up.
+    // The assertion is unchanged.
+  }, 90_000);
 
   it('review-only fields may name real brands', () => {
     expect(lintBrands('')).toEqual([]);

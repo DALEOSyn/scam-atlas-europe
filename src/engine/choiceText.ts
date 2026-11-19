@@ -46,7 +46,7 @@ export function overCautionOf(cls: ActionClass, truth: Truth, playerStarted: boo
 }
 
 export function choiceLineText(c: ChoiceLine, msg: CatalogueLookup): string {
-  if (c.kind === 'timer') return format(msg('you_chose_timer') ?? '');
+  if (c.kind === 'timer') return format((c.genuine ? msg('you_chose_timer_genuine') : undefined) ?? msg('you_chose_timer') ?? '');
   if (c.kind === 'over_caution') {
     const own = msg(OVER_CAUTION_KEYS[c.which]);
     if (own) return format(own);

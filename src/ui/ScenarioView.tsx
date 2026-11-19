@@ -309,8 +309,14 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
   const closeSettings = useCallback(() => {
     setSettingsOpen(false);
     runner.freeze('settings', false);
+    // Opened from the HUD menu, whose item is hidden once the menu closes: return to the Menu button.
     const el = settingsReturn.current;
-    if (el) setTimeout(() => (el.isConnected ? el.focus() : deviceHeadingRef.current?.focus()), 0);
+    setTimeout(() => {
+      const menu = document.querySelector<HTMLElement>('[data-hud="menu"]');
+      const usable = !!el && el.isConnected && !el.closest('[hidden], [inert]');
+      const target = usable ? el : (menu ?? deviceHeadingRef.current);
+      target?.focus();
+    }, 0);
   }, [runner.freeze]);
 
   // ---- "Jump to your options" (QA M6): a sticky bar at the bottom of the screen on phones while the

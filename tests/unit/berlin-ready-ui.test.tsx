@@ -178,7 +178,9 @@ describe('M1/M3/M4: interrupts', () => {
     render(<ScenarioView scenario={s} ctx={ctx({ timerMode: 'off' })} onDone={() => undefined} settings={freshSave().settings} onSettings={onSettings} />);
     fireEvent.click(screen.getByRole('button', { name: 'Menu' }));
     await flush(async () => {
-      fireEvent.click(screen.getByRole('button', { name: 'Settings' }));
+      const item = screen.getByRole('button', { name: 'Settings' });
+      item.focus(); // a real click focuses the menu item
+      fireEvent.click(item);
     });
     const dialog = screen.getByRole('dialog', { name: 'Settings' });
     expect(document.activeElement?.id).toBe('settings-h');
@@ -193,6 +195,11 @@ describe('M1/M3/M4: interrupts', () => {
       fireEvent.keyDown(document, { key: 'Escape' });
     });
     expect(screen.queryByRole('dialog', { name: 'Settings' })).toBeNull();
+    // The menu item that opened it is gone: focus returns to the Menu button, never to <body>.
+    await flush(async () => {
+      vi.advanceTimersByTime(1);
+    });
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Menu' }));
   });
 });
 

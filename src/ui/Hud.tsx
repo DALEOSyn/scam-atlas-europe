@@ -99,7 +99,7 @@ export function Hud({ view, progress, chip, timersOff, onPause, menu }: { view: 
         <span class={styles.label}>{view.pause.available ? (overwhelmed ? t('pause_breath') : t('pause')) : t('pause_cooldown', { seconds: Math.ceil(view.pause.cooldownLeft) })}</span>
       </button>
       <div class={styles.menuWrap} ref={menuRef}>
-        <button type="button" class={styles.button} aria-expanded={open} aria-controls="hud-menu" onClick={() => toggle(!open)}>
+        <button type="button" class={styles.button} aria-expanded={open} aria-controls="hud-menu" data-hud="menu" onClick={() => toggle(!open)}>
           <Icon name="menu" />
           <span class={styles.label}>{t('menu')}</span>
         </button>

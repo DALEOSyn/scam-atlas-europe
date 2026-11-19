@@ -1,0 +1,22 @@
+# Rome placed beat (GDD §26.2 beat 3, STORY §3.6; worried → relieved; sensitive): after drill 6-6, so the
+# impersonated person is shown safe straight after the fall (STORY §5.7). Giulia appears only in a video
+# frame. Bruna leads, Davide drawn beside her (R-S3). True in every branch: the drill always ends with
+# Davide having called his bank. No amount, no number, no account (STORY §4.2 rule 1).
+id: rome-giulia-safe
+chapter: rome
+slot: beat
+title: "Giulia's safe"
+sensitive: true
+panels:
+  - video: true
+    speaker: giulia
+    expression: laughing
+    line: "I was in a lecture the whole time! Phone on silent."
+    alt: "Giulia on a video call, laughing, relieved to see everyone."
+  - backdrop: rome-bnb
+    crop: centre
+    speaker: bruna
+    expression: calm
+    with: { id: davide, expression: calm }
+    line: "Everyone's safe. The bank first, then the rest."
+    alt: "Bruna, calm, at the courtyard table; Davide sits beside her, calm."

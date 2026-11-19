@@ -1,0 +1,59 @@
+# Rome resolution (GDD §26.2 beat 4, STORY §3.6; relieved; sensitive): after the boss debrief.
+# Variant rome_bank_called (story-only, set by every boss fall outcome; R17 approach): the first panel of the
+# resolution (a boss-fall variant always opens the resolution, STORY §4.2 rule 5; R-M1). No refund promise.
+# Order with it: variant, police story, Davide, Bruna, Teo, If-then (six panels, the cap); five without it.
+# Bruna's past-tense police story is told after every Rome police debrief (STORY §4.2 rule 7).
+# Davide falls and is never mocked: Bruna takes the blame off him in the next panel (STORY §5.4). "We called
+# the bank straight away" is true in every branch (drill 6-6 always ends with his bank called).
+# Teo on video proposes the code word: an extra, never the main check (GDD §26.1, RM7); the If-then line
+# says "call their known number" first.
+# If-then (Davide, phone at the ear: calling the known number), word for word from STORY §3.6, with the
+# extra line under it. Map invitation (Bruna, STORY §3.6) is not built yet (ENGINE "Not in S3").
+id: rome-resolution
+chapter: rome
+slot: resolution
+sensitive: true
+panels:
+  - backdrop: rome-bnb
+    crop: centre
+    speaker: bruna
+    expression: calm
+    if_flag: rome_bank_called
+    line: "The bank was called straight away, the right first step. We'll see what it can do."
+    alt: "Bruna, calm, at the courtyard table in the evening light."
+  - backdrop: rome-bnb
+    crop: centre
+    speaker: bruna
+    expression: calm
+    caption: "Evening, under the lemon tree."
+    line: "A caller once said he was police. I said I'd ring the station myself. He hung up first."
+    alt: "Bruna, calm, at the courtyard table with two cups."
+  - backdrop: rome-bnb
+    crop: left
+    speaker: davide
+    expression: sheepish
+    line: "It sounded exactly like Giulia. I didn't even think."
+    alt: "Davide with a sheepish smile by the lemon tree."
+  - backdrop: rome-bnb
+    crop: left
+    speaker: bruna
+    expression: calm
+    flip: true
+    with: { id: davide, expression: calm }
+    line: "Of course not. They made it sound like her. That's the trick, not you. We called the bank straight away."
+    alt: "Bruna, calm, by the lemon tree; Davide listens, calm."
+  - video: true
+    speaker: teo
+    expression: warm
+    line: "Let's have a family code word for calls and voice messages. Both families. And it stays in the family."
+    alt: "Teo on a video call, smiling warmly."
+  - backdrop: rome-bnb
+    crop: right
+    speaker: davide
+    expression: calm-phone-ear
+    flip: true
+    if_then:
+      cue: "If someone I love asks for money by call, voice note or new number,"
+      action: "then I call their known number and ask for our word."
+      extra: "A voice can be copied. Calling the number you have reaches the real person."
+    alt: "Davide, calm, phone to his ear, in the B&B courtyard."

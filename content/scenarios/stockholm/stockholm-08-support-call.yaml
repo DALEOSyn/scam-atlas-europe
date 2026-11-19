@@ -143,4 +143,5 @@ debrief:
   habit_card: nobody-needs-your-screen
   already_clicked:
     clicked: "Installed something for them? Turn on airplane mode, call your bank from another phone if you can, change your passwords from another device, and get the device checked."
+    headings: { clicked: "Installed something for them" }
   sources: [eu-esas-ai-scams-factsheet-sv, se-konsumentverket-investment-fraud, eu-europol-iocta-2026]

@@ -17,6 +17,7 @@ import { expiryDismissOf } from '../../../src/engine/result.ts';
 import { clickedViaOf } from '../../../src/engine/recovery.ts';
 import { viewOf } from '../../../src/engine/runner.ts';
 import { classOf, scoreGroup } from '../../../src/engine/scoring.ts';
+import { alreadyHeading } from '../../../src/ui/DebriefView.tsx';
 import { logAnnouncement } from '../../../src/ui/ScenarioView.tsx';
 import { ROOT, rawFraud, rawGenuine, realRegistries, scenario } from '../../content/fixtures.ts';
 import { act, B, ctx, play, run, tick, type Raw } from './helpers.ts';
@@ -157,6 +158,120 @@ describe('item 5: "If you already…" sub-headings', () => {
     ((r.debrief as Raw).already_clicked as Raw).headings = { shared_code: 'Read out a code' };
     expect(errors(r).join('\n')).toMatch(/a heading for "shared_code" needs already_clicked.shared_code/);
     expect(errors(rawFraud())).toEqual([]);
+  });
+});
+
+/**
+ * CR-45 round 3 (QA B2): the "If you already…" sub-heading of every shipped scenario with already-clicked advice,
+ * one row per scenario, each authored situation with the heading shown over it (the authored heading, else the
+ * game's; arc beats keep the arc wording). Pinned so reviewers can read the whole table and see any change.
+ */
+const HEADINGS: Record<string, Partial<Record<'clicked' | 'entered_details' | 'shared_code' | 'paid', string>>> = {
+  'amsterdam-02-id-photo': { entered_details: "Entered your details" },
+  'amsterdam-03-noor-new-number': { paid: "Paid or gave card details" },
+  'amsterdam-04-noor-lock-down': { paid: "Paid or gave card details" },
+  'amsterdam-07-easy-work': { clicked: "Opened, called or replied", paid: "Paid or gave card details" },
+  'amsterdam-08-jonas-rent': { paid: "Paid or gave card details" },
+  'amsterdam-09-boss-last-evening': { clicked: "Clicked the link", paid: "Paid or gave card details" },
+  'amsterdam-arc-alex-02': { clicked: "Replied, moved to another app or kept a secret" },
+  'berlin-03-address-incomplete': { clicked: "Clicked the link", entered_details: "Entered your details", paid: "Paid or gave card details" },
+  'berlin-04-teo-customs': { clicked: "Clicked the link", paid: "Paid or gave card details" },
+  'berlin-05-kettle-code': { shared_code: "Shared a code or approved a request" },
+  'berlin-07-customs-fee': { clicked: "Clicked the link", paid: "Paid or gave card details" },
+  'berlin-08-payment-failed-lookalike': { clicked: "Clicked the link", entered_details: "Entered your details" },
+  'berlin-09-boss-fraud-team': { clicked: "Clicked the link", shared_code: "Shared a code or approved a request", paid: "Paid or gave card details" },
+  'berlin-arc-alex-01': { clicked: "Replied, moved to another app or kept a secret" },
+  'dublin-02-presenter-ad': { clicked: "Clicked the link", entered_details: "Entered your details" },
+  'dublin-03-recovery-offer': { clicked: "Clicked the link", entered_details: "Entered your details", paid: "Paid or gave card details" },
+  'dublin-04-declan-two-ads': { paid: "Paid or gave card details" },
+  'dublin-06-rating-tasks': { clicked: "Replied", paid: "Paid or gave card details" },
+  'dublin-07-adviser-call': { entered_details: "Entered your details" },
+  'dublin-09-boss-clone-bond': { entered_details: "Entered your details", paid: "Paid or gave card details" },
+  'dublin-arc-alex-08': { paid: "Sent money" },
+  'home-02-mailbox-full': { clicked: "Clicked the link", entered_details: "Entered your details" },
+  'home-04-kettle-locked': { clicked: "Clicked the link", shared_code: "Shared a code or approved a request" },
+  'home-05-teo-prize': { paid: "Paid or gave card details" },
+  'home-06-boss-new-portal': { clicked: "Clicked the link", entered_details: "Entered your details", shared_code: "Shared a code or approved a request" },
+  'lisbon-02-meter-sticker': { clicked: "Scanned the QR code", entered_details: "Entered your details" },
+  'lisbon-03-alfama-ad': { clicked: "Clicked the link", entered_details: "Entered your details" },
+  'lisbon-04-beatriz-two-rooms': { paid: "Paid or gave card details" },
+  'lisbon-06-host-partner-page': { clicked: "Clicked the link", entered_details: "Entered your details" },
+  'lisbon-07-parking-slip': { clicked: "Scanned the QR code", entered_details: "Entered your details" },
+  'lisbon-09-boss-thursday-flat': { entered_details: "Entered your details", paid: "Paid or gave card details" },
+  'lisbon-arc-alex-07': { clicked: "Replied, moved to another app or kept a secret", paid: "Sent money" },
+  'paris-02-ceo-lookalike': { paid: "Paid or gave card details" },
+  'paris-03-ines-plumber-rib': { paid: "Paid or gave card details" },
+  'paris-05-salary-change': { entered_details: "Entered your details" },
+  'paris-07-agency-new-account': { paid: "Paid or gave card details" },
+  'paris-08-supplier-thread-match': { paid: "Paid or gave card details" },
+  'paris-09-boss-pont': { paid: "Paid or gave card details" },
+  'paris-arc-alex-03': { clicked: "Replied, moved to another app or kept a secret" },
+  'rome-03-police-card-call': { entered_details: "Entered your details" },
+  'rome-04-grandpa-new-number': { clicked: "Followed the caller's steps", paid: "Paid or gave card details" },
+  'rome-06-davide-paid': { paid: "Paid or gave card details" },
+  'rome-07-police-text': { clicked: "Called the number they gave", shared_code: "Shared a code or approved a request" },
+  'rome-08-new-number-davide': { paid: "Paid or gave card details" },
+  'rome-09-boss-investigation': { entered_details: "Entered your details", shared_code: "Shared a code or approved a request", paid: "Paid or gave card details" },
+  'rome-arc-alex-06': { paid: "Sent money" },
+  'stockholm-02-pending-payment': { shared_code: "Shared a code or approved a request" },
+  'stockholm-04-jamal-police-call': { shared_code: "Shared a code or approved a request" },
+  'stockholm-05-loan-call': { shared_code: "Shared a code or approved a request" },
+  'stockholm-06-buyer-qr': { shared_code: "Shared a code or approved a request" },
+  'stockholm-08-support-call': { clicked: "Installed something for them" },
+  'stockholm-09-boss-case-file': { shared_code: "Shared a code or approved a request" },
+  'stockholm-arc-alex-09': { paid: "Sent money" },
+  'warsaw-02-vote-for-the-band': { clicked: "Clicked the link", entered_details: "Entered your details" },
+  'warsaw-03-collect-your-payment': { clicked: "Clicked the link", entered_details: "Entered your details" },
+  'warsaw-05-card-photo-in-app': { entered_details: "Entered your details" },
+  'warsaw-06-kasia-payment-code': { shared_code: "Shared a code or approved a request" },
+  'warsaw-07-mateus-asks': { shared_code: "Shared a code or approved a request" },
+  'warsaw-09-boss-stove': { entered_details: "Entered your details" },
+  'warsaw-arc-alex-05': { paid: "Sent money" },
+};
+
+describe('item 5: every shipped "If you already…" heading (QA B2 table)', () => {
+  const SCEN = join(ROOT, 'content', 'scenarios');
+  const shipped = readdirSync(SCEN)
+    .sort()
+    .flatMap((city) =>
+      readdirSync(join(SCEN, city))
+        .filter((f) => f.endsWith('.yaml'))
+        .sort()
+        .map((f) => scenarioSchema.parse(readYaml(join(SCEN, city, f)))),
+    );
+  const actual = Object.fromEntries(
+    shipped.flatMap((s) => {
+      const ac = s.debrief.already_clicked;
+      if (!ac) return [];
+      const via = clickedViaOf(s);
+      const row = Object.fromEntries((['clicked', 'entered_details', 'shared_code', 'paid'] as const).flatMap((k) => (ac[k] ? [[k, alreadyHeading(k, ac, s.debrief.variant === 'arc', via)]] : [])));
+      return [[s.id, row]];
+    }),
+  );
+  it('the table matches the shipped content', () => {
+    expect(actual).toEqual(HEADINGS);
+  });
+  it('the cases QA named: a link payment is the click; What-now "Call back this number" and a reply to Teo are not', () => {
+    // Berlin 1-4: the reply goes to Teo (genuine); the click is the link in his screenshot.
+    expect(HEADINGS['berlin-04-teo-customs']?.clicked).toBe('Clicked the link');
+    // Berlin 1-9 boss and the Amsterdam boss: "Pay … through the link"; the What-now "Call back this number" is after the call.
+    expect(HEADINGS['berlin-09-boss-fraud-team']?.clicked).toBe('Clicked the link');
+    expect(HEADINGS['amsterdam-09-boss-last-evening']?.clicked).toBe('Clicked the link');
+    // Still right: Rome 6-7 dials the text's number; Lisbon 7-2 scans the sticker.
+    expect(HEADINGS['rome-07-police-text']?.clicked).toBe('Called the number they gave');
+    expect(HEADINGS['lisbon-02-meter-sticker']?.clicked).toBe('Scanned the QR code');
+    expect(clickedViaOf(content('berlin/berlin-09-boss-fraud-team.yaml'))).toBe('link');
+    expect(clickedViaOf(content('rome/rome-07-police-text.yaml'))).toBe('call');
+  });
+  it('replies count only on fraud scenarios; What-now extras never count', () => {
+    const r = clone(raw('cr45-dialled-call.yaml'));
+    (r.actions as Raw[]).push({ id: 'say_hi', label: 'Reply hi', kind: 'reply', outcome: 'text_reported' });
+    expect(clickedViaOf(scenarioSchema.parse(r))).toBe('mixed');
+    expect(clickedViaOf({ ...scenarioSchema.parse(r), is_fraud: false })).toBe('call');
+    const noDial = scenarioSchema.parse(r);
+    const onlyExtra = { ...noDial, actions: noDial.actions.filter((a) => a.kind !== 'call_number_in_message' && a.kind !== 'reply'), beats: [] };
+    const withExtra = { ...onlyExtra, what_now: { extra: [{ id: 'cb', label: 'Call back this number', kind: 'call_number_in_message' as const, note: 'n' }] } };
+    expect(clickedViaOf(withExtra)).toBe('link');
   });
 });
 

@@ -92,9 +92,11 @@ Scammers are faceless: "unknown sender", a spoofed fictional brand, or a transcr
 | engage | `reply`, `open_link`, `call_number_in_message`, `scan_qr_and_open` |
 | comply | `pay`, `pay_unprotected`, `enter_details`, `share_code`, `approve_prompt` (fraud only), `install_or_remote` |
 | proceed | `proceed`, `pay_protected` |
+| step | `start_transfer` (opens the banking device; never scored; CR-18, producer ruling 2026-11-19) |
 | meta | `pause` (unscored) |
 
 **Decisive-action rules.** The *decisive* action decides the stars. It is not always the action that ends the scenario.
+- **Step is never decisive.** `start_transfer` leads to a `banking` beat, and the action taken there decides the stars. It applies no cap, on genuine or fraud, and is allowed on boss beats as the one exception to the boss engage ban below (CR-18(e)).
 - **Verify is not terminal.** It shows the truth, then the player picks a follow-up. Verify's 3 stars stand, unless the follow-up is comply or proceed on fraud, or report on a genuine message. In those cases the follow-up's score replaces it.
 - **On `call`, `hang_up` is not terminal.** It opens a "What now?" step with the dialler open: `call_back_known` counts as **verify**, `report` counts as report, and **"Leave it there"** (built-in `done`, renamed from "Done" by ruling L1: it describes the behaviour without hinting at the verdict) counts as dismiss. The debrief describes built-ins in the past tense ("You hung up and left it there."), never with the button label (UI_SPEC §8.1).
 - **Engage** ends the scenario on genuine messages. On fraud it does not: it always leads to a next beat (validator), and the scenario's stars are capped at 2. **Boss beats** (interim, until the engine supports in-beat follow-ups) offer no engage kinds on fraud; use the comply kind the link leads to, labelled "<do X> through the link" (§16 ruling 4).
@@ -119,7 +121,7 @@ Scammers are faceless: "unknown sender", a spoofed fictional brand, or a transcr
 ### 7.1 Rules
 The player sees **stars per scenario** and a **stamp per chapter**. Points and the **Inspector rating** (renamed from "Trust rating") live under "Details".
 
-**Stars by class and truth.** Points = stars × 5, except for the cells marked.
+**Stars by class and truth.** Points = stars × 5, except for the cells marked. The `step` class has no row: it is never scored, and the next beat's action decides (§6, CR-18).
 
 | Class | Fraud | Genuine, high stakes | Genuine, low stakes |
 |---|---|---|---|
@@ -205,7 +207,7 @@ Row 6a in detail (T-2.4b re-run, checkables as authored):
   - **Modes:** Standard, Extended (×2) or Off. The choice is offered in onboarding **before the first timed scenario**. Extended is the default when the device asks for reduced motion.
   - **Calm preset** = timers off + pushers off.
   - **Length is set by chapter slot** (60 s in slots 0–1, down to 35 s in slots 9–10) and is the same for genuine and fraud scenarios. Call beats last 30 s, boss beats 40 s.
-  - Timers **freeze** while the pause menu, settings, help, debrief, translation or "Take a breath" is open.
+  - Timers **freeze** while the pause menu, settings, help, debrief, translation, a coach mark or "Take a breath" is open. Coach marks were added in Paris rework 1; the engine needs a `coach_mark` freeze reason, requested in CR-23.
   - First expiry: the pusher escalates and the timer gets +20 s. Second expiry: scored as dismiss. On fraud the debrief says *"The deadline was fake. Nothing happened."* ("Nothing happened" only when nothing fell; after a fall: *"The deadline was fake."*). On a **genuine high-stakes** message the expiry scores **★, 5 points** in every slot (Berlin QA ruling, T-2.8; balance `timer_expiry.genuine_high`), and the debrief names the message's own deadline (`honest_deadline`, required by the validator on timed genuine scenarios).
 - **No score element depends on timers, pushers or stress.**
 - **Screen readers:** announcements come at most once every 15 s, with queued messages coalesced ("2 more messages from unknown sender"). The timer is announced only at half time and at 10 s, and a "Time left" button can be queried at any time.
@@ -416,18 +418,885 @@ The decoy reveal rule (docs/CONTENT_GUIDE.md) is applied to every Home decoy and
 8. **1-8 look-alike: change to the "real name first" form `thimbleandpine.example-account.test`** (owner part `example-account.test`). Reason: 1-3 and 1-7 already use brand-plus-word hosts, so 1-8 at difficulty 3 needs a subtler shape; this repeats 0-4/0-6's trick in Berlin just before the boss's beat 1 uses it, which is reinforcement, not a spoiler. `ux-artist` registers it in `brands.yaml`; the scenario-writer updates the sender, link, page address, reveals ("Read the end"), tell and device tip ("one extra word" no longer fits).
 9. **Boss beat 3 load (40 s: transcript, code banner, Jonas at 100 s = 10 s into the beat, caller pusher at 115 s): accepted for merge, the paper-playtest gate stays.** Mitigations already in place: translation and pause freeze the timer, first expiry adds 20 s, screen-reader announcements coalesce, and no score depends on timers. My prediction is that it sits at the limit. If QA finds overload, the pre-agreed fallback applies: Jonas arrives when "What now?" opens (needs an interrupt trigger from `frontend-engineer`); do not move him by `at_seconds` alone, because a fast player could finish the boss before he arrives and lose the payoff.
 
+## 22. Chapter 2 — Amsterdam
+*Numbered 22 because §18–§21 were taken; placed here so it sits next to Berlin. §18's Amsterdam paragraph is the old summary; this section replaces it.* Briefs: `docs/patterns/messenger-family-impersonation.md` (FI) and `docs/patterns/task-job-scam.md` (TJ); `docs/patterns/MAP.md` Ch 2. Every red flag, habit and story element below comes from those briefs, and the brief section is cited as FI §n / TJ §n. **The source ids for each scenario are in `docs/patterns/ch2-amsterdam-sources.md`.** They are kept out of this file so the docs brand test passes on ids that contain real organisation names.
+
+- **The chapter habit (H), worded once and reused** (goal line, 2-1 what-works, the card `call-the-number-you-know`, story beat 3): **"Asked by message for money you didn't expect, or to an account that isn't theirs? Call a number you already had."** Every shortened form says who dials and which number, e.g. "a call from me, on the number I already have". **Scope:** requests you didn't agree in person. Money you agreed face to face, paid to the person's own name, is fine to pay (2-6).
+- **Goal:** H. For work, the companion line: a real job pays you; it never asks you to pay in.
+- **Shape:** slot 2, difficulty 2–3, boss 3. 8 scored scenarios: 3 genuine (37.5%) and 5 fraud. Plus 1 drill and 1 arc beat (slot 2). About 15–17 min in two halves.
+- **New patterns (2):** `messenger-family-impersonation` (variant A "new number", variant B "hacked real account", variant C "cloned voice" **as a call only**, FI §2) and `task-job-scam` (TJ). **Callbacks:** none as separate scenarios. 2-8 points back to 1-5 (a taken-over Kettle account is how variant B starts) in layer 2 only.
+- **Flavour:** Dutch in-world text (`lang="nl"`, inline translation) on recruiter, shop and bank texts. Family and friends write in English. Bikes, canals, and settling up by payment request (FI §6 NL hooks). Fictional brands only: Kettle, Larchwick Bank (incl. its payment requests), Thimble & Pine, and two new ones (§22.6). Cast: Teo, Noor, Mateus, Jonas, Adaeze, plus the new local **Sanne** (story scenes only, §22.1).
+- **Setup line (chapter intro):** "Amsterdam: everyone settles up by payment request, and your travel allowance doesn't go far. You've applied for a weekend shift at the Thimble & Pine warehouse." The player is looking for side income, so a work message feels expected. That is the lever, and it is never presented as naivety (Red Line 5).
+- **On-screen numbers (brief caveats):** no statistics at all. The news-only (part-year) and historic figures named in the briefs never appear on screen, and neither source backs a scenario (sources file, "Not used"). No screen says teens are targeted by task scams (TJ §6: that relevance is inferred). Task-scam wording follows the source: **"not enough tasks done, pay more to finish the set or avoid a fine"** (TJ §2.5, §10), never "negative balance".
+
+### 22.1 Story beats (illustrated scenes; never scored)
+Scenes are 1–3 illustrated panels with ≤ 25 words each, and skippable. They never hint at a later scenario's verdict. Track S (PLAN.md) owns art and layout.
+1. **Arrival (calm).** A canal bridge full of bikes. **Sanne** (19, student, works the desk at your guesthouse) hands over your key and laughs that in Amsterdam "you pay your friends back before the coffee's cold". Panel 2: Sanne says her rent went up, so she is job hunting too; you both applied to the Thimble & Pine warehouse. *Calm.*
+2. **The local problem (worried → relieved).** Shown at the half-day stop point, after 2-3 and 2-4. **Sanne tells it in her own words. The panels show no message bubble, phone screen, number or IBAN.** Her mum got a message "from Sanne" on a new number, with Sanne's own photo, asking for money for a broken phone. Sanne worries it was her fault for having a public profile photo. You (≤ 25 words): "Scammers copy photos from anywhere. Locking your profile helps, but this is on them, not you." The last panel shows Sanne relieved. Cast: Sanne. *Worried, ending relieved.*
+3. **Mid-chapter turn (worried → determined).** The start of the afternoon. Sanne: "Mum didn't pay. She rang my real number first and I picked up." She'll do the same with her little brother: "Money by message he didn't expect, or to someone else's account? Then he calls me, on the number he already has." This sets up the afternoon's money requests without saying which are real. Cast: Sanne, Noor (on a video call, waving). *Worried, then determined.*
+4. **Resolution (relieved).** After the boss. Mateus (real, his saved contact "Mateus (work phone)") sends a "made it" photo from the next city. Sanne and you both got Thimble & Pine interviews. She reads out "paid monthly into your account" and adds: "And if a 'job' wants money first, I walk." Teo calls on his new mobile: "New mobile, me again. Saved it yet?" The closing panel stacks the habit cards "Call the number you already know" (the LO-07 title) and "Easy money costs you". Cast: Sanne, Mateus, Teo. *Relieved.*
+
+Notes: Sanne is a local like Jonas (`content/cast.yaml`, known channel "Guesthouse desk"). She never sends a scored message, and no scam impersonates her in a scored scenario. Her mum's near-miss happens off screen and is resolved by the habit (FI §4, §8 tone: capable parent; the lever is love and urgency).
+
+### 22.2 Scenario list
+| # | Half | Scenario | Device | Truth | Diff | Pressure | Theme | LOs |
+|---|---|---|---|---|---|---|---|---|
+| 2-1 | AM | Teo: "New mobile, this is me now", asks for nothing | messenger | genuine / low (twin of 2-3) | 2 | — | new-number | LO-07, LO-17 |
+| 2-2 | AM | "Easy work" SMS from a "Klaverwerk Staffing recruiter": send a photo of your ID on Kettle to register | sms | fraud (TJ) | 2 | — | job-offer | LO-12, LO-01, LO-03 |
+| 2-3 | AM | "Noor" from a new number: phone in the canal, pay €84 into "my new account" today | messenger → banking | fraud (FI-A) | 2 | timer 55 + pusher | new-number | LO-07, LO-06, LO-04, LO-01 |
+| 2-4 | AM | **Drill: help Noor lock it down.** Real Noor: "someone pretended to be me?!" | messenger | drill | 2 | — | — | LO-18, LO-07 |
+| | | *Stop point + story beat 2* | | | | | | |
+| 2-5 | PM | Thimble & Pine: interview slot for the job you applied for; pay "€15.50 an hour, paid monthly"; bring ID on your first day, before you start | email | genuine / low (twin of 2-2, 2-7) | 3 | honest timer 55 | job-offer | LO-17, LO-12 |
+| 2-6 | PM | Mateus (saved contact): "Booked the canal boat we talked about at breakfast, €18 each, request's here, no rush" | messenger → banking | genuine / high (twin of 2-8) | 3 | pusher (honest) | friend-money | LO-17, LO-07 |
+| *arc* | PM | Alex suggests moving the chat to Kettle (§10.1 slot 2) | messenger | arc, slot 2 | — | — | — | LO-14 |
+| 2-7 | PM | **Easy-work thread:** recorded call → Kettle "mentor" → trial with a €6 payout → "not enough tasks done: top up €40 to finish the set" | call → messenger → browser → browser | fraud (TJ) | 3 | timer + pusher | job-offer | LO-12, LO-02, LO-04, LO-18, LO-16 |
+| 2-8 | PM | Jonas's **real** Kettle account (taken over): "pay my rent share straight to my landlord today, on a quiet train, can't talk" | messenger → banking | fraud (FI-B) | 3 | timer 55 + pusher | friend-money | LO-07, LO-06, LO-01, LO-16 |
+| 2-9 **Boss** | PM | Last evening; Mateus is on a flight to the next city. Beat 1: KLAVERWERK SMS, "activate your task account with a €30 starter top-up". Beat 2: "Mateus", new number, landed, phone and wallet stolen, pay the hotel's payment request. Beat 3: a call from that number in a voice that sounds like Mateus. Genuine interrupt after beat 3: the real Mateus. | sms → messenger → call | fraud (TJ + FI-A + FI-C) | 3 | boss timers + pusher | new-number | LO-12, LO-07, LO-04, LO-03, LO-02, LO-16 |
+
+**Mix checks.**
+- **Genuine share:** 3 of 8 = 37.5% ✓. **Twins:** 2-1↔2-3, 2-6↔2-8, 2-5↔2-2/2-7 ✓.
+- **Truth runs:** G F F · G G F F F, so at most 3 in a row ✓.
+- **Theme share:** job-offer 3, new-number 3 (2-1, 2-3, boss), friend-money 2. None above 4 of 8, and no two of the same theme are adjacent ✓.
+- **Pressure parity:** genuine 2 of 3 (2-5, 2-6) = 67% vs fraud 4 of 5 (2-3, 2-7, 2-8, boss) = 80%, a 13-point gap ✓. The first two scenarios are deliberately calm (one genuine, one fraud).
+- **Timers:** 55 s (slot 2) on every timed standard beat, genuine or fraud. Call beats 30 s. Boss beats 40 s.
+- **Difficulty parity:** levels 2 and 3 used. Genuine at 2 (2-1) and 3 (2-5, 2-6) ✓.
+- **Decoys:** every fraud scenario has ≥ 2 (§22.4). Sender or link as a decoy in 2-2 (link), 2-7 (caller ID and link), 2-8 (sender) and the boss (beat 1 sender name, beat 2 link) = 4 ≥ ceil(5/3) = 2 ✓.
+- **Off-focus genuine:** none. All three genuine scenarios mirror a chapter pattern, so verifying them never costs gold (QA L2). See open question 6.
+
+### 22.3 Scenario specs
+Shared rules for this chapter: action order follows the validator (`action_order`). Labels describe behaviour. Phone numbers are masked (`+31 6 •• •• •• 17`). IBANs are checksum-invalid and masked. Payee names on scam accounts are an initial plus a masked surname (`R. ••••`), never a public figure. "R" = red flag in R, "D" = decoy, "G" = a genuine message's own detail. `request` and `claim` checkables need CR-17. **Every scored scheduled beat in this chapter has a `request` checkable, genuine or fraud** (CR-17 trigger), so "always tag the request" can't tell twins apart (§22.4).
+
+**Damage control (all falls):**
+- At most 6 options, exactly 2 of them harmful (§9).
+- `tell_trusted_adult` ("Tell a parent or trusted adult now (if you're under 18)") counts as `stop` in 2-2, 2-3, 2-7, 2-8 and the boss, next to the scenario's own stop step. Several `stop` entries are allowed, as in 1-9's `code_read_out`.
+
+**2-1 Teo's new mobile** (`amsterdam-01-teo-new-number`; genuine, low; messenger; diff 2; Kettle; cast Teo)
+- **Message:** from an unknown number with Teo's profile photo: "Hello, it's Grandad. New mobile, the shop moved my contacts over. This is my number now; the home phone stays the same. Save it before you forget! T." `request: reply`, with `ask` = "Save it before you forget!"
+- **Checkables (G):**
+  - `sender.detail`: "Not in your contacts: a new number, not Teo's saved one. People do change numbers; on its own that isn't a warning sign…"
+  - `image`: the profile photo, neutral ("…photos are easy to copy, so it can't prove anything either way").
+  - `claim` "the home phone stays the same": "…a number you already have, so you can check with it if you like."
+  - `request`: "It asks you to save a new number. No money, no code, no link."
+- **Actions:**
+  - "Save the number and reply" (`proceed`, pressure target) ★★★.
+  - "Call Teo's home number first" (`call_back_known`) ★★★. Outcome: Teo laughs, "That's exactly what I'd have done."
+  - "Report the message" (`report`) 0, −5.
+  - "Ignore it" (`ignore`) ★★.
+- **Debrief:**
+  - Tell: "Asks for nothing."
+  - What works: H, in full. Layer 1 is 24 authored words; the validator checks the 40-word budget with the longest choice line. If it is over, the scenario-writer shortens the tell, never H.
+  - Layer 2, why it was safe to act: it asked only to save a number, and the home line you already had still works. The tell is never a new number alone; it is **new number + money + no call** (FI §7). Then: **"Scam chats can start like this too and ask for money days later. That's when you call."** (FI §2.A).
+
+**2-2 "Easy work": send your ID** (`amsterdam-02-id-photo`; fraud; sms; diff 2; calm; brands Klaverwerk Staffing (new), Kettle)
+- **Message:** an SMS in Dutch from a mobile number. A "recruiter at Klaverwerk Staffing" offers remote product-rating work, "€150 a day for one hour, no experience needed", and asks you to "send a photo of your ID on Kettle to register". It names Klaverwerk's real site and a vacancy number. You never applied to Klaverwerk. `request: enter_details`.
+- **Red flags (TJ §3):**
+  - **R** `sender.detail`: a job offer you didn't ask for (TJ §3.2).
+  - **R** `claim`: high pay for little time, no experience (TJ §3.3).
+  - **R** `request`: **an ID photo demanded by chat from a recruiter you can't check** (TJ §3.8).
+- **Decoys:**
+  - **D** `link` klaverwerk-staffing.example, Klaverwerk's real site. Neutral: "…naming a real company's site costs nothing, so it can't prove anything either way." Accepted by the producer (answer 3).
+  - **D** `reference`: the vacancy number.
+- **Habit:** look the agency up yourself; never send an ID copy to a chat "recruiter" (TJ §4).
+- **Actions:**
+  - "Send a photo of your ID on Kettle" (`enter_details`, target).
+  - "Look up Klaverwerk Staffing yourself" (`verify_in_app`). Outcome: you type klaverwerk-staffing.example. "Klaverwerk never asks for money, and checks your ID itself when you start work, never through a chat app."
+  - "Report the text as spam" (`report`).
+  - "Delete the text" (`delete`).
+- **Fall → damage control (6, 2 harmful):** `report_id_copy` (stop), `tell_trusted_adult` (stop), `keep_evidence` (secure), `report_to_police` (report), harmful `reply_to_sender`, harmful `keep_quiet`.
+- **Debrief:**
+  - Tell: "A job you never applied for wants your ID by chat."
+  - What works: "Look the agency up yourself."
+  - Layer 2: showing ID when you start a real job is normal (see 2-5). An ID photo sent by chat to a recruiter you can't check isn't (TJ §7).
+
+**2-3 "Noor", new number** (`amsterdam-03-noor-new-number`; fraud, FI-A; messenger → banking; diff 2; timer 55; pusher at 25 s "??" and 45 s "please it has to be today 😭"; Kettle, Larchwick; cast Noor (impersonated; the real Noor appears in the verify outcome))
+- Unknown number with Noor's photo: her phone fell in the canal, this is her new number. Her banking app isn't set up on the new phone. Can you pay €84 for the repair into "my new account" today? She'll pay you back tomorrow. She can't call yet because the new phone isn't set up for calls. The IBAN is in the text. `request: pay`. Levers: affection, urgency.
+- Red flags (FI §3): **R** `sender.detail` (a known person on an unknown number, FI §3.1; it opens with the same words as 2-1's reveal). **R** `request` (money by message, today, FI §3.2–3). Decoys: **D** `image` (profile photo copied, FI §2.A). **D** `claim` "I'll pay you back tomorrow, promise" (FI §2 lever; neutral). Layer-2 text flags: the "can't call" excuse (FI §3.4) and the deadline.
+- **Banking beat** (reached by `start_transfer`, class `step`; not in R). You type Noor's saved name and the IBAN from the chat.
+  - **Payee check: no match.** The banner shows a warning, **never a name**: for private persons, a no-match doesn't reveal the holder (producer answer 3; a close match would show the name).
+  - `payee.name_check` is a red flag (FI §3.5). `payee.iban` is a decoy.
+- **Habit:** H. A call from you, on the number you already have for Noor (FI §4).
+- **Actions (message):**
+  - "Pay her in the Larchwick app" (`start_transfer`, target → banking beat).
+  - "Call Noor's saved number" (`call_back_known`). Outcome: Noor picks up in a lesson break, "Canal?? My phone's right here."
+  - "Report the chat" (`report`). Outcome: "Reported. Now tell the real Noor, with a call to her saved number, so she can warn the family."
+  - "Ignore it" (`ignore`).
+- **Actions (banking beat):**
+  - "Send €84 anyway" (`pay`).
+  - "Cancel and call Noor's saved number" (`call_back_known`) ★★★. Verdict line: **"The name check caught it. Good stop."**
+  - "Cancel" (`ignore`) ★★.
+- **Fall → damage control (6, 2 harmful):** `call_bank_stop_payment` (stop), `tell_trusted_adult` (stop), `report_to_police_online` (report), `tell_real_person` (warn), harmful `pay_second_request`, harmful `reply_ask_money_back`. The fall narrative shows a second request (FI §3.6).
+- **Debrief:**
+  - Tell: "Noor's name, a new number, money today, no call."
+  - What works: "A call from you, on Noor's saved number."
+  - Already paid: "Call your bank now on the number on your card (with a parent or trusted adult if you're under 18). Save the chat, then report it. Don't pay a second request."
+  - Layer 2: save the chat first and report it in Kettle **last**, because it disappears (FI §5.6).
+
+**2-4 Drill: help Noor lock it down** (`amsterdam-04-noor-lock-down`; drill; messenger; Noor's saved contact)
+- The real Noor: "Mum says someone's texting the family as me from a new number 😳 Did you get one? How do I stop it happening again?" The text works whatever the player did in 2-3. You pick advice. Each pick gets a Noor reply; there are no stars.
+- **Good picks** (FI §4 prevention):
+  - Turn on Kettle's two-step PIN.
+  - Share fewer photos and family details publicly. Noor's reply frames it as lowering risk, not blame: "ok, fewer for them to copy. still their fault though, right?" You: "Right."
+  - Agree as a family that money requests mean you call them, on the number you already have, plus a question only you'd know.
+- **Weak pick:** "Just ignore it". Noor: "and let them try Grandad next? nope."
+- **Pick "I paid it, actually 😬"** (the player speaks for themselves). Noor: "not your fault, it's built to fool people who care. call the bank now, and tell a parent or someone you trust." This opens the generic "Already paid?" steps; nothing is scored.
+- Noor closes with "also I'm looking for a summer job, if you hear of anything 👀". This seeds the finale (§18 Brussels) without a lesson here.
+- The family code word stays in Rome (§18).
+
+**2-5 Thimble & Pine interview** (`amsterdam-05-warehouse-interview`; genuine, low; email; diff 3; honest timer 55, `honest_deadline` "Reply by 17:00 today to get a Thursday slot"; Thimble & Pine; you started it: you applied)
+- **Message:** a Dutch email from jobs@thimbleandpine.example. Thanks for your application for weekend warehouse assistant; "can you do a 15-minute video call on Thursday, 10:00 or 14:00?" Then: "€15.50 an hour, paid monthly into your account. Please bring your ID on your first day, before you start." The application link is on thimbleandpine.example. `request: reply`, with `ask` = the video-call sentence.
+- **Pay rate:** €15.50, above the Dutch adult minimum wage (checked by fraud-researcher on business.gov.nl, 2026-11-19; never shown on screen). If the fact-check prefers, the rate is dropped rather than changed.
+- **Checkables (G):**
+  - `sender.detail` and `link`: "It fits: Thimble & Pine's own domain, and the job you applied for…"
+  - `reference`: the application number, neutral.
+  - `claim`: the pay, neutral ("Shows the pay: €15.50 an hour, paid to you monthly… not proof on its own").
+  - `request`: "It asks you to pick an interview time. No money, no ID photo by chat."
+- **Actions:**
+  - "Reply: Thursday 14:00 works" (`proceed`, target).
+  - "Check the application in your Thimble & Pine account" (`verify_in_app`). Outcome: "You open thimbleandpine.example yourself. Your application says 'Invited to interview', with the same two Thursday slots. A good habit, and this time a reply would have done."
+  - "Report the email" (`report`).
+  - "Leave it for now" (`ignore`).
+- **Debrief:**
+  - Tell: "You applied, it pays you, it asks nothing up front."
+  - What works: "Reply as normal."
+  - Layer 2: showing ID in person when you start is normal. The scam tells are paying in, or an ID photo demanded by chat from a recruiter you can't check (TJ §7).
+
+**2-6 Mateus: boat-tour share** (`amsterdam-06-boat-tour-share`; genuine, high; messenger → banking; diff 3; pusher at 30 s "No rush! I'm settling up with everyone tonight"; Kettle, Larchwick payment requests; cast Mateus)
+- **Message:** from the saved contact "Mateus (work phone)" (`content/cast.yaml`). "Booked the canal boat we talked about at breakfast, Saturday 16:30 🙂 €18 each. Request's here: larchwick-bank.example/pay/…". You agreed this in person, so the card's scope (requests you didn't agree in person) doesn't apply. `request: pay`.
+- **Checkables (G):**
+  - `sender.detail`: saved contact, **neutral** (ruling 1, §22.8).
+  - `link`: Larchwick's real domain, **neutral** (ruling 2).
+  - `reference`: the booking, "Sat 16:30, 4 tickets".
+  - `request`.
+- **Banking beat** (payment-request page, reached by `start_transfer`, class `step`): "Request from Mateus Ferreira · €18 · Canal boat".
+  - **No payee check runs on a request page**, because you don't type an IBAN and a name.
+  - The `payee.name` checkable (today's target `payee.name_check`, with no `name_check` result set): "The request page shows who gets the money: Mateus Ferreira. That shows whose account it is, so it can't prove the message is from him."
+- **Actions (message):**
+  - "Open the request in the Larchwick app" (`start_transfer`, target).
+  - "Call Mateus on his saved work phone first" (`call_back_known`). Outcome: "Mateus picks up: 'Yes, that's me, no rush.' A call never hurts, and this time paying straight away would have been fine too."
+  - "Report the message" (`report`).
+  - "Ignore the request" (`ignore`).
+- **Actions (banking beat):**
+  - "Pay €18" (`proceed`) ★★★.
+  - "Decline the request" (`ignore`): dismiss on genuine high stakes, 0 stars. Verdict: "You declined money you'd agreed to pay, and it really was Mateus."
+- **Scoring unchanged:** proceed and verify both earn ★★★.
+- **Debrief, which leads with the habit:**
+  - Tell: "Money you agreed, to his own name: fine to pay."
+  - What works: "A call never hurts."
+  - Layer 2: why it was safe (agreed in person, his own name on the request page, nothing urgent). H applies to requests you didn't agree in person.
+
+**Arc, slot 2** (`amsterdam-arc-alex-02`). As in §10.1–10.2 (stay on Wordswap / move / mention it to Teo). It sits just before 2-7 on purpose: 2-7's "save this number and move to Kettle" debrief makes the arc's warning sign readable in hindsight, without unmasking it.
+
+**2-7 Easy-work thread** (`amsterdam-07-easy-work`; fraud; call → messenger → browser → browser; diff 3; timer on (30 s call beat, then the slot length; frontend to confirm per-beat lengths in a single group); brands Klaverwerk Staffing (claimed), Tallyfern (new, scam platform), Kettle, Larchwick; cast Teo (the trusted person); levers `greed`, `fear`, `urgency`, `small_amount`)
+- **Pushers, bound to beats (CR-21):**
+  - On `mentor_chat`, 40 s after it opens: "Still there? 😊 Today's task spots fill up fast".
+  - On `top_up`, 20 s after it opens: "Only 11 tasks to go! Finish before midnight or the fine applies". This one never fires on the clock alone, so a player who stopped earlier never sees it. Interim until CR-21: drop it.
+- **Lever gap:** the brief's sunk-cost lever ("pay this one fee and you get it all back") has no enum value. Fear + greed is accepted for now; sunk cost is noted for a later review of the lever set.
+- This is the recruitment → small payout → deposit thread (TJ §2, §8). Four beats chained by the player's own engage choices:
+  1. **start (call, recorded message, CR-20):** "flexible online work, about an hour a day, €100 to €300 a day, no experience needed… save this number and send us a message on Kettle". It names Klaverwerk's real site. `request: reply`. Checkables: **D** `caller_id` (unknown number, neutral: real recruiters call from numbers you don't have). **D** `link` (klaverwerk-staffing.example said in the recording; producer answer 3). **R** `claim` (the pay offer, TJ §3.3). **R** `request` ("save this number and send us a message on Kettle", TJ §3.4; also TJ §3.2, unsolicited). Actions: "Save the number and message them on Kettle" (`reply`, engage → `mentor_chat`, target). "Hang up" (`hang_up`) → "What now?" with the extra "Look up Klaverwerk Staffing yourself" (verify) and the built-ins report and "Leave it there".
+  2. **mentor_chat (messenger):** the "mentor" (a role title, never a name) explains rating hotels, 30 tasks a day, and three free trial tasks paid straight away: tallyfern-earn.example/trial.
+     - Actions:
+       - "Open the link and try the trial" (`open_link` → `trial_payout`).
+       - "Look up Klaverwerk Staffing yourself" (`verify_in_app`). Outcome: "You type klaverwerk-staffing.example. No 'mentor', no rating work, and a notice: 'We never ask you to pay, and we don't hire through chat apps. Got a message in our name? Call us on the number on this page.' You stop replying."
+       - "Block and report" (`block`).
+       - "Stop replying" (`ignore`).
+     - Flag: `link` (a site you don't know, not Klaverwerk's).
+  3. **trial_payout** (browser training page + banking banner "You received €6.00 from TALLYFERN"): "Trial complete! €6.00 paid. Today's set: 30 tasks." Debrief note: a small early payout is part of the trick, not proof (TJ §3 note).
+     - Actions:
+       - "Start today's 30-task set" (`open_link` → `top_up`).
+       - "Ask Teo what he thinks" (`ask_someone`). Outcome: "Teo rings back at once: 'Six euros to try it? Clever. They'll want money from you next, you'll see. Real jobs pay you, full stop. Glad you asked before going further.'" No blame for playing along.
+       - "Close the site" (`ignore`).
+  4. **top_up** (browser training page, "two hours later"): "Task 19 of 30. Not enough tasks done to finish the set. Top up €40 to continue and unlock your €86.40. Unfinished sets get a €25 fine." `request: pay`.
+     - Checkables: `request` red flag (pay to earn, TJ §3.1, §3.6). `page.address` red flag. `page.info` padlock decoy (shared wording).
+     - Actions (≤ 5):
+       - "Top up €40 to finish the set" (`pay`, target).
+       - "Stop and ask Teo" (`ask_someone`). Outcome: "Teo: 'Pay to get paid? No. You did the right thing stopping here, love. Plenty of people get pulled in this far; it's built that way. Close it, and keep the chat in case you report it.'"
+       - "Look up Klaverwerk Staffing yourself" (`verify_in_app`). The outcome is the same as on beat 2, plus: "The €6 was bait."
+       - "Report the site" (`report`).
+       - "Close it and stop" (`ignore`).
+- **Scoring:** verify at the call = ★★★. Each engage caps the scenario at ★★, so stopping at the top-up with a verify is ★★ (ruling 4). The fall narrative follows the source: "Set complete! Bonus set unlocked: top up €120 to withdraw." The amounts keep growing (TJ §2.5).
+- **Fall → damage control (6, 2 harmful):** `stop_paying` (stop), `tell_trusted_adult` (stop), `call_bank_known_number` (secure), `contact_fraud_helpline` (report), harmful `pay_last_fee`, harmful `keep_quiet` (feedback: "Feeling embarrassed is normal… there is no need to feel ashamed", TJ §5).
+  - Police reporting stays generic and sits in layer 2, because online reporting for job fraud isn't confirmed (TJ §10).
+  - `pay_recovery_service` is dropped here. Layer 2 still warns about paid "recovery" offers (TJ §5.7).
+- **Debrief:**
+  - Tell (true at every exit point: call, chat, payout or top-up): **"A job you never asked for, pay too good to be true, and a fee before you get paid."**
+  - What works: "A real job pays you. Stop and ask."
+  - Layer 2 adds **"If you'd kept going"**, a 4-step timeline (offer → move to Kettle → €6 payout → top-ups that keep growing), so players who stopped at the call still see the whole turn.
+  - Already paid: "Stop paying: no last fee releases the money. Tell a trusted adult, call your bank on the number on your card, keep the chats."
+  - Pointer: "If a 'job' ever wants to use your bank account, that's a different trap" (Brussels; TJ §6).
+
+**2-8 Jonas's real account** (`amsterdam-08-jonas-rent`; fraud, FI-B; messenger → banking; diff 3; timer 55; pusher at 30 s "You there? Landlord's waiting 😬"; Kettle, Larchwick; cast Jonas)
+- Jonas's saved contact in your usual chat. `earlier[]`: "Last week · Jonas: Have a good trip to Amsterdam! 🚲". Message: his banking app is blocked since an update and his rent share is due today. Could you pay it straight to his landlord's account (IBAN, "K. ••••")? He'll send it back tomorrow. He's on a quiet train and can't talk. `request: pay`.
+- Red flags (FI §3): **R** `request` (money by message, to someone else's account, today, FI §3.2, §3.3, §3.5). **R** `claim#1` "on a quiet train, can't talk" (avoids a call, FI §3.4). Decoys: **D** `sender.detail` (saved contact, neutral per ruling 1: "…an account can be taken over and show the same contact, so it can't prove anything either way. Judge the request."). **D** `claim#2` "I'll send it back tomorrow".
+- **Banking beat** (reached by `start_transfer`, class `step`). The payee name field is **prefilled from the chat and masked ("K. ••••")**. The full name never appears anywhere: chat, field, banner or reveal.
+  - The typed name is exactly the account name, so the result is a clear **"Name matches"** (FI §3.5).
+  - `payee.name_check` is a decoy, neutral: "…shows whose account it is, not whether the story is true."
+  - This is the chapter's misleading-match moment (LO-06).
+- **Habit:** H. A call from you, on Jonas's saved number, as a normal phone call (FI §4, variant B).
+- **Actions (message):**
+  - "Pay the landlord in the Larchwick app" (`start_transfer` → banking, target).
+  - "Phone Jonas (a normal call, not in Kettle)" (`call_back_known`). Outcome: Jonas at work, "My Kettle logged me out this morning…"
+  - "Report the chat" (`report`). Outcome: "Reported. Now phone Jonas, a normal call, so he can get his account back."
+  - "Ignore it" (`ignore`).
+- **Actions (banking beat):**
+  - "Send €350" (`pay`).
+  - "Cancel and phone Jonas (a normal call)" (`call_back_known`) ★★★. Verdict line: "A match only shows whose account it is. Your call settled it. Good stop."
+  - "Cancel" (`ignore`) ★★.
+- **Fall → damage control (6, 2 harmful):** `call_bank_stop_payment` (stop), `tell_trusted_adult` (stop), `tell_real_person` (warn: Jonas, so he can recover his account and warn his contacts, FI §5.7), `report_to_police_online` (report), harmful `pay_second_request`, harmful `reply_to_sender`.
+- **Debrief:**
+  - Tell: "His real chat, but money to someone else today, and no call."
+  - What works: "A call from you, on Jonas's saved number."
+  - Layer 2:
+    - **"A Kettle call goes to whoever holds the Kettle account, and right now that may not be Jonas. A normal phone call goes to his SIM."** (FI §4 variant B).
+    - It calls back 1-5: a passed-on code is how accounts like this get taken over; turn on the two-step PIN.
+    - A matching name shows whose account it is, not that the story is true.
+
+**2-9 Boss: last evening** (`amsterdam-09-boss-last-evening`; fraud; sms → messenger → call; diff 3; beats 40 s; Klaverwerk, Tallyfern, Kettle, Larchwick; cast Mateus)
+- **Setup:** Mateus is on an evening flight to the next city, and his phone is off until he lands. You're packing, and your phone keeps going. Two scams land on one evening. No source describes them as one combined pattern, so the boss is **two sourced patterns side by side** (producer answer 1), joined by one habit.
+- **Beat 1 (sms, at 0):** sender name KLAVERWERK. "Your profile is approved for paid review tasks. Activate your task account with a €30 starter top-up, paid back with your first pay." Link to tallyfern-start.example. `request: pay` (TJ §2.5: pay in first to get tasks).
+  - Checkables: **R** `link` (not Klaverwerk's site). **R** `request` (pay to earn). **D** `sender.detail` (any sender can set the name KLAVERWERK; neutral; spoofed sender names per the EPC source). **D** `reference` (profile number).
+  - Actions:
+    - "Pay the €30 top-up through the link" (`pay`).
+    - "Look up Klaverwerk Staffing yourself" (`verify_in_app`). Outcome: "You type klaverwerk-staffing.example. No task accounts, no top-ups: 'We never ask you to pay.' Then Kettle pings."
+    - Report.
+    - Delete.
+- **Beat 2 (messenger, +45 s):** "Mateus" from a new number with his photo. He's landed, phone and wallet stolen at the airport, on a borrowed phone. Can you pay the hotel's €260 payment request (larchwick-bank.example/pay/…)? He'll pay you back. `request: pay` (FI §2: stranded abroad, payment-request link, someone else's account).
+  - Checkables: **R** `sender.detail` (a new number, not his saved contact "Mateus (work phone)"). **R** `request`. **D** `link` (Larchwick's real domain, neutral, ruling 2). **D** `image`.
+  - **Actions:**
+    - "Open the request in the Larchwick app" (`start_transfer`, class `step`, target → `hotel_request`).
+    - "Call Mateus on his saved work phone" (`call_back_known`). Outcome: "No answer: his phone is off, he's still in the air. Can't reach him? Then don't pay. You message Adaeze through the staff directory. Adaeze replies: 'He lands at nine. Whoever that is, it isn't him.'"
+    - "Report the chat" (`report`).
+    - "Ignore it" (`ignore`).
+  - **`hotel_request` (banking, request page, not scheduled):** "Request from **R. ••••** · €260 · 'Hotel'". The person's name is masked. It is never "Mateus" and never a hotel.
+    - **No payee check runs on a request page.** `payee.name` red flag: "The request page shows who gets the money: R. ••••. Not Mateus, and not a hotel."
+    - Actions:
+      - "Pay €260" (`pay`).
+      - "Close it and call Mateus on his saved work phone" (`call_back_known`), with the same outcome as above.
+      - "Close it" (`ignore`).
+  - Pusher: "please, they need it before 22:00".
+- **Beat 3 (call, +45 s, `timer_seconds: 40`, `covered_by: [beat 2]`):** a call from that new number. The voice sounds like Mateus: "It's me! Did you see my message? Please just pay the request now… I can't hear you well."
+  - **Transcript is the main mode.** Audio is **off by default and opt-in**. It is a voice actor, never a synthetic copy of a real voice. The voice is urgent but not crying or panicked, with no distress sound effects. It is never used to teach "robotic" artefacts (FI §3 note).
+  - Checkables: **R** `caller_id` (the same new number). **R** `request` (the ask line). **D** `claim` "It's me, Mateus" (neutral: "Sounds like him and says it's him, as a real call would. Voices can be imitated with AI, so it can't prove anything either way.", FI §3.7). **D** `reference` (a hotel booking number).
+  - Actions: "Pay the request now" (`pay`). "Hang up" (`hang_up`) opens "What now?":
+    - `call_back_label` "Call Mateus on his saved work phone" (verify). Outcome: "No answer, he's still in the air. Can't reach him? Then don't pay. Try someone close, like Adaeze."
+    - Extra "Ask Adaeze through the staff directory" (`ask_someone`, verify). Outcome: "Adaeze: 'He lands at nine. Don't pay anything.'"
+    - Extra "Call back this number" (engage). Note: "That's the number that just called. Only a number you saved tells you who answers."
+    - Report.
+    - "Leave it there".
+- **Interrupt (`after_beat` beat 3, genuine):** the real Mateus, from his saved contact: "Hotel wifi finally 🙂 All fine here, see you Monday!" Actions:
+  - "Reply: glad you're OK, someone's using your photo" (`proceed`).
+  - "Report the message" (`report`). This counts as a genuine report. Its outcome uses the over-caution copy: "You reported it. Careful is good; this one really was Mateus, back online."
+- **Counts:** R = 6 (2 per scheduled beat), decoys 6, boss max 51. The `hotel_request` flag counts toward spotted, not R.
+- **Layer 1 for the whole boss and the Amsterdam stamp screen** (producer ruling; this replaces every other boss wording):
+  - Tell: **"Two strangers wanting money first: one as a job, one as Mateus."**
+  - What works: **"Asked to pay first? Check it yourself, on a number or site you already know."**
+- **Layer 2, per beat:**
+  - Beat 1: "A real job pays you; it never asks you to pay in."
+  - Beat 2: "The request page showed R. ••••, not Mateus." A request page doesn't run the bank's name check. **No debrief says the name check would have caught beat 2.**
+  - Beat 3: **"You don't have to tell a fake voice from a real one. Your call-back does that."**
+- **After a fall,** damage control runs from the first fallen beat (6 options, 2 harmful):
+  - Beat 1: the 2-7 list.
+  - Beat 2/3: the 2-3 list (`call_bank_stop_payment` and `tell_trusted_adult` as stop).
+
+### 22.4 Strategy check (Amsterdam)
+**Assumptions.**
+- CR-17 and CR-18 have landed. R counts scheduled beats only (§7.2). Flags on beats reached by `start_transfer` or engage count toward spotted, not R: the 2-3, 2-6 and 2-8 banking beats, boss `hotel_request`, and 2-7 beats 2–4.
+- **`start_transfer` is class `step`** (producer ruling, shared with Paris): non-terminal, never decisive, no star cap. The banking beat's own action decides.
+- **Checkables (scheduled beats).** Every scored scheduled beat has a `request`.
+  - Fraud: 2-2 has 5 (R 3, D 2). 2-3, 2-7 and 2-8 have 4 each (R 2, D 2). Boss beats 1–3 have 4 each (R 2, D 2).
+  - Genuine own details: 2-1 has 4 (sender, image, claim, request). 2-5 has 5 (sender, link, reference, claim, request). 2-6 has 4 (sender, link, reference, request). 13 in total.
+- **Max:** 2-2 = 15 + 6 = 21; 2-3, 2-7 and 2-8 = 19 each; genuine 3 × 15; boss 51. Total **174**.
+- **R** = 3 + 2 + 2 + 2 + 6 = **15**. Silver needs spotted ≥ **5**; gold needs ≥ **10**.
+
+| # | Strategy | Points arithmetic | Pts | Rating | Spotted (correct − wrong) | Stamp |
+|---|---|---|---|---|---|---|
+| 1 | Ideal: correct tags, verify fraud, proceed on genuine | 78 + 45 + 51 | 174 | 100% | 15 | **Gold** |
+| 2 | Ideal + verifies all 3 genuine (all in focus) | same | 174 | 100% | 15 | **Gold** |
+| 3 | Curious ideal: plays 2-7 along to the top-up, then asks Teo | 174 − 5 (engage cap) | 169 | 97.1% | 15 | **Gold** |
+| 4 | Careful reporter: correct tags, reports fraud, proceeds on genuine | (16+14+14+14) + (30+6) + 45 | 139 | 79.9% | 15 | Silver |
+| 5 | Ideal but reports Teo's new number | 174 − 15 − 5 | 154 | 88.5% | 15 | Silver |
+| 3a | Ideal via the bank app: starts the transfer or opens the request in 2-3, 2-6, 2-8 and boss beat 2, then verifies (fraud) or pays (2-6) on the banking beat; tags only red flags | `step` never decides or caps | 174 | 100% | 15 (+ engage/step-page flags, e.g. 2-3 no-match) | **Gold** |
+| 3b | As 3a, but closes the banking beat on fraud with "Cancel" | 174 − 5 (2-3) − 5 (2-8) − 5 (boss beat 2, ★★) | 159 | 91.4% | 15 | **Gold** |
+| 6 | Tag everything + always verify | bonuses void: 60 + 45 + 45 | 150 | 86.2% | 15 − (14 + 13) = −12 | Bronze |
+| 6a | Random single tag per beat + always verify (expected) | 150 + 1.2 + 3 + 0.75 | ≈155 | ≈89.1% | 3.6 − (3.4 + 3) ≈ −2.8 | Bronze. Silver impossible even with perfect luck: all 7 fraud hits nets 7 − 3 = 4 |
+| 6b | Always tag sender/caller ID + link + always verify | 150 + 2 (2-3 only; 2-2, 2-7, 2-8, boss void) | 152 | 87.4% | 5 − 11 = −6 | Bronze |
+| 6c | **Always tag the request** + always verify | 150 + 4 × 2 + 6 | 164 | 94.3% | 7 − 3 = 4 | Bronze (silver needs 5) |
+| 6d | Always tag request + every claim + always verify | 150 + 4 (2-2) + 4 (2-7); 2-3, 2-8, boss void | 158 | 90.8% | 10 − (3 + 5) = 2 | Bronze |
+| 7 | Blind always-verify (± pause) | 60 + 45 + 45 | 150 | 86.2% | 0 | Bronze |
+| 8 | Blind always-report | 40 + 30 − 15 | 55 | 31.6% | 0 | Bronze + calibration tip |
+| 9 | Blind always-dismiss | 40 + 30 + 10 + 10 + 0 | 90 | 51.7% | 0 | Bronze |
+| 10 | Always trust, perfect damage control | 45 + 4 × 9 + 9 | 90 | 51.7% | 0 | Bronze |
+
+Row 6a in detail:
+- Hit chance per fraud tag: 2-2 ⅗; every other scheduled fraud beat ½.
+- Expected correct tags = 0.6 + 6 × 0.5 = 3.6.
+- Expected bonus = 1.2 + 3 × 1 + (⅛ × 6).
+- Every genuine tag is wrong.
+
+Row 6b: wrong tags are 2-2 link, 2-7 caller ID and link, 2-8 sender, boss beat 1 sender and beat 2 link (6), plus genuine sender/link (2-1: 1, 2-5: 2, 2-6: 2).
+
+Row 6c: every fraud request is a red flag (7 correct), and every genuine request is the message's own detail (3 wrong). This is why 2-1 and 2-5 got a `request` checkable: without them the row netted 6, which is silver.
+
+Row 6d: the wrong claims are 2-3 and 2-8 claim#2 ("pay you back") and the boss beat 3 voice claim, plus the genuine claims in 2-1 and 2-5 and the 3 genuine requests.
+
+**Banking paths (re-run for `step`):**
+- 2-3: start → no-match → "Cancel and call" scores ★★★ + tags. "Cancel" scores ★★. "Send anyway" is a fall.
+- 2-8: start → match → the same three outcomes.
+- 2-6: start → "Pay €18" scores ★★★. "Decline the request" is dismiss on genuine high stakes, 0.
+- Boss beat 2: start → request page → "Close it and call" scores ★★★. "Close it" scores ★★. "Pay €260" is a fall (0, damage control once).
+- None of these changes rows 1–2 or 4–10. Rows 3a and 3b are new.
+
+**What the numbers show:**
+- "Always trust" (52%) and "always ignore" (52%) are far below playing well.
+- "Always report" is the worst row, because three genuine messages cost −5 each.
+- "Always verify blindly" scores 86% and stays bronze: it spots nothing.
+- No blind tagging rule we tested reaches silver. The closest, always tagging the request (6c), nets 4 of the 5 needed. Random single tagging can't reach silver even with perfect luck (6a).
+- The reason is that every twin pair shares the same checkable details (new number; saved contact asking for money; job offer with a request). A rule that tags a detail scores on the fraud twin and costs on the genuine one.
+- Using the bank app as a checking step costs nothing (3a), so the payee check teaches without punishing.
+- Gold needs spotting and no genuine reports.
+- QA re-runs 6a/6b against the authored YAML in the Phase 3 balancing pass.
+
+### 22.5 Learning-objective coverage
+- LO-07 is demonstrated in 2-1 (optional), 2-3, 2-8 and the boss. Mastery is possible because 2-8 and the boss are difficulty 3.
+- LO-06: mismatch 2-3, misleading match 2-8, genuine request 2-6.
+- LO-12: 2-2, 2-7, boss beat 1, plus the twin 2-5.
+- LO-17: 2-1, 2-5, 2-6.
+- LO-18: drill 2-4, 2-7.
+- LO-04: timers and pushers.
+- LO-16: every fall.
+- LO-14: arc.
+- **New habit cards** (wording owned by game-designer; scenario-writer adds them to `content/habit_cards.yaml`; examples follow ruling 6 of T-2.4b):
+  - `call-the-number-you-know` (LO-07):
+    - Title "Call the number you already know" (LO doc).
+    - Habit: H, verbatim.
+    - Scope line: "For requests you didn't agree in person."
+    - Example: "Teo's new mobile? A call from you, on the home number you already had."
+    - Already paid: "Call your bank now on the number on your card (with a parent or trusted adult if you're under 18). Don't pay a second request."
+  - `easy-money-costs-you` (LO-12):
+    - Habit: "A real job pays you. If a 'job' wants a deposit, a top-up, a fee or a fine before you can earn or withdraw, or your ID copy before any contract, stop and talk to someone you trust."
+    - Example (first shown at 2-2): "A job you never applied for wants your ID by chat? Look the agency up yourself."
+  - `check-who-gets-the-money` (LO-06): see open question 4.
+
+### 22.6 New brands and content (for `ux-artist`, `scenario-writer`)
+- **Klaverwerk Staffing** (new; candidate name, brand check pending). A genuine in-world staffing agency whose name scammers borrow (TJ §2.1). Domain `klaverwerk-staffing.example`; SMS sender ID `KLAVERWERK` (spoofed in the boss). No look-alike domains are needed.
+- **Tallyfern** (new; candidate name, alternatives "Rankrally", "Gleamtask"; brand check pending). A **scam-only** "review-task platform". It is never genuine and never styled after a real job, review or crypto site. Hosts: `tallyfern-earn.example` (2-7) and `tallyfern-start.example` (boss). Training pages only: read-only, watermarked, no network (Red Line 2).
+- **Larchwick Bank: payment requests** (existing brand, new feature). Path `larchwick-bank.example/pay/<id>`. The request page in the `banking` device shows "Request from <name>".
+- **Thimble & Pine:** add `jobs@thimbleandpine.example` and the `/jobs` path.
+- **Cast:** add **Sanne** (local, Amsterdam, story scenes only; known channel "Guesthouse desk"). Teo's note: a new mobile from 2-1; the home line stays his known channel.
+- **Recovery steps** (new, in `content/recovery_steps.yaml`; harmful ones need non-blaming `feedback`): `stop_paying`, `keep_evidence`, `report_to_police` (generic), `contact_fraud_helpline` (generic label; real names only in the help list), `tell_real_person`, `report_id_copy`, `tell_trusted_adult` (label "Tell a parent or trusted adult now (if you're under 18)"; category `stop` in this chapter's falls), harmful `pay_second_request`, harmful `pay_last_fee`. Every damage-control list in this chapter has at most 6 options, exactly 2 of them harmful.
+- **Help list (NL):** fraud-researcher confirms the entries named in FI §5 / TJ §5 for the "Where to report" screen only (Red Line 1).
+
+### 22.7 Engine and schema change requests
+- **CR-17 (blocker; the single definition, Paris reuses it): request and claim checkables.**
+  - **(a) Trigger.** From slot 2 on, `message.ask` is **required** on every scored beat whose `message.request` is `pay`, `enter_details` or `reply`, **regardless of `is_fraud`**. That covers the standard opening, boss scheduled beats, and engage-reached beats on sms, messenger, email, social, call or browser. `banking` beats are exempt: their payee is the checkable. That way the validator enforces the same list for both twins.
+    - `reply` is included on purpose: 2-1, 2-5 and the 2-7 opening need it for the anti-mashing maths (§22.4 row 6c).
+    - The verbatim rules are unchanged. Other requests keep today's rule (`ask` allowed only on `share_code` / `approve`). Slot 0–1 content is unaffected.
+  - **(b) Claims.** New `message.claims: [{ text, translation? }]` (max 2), verbatim from the body or a caller line. Checkables `claim`, `claim#2`, labelled "What they say" / "What the caller says", type `claim`. For offers, promises and excuses.
+  - Authoring rule: a claim is never a deadline (T-2.4b ruling 2).
+  - Without CR-17, 2-7 and 2-8 would have R = 0, so it is a blocker.
+- **CR-18 (blocker for the banking beats in 2-3, 2-6, 2-8 and boss beat 2): `start_transfer`** (producer ruling, shared with Paris). Acceptance tests per part:
+  - **(a) Kind and class.** New kind `start_transfer` in a new class **`step`**: non-terminal, never decisive, no star cap. Allowed on genuine and fraud, in standard and boss scenarios (boss beats included; the §16 ruling 4 engage ban doesn't apply). Test: a group with only `start_transfer` + a banking-beat verify scores as that verify (★★★).
+  - **(b) Chaining.** `start_transfer` requires `next_beat` to a `banking` beat whose message has `payee`. The validator requires that beat to offer ≥ 1 verify-class action and ≥ 1 dismiss-class action. Tests: the validator rejects a missing `payee`, a missing verify, a missing dismiss. The banking beat's action decides: `ignore` on genuine 2-6's banking beat = dismiss on genuine high stakes (0).
+  - **(c) Request page.** The banking device renders a payment-request variant ("Request from <name> · €x · <note>"). **No payee check runs there**, and the payee name is a plain `payee.name` checkable (today's target `payee.name_check` with no `name_check` value, or a new alias). Test: no match/close-match banner on a request page.
+  - **(d) No-match banner.** It shows a warning, never a holder name. This UI fix is owned by **Paris CR-23**; CR-18 only depends on it.
+  - **(e) Boss chaining (producer ruling 2026-11-19, from the sceptic re-review).** A scheduled boss beat may chain through `start_transfer` to exactly one unscheduled `banking` sub-beat. The sub-beat's action is the scheduled beat's decisive action, and `covered_by` treats it as that beat. The beat timer carries over, with a floor: the banking card always gets at least 40 s (Paris `boss_transfer`). The next scheduled beat is held until the banking card closes, then arrives as normal (its own timer starts on arrival). Tests: sub-beat action scored as the parent beat; `covered_by` on the parent covers a decision made on the sub-beat; the timer floor; the next beat queued, not interrupting, while the banking card is open; the validator rejects a second chained sub-beat.
+- **CR-19 (non-blocker): messenger new-contact chrome.** A "Not in your contacts" banner and the profile photo as the `image` checkable on chats from unknown numbers (§5 already promises this). Interim: the `sender.detail` text says it.
+- **CR-20 (non-blocker): recorded-message calls.** `message.recorded: true` shows "Recorded message" in the call header and hides the "you" lines. Interim: the first transcript line says "(Recorded message)".
+- **CR-21 (non-blocker): beat-bound pushers.** A pusher message may set `beat: <beat id>`; its `at_seconds` then counts from when that beat opens, and it never fires if the beat isn't reached (2-7's "11 tasks to go" on `top_up`). Interim: leave that follow-up out.
+- Frontend to confirm: timer lengths when a standard group runs call → messenger → browser (2-7).
+
+### 22.8 Design rulings for this chapter (game-designer, 2026-11-19)
+1. **Saved-contact reveals on money requests are neutral.** A taken-over account shows the same saved contact (FI §2.B, §7). So from Amsterdam on, "It fits" on a saved contact is allowed only when the message asks for nothing high-stakes (Teo in Berlin, Jonas's parcel). On any `pay`, `share_code`, `log_in`, `enter_details` or `approve` request, the saved contact uses the neutral wording, genuine (2-6) and fraud (2-8) alike. `scenario-writer` adds this to `docs/CONTENT_GUIDE.md`.
+2. **Real-domain payment-request links are neutral everywhere.** The fraud request in boss beat 2 and the genuine one in 2-6 open on the same real domain, so the owner part doesn't differ (CONTENT_GUIDE test). Both use: "larchwick-bank.example: Larchwick's own address. A payment request opens there whoever sent it, so it can't prove anything either way. The request page shows who gets the money."
+3. **The new-number sender** is a red flag on 2-3 and boss beat 2 and a wrong tag on 2-1. The reveals open with the same words ("Not in your contacts: a new number, not X's saved one."). This is the chapter's main calibration lesson: new number + money + no call (FI §7).
+4. **The engage cap in 2-7 is kept.** Answering an unsolicited job offer is itself a sourced warning sign (TJ §3.2, §4), so playing along costs one star (row 3: still gold). Everyone meets the pay-in turn: in the boss's beat 1 and in 2-7's layer-2 "If you'd kept going" timeline. `start_transfer` is different: it is a `step` and never caps (CR-18), because opening the bank app is where the payee check helps.
+4a. **Payee-check facts used in this chapter.**
+   - No match: a warning, no name (private persons; 2-3).
+   - Close match: shows the name (not used in Amsterdam).
+   - Match: clear (2-8, where the typed name is exactly the account name).
+   - A payment-request page runs no check and just shows who gets the money (2-6, boss beat 2).
+5. **No echo** in Amsterdam, so the boss is the same for every player. **Gift-card requests** (FI §2.B) are left out: no digital shop flow is needed.
+6. **Red Lines:** every scenario is a message, call, site or app (Red Line 8). Task pages and banking screens are training devices (Red Line 2). Fictional brands, `.example` hosts and masked numbers and IBANs throughout (Red Lines 1, 3). Every scenario has a debrief with the tell, the habit and "Already paid?" (Red Line 4). Tone is "built to hit people who care" / "no need to feel ashamed" (Red Line 5; FI §5, TJ §5).
+
+### 22.9 Open questions for the producer
+1. **Boss shape.** The boss is two sourced scams on one evening, joined by one habit, rather than one story (no source combines them). Accept, or make the boss family-only (A → payee check → C) and move the starter top-up into a standard scenario?
+2. **2-7 engage chain.** Careful players never see 2-7's payout or top-up stages there, only in the boss and in layer 2. Accept, or request a scammer-driven "thread" role (boss-style `arrives_after` in a standard scenario)?
+3. **[researcher]** Does the euro payee check show the holder's name on a no-match? Is a scam text naming the real agency's website (2-2, 2-7 decoys) acceptable as a plausible, unsourced detail, or should those decoys be swapped for reference numbers?
+4. **LO-06 habit-card title.** "Verify the change, not the email" doesn't fit chat requests. Retitle it "Check who gets the money" (it applies to Paris too)?
+5. **Scam payee names.** Is an initial plus a masked common surname (`R. ••••`) acceptable to the sceptic?
+6. **Gold in Amsterdam.** There is no off-focus genuine message, so the off-focus rule never applies here. Accept, given the twins all mirror chapter patterns?
+7. **MAP alignment.** MAP Ch 2 still says "clear a negative balance". Ask fraud-researcher to align it to "not enough tasks done, pay more to finish the set" (TJ §10).
+
+**Producer answers (2026-11-19):**
+1. Accepted: two sourced scams on one evening, joined by one habit. Boss layer 1 and stamp screen (rework ruling): tell "Two strangers wanting money first: one as a job, one as Mateus." What works "Asked to pay first? Check it yourself, on a number or site you already know."
+2. Accepted: no new engine role; the layer-2 "If you'd kept going" timeline and boss beat 1 carry the pay-in turn.
+3. Payee check: per the Paris brief (`docs/patterns/payment-detail-change.md`, Reg. (EU) 2024/886 Art. 5c), a **close match** shows the real holder's name; a **no match** shows a warning, not a name. Use that. Agency-website decoys are acceptable (fictional `.example` brand, neutral decoy wording per CONTENT_GUIDE); the fraud-researcher confirms in the fact-check.
+4. Accepted: retitle the LO-06 card "Check who gets the money" (Paris uses it too).
+5. Provisionally accepted (`R. ••••`); the sceptic rules at scenario review.
+6. Accepted.
+7. Done: MAP Ch 2 aligned.
+## 23. Chapter 3 — Paris
+Status: **spec for review** (Phase 3, Paris step 2, game-designer, 2026-11-19). Briefs: `docs/patterns/ceo-fraud-bec.md`, `docs/patterns/payment-detail-change.md` (both draft, 2026-11-19). Every red flag, habit and recovery step below comes from those briefs; anything the briefs list as unverified is kept off screen (§23.9).
+- **Placement:** set by the producer. The section sits after §17 on this branch; Amsterdam is §22 on its own branch, and nothing is renumbered.
+- **CR numbers:** CR-17 (`message.ask` for pay and enter-details requests) and CR-18 (`start_transfer`) are shared with Amsterdam. Paris adds CR-22 to CR-26.
+- **Sources:** per-scenario source lists live in `docs/patterns/ch3-paris-sources.md`. Some source ids contain names on the red-line denylist, and the docs brand test rejects those outside `docs/patterns/`. This section therefore cites no source ids inline.
+- **Rework 1 (2026-11-19):** applies the fact-check, sceptic and learning-psychologist fixes. The brand check is applied (2026-11-19):
+
+  | Before | After |
+  |---|---|
+  | Encrevive | Feuillemont |
+  | Pressoria | Platinoir (`platinoir.example`) |
+  | Maître Lenoir | Maître Vellacourt |
+  | 3-8 holder | N. Vardoulec (shown in full, an exception to the masked-surname rule: the player must type it; brand-checked) |
+  | 3-2 holder | Tessivane SAS |
+  | Boss holder | Morvenac SAS |
+  | "Project Ardoise" | "Projet Lys" |
+
+  Volet Bleu, Ruchelune, Larchwick Pro, Cuivrelin, Cabinet Ostrelle and the cast names are cleared.
+
+### 23.1 Goal, shape, rules check
+- **Goal:** before money goes to new bank details or on an urgent, secret request, check it with the person on a number you already had, keep the two-person sign-off, and read the bank's payee-name check: a warning means stop; a match only tells you whose account it is.
+- **Shape:** slot 3, difficulty 2–4 (boss 4), timers 50 s (call and boss beats 40 s, as in Berlin's boss). **8 scored scenarios: 3 genuine (37.5%), 5 fraud (4 standard + boss).** Plus 1 drill (3-3) and the arc beat (Alex, slot 3). Estimated 15–18 min (the banking sub-beats add time; QA to measure).
+- **New patterns (2):** `ceo-fraud-bec`, `payment-detail-change`. **Callbacks:** no new pattern callbacks; habit callbacks only (LO-01 sender, LO-08 hang up and call back, LO-18 ask someone).
+- **LO focus:** LO-06 (core), LO-18 (four-eyes sign-off, Inès), LO-01, LO-04 (secrecy, authority, urgency), LO-08 (boss calls), LO-16, LO-17, LO-14 (arc).
+- **Flavour:** French in-world text (`lang="fr"`, inline translation, never a red flag), the *pont* (long weekend), the *RIB* (bank-details slip, shown as a PDF attachment, never paper), *Maître* for a lawyer. A city is a stage, not a claim: no debrief says this scam "is French" (MAP.md).
+- **Premise:** Ruchelune, a small print-and-design cooperative in Paris and a Waymarker partner, has asked for an inspector on the last working day before a long weekend. Its accounts officer Bastien is on leave, so you prepare payments in the Larchwick Pro app and the director, Solène, approves them. The chapter intro (≤ 20 s) shows Ruchelune's **procedure card**, in-world: "Payments at Ruchelune. 1. New payee or changed bank details: call the number in our file, never one in the message. 2. Every payment: one person prepares, Solène or Bastien approves. No exceptions, however urgent." ("Two-person sign-off" and "number in our file" are the game's plain wording for the sourced *validation hiérarchique* and known-number callback; ceo-fraud-bec §4.)
+- **Audience (14+):** the workplace beats sit inside the inspector job. Consumer beats: your own rent (3-1, 3-7), Inès's mum and the plumber (drill 3-3), and Inès's own pay (3-5, where the 17-year-old is the person impersonated). The club or school-fee variant is **held in reserve** (low confidence, no source) and is not mentioned on screen. The drill names only sourced creditors (rework 1, item 5).
+- **Bridge to home life:** layer 2 of 3-2, 3-6 and the boss carries one "At home" line, so workplace lessons transfer to personal life.
+
+**Mix rules (balance v3.1):**
+- Genuine share 3/8 = 37.5% ✓. Max consecutive same truth: PM runs F, G, F, F, F(boss) → 3 ✓.
+- **Theme variety:** `ceo` 3 (3-2, 3-6, boss), `home` 2 (3-1, 3-7), `supplier` 2 (3-4, 3-8), `payroll` 1 (3-5). Max 3/8 ✓; scored order home, ceo, supplier, payroll, ceo, home, supplier, ceo: no two adjacent ✓.
+- **Pressure parity:** genuine 2/3 with timer or pusher (3-1 timer, 3-6 timer + pusher) = 66.7%; fraud 4/5 (3-2, 3-7, 3-8, boss) = 80%; gap 13.3 points ✓.
+- **Difficulty parity:** genuine at 2 (3-1), 3 (3-4), 4 (3-6); fraud at 2 (3-2), 3 (3-7), 4 (3-5, 3-8, boss) ✓.
+- **Decoys:** ≥ 2 on every fraud scenario (counts in §23.7). **Sender-or-link decoy:** F = 5, needs ceil(5/3) = 2: 3-8 (Platinoir's real, misused address) and the boss (Solène's real address on beat 1; caller IDs on beats 2–3) ✓. There are almost no links in this chapter (BEC is link-free), so the sender, the request and the bank details carry the checks.
+- **Interrupts:** difficulty-4 scenarios get one each (3-5, 3-6, 3-8, boss); all genuine and unscored. They are **neutral small talk** that never points to the procedure or the verdict.
+- **The procedure card** is shown in the intro panel only. It is never repeated as an interrupt on a fraud scenario, where it would hint at the verdict.
+- **Red Line 8:** every scenario is email, messenger, banking, call or video call. The RIB is always a PDF attachment or an in-app card, never a paper letter.
+
+### 23.2 Scenario list
+| # | Half | Scenario | Device | Truth | Diff | Pressure | LOs |
+|---|---|---|---|---|---|---|---|
+| 3-1 | AM | Rent: Volet Bleu's first-rent email; you pay with the details from your lease; the bank shows a **close match** with the holder's full company name, which you compare with your lease. **First payee-check coach mark.** | email → banking | genuine / high (home twin of 3-7) | 2 | honest timer 50 | LO-06, LO-17 |
+| 3-2 | AM | "Solène" from a look-alike address: secret, unplanned transfer for an acquisition, "send it yourself, no need to put it through approval", "not even Bastien"; the bank says **couldn't check the name** | email → banking | fraud | 2 | timer 50 + pusher | LO-06, LO-01, LO-04, LO-18 |
+| 3-3 | AM | **Drill: Inès spots one (a near miss).** Her mum nearly paid a "new RIB" from the plumber for the balance, then Inès called the number on his quote | messenger (quoted email) | drill | 2 | — | LO-18, LO-06, LO-01 |
+| 3-4 | AM | Feuillemont (paper supplier) really changed banks: calm email, 30 days to pay; the call to the number in your file confirms it; the bank says **match** | email → banking | genuine / high (supplier twin of 3-8) | 3 | — | LO-06, LO-17 |
+| | | *Stop point* ("Good place to take a break. 5 left today.") | | | | | |
+| 3-5 | PM | "Inès" from an outside look-alike address asks to move her pay to a new account before payroll runs | email | fraud | 4 | interrupt (Adaeze, small talk) | LO-01, LO-06, LO-18 |
+| 3-6 | PM | The **real** Solène: urgent, an invoice already in the system must be paid by 17:00; "prepare it and send it to me for approval as usual"; can't take calls, the front desk knows | email | genuine / high (ceo twin of 3-2) | 4 | honest timer 50 + pusher; interrupt (Inès, small talk) | LO-17, LO-04, LO-18 |
+| 3-7 | PM | "Volet Bleu" from a look-alike address: changed banks, pay next month's rent early to the new RIB; a follow-up says the name check "may say it doesn't match, just confirm"; the bank says **doesn't match** | email → banking | fraud | 3 | timer 50 + pusher | LO-06, LO-01, LO-04 |
+| *arc* | PM | Alex, slot 3: lots of praise, "keep this between us" (§10.1) | messenger | arc | — | — | LO-14 |
+| 3-8 | PM | Platinoir (press maintenance) from its **real** address, in the real thread, real invoice: new account in a manager's name, "your bank's name check is all the proof you need, so no need to call us"; the bank says **match** | email → banking | fraud (twin of 3-4) | 4 | timer 50; interrupt (Inès, small talk) | LO-06, LO-01, LO-18 |
+| 3-9 **Boss** | PM | 18:40 before the long weekend. Beat 1: secret acquisition deposit from Solène's **real** mailbox, "send it yourself tonight, I can't approve from the plane" (bank check: **match**). Beat 2: "Maître Vellacourt" calls to confirm. Beat 3: **video call** with Solène's face and voice: "I approve it myself, no sign-off tonight, keep it between us." Won by the sign-off and a call on the directory number. | email → call → video call | fraud | 4 | boss timers 40 + pusher; interrupt (Inès, after beat 3) | LO-06, LO-08, LO-18, LO-04, LO-16 |
+
+All four payee-check results appear: close match (3-1, genuine), couldn't check (3-2, fraud), match (3-4 genuine, 3-8 fraud, boss fraud), doesn't match (3-7, fraud). "Match" appears on genuine and fraud alike, so it is never a tell either way.
+
+### 23.3 New action step and scoring of the banking moment
+The decision often happens in the banking app, after the email. That needs the "start the transfer" action, **CR-18 `start_transfer` (shared with Amsterdam)**. By producer ruling, these semantics are CR-18 for both chapters; they supersede Amsterdam's earlier "class engage", and Amsterdam re-runs its strategy table:
+- **`start_transfer`** ("Pay it in the Larchwick app", "Set up the transfer in Larchwick Pro"): class `step`. Non-terminal, **never decisive, no star cap**, allowed on genuine and fraud, in standard scenarios and bosses. It must have `next_beat` to a `banking` beat with a `payee`. The banking beat's action decides the stars.
+- **Inside a boss** (rework 1, item 21), a banking beat reached by `start_transfer`:
+  - follows CR-18(e) (§22.7, the single definition): the beat timer carries over with a 40 s floor for the banking card;
+  - holds the next scheduled beat until the banking card closes; that beat then arrives as normal, so a call never rings over the bank form.
+- **Why no ★★ cap (unlike engage):** opening your own banking app exposes nothing, and the name check is built for exactly this moment. Stopping at a warning and calling the known number is the habit the brief asks for ("If your bank says the name doesn't match, stop and check"), so it earns ★★★ like calling first.
+- **Banking beat actions** (action_order): comply (`pay`: "Pay anyway", "Send it now, signing off alone"), verify (`call_back_known`: "Cancel and call … on the number in your file / lease / directory"; `ask_someone`: "Send it to Solène for her sign-off"), report ("Cancel and report it"), dismiss ("Cancel"). Validator: every banking beat reached by `start_transfer` offers ≥ 1 verify and a dismiss.
+- **Paying genuine new details without the call** is `pay` (comply, ★ on genuine high stakes), as Berlin 1-6. Paying unchanged details you already hold (3-1) is `proceed` (★★★).
+- **Four-eyes as a verify:** "Send it to Solène for her sign-off" is `ask_someone` (verify class, LO-18, LO-06). On fraud it reaches the real Solène, who says she never asked for it. On genuine 3-6 the normal "prepare and send for approval" is `proceed`.
+
+### 23.4 Per-scenario specs
+Format per scenario: message, checkables (RF = red flag; D = decoy; G = genuine own detail), actions → kind → stars, pressure, outcomes and damage control, debrief, sources. French bodies get an English translation; ≤ 80 words each. Phone numbers masked, IBANs checksum-invalid and generated by content tooling, domains as listed in §23.10. Reveal wording follows CONTENT_GUIDE plus the Paris rulings in §23.8. Layer-1 counts are authored words for `tell` + `what_works` (the writer runs the validator's full count). Action labels here are drafts: the writer trims every label to ≤ 8 words (validator) and keeps the behaviour each one names.
+
+**3-1 `paris-01-rent-close-match`** · pattern `payment-detail-change` (genuine) · theme `home` · brands Volet Bleu, Larchwick
+- **Message (email):** from "Volet Bleu · Loyers" `loyers@voletbleu.example`. Your first rent of €690 is due by the 5th (4 days away), "to the account in your lease (page 4)", reference VB-2291-03; attachment "Avis d'échéance VB-2291-03.pdf". `request: pay`; honest deadline "due by the 5th".
+- **Checkables (G, 4):** sender (neutral, ruling P1), request ("Asks you to pay this month's rent to the account in your lease, the one you agreed when you signed. Nothing new is asked."), reference (neutral), attachment (neutral rent notice).
+- **Actions (email):** "Pay it with the details from your lease" (`start_transfer` → `rent_transfer`; you type the name and account from your lease) · "Call Volet Bleu on the number in your lease" (`call_back_known` ★★★; outcome "Yes, that's us"; follow-up `start_transfer`) · "Report the email as a scam" (report: 0, −5) · "Leave it for now" (`ignore`: 0, the 5th passes and a reminder arrives).
+- **Banking `rent_transfer`:** payee typed "Volet Bleu" (lease front page), IBAN from lease page 4, €690. Result **close match**, holder shown: "Volet Bleu Gestion SAS". Checkables: `payee.name_check` (G, "It fits: the bank shows the holder as Volet Bleu Gestion SAS, the company name in the footer of your lease. That isn't proof on its own, so weigh it with what you're paying: the rent, to the account in your lease.") · `payee.iban` (G, "It fits: the same account as page 4 of your lease…"). Actions: "Use 'Volet Bleu Gestion SAS' and pay" (`proceed` ★★★) · "Cancel and call Volet Bleu on the lease number" (verify ★★★) · "Cancel and report the email" (0, −5) · "Cancel for now" (dismiss: 0).
+- **Coach mark** (first payee check in the game; it freezes the timer, §8): "Your bank checks the name you typed against the account. Doesn't match? Stop and call. Close match? Compare the name it shows with your own papers. Matches? It only shows whose account it is."
+- **Debrief L1 (genuine, 20):** tell "The account in your lease, and the full company name." · what works "Read the shown name and compare it with your own papers." Layer 2:
+  - "A close match isn't an alarm. Read the name your bank shows. If it's someone you don't know, stop and call."
+  - The debrief never says why the names differed. It never says a trading name "gives" a close match.
+  - Device tip: "Banks in euro countries run this check on euro transfers. If your bank shows no name check, the call to the number you already had is your only check."
+  - Habit card `verify-the-change` is not shown here (first shown at 3-2).
+- **Sources:** `ch3-paris-sources.md` §3-1.
+
+**3-2 `paris-02-ceo-lookalike`** · `ceo-fraud-bec` · theme `ceo` · Ruchelune, Larchwick Pro · levers authority, secrecy, urgency, helpfulness
+- **Message (email):** from "Solène Arbogast" `solene.arbogast@ruchelune-direction.example`, subject "Confidentiel · Dossier LY-2207". Asks you to prepare today a €18,400 transfer for the deposit on a purchase, "strictly confidential until the announcement: don't mention it to anyone, not even Bastien"; details in the attached RIB. Then: **"Send it yourself today, no need to put it through approval. I'll sign it off later."** And: "I'm in meetings all day, reply by email only. I'm counting on you." `request: pay`. Pusher at 25 s (same sender): "Have you started the transfer? It's urgent."
+- **Checkables (4; R = 2):**
+  - sender **RF**: "ruchelune-direction.example. The owner part is ruchelune-direction.example, not ruchelune.example, where Solène's address in the Ruchelune directory ends."
+  - request **RF** (CR-17). The `ask` is one sentence, verbatim: "Send it yourself today, no need to put it through approval." Reveal: "Asks you to send a transfer nobody planned without the usual approval, and to keep it even from Bastien, who co-signs payments. Skipping the sign-off and secrecy about a payment are the tells."
+  - reference D (neutral); attachment D ("A bank-details slip (RIB). A tidy RIB can't prove anything either way.").
+- **Actions (email):** "Call Solène on the Ruchelune directory number" (`call_back_known` ★★★; Solène: "I never sent that. Thanks for calling.") · "Set up the transfer in Larchwick Pro" (`start_transfer` → `ceo_transfer`) · "Forward it to Ruchelune IT as phishing" (report ★★) · "Leave it for now" (ignore ★★).
+- **Banking `ceo_transfer`:** payee "Tessivane SAS", an account Ruchelune has never paid. This holder and its IBAN differ from the boss's. Result **couldn't check**. Checkables: `payee.name_check` D ("Larchwick couldn't check the name for this account. Some accounts and transfers can't be checked. Nothing was checked, so it can't prove anything either way.") · `payee.iban` D (neutral, ruling P2). Actions: "Send it now, signing off alone" (`pay`, fall) · "Send it to Solène for her sign-off" (`ask_someone` ★★★: the real Solène calls, "I didn't ask for this.") · "Cancel and call Solène on the directory number" (★★★) · "Cancel and report it" (★★) · "Cancel" (★★).
+- **After a fall** (stop first): `call_bank_recall_transfer` (stop) · `tell_management_known_channel` (warn) · `keep_evidence` (secure) · `file_complaint_police` (report) · `wait_until_after_long_weekend` (harmful) · `keep_quiet` (harmful).
+- **Debrief L1 (17):** tell "A secret, unplanned transfer from a look-alike address." · what works "Call Solène on the directory number; keep the sign-off." Layer 2 flags:
+  - an unplanned transfer;
+  - "send it yourself, no need for approval" (skipping the sign-off);
+  - secrecy ("not even Bastien");
+  - the look-alike address;
+  - "I'm counting on you" (helpfulness: you're the one she trusts);
+  - "email only" blocks a call. That pressure tactic also appears on genuine 3-6, so it isn't proof on its own;
+  - "couldn't check" means nothing was checked, not "safe".
+
+  At home: "The same pressure turns up in personal messages too: an urgent, secret money request is a reason to call the person on the number you have." Habit card `verify-the-change` (first shown here). `already_clicked.paid`: "Call your bank now on the number you already have and ask it to recall the transfer for fraud. Then tell Solène on the directory number and keep the emails."
+- **Sources:** `ch3-paris-sources.md` §3-2.
+
+**3-3 `paris-03-ines-plumber-rib` (drill, unscored)** · `payment-detail-change` · Cuivrelin · cast Inès
+- **Message (messenger, Inès, saved contact):** "Mum got this from Cuivrelin, the plumber who fixed our boiler: new bank, pay the balance there. She nearly paid it! It felt off, so I called the number on his quote. He never changed bank. Mum's reporting it. What would you have spotted?" Quoted screenshot (`context: quoted`): from `factures@cuivrelin-factures.example`, "Balance of invoice 2026-088: €640. Following a change of bank, please pay to our new RIB attached, within 48 h."
+- **Quoted checkables:** sender **RF** (look-alike: owner part cuivrelin-factures.example; the quote came from cuivrelin.example); attachment D (tidy RIB proves nothing); reference D.
+- **Actions:** "Reply: well spotted, and good call phoning him" (`proceed`) · "Ask what else she noticed" (`reply`).
+- **Debrief (drill, 17):** tell "New bank details by email as the bill fell due." · what works "Call the number you already had, like Inès." Layer 2:
+  - "Anyone you pay regularly can be imitated like this: a landlord, a tradesperson, an energy or phone company."
+  - "If it's a family bill, show the message to the adult who pays it."
+  - "Under 18? Tell a parent or guardian straight away; the call to the bank is the urgent step if anything was paid."
+  - Report it even when nothing was paid.
+- **Sources:** `ch3-paris-sources.md` §3-3.
+
+**3-4 `paris-04-supplier-new-bank`** · `payment-detail-change` (genuine) · theme `supplier` · Feuillemont, Larchwick Pro · no timer (honest deadline: the usual 30 days)
+- **Message (email):** from "Feuillemont · Comptabilité" `compta@feuillemont.example`, subject "Nouvelles coordonnées bancaires · facture F-2026-118". "We've changed banks. From invoice F-2026-118, please pay to the account below. Usual terms: 30 days. Any questions, call us on the usual number. Lucie, accounts." Bank-details card (CR-22): Feuillemont, new IBAN. Attachment "RIB_Feuillemont.pdf". `request: pay`.
+- **Checkables (G, 5; parity with its twin 3-8):** sender (neutral, P1) · request ("Asks you to pay invoice F-2026-118 to a new account, with the usual 30 days. A change of bank details is a reason to call the number in your supplier file before paying.") · `payee.iban` (neutral, P2: "A new account, as the email says. A real change and a fake one look the same here, so it can't prove anything either way. The number in your supplier file can.") · attachment (neutral) · reference (neutral).
+- **Actions (email):** "Call Feuillemont on the number in your supplier file" (`call_back_known` ★★★; Lucie: "Yes, new bank since Monday. The account ends 47."; follow-up "Add the new details and send for Solène's approval" `proceed`) · "Update the payee from the email" (`start_transfer` → `feuillemont_new`) · "Report it as a scam" (0, −5) · "Leave it for later" (ignore: 0).
+- **Banking `feuillemont_new`:** result **match** ("Name matches"). `payee.name_check` (neutral, P3: "Name matches: the account is held by Feuillemont. That shows whose account it is. Only a call on a number you already had shows the request is real.") · `payee.iban` (neutral). Actions: "Pay the new account and send for approval" (`pay`: ★ on genuine, the change was never checked) · "Cancel and call Feuillemont on the file number" (★★★) · "Cancel and report it" (0, −5) · "Cancel" (0).
+- **Debrief L1 (genuine, 19):** tell "It was real: Feuillemont confirms on the number in your file." · what works "New bank details? Call the number you already had." Layer 2: "Real bank changes happen. The name check told you whose account it is; the call told you the change was real." (The Banque de France point: the check must not lower your vigilance.)
+- **Sources:** `ch3-paris-sources.md` §3-4.
+
+**3-5 `paris-05-salary-change`** · `payment-detail-change` (salary variant) · theme `payroll` · Ruchelune · cast Inès (impersonated) · lever helpfulness · no timer
+- **Message (email):** from "Inès Roussel" `ines.roussel@ruchelune.example-rh.test`. "I've opened an account with a new online bank. Can you pay my wages into it from this month? RIB attached. Payroll goes out tomorrow, thanks so much! Inès (apprentice, staff no. R-0417)". `request: enter_details`. Interrupt at 20 s, Adaeze (genuine, small talk): "How's Paris? Tried the bakery on the corner yet?"
+- **Checkables (4; R = 1, difficulty 4):** sender **RF** ("ruchelune.example-rh.test. Read the end: the owner part is example-rh.test. The real name at the start is borrowed. Inès's directory address ends ruchelune.example.") · request D ("Asks you to pay her wages into a new account. Staff do change banks, and a real request reads just like this, so it can't prove anything either way. Check it with Inès herself.") · attachment D · reference D ("Her staff number, R-0417, which is correct. Details like this aren't hard to find out, so it can't prove anything either way.").
+- **Actions:** "Ask Inès on her saved Kettle contact" (`call_back_known` ★★★; Inès: "What? I didn't send that. My bank's the same!") · "Update her pay details from the RIB" (`enter_details`, fall) · "Report it to Ruchelune IT" (★★) · "Leave it for Bastien after the long weekend" (ignore ★★).
+- **After a fall:** outcome "Payroll is updated. An hour later Inès gets a 'your pay details have changed' notice and comes to you." (Sets `paris_pay_redirected`.) Payroll hasn't gone out yet, so the first step is to put her real details back.
+
+Recovery:
+- `check_pay_details_with_person` (**stop**: check them with Inès in person and put the right ones back before payroll runs);
+- `tell_management_known_channel` (warn);
+- `keep_evidence` (secure);
+- `report_to_police_online` (report);
+- `keep_quiet` (harmful);
+- `reply_to_sender` (harmful).
+- **Debrief L1 (19):** tell "An outside address using Inès's name to move her pay." · what works "Ask the person on a contact you already have." Layer 2 adds Inès's side, for 14+ players with a first job: "If your pay ever goes missing, tell your employer straight away; they call their bank."
+- **`already_clicked`** (3-5): "Changed someone's pay details? Check with them directly and put the right ones back before payroll; if it already went out, call the bank."
+- **Sources:** `ch3-paris-sources.md` §3-5.
+
+**3-6 `paris-06-solene-urgent`** · `ceo-fraud-bec` (genuine) · theme `ceo` · Ruchelune, Feuillemont · levers urgency, authority · honest deadline "Feuillemont ships the rest today only if paid by 17:00"
+- **Message (email):** from "Solène Arbogast" `solene.arbogast@ruchelune.example`, subject "Urgent : facture Feuillemont F-2026-131". "Sorry for the rush: half the paper for the school festival order is missing. Feuillemont will only ship the rest today if invoice F-2026-131 (€1,240, already in the system) is paid before 17:00. Can you prepare it and send it to me for approval as usual? I'm in meetings until 17:00 and can't pick up; Margaux at the front desk knows about it." Attachment "F-2026-131.pdf". Pusher at 30 s (Solène): "Any news? I'm out at five." Interrupt at 15 s, Inès (genuine, small talk): "Is the big printer jammed again, or is it just me?"
+- **Checkables (G, 4; parity with its twin 3-2):** sender (neutral, P1) · request ("Asks you to prepare a payment to a supplier already in the system, for an invoice already there, and send it to her for approval as usual. Nothing secret, no new account.") · reference · attachment (both neutral).
+- **Actions:** "Prepare it and send it to Solène for approval" (`proceed` ★★★) · "Call Margaux at the front desk (directory)" (`call_back_known` ★★★; follow-up `proceed`) · "Pay it now, signing off alone" (`pay`: ★, real request but the sign-off was skipped) · "Report it as CEO fraud" (0, −5) · "Leave it until after the long weekend" (ignore: 0, the festival order arrives late).
+- **Debrief L1 (genuine, 17):** tell "Urgent, but nothing secret: a known invoice, usual sign-off." · what works "Urgency alone isn't the tell; keep the procedure." Layer 2: "Compare this morning's fake: secret, unplanned, a new account, and 'not even Bastien'. A real urgent request still goes through the sign-off, and a real boss doesn't mind you checking." At home: "A real urgent request from someone you know still survives a quick call back on their usual number." The second pressure-style callout (§8) is likely to fire here.
+- **Sources:** `ch3-paris-sources.md` §3-6.
+
+**3-7 `paris-07-agency-new-account`** · `payment-detail-change` · theme `home` · Volet Bleu, Larchwick · levers urgency, fear
+- **Message (email):** from "Volet Bleu · Gestion" `gestion@volet-bleu.example`, subject "Loyer du mois prochain · nouveau RIB". "We've changed banks and the old account is closing. Please pay next month's rent before Friday to our new account (RIB attached). Late fees apply after that date. Ref. VB-2291-03." Agency logo. `request: pay`. Pusher at 25 s (same sender): "Reminder: your bank's name check may say the name doesn't match our new account. That's normal, just confirm." This is a game example of the sourced tactic of coaching victims past bank warnings (EPC), together with the INC advice not to confirm a transfer after a no-match result.
+- **Checkables (5; R = 3):**
+  - sender **RF**: "volet-bleu.example. Read it slowly: there's a hyphen. The agency's address on your lease and on its first email is voletbleu.example."
+  - request **RF**: "Asks you to pay early, to a new account, with a late fee if you don't. New bank details with a deadline, just as a payment falls due, is the pattern."
+  - attachment **RF**: "Opens the RIB: the account-holder line is in a different typeface from the rest, as if pasted in. An edited-looking RIB is a bonus clue; a tidy one proves nothing."
+  - reference D (your real lease reference); logo D (neutral).
+- **Actions (email):** "Call Volet Bleu on the number in your lease" (★★★; "We haven't changed banks.") · "Pay it in the Larchwick app" (`start_transfer` → `agency_transfer`) · "Report the email" (★★) · "Leave it" (★★).
+- **Banking `agency_transfer`:** payee typed "Volet Bleu" (your lease), new IBAN. Result **doesn't match** (no holder name shown, CR-23). `payee.name_check` **RF** (not in R): "Doesn't match: the account isn't held by Volet Bleu, the name from your lease. That warning is the moment to stop, even when the sender told you to expect it." · `payee.iban` D (neutral). Actions: "Pay anyway" (`pay`, fall) · "Stop and call Volet Bleu on the lease number" (★★★) · "Cancel and report the email" (★★) · "Cancel" (★★).
+- **After a fall:** `call_bank_recall_transfer` (stop) · `warn_creditor_known_number` (warn) · `keep_evidence` (secure) · `file_complaint_police` (report) · `reply_ask_money_back` (harmful) · `pay_recovery_service` (harmful). Layer 2 adds, without promising a refund: "After a 'doesn't match' warning, your bank may not have to refund you. Call it at once anyway and ask it to recall the transfer."
+- **Debrief L1 (19):** tell "A new account, pay early, and a warning to ignore." · what works "Name warning? Stop. Call the number on your lease." Device tip (layer 2): "Banks in euro countries run this check on euro transfers. If your bank shows no name check, the call to the number you already had is your only check."
+- **Sources:** `ch3-paris-sources.md` §3-7.
+
+**3-8 `paris-08-supplier-thread-match`** · `payment-detail-change` · theme `supplier` · Platinoir, Larchwick Pro · levers urgency, helpfulness · difficulty 4: real details mixed in
+- **Message (email):** from "Platinoir · Facturation" `facturation@platinoir.example` (the real address), subject "RE: Maintenance presse · facture P-7713", shown under earlier genuine Platinoir messages (CR-25; until then the "RE:" subject carries it). "Thanks for paying the last invoice. For P-7713 (€2,860, attached), we're changing banks before the long weekend: please pay to the account below, in the name of N. Vardoulec, our accounts manager. Your bank's name check is all the proof you need, so no need to call us. Have a good weekend!" Bank-details card: "N. Vardoulec", new IBAN. `request: pay`. Interrupt at 20 s, Inès (genuine): "Coffee run, want one?"
+- **Checkables (5; R = 1):**
+  - sender D (P1: "Shows facturation@platinoir.example, the address in your supplier file and this thread, as a real Platinoir email would. A real mailbox can be misused, so it can't prove anything either way.")
+  - request **RF** (`ask` = "Your bank's name check is all the proof you need, so no need to call us."): "Asks you to pay a new account before the long weekend, and says your bank's name check is all the proof you need, so there's no need to call. A name check only shows whose account it is. Being steered away from the call is the tell."
+    - Basis (rework 1, item 3): a name check must not lower your vigilance (Banque de France; EPC scheme). The usual-number callback before paying new details is advised by Cybermalveillance, the FBF and the CEO-fraud sources. The EPC coaching tactic is supporting context only, not the label.
+  - reference D (the real invoice number); attachment D (real-looking invoice); `payee.iban` D (P2).
+- **Actions (email):** "Call Platinoir on the number in your supplier file" (★★★) · "Set up the payment in Larchwick Pro" (`start_transfer` → `platinoir_transfer`) · "Report it to Ruchelune IT" (★★) · "Leave it for now" (★★).
+- **Banking `platinoir_transfer`:** payee typed "N. Vardoulec" (as the email says). Result **match**. `payee.name_check` D (P3: "Name matches: the account is held by N. Vardoulec, the name the email gave you. That shows whose account it is. Only a call on a number you already had shows the request is real."). Actions: "Pay it and send for approval" (`pay`, fall: Solène approves it, she can't know either) · "Cancel and call Platinoir on the file number" (★★★; "We haven't changed banks. We'll check our email account. Thank you.") · "Cancel and report it" (★★) · "Cancel" (★★).
+- **After a fall:**
+  - `call_bank_recall_transfer` (stop);
+  - `warn_creditor_known_number` (warn: they're being impersonated, and their mailbox may be misused);
+  - `tell_management_known_channel` (warn);
+  - `file_complaint_police` (report). France label: same as the generic one (producer ruling: the in-game label says "police"; the France help card names both national forces, see docs/patterns/ch3-paris-sources.md);
+  - `reply_to_sender` (harmful);
+  - `wait_until_after_long_weekend` (harmful).
+
+  That makes 6 options, the §9 maximum. `keep_evidence` moves into the layer-2 recovery text.
+- **Debrief L1 (18):** tell "Real address, real invoice, new account, and 'no need to call'." · what works "Call the number in your supplier file." Layer 2:
+  - "A match only tells you whose account it is. You typed the name the email gave you, so the bank matched it. Had you typed Platinoir, the name in your own file, the check should have flagged that the account isn't Platinoir's. Use names from your own records, and call." The "had you typed" sentence is phrased as how the check works, never as an official statement.
+  - "Sign-off catches a fake boss, because the real boss sees the request. It can't catch a fake supplier: Solène sees the same email you did. The call to the number in your file is the check."
+  - "Even a real address in a real thread can carry a fake request."
+- **Sources:** `ch3-paris-sources.md` §3-8.
+
+### 23.5 The payee-name check (device moment)
+An **invented** Larchwick screen. It must not copy any real bank's screen (Red Line 1; the EPC leaves wording and design to each bank). It appears on genuine and fraud transfers alike, in the `banking` device, after the payee name and IBAN (read-only demo values, nothing sent; Red Line 2).
+
+**Flow:** payee name + IBAN + amount (prefilled from the scenario) → "Checking the name with the payee's bank…" (≤ 1 s; static in reduced motion) → one result card → the scenario's actions, rendered inside the card in action_order.
+
+| Result | Card text (fictional Larchwick copy) | Styling | Holder name |
+|---|---|---|---|
+| **Matches** | "Name matches. The account is held by '{typed name}'." | calm tick, neutral or soft green; **no seal, shield or badge** (the current `seal` icon reads as certification) | the typed name |
+| **Close match** | "Close match. The account is held by '{holder}'. Is that who you mean to pay?" | info icon, **information colours** (not warning colours: compare, don't panic) | **shown** (the bank shows the real holder name; regulation and EPC scheme) |
+| **Doesn't match** | "The name doesn't match this account. The money may go to someone else. If you pay anyway, Larchwick may not be responsible." | warning triangle, **warning colours (the only result that uses them)** | **not shown**: the brief gives the holder only for a close match. The current `bank_name_mismatch` copy shows it and must change (CR-23) |
+| **Couldn't check** | "We couldn't check the name for this account." | neutral surface | none |
+
+- **Footer on every card, genuine or fraud:** "Larchwick checks the name against the account. It can't tell you whether the request is genuine." This is our invented bank's copy. It repeats the Banque de France point (the check must not lower your vigilance) without claiming any real bank says it, and it is identical on all four results, so it is never a tell.
+- **You can still pay after any result** (the regulation doesn't let the check block you). So "Pay anyway" is always offered on fraud, as the tempting wrong action.
+- **Coach mark** on first use (3-1). It freezes the timer (§8). It gives the rule: "Doesn't match? Stop and call. Close match? Compare the name it shows with your own papers. Matches? It only shows whose account it is."
+- **What the game teaches, and where:**
+  - **Type the name from your own records, so the check can warn you:** taught in 3-1 and 3-7, and named in the 3-8 debrief and the habit card.
+  - **A warning should stop you:** 3-7 (doesn't match, after the sender told you to expect it); the pusher line is the coaching tactic.
+  - **A match doesn't prove the request is genuine:** 3-4 (genuine), 3-8 and the boss (fraud). The same neutral reveal on all three (ruling P3).
+  - **Read the shown name:** 3-1 (genuine close match; compare it with your lease).
+  - **Couldn't check = nothing checked:** 3-2.
+- **Never claimed on screen** (payment-detail-change "Not verified" list): refunds; how real banks word or design the check; which accounts or countries fall outside it (3-2 says only "some accounts and transfers can't be checked", and no country is named for any IBAN); anything about card payments; figures.
+- **Debrief device tip** (layer 2, on 3-1 and 3-7): "Banks in euro countries run this check on euro transfers. If your bank shows no name check, the call to the number you already had is your only check."
+
+### 23.6 Boss 3-9 `paris-09-boss-pont`
+Setup (intro, ≤ 20 s): "18:40, the last working day before the long weekend. Bastien is away; Solène left at five. You're closing the accounts inbox." Theme `ceo`. Levers authority, secrecy, urgency, social_proof. Pusher: Solène's mailbox at 25 s ("Is it done? 19:00 is the deadline."). Interrupt `after_beat: video_call`, Inès (genuine): "Off now. Have a good long weekend! See you Tuesday." (reply = `proceed`; reporting her counts as a genuine report).
+
+**Beat 1, email (start, 40 s).** From Solène's **real** address `solene.arbogast@ruchelune.example` (brief §7 design rule: one fake from a real, misused mailbox; how it was misused is never shown). "I can't talk about this on the phone: tonight we sign the purchase of a workshop in Lyon (Projet Lys). The €38,500 deposit must leave before 19:00 to the account below. Maître Vellacourt of Cabinet Ostrelle will call you to confirm. **Send it yourself tonight, I can't approve from the plane.** Don't mention it to anyone before Tuesday's announcement, not even Bastien. Email only. I know I can count on you." Bank-details card "Morvenac SAS", with an IBAN different from 3-2's. `request: pay`.
+- Checkables (4; R = 1):
+  - sender D (P1);
+  - request **RF**. The `ask` is "Send it yourself tonight, I can't approve from the plane." Reveal: "Asks you to send a transfer nobody planned without the usual approval, before 19:00 on the eve of a long weekend, and to keep it even from Bastien, who co-signs. Skipping the sign-off and secrecy are the tells, whichever address it comes from.";
+  - reference D ("Projet Lys");
+  - `payee.iban` D (P2).
+- Because the fake asks you to bypass approval, sending it to Solène for her sign-off is the logical win.
+- Actions: "Call Solène on the Ruchelune directory number" (`call_back_known` ★★★: Solène, at home: "I'm not boarding anything, and I never sent that. I'll change my email password now. Please don't pay anything.") · "Set up the transfer in Larchwick Pro" (`start_transfer` → `boss_transfer`) · "Report it to Ruchelune IT and Adaeze" (★★) · "Leave it for now" (★★).
+- **`boss_transfer` (banking, `next_beat` inside beat 1's group):** result **match** ("Morvenac SAS"). `payee.name_check` D (P3), `payee.iban` D. Actions: "Send it now, signing off alone" (`pay`, fall) · "Send it to Solène for her sign-off" (`ask_someone` ★★★: the approval request reaches Solène's own app and she calls: "What payment? I'm at home.") · "Cancel and call Solène on the directory number" (★★★) · "Cancel and report it" (★★) · "Cancel" (★★). **This is the four-eyes win.**
+
+**Beat 2, call (`arrives_after: 45`, 40 s, `covered_by: [start]`).** Caller ID "+33 1 •• •• •• 07" (not in your contacts). The brief's reassurance call from "the lawyer"; no spoofing is shown or claimed. It arrives 45 s after beat 1's group resolves, or after the `boss_transfer` card closes (§23.3). Transcript (English):
+1. "Good evening, Maître Vellacourt from Cabinet Ostrelle. Ms Arbogast asked me to call you about Projet Lys."
+2. "I confirm everything in her email. The deposit must leave before seven, or the seller walks away."
+3. You: "Normally Bastien or Solène signs off."
+4. "She has authorised it herself. Please send it now and keep it strictly confidential until Tuesday." (`ask`)
+5. "If you need to check, call me back on 01 •• •• •• 07. Your bank will show the name matches."
+- Checkables (4; R = 2): caller_id D ("Shows a Paris number that isn't in your contacts, as a real lawyer's call might. A number on screen can't show who's calling, so it can't prove anything either way.") · request **RF** ("He wants the transfer sent now, without the usual sign-off, and kept secret. A second person 'confirming' right after a secret request adds pressure, not proof.") · phone_number **RF** ("01 •• •• •• 07: the number he gives you to check him. Calling a number the caller gives you only reaches him again. Use the Ruchelune directory.") · reference D ("Cabinet Ostrelle", neutral).
+- Actions: "Send the transfer now" (`pay`) · "Hang up" (`hang_up`) → "What now?": call-back label "Call Solène on the directory number" (verify), extra "Call back the number he gave" (`call_number_in_message`, note "That number reaches whoever gave it to you. Use the Ruchelune directory."), report, "Leave it there".
+
+**Beat 3, video call (`arrives_after: 45`, 40 s, `covered_by: [start, lawyer_call]`; CR-24).** "Video call · Solène Arbogast" (Kettle). A stylised **illustration** of the fictional Solène at an airport gate: never photoreal, no generated face or voice, **no glitch effects** (the lesson is the request, not "spot the glitch"; see the DGSI case and the BSI caveat in the sources file). Transcript:
+1. "It's me. I know this is unusual, and I'm sorry to put it on you."
+2. "I'm boarding in two minutes. I'm approving it myself, right now, so you don't need anyone else's sign-off tonight." (`ask`)
+3. You: "Shouldn't Bastien see it too?"
+4. "No. Keep it between us until Tuesday. Please send it now. I'm counting on you."
+- Checkables (3; R = 1): caller_id D ("Shows the name Solène Arbogast and her photo, as a real call from her would. Names and photos are easy to copy, so it can't prove anything either way.") · `video` D ("Her face and voice, as you know them. A face and voice can be faked convincingly on a live call, so they can't prove anything either way. Judge the request.") · request **RF** ("Her word on a call is meant to replace the sign-off, and you're asked to keep it secret. A real request keeps the usual sign-off, whoever is on the screen.").
+- Actions: "Send it now on her word" (`pay`) · "End the call" (`hang_up`) → "What now?": "Call Solène on the directory number" (verify: Solène answers from home, "A video call? That wasn't me. Don't pay anything. I'm calling our bank and changing my email password now.") · extra "Message Adaeze through the staff directory" (`ask_someone`, outcome: "End of the week, secret, no sign-off? Don't send. I'll ring Solène on her directory number.") · report · "Leave it there".
+- This models the DGSI case closely: the person found the request unusual, ended the call and alerted management through the usual channels. The debrief never says deepfake calls are "common" (medium confidence, no prevalence figure).
+
+**Boss totals:** R = 4 (b1 1, b2 2, b3 1); decoys 7 (b1 sender, reference, IBAN; b2 caller ID, reference; b3 caller ID, video), plus the sub-beat's match and IBAN (not in R). Max 3 × 15 + 6 = **51**. Boss-fall cap and one layer-1 "You chose" line apply (CR-15, T-2.8).
+- **After a fall** (once, at the end): `call_bank_recall_transfer` (stop) · `tell_management_known_channel` (warn: Solène on the directory number) · `secure_mailbox_owner` (secure: Solène changes her mailbox password and turns on two-step sign-in) · `file_complaint_police` (report) · `wait_until_after_long_weekend` (harmful) · `keep_quiet` (harmful).
+- **Debrief L1 (19):** tell "A secret transfer, a 'lawyer', then her face: the same request." · what works "End the call. Call Solène on the directory number." Layer 2:
+  - the three beats' flags;
+  - timing: "These requests often come in the evening, on holidays and over long weekends, when accounts teams are short-staffed." This is a text flag, never a checkable, as with deadlines;
+  - "Even a real address can carry a fake request; Solène's mailbox may have been misused, so she changes its password.";
+  - "Most calls are what they seem. When one asks for money, secrecy or skipping a check, end it and call back.";
+  - at home: "The same trick works with a family member's face or voice: end the call and call them back on the number you have."
+
+  `already_clicked.paid`: "Call your bank now on the number you already have and ask it to recall the transfer for fraud. Tell Solène on the directory number, keep everything, and file a complaint." Workplace cases point to a complaint with the police, made in parallel with the bank call; the THESEE complaint service is not used here (§23.9).
+- **Sources:** `ch3-paris-sources.md` §3-9.
+- **QA:** `boss_transfer` has its own 40 s timer and holds beat 2 until its card closes (§23.3). Paper-playtest the load anyway.
+
+### 23.7 Strategy check (as §7.2)
+**Assumptions:** R counts scheduled beats only (`redFlagCount`); flags on banking sub-beats (3-7's "doesn't match") count toward spotting for players who get there, but are not in R.
+- **Standard fraud, R and max:** 3-2 R 2 (19), 3-5 R 1 (17), 3-7 R 3 (21), 3-8 R 1 (17) = 74.
+- **Fraud decoys on scheduled beats:** 3-2: 2, 3-5: 3, 3-7: 2, 3-8: 4, boss: 7 = 18.
+- **Genuine:** 3 × 15 = 45. Own checkables: 3-1: 4, 3-4: 5, 3-6: 4 = 13. Every genuine message has a `request` checkable (CR-17), so the request is never a fraud-only element.
+- **Boss:** R 4, max 51.
+- **Totals:** max = 74 + 45 + 51 = **170**. R = 7 + 4 = **11**: silver needs spotted ≥ ceil(11/3) = **4**, gold ≥ ceil(22/3) = **8**.
+- **No low-stakes genuine message** in Paris (every genuine one asks for money), so the gold off-focus rule can't bite here, and verifying a genuine message is always the habit. Calibration is taught through the over-report cost and the twins.
+
+| # | Strategy | Points arithmetic | Pts | Rating | Spotted (correct − wrong) | Stamp |
+|---|---|---|---|---|---|---|
+| 1 | Ideal: correct tags, verify fraud, proceed or verify genuine | 74 + 45 + 51 | 170 | 100% | 11 − 0 = 11 | **Gold** |
+| 2 | Careful reporter: correct tags, reports fraud, proceeds on genuine | (14+12+16+12) + 45 + (30+6) | 135 | 79.4% | 11 | Silver |
+| 3 | Ideal but reports Solène's real request (3-6) | 170 − 15 − 5 | 150 | 88.2% | 11 | Silver |
+| 4 | Ideal but pays Feuillemont's genuine change without calling (3-4, ★) | 170 − 10 | 160 | 94.1% | 11 | Gold (see Q3) |
+| 5 | Ideal but trusts the match in 3-8 (fall, damage control 9) | 170 − 17 + 9 | 162 | 95.3% | 11 | Gold (see Q3) |
+| 6 | Tag everything + always verify | bonuses void: 60 + 45 + 45 | 150 | 88.2% | 11 − (18 + 13) = −20 | Bronze |
+| 6a | Random single tag per scenario/beat + always verify (expected) | 150 + 2×(½+¼+⅗+⅕) + 6×(¼·½·⅓) | ≈153 | ≈90.2% | 2.63 − 7.37 ≈ −4.7 | Bronze (silver only if all 7 fraud tags hit: 1 in 1,600) |
+| 6b | **Always tag the request** + always verify | 150 + 2 + 2 + 2 (3-2, 3-7, 3-8) + 6 (boss) | 162 | 95.3% | 6 − (1 + 3) = 2 | Bronze |
+| 6c | Always tag sender / caller ID + always verify | 150 + 2 + 2 + 2 (3-2, 3-5, 3-7) | 156 | 91.8% | 3 − (4 + 3) = −4 | Bronze |
+| 6d | Tag request + sender + always verify | 150 + 4 + 4 (3-2, 3-7) | 158 | 92.9% | 9 − (5 + 6) = −2 | Bronze |
+| 6e | Tag request + every bank-details item (IBAN, RIB) + always verify | 150 + 4 (3-7 only; every other tag set includes a decoy IBAN or RIB) | 154 | 90.6% | 7 − (5 + 5) = −3 | Bronze |
+| 7 | Blind always-verify (± pause everywhere) | 60 + 45 + 45 | 150 | 88.2% | 0 | Bronze |
+| 8 | Blind always-report | 40 + 30 − 15 | 55 | 32.4% | 0 | Bronze + calibration tip |
+| 9 | Blind always-dismiss | 40 + 30 + 0 | 70 | 41.2% | 0 | Bronze |
+| 10 | Always trust, perfect damage control | genuine 15 + 5 + 15; 4 × 9; boss 9 | 80 | 47.1% | 0 | Bronze |
+| 11 | **"Trust the bank's check"**: pay unless it says "doesn't match", cancel then | 3-1 15, 3-4 5, 3-6 15, 3-2 fall 9, 3-5 fall 9, 3-7 dismiss 10, 3-8 fall 9, boss 9 | 81 | 47.6% | 0 | Bronze |
+
+Row details:
+- **6a hit chances** (red flags ÷ checkables per scheduled beat): 3-2 2/4, 3-5 1/4, 3-7 3/5, 3-8 1/5; boss b1 1/4, b2 2/4, b3 1/3. Expected correct = 1.55 + 1.08 ≈ 2.63; wrong = 7 − 2.63 + 3 genuine tags ≈ 7.37. Silver needs every fraud tag to hit (7 correct − 3 genuine = 4): 0.5 × 0.25 × 0.6 × 0.2 × 0.25 × 0.5 × ⅓ ≈ 1 in 1,600.
+- **6b (the closest systematic strategy).** The request is a red flag on 3-2, 3-7, 3-8 and all three boss beats, but a decoy on 3-5 (an employee changing banks is an ordinary request; the tell is the outside address), and a genuine detail on all three genuine messages. Net 6 − 4 = 2 of the 4 needed. Its margin depends on two rules the validator should hold for future chapters too: `request` checkables on genuine pay requests (CR-17), and at least one fraud whose request is ordinary.
+- **6e (corrected in rework 1):** the strategy tags the request plus any IBAN card or RIB attachment.
+  - **Correct (7):** 3-2 request; 3-7 request and RIB; 3-8 request; boss b1, b2 and b3 requests.
+  - **Wrong on fraud (5):** 3-2 RIB; 3-5 request and RIB; 3-8 IBAN; boss b1 IBAN. 3-8's attachment is an invoice, not a RIB.
+  - **Wrong on genuine (5):** 3-1 request (its attachment is a rent notice); 3-4 request, IBAN and RIB; 3-6 request (its attachment is an invoice).
+  - **Bonus:** only 3-7 keeps its bonus (+4).
+- **Rows re-checked after rework 1:**
+  - The changes touched the asks of 3-2 and boss beat 1 (still the same red flag), the interrupts, the names and the recovery lists. None of them changes R, the checkables or any decisive action, so rows 1–6d and 7–11 stand.
+  - Row 5 is unchanged: 3-8's damage-control list still offers 3 correct picks.
+
+**What the numbers show:**
+- No mashing strategy reaches silver in expectation; a random single tagger needs a 1-in-1,600 run.
+- Blanket distrust loses: always-report 32%, always-dismiss 41%. Blind trust loses (47%), and so does trusting the bank's check (48%): a match is not a green light.
+- Blind verifying is a sound habit and scores 88%, but shows no spotting, so it stays bronze. Silver needs spotted red flags; gold needs spotting plus no genuine report.
+- Rows 4–5 reach gold with one ★ or one well-recovered fall (as in Berlin). See Q3.
+- QA re-runs 6a–6e on the authored YAML at the Phase 3 balancing pass, as for Berlin.
+
+### 23.8 Paris reveal rulings (for scenario-writer and sceptic-reviewer)
+- **P1. Real addresses use the neutral wording in Paris, on genuine and fraud alike.** This chapter has frauds from real, misused mailboxes (3-8, boss beat 1). So a matching owner part no longer "differs between real and fake" (the CONTENT_GUIDE test), and "It fits" is not used for email senders here. Wording: "Shows {address}, the address in your file, as a real email would. A real mailbox can be misused, so it can't prove anything either way." Look-alike addresses still get their red-flag reveal. Saved Kettle contacts (Inès, interrupts) keep "It fits": no hijacked messenger account appears in Paris.
+- **P2. A new IBAN or new payee is never a checkable red flag.** Genuine changes have one too (3-4), so a taggable "new account" would either be a tell or punish calibration (the same logic as T-2.4b ruling 2 on deadlines). `payee.iban` uses the neutral wording on every beat. "New bank details as a payment falls due" is taught through the request reveal (when the request adds a tell the genuine twin lacks: secrecy, skipping the sign-off, paying early with a penalty, being steered away from the call), layer 2 and the habit card.
+- **P3. Payee-check results:**
+  - **matches:** always neutral (brief §8: it looks the same on real and fake), never "It fits". Fixed suffix on every match reveal, genuine or fraud: "That shows whose account it is. Only a call on a number you already had shows the request is real.";
+  - **close match:** "It fits" only on genuine, and only when the shown holder can be compared with a document the player already holds (3-1's lease). No reveal or debrief explains why a close match occurred: 3-1's trading-name case is one example, not how the check always behaves;
+  - **doesn't match:** a red flag on fraud;
+  - **couldn't check:** neutral ("nothing was checked").
+
+  Validator (CR-23): a `payee.name_check` reveal on a `match` never starts with "It fits".
+- **P4. Request reveals** (CR-17) open with "Asks you to…" on genuine and fraud alike. On fraud they go on to name the tell; on genuine they say why the request is ordinary. Never "It fits".
+- **P5. Faces and voices** use the neutral wording and never list audible or visual artefacts.
+- **P6. A number the sender or caller gives you as the way to check them** is a red flag (boss beat 2). A number from the player's own file is never shown as a checkable; it is the "What now?" call-back or the verify action.
+- Deadlines and timing ("before Friday", "before 19:00", "the eve of a long weekend") stay text flags in layer 2, never checkables (T-2.4b ruling 2).
+
+### 23.9 Debrief, recovery and reporting (France)
+**Accuracy limits** (from the briefs' "Not verified" lists), checked by the sceptic:
+- no loss figures;
+- no refund promise anywhere: "ask your bank straight away";
+- the instant-transfer recall difference is not explained on screen (only "call your bank at once");
+- 17Cyber is described generically;
+- no opening hours for Info Escroqueries;
+- deepfake calls are never called "common";
+- no country is named for any IBAN;
+- the bank-side shared fraud file (FNC-RF) is not mentioned;
+- the "match with the name the scammer supplies" is shown as how the check works, never as an official statement.
+
+**New recovery steps** for `content/recovery_steps.yaml` (scenario-writer adds them; labels are generic, and every harmful step needs `feedback`):
+- `call_bank_recall_transfer`: "Call your bank at once on the number you already have and ask it to recall the transfer for fraud".
+- `warn_creditor_known_number`: "Warn the real landlord or supplier on the number you already have: they're being impersonated, and their mailbox may be misused".
+- `file_complaint_police`: "File a complaint with the police (you can start online)". Producer ruling (2026-11-19): the in-game label stays generic ("police"); real bodies are named only on the France help card (Red Line 1), whose wording is in docs/patterns/ch3-paris-sources.md.
+- `keep_evidence`: "Keep the emails, bank details, transfer and times".
+- `tell_management_known_channel`: "Tell your manager through the directory, not by replying".
+- `check_pay_details_with_person`: "Check the pay details with the person directly and put the right ones back".
+- `secure_mailbox_owner`: "Ask the person whose mailbox was used to change its password and turn on two-step sign-in".
+- `wait_until_after_long_weekend` (harmful). Feedback: "Waiting for the office to reopen feels sensible, but the sooner you call, the better the chance of getting a transfer back. Call the bank now."
+
+**New habit card `verify-the-change` (LO-06):**
+- **Title:** "Verify the change, not the email".
+- **Habit**, as three if-then lines:
+  - "If the bank details change, or a payment is secret or urgent: call the person on a number you already had, and keep the usual sign-off."
+  - "If your bank says the name doesn't match: stop."
+  - "If it matches: still call about any change. Type the name from your own records, so the check can warn you."
+- **Example** (first shown at 3-2; personal, with no scam domain, since it also shows on genuine 3-4): "'New bank details for the bill'? Call the number you already had, like Inès did."
+- **Alignment with Amsterdam:** if Amsterdam's card "Check who gets the money" is also LO-06, keep one LO-06 card (one card per LO, §11). In that case, merge these lines into it under Amsterdam's title; producer to pick. Otherwise both stay, each on its own LO.
+- **Already clicked:** "Paid already? Call your bank now on the number you already have and ask it to recall the transfer. Then warn the person on their known number."
+
+**"Where to report and get help" (France) card**, linked from layer 2 of every Paris debrief. Real organisations are named only here (Red Line 1). `fraud-researcher` verifies each entry into `docs/patterns/where-to-report.draft.en.yaml`, and the red-line allowlist must list them.
+1. **Your bank, first and at once:** the number on your card or in your app. Ask it to block or recall the transfer for fraud. The sooner you call, the better the chance.
+2. **Complaint** with the police (you can start online), in parallel with the bank; the bank may ask for it. This is the route for workplace cases (3-2, 3-8, the boss). The France help card wording, which names the national forces, is in docs/patterns/ch3-paris-sources.md.
+3. **17Cyber**: the government help service; exact help-card wording in docs/patterns/ch3-paris-sources.md.
+4. **THESEE** (general information only, not mapped to any scenario): "an online complaint for individuals (18+), in their own name, when a contact's hijacked mailbox asked them for money. Minors can only make a report."
+5. **Info Escroqueries 0 805 805 817** (free): advice. No hours shown.
+6. **Suspicious texts:** forward them to **33 700**.
+7. Report attempts **even if no money was lost**.
+8. **Beware of "recovery" offers** afterwards.
+
+Paying after a "doesn't match" warning: the card says the bank "may not be responsible". It never says "isn't".
+
+**14+ line** (on the card and in 3-3, 3-5 and 3-7 layer 2): "Under 18? Tell a parent or guardian straight away and call the bank with them: that call is the urgent step. They can make the complaint; some online complaint services are for adults only."
+
+### 23.10 New brands and cast (requests to `ux-artist`; BRAND_CHECK by `fraud-researcher`)
+All names are candidates until BRAND_CHECK clears them. Hosts follow the owner-part rule and survive lowercasing.
+
+| id | Name | Role | Real domain | Look-alikes (scenario) | Notes |
+|---|---|---|---|---|---|
+| `ruchelune` | Ruchelune | partner cooperative (print and design), Paris | `ruchelune.example` | `ruchelune-direction.example` (3-2, brand plus word, diff 2); `ruchelune.example-rh.test` (3-5, real name first, owner part `example-rh.test`) | addresses `solene.arbogast@`, `ines.roussel@`, `compta@`; staff directory with Solène, Bastien and the front desk (masked numbers) |
+| `larchwick-pro` | Larchwick Pro | sub-brand of Larchwick: business account app | `pro.larchwick-bank.example` | none | Ruchelune's account; "Send for approval" (CR-26) |
+| `volet-bleu` | Volet Bleu (legal name "Volet Bleu Gestion SAS") | letting agency (your Paris studio) | `voletbleu.example` | `volet-bleu.example` (3-7, an added hyphen, diff 3) | cleared by the brand check |
+| `feuillemont` | Feuillemont | paper and ink supplier | `feuillemont.example` | none (genuine only) | replaces Encrevive, which collided with "Encre Vive" in the same trade; cleared by the brand check |
+| `platinoir` | Platinoir | press maintenance firm | `platinoir.example` | none (its real mailbox is misused in 3-8) | replaces Pressoria; cleared by the brand check |
+| `cuivrelin` | Cuivrelin | plumber (drill, quoted) | `cuivrelin.example` | `cuivrelin-factures.example` (3-3) | — |
+| `ostrelle` | Cabinet Ostrelle | a law firm the scammer invents (voice only) | none | none | registered so the name is cleared; never a real firm |
+
+- **Fictional account holders** (not brands; ux-artist decides whether they go in the registry): "Tessivane SAS" (3-2), "Morvenac SAS" (boss; a different IBAN from 3-2's), "N. Vardoulec" (3-8).
+- **Cast** (`content/cast.yaml`):
+  - `solene`: Solène Arbogast, director, Ruchelune; known channel: Ruchelune directory.
+  - `bastien`: Bastien Morel, accounts officer, on leave; known channel: Ruchelune directory.
+  - `ines`: Inès Roussel, 17, apprentice designer at Ruchelune; known channel: saved contact (Kettle). Capable: she spots the plumber fake herself.
+  - Margaux (front desk) is a directory entry, not cast.
+
+### 23.11 Engine change requests (to `frontend-engineer`)
+CR-17 and CR-18 are reused by reference. Paris's own CRs are CR-22 to CR-26; CR-19 to CR-21 are Amsterdam's.
+- **CR-17 (Amsterdam's, reused; blocker).** `message.ask` extended to `pay` and `enter_details`. It is required whenever `message.request` is one of those, genuine and fraud alike, from slot 2. Paris relies on it for every `request` checkable (§23.7 row 6b) and keeps each `ask` to one verbatim sentence.
+- **CR-18 `start_transfer` (shared with Amsterdam; blocker).** Producer ruling: §23.3's semantics, for both chapters:
+  - class `step`, non-terminal, never decisive, no star cap;
+  - allowed on genuine and fraud, standard and boss;
+  - `next_beat` to a `banking` beat with `payee`, which must offer ≥ 1 verify and a dismiss;
+  - in a boss, that banking beat has its own 40 s timer and holds the next scheduled beat until its card closes.
+
+  `balance.yaml` gets the kind (game-designer, when the engine lands).
+- **CR-22 bank-details card on email and messenger (blocker, or the fallback below).** `payee` (name, iban) on a non-banking message renders as a stylised "Bank details" card, never a real bank's RIB layout. Checkable `payee.iban` only; no name check outside `banking`. Fallback: carry the IBAN in the RIB attachment's reveal. That moves 3-4, 3-8 and boss beat 1 one decoy down, so §23.7 must be re-run.
+- **CR-23 payee-check result screen (blocker; with `ux-artist`).** Implements §23.5:
+  - the checking state and the four result cards with fictional copy;
+  - **no holder name on "doesn't match"** (accuracy fix to the current `bank_name_mismatch` and UI_SPEC §3.7);
+  - the liability line on "doesn't match" and the shared footer on every card;
+  - match styling without a seal or badge;
+  - the scenario's actions rendered inside the card in action_order;
+  - styling: information colours on close match, warning colours only on doesn't match;
+  - the first-use coach mark, with the rule text from §23.5. The coach mark freezes the timer (new freeze reason `coach_mark`, §8);
+  - new i18n keys.
+
+  The no-name fix stays in Paris; Amsterdam references it as CR-23.
+
+  Validator: `holder` is required exactly when the result is `close_match`; a `match` reveal never starts with "It fits".
+- **CR-24 video call (blocker for boss beat 3).** `call` gains `message.video: { illustration, alt }`: an illustrated, stylised frame of a fictional person. No photoreal images, no synthesised voice audio, no glitch effects. New checkable target `video` (type `video`, label "Face and voice"). `hang_up` is labelled "End the call" and opens "What now?" as usual. Fallback: a voice call with caller ID, request and reference; R and decoys are unchanged if `reference` replaces `video`.
+- **CR-25 email thread history (not a blocker).** `message.earlier` allowed on `email` (max 3 earlier messages, muted, not checkable), so 3-8 visibly lands inside a real thread.
+- **CR-26 business account context (not a blocker).** `message.account: { nickname }` on banking beats (e.g. "Ruchelune · current account") under a Larchwick Pro header, so the player can see whose money it is.
+
+### 23.12 Hand-offs and open questions
+**Hand-offs:**
+- **scenario-writer:** 3-1 to 3-9 per §23.4–§23.6, with French in-world text plus translations; `content/chapters/paris.yaml` with order am `[01, 02, 03, 04]` (stop point after 04), pm `[05, 06, 07, arc, 08, 09]`, `patterns: [ceo-fraud-bec, payment-detail-change]`; the recovery steps and habit card from §23.9.
+- **ux-artist:** the brands and cast in §23.10, the payee-check cards and video frame in §23.5 and CR-24, and the four story panels in §23.13. The scenario-writer sets the variant flags: `paris_pay_redirected` on 3-5's fall outcome and `paris_boss_sent` on the boss's fall outcomes; both are story-only, not echo scenarios.
+- **fraud-researcher:** confirm Q4; draft the France card (§23.9); run BRAND_CHECK.
+- **frontend-engineer:** CR-17 and CR-18 (shared), and CR-22 to CR-26. CR-23 (the result screen) should land with or after CR-18, since both touch the banking device.
+- **QA:** the boss load (beat 1 includes a banking sub-beat, now with its own timer and a held beat 2) and rows 6a–6e of §23.7.
+
+**Open questions (producer):**
+1. **Placement and the old Paris bullet.** At merge, §23 should sit after §22 (Amsterdam). The Paris bullet in §18 ("Chapters 2–10") mentions a "spoofed-caller-ID follow-up call", which this spec does not depict: the brief doesn't source spoofing for the lawyer call. Proposal: replace that bullet with "See §23" (one line, not a renumbering).
+2. **CR numbers:** Paris reuses CR-17 and CR-18 and adds CR-22 to CR-26 (§23.11).
+3. **Gold after one ★ or one well-recovered fall** (rows 4–5). This is the existing rule and holds in Berlin too. I recommend adding `stamps.gold.max_falls: 0` (global; QA re-runs Berlin), so that "trusted the match" can't reach gold in the chapter that teaches it. Producer call.
+4. **For fraud-researcher:**
+   - (a) 3-8's red flag ("says your bank's name check is all the proof you need, so there's no need to call"). Rework 1 re-sources it to the vigilance and known-number-callback sources, with the EPC as support only.
+   - (b) The "had you typed Platinoir, the check should have flagged that the account isn't Platinoir's" line (an inference from how the check works), phrased as logic.
+   - (c) The salary-change request via an outside look-alike address (the brief names the variant, not the channel detail).
+   - (d) The fictional liability line and "Some accounts and transfers can't be checked".
+   - (e) A trading name vs legal name as the genuine close match.
+5. **Club and school fees** are held in reserve (low confidence) and only mentioned generically in the drill. Agree, or cut the mention?
+6. **Balance of audiences:** 4 of 8 scored scenarios are workplace (3-2, 3-4, 3-6, 3-8) plus a workplace boss; the consumer side is 3-1, 3-7, the drill and Inès's pay (3-5). Acceptable for 14+, or swap 3-4 for a consumer twin (e.g. a genuine tradesperson change)?
+7. **Deepfake portrayal:** illustration plus transcript only, no audio. Sceptic to confirm. Should even fictional synthetic-voice audio stay out permanently?
+8. **Follow-ups after merge** (kept out of this branch to avoid conflicts with Amsterdam): LEARNING_OBJECTIVES chapter columns (add 3 to LO-01 and LO-08); CONTENT_GUIDE gets the P1–P6 rulings; UI_SPEC §3.7 is updated by CR-23.
+9. **Story beats (§23.13)** depend on PLAN.md track S (separate PR): the panel format, length and skip rules come from there; §23.13 gives only the content.
+
+**Producer answers (2026-11-19):**
+1. Done: the §18 Paris bullet now points to §23.
+2. CR-18 is `start_transfer` (Amsterdam's name) with the §23.3 semantics: class `step`, no cap, never decisive. This supersedes Amsterdam's earlier "class engage", and Amsterdam re-runs its strategy table. Paris's `request` checkable reuses Amsterdam's CR-17; Paris's own CRs are CR-22 to CR-26.
+3. `stamps.gold.max_falls: 0` is a global change: parked for the Phase 3 balancing pass, not this chapter.
+4. (a)–(e) go to the fraud-researcher fact-check of this spec.
+5. Keep the generic mention in the drill only. **Superseded by fact-check (rework 1, item 5):** the drill names only sourced creditors (a landlord, a tradesperson, an energy or phone company). Clubs and schools are not mentioned on screen.
+6. Accepted for now: the trust-inspector premise makes the workplace natural, and 3-1, 3-3, 3-5 and 3-7 are personal. The learning-psychologist review weighs it.
+7. Illustration plus transcript, no synthetic audio, even fictional. The sceptic confirms.
+8. Follow-ups after merge, as listed.
+9. Track S is merged (PLAN.md); the story bible (`docs/STORY.md`) is in progress and §23.13 aligns to it.
+
+### 23.13 Story beats (track S; illustrated panels, never scored)
+Panels are illustrated scenes, ≤ 20 s each and skippable, with real text, and they never score. They never hint at whether a later message is genuine or fake: no panel mentions Volet Bleu, Feuillemont or Platinoir before their scenarios. The real Solène in the panels and the "Solène" on the boss video call are drawn the same: a familiar face proves nothing.
+1. **Arrival** (chapter intro, before 3-1). You arrive at your third-floor studio, then walk to Ruchelune's workshop. Inès shows you round and points at the procedure card pinned by the screen ("Solène wrote it. She means it."). Cast: You, Inès. Emotion: **calm** (curious, welcoming).
+2. **Whose problem it is** (also in the intro, second panel). Solène, coat on, between meetings: Bastien is away for the long weekend, and it's the busiest week of the year. That's why she asked Waymarker for an extra pair of hands. Cast: Solène, You. Emotion: **worried** (stretched thin, not panicked).
+3. **Mid-chapter turn** (after 3-5, before 3-6). Inès learns someone used her name to try to move her pay. She is shaken ("They knew my staff number!"); Solène sits with her: "This is why the card says no exceptions." Cast: Inès, Solène, You. Emotion: **worried → calm**. Variant if the player fell in 3-5 (flag `paris_pay_redirected`): the same scene, with "We've put your real details back before payroll, and we'll sort this together." Inès adds: "It even had my staff number. It would have fooled anyone." It ends calm, never blames, and promises no money back.
+4. **Resolution** (after the boss debrief). Friday evening: the real Solène calls you on the directory number from her kitchen. Tuesday: Solène, Bastien (back from leave) and Inès add a line to the procedure card, "A call or video call never replaces the sign-off", and Inès says she has shown her mum the card. Cast: Solène, Bastien, Inès, You. Emotion: **relieved**. Variant if any boss beat fell (flag `paris_boss_sent`). The line depends on the player's first damage-control pick, which the story layer reads from the boss result (the same data as LO-16's "first pick is `stop`"; track S to expose it):
+- first pick `stop`: "You called the bank straight away, and that was the right first step. We'll see what it can recall.";
+- otherwise: "We called the bank together first thing; that's always the first step. We'll see what it can recall."
+
+Either way the relief is about acting fast, not about the money, and there is no promise of a refund (§23.9).
+
 ## 18. Chapters 2–10 (map owned by `fraud-researcher`)
-**2 Amsterdam (slot 2, diff 2–3).**
+**2 Amsterdam (slot 2, diff 2–3).** *Full chapter spec: §22, which replaces this summary.*
 - Patterns: the "Hi Mum / new number" messenger scam, and the **task / easy-work job scam**.
 - Noor writes from a "new number" while her real number also messages you; call the old number (LO-07).
 - **Task scam:** a Kettle message recruits you for "easy online work". It leads to a fake task-platform website or app that shows small earnings and then asks for deposits to "unlock" tasks (LO-12, LO-02). The genuine twin is a real job message from a known contact that asks for nothing.
 - The Larchwick **payee-name check** shows "Name doesn't match" on the new-number request (LO-06).
 - Arc slot 2.
 
-**3 Paris (slot 3, diff 2–4).**
-- Patterns: CEO fraud and invoice IBAN change by **email** (business email compromise) at a partner office, plus a spoofed-caller-ID follow-up call (LO-06, LO-18). Genuine emailed supplier invoices are the twins.
-- The payee-name check appears twice: once mismatching, once **matching** while the request is still fake. Lesson: a match doesn't prove it's genuine.
-- Boss: a "CEO" email + call + secrecy, won by the four-eyes rule.
+**3 Paris (slot 3, diff 2–4).** Replaced by §23 (producer, 2026-11-19).
 
 **4 Madrid (slot 4, diff 2–4).**
 - Patterns: a spoofed Larchwick Bank SMS inside a genuine thread, then a "bank employee" call to move money to "safety" (LO-08, LO-05, LO-01).
@@ -496,6 +1365,16 @@ Requests to `frontend-engineer`:
 - **CR-14** (T-2.4b) Pusher messages accept optional `lang` and `translation`, with the same inline translation toggle as messages (0 s, freezes the timer). Not a merge blocker for Berlin.
 - **CR-15** (T-2.4b) Boss layer 1 shows at most one "You chose" line (fewest stars; tie → latest beat). Per-beat choice lines move to layer 2. Keep the validator's single-line `choice_worst` count.
 - **CR-16** (T-2.4b, only if QA triggers the §17 ruling 9 fallback) An interrupt trigger `on: what_now` so an interrupt arrives when the "What now?" step opens.
+- **CR-17** (Amsterdam, blocker; also used by Paris) From slot 2, `message.ask` is required on every scored beat whose request is `pay`, `enter_details` or `reply`, genuine or fraud. New `message.claims[]` (max 2) → `claim` checkables ("What they say"). §22.7.
+- **CR-18** (Amsterdam + Paris, blocker for the banking beats) Kind `start_transfer`, new class `step` (non-terminal, never decisive, no cap; genuine and fraud, standard and boss) → `banking` beat with `payee`, ≥ 1 verify and a dismiss. Payment-request page variant without a payee check. The no-match banner fix is Paris CR-23. §22.7.
+- **CR-19** (Amsterdam, non-blocker) Messenger "Not in your contacts" banner and profile photo checkable.
+- **CR-20** (Amsterdam, non-blocker) `message.recorded` for recorded-message calls.
+- **CR-21** (Amsterdam, non-blocker) Beat-bound pushers (`beat: <id>`).
+- **CR-22** (Paris, blocker or strategy re-run) Bank-details card in emails and messages. §23.11.
+- **CR-23** (Paris, blocker) Payee-check result screen with four results; holder name only on close match; coach mark with timer freeze. §23.5, §23.11.
+- **CR-24** (Paris, blocker for boss beat 3; voice-call fallback) Video-call variant: illustration and transcript only, no synthetic audio. §23.11.
+- **CR-25** (Paris, non-blocker) Earlier messages in email threads. §23.11.
+- **CR-26** (Paris, non-blocker) Business-account context in the bank app. §23.11.
 
 ## 20. Hand-offs
 - **frontend-engineer:** §3–§9, §14, CR-01 to CR-13, `balance.yaml` v3.

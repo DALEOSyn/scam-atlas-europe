@@ -19,5 +19,9 @@ export default defineConfig({
   test: {
     include: ['tests/unit/**/*.test.{ts,tsx}', 'tests/content/**/*.test.ts'],
     environment: 'node',
+    // Whole-tree scans (red-line lint over content/, docs/, brands.yaml) and full-chapter
+    // debrief renders take 5-8 s on loaded CI runners and hit Vitest's 5 s default
+    // (PR #17, PR #18). Unit tests stay fast; this only lifts the ceiling.
+    testTimeout: 30_000,
   },
 });

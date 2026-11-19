@@ -86,7 +86,10 @@ describe('App shell', () => {
 
     // The timing choice comes before the first timed scenario (GDD §8).
     await waitFor(() => screen.getByRole('heading', { name: 'How much time do you want?' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Standard timer' }));
+    // One choice (radio group) and Continue; Standard is pre-selected without reduced motion (QA m7).
+    expect((screen.getByRole('radio', { name: 'Standard timer' }) as HTMLInputElement).checked).toBe(true);
+    fireEvent.click(screen.getByRole('radio', { name: 'Standard timer' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     await waitFor(() => screen.getByText(/Zollgebühr 1,99 EUR/));
     assertFormsAreSafe(container);
     for (const a of scenario.actions) expect(screen.getByRole('button', { name: a.label })).toBeTruthy();
@@ -117,8 +120,9 @@ describe('App shell', () => {
     const scenario = loadExample();
     const { container } = render(<App loadFirst={async () => scenario} store={memoryless()} />);
     fireEvent.click(screen.getByRole('button', { name: 'Start' }));
-    await waitFor(() => screen.getByRole('button', { name: 'Timers off' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Timers off' }));
+    await waitFor(() => screen.getByRole('radio', { name: 'Timers off' }));
+    fireEvent.click(screen.getByRole('radio', { name: 'Timers off' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     await waitFor(() => screen.getByText(/Zollgebühr 1,99 EUR offen/));
     expect(screen.queryByRole('timer')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: /Open the link/ }));
@@ -174,7 +178,7 @@ describe('App error state (finding 13)', () => {
     await waitFor(() => screen.getByRole('alert'));
     expect(screen.getByRole('alert').textContent).toMatch(/could not be loaded/);
     fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
-    await waitFor(() => screen.getByRole('button', { name: 'Standard timer' }));
+    await waitFor(() => screen.getByRole('radio', { name: 'Standard timer' }));
     expect(warn).toHaveBeenCalled();
     warn.mockRestore();
   });

@@ -1,4 +1,7 @@
-/** Chapter end (UI_SPEC §9.2, GDD §7): stamp, plain-words summary "x of R", and what the next tier needs. */
+/**
+ * Chapter end (UI_SPEC §9.2, GDD §7): the stamp with the city ("Passport stamp: Berlin, gold"), the
+ * plain-words summary "x of R", and what the next tier needs. Stamp art comes later.
+ */
 import { useEffect, useRef } from 'preact/hooks';
 import type { ChapterSummary } from '../engine/chapter.ts';
 import { t, type MessageKey } from '../i18n/index.ts';
@@ -11,7 +14,9 @@ const NEED_KEYS: Record<NonNullable<ChapterSummary['nextTier']>['needs'][number]
   offfocus: 'tier_need_offfocus',
 };
 
-export function ChapterDone({ summary, onBack }: { summary: ChapterSummary; onBack: () => void }) {
+const TIER_WORD: Record<'bronze' | 'silver' | 'gold', MessageKey> = { bronze: 'stamp_word_bronze', silver: 'stamp_word_silver', gold: 'stamp_word_gold' };
+
+export function ChapterDone({ summary, city, onBack }: { summary: ChapterSummary; city?: string; onBack: () => void }) {
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => heading.current?.focus(), []);
   const next = summary.nextTier;
@@ -24,7 +29,7 @@ export function ChapterDone({ summary, onBack }: { summary: ChapterSummary; onBa
         </h1>
         {summary.stamp ? (
           <p>
-            <strong>{t(stampKey)}</strong>
+            <strong data-stamp={summary.stamp}>{city ? t('stamp_city', { city, tier: t(TIER_WORD[summary.stamp]) }) : t(stampKey)}</strong>
           </p>
         ) : null}
         {summary.stamp === 'gold' ? <p>{t('stamp_gold_copy')}</p> : null}
@@ -53,7 +58,7 @@ export function ChapterDone({ summary, onBack }: { summary: ChapterSummary; onBa
         </details>
         <div class={styles.buttons}>
           <button type="button" class={styles.primary} onClick={onBack}>
-            {t('app_back_to_title')}
+            {t(city ? 'app_back_to_chapters' : 'app_back_to_title')}
           </button>
         </div>
       </section>

@@ -12,7 +12,7 @@ panels:
     crop: centre
     speaker: sanne
     expression: laughing
-    line: "Here's your key! Here everyone settles up by payment request, so expect a few."
+    line: "Here's your key! Everyone here settles up by payment request, even for coffee."
     local: { text: "Welkom!", lang: nl, translation: "Welcome!" }
     alt: "Sanne laughing by a small canal bridge full of bikes."
   - backdrop: amsterdam-guesthouse

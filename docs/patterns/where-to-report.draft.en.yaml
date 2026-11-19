@@ -499,7 +499,7 @@ countries:
           label: "Emergency"
       checked: 2026-11-19
       sources: [it-carabinieri-contro-truffe]
-      review_note: "G3 (2026-11-19): only partly verified. The number is right, but the fake-police / relative-in-trouble wording is not directly backed by the cited source. Open item 7 in docs/G3_SOURCES_CHECK.md."
+      review_note: "G3 (2026-11-19): only partly verified. The number is right, but the fake-police / relative-in-trouble wording is not directly backed by the cited source. Open item 7 in docs/patterns/G3_SOURCES_CHECK.md."
     - id: it-polizia-postale
       role: report
       name: "Polizia Postale e delle comunicazioni"

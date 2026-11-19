@@ -218,8 +218,12 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
       <section class={styles.scene} aria-labelledby="scene-h">
         <header class={styles.head}>
           <div>
-            <p class={styles.kicker}>{t('scene_story_label')}</p>
+            <p class={styles.kicker} aria-hidden="true">
+              {t('scene_story_label')}
+            </p>
             <h1 id="scene-h" ref={heading} tabIndex={-1} class={styles.title}>
+              {/* Screen-reader parity with the visible kicker: "Story scene: Berlin · Arrival". */}
+              <span class={styles.vh}>{t('scene_story_label')}: </span>
               {title}
             </h1>
           </div>

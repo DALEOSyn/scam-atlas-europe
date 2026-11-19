@@ -40,9 +40,11 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     expect(container.querySelectorAll('li[data-panel]').length).toBe(1);
     vi.useRealTimers();
     expect(document.activeElement?.id).toBe('scene-h');
-    // Item 14: the "Story scene" kicker sits outside the h1.
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Berlin · Arrival');
-    expect(container.querySelector('p[class*="kicker"]')?.textContent).toBe('Story scene');
+    // Item 14: the visible "Story scene" kicker sits outside the h1 (aria-hidden); the h1 carries a
+    // visually hidden "Story scene: " so screen readers hear the same.
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Story scene: Berlin · Arrival');
+    expect(container.querySelector('p[class*="kicker"]')?.textContent?.trim()).toBe('Story scene');
+    expect(container.querySelector('p[class*="kicker"]')?.getAttribute('aria-hidden')).toBe('true');
     const section = container.querySelector('section[aria-labelledby="scene-h"]') as HTMLElement;
     expect(section.querySelector('ol > li[tabindex="-1"] > figure > figcaption')).toBeTruthy();
     expect(within(section).getByText('Panel 1 of 3')).toBeTruthy();
@@ -132,7 +134,7 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     const scene = fixtureScene('interludes', 'interlude-cafe');
     const flip = { city: 'berlin', cityName: 'Berlin', ifThen: { cue: 'If a parcel message wants money or a click,', action: "then I open the courier's app myself." } };
     const { container } = render(<ScenePlayer scene={scene} heading="Between cities" vars={{ count: 4, lastCity: 'Rome' }} flip={flip} onFlip={onFlip} onDone={() => undefined} />);
-    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Between cities');
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toBe('Story scene: Between cities');
     expect(container.textContent).toContain('4 cities so far, the last one Rome.');
     expect(onFlip).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
@@ -385,7 +387,7 @@ describe('App: scenes around scenarios (retrofit hooks)', () => {
     await screen.findByRole('heading', { level: 1, name: /This was a scam/ });
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Back to the chapters' }));
-    await screen.findByRole('heading', { level: 1, name: 'Between cities' });
+    await screen.findByRole('heading', { level: 1, name: /Between cities/ });
     // No postcard is two chapters old yet, so the flip panel is left out.
     expect(screen.getByText('Panel 1 of 2')).toBeTruthy();
     expect(screen.getByText(/2 cities so far, the last one Madrid\./)).toBeTruthy();
@@ -393,5 +395,40 @@ describe('App: scenes around scenarios (retrofit hooks)', () => {
     await screen.findByRole('heading', { level: 1, name: 'Chapters' });
     const saved = JSON.parse(mem.data.get(SAVE_KEY) ?? '{}') as { story: { seen: string[] } };
     expect(saved.story.seen).toContain('interlude-cafe');
+  });
+  it('two sensitive interludes in one session each show their own content note (per-interlude gate)', async () => {
+    const middle = (city: string, slot: number) => chapterSchema.parse({ ...chapter, city, name: city[0]?.toUpperCase() + city.slice(1), slot, scenes: undefined });
+    const chapters = [middle('rome', 6), middle('madrid', 4)];
+    const s = freshSave();
+    s.chapters.rome = { finished: true, bestStamp: 'bronze', bestRating: 0, position: 0, run: null };
+    s.chapters.madrid = { finished: false, bestStamp: null, bestRating: 0, position: 1, run: { index: 0, records: [], flags: [] } };
+    s.story.postcards = ['rome'];
+    const mem = memory();
+    mem.data.set(SAVE_KEY, JSON.stringify(s));
+    const sensitive = (id: string, note: string): SceneRef => ({ folder: 'interludes', id, load: async () => ({ ...fixtureScene('interludes', 'interlude-cafe'), id, sensitive: true, content_note: note }) });
+    const refs = [sensitive('interlude-one', 'Note for the first interlude.'), sensitive('interlude-two', 'Note for the second interlude.')];
+    render(<App chapters={chapters} load={async () => ({ ...ex, id: 'home-00-example' })} sceneRefs={refs} store={createStore(mem)} />);
+    const playThrough = async () => {
+      const first = await screen.findByRole('button', { name: /Calm preset|Open the Trundle app yourself/ });
+      const wasTiming = /Calm preset/.test(first.textContent ?? '');
+      fireEvent.click(first);
+      if (wasTiming) fireEvent.click(await screen.findByRole('button', { name: /Open the Trundle app yourself/ }));
+      fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
+      await screen.findByRole('heading', { level: 1, name: /This was a scam/ });
+      fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+      fireEvent.click(await screen.findByRole('button', { name: 'Back to the chapters' }));
+    };
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+    await playThrough();
+    await screen.findByRole('heading', { level: 1, name: 'Before this story scene' });
+    expect(screen.getByText('Note for the first interlude.')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Skip this scene' }));
+    await screen.findByRole('heading', { level: 1, name: 'Chapters' });
+    // Play Rome again: on the way back the second interlude is due, and its note is shown too.
+    const rome = (await screen.findAllByRole('button', { name: /Rome/ }))[0] as HTMLElement;
+    fireEvent.click(rome);
+    await playThrough();
+    await screen.findByRole('heading', { level: 1, name: 'Before this story scene' });
+    expect(screen.getByText('Note for the second interlude.')).toBeTruthy();
   });
 });

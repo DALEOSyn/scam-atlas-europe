@@ -36,6 +36,8 @@ export const SOURCE_HOST_ALLOWLIST: readonly string[] = [
   'betaalvereniging.nl',
   'safeonweb.be',
   'febelfin.be',
+  'police.be',
+  'fsma.be',
   // Ireland
   'garda.ie',
   'ncsc.gov.ie',

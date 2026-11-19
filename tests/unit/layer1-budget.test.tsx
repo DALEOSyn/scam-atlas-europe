@@ -78,6 +78,8 @@ function layer1Words(container: Element): number {
   if (!section) throw new Error('no layer 1');
   const copy = section.cloneNode(true) as HTMLElement;
   copy.querySelectorAll('[role="img"]').forEach((e) => e.remove()); // stars
+  // CR-40 (docs/ENGINE.md): the advice line after advise_comply is shown in layer 1 but outside the 40-word budget.
+  copy.querySelectorAll('[data-advice-line]').forEach((e) => e.remove());
   copy.querySelectorAll('button').forEach((b) => {
     if (['More', 'Continue', 'Play again'].includes((b.textContent ?? '').trim())) b.remove();
   });

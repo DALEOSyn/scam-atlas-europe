@@ -1,0 +1,121 @@
+# 10-7 The IT desk answers your ticket: "I'll come by at 4 to look at the laptop in person." (GDD §30.4 10-7;
+# remote-access-support-call, in-focus genuine twin of the boss: help you asked for, through your own channel,
+# asks for nothing on the spot). Genuine, low stakes (a reply), difficulty 5, calm (no timer); interrupt (Teo)
+# at 15 s. You started it (your ticket), but the email is the desk's reply, so the normal response is proceed.
+# Checkables (G, 3): sender ("It fits": the owner part matches and you raised the ticket), reference (ticket
+# number: neutral wording, CONTENT_GUIDE: reference numbers look the same on fakes), request.
+# Red Line 8: the lesson is the contrast with the boss's remote-access asks; nothing is installed or shared.
+id: brussels-07-it-desk-visit
+chapter: brussels
+role: standard
+pattern: remote-access-support-call
+theme: support
+learning_objectives: [LO-15, LO-17]
+difficulty: 5
+is_fraud: false
+stakes: low
+device: email
+setup: "This morning you raised a ticket on Waymarker Desk: the projector laptop keeps freezing."
+brands: [waymarker, kettle]
+cast: [teo]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Waymarker IT desk", detail: "it-desk@waymarker-network.example" }
+  subject: "Re: Ticket WD-4471, projector laptop"
+  body: |
+    Hi Sam,
+
+    Thanks for the ticket. I'll come by at 4 to look at the laptop in person. Reply if 4 doesn't suit you.
+
+    IT desk
+  request: reply
+  ask: { text: "Reply if 4 doesn't suit you." }
+  references: ["Ticket WD-4471"]
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: the IT desk's address in the staff directory, on Waymarker's own domain. That isn't proof on its own, so weigh it with what it asks."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: reference
+    reveal: "Shows ticket WD-4471, the number Waymarker Desk gave you this morning. Ticket numbers can be copied, so on its own it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: request
+    reveal: "A reply about a visit you asked for. Nothing to install, no code, no screen."
+    red_flag: false
+    type: request
+
+actions:
+  - id: reply_four_is_fine
+    label: "Reply: 4 is fine, thanks"
+    kind: proceed
+    outcome: it_desk_coming
+    pressure_target: true
+  - id: check_ticket_on_desk
+    label: "Check the ticket on Waymarker Desk"
+    kind: verify_in_app
+    outcome: ticket_visit_booked
+  - id: report_it_desk_email
+    label: "Report it as a scam"
+    kind: report
+    outcome: it_desk_email_reported
+  - id: delete_it_desk_email
+    label: "Delete it"
+    kind: ignore
+    outcome: it_desk_email_deleted
+
+interrupts:
+  - id: teo_projector_vibing
+    at_seconds: 15
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Grandpa Teo", detail: "Saved contact: Grandpa Teo (home)" }
+      from_cast: teo
+      body: "Noor says the projector is 'vibing'. Is that good?"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Teo's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what he asks for: a translation of 'vibing'."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_teo_vibing
+        label: "Reply: it's good, in Noor"
+        kind: proceed
+        outcome: teo_vibing_noted
+        pressure_target: true
+      - id: report_teo_vibing
+        label: "Report the message"
+        kind: report
+        outcome: teo_vibing_reported
+
+outcomes:
+  it_desk_coming:
+    narrative: "IT desk: \"See you at 4. Leave the laptop on the desk, please.\" At 4 they turn up, fix a setting and leave. Nothing to install, nothing to read out."
+  ticket_visit_booked:
+    narrative: "You open Waymarker Desk yourself. Ticket WD-4471: \"Visit booked, 4 pm.\" You reply that 4 is fine."
+  it_desk_email_reported:
+    narrative: "Reported. The IT desk writes back, puzzled: \"That was me, about your ticket. Still on for 4?\""
+  it_desk_email_deleted:
+    narrative: "You delete it. At 4 the IT desk turns up anyway, as booked in your ticket."
+  teo_vibing_noted:
+    narrative: "Teo: \"Good. I'll add it to my vocabulary list, under 'g'.\""
+  teo_vibing_reported:
+    narrative: "You reported it. Careful is good; this one really was Teo, asking about 'vibing'."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Your own ticket, answered by the IT desk you contacted."
+    what_works: "Replying was right."
+  layer2:
+    message_flags: []
+    notes: "Help you asked for, through your own channel, asks for nothing on the spot. Nobody needs your screen for that. Where to report and get help (Belgium) is on the help screen."
+  device_tip: "On a real device, check a support reply against your own ticket in the company's app or site. Real help you asked for never needs a code read out or an app installed on a call."
+  habit_card: calm-not-paranoid
+  sources: [be-febelfin-helpdesk-fraud, be-police-microsoft-scam-2024]

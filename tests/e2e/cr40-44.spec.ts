@@ -15,6 +15,29 @@ async function noFullscreenNoAudio(page: Page) {
 }
 
 for (const width of [320, 1280]) {
+  test(`QA B1 at ${width}px: each checkable of the forwarded DM appears once, inside the card, and fits its box`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 800 });
+    await open(page, 'fx-cr40-advice');
+    const card = page.locator('[data-forwarded]');
+    await expect(card).toBeVisible();
+    const targets = await page.locator('[data-check]').evaluateAll((els) => els.map((e) => e.getAttribute('data-check') ?? ''));
+    expect(targets).toEqual(expect.arrayContaining(['forwarded.sender', 'reference', 'request', 'claim']));
+    expect(new Set(targets).size, `duplicated targets: ${targets.join(', ')}`).toBe(targets.length);
+    // CR-40/41: nothing checkable in Noor's own bubble; the reference is the DM's words, not hers.
+    await expect(page.locator('[data-check]:not([data-forwarded] [data-check])')).toHaveCount(0);
+    await expect(card.locator('[data-check="reference"]')).toHaveCount(1);
+    // No pill spills past its own border or out of the card.
+    const spill = await page.locator('[data-forwarded] [data-check]').evaluateAll((els) => {
+      const box = document.querySelector('[data-forwarded]')?.getBoundingClientRect();
+      // Inline pills wrap over several lines: every line box of the pill stays inside the card.
+      return els.flatMap((e) =>
+        [...e.getClientRects()].flatMap((r, i) => (box && (r.left < box.left - 1 || r.right > box.right + 1) ? [`${e.getAttribute('data-check') ?? ''} line ${i + 1}: outside the card`] : [])),
+      );
+    });
+    expect(spill).toEqual([]);
+    await noOverflow(page);
+  });
+
   test(`CR-40 at ${width}px: a forwarded card inside Noor's chat, with its own checkable sender`, async ({ page }) => {
     await page.setViewportSize({ width, height: 800 });
     await open(page, 'fx-cr40-advice');

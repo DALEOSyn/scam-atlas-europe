@@ -173,6 +173,15 @@ const HEADINGS: Record<string, Partial<Record<'clicked' | 'entered_details' | 's
   'amsterdam-07-easy-work': { clicked: "Opened, called or replied", paid: "Paid or gave card details" },
   'amsterdam-08-jonas-rent': { paid: "Paid or gave card details" },
   'amsterdam-09-boss-last-evening': { clicked: "Clicked the link", paid: "Paid or gave card details" },
+  'brussels-02-poster-parcel': { clicked: "Clicked the link", entered_details: "Entered your details" },
+  'brussels-03-new-bank-details': { paid: "Paid or gave card details" },
+  'brussels-04-noor-easy-money': { entered_details: "Shared a login or card details" }, // authored
+  'brussels-05-noor-friend': { entered_details: "Shared a login or card details" }, // authored
+  'brussels-08-mateus-new-number': { paid: "Paid or gave card details" },
+  'brussels-09-boss-helpdesk': { clicked: "Called the number they gave", shared_code: "Shared a code or approved a request" }, // clicked authored (pop-up number)
+  'brussels-arc-close': { paid: "Sent money" },
+  'brussels-arc-recovery-offer': { paid: "Sent money" },
+  'brussels-arc-teo': { clicked: "Replied, moved to another app or kept a secret" },
   'amsterdam-arc-alex-02': { clicked: "Replied, moved to another app or kept a secret" },
   'berlin-03-address-incomplete': { clicked: "Clicked the link", entered_details: "Entered your details", paid: "Paid or gave card details" },
   'berlin-04-teo-customs': { clicked: "Clicked the link", paid: "Paid or gave card details" },
@@ -351,6 +360,8 @@ describe('shipped content (after merging CR-36…44, Rome, Lisbon, Stockholm and
   /** Expiry on the opening message, played in the chapter's slot: [stars, points] (R21 changes marked). */
   const EXPIRY: Record<string, [number, number]> = {
     'amsterdam-05-warehouse-interview': [2, 10],
+    'brussels-01-print-invoice': [0, 0], // R21 (Brussels)
+    'brussels-06-desk-signin': [0, 0], // R21 (Brussels)
     'berlin-06-payment-failed': [0, 0], // R21: was ★, 5
     'dublin-01-tea-money': [0, 0], // R21 (merged from main)
     'dublin-05-ellisfen-sheet': [2, 10],

@@ -1,0 +1,98 @@
+# 10-5 Drill: Noor's friend already said yes (GDD §30.4 10-5; money-mule-recruitment). Unscored.
+# CR-41: damage control for someone off-cast (`recovery_for: { label: "Noor's friend", voiced_by: noor }`),
+# harmful-pick feedback in Noor's voice. The friend is never named, drawn or cast. Noor herself never shared
+# anything (R19(1)).
+# Steps (6, 2 harmful; MMR §7 order): stop_sharing (stop, new) · tell_trusted_adult (stop) ·
+# call_bank_known_number (stop) · change_password (secure) · harmful keep_quiet · harmful one_more_to_end_it (new).
+# Spec wording per step ("today: a parent, carer, teacher…", "now, on the number on her card or in the app",
+# "her banking login and passcodes") can't be authored per scenario (labels are shared; feedback is for harmful
+# steps only), so it lives in layer 2, in MMR §7 order.
+# "After the picks (every branch)": the engine has no narrative after damage control, so Noor's closing line
+# opens layer 2 (as Rome 6-6). Both branches run the same damage control (psych 2, round 1): "it'll blow over"
+# gets Noor's "I don't think it will. Help me pick what she does first?". No consequence sentence here (BX7: it
+# lives in 10-4 only).
+id: brussels-05-noor-friend
+chapter: brussels
+role: drill
+pattern: money-mule-recruitment
+learning_objectives: [LO-16, LO-12, LO-18]
+difficulty: 4
+is_fraud: false
+device: messenger
+brands: [kettle]
+cast: [noor]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Noor", detail: "Saved contact: Noor" }
+  from_cast: noor
+  body: "One more thing. My friend from football already sent her login and card details last night. She's really worried now. What should she do first?"
+  request: reply
+  ask: { text: "What should she do first?" }
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: Noor's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what she asks for: your advice for a friend, not money or a code."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: request
+    reveal: "She asks what her friend should do first. That's a question you can help with."
+    red_flag: false
+    type: request
+
+actions:
+  - id: talk_it_through_noor
+    label: "Talk it through with Noor, step by step"
+    kind: proceed
+    outcome: helping_noors_friend
+    pressure_target: true
+  - id: say_it_will_blow_over
+    label: "Say it'll probably blow over"
+    kind: reply
+    outcome: noor_not_so_sure
+
+outcomes:
+  helping_noors_friend:
+    narrative: "Noor: \"Okay. She's scared, but she wants to fix it. What first?\""
+    recovery_for: { label: "Noor's friend", voiced_by: noor }
+    recovery:
+      - { step: stop_sharing, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: change_password, category: secure }
+      - step: keep_quiet
+        category: harmful
+        feedback: "She wants it to go away. But getting help early is the right move."
+      - step: one_more_to_end_it
+        category: harmful
+        feedback: "If anyone pressures you to keep going, that's a reason to get help now."
+  noor_not_so_sure:
+    narrative: "Noor: \"I don't think it will. Help me pick what she does first?\""
+    recovery_for: { label: "Noor's friend", voiced_by: noor }
+    recovery:
+      - { step: stop_sharing, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: change_password, category: secure }
+      - step: keep_quiet
+        category: harmful
+        feedback: "She wants it to go away. But getting help early is the right move."
+      - step: one_more_to_end_it
+        category: harmful
+        feedback: "If anyone pressures you to keep going, that's a reason to get help now."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Already said yes? It's not too late."
+    what_works: "Stop, tell an adult, call the bank."
+  layer2:
+    message_flags: []
+    notes: "Noor: \"She's telling her mum tonight. They'll call the bank together, go to the police, and report the account. And I'm warning the team chat.\" Stop. Tell a trusted adult today: a parent, carer, teacher or another adult she trusts. Call the bank now on the number on the card or in the app. Change the banking login and passcodes. Go to the police with an adult. Report the account. Warn friends. Where to report and get help (Belgium) is on the help screen."
+  device_tip: "Keep your bank's number from the back of your card in your phone before you ever need it."
+  habit_card: stop-the-damage-first
+  already_clicked:
+    entered_details: "Shared a login or card details? It's not too late: change the login, call your bank on the number on your card, and tell a trusted adult."
+    headings: { entered_details: "Shared a login or card details" }
+  sources: [eu-europol-mule-flyer-be-fr, be-febelfin-money-mules, be-febelfin-games-campaign-2025, be-febelfin-fraudstop-2026]

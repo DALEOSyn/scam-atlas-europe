@@ -65,12 +65,14 @@ cards:
     habit: "Asked by message for money you didn't expect, or to an account that isn't theirs? Call a number you already had. For requests you didn't agree in person."
     example: "\"Noor\" on a new number wants €84 today? A call from you, on Noor's saved number."
     already_clicked: "Call your bank now on the number on your card (with a parent or trusted adult if you're under 18). Don't pay a second request."
+  # R19(5) (Brussels, GDD §30.11): the example and already-clicked lines gain Brussels' account-lending case;
+  # the habit sentence is unchanged.
   - id: easy-money-costs-you
     lo: LO-12
     title: "Easy money costs you"
     habit: "A real job pays you. If a 'job' wants a deposit, a top-up, a fee or a fine before you can earn or withdraw, or your ID copy before any contract, stop and talk to someone you trust."
-    example: "A job you never applied for wants your ID by chat? Look the agency up yourself."
-    already_clicked: "Stop paying: no last fee releases the money. Tell a trusted adult, call your bank on the number on your card, and keep the chats."
+    example: "A job you never applied for wants your ID by chat? Look the agency up yourself. Someone online wants to 'use your account for a few transfers'? Say no and ask someone."
+    already_clicked: "Stop paying: no last fee releases the money. Tell a trusted adult, call your bank on the number on your card, and keep the chats. Shared your login or card? Change your login, call your bank on the number on your card, and tell a trusted adult."
   - id: check-who-gets-the-money
     lo: LO-06
     title: "Check who gets the money"
@@ -112,3 +114,13 @@ cards:
     habit: "Before you pay, look the firm up yourself on the regulator's register, and contact it only through the details the register gives. Not on the register? Don't pay, even if the warning list is clean. If you're asked to pay to get your money out, or back: stop."
     example: "A famous face recommends a platform in an ad? Find the firm on the register yourself. Not there? Don't pay."
     already_clicked: "Paid already? Stop paying, call your bank now on the number on your card, keep the chats, and report the firm. Ignore anyone who offers to get it back for a fee."
+  # Brussels (GDD §30.11, LO-14; T-3.12). First shown in the finale block (close beat and Teo's chat); the
+  # example uses no scam name, platform or amount. Sourced to be-fsma-dating-platforms-2026 (another app; steering
+  # to money; never send money to someone only met online) and be-police-romance-2026 (photo check). Cards have no
+  # sources field; the citations are on the close beat and Teo's chat.
+  - id: a-real-friend-never-needs-your-money
+    lo: LO-14
+    title: "A real friend never needs your money"
+    habit: "Someone you've only met online moves you to another app or steers you to money? Tell someone you trust, do a photo check, and never send money."
+    example: "A new online friend's 'easy profits' come with an invitation? Ask someone before you reply."
+    already_clicked: "Sent money already? Stop paying, tell someone you trust, call your bank on the number on your card, and keep the chat history. Ignore anyone who offers to get it back for a fee."

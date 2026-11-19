@@ -1,0 +1,68 @@
+# Arc finale: the close beat (GDD §30.6; CR-43). Plays only if the Alex arc is still open on entering Brussels,
+# after the boss's debrief and damage control. Unscored for the chapter (arc points only); no timer (R22).
+# Alex sends nothing new (§28.5 item 6): the chat shows Alex's last message (slot 9's) as it stands, under
+# "Earlier" with "Yesterday" (§30.6), not as a new bubble under "Today" (QA round 1). A chat beat needs a
+# body, so the slot-9 message's own last word, "Please?", stays as the body: no new words from Alex. Its amount
+# sentence ("…and I need €300 by tomorrow") is left out so that no amount a player may have sent appears in the
+# finale (§28.5 item 8, "no amounts lost anywhere").
+# Both options open the reveal card (CR-43(b), R22: reveal on every outcome) and set arc_told_someone (a report
+# or a photo check). Reveal: the one Alex portrait under "The same picture Alex used.", names from the
+# chapter's arc_finale.reveal_names (Alex, Robin, Sacha), and the engine's fixed line under it.
+id: brussels-arc-close
+chapter: brussels
+role: arc
+finale: close
+learning_objectives: [LO-14]
+is_fraud: true
+device: messenger
+setup: "The Open Evening is tomorrow. You open your chat with Alex one more time."
+brands: [wordswap]
+cast: [alex]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Alex", detail: "Practice partner from Wordswap" }
+  from_cast: alex
+  earlier:
+    - { when: "Yesterday", body: "I'm in trouble. My account's frozen. You're the only one I can ask." }
+  body: "Please?"
+  request: none
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows Alex, your practice partner from Wordswap, as any profile would. A profile name and picture can be borrowed, so they can't prove anything either way."
+    red_flag: false
+    type: sender
+
+actions:
+  - id: photo_check_alex
+    label: "Do a photo check on Alex's picture"
+    kind: verify_identity
+    outcome: alex_same_picture
+  - id: report_alex_profile
+    label: "Report the profile"
+    kind: report
+    outcome: alex_profile_reported
+
+outcomes:
+  alex_same_picture:
+    narrative: "The photo check finds the same picture on other profiles, with other names."
+    reveal: true
+    sets_flags: [arc_told_someone]
+  alex_profile_reported:
+    narrative: "You report the profile to Wordswap. Its check finds the same picture on other profiles, with other names."
+    reveal: true
+    sets_flags: [arc_told_someone]
+
+debrief:
+  variant: arc
+  layer1:
+    tell: "Same picture, other names."
+    what_works: "A photo check and a trusted person beat a feeling."
+  layer2:
+    message_flags: []
+    notes: "A clean photo check doesn't prove a profile is real: pictures can be made with AI. Telling someone is what works. Where to report and get help (Belgium) is on the help screen."
+  habit_card: a-real-friend-never-needs-your-money
+  already_clicked:
+    paid: "Sent money already? Stop paying, tell someone you trust, call your bank on the number on your card, and keep the chat history. Ignore anyone who offers to get it back for a fee."
+  sources: [be-police-romance-2026, be-fsma-dating-platforms-2026, eu-esas-ai-scams-factsheet-nl]

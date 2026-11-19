@@ -1,0 +1,197 @@
+# 10-3 Same Ruchelune thread, real address: "our bank has changed … the old account closes today at 5"
+# (GDD §30.4 10-3; payment-detail-change callback, Paris). Fraud, difficulty 5, timer 35 s; interrupt (Teo)
+# at 14 s. Levers authority (a real supplier, real thread), urgency. The real mailbox is misused; how is never
+# shown (BX6). Twin of brussels-01-print-invoice (5 checkables each).
+# Checkables (5; R 2): sender D (BX6, the sender-or-link decoy) · reference D · the IBAN D · claim R (new
+# bank details by email) · request R (pay a new account, today). The "closes today at 5" deadline is a
+# layer-2 text flag, not a checkable (a claim is never a deadline).
+# Banking beat: payee typed from the email, "Ruchelune"; the name check doesn't match (no holder shown,
+# CR-23). Business account (Waymarker events), so the damage control has no tell_trusted_adult; Paris's
+# supplier steps (call_bank_stop_payment carries "try to stop or recall"; warn_creditor_known_number is the
+# warn step; reply_ask_money_back is the shipped "reply and ask for it back" step).
+id: brussels-03-new-bank-details
+chapter: brussels
+role: standard
+pattern: payment-detail-change
+theme: supplier
+twin_of: brussels-01-print-invoice
+learning_objectives: [LO-06, LO-18]
+difficulty: 5
+is_fraud: true
+device: email
+setup: "Mid-morning. The posters are sorted, and the Ruchelune thread pings again."
+brands: [ruchelune, larchwick, waymarker, kettle]
+cast: [ines, adaeze, teo]
+pressure:
+  timer: true
+  levers: [authority, urgency]
+
+message:
+  sender: { display: "Ruchelune accounts", detail: "compta@ruchelune.example" }
+  subject: "Re: Atlas print run"
+  body: |
+    Sam, small change: our bank has changed this month. For the poster reprint (invoice R-2614, €480.00), please use our new account below. The old account closes today at 5, so today would be ideal.
+
+    Merci ! (Thanks!)
+    Ruchelune
+  request: pay
+  ask: { text: "please use our new account below" }
+  claims:
+    - text: "our bank has changed this month"
+  payee: { name: "Ruchelune", iban: "BE•• … 7720" }
+  references: ["invoice R-2614"]
+  earlier:
+    - from: "Ruchelune accounts"
+      when: "This morning"
+      body: "Bonjour Sam, the Atlas print run is delivered. Invoice R-2611 is attached: €1,180.00. Please pay it to our usual account, as on Waymarker's supplier list. Due within 30 days. Merci ! (Thanks!) Ruchelune"
+  l10n_note: "'Merci !' is small talk from a Paris printer, translated inline, as in 10-1. Keep it in every locale."
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows compta@ruchelune.example, Ruchelune's real address, in your real thread. A real mailbox can be misused, so it can't prove anything either way. Judge the request."
+    red_flag: false
+    type: sender
+  - target: reference
+    reveal: "Shows invoice R-2614, a real-looking number. Anyone in the thread can copy one, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: payee.iban
+    reveal: "A Belgian account. Accounts can be opened anywhere, so it can't prove anything either way."
+    red_flag: false
+    type: payee
+  - target: claim
+    reveal: "New bank details by email. That's the change to check, on a number you already have."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "Pay a new account, today. A change of bank details is a reason to call before you pay."
+    red_flag: true
+    type: request
+
+actions:
+  - id: pay_new_account
+    label: "Pay the new account in Larchwick Pro"
+    kind: start_transfer
+    next_beat: reprint_transfer
+    pressure_target: true
+  - id: call_ruchelune_directory_change
+    label: "Call Ruchelune on the directory number"
+    kind: call_back_known
+    outcome: ines_no_change
+  - id: ask_adaeze_change
+    label: "Ask Adaeze to check it with you"
+    kind: ask_someone
+    outcome: adaeze_rings_first
+  - id: report_new_details
+    label: "Report it as a scam"
+    kind: report
+    outcome: new_details_reported
+  - id: leave_new_details
+    label: "Leave it"
+    kind: ignore
+    outcome: new_details_left
+
+beats:
+  - id: reprint_transfer
+    device: banking
+    message:
+      bank: { brand: larchwick-pro }
+      account: { nickname: "Waymarker events" }
+      payee: { name: "Ruchelune", iban: "BE•• … 7720", name_check: mismatch, amount: "€480.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "Doesn't match: this account isn't held by Ruchelune."
+        red_flag: true
+        type: payee
+      - target: payee.iban
+        reveal: "The account number from the email. An IBAN looks the same whoever holds it, so it can't prove anything either way. The name check tells you more."
+        red_flag: false
+        type: payee
+    actions:
+      - id: pay_reprint_anyway
+        label: "Pay €480.00 anyway"
+        kind: pay
+        outcome: reprint_paid
+        pressure_target: true
+      - id: cancel_call_ruchelune_change
+        label: "Cancel and call Ruchelune on the directory number"
+        kind: call_back_known
+        outcome: ines_no_change
+      - id: cancel_report_reprint
+        label: "Cancel and report it"
+        kind: report
+        outcome: new_details_reported
+      - id: cancel_reprint
+        label: "Cancel"
+        kind: ignore
+        outcome: reprint_cancelled
+
+interrupts:
+  - id: teo_sandwiches
+    at_seconds: 14
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Grandpa Teo", detail: "Saved contact: Grandpa Teo (home)" }
+      from_cast: teo
+      body: "Noor has eaten all the sandwiches. I'm told this is normal."
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Teo's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what he asks for: nothing, just a sandwich report."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_teo_sandwiches
+        label: "Reply: save me a crust"
+        kind: proceed
+        outcome: teo_crust
+        pressure_target: true
+      - id: report_teo_sandwiches
+        label: "Report the message"
+        kind: report
+        outcome: teo_sandwiches_reported
+
+outcomes:
+  reprint_paid:
+    narrative: "Paid. Inès rings that afternoon: \"Did you pay the reprint? We never changed banks.\""
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: warn_creditor_known_number, category: warn }
+      - { step: keep_transfer_evidence, category: secure }
+      - { step: report_to_police_online, category: report }
+      - step: reply_ask_money_back
+        category: harmful
+        feedback: "Asking for it back feels fair, but the reply goes to whoever is misusing the mailbox. Call your bank and Ruchelune on the numbers you already have."
+      - { step: wait_and_see, category: harmful }
+  ines_no_change:
+    narrative: "Inès, on the number in Ruchelune's staff directory: \"We haven't changed banks! Thank you for calling. We're telling our IT now.\""
+  adaeze_rings_first:
+    narrative: "Adaeze: \"New details? We ring them first. Always.\" She calls the directory number. Inès: \"We haven't changed banks!\""
+  new_details_reported:
+    narrative: "Reported. Adaeze rings Ruchelune on the directory number: they never changed banks, and they're telling their IT."
+  new_details_left:
+    narrative: "You leave it. Five o'clock comes and goes, and nothing closes. The reprint invoice can wait for a phone call."
+  reprint_cancelled:
+    narrative: "You cancel. Nothing is sent. A call on the directory number will sort out the reprint."
+  teo_crust:
+    narrative: "Teo: \"A crust has been reserved. Noor is negotiating.\""
+  teo_sandwiches_reported:
+    narrative: "You reported it. Careful is good; this one really was Teo, reporting on sandwiches."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "New bank details by email, with a same-day deadline."
+    what_works: "Call on a number you already have."
+  layer2:
+    message_flags:
+      - "\"The old account closes today at 5\": a same-day deadline, so you pay before anyone checks."
+    notes: "The address was real and the thread was real. The change was the tell, and a phone call to a number you already have catches it. Where to report and get help (Belgium) is on the help screen."
+  device_tip: "In a real banking app, never add new bank details from an email. Call the supplier first on the number you already had, then pay."
+  habit_card: check-who-gets-the-money
+  already_clicked:
+    paid: "Paid the new account? Call your bank now on the number you already have and ask it to try to stop or recall the payment. Then warn the supplier on its known number, and keep the emails."
+  sources: [be-febelfin-vop-faq, eu-europol-ceo-bec-leaflet, eu-epc-threats-2025, fr-cybermalveillance-fiche-faux-rib, fr-fbf-cles-faux-rib-2025]

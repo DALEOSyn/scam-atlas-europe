@@ -1,0 +1,65 @@
+# Chapter 10 — Brussels (finale). GDD §30. Slot 10, difficulty 4–5, boss 5. 8 scored scenarios (3 genuine =
+# 37.5%), plus drill 10-5 (Noor's friend) and, after the boss, the arc finale block (CR-43): close beat, reveal,
+# arc damage control, the Backhaven recovery-agency test, Teo's chat and the red-flag timeline, dispatched by the
+# engine from the saved arc state (GDD §30.6, R22(1)). No arc beat (slot 9 is the last, CR-43(f)).
+# Habit (H): "Nobody who contacted you gets your screen, your codes or your account. Hang up or say no, then
+# check on a number or app you already know, and ask someone."
+# New patterns: remote-access-support-call (boss; 10-7 genuine twin) and money-mule-recruitment (10-4; drill 10-5).
+# Callbacks (GDD §30.1, one per earlier habit family): payment-detail-change (10-1 genuine twin, 10-3),
+# smishing-parcel-fee (10-2), the family-impersonation chat pattern (10-8), e-id-approval-on-call (10-6 genuine twin,
+# boss beat 3), recovery-scam (arc ending C, the recovery-agency test).
+# balance.yaml caps callbacks at 2 per chapter; the finale reviews every earlier habit (GDD §30.5), so the validator
+# exempts arc_finale chapters from that cap (scripts/lib/rules.ts, T-3.12; for game-designer to confirm).
+# Mix (GDD §30.1): truth G F F · F G G F F(boss), max run 3; themes supplier 10-1, 10-3; parcel 10-2; easy-money
+# 10-4; work 10-6; support 10-7, boss; family 10-8 (never adjacent); pressure parity genuine 2/3 (10-1, 10-6
+# honest timers) vs fraud 4/5 (10-2, 10-3, 10-8, boss); genuine at difficulty 4 and 5; sender-or-link decoys in
+# 10-2, 10-3 and the boss. 10-4 is calm on purpose (a sensitive topic; Noor asks before anything is due).
+# Help card: layer 2 of every Brussels debrief points to "Where to report and get help (Belgium)"; its wording is
+# in the chapter 10 sources file in docs/patterns ("Belgium help card") and the BE rows of the where-to-report
+# list. Real bodies appear only there and on the help screen (Red Line 1). The schema has no per-chapter
+# help-card field yet, so this is the pointer.
+# Story scenes (GDD §30.2, STORY §3.10: arrival, turn, the resolution list with the brussels_bank_called opening,
+# one ending scene per arc ending, feelings, the Open Evening) are T-3.12 part 2. The validator does not require
+# `scenes`, so it is left out until those scenes exist (part 2 adds
+# scenes: { arrival: brussels-arrival, turn: brussels-turn, resolution: [brussels-resolution-open,
+# brussels-ending-<variant>…, brussels-feelings, brussels-open-evening] }).
+slot: 10
+city: brussels
+name: "Brussels"
+status: complete
+patterns: [remote-access-support-call, money-mule-recruitment]
+callbacks: [payment-detail-change, smishing-parcel-fee, messenger-family-impersonation, e-id-approval-on-call, recovery-scam]
+lo_focus: [LO-15, LO-12, LO-18, LO-16, LO-14, LO-13, LO-08, LO-09, LO-06, LO-07, LO-02, LO-03, LO-17]
+scenario_order:
+  am: [brussels-01-print-invoice, brussels-02-poster-parcel, brussels-03-new-bank-details]
+  pm: [brussels-04-noor-easy-money, brussels-05-noor-friend, brussels-06-desk-signin, brussels-07-it-desk-visit, brussels-08-mateus-new-number, brussels-09-boss-helpdesk]
+boss: brussels-09-boss-helpdesk
+intro: "Brussels: the Open Evening is in two days. The Atlas is printed, Teo and Noor are on their way, and the projector laptop is being difficult."
+content_note: "This chapter ends the trip, including the Alex storyline. It touches on friendship, feeling let down, money and a teenager being offered easy money. You can pause or skip any story scene, and help is one tap away."
+content_note_arc_closed: "This chapter ends the trip and touches on money and a teenager being offered easy money. You can pause or skip any story scene, and help is one tap away."
+rules:
+  title: "Adaeze's Open Evening rules"
+  items:
+    - "Nobody who contacted you gets your screen, your codes or your account."
+    - "Pause, check on a number or app you already know, and ask someone."
+atlas_cards: [easy-money-costs-you, nobody-needs-your-screen, a-real-friend-never-needs-your-money, ask-someone]
+arc_finale:
+  close: brussels-arc-close
+  recovery_offer: brussels-arc-recovery-offer
+  teo: brussels-arc-teo
+  reveal_names: ["Alex", "Robin", "Sacha"]
+  reveal:
+    tell: "Same picture, other names."
+    habit: "A photo check and a trusted person beat a feeling."
+  # Ending C's arc damage control (GDD §30.6; scored as arc points, no amounts; opens with the engine's "Alex was
+  # never real. The lie was theirs, not yours.", R22(4); shuffled, R22(7)). Spec deviation (§30.4 shared rule,
+  # "tell_trusted_adult is stop in every personal-money fall"): tell_trusted_adult replaces keep_evidence ("the
+  # chat history", which stays in the close beat's and the habit card's already-clicked lines). 6 options,
+  # exactly 2 harmful (GDD §9).
+  damage_control:
+    - { step: stop_paying, category: stop }
+    - { step: call_bank_known_number, category: stop }
+    - { step: tell_trusted_adult, category: stop }
+    - { step: report_firm_to_regulator, category: report }
+    - { step: pay_last_fee, category: harmful }
+    - { step: add_more_to_test, category: harmful }

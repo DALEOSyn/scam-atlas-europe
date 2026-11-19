@@ -191,6 +191,28 @@ export function segmentMessage(m: Pick<Message, 'body' | 'transcript' | 'referen
   return { body: m.body ? (segs[0] ?? []) : [], transcript: segs.slice(1), leftover };
 }
 
+type Segmentable = Pick<Message, 'body' | 'transcript' | 'references' | 'phone_numbers' | 'ask' | 'claims'> & Partial<Pick<Message, 'listing' | 'forwarded'>>;
+
+/**
+ * CR-40: the segments of a forwarded message's card: its body with the beat's checkables, and the ones not
+ * quoted in it as chips inside the card. Undefined when the beat forwards nothing.
+ */
+export function forwardedSegments(m: Segmentable): MessageSegments | undefined {
+  return m.forwarded ? segmentMessage({ ...m, body: m.forwarded.body, transcript: undefined }) : undefined;
+}
+
+/**
+ * Leftover chips for the bubble around the body (QA B1, Brussels 10-4). With a forwarded card, a checkable the
+ * card draws (inline or as its own chip) belongs to the forwarded message and is never drawn again in the
+ * forwarder's bubble, where a screen reader would read it as their words. Without one, all leftovers stay.
+ */
+export function outerLeftover(m: Segmentable, segs: MessageSegments = segmentMessage(m)): MessageSegments['leftover'] {
+  const inner = forwardedSegments(m);
+  if (!inner) return segs.leftover;
+  const owned = new Set([...inner.body.flatMap((x) => (x.kind === 'check' ? [x.target] : [])), ...inner.leftover.map((x) => x.target)]);
+  return segs.leftover.filter((x) => !owned.has(x.target));
+}
+
 /** Word count for the "Show more" rule on long e-mails (UI_SPEC §3). */
 export function words(text: string | undefined): number {
   return text ? text.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length : 0;

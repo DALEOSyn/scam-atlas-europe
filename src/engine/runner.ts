@@ -20,7 +20,7 @@
  * - The clock and timer freeze while any freeze reason is active (pause menu,
  *   settings, help, debrief, Take a breath, an expanded translation).
  */
-import type { Action, ActionKind, Message, Device, Scenario, WhatNow } from '../content/schema.ts';
+import type { Action, ActionClass, ActionKind, Message, Device, Scenario, WhatNow } from '../content/schema.ts';
 import type { CheckableBeat } from './inspect.ts';
 import { checkablesOf, keyOf } from './inspect.ts';
 import { armBeat, firePusher, planPushers, startPushers, stopPushers, type PusherPlan, type PusherState } from './pushers.ts';
@@ -174,6 +174,14 @@ export function beatById(s: Scenario, id: string): BeatLike | undefined {
     return { id: 'start', device: s.device, message: s.message, inspectables: s.inspectables, actions: s.actions, banner: s.banner, what_now: s.what_now };
   }
   return s.beats.find((b) => b.id === id) ?? s.interrupts.find((i) => i.id === id);
+}
+
+/**
+ * A setup step: `proceed` that only moves on (next_beat, no outcome) from a beat whose message asks
+ * nothing (`request: none`), e.g. 0-3's "check your inbox" page → the reset email. Never decisive.
+ */
+export function isSetupStep(beat: Pick<BeatLike, 'message'>, action: Pick<Action, 'next_beat' | 'outcome'>, cls: ActionClass): boolean {
+  return cls === 'proceed' && action.next_beat !== undefined && action.outcome === undefined && beat.message.request === 'none';
 }
 
 function storyBeat(s: Scenario, id: string): BeatLike | undefined {
@@ -579,6 +587,10 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
         let ended: RunnerState = { ...withGroup(next, { ...g2, pendingOutcome: action.outcome }), phase: 'what_now', timer: null, pushers: stopPushers(next.pushers) };
         for (const i of ended.interrupts) if (i.afterBeat !== undefined && !i.arrived && g2.visited.includes(i.afterBeat)) ended = arriveInterrupt(ctx, ended, i.id);
         return ended;
+      } else if (isSetupStep(beat, action, cls)) {
+        // GDD §6 / §16 ruling 2: proceeding from a setup beat (an opener that asks nothing) is not the
+        // decisive action. Recording it would let a timer expiry on the next beat score as that proceed
+        // (QA T-2.8 M1), and would end LO-01/LO-04 credit (checks and pauses "before deciding") early.
       } else {
         if (cls === 'engage' && !g2.firstEngage) g2 = { ...g2, firstEngage: { id: action.id, label: action.label } };
         g2 = {

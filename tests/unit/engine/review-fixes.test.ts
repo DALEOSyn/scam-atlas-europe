@@ -6,7 +6,7 @@ import { debriefOf } from '../../../src/engine/debrief.ts';
 import { beginChapter, commitScenario, finishChapter, nextScenarioId, runFlags } from '../../../src/engine/game.ts';
 import { clampDt, useSave } from '../../../src/engine/hooks.ts';
 import { maxPointsOfScenario, resultOf } from '../../../src/engine/result.ts';
-import { step, viewOf } from '../../../src/engine/runner.ts';
+import { isSetupStep, step, viewOf } from '../../../src/engine/runner.ts';
 import { createStore, freshSave, type SaveState, type StorageLike } from '../../../src/engine/save.ts';
 import { scenarioSchema, type Scenario } from '../../../src/content/schema.ts';
 import { rawFraud, rawGenuine, scenario } from '../../content/fixtures.ts';
@@ -178,10 +178,44 @@ describe('producer rulings', () => {
 
   it('0-3: the opener\'s proceed is not decisive once the next beat is reached', () => {
     const s = home('home-03-password-reset');
-    // Tutorial grace (ruling L4): slot 0 scores a report on genuine ★, 0 points; it still counts as reported.
-    expect(play(s, ctx({ slot: 0 }), [act('go_to_inbox'), act('report_reset')]).r).toMatchObject({ stars: 1, points: 0, genuineReported: 1 });
+    // Tutorial grace (ruling L4, ★ = 5 by producer ruling T-2.8): slot 0 scores a report on genuine ★, 5 points; it still counts as reported.
+    expect(play(s, ctx({ slot: 0 }), [act('go_to_inbox'), act('report_reset')]).r).toMatchObject({ stars: 1, points: 5, genuineReported: 1 });
     expect(play(s, ctx({ slot: 1 }), [act('go_to_inbox'), act('report_reset')]).r).toMatchObject({ stars: 0, points: -5, genuineReported: 1 });
     expect(play(s, ctx({ slot: 0 }), [act('go_to_inbox'), act('use_reset_link')]).r).toMatchObject({ stars: 3, points: 15 });
+  });
+
+  it('0-3: opener proceed, then the timer runs out twice on the reset email → scored as expiry, not as the proceed (QA T-2.8 M1)', () => {
+    const s = home('home-03-password-reset');
+    for (const slot of [0, 1]) {
+      const c = ctx({ slot });
+      const ticks = Array.from({ length: 400 }, () => tick(1));
+      const { st, r } = play(s, c, [act('go_to_inbox'), ...ticks]);
+      expect(st.phase).toBe('done');
+      expect(r.beats[0], `slot ${slot}`).toMatchObject({ stars: 1, points: 5, timerExpired: true });
+      expect(r).toMatchObject({ stars: 1, points: 5 });
+      const dd = debriefOf(s, st, r, { pressureAny: true, pressureGenuine: true });
+      expect(dd.layer1.allBest).toBe(false);
+      expect(dd.layer2.deadline).toBe('genuine');
+    }
+  });
+
+  it('a setup step is never decisive: checks and a pause on the next beat still count as "before deciding" (LO-01, LO-04)', () => {
+    const s = home('home-03-password-reset');
+    const c = ctx({ slot: 0 });
+    const st = run(s, c, [act('go_to_inbox')]);
+    expect(st.groups[0]?.decision).toBeUndefined();
+    const checked = run(s, c, [act('go_to_inbox'), check('sender.detail', 'reset_email')]);
+    expect(checked.groups[0]?.checkedBefore.length).toBe(1);
+  });
+
+  it('isSetupStep: only a non-terminal proceed from a beat that asks nothing', () => {
+    const none = { message: { request: 'none' } } as Parameters<typeof isSetupStep>[0];
+    const asks = { message: { request: 'log_in' } } as Parameters<typeof isSetupStep>[0];
+    expect(isSetupStep(none, { next_beat: 'x' }, 'proceed')).toBe(true);
+    expect(isSetupStep(asks, { next_beat: 'x' }, 'proceed')).toBe(false); // e.g. 0-2 "Tap the link": a click on fraud stays a fall
+    expect(isSetupStep(none, { next_beat: 'x', outcome: 'o' }, 'proceed')).toBe(false);
+    expect(isSetupStep(none, { outcome: 'o' }, 'proceed')).toBe(false);
+    expect(isSetupStep(none, { next_beat: 'x' }, 'verify')).toBe(false);
   });
 });
 

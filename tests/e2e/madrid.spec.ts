@@ -130,13 +130,13 @@ test('Madrid 4-3: calling the number in the text, then hanging up and calling th
   test.setTimeout(90_000);
   await resumeMadrid(page, 2);
   await option(page, 'Call the number in the text').click();
-  // CR-45 dependency: today the call the player placed rings with "Answer"; after CR-45 it is an outgoing
-  // call that connects on its own. Either way the transcript and "Hang up" follow, so the path below holds.
-  const answer = page.getByRole('button', { name: 'Answer', exact: true });
-  const hangUp = page.getByRole('button', { name: 'Hang up', exact: true });
-  await expect(answer.or(hangUp).first()).toBeVisible({ timeout: 10_000 });
-  if (await answer.isVisible()) await answer.click();
-  await hangUp.click();
+  // CR-45: the player placed this call, so it dials ("Calling…", then "Connected"); no Answer or Decline.
+  await expect(page.locator('#device-heading')).toHaveText('Call to 9•• ••• •14');
+  await expect(page.locator('[data-dialled-detail]')).toHaveText('The number from the text');
+  await expect(page.getByRole('button', { name: 'Answer', exact: true })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Decline', exact: true })).toHaveCount(0);
+  await expect(page.locator('[data-call-state]')).toHaveText('Connected', { timeout: 5000 });
+  await page.getByRole('button', { name: 'Hang up', exact: true }).click();
   await expect(page.getByRole('heading', { level: 3, name: 'What now?' })).toBeVisible();
   await option(page, 'Call the number on your card').click();
   await expect(consequenceHeading(page)).toBeFocused();
@@ -148,6 +148,9 @@ test('Madrid 4-3: calling the number in the text, then hanging up and calling th
   await page.getByText('More', { exact: true }).click();
   await expect(page.getByText(/^Behind that number: a recorded menu/)).toBeVisible();
   await expect(page.getByText(/If you'd called/)).toHaveCount(0);
+  // CR-45: the "If you already…" sub-heading over "Called the number?" names the call, not a link.
+  await expect(page.getByText('Called the number they gave', { exact: true })).toBeVisible();
+  await expect(page.getByText('Clicked the link', { exact: true })).toHaveCount(0);
   await axeClean(page);
 });
 
@@ -176,12 +179,19 @@ test('Madrid boss 4-9: the ideal run (app, hang up and call the card, call the c
   await b3.click();
   // Andrés says good night (after beat 3), then the debrief.
   const goodNight = page.locator('[data-interrupt-action]', { hasText: 'buenas noches' }).first();
+  let sawSpan = false;
   for (let i = 0; i < 60 && !(await debriefHeading(page).isVisible()); i++) {
-    if (await goodNight.isVisible()) await goodNight.click();
+    if (await goodNight.isVisible()) {
+      // CR-45: the Spanish words in the label carry lang="es" for screen readers.
+      await expect(goodNight.locator('span[lang="es"]')).toHaveText('¡buenas noches!');
+      sawSpan = true;
+      await goodNight.click();
+    }
     else if (await cont.isVisible()) await cont.click();
     await page.waitForTimeout(500);
   }
   await expect(debriefHeading(page)).toBeVisible();
+  expect(sawSpan).toBe(true);
   await expect(page.getByRole('img', { name: '3 of 3 stars' })).toBeVisible();
   // QA (Madrid round 2): the app line is conditional, and no later beat restates the full balance.
   await page.getByText('More', { exact: true }).click();

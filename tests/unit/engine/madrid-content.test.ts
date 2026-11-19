@@ -11,7 +11,8 @@ import { recordOf, summarise, type ScenarioRecord } from '../../../src/engine/ch
 import { maxPointsOfScenario, redFlagCount, resultOf } from '../../../src/engine/result.ts';
 import { step, type RunnerContext, type RunnerEvent, type RunnerState } from '../../../src/engine/runner.ts';
 import { readYaml, ROOT } from '../helpers.ts';
-import { act, B, check, ctx, play, run, tag } from './helpers.ts';
+import { act, B, check, ctx, play, run, tag, tick } from './helpers.ts';
+import { classOf } from '../../../src/engine/scoring.ts';
 
 const DIR = 'content/scenarios/madrid';
 const chapter = chapterSchema.parse(readYaml('content/chapters/madrid.yaml'));
@@ -196,9 +197,13 @@ describe('Madrid genuine twins and calls (ruling R9)', () => {
     expect(play(s, T(), [act('wait_for_code'), act('type_code_checkout')]).r.stars).toBe(3);
     expect(play(s, T(), [act('wait_for_code'), act('open_app_first')]).r.stars).toBe(3);
     expect(play(s, T(), [act('wait_for_code'), act('report_code_text')]).r.points).toBe(-5);
-    expect(play(s, T(), [act('close_checkout')]).r.stars).toBe(0);
+    expect(play(s, T(), [act('wait_for_code'), act('leave_adapter')]).r.stars).toBe(0);
   });
 
+  it('4-6: the checkout opener has one action, the setup step (CR-45 single-action opener; the old workaround option is gone)', () => {
+    const s = get('madrid-06-real-code-for-you');
+    expect(s.actions.map((a) => a.id)).toEqual(['wait_for_code']);
+  });
   it('4-7: reading out the code falls (6 options); the card\'s number on "What now?" is ★★★', () => {
     const s = get('madrid-07-cancellation-code');
     const fell = play(s, c(), [act('read_out_cancel_code')]);
@@ -329,5 +334,30 @@ describe('Madrid drill 4-4 and arc beat', () => {
     const s = get('madrid-arc-alex-04');
     expect(s.arc_slot).toBe(4);
     expect(play(s, c(), [act('change_topic_alex')]).r.stars).toBeNull();
+  });
+});
+
+describe('Madrid R21: timer expiry on a genuine scenario never beats its dismiss option', () => {
+  const expire: RunnerEvent[] = Array.from({ length: 400 }, () => tick(1));
+  // [expiry stars, expiry points, the dismiss option it scores as]
+  const EXPIRY: Record<string, [number, number, RunnerEvent[]]> = {
+    'madrid-02-real-card-call': [2, 10, [act('hang_up_card_team'), whatNow('done')]], // low stakes: as "Hang up", then "Leave it there"
+    'madrid-06-real-code-for-you': [0, 0, [act('wait_for_code'), act('leave_adapter')]], // psych M1: the code text's "Leave it, buy the adapter later"
+  };
+  it('timed genuine scenarios are exactly 4-2 and 4-6, and their expiry scores are pinned', () => {
+    const timed = [...all.values()].filter((s) => !s.is_fraud && s.pressure.timer && s.role !== 'arc' && s.role !== 'drill');
+    expect(timed.map((s) => s.id).sort()).toEqual(Object.keys(EXPIRY).sort());
+    for (const [id, [stars, points, dismiss]] of Object.entries(EXPIRY)) {
+      const s = get(id);
+      const expired = play(s, c(), expire).r.beats[0];
+      expect([id, expired?.timerExpired, expired?.stars, expired?.points]).toEqual([id, true, stars, points]);
+      const left = play(s, c(), dismiss).r.beats[0];
+      expect([id, left?.stars, left?.points]).toEqual([id, stars, points]);
+    }
+  });
+  it('4-6: no dismiss on the opener, so the expiry looks ahead to the code text', () => {
+    const s = get('madrid-06-real-code-for-you');
+    expect(s.actions.filter((a) => classOf(B, a.kind) === 'dismiss')).toEqual([]);
+    expect(s.beats[0]?.actions.filter((a) => classOf(B, a.kind) === 'dismiss').map((a) => a.id)).toEqual(['leave_adapter']);
   });
 });

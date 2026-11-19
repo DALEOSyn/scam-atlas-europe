@@ -109,7 +109,8 @@ interrupts:
         reassures: true
     actions:
       - id: reply_lucia_coffee
-        label: "Reply: ¡sí, gracias!"
+        label: "Reply: {lang:es}¡sí, gracias!{/lang}"
+        translation: "yes, thanks!"
         kind: proceed
         outcome: lucia_coffee_on
         pressure_target: true

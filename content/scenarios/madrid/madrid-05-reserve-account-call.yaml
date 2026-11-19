@@ -164,4 +164,5 @@ debrief:
   already_clicked:
     clicked: "Followed a caller's steps in your app? Hang up, then call the number on your card."
     paid: "Moved money? Call your bank now on the number on your card and ask it to try to stop or recall the transfer. Keep the texts and the call log."
+    headings: { clicked: "Followed the caller's steps" }   # CR-45: no link here; as Rome 6-4
   sources: [es-incibe-smishing-bank-callback-2025, es-bde-vishing-2020, ch-ncsc-double-phishing-2026, it-carabinieri-21-arresti-2025, pl-cert-fake-consultants, fr-bdf-osmp-2024, eu-eba-ecb-fraud-2025, eu-epc-threats-2025, fr-inc-vop-2025, eu-ec-ipr-vop-2025, eu-eurlex-ipr-2024-886, eu-ecb-ipr, es-bde-msr2025-fraude]

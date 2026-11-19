@@ -272,7 +272,8 @@ interrupts:
         reassures: true
     actions:
       - id: reply_buenas_noches
-        label: "Reply: ¡buenas noches!"
+        label: "Reply: {lang:es}¡buenas noches!{/lang}"
+        translation: "good night!"
         kind: proceed
         outcome: andres_good_night
         pressure_target: true
@@ -339,7 +340,8 @@ outcomes:
   b3_deleted:
     narrative: "Deleted. The thread goes quiet."
   andres_good_night:
-    narrative: "Andrés: \"😴 Hasta mañana.\""
+    narrative: "Andrés: \"😴 {lang:es}Hasta mañana.{/lang}\""
+    translation: "See you tomorrow."
   andres_good_night_reported:
     narrative: "You reported it. Careful is good; this one really was Andrés, saying good night."
 
@@ -360,4 +362,5 @@ debrief:
   already_clicked:
     clicked: "Called the number? Hang up, then call the number on your card and tell your bank what happened."
     paid: "Moved money? Call your bank now on the number on your card and ask it to try to stop or recall the transfer. Keep the texts and the call log."
+    headings: { clicked: "Called the number they gave" }   # CR-45: beat 1's "Call the number and follow their steps" is a pay, so the auto heading fell back to "Clicked the link"
   sources: [es-incibe-smishing-bank-callback-2025, es-bde-sms-callerid-spoofing-2022, es-incibe-sms-banks-2022, es-bde-vishing-2020, ch-ncsc-double-phishing-2026, it-carabinieri-21-arresti-2025, pl-cert-fake-consultants, fr-bdf-osmp-2024, eu-eba-ecb-fraud-2025, eu-epc-threats-2025, eu-ecb-ipr, es-bde-msr2025-fraude]

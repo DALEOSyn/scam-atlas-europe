@@ -80,4 +80,5 @@ debrief:
   habit_card: pressure-is-the-tell
   already_clicked:
     clicked: "Called a number a text gave you? Hang up and call the number on your card."
+    headings: { clicked: "Called the number they gave" }   # CR-45: the auto heading ("Clicked the link") fits no Madrid drill pick
   sources: [es-incibe-smishing-bank-callback-2025, es-bde-sms-callerid-spoofing-2022]

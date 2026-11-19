@@ -2,8 +2,9 @@
 # the genuine twin of 4-7, and the thread twin of 4-3 and 4-8). Genuine, high stakes (a code), difficulty 4,
 # slot timer 50 s with the honest deadline "Code valid 5 minutes", an honest follow-up from the checkout
 # page, and an interrupt (Andrés, small talk). The player started it (player_started).
-# Opens on the Thimble & Pine checkout (opener beat, request: none; "Wait for the code" is a setup step,
-# GDD §6 opener ruling), then the code text in the same Larchwick thread as this morning's fake (4-3),
+# Opens on the Thimble & Pine checkout (opener beat, request: none; "Wait for the code" is its only action,
+# a setup step under CR-45's single-action opener rule; the old "Close the page and buy it later" workaround
+# is gone, "Leave it, buy the adapter later" on the code text is the dismiss), then the code text in the same Larchwick thread as this morning's fake (4-3),
 # shown muted in the thread history and not checkable.
 # Checkables on the code text (G, 5; parity with 4-7): sender (M1 neutral + "you started this"), the
 # payment (It fits: something the player started), the "never share" claim (neutral), the card's number
@@ -53,10 +54,6 @@ actions:
     label: "Wait for the code"
     kind: proceed
     next_beat: code_text
-  - id: close_checkout
-    label: "Close the page and buy it later"
-    kind: ignore
-    outcome: adapter_later
 
 beats:
   - id: code_text
@@ -133,7 +130,8 @@ interrupts:
         reassures: true
     actions:
       - id: reply_andres_pasta
-        label: "Reply: ¡pasta, genial!"
+        label: "Reply: {lang:es}¡pasta, genial!{/lang}"
+        translation: "pasta, great!"
         kind: proceed
         outcome: andres_pasta_thanks
         pressure_target: true

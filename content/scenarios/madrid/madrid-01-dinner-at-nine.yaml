@@ -2,7 +2,8 @@
 # Off-focus for Madrid: its pattern (family impersonation by chat) is not in the chapter's patterns or
 # callbacks, so calling Andrés to check is an off-focus double check that costs gold (as Berlin 1-2;
 # GDD §24.7 row 2). Checkables (G, 2): sender + request.
-# Language: the engine marks a whole message's language (lang + translation), not a phrase inside it, so
+# Language: a message body takes lang + translation for the whole message (CR-45 inline spans are for
+# action labels and outcome narratives only, e.g. "¡Genial!" below), so
 # Andrés writes the whole message in Spanish with the spec's English as the inline translation (GDD §24.1
 # flavour rule; the spec had an English body with a Spanish greeting). Never a red flag.
 id: madrid-01-dinner-at-nine
@@ -62,7 +63,8 @@ actions:
 
 outcomes:
   lentils_at_nine:
-    narrative: "Andrés: \"¡Genial! Nine o'clock. Come hungry.\""
+    narrative: "Andrés: \"{lang:es}¡Genial!{/lang} Nine o'clock. Come hungry.\""
+    translation: "Great!"
   andres_puzzled:
     narrative: "Andrés, puzzled but cheerful: \"Yes, it's me. Lentils at nine!\" A good habit, and this time a quick reply would have done."
   dinner_reported:

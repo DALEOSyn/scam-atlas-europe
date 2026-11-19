@@ -264,6 +264,7 @@ outcomes:
     sets_flags: [lisbon_acted_fast]
     recovery:
       - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
       - { step: report_listing_or_host, category: report }
       - { step: report_to_police, category: report }
       - { step: keep_chatting_host, category: harmful }

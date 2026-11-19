@@ -125,6 +125,8 @@ describe('Lisbon strategy rows (GDD §27.7)', () => {
   it('row 1 ideal: 168 points, 13 spotted, gold', () => {
     const r = summary({});
     expect(r.points).toBe(168);
+    expect(r.spotted).toBe(13);
+    expect(r.redFlags).toBe(13);
     expect(r.stamp).toBe('gold');
   });
 
@@ -155,6 +157,23 @@ describe('Lisbon strategy rows (GDD §27.7)', () => {
     expect(r.stamp).toBe('gold');
   });
 
+  it('row 6b: always tag the link or QR destination + always verify nets 4, one short of silver (bronze)', () => {
+    const r = summary({
+      'lisbon-01-graca-studio': [act('read_reviews_first')],
+      'lisbon-02-meter-sticker': [...tagAll('start', 'qr.destination'), act('open_zonelet_sticker')],
+      'lisbon-03-alfama-ad': [...tagAll('start', 'link'), act('search_roostwell_ad')],
+      'lisbon-05-printed-meter': [...tagAll('start', 'qr.destination'), act('open_zonelet_printed')],
+      'lisbon-06-host-partner-page': [...tagAll('start', 'link'), act('check_listing_app')],
+      'lisbon-07-parking-slip': [...tagAll('start', 'qr.destination'), act('check_zonelet_notice')],
+      'lisbon-08-city-tax-email': [...tagAll('start', 'link'), act('check_trips_first')],
+      [BOSS]: [...tagAll('start', 'link'), act('open_roostwell_b1'), cont, act('check_booking_b2'), cont, ...tagAll('final_sms', 'link'), act('open_roostwell_b3')],
+    });
+    expect(r.correctTags).toBe(6);
+    expect(r.wrongTags).toBe(2);
+    expect(r.spotted).toBe(4);
+    expect(r.stamp).toBe('bronze');
+  });
+
   it('row 7 blind always-verify: bronze', () => {
     const r = summary({
       'lisbon-01-graca-studio': [act('read_reviews_first')],
@@ -171,14 +190,15 @@ describe('Lisbon strategy rows (GDD §27.7)', () => {
 });
 
 describe('Lisbon boss: three ways out of the app', () => {
-  it('beat 2: starting the transfer opens the unscored banking step; confirming falls with five options, led by asking the bank to stop it', () => {
+  it('beat 2: starting the transfer opens the unscored banking step; confirming falls with six options, led by asking the bank to stop it', () => {
     const s = get(BOSS);
     let st = run(s, T(), [act('open_roostwell_b1'), cont, act('pay_in_larchwick_b2'), act('confirm_send_b2'), cont, act('open_roostwell_b3')]);
     for (let i = 0; i < 6 && st.phase !== 'damage_control' && st.phase !== 'done'; i++) {
       st = st.phase === 'interrupt' ? step(s, T(), st, { type: 'interrupt_act', interruptId: 'leonor_see_you', actionId: 'reply_leonor_obrigado' }) : step(s, T(), st, cont);
     }
     expect(st.phase).toBe('damage_control');
-    expect(st.recovery?.options).toHaveLength(5);
+    expect(st.recovery?.options).toHaveLength(6);
+    expect(st.recovery?.options.map((o) => o.step)).toContain('tell_trusted_adult');
     expect(st.recovery?.options.map((o) => o.step)).toContain('call_bank_stop_payment');
   });
 
@@ -187,5 +207,84 @@ describe('Lisbon boss: three ways out of the app', () => {
     const falls = Object.values(s.outcomes).filter((o) => o.recovery && o.recovery.length > 0);
     expect(falls.length).toBe(3);
     for (const o of falls) expect(o.sets_flags ?? []).toContain('lisbon_acted_fast');
+  });
+});
+
+describe('Lisbon: R20 and the genuine city-tax email', () => {
+  it('R20: Leonor\'s in-app follow-up is on_fall: show and still arrives after a beat-2 fall', () => {
+    const s = get(BOSS);
+    const leonor = s.interrupts.find((i) => i.id === 'leonor_see_you');
+    expect(leonor?.on_fall).toBe('show');
+    expect(leonor?.after_beat).toBe('final_sms');
+    let st = run(s, T(), [act('open_roostwell_b1'), cont, act('pay_in_larchwick_b2'), act('confirm_send_b2'), cont, act('open_roostwell_b3')]);
+    let sawLeonor = false;
+    let sawDamageControl = false;
+    for (let i = 0; i < 8 && st.phase !== 'done'; i++) {
+      if (st.phase === 'interrupt') {
+        sawLeonor = true;
+        st = step(s, T(), st, { type: 'interrupt_act', interruptId: 'leonor_see_you', actionId: 'reply_leonor_obrigado' });
+      } else if (st.phase === 'damage_control') {
+        sawDamageControl = true;
+        st = step(s, T(), st, recover(['call_bank_stop_payment', 'tell_trusted_adult', 'report_listing_or_host']));
+      } else st = step(s, T(), st, cont);
+    }
+    expect(sawDamageControl).toBe(true);
+    expect(st.interrupts.find((i) => i.id === 'leonor_see_you')?.skipped ?? false).toBe(false);
+    expect(sawLeonor).toBe(true);
+    expect(st.phase).toBe('done');
+  });
+
+  it('7-8 carries no payment link (only the booking page) and its correct action is pay_protected', () => {
+    const s = get('lisbon-08-city-tax-email');
+    const links = (s.message.body ?? '').match(/\b[\w.-]+\.example\/\S*/g) ?? [];
+    expect(links).toEqual(['roostwell.example/trips/4471']);
+    expect(s.message.request).toBe('pay');
+    const target = s.actions.find((a) => a.pressure_target);
+    expect(target?.kind).toBe('pay_protected');
+    expect(play(s, T(), [act(target?.id ?? '')]).r.stars).toBe(3);
+  });
+});
+
+describe('Lisbon: every fall on a money action offers tell_trusted_adult (sceptic round 3)', () => {
+  const MONEY = new Set(['pay', 'pay_unprotected', 'enter_details', 'start_transfer', 'log_in']);
+  // Falls reached from a money action, found by following actions (and beat actions) to their outcomes.
+  const moneyFalls = (s: Scenario): string[] => {
+    const acts = [...s.actions, ...s.beats.flatMap((b) => b.actions ?? [])];
+    return acts.filter((a) => MONEY.has(a.kind) && a.outcome && s.outcomes[a.outcome]?.recovery).map((a) => a.outcome as string);
+  };
+  it('lists every money fall', () => {
+    const all7 = [...all.values()].flatMap((s) => moneyFalls(s).map((o) => `${s.id}:${o}`));
+    expect(all7.sort()).toEqual(
+      [
+        'lisbon-02-meter-sticker:card_taken_meter',
+        'lisbon-03-alfama-ad:deposit_taken',
+        'lisbon-06-host-partner-page:securepay_taken',
+        'lisbon-07-parking-slip:card_taken_slip',
+        `${BOSS}:login_typed_b1`,
+        `${BOSS}:transfer_sent_b2`,
+        `${BOSS}:card_typed_b3`,
+      ].sort(),
+    );
+  });
+  // PENDING: these six lists are already at the six-step cap with every correct step and two harmful
+  // ones. The producer ruling (drop one harmful) conflicts with GDD §9 / content:validate ("exactly 2
+  // harmful"), so they wait for a ruling on that rule. Remove each id here once its list has the step;
+  // the second assertion fails if one gains it without being removed, so this list can't go stale.
+  const PENDING = new Set([
+    'lisbon-02-meter-sticker:card_taken_meter',
+    'lisbon-03-alfama-ad:deposit_taken',
+    'lisbon-06-host-partner-page:securepay_taken',
+    'lisbon-07-parking-slip:card_taken_slip',
+    `${BOSS}:login_typed_b1`,
+    `${BOSS}:card_typed_b3`,
+  ]);
+  it('each includes tell_trusted_adult as a stop step (except the pending lists)', () => {
+    for (const s of all.values()) {
+      for (const o of moneyFalls(s)) {
+        const step = s.outcomes[o]?.recovery?.find((r) => r.step === 'tell_trusted_adult');
+        if (PENDING.has(`${s.id}:${o}`)) expect([s.id, o, step]).toEqual([s.id, o, undefined]);
+        else expect([s.id, o, step?.category]).toEqual([s.id, o, 'stop']);
+      }
+    }
   });
 });

@@ -113,7 +113,7 @@ interrupts:
     is_fraud: false
     device: messenger
     message:
-      sender: { display: "Mateus", detail: "Saved contact: Mateus (work phone)" }
+      sender: { display: "Mateus", detail: "Saved contact: Mateus" }
       from_cast: mateus
       body: "Mum asks: do you eat octopus? Be honest."
       request: reply

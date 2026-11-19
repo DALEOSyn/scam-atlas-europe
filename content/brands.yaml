@@ -586,6 +586,24 @@ brands:
     trademark_search: "web-checked 2026-11-19; TMview/EUIPO and INPI-PT pending before G4"
     status: draft
 
+  - id: glimmerfund
+    name: "Glimmerfund"
+    sector: online trading platform (scam-only, Alex arc)
+    role_in_game: >
+      Alex's platform in the cross-game arc (GDD §28.5, slots 5–9). Named only in Alex's arc lines, never in a
+      chapter's scored scenario or debrief, so no chapter can unmask it. No page or dashboard is drawn
+      outside the arc's text; never a real service.
+    domain: glimmerfund.example
+    rationale:
+      name: "Coined: 'glimmer' + 'fund'. No exact hit (BRAND_CHECK DS5); never shorten it to 'Glimmer'."
+      colour_shape: "No mark drawn: the name appears as plain text in Alex's messages, so no palette or shape can echo a real trading app."
+    checked_against: ["Glimmer (investor profile)", "Gimmelfund", "Real trading and investment apps (BRAND_CHECK DS5)"]
+    web_check: "Low–Medium. Keep (BRAND_CHECK DS5)."
+    lookalike_examples: []
+    trademark_search: "web-checked 2026-11-19; formal TMview/EUIPO pending before G4"
+    status: draft
+    # Added by Lisbon (T-3.9) for arc slot 7; Dublin (GDD §28) registers the same brand: keep one copy.
+
 # Not yet registered (request ux-artist before writing these scenarios): streaming service (0-4 now
 # uses Kettle, so possibly not needed), utility company (Rome), in-world regulator warning list
 # (Dublin), remote-support tool (finale).

@@ -1,7 +1,7 @@
 # Story bible — Scam Atlas: Europe
 
-Owners: `game-designer` + `learning-psychologist` (psychology sections), `scenario-writer` (voice) · Status: **v1.3 (T-S1; sceptic and learning-psychologist PASS on v1.2, plus final polish; aligned to the reviewed Amsterdam §22.1 and Paris §23.13 story beats and the producer answers)** · Last update: 2026-11-19
-Related: `docs/PLAN.md` Phase 3 track S, `docs/DECISIONS.md` D-S1, `docs/GDD.md` §2, §10, §15–§18, §22, §23, `content/cast.yaml`, `content/habit_cards.yaml`, `docs/patterns/MAP.md`, `docs/ART_DIRECTION.md` (S2, to come), `docs/PSYCHOLOGY.md` (sources for the principles named here).
+Owners: `game-designer` + `learning-psychologist` (psychology sections), `scenario-writer` (voice) · Status: **v1.3 (T-S1; sceptic and learning-psychologist PASS on v1.2, plus final polish; aligned to the reviewed Amsterdam §22.1 and Paris §23.13 story beats and the producer answers; v1.4 draft: Madrid §3.4 and Warsaw §3.5 aligned to the GDD §24.2 and §25.2 specs, in review)** · Last update: 2026-11-19
+Related: `docs/PLAN.md` Phase 3 track S, `docs/DECISIONS.md` D-S1, `docs/GDD.md` §2, §10, §15–§18, §22–§25, `content/cast.yaml`, `content/habit_cards.yaml`, `docs/patterns/MAP.md`, `docs/ART_DIRECTION.md` (S2, to come), `docs/PSYCHOLOGY.md` (sources for the principles named here).
 
 > This file states no fraud facts. Patterns per city come from `docs/patterns/MAP.md` and the chapter specs. Every chapter's scams live **only in device scenarios**, which carry the debrief (Red Line 4). Scenes carry people, places and habits. Sample lines are drafts: the `scenario-writer` owns the final wording, within the rules in §4. The If-then lines in §3 are the exception: they are reviewed wording and are reused word for word (§4.4).
 
@@ -67,7 +67,7 @@ From "I'm the inspector, I'd never fall for that" to "anyone can be caught, and 
 | Amsterdam | **Sanne** (19), student, works the desk at your guesthouse, job hunting after a rent rise; her mum and little brother off screen. Known channel "Guesthouse desk"; story scenes only (GDD §22.1) | Capable; worries a scam on her mum was her fault, learns it wasn't; her mum is a capable parent who rang the real number | warm, laughing, worried, relieved, focused (for "determined") |
 | Paris | **Solène Arbogast**, director of Ruchelune (print-and-design cooperative); **Bastien Morel**, accounts officer, on leave; **Inès Roussel** (17), apprentice designer. Margaux (front desk) is a directory entry, not cast (GDD §23.10) | Inès capable (spots the plumber fake in drill 3-3), then targeted (3-5); Solène stretched thin, firm on the procedure | Solène: worried, calm, relieved, warm · Inès: focused, worried, calm, proud · Bastien: warm, calm |
 | Madrid | **Lucía Herrera** (34), night-shift nurse, your host; partner **Andrés** (36), teacher | Both capable; tiredness is the risk, not ability | Lucía: warm, calm, thinking, relieved · Andrés: worried, laughing, proud |
-| Warsaw | **Kasia Wójcik** (23), music student, Waymarker volunteer (Mateus is the fallible one) | Capable seller | warm, focused, laughing, calm |
+| Warsaw | **Kasia Wójcik** (23), music student, Waymarker volunteer (Mateus is the fallible one); her Kettle account is taken over off screen (GDD §25), never her fault. Contact only: **Ola** (fellow volunteer, saved as "Ola (volunteers)"; never drawn) | Capable seller | warm, focused, laughing, calm, worried (placed beat only) |
 | Rome | **Signora Bruna Esposito** (72), B&B owner, Teo's postcard pen-pal of 40 years; grandson **Davide** (19); granddaughter **Giulia** (22, abroad, video only) | Bruna capable and leads; Davide falls (GDD §15) | Bruna: warm, calm, thinking, proud · Davide: sheepish, worried, relieved · Giulia: laughing, relieved |
 | Lisbon | **Beatriz Ferreira** (20), Mateus's sister, room-hunting before her master's (not "Inês": that name belongs to Paris's Inès Roussel) | Capable once she slows down | laughing, worried, thinking, relieved |
 | Dublin | **Declan Byrne** (52), made redundant after 22 years at a warehouse; daughter **Róisín** (18), starting college | Declan tempted, checks; Róisín supportive | Declan: worried, thinking, sheepish, laughing · Róisín: worried, warm, proud |
@@ -75,7 +75,7 @@ From "I'm the inspector, I'd never fall for that" to "anyone can be caught, and 
 
 Any shop, studio or workshop name visible in art must be registered in `brands.yaml` first; until then, scenes describe them without names (Ruchelune is requested in GDD §23.10).
 
-**Name register (no name used twice for different people):** Teo, Noor, Adaeze, Mateus, Alex, Jonas, Mia, Sanne, Solène, Bastien, Inès (Roussel, Paris), Margaux (directory only), Lucía, Andrés, Kasia, Bruna, Davide, Giulia, Beatriz, Declan, Róisín, Jamal, Lina, Birgitta. Scam-side names (e.g. "Maître Vellacourt", "N. Vardoulec", "R. ••••", "K. ••••") are never cast and must not reuse a cast first name. New locals check this list first.
+**Name register (no name used twice for different people):** Teo, Noor, Adaeze, Mateus, Alex, Jonas, Mia, Sanne, Solène, Bastien, Inès (Roussel, Paris), Margaux (directory only), Lucía, Andrés, Kasia, Ola (contact only, Warsaw), Bruna, Davide, Giulia, Beatriz, Declan, Róisín, Jamal, Lina, Birgitta. Scam-side names (e.g. "Maître Vellacourt", "N. Vardoulec", "R. ••••", "K. ••••", "Olvarde Custodia SL" and "Larchwick Reserva" (Madrid), "TREMOLIK" and "Votelark" (Warsaw)) are never cast and must not reuse a cast first name. New locals check this list first.
 
 ---
 
@@ -147,26 +147,30 @@ Each block lists the patterns from MAP.md or the chapter spec (the scene never s
 - **Adaeze's story** (nearly paying the wrong account) is in interlude I2, so it stays order-free and Paris's turn stays with Inès and Solène.
 - **Safety:** Inès is shaken, then supported; the variants never blame and never promise money back (GDD §23.9).
 
-### 3.4 Madrid (map no. 4)
+### 3.4 Madrid (map no. 4) — scene content per GDD §24.2 (spec in review)
 - **Habit cards / LOs on the Atlas page:** `hang-up-call-back` (LO-08), `who-really-sent` (LO-01), `pressure-is-the-tell` (LO-04).
-- **Patterns:** spoofed bank SMS inside the genuine thread; fake bank-employee call, "move money to safety".
-- **Locals:** Lucía (your host), Andrés.
+- **Patterns (GDD §24):** spoofed bank SMS inside the genuine Larchwick thread; fake "security department" call that guides you to move money inside your real app to a "safe account"; code "to cancel" call (callback). Chapter habit: "No real bank asks you to move your money to keep it safe. Hang up, and call the number on your card."
+- **Locals:** Lucía (your host), Andrés. Neither is ever impersonated; their money is never in a scored scenario. Lucía's own near-miss is drill 4-4 (she slept on a text, then checked).
 - **Human problem:** they are saving for a deposit on their first flat; Lucía is on night shifts and exhausted.
-- **Arrival:** a sunny kitchen at 8 a.m.; Lucía coming home as you get up: "Coffee's there. I'm going to sleep for a year." Andrés: "Every euro is saved for the flat. Even this coffee is in a spreadsheet."
-- **Turn:** Andrés (worried): "The bank's been texting about the deposit transfer next week." (Soil only: the texts are never shown.) Lucía (calm), last: "After nights, my rule: no big decisions until I've slept. Not one."
-- **Resolution:** keys on the table: they got the flat. Lucía: "Sleepy or not, same rule."
-- **If-then panel (Lucía):** "If someone says my money isn't safe, then I hang up and call the number on my card."
+- **Arrival** (before 4-1; calm): a sunny kitchen at 8 a.m.; Lucía coming home as you get up: "Coffee's there. I'm going to sleep for a year." Andrés (laughing): "Every euro is saved for the flat. Even this coffee is in a spreadsheet."
+- **Turn** (stop point, after 4-3, before drill 4-4; worried → calm): Andrés (worried): "Next week we send the deposit for the flat. Biggest transfer of our lives. I keep checking the app." Lucía (calm), last: "After nights, my rule: no big decisions until I've slept. Not one." Andrés (laughing): "So I'll make the decisions. Kidding." *(Changed from v1.3: "The bank's been texting about the deposit transfer" is cut, because right before a drill about a fake bank text it would cast doubt on his real bank messages, §4.2 rule 2.)*
+- **Resolution** (after the boss debrief; relieved): two days later, keys on the table: they got the flat. Andrés (proud): "Signed. And I checked every step in the app myself." Lucía (warm): "Sleepy or not, same rule."
+  - **Variant `madrid_money_moved`** (story-only flag, set by the boss's fall outcomes): one panel before the If-then, Lucía (calm): "The bank was called straight away, the right first step. We'll see what it can recall." No refund promise. Andrés's "Signed" panel still plays.
+- **If-then panel (Lucía):** "If someone says my money isn't safe, then I hang up and call the number on my card." Extra line under it: "No real bank asks you to move your money to keep it safe."
 - **Invitation:** Lucía: "Our spare room is yours whenever you come. Bring an appetite."
-- **Safety:** money-fear theme; calm pacing (§5).
+- **Arc:** arc slot N for the play position (§1.4), placed between 4-7 and 4-8.
+- **Safety:** money-fear theme; calm pacing (§5). The turn resolves its own worry.
 
-### 3.5 Warsaw (map no. 5)
-- **Habit cards / LOs on the Atlas page:** `codes-are-only-for-you` (LO-05), LO-10 "Stay on the platform" (card id set by the chapter spec), `call-the-number-you-know` (LO-07), `stop-the-damage-first` (LO-16).
-- **Patterns:** marketplace "safe delivery / collect your payment" link while you sell something on Swaploft; payment or login code requested by a hijacked friend's account (Mateus).
-- **Locals:** Kasia; Mateus.
-- **Human problem:** Kasia is moving to a smaller flat to afford her last year of music school and is selling furniture; you have something to sell too (scenario-writer picks the item).
-- **Arrival:** a flat full of boxes and a cello case. Kasia: "Everything must go, except the cello." Mateus photographs a lamp: "Good photos sell. Trust me, I'm a professional."
-- **Turn:** Kasia (focused): "I sell a lot. My rule is simple: the deal and the money stay inside Swaploft." Mateus (thinking): "Good rule. I might borrow it."
-- **Resolution (Mateus's fallible moment, after his device scenario):** Mateus (sheepish): "A friend's account asked for my code and I sent it. Me. The gadget guy." Kasia (warm): "It wasn't really your friend. And you fixed it fast."
+### 3.5 Warsaw (map no. 5) — scene content per GDD §25.2 (spec in review)
+- **Habit cards / LOs on the Atlas page:** `codes-are-only-for-you` (LO-05), `stay-on-the-platform` (LO-10, new card, GDD §25.9), `call-the-number-you-know` (LO-07), `stop-the-damage-first` (LO-16).
+- **Patterns (GDD §25):** a marketplace "buyer" moves the chat from Swaploft to Kettle and sends a link to "collect" the payment while you sell something; a hijacked friend's account asks for money and, in one scenario only (5-6), a 6-digit payment code from the Larchwick app; vote-request takeover as the callback (5-2).
+- **Locals:** Kasia; Mateus. **Kasia's real Kettle account is the one taken over** (in 5-6, while she is at rehearsal; never her fault, never shown how). She is never the one who falls. Mateus falls in drill 5-7 and the player guides his damage control. Contact only: Ola (fellow volunteer, 5-2; never drawn).
+- **Human problem:** Kasia is moving to a smaller flat to afford her last year of music school and is selling furniture; you have something to sell too (the scenario-writer picks the item; the boss uses a stove).
+- **Arrival** (before 5-1; calm): a flat full of boxes and a cello case. Kasia (warm): "Everything must go, except the cello." Mateus photographs a lamp (laughing): "Good photos sell. Trust me, I'm a professional." Kasia pins her selling rules to the fridge (the rules card follows on the intro screen).
+- **Turn** (stop point, after 5-3; calm → focused): Kasia (focused): "I sell a lot. My rule is simple: the deal and the money stay inside Swaploft." Mateus (thinking): "Good rule. I might borrow it." Kasia, shouldering the cello case: "Rehearsal at four, concert tonight. Phone on silent, but I'll pick up between pieces."
+- **Placed beat `warsaw-kasia-back`** (after drill 5-7; worried → relieved): Kasia, back from rehearsal (worried): "Someone got into my Kettle while I was playing. I've got it back and turned on two-step." Mateus (relieved): "And the bank's on it. I called them first." True in every branch: the drill always ends with Mateus having called his bank.
+- **Resolution** (after the boss debrief; Mateus's fallible moment): Mateus (sheepish): "Kasia's account asked for my code and I sent it. Me. The gadget guy." Kasia (warm): "It wasn't really me. And you fixed it fast." *(Was "A friend's account…" / "It wasn't really your friend" in v1.3; the friend is now Kasia herself.)*
+  - **Variant `warsaw_card_blocked`** (story-only flag, set by the boss's fall outcomes): one panel before the If-then, Kasia (calm): "Your card was blocked straight away, the right first step." No refund promise.
 - **If-then panel (Mateus; Warsaw exception, §4.4):** "If anyone asks for a code, even a friend, then I don't send it, and I call them on the number I know."
 - **Invitation:** Kasia: "I'm selling half my flat before I move. Want to see how to do it safely?"
 - **Safety:** shows a confident expert falling and recovering; no teasing from others.

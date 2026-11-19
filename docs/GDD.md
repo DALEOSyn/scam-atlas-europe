@@ -1296,6 +1296,495 @@ Panels are illustrated scenes, ≤ 20 s each and skippable, with real text, and 
 
 Either way the relief is about acting fast, not about the money, and there is no promise of a refund (§23.9).
 
+## 24. Chapter 4 — Madrid
+Status: **spec for review** (Phase 3, game-designer, 2026-11-19). Brief: `docs/patterns/bank-safe-account-call.md` (BSA), plus `docs/patterns/multichannel-support-callback.md` (MSC) for the one callback. Per-scenario sources are in `docs/patterns/ch4-madrid-sources.md`. This section cites no source ids inline, because several contain names on the red-line denylist (as for Paris). It replaces the §18 Madrid summary. CR numbers continue after CR-29: Madrid adds **CR-30 and CR-31**, Warsaw adds **CR-32 to CR-34** (§25.10).
+
+### 24.1 Goal, shape, rules check
+- **The chapter habit (H), worded once and reused** (goal line, layer 1 of the boss, the stamp screen, Lucía's If-then line in spirit): **"No real bank asks you to move your money to keep it safe. Hang up, and call the number on your card."** (BSA §4.) The second half has a twin for texts: "Don't call a number from a text. Open the Larchwick app yourself, or call the number on your card."
+- **What the chapter teaches, in order of weight:**
+  1. Moving money "to keep it safe" **is** the scam, whoever asks, whatever the screen shows (BSA §3.1). Being guided to make a payment in your own real app is the tell; "we won't ask for your passwords" is **not** reassurance (BSA §3.5).
+  2. A text inside the bank's **real** thread proves nothing; the tell is that it gives you a number to call (BSA §3.2–3.3).
+  3. The bank's name or number on the call screen proves nothing (BSA §3.4). A number **you dial yourself**, from your card, is the one you can trust.
+  4. Codes: a code "to cancel" a payment is a code to make one (BSA §3.6; MSC callback).
+  5. Calibration: real Larchwick texts and a real Larchwick call sit in the same thread or on the same caller ID, and ask for nothing like that (BSA §7).
+- **Shape:** slot 4, difficulty 2–4, boss 4. Timers 50 s (slot 4), call beats 30 s, boss beats 40 s. **8 scored scenarios: 3 genuine (37.5%), 5 fraud (4 standard + boss).** Plus 1 drill (4-4) and the arc beat. Estimated 16–18 min including scenes (QA to measure; the cut candidate if over is 4-3's engage branch, not a scenario).
+- **New pattern (1):** `bank-safe-account-call` (4-2 genuine twin, 4-3, 4-5, 4-8, boss; 4-8 is BSA's "older chain", a text link to a fake bank login, BSA §2, §6). **Callback (1):** `multichannel-support-callback` (4-7 the code "to cancel"; 4-6 is its genuine twin).
+- **LO focus:** LO-08 (core), LO-01, LO-04 (core in slot-4 chapters per the LO doc), LO-05, LO-03, LO-02 (4-8), LO-17, LO-16, LO-18 (drill), LO-14 (arc).
+- **Flavour:** Spanish in-world text (`lang="es"`, inline translation, never a red flag) in chats with Andrés and Lucía, the market stall, and interrupts. **Larchwick is the player's own bank and writes in English in every message, real or fake**, so language is never a tell. Late dinners, night shifts, saving for a first flat. A city is a stage, not a claim: no debrief says this scam "is Spanish" (MAP.md).
+- **Premise and intro** (CR-27 intro screen, ≤ 20 s): "Madrid: you're staying in Lucía and Andrés's spare room while you write the Madrid page of the Atlas. Your travel allowance has just landed in your Larchwick account, so this week your phone is your wallet."
+- **Rules card** (CR-27 pinned card, title **"On the back of your Larchwick card"**), one item only: "Questions about your account? Call us on 9•• ••• •00 or open the Larchwick app." It makes the known channel a concrete object the player can compare numbers with. It says nothing about what Larchwick never asks, so it hands over the channel, not the verdict. The number is masked (Red Line 3); "the number on your card" in every label means this one.
+
+**Mix rules (balance v3.1):**
+- **Genuine share** 3/8 = 37.5% ✓. **Truth order** (scored): G G F · F G F F F(boss), max run 3 ✓.
+- **Themes:** `home` 1 (4-1), `bank-call` 4 (4-2, 4-5, 4-7, boss), `bank-text` 3 (4-3, 4-6, 4-8). Max 4/8 = 50% ✓. Scored order home, call, text, call, text, call, text, call: no two adjacent ✓.
+- **Pressure parity:** genuine 2/3 (4-2 call timer, 4-6 timer + pusher) = 66.7%; fraud 4/5 (4-3, 4-5, 4-7, boss) = 80%; gap 13.3 points ✓. 4-1 and 4-8 are deliberately calm.
+- **Difficulty parity:** genuine at 2 (4-1), 3 (4-2), 4 (4-6); fraud at 2 (4-3), 3 (4-5), 4 (4-7, 4-8, boss) ✓.
+- **Decoys:** ≥ 2 on every fraud (counts in §24.7). **Sender-or-link decoy:** F = 5 needs 2; the in-thread sender in 4-3, 4-8 and boss beats 1 and 3, and the caller ID in 4-5, 4-7 and boss beat 2 ✓.
+- **Interrupts:** every difficulty-4 scenario has one, all genuine, unscored, small talk that never points to the verdict (4-6 Andrés, 4-7 Lucía, 4-8 Noor, boss Andrés after beat 3).
+- **Off-focus genuine:** 4-1 (Andrés, no pattern). Calling Andrés to check costs gold, as Berlin 1-2. 4-2 (pattern `bank-safe-account-call`) and 4-6 (pattern `multichannel-support-callback`) are in focus, so checking them is always free.
+- **Red Line 8:** every scenario is SMS, call, messenger, browser or banking. No doorstep card pick-up, no cash courier (MAP: out of scope); scenarios end at the digital request.
+- **Never on screen** (BSA §5, §6, §10): no statistics; no refund promise ("may", never "will"); no claim that Spain's sender register has stopped spoofed texts; no depiction of how sender IDs or caller IDs are spoofed; no "how the gang worked"; spelling and accents are never tells.
+- **The Spain sender register (ruling M5):** the register is **never presented as protection**. Its only on-screen use is one layer-2 line in 4-3, word for word from `ch4-madrid-sources.md`: "Since September 2026, Spanish phone companies must block texts under sender names that aren't registered. Even so, a text in your bank's real thread is no proof." It appears nowhere else (no layer 1, no habit card, no help card, no scene).
+
+### 24.2 Story beats (track S; illustrated panels, never scored)
+Scenes follow STORY §3.4 (updated with this spec) and §4. No panel shows a message, number, amount or the word "bank" next to a phone screen before its scenario; no panel mentions a safe account, a security department or a code.
+1. **Arrival** (before 4-1; 3 panels; calm). A sunny kitchen at 8 a.m. Lucía comes in from her night shift as you get up: "Coffee's there. I'm going to sleep for a year." Andrés, laughing: "Every euro is saved for the flat. Even this coffee is in a spreadsheet." Caption on the street backdrop first: "Madrid. Your host's spare room, and the Atlas page to write." Cast: Lucía, Andrés. *Calm.*
+2. **Turn** (stop point, after 4-3, before drill 4-4; 3 panels; worried → calm). Afternoon. Andrés, worried: "Next week we send the deposit for the flat. Biggest transfer of our lives. I keep checking the app." Lucía, just up, calm and last: "After nights, my rule: no big decisions until I've slept. Not one." Andrés, laughing: "So I'll make the decisions. Kidding." *Change from STORY v1.3:* Andrés no longer says "the bank's been texting about the deposit transfer". Right before a drill about a fake bank text, that line would have cast doubt on his real bank messages (STORY §4.2 rule 2). Cast: Andrés, Lucía. *Worried, ending calm.*
+3. **Resolution** (after the boss debrief; 3 panels + If-then, 4 total; relieved). Two days later, keys on the kitchen table: they got the flat. Andrés, proud: "Signed. And I checked every step in the app myself." Lucía, warm: "Sleepy or not, same rule." Then the **If-then panel (Lucía), word for word from STORY §3.4:** "If someone says my money isn't safe, then I hang up and call the number on my card." Extra line under it on the postcard and Atlas page: "No real bank asks you to move your money to keep it safe."
+   - **Variant `madrid_money_moved`** (story-only flag, set by the boss's fall outcomes; STORY §4.2 rule 5). One extra panel before the If-then, Lucía (calm): "The bank was called straight away, the right first step. We'll see what it can recall." Same merged wording as Paris R6 (true for every first pick, no refund promise). Andrés's "Signed" panel still plays: their flat is never at stake in any branch.
+- **Truth in every branch:** the locals' money is never in a scored scenario, so "they got the flat" is true whatever the player did. Lucía's rule is shown working in drill 4-4 (her own phone), which is unscored and ends the same way for every pick.
+- **Map invitation (Lucía):** "Our spare room is yours whenever you come. Bring an appetite." (STORY §3.4.)
+- **Panels:** 3 + 3 + 4 = 10 (+1 with the variant), inside the budget of about 12.
+- **Safety:** money-fear theme, calm pacing (STORY §5.3). `worried` never escalates; the turn resolves its own worry. No content note needed (not on the STORY §5.6 list); the producer may add one.
+
+### 24.3 Scenario list
+| # | Half | Scenario | Device | Truth | Diff | Pressure | Theme | LOs |
+|---|---|---|---|---|---|---|---|---|
+| 4-1 | AM | Andrés: "Lucía's asleep till three. Dinner at nine, are you in?" | messenger | genuine / low (off-focus) | 2 | — | home | LO-17 |
+| 4-2 | AM | A **real** Larchwick call: "We held a €212 card payment as a precaution. Was it you? Just yes or no. Rather check? Hang up and call the number on your card." | call | genuine / low (twin of 4-5) | 3 | call timer 30 | bank-call | LO-17, LO-08 |
+| 4-3 | AM | A fake text **in the real Larchwick thread**: "A transfer of €2,940 is being processed. Not you? Call us now to stop it: 9•• ••• •14." Calling leads to a "security department" | sms → call | fraud | 2 | timer 50 + pusher | bank-text | LO-01, LO-08, LO-03, LO-04 |
+| | | *Stop point + turn* | | | | | | |
+| 4-4 | PM | **Drill: Lucía slept on it.** A text landed in *her* real Larchwick thread overnight. She followed her rule; now she asks you what to check | messenger (quoted sms) | drill | 2 | — | — | LO-18, LO-01 |
+| 4-5 | PM | Incoming call, caller ID **"Larchwick Bank"**: "I won't ask for your passwords or codes. Stay on the line, open your app, and I'll guide you to move your balance to a reserve account." The call stays on the line over the Larchwick app; the bank says **doesn't match** | call → banking | fraud (new pattern core) | 3 | call 30 + pusher; then timer 50 | bank-call | LO-08, LO-04, LO-06 |
+| 4-6 | PM | You're paying €24.90 at Thimble & Pine; a **real** Larchwick code arrives in the same thread, under this morning's fake: "Enter it to confirm your payment… Valid 5 minutes." | browser → sms | genuine / high (twin of 4-7, 4-8) | 4 | timer 50 + honest pusher; interrupt | bank-text | LO-17, LO-05 |
+| 4-7 | PM | Caller ID "Larchwick Bank", knows your name and card ending: "Read me the cancellation code we've just texted you and I'll stop the €640 payment." The text says the code is to **confirm** a payment | call (code banner) | fraud (callback MSC) | 4 | call timer 30; interrupt | bank-call | LO-05, LO-08, LO-01 |
+| *arc* | PM | Arc slot N for this play position (default position: slot 4, §10.1) | messenger | arc | — | — | — | LO-14 |
+| 4-8 | PM | In-thread text: "We've paused your card after an unusual payment. Check it and turn it back on in your Larchwick app: larchwick-secure.example/app" | sms → browser | fraud | 4 | interrupt | bank-text | LO-02, LO-03, LO-01, LO-05 |
+| 4-9 **Boss** | PM | Evening, alone. Beat 1: in-thread text, a €1,950 transfer, "call our security department". Beat 2: a call showing "Larchwick Bank" that guides you to move your balance in your own app (bank: **match** on the name the caller dictates). Beat 3: in-thread text, "move your balance to the security reserve tonight". | sms → call (+ banking) → sms | fraud | 4 | boss timers 40 + pusher; interrupt after beat 3 | bank-call | LO-08, LO-01, LO-04, LO-03, LO-16 |
+
+### 24.4 Scenario specs
+Shared rules: action order follows the validator (`action_order`); labels ≤ 8 words, describing behaviour, never the verdict. Phone numbers masked as `9•• ••• •NN`; the card's number ends **00** and no other number in the chapter does. IBANs checksum-invalid, generated by content tooling, masked (`ES•• •••• •••• •••• •••• 0417`). "R" = red flag in R, "D" = decoy, "G" = a genuine message's own detail. Every scored scheduled beat has a `request` checkable (CR-30, §24.9), genuine or fraud. Reveal wording follows CONTENT_GUIDE and the Madrid rulings M1–M6 (§24.8). Layer-1 counts are authored words; the writer runs the validator's full count and shortens the tell, never the habit.
+
+**Damage control (all Madrid falls):** at most 6 options, exactly 2 harmful (§9). `tell_trusted_adult` counts as `stop` next to the scenario's own stop step (as Amsterdam), because the player's own money is at stake and players may be 14.
+
+**4-1 `madrid-01-dinner-at-nine`** · genuine, low, off-focus · messenger · diff 2 · calm · Kettle · cast Andrés, Lucía (mentioned)
+- **Message:** from the saved contact "Andrés (Madrid)". "¡Buenos días! Lucía's asleep till three after her nights, so the kitchen's yours, quietly 🙂 I'm cooking lentils tonight. Dinner at nine, are you in?" (`lang` mix: the greeting is Spanish with translation). `request: reply`, `ask` = "Dinner at nine, are you in?"
+- **Checkables (G, 2):** `sender.detail` ("It fits: Andrés's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what he asks for: whether you're in for dinner."; allowed, low stakes, ruling 1 of §22.8) · `request` ("Asks whether you'll be in for dinner. No money, no code, no link.").
+- **Actions:** "Reply: I'm in, thanks!" (`proceed`, target, ★★★) · "Call Andrés first to check" (`call_back_known`, ★★★, off-focus double check: blocks gold; outcome "Andrés, puzzled but cheerful: 'Yes, it's me. Lentils at nine!'") · "Report the message" (report, 0, −5) · "Don't answer" (`ignore`, ★★).
+- **Debrief L1 (genuine):** tell "Your host, asking about dinner. Nothing else." · what works "Reply as normal." Layer 2: "Most messages are fine. Save your checks for ones that ask for money, codes or a login." Habit card `calm-not-paranoid`.
+
+**4-2 `madrid-02-real-card-call`** · genuine, low · call · diff 3 · call timer 30 · `pattern: bank-safe-account-call` (in-focus twin of 4-5) · Larchwick
+- **Setup:** "Mid-morning. Your phone rings."
+- **Message (call):** caller ID "Larchwick Bank" (detail: "Saved contact: Larchwick Bank, the number on your card"). Transcript:
+  1. "Hello, Larchwick Bank's card team. We've held a card payment of €212.00 to an online shop as a precaution."
+  2. "We'll never ask for your PIN, passwords or codes, or ask you to move money." (`claims[0]`)
+  3. "Was it you? Just yes or no." (`ask`)
+  4. "If you'd rather check, hang up and call us on the number on your card."
+  `request: reply`.
+- **Checkables (G, 4; parity with 4-5):** `caller_id` (neutral, M2: "Shows Larchwick Bank, the number on your card, as a real call would. A number on screen can be faked to show the same, so it can't prove anything either way. Judge what the caller asks.") · `reference` (the held payment, neutral: "A card payment you didn't make, held. A fake call can describe a payment too, so it can't prove anything either way.") · `claim` (neutral, M4: "Says the bank never asks for passwords or codes, or to move money. Real banks say this, and a fake caller can say it too, so it can't prove anything either way. Judge what you're asked to do.") · `request` ("Asks only whether the payment was yours, yes or no. Nothing to move, no code, no app steps, and you're free to hang up and call back.").
+- **Actions:** "Answer: no, that wasn't me" (`proceed`, target, ★★★; outcome "Thanks. We've blocked that card. Your new card is in the app's Cards tab. Nothing else to do.") · "Hang up" (`hang_up`) → "What now?": call-back label "Call the number on your card" (verify ★★★; outcome "Same team, same answer: the payment was held and the card is blocked. 'Calling back is always fine.'") · report (0, −5) · "Leave it there" (dismiss on genuine low, ★★; outcome "Later the app asks you to confirm the held payment wasn't yours. You tap 'Not me'.").
+- **Debrief L1 (genuine):** tell "A yes or no, nothing to move, and fine with a call-back." · what works "Answering was fine; calling back is never wrong." Layer 2, why it was safe: it asked nothing you'd regret (no code, no money moved, no app steps), and it offered the number on your card. "The bank's name on screen proved nothing either way; what it asked for did." This is the "real" half of the chapter's twin; the fake (4-5) copies the caller ID and the reassurance and differs in the request.
+
+**4-3 `madrid-03-text-in-the-thread`** · fraud · sms → call · diff 2 · timer 50; pusher at 25 s (same thread): "LARCHWICK: Transfer still processing. Call now to stop it." · levers fear, urgency, authority · Larchwick
+- **Message (sms, sender LARCHWICK).** `earlier[]` (CR-25 thread history, genuine, muted): "Yesterday 18:12 · Card payment of €18.60 at MERCADO PUESTO 14." · "Mon 09:03 · You've received €400.00 from WAYMARKER NETWORK." Today: "LARCHWICK: A transfer of €2,940.00 to ES•• •••• 0417 is being processed. Not you? Call us now to stop it: 9•• ••• •14." `request: call`; `ask` = "Not you? Call us now to stop it" (CR-30); `phone_numbers: ["9•• ••• •14"]`; `references: ["ES•• •••• 0417"]`.
+- **Checkables (4; R 2):**
+  - `sender.detail` **D** (M1): "Shows LARCHWICK, in the same thread as your real Larchwick texts, as a real one would. A sender name can be faked so a text lands in the real thread, so it can't prove anything either way. Judge what it asks."
+  - `reference` **D**: "An account ending 0417. Real and fake alerts both show a masked account, so it can't prove anything either way."
+  - `phone_number` **R** (M3): "9•• ••• •14: a number given in the text. It isn't the number on your card, which ends 00. Calling it reaches whoever sent the text."
+  - `request` **R**: "Asks you to call a number it gives you about a payment you don't recognise. A real alert sends you to your own app or the number on your card."
+- **Actions:** "Call the number in the text" (`call_number_in_message`, engage → `security_line`, target) · "Open the Larchwick app yourself" (`verify_in_app` ★★★; outcome "No transfer, nothing pending. Your balance is as it was.") · "Call the number on your card" (`call_back_known` ★★★; outcome "Larchwick: 'No such transfer. We never ask you to call a number from a text, or to move your money. Thanks for checking.'") · "Report the text" (report ★★) · "Delete it" (`delete` ★★).
+- **`security_line` (call you placed, 30 s; not in R).** Transcript: "(Recorded message) Welcome to Larchwick Bank. Connecting you to our security department." · "Security department. I can see the transfer. We've paused it, but your account is exposed." · "I won't ask for your passwords." (`claims[0]`) · "Open your Larchwick app and I'll guide you to move your balance to a safe reserve account while we fix this." (`ask`). Sender display "9•• ••• •14", detail "The number from the text". `request: pay`. Checkables: `claim` D (M4), `request` R ("Asks you to move your money to keep it safe. No real bank does that. That request is the scam."). Actions: "Follow their steps in your app" (`pay`, fall) · "Hang up" → "What now?": "Call the number on your card" (verify, ★★ engage cap) · extra "Open the Larchwick app yourself" (`verify_in_app`) · report · "Leave it there".
+- **Fall** (`pay` on `security_line`): narrative "You move €3,240.18 to the 'reserve account' as the voice guides you. 'Done. We'll be in touch.' The line goes quiet." Damage control (6, 2 harmful): `call_bank_stop_payment` (stop) · `tell_trusted_adult` (stop) · `keep_call_evidence` (secure, new) · `report_police_copy_to_bank` (report, new) · harmful `call_back_caller_number` (new) · harmful `wait_and_see`.
+- **Debrief L1 (≈18):** tell "A number to call, in a text in your bank's real thread." · what works "Don't call it. Open your app, or call your card's number." Layer 2:
+  - "A logo or familiar name proves nothing. Scammers copy them perfectly, even into a real thread." (LO doc standard line.)
+  - **The register line (M5), word for word:** "Since September 2026, Spanish phone companies must block texts under sender names that aren't registered. Even so, a text in your bank's real thread is no proof."
+  - **"If you'd called"** (for players who stopped at the text): "A recorded menu, then a 'security department' that won't ask for your passwords, and wants you to move your money to a 'safe' account. That move is the scam."
+  - Device tip: "On a real phone, a text can sit right under your bank's genuine messages. Check in the app you open yourself."
+  - `already_clicked`: `clicked` "Called the number? Hang up, then call the number on your card and tell your bank what happened." · `paid` "Moved money? Call your bank now on the number on your card and ask it to try to stop or recall the transfer. Keep the texts and the call log."
+- Habit card `who-really-sent` (first Madrid showing).
+
+**4-4 `madrid-04-lucia-slept-on-it`** (drill, unscored) · messenger with a quoted sms · cast Lucía · `pattern: bank-safe-account-call`
+- **Message:** Lucía's saved contact "Lucía (Madrid)". "Just woke up. This came in overnight, in my real Larchwick chat. My rule: nothing big till I've slept. Slept now 😄 What would you check?" Quoted text (`context: quoted`): "LARCHWICK: New sign-in to your account from a new device. Not you? Call us immediately on 9•• ••• •52."
+- **Quoted checkables:** `sender.detail` D (quoted; M1 wording, "in her real Larchwick thread") · `phone_number` **R** (quoted; "a number in a text, not the one on her card"). Drill tags never count.
+- **Picks** (each gets a Lucía reply; no stars):
+  - "Don't call it. Open your Larchwick app yourself." (`proceed`) → "App says no new sign-in. Phew. Deleting it."
+  - "Call the number on the back of your card." (`proceed`) → "Card line says they never text you a number to call. Noted."
+  - "Call the number in the text, it's your bank's chat" (`reply`) → "Hmm. Texts can land in the real chat, can't they? I'll use the number on my card instead." (Gentle; Lucía is capable and does the right thing anyway.)
+- **Debrief (drill):** tell "Her real bank chat, but a number to call." · what works "Her rule worked: she slept, then checked in the app." Layer 2: "Waiting is allowed. A real problem is still there after you sleep, and it shows in the app." `already_clicked.clicked`: "Called a number from a text? Hang up and call the number on your card." Habit card `pressure-is-the-tell`.
+
+**4-5 `madrid-05-reserve-account-call`** · fraud (BSA core) · call → banking · diff 3 · call 30 s; banking beat on the slot timer (50 s, fresh after the call, §22.7) · levers authority, fear, urgency, helpfulness · Larchwick
+- **Message (incoming call):** caller ID "Larchwick Bank" (detail "Saved contact: Larchwick Bank, the number on your card"; M2). Transcript:
+  1. "Larchwick Bank, security department. A payment of €1,180 is leaving your account for an online shop right now."
+  2. "Don't worry. I won't ask for your passwords or any codes." (`claims[0]`)
+  3. You: "Can I call you back on the number on my card?"
+  4. "Please stay on the line, or the payment goes through." (`claims[1]`)
+  5. "Open your Larchwick app and I'll guide you to move your balance to our reserve account until we've blocked it." (`ask`)
+  `request: pay`; `references: ["€1,180 to an online shop"]`.
+- **Checkables (5; R 2):** `caller_id` **D** (M2) · `reference` **D** (neutral, as 4-2) · `claim` **D** (M4, the same wording as 4-2's claim) · `claim#2` **R**: "Wants you to stay on the line so you can't check. A real bank is fine with you hanging up and calling back." · `request` **R**: "Asks you to move your money to another account to keep it safe. No real bank does that, however it's explained. That request is the scam."
+- **Actions (call):** "Open the app and follow their steps" (`start_transfer` → `reserve_transfer`, target) · "Hang up" (`hang_up`) → "What now?": "Call the number on your card" (verify ★★★; outcome "Larchwick: 'No payment is leaving your account. We'd never ask you to move money. Thank you for calling.'") · extra "Open the Larchwick app yourself" (`verify_in_app` ★★★) · extra "Call back this number" (`call_number_in_message`, note: "That's the number that just called. It can show the bank's real number, so you can't tell whose line it is. Use the number on your card.") · report · "Leave it there" (★★).
+- **`reserve_transfer` (banking; the device moment, §24.5):** the call stays on the line over the app (CR-31; interim: beat-bound pushers from the caller, CR-21). Payee typed as the caller dictates: "Larchwick Reserva"; IBAN `ES•• … 7731`; amount "€3,240.18 (your whole balance)". Result **doesn't match** (no holder shown, CR-23). Caller lines (beat-bound, at 6 s and 20 s): "Type the name exactly: Larchwick Reserva." · "It'll say the name doesn't match. That's normal for our internal reserve. Just confirm."
+  - Checkables (not in R): `payee.name_check` **R**: "Doesn't match: this account isn't held by Larchwick Reserva, the name the caller gave you. And no real bank moves your money to keep it safe, whatever the screen says." · `payee.iban` D (P2, neutral).
+  - Actions: "Confirm and send €3,240.18" (`pay`, fall, target) · "Hang up and call the number on your card" (`call_back_known` ★★★) · "Hang up and report it" (report ★★) · "Hang up and cancel" (`ignore` ★★).
+- **Fall** (sets no flag): narrative "Sent. 'Perfect, your money is safe now. Don't use the app for a few hours.' The line goes dead." Damage control as 4-3.
+- **Debrief L1 (≈19):** tell "'No passwords needed', just move your money to keep it safe." · what works "Hang up. Call the number on your card." Layer 2:
+  - "Not asking for passwords isn't reassurance. They didn't need them: you were going to make the transfer yourself, in your real app. Being guided to move money **is** the tell."
+  - "The call showed your bank's name, maybe even its real number. A number that calls you proves nothing. A number you dial yourself, from your card, does."
+  - "'Stay on the line' is there so you can't check."
+  - "After a 'doesn't match' warning, your bank may not have to refund you. Call it at once anyway." (refunds: "may", never "will"; BSA §5.)
+  - `already_clicked.paid`: as 4-3.
+- Habit card `hang-up-call-back`.
+
+**4-6 `madrid-06-real-code-for-you`** · genuine, high · browser → sms · diff 4 · timer 50 (honest deadline "Code valid 5 minutes") · `pattern: multichannel-support-callback` (twin of 4-7; also the thread twin of 4-3/4-8) · Thimble & Pine, Larchwick · you started it
+- **Setup:** "You're buying a travel adapter from Thimble & Pine, the online shop."
+- **Opener (browser, `request: none`):** thimbleandpine.example/checkout, "Confirm with your bank. We've sent a code to your phone." Action "Wait for the code" (`proceed`, setup step, §6 opener ruling).
+- **SMS beat (sender LARCHWICK):** `earlier[]`: "Yesterday 18:12 · Card payment of €18.60 at MERCADO PUESTO 14." · "Today 10:41 · A transfer of €2,940.00 to ES•• •••• 0417 is being processed. Not you? Call us now to stop it: 9•• ••• •14." (this morning's fake from 4-3, still in the thread, muted, not checkable). Today: "LARCHWICK: Code 4••••• to confirm your payment of €24.90 to THIMBLE & PINE. Enter it on the payment page. Valid 5 minutes. Never share this code with anyone. Not you? Call us on 9•• ••• •00." `request: enter_details`; `ask` = "Enter it on the payment page."; `claims[0]` = "Never share this code with anyone."; `phone_numbers: ["9•• ••• •00"]`.
+- **Pusher** (honest, from the checkout page, at 30 s): "Waiting for your bank… 3:00 left." **Interrupt** at 15 s, Andrés (genuine, small talk): "¿Lentejas otra vez? Joking. Pasta tonight 🙂" (translation).
+- **Checkables (G, 5; parity with 4-7):** `sender.detail` (M1 neutral, plus "…You started this payment a moment ago.") · `reference` "€24.90 to Thimble & Pine" (**"It fits":** something the player started: "It fits: €24.90 to Thimble & Pine, the adapter in your basket right now. That isn't proof on its own, so weigh it with what it asks: to type the code where you're paying.") · `claim` (neutral) · `phone_number` (M3: "9•• ••• •00, the number on the back of your card. A text can copy it, so it can't prove the text is real, but calling that number reaches Larchwick.") · `request` ("Asks you to type the code into the page where you're paying, for a payment you started. Nobody is asking you to read it out.").
+- **Actions:** "Type the code into the checkout page" (`proceed`, target ★★★; outcome "Payment confirmed. Adapter on its way.") · "Open the Larchwick app first" (`verify_in_app` ★★★; outcome "A pending €24.90 to Thimble & Pine, waiting for your code. You type it in."; follow-up `proceed`) · "Report the text as a scam" (report, 0, −5) · "Leave it, buy the adapter later" (`ignore`, dismiss on genuine high, 0).
+- **Debrief L1 (genuine):** tell "A code you asked for, for the payment you're making." · what works "Type it where you're paying. Never read it out." Layer 2: "Same thread as this morning's fake, same sender name, same kind of deadline. The difference: you started this, it says what the code is for, and nobody wants it from you." Second pressure-style callout (§8) is likely to fire here. Habit card `codes-are-only-for-you`.
+
+**4-7 `madrid-07-cancellation-code`** · fraud (MSC callback) · call with code banner · diff 4 · call timer 30 · levers authority, fear, urgency · Larchwick
+- **Message (incoming call):** caller ID "Larchwick Bank" (M2). Transcript:
+  1. "Good afternoon, am I speaking to {nickname}? Larchwick security. It's about your card ending 17." (`references[0]` = "your card ending 17", a real detail)
+  2. "Someone's trying to pay €640 to an electronics site with it right now. I won't ask for your PIN or passwords." (`claims[0]`)
+  3. "We've just sent you a cancellation code. Read it to me and I'll stop the payment." (`ask`)
+  4. "You can check us on the number on your card afterwards." (`phone_numbers` none; it names no digits)
+  `request: share_code`. **Banner** inside the call (§17 rule, no actions, no checkable): "LARCHWICK: Code 5••••• to confirm a card payment of €640.00 online. Never share this code, not even with Larchwick." **Interrupt** at 12 s, Lucía (genuine): "¡Despierta! Coffee? ☕" (translation).
+- **Checkables (4; R 1):** `caller_id` D (M2) · `reference` D ("Knows your name and the last digits of your card. Details like these aren't hard to find out, so they can't prove anything either way.") · `claim` D (M4) · `request` **R**: "Wants the code read out to 'cancel' a payment. Read the text: the code is to **confirm** a payment. A code is only for making an operation; your bank never needs one from you to stop fraud."
+- **Actions:** "Read out the code" (`share_code`, target, fall) · "Hang up" → "What now?": "Call the number on your card" (verify ★★★; "Larchwick: 'We've blocked that payment attempt and your card. Never share a code with anyone who calls.'") · extra "Call back this number" (engage note as 4-5) · report · "Leave it there".
+- **Fall** narrative: "'Thank you, that's cancelled.' Your app shows €640.00 paid." Damage control (6, 2 harmful): `call_bank_stop_payment` (stop) · `block_card_in_bank_app` (stop) · `refuse_codes_to_callers` (secure) · `report_police_copy_to_bank` (report) · harmful `call_back_caller_number` · harmful `wait_and_see`.
+- **Debrief L1 (≈17):** tell "A code 'to cancel' a payment is a code to make one." · what works "Hang up. Call the number on your card." Layer 2: "Real details (your name, your card's last digits) prove nothing. Read what the code text says it's for." `already_clicked.shared_code`: "Read out a code? Call your bank now on the number on your card: block the card and ask it to try to stop or recall the payment." Habit card `codes-are-only-for-you`.
+
+**Arc beat (`madrid-arc-alex-NN`).** Arc slot N for the play position (STORY §1.4); placed between 4-7 and 4-8. Reason: not adjacent to 4-5 (a "move your money" debrief right before or after a money-themed arc beat could unmask slots 5–9), and 4-8's link debrief says nothing about friends or platforms.
+
+**4-8 `madrid-08-card-paused-link`** · fraud (BSA older chain) · sms → browser · diff 4 · no timer · interrupt · levers fear, authority · Larchwick (look-alike `larchwick-secure.example`, registered)
+- **Message (sms, LARCHWICK, in the thread).** `earlier[]`: the 4-6 code text and yesterday's market payment. Today: "LARCHWICK: For your security we've paused your card ending 17 after an unusual payment. Check it and turn it back on in your Larchwick app: larchwick-secure.example/app". `request: log_in`; `ask` = "Check it and turn it back on in your Larchwick app" (CR-30). **Interrupt** at 15 s, Noor (genuine): "inspector!! how's Madrid, eaten anything good?" Honest deadline: none; "before 20:00" is not used, to keep the chapter's calm fraud calm.
+- **Checkables (4; R 1; difficulty 4, real details mixed in):** `sender.detail` D (M1) · `reference` D ("your card ending 17", true; neutral as 4-7) · `request` **D**: "Asks you to check your card in your Larchwick app. Real banks do send you to the app, so it can't prove anything either way. Judge where the link goes." (the one fraud whose request is ordinary, §24.7 row 6c) · `link` **R**: "larchwick-secure.example. Read the end: the owner part is larchwick-secure.example, not larchwick-bank.example, where your real app and site live. It says 'your app' but opens a web page."
+- **Actions:** "Open the link" (`open_link` → `paused_page`, target) · "Open the Larchwick app yourself" (`verify_in_app` ★★★; "Your card is active. Nothing is paused.") · "Report the text" (report) · "Delete it" (delete).
+- **`paused_page` (browser training page, not in R):** "Larchwick · Turn your card back on". Read-only demo fields: user ID, password; then card number, expiry, security code and "the code we text you". Checkables: `page.address` R, `page.info` padlock D (shared wording). Actions: "Log in and enter your card details" (`enter_details`, fall) · "Close it and open the app yourself" (`verify_in_app`, ★★ engage cap) · "Close the page" (`ignore`).
+- **Fall:** damage control (6, 2 harmful): `block_card_in_bank_app` (stop) · `call_bank_known_number` (stop) · `change_password` (secure: "from the real app") · `report_police_copy_to_bank` (report) · harmful `wait_and_see` · harmful `reply_to_sender`.
+- **Debrief L1 (≈16):** tell "In the real thread, real card digits, but a look-alike link." · what works "Open the Larchwick app yourself." Layer 2 links back to 4-3: "Same thread, same name. Texts can carry a number to call, or a link. Either way, go to the app or the card yourself." Habit card `read-the-link`.
+
+### 24.5 Device moment: "the call is still on the line"
+The new thing Madrid shows is that the fall happens **in the player's own, real Larchwick app**, with nothing on the bank screen that looks fake.
+- **CR-31 on-call bar** (banking beats reached from a call by `start_transfer`): a slim, persistent bar at the top of the banking device, "On a call · Larchwick Bank · 02:14", with a **Hang up** control that opens the banking beat's dismiss-and-call-back choices (it maps to the beat's actions, never a new scored path). The caller's lines arrive as beat-bound follow-ups in the bar (CR-21 timing). The bar uses the same neutral styling as any call; no red, no warning.
+- **Interim (until CR-31):** beat-bound pushers carry the caller's lines (engine follow-up c already shows them with the caller as sender), and every banking action label starts "Hang up and…" or "Confirm and send", so the player still feels the call is live.
+- **Payee-check results used:** **doesn't match** (4-5, red flag, with the caller coaching past it) and **match** (boss, on the name the caller dictates, neutral). The coach mark (CR-23) shows on first use in the game, whichever chapter that is, so Madrid works before or after Paris.
+- **Never shown:** how caller IDs or sender names are faked; any real bank's screens; a real "reserve" product.
+
+### 24.6 Boss 4-9 `madrid-09-boss-reserve`
+- **Setup:** "22:15. Lucía has left for her night shift; Andrés has gone to bed early before school. You're on the sofa with your phone."
+- **Levers:** authority, fear, urgency, helpfulness. Pusher on beat 2 at 20 s (caller): "Are you in the app yet? Every minute counts."
+- **Beats** are scammer-driven (§6) and arrive whatever the player did.
+
+**Beat 1, sms (start, 40 s).** LARCHWICK, in the thread (`earlier[]`: the 4-6 code text and the 4-8 "paused card" text, so the thread visibly holds real and fake together). "LARCHWICK: We've detected a transfer of €1,950.00 from your account to ES•• •••• 2268. If it wasn't you, call our security department now: 9•• ••• •61. Never share your codes." `request: call`; `ask` = "If it wasn't you, call our security department now".
+- Checkables (5; R 2): `sender.detail` D (M1) · `reference` D (ES••2268) · `claim` D ("Never share your codes.": "Good advice that real texts give too. A fake can copy it, so it can't prove anything either way.") · `phone_number` **R** (M3; not your card's 00) · `request` **R** (as 4-3).
+- Actions (no engage on boss beats, §16 ruling 4): "Call the number and follow their steps" (`pay`, target) · "Open the Larchwick app yourself" (`verify_in_app` ★★★; "No transfer. Balance as it was. Then your phone rings: 'Larchwick Bank'.") · "Call the number on your card" (`call_back_known` ★★★; "'No such transfer. We never ask you to call a number from a text, or to move money.' As you hang up, your phone rings: 'Larchwick Bank'.") · report · delete.
+
+**Beat 2, call (`arrives_after: 45`, 40 s, `covered_by: [start]`).** Caller ID "Larchwick Bank" (M2; may show the real number). Transcript:
+1. "Larchwick security department. You didn't call us back about the €1,950 transfer, so I'm calling you."
+2. "We've paused it, but your account is exposed. I won't ask for your passwords or codes; the bank never does." (`claims[0]`)
+3. You: "Can I call you back on the number on my card?"
+4. "Please don't hang up, or the transfer goes through." (`claims[1]`)
+5. "Open your Larchwick app now and I'll guide you to move your balance to our security reserve account until it's safe." (`ask`)
+- Checkables (4; R 2): `caller_id` D · `claim` D (M4) · `claim#2` **R** (as 4-5) · `request` **R** (as 4-5).
+- Actions: "Open the app and follow their steps" (`start_transfer` → `boss_reserve`, target) · "Hang up" → "What now?": "Call the number on your card" (verify) · extra "Open the Larchwick app yourself" (verify) · extra "Call back this number" (engage note as 4-5) · report · "Leave it there".
+- **`boss_reserve` (banking sub-beat, CR-18(e); on-call bar CR-31; 40 s floor; beat 3 held until it closes).** Caller lines: "New payee. Type the name exactly: Olvarde Custodia SL. That's our reserve partner." · "Amount: your full balance." · "When it says the name matches, confirm. Quickly." Payee "Olvarde Custodia SL" (brand-checked company holder, shown in full, CONTENT_GUIDE payee rule), IBAN `ES•• … 5590`, amount €3,215.60. Result **match**.
+  - Checkables: `payee.name_check` D (P3 + M6): "Name matches: the account is held by Olvarde Custodia SL, the name the caller gave you. That shows whose account it is. It can't show the call is real, and no real bank asks you to move money to keep it safe." · `payee.iban` D.
+  - Actions: "Confirm and send €3,215.60" (`pay`, fall, target) · "Hang up and call the number on your card" (`call_back_known` ★★★) · "Hang up and report it" (report ★★) · "Hang up and cancel" (`ignore` ★★).
+
+**Beat 3, sms (`arrives_after: 45`, 40 s, `covered_by: [start, security_call]`).** LARCHWICK, in the thread. "LARCHWICK: Your account is still at risk. Move your balance to the security reserve tonight to protect it. Your agent's direct line: 9•• ••• •61." `request: pay`; `ask` = "Move your balance to the security reserve tonight to protect it." Written so it reads true whether or not the player moved money at beat 2.
+- Checkables (3; R 2): `sender.detail` D (M1) · `phone_number` **R** (same number as beat 1, not your card's) · `request` **R** ("Moving your money 'to protect it' is the scam, in a text as on a call.").
+- Actions: "Call the agent and move your balance" (`pay`, target) · "Call the number on your card" (verify) · "Open the Larchwick app yourself" (verify) · report · delete.
+
+**Interrupt** (`after_beat: reserve_text`, genuine, `on_fall: skip`): Andrés: "Still up? Lucía says her shift's quiet tonight 🙂 Buenas noches." Actions: "Reply: buenas noches!" (`proceed`) · "Report the message" (`report`; counts as a genuine report; outcome "You reported it. Careful is good; this one really was Andrés, saying good night.").
+
+- **Counts:** R = 6 (b1 2, b2 2, b3 2); decoys 6 on scheduled beats (b1 3: sender, reference, claim; b2 2: caller ID, claim; b3 1: sender; see §24.7), plus the sub-beat's match and IBAN (not in R). Max 3 × 15 + 6 = **51**. One layer-1 "You chose" line (CR-15); fall cap (T-2.8).
+- **After a fall** (once, merged, cap 6): `call_bank_stop_payment` (stop) · `tell_trusted_adult` (stop) · `keep_call_evidence` (secure) · `report_police_copy_to_bank` (report) · harmful `call_back_caller_number` · harmful `wait_and_see`. Every fall outcome sets `madrid_money_moved` (story only).
+- **Layer 1 for the boss and the stamp screen** (≈19): tell **"A text, a 'bank' call, a text: all wanting your money moved."** · what works **"Hang up. Call the number on your card."**
+- **Layer 2, per beat:** beat 1 "A number to call, in the real thread." · beat 2 "'No passwords needed' and 'don't hang up' came with the real request: move your money." · sub-beat "The name matched because you typed what the caller said." · beat 3 "Same number, same request, back in the thread." Then: "Most calls from your bank are what they seem. When one asks you to move money, read out a code, or stay on the line, hang up and call the number on your card." `already_clicked.paid` as 4-3; `already_clicked.clicked` as 4-3.
+- **QA:** paper-playtest the load of beat 2 (5 transcript lines + the banking sub-beat with caller lines).
+
+### 24.7 Strategy check (as §7.2)
+**Assumptions:** CR-17/18/23/30 landed. R counts scheduled beats only. Flags on `security_line`, `reserve_transfer`, `paused_page` and `boss_reserve` count toward spotted, not R. Every scheduled beat has a `request` checkable.
+- **Standard fraud:** 4-3 R 2 (19), 4-5 R 2 (19), 4-7 R 1 (17), 4-8 R 1 (17) = **72**. Decoys on scheduled beats: 4-3 2, 4-5 3, 4-7 3 (caller ID, reference, claim), 4-8 3 (sender, reference, request), boss 6 = 17.
+- **Genuine:** 3 × 15 = **45**. Own checkables: 4-1 2, 4-2 4, 4-6 5 = 11.
+- **Boss:** R 6, max **51**.
+- **Totals:** max = 72 + 45 + 51 = **168**. R = 6 + 6 = **12**: silver needs spotted ≥ **4**, gold ≥ **8**.
+
+| # | Strategy | Points arithmetic | Pts | Rating | Spotted (correct − wrong) | Stamp |
+|---|---|---|---|---|---|---|
+| 1 | Ideal: correct tags, verify fraud, proceed or verify on genuine (4-1 proceed) | 72 + 45 + 51 | 168 | 100% | 12 | **Gold** |
+| 2 | Ideal + calls Andrés about dinner (off-focus double check) | same | 168 | 100% | 12 | Silver |
+| 3 | Curious ideal: calls the number in 4-3, then hangs up and calls the card | 168 − 5 (engage cap) | 163 | 97.0% | 12 | **Gold** |
+| 3a | Ideal via the app: follows the caller into the app in 4-5 and boss beat 2, then "Hang up and call the number on your card" | `step` never caps | 168 | 100% | 12 (+ 4-5 no-match flag) | **Gold** |
+| 4 | Careful reporter: correct tags, reports fraud, proceeds on genuine | (14+14+12+12) + 45 + (30+6) | 133 | 79.2% | 12 | Silver |
+| 5 | Ideal but reports the real bank call (4-2) | 168 − 15 − 5 | 148 | 88.1% | 12 | Silver |
+| 6 | Tag everything + always verify | bonuses void: 60 + 45 + 45 | 150 | 89.3% | 12 − (17 + 11) = −16 | Bronze |
+| 6a | Random single tag per beat + always verify (expected) | 150 + 2×(½+⅖+⅕+¼) + boss ≈0.8 | ≈154 | ≈91.6% | 2.92 − 7.08 ≈ −4.2 | Bronze (silver only if all 7 fraud tags hit: about 1 in 750) |
+| 6b | Always tag sender / caller ID + link + always verify | 150 (every set includes a decoy) | 150 | 89.3% | 1 − 10 = −9 | Bronze |
+| 6c | **Always tag the request** + always verify | 150 + 2 + 2 + 2 + 6 (4-8 void) | 162 | 96.4% | 6 − 4 = 2 | Bronze |
+| 6d | Tag request + every phone number + always verify | 150 + 4 (4-3) + 2 (4-5) + 6 (boss) | 162 | 96.4% | 9 − 7 = 2 | Bronze |
+| 6e | Tag request + every claim + always verify | 150 + 4 (4-5 void? see note) | 150 | 89.3% | 8 − 10 = −2 | Bronze |
+| 7 | Blind always-verify (± pause) | 60 + 45 + 45 | 150 | 89.3% | 0 | Bronze |
+| 8 | Blind always-report | 40 + 30 − 15 | 55 | 32.7% | 0 | Bronze + calibration tip |
+| 9 | Blind always-dismiss | 40 + 30 + 10 + 10 + 0 | 90 | 53.6% | 0 | Bronze |
+| 10 | Always trust, perfect damage control | 45 + 4 × 9 + 9 | 90 | 53.6% | 0 | Bronze |
+| 11 | **"Trust the caller ID"**: does what any call showing "Larchwick Bank" says, verifies texts | 4-2 15; 4-5 fall 9; 4-7 fall 9; texts 19 + 17; boss b1 15, b2 0, b3 15, +9 DC; genuine 15 + 15 | 138 | 82.1% | (tags as ideal on texts) | Silver at best (two falls); never gold with a call fall in R6 terms, see Q3 |
+
+Row notes:
+- **6a hit chances:** 4-3 2/4, 4-5 2/5, 4-7 1/4 (caller ID, reference, claim, request), 4-8 1/4, b1 2/5, b2 2/4, b3 2/3. Product ≈ 1/750. Perfect luck nets 7 − 3 genuine = 4 = silver, the one luck path, as in Berlin.
+- **6c:** the request is R on 4-3, 4-5, 4-7 and all three boss beats, and a decoy on 4-8 (the one ordinary request, as Paris 3-5), plus a wrong tag on each genuine request.
+- **6d:** fraud phone numbers 4-3, b1, b3 are R; 4-7 has none; genuine 4-6 shows the card's number (wrong tag). Wrong = 4-8 request + 3 genuine requests + 4-6 phone = 5, plus the 4-2 claim? no: 6d tags phones only. Correct 9, wrong 5 → **4 = silver**. **Fix applied:** 4-2's transcript line 4 names the card's number as digits ("…call us on the number on your card, 9•• ••• •00") and gains a `phone_numbers` entry (neutral, M3), and 4-7's line 4 does the same ("…check us on 9•• ••• •00, the number on your card", a decoy, as Berlin 1-9's quoted card number). Wrong = 7, net **2**. The table row shows the fixed state.
+- **6e:** correct = 6 requests + 4-5 claim#2 + b2 claim#2 = 8; wrong = 4-8 request, fraud claims 4-3's `security_line` excluded (not scheduled), 4-5 claim#1, 4-7 claim, b1 claim, b2 claim#1 (4), genuine requests 3, genuine claims 4-2 and 4-6 (2) = 10. Net −2. Bonuses void wherever a decoy claim was tagged (4-5, 4-7, boss), so only 4-3 keeps +2: 152, 90.5% (table rounded down to the void case; QA confirms on YAML).
+- **Row 11:** shows the chapter's point: trusting the bank's name on screen loses two scenarios and a boss beat.
+
+**Checkable parity after the 6d fix:** 4-2 has 5 own checkables (caller ID, reference, claim, phone, request) and 4-7 has 5 (caller ID, reference, claim, phone, request): the list length never differs between the twins (balance `show_count: []` already hides counts; parity is belt and braces). Genuine own checkables total 12; row 6 becomes 12 − (18 + 12) = −18.
+
+**What the numbers show:** no blind tagging rule reaches silver; random tagging needs a 1-in-750 run. Trusting a call because it shows the bank's name is the costliest "reasonable" strategy (row 11). Over-reporting the real bank call costs silver-to-gold, which is the calibration the chapter wants. QA re-runs 6a–6e on the authored YAML at the Phase 3 balancing pass.
+
+### 24.8 Madrid reveal rulings (for scenario-writer and sceptic-reviewer)
+- **M1. The LARCHWICK sender in the thread is neutral everywhere, genuine and fraud alike.** Fakes land in the real thread in this chapter, so "It fits" is never used on a LARCHWICK sender. Wording as 4-3. On genuine texts the reveal may add a separate, true sentence about what the player started (4-6).
+- **M2. Caller ID "Larchwick Bank" is neutral everywhere**, including the real call (4-2). Never "It fits" on a caller ID (validator follow-up from T-2.7).
+- **M3. Phone numbers:** a number in a text or on a call that **is not** the card's (ends 00) is a red flag when the message asks you to call it. The card's number, quoted by a real or fake message, is neutral: "A message can copy it, so it can't prove the message is real, but calling that number reaches Larchwick." A number from the player's own card is never a checkable on the dialler; it is the "What now?" call-back.
+- **M4. "We won't ask for your passwords/codes" is a claim with one neutral wording on genuine and fraud.** The lesson that it is not reassurance lives in the request reveal and layer 2, never in the claim's opening words.
+- **M5. The Spain register line** appears once, in 4-3 layer 2, word for word (§24.1). Never as protection.
+- **M6. Payee check:** a match on a name the caller dictated is neutral (P3) and adds "It can't show the call is real". A no-match is a red flag. Neither is the scenario's tell: the request is.
+
+### 24.9 Madrid change requests (to `frontend-engineer`)
+- **CR-30 (blocker for the request parity in §24.7; shared with Warsaw): `ask` on every request type.** `ASK_REQUESTS` gains `call`, `log_in`, `open_link` and `none` (for `none`, the ask is the sentence telling the reader what to do, e.g. "Print your label…"). From slot 4, `chapterRules` requires `ask` on every scored scheduled beat on `sms`, `messenger`, `email`, `social` or `call` (not `banking`, not interrupts, not `scored: false`), genuine and fraud alike. Slots 0–3 keep CR-17. Test: a slot-4 chapter with a `request: call` beat and no `ask` fails. Fallback if refused: 4-3 and boss beats 1/3 lose their `request` R (R drops to 9, silver 3, gold 6), and §24.7 must be re-run.
+- **CR-31 (non-blocker): on-call bar over a banking beat** (§24.5). A banking beat reached by `start_transfer` from a `call` beat shows "On a call · {caller display} · mm:ss" with a Hang up control; Hang up focuses the beat's own dismiss/verify actions (no new scored path). Caller follow-ups bound to the beat (CR-21) render inside the bar. Interim as §24.5.
+
+### 24.10 New brands, cast, content
+- **Account holder (not a brand; registered like Paris holders after BRAND_CHECK):** **"Olvarde Custodia SL"** (boss sub-beat). Alternatives "Corvaldo Custodia SL", "Mirtelo Custodia SL". Check against Spanish banks and custody firms (Santander, BBVA, CaixaBank, Sabadell, Bankinter, Unicaja, Kutxabank, Abanca, Ibercaja, Cajamar, Openbank, EVO, Cecabank, Inversis, Allfunds, Renta 4) and company directories. "Larchwick Reserva" (4-5) is the bank's own fictional brand plus a word; no holder exists, it never matches.
+- **Merchant descriptor** "MERCADO PUESTO 14" ("market stall 14"): a generic descriptor, not a brand; sceptic to confirm it needs no registry entry.
+- **Larchwick:** no new look-alike (`larchwick-secure.example` is registered). The card's number (masked, ends 00) is added to `known_channels`.
+- **Cast (`content/cast.yaml`):** `lucia` "Lucía Herrera", role "Night-shift nurse, your host (Madrid)", known channel "Saved contact: Lucía (Madrid)"; `andres` "Andrés", role "Teacher, your host (Madrid)", known channel "Saved contact: Andrés (Madrid)". Both already in STORY §2.3 and the name register. Neither is ever impersonated, and their money is never in a scored scenario.
+- **Recovery steps** (new, in `content/recovery_steps.yaml`; harmful ones need non-blaming `feedback`):
+  - `keep_call_evidence`: "Keep screenshots of the texts, the call log and the times".
+  - `report_police_copy_to_bank`: "Make a police report and give your bank a copy".
+  - `call_back_caller_number` (harmful): "Call back the number that called you and ask them to send it back". Feedback: "Wanting to fix it fast is natural, but that number reaches the scammer, even when it shows your bank's name. Call the number on your card instead."
+- **Habit cards** (wording owned by game-designer; scenario-writer edits `content/habit_cards.yaml`):
+  - `hang-up-call-back` habit becomes: "An unexpected call from your bank, the police or any official? Hang up, then call back on a number you find yourself, like the one on your card. Caller ID proves nothing, and no real bank asks you to move your money to keep it safe." Example unchanged (first shown in Berlin).
+  - `who-really-sent` habit gains one sentence: "A fake text can even land in your bank's real thread."
+  - `codes-are-only-for-you` and `pressure-is-the-tell` unchanged.
+- **Atlas page:** `atlas_cards: [hang-up-call-back, who-really-sent, pressure-is-the-tell]` (STORY §3.4).
+- **"Where to report and get help" (Spain) card:** wording in `docs/patterns/ch4-madrid-sources.md` ("Spain help card"), linked from layer 2 of every Madrid debrief. Real bodies only there (Red Line 1). It does not mention the sender register.
+- **Chapter file:** `content/chapters/madrid.yaml`: slot 4; `patterns: [bank-safe-account-call]`; `callbacks: [multichannel-support-callback]`; am `[01, 02, 03]` (stop point after 03), pm `[04, 05, 06, 07, arc, 08, 09]`; `boss: madrid-09-boss-reserve`; intro and rules as §24.1; `scenes: { arrival: madrid-arrival, turn: madrid-turn, resolution: madrid-resolution }`.
+
+### 24.11 Open questions for the producer (Madrid)
+1. **The genuine bank call (4-2).** It teaches that a real bank call asks nothing you'd regret and welcomes a call-back. Accept answering "no, that wasn't me" as `proceed` ★★★, or score the real call so that only hanging up and calling back earns ★★★ (verify), with answering at ★★?
+2. **The register line** (M5): keep it once in 4-3 layer 2, or drop it entirely? I recommend keeping it: it pre-empts "Spain fixed this", and its wording says the thread is no proof.
+3. **`stamps.gold.max_falls`** (parked from Paris Q3): row 11 reaches silver with two falls; with the parked rule it would stay silver either way. No change needed here.
+4. **Content note:** Madrid has a money-fear theme but no family emergency. No note proposed; add one?
+5. **For fraud-researcher:** (a) the "stay on the line" claim as a red flag (BSA §3.7); (b) the card's number quoted by a fake caller as a decoy (as Berlin 1-9); (c) 4-8 as BSA's "older chain" with a link that says "your app" but opens a web page; (d) boss beat 3 (a follow-up text asking to move the balance) as a combination of BSA §2 elements, not a separately sourced step.
+
+## 25. Chapter 5 — Warsaw
+Status: **spec for review** (Phase 3, game-designer, 2026-11-19). Briefs: `docs/patterns/marketplace-collect-payment-link.md` (MCP) and `docs/patterns/hijacked-friend-payment-code.md` (HFC), plus `docs/patterns/messenger-account-takeover-code.md` (MAT) for the one callback. Per-scenario sources: `docs/patterns/ch5-warsaw-sources.md`. No source ids inline. Replaces the §18 Warsaw summary.
+
+### 25.1 Goal, shape, rules check
+- **The chapter habit (H):** **"Money comes to you inside the app; codes stay with you."** Long form, for the habit cards and layer 2: "Keep the deal and the payment inside Swaploft, which you open yourself: if you've been paid, it shows there. Receiving money never needs your card details or bank login. And never send a code from your banking app or messenger to anyone, even a friend: call them on the number you know." (MCP §4, HFC §4.)
+- **Producer constraints (research revision 85e2484):**
+  - The **payment-code detail is Medium confidence**, so it appears in **one scored scenario only (5-6)**. Mateus's drill (5-7) is the same event seen from his phone (he got the same message), not a second code scenario. The rest of the friend thread leans on the **account takeover plus a request** (5-2, Medium-high).
+  - **No fake marketplace login pages.** Every fake page in Warsaw is a "collect your payment" page with a card or **bank-login** panel (MCP §2.3, sourced), never a Swaploft sign-in clone.
+  - Refunds are always "may".
+- **Wording:** debriefs say **"a link to collect your payment"** (MCP §6). "Swaploft Safe Delivery" is used **only** as the fake page's own label, never in a debrief as a real thing.
+- **Shape:** slot 5, difficulty 3–4, boss 4. Timers 45 s, call beats 30 s, boss beats 40 s. **8 scored: 3 genuine (37.5%), 5 fraud.** Plus drill 5-7 (Mateus) and the arc beat. Estimated 16–18 min.
+- **New patterns (2):** `marketplace-collect-payment-link` (5-1 twin, 5-3, 5-5, boss), `hijacked-friend-payment-code` (5-4 twin, 5-6, drill 5-7). **Callback (1):** `messenger-account-takeover-code` (5-2, the vote request, MAT and the CERT vote advisory cited in HFC).
+- **LO focus:** LO-10 (core), LO-05, LO-07, LO-16 (drill + falls), LO-02, LO-01, LO-17, LO-18 (drill: you are the someone), LO-14 (arc).
+- **Flavour:** Polish in-world text (`lang="pl"`, inline translation): Swaploft's app texts and notifications, buyers' messages (genuine and fake alike, so language is never a tell), Kasia's odd word. Moving boxes, a cello, parcel lockers (Trundle). Kasia, Mateus and the player write English.
+- **Premise and intro:** "Warsaw: Kasia, a Waymarker volunteer, is moving to a smaller flat to afford her last year of music school, and is selling half of what she owns on Swaploft. You're helping, and selling your old rucksack and camping stove too." (The writer may swap the items; one item per sale scenario.)
+- **Rules card** (CR-27): title "Kasia's selling rules", two items: "The deal and the money stay inside Swaploft." · "Paid? It shows in the Swaploft app. Check there, not in a message." This is the habit (STORY §4.2 rule 2 allows a general rule) and is never wrong on the genuine twins.
+
+**Mix rules:**
+- **Genuine** 3/8 ✓. **Truth order:** G F F · G F F G F(boss), max run 2 ✓.
+- **Themes:** `marketplace` 4 (5-1, 5-3, 5-5, boss), `friend` 3 (5-2, 5-4, 5-6), `work` 1 (5-8). Max 50% ✓; order M, F, M, F, M, F, W, M: no two adjacent ✓ (the drill and arc don't count).
+- **Pressure parity:** genuine 2/3 (5-1 honest timer, 5-4 timer + honest pusher) = 66.7%; fraud 4/5 (5-3, 5-5, 5-6, boss) = 80%; gap 13.3 ✓. 5-2 and 5-8 are calm.
+- **Difficulty parity:** genuine at 3 (5-1, 5-8) and 4 (5-4); fraud at 3 (5-2, 5-3) and 4 (5-5, 5-6, boss) ✓.
+- **Decoys and sender-or-link:** ≥ 2 on every fraud; sender decoys in 5-2 (Ola's saved contact), 5-5 (a buyer inside Swaploft), 5-6 (Kasia's saved contact) and boss beats 1–3; link decoys (Swaploft's real domain) in 5-5 and boss beat 1. F = 5 needs 2 ✓.
+- **Interrupts:** 5-4, 5-5, 5-6 and the boss (difficulty 4): small talk, genuine, unscored.
+- **Off-focus genuine:** 5-8 (Adaeze). Checking it costs gold; 5-1 and 5-4 are in focus.
+- **Echo:** none (the boss is the same for every player). The §18 "echo of earlier account choices" is replaced by the drill: Mateus's fall is the consequence the player meets.
+- **Red Line 8:** every scenario is messenger, Swaploft chat, SMS, browser or banking. Lockers appear only as places a parcel is dropped (no locker QR, no in-person trick).
+- **Never on screen:** statistics (the CERT totals are designer context only); the real payment scheme, marketplace, courier or locker brand; how pages are built or hosted; how accounts are taken over (only "someone got into my Kettle"); refunds as certain.
+
+### 25.2 Story beats (track S)
+STORY §3.5, updated with this spec. The hijacked account is **Kasia's** (her real Kettle, taken over while she is at rehearsal; never her fault, never shown how). Mateus is still the one who falls. No panel shows a buyer, link, code, amount or listing price.
+1. **Arrival** (before 5-1; 3 panels; calm). A flat full of boxes and a cello case. Kasia (warm): "Everything must go, except the cello." Mateus photographs a lamp (laughing): "Good photos sell. Trust me, I'm a professional." Kasia pins her two selling rules to the fridge (the rules card follows on the intro screen). Cast: Kasia, Mateus.
+2. **Turn** (stop point, after 5-3; 3 panels; calm → focused). Kasia (focused): "I sell a lot. My rule is simple: the deal and the money stay inside Swaploft." Mateus (thinking): "Good rule. I might borrow it." Kasia, shouldering the cello case: "Rehearsal at four, concert tonight. Phone on silent, but I'll pick up between pieces." (Sets up why "Kasia" can't be asked in person in 5-6, and that a call reaches her: no verdict, it's true for her real message in 5-4 too.)
+3. **Placed beat after drill 5-7** (2 panels; worried → relieved). Kasia, back from rehearsal, phone in hand (worried): "Someone got into my Kettle while I was playing. I've got it back and turned on two-step." Mateus (relieved): "And the bank's on it. I called them first." True in every branch: the drill always ends with Mateus having called his bank (§25.4, 5-7).
+4. **Resolution** (after the boss debrief; 3 panels + If-then). Late evening, empty shelves. Mateus (sheepish): "Kasia's account asked for my code and I sent it. Me. The gadget guy." Kasia (warm): "It wasn't really me. And you fixed it fast." *(Was "It wasn't really your friend" in STORY v1.3; the friend is now Kasia herself.)* Then the **If-then panel (Mateus; Warsaw exception), word for word from STORY §3.5:** "If anyone asks for a code, even a friend, then I don't send it, and I call them on the number I know." Extra line under it: "Money comes to you inside the app."
+   - **Variant `warsaw_card_blocked`** (story-only, set by the boss's fall outcomes): one panel before the If-then, Kasia (calm): "Your card was blocked straight away, the right first step." Same merged-line approach as Paris R6; no refund promise.
+- **Map invitation (Kasia):** "I'm selling half my flat before I move. Want to see how to do it safely?" (STORY §3.5.)
+- **Panels:** 3 + 3 + 2 + 4 = 12 (+1 with the variant).
+- **Safety:** a confident expert falls and recovers; nobody teases him; Kasia's account takeover is not her fault (STORY §5).
+
+### 25.3 Scenario list
+| # | Half | Scenario | Device | Truth | Diff | Pressure | Theme | LOs |
+|---|---|---|---|---|---|---|---|---|
+| 5-1 | AM | Swaploft (in the app you opened): "Sold! Your rucksack, €35. Swaploft holds the payment until delivery. Print your label and drop it at a Trundle locker by Friday." | marketplace (CR-33) | genuine / low (twin of 5-3, 5-5, boss) | 3 | honest timer 45 | marketplace | LO-10, LO-17 |
+| 5-2 | AM | Ola (a volunteer, her **real** Kettle account): "Could you vote for my little sister's band? You just log in with your phone number and type the code you get." | messenger → browser | fraud (MAT callback) | 3 | — | friend | LO-05, LO-02, LO-07 |
+| 5-3 | AM | A new Kettle number: "I'm the buyer for your rucksack on Swaploft. I've paid already, courier delivery included. Collect your payment here: swaploft-safe-delivery.example/collect/…" | messenger → browser | fraud (MCP) | 3 | timer 45 + pusher | marketplace | LO-10, LO-02, LO-01 |
+| | | *Stop point + turn* | | | | | | |
+| 5-4 | PM | The **real** Kasia, leaving for rehearsal: "Can you send me the €12 for the tape and boxes from this morning? To my account as usual. Tonight's fine." | messenger → banking | genuine / high (twin of 5-6) | 4 | timer 45 + honest pusher; interrupt | friend | LO-07, LO-17, LO-06 |
+| *arc* | PM | Arc slot N for this play position (default: slot 5) | messenger | arc | — | — | — | LO-14 |
+| 5-5 | PM | **Inside Swaploft's own chat**, a buyer for your stove: "Swaploft verifies sellers before payout. Send me a photo of your card, both sides, so the money can reach you." | marketplace (CR-33) | fraud (MCP) | 4 | timer 45; interrupt | marketplace | LO-10, LO-05 |
+| 5-6 | PM | Kasia's **real** Kettle (taken over): "Card declined at the music shop 😩 Can you send me a 6-digit payment code from your Larchwick app? I'll pay you back tonight." | messenger | fraud (HFC; the one code scenario) | 4 | timer 45 + pusher; interrupt | friend | LO-05, LO-07 |
+| 5-7 | PM | **Drill: Mateus asks for help.** He got the same message, sent a code and confirmed without reading. You guide his damage control | messenger | drill | 3 | — | — | LO-16, LO-18 |
+| 5-8 | PM | Adaeze: "Three lines on Warsaw for the Atlas by Thursday?" (link to the Atlas draft on Waymarker Desk) | email | genuine / low (off-focus) | 3 | — | work | LO-17 |
+| 5-9 **Boss** | PM | Evening, Kasia at her concert. Beat 1 (Swaploft chat): a buyer for your stove asks to "continue on Kettle". Beat 2 (Kettle): "I've paid with courier delivery; collect your payment here" (card panel). Beat 3 (Kettle): "The courier's coming; the payment is on hold until you confirm with your bank: log in here." | marketplace → messenger → messenger | fraud (MCP) | 4 | boss timers 40 + pusher; interrupt after beat 3 | marketplace | LO-10, LO-02, LO-05, LO-04, LO-16 |
+
+### 25.4 Scenario specs
+Shared rules as §24.4. Polish phone numbers masked `+48 5•• ••• •NN`; IBANs `PL•• … NNNN`, checksum-invalid. Buyer display names are neutral handles ("user 2208"), never a name that points to an ethnicity (§2). Every scored scheduled beat has a `request` (CR-30). Reveals follow CONTENT_GUIDE and W1–W5 (§25.8). `tell_trusted_adult` is `stop` in every personal-money fall.
+
+**5-1 `warsaw-01-rucksack-sold`** · genuine, low · marketplace (Swaploft app, CR-33) · diff 3 · honest timer 45, `honest_deadline` "Drop it off by Friday" · Swaploft, Trundle · `pattern: marketplace-collect-payment-link` · you started it (your listing)
+- **Message** (Swaploft notification inside the app the player opened; Polish with translation): "Sprzedane! Sold! Your rucksack, €35.00, order SW-•••• 4471. Swaploft holds the payment until the buyer receives it, then pays it to your saved account. Print your label and drop it at a Trundle locker by Friday. swaploft.example/sales/4471". `request: none`; `ask` = "Print your label and drop it at a Trundle locker by Friday." (CR-30); `claims[0]` = "Swaploft holds the payment until the buyer receives it".
+- **Checkables (G, 5):** `sender.detail` (W1, "It fits: a notice inside the Swaploft app you opened yourself, about your own listing. That isn't proof on its own, so weigh it with what it asks: to post the parcel.") · `link` (W3, "It fits: swaploft.example, Swaploft's own address, the sale in your own account…"; allowed: owner part matches, low stakes) · `reference` (order number, neutral) · `claim` (neutral: "Says the money is held until delivery, then paid to your saved account. That's how a real sale shows, inside the app.") · `request` ("Asks you to post the parcel. No card, no login, nothing to collect.").
+- **Actions:** "Print the label" (`proceed`, target ★★★) · "Check the sale in your Swaploft sales list" (`check_with_platform` ★★★; in focus) · "Report the notice" (report, 0, −5) · "Ignore it for now" (`ignore` ★★; outcome "Friday comes; the app reminds you once, then the sale is cancelled.").
+- **Debrief L1 (genuine):** tell "In the app you opened: sold, money held, post it." · what works "Posting it was right. That's what being paid looks like." Habit card `calm-not-paranoid`. Layer 2: "A real sale shows inside Swaploft, and the money goes to the account you saved there. Remember this screen: it's the one a fake buyer can't show you."
+
+**5-2 `warsaw-02-vote-for-the-band`** · fraud (MAT callback) · messenger → browser → browser · diff 3 · calm (no timer) · levers helpfulness, affection, small_amount · Kettle, **Votelark** (new, scam-only) · contact Ola (contact-only, §25.9)
+- **Message:** Ola's saved contact "Ola (volunteers)", in your usual chat (`earlier[]`: "Ola: Welcome to Warsaw! See you at Saturday's stall 🙂"). "Hi! Could you vote for my little sister's band in the city school contest? 🙏 You just log in with your phone number and type the code you get. votelark-vote.example/band/…" `request: log_in`; `ask` = "Could you vote for my little sister's band in the city school contest?"; `claims[0]` = "You just log in with your phone number and type the code you get."
+- **Checkables (4; R 2):** `sender.detail` **D** (W2 neutral: "Shows Ola's saved contact, in your usual chat, as a real message from her would. An account can be taken over and show the same contact, so it can't prove anything either way. Judge the request.") · `request` **D** ("Asks you to vote for a band. Friends ask favours like this, so it can't prove anything either way. Look at what voting needs.") · `claim` **R** ("A vote that needs the code sent to your phone. That code is a key to your Kettle account, not a vote.") · `link` **R** ("votelark-vote.example: a voting site you don't know, asking you to log in with your number.").
+- **Actions:** "Open the link and vote" (`open_link` → `vote_page`, target) · "Call Ola's saved number (a normal call)" (`call_back_known` ★★★; outcome "Ola: 'Vote? My sister's eleven and plays the recorder. Someone's in my Kettle, I think.'") · "Report the chat" (report) · "Ignore it" (ignore).
+- **`vote_page` (training page):** "Vote now · Enter your phone number". Read-only demo field. Action "Enter your number" (`open_link` → `code_page`) · "Close it" (`ignore`). Checkables `page.address` R, `page.info` D.
+- **`code_page` (training page + banner):** banner (Kettle SMS, no actions): "Kettle code: 3•••••. Don't share it. This code registers your Kettle account on a new device." Page: "Enter the 6-digit code to confirm your vote." Checkable `request` R ("asks for the code the banner says registers your account on a new device"). Actions: "Type the code to vote" (`enter_details`, fall) · "Close it and call Ola" (`call_back_known`, ★★ engage cap) · "Close it" (`ignore`, ★★).
+- **Fall** narrative: "'Thanks for voting!' A minute later Kettle logs you out on your phone. Your contacts start getting 'vote for my sister's band' from you." Damage control (6, 2 harmful): `log_out_unknown_devices` (stop) · `reregister_app_own_number` (stop) · `turn_on_two_step` (secure) · `warn_contacts` (warn: "another way, not in Kettle") · harmful `reply_to_sender` · harmful `keep_quiet`.
+- **Debrief L1 (≈17):** tell "A vote that needs the code from your phone." · what works "Never type that code anywhere. Call your friend." Layer 2: "This is one way friends' accounts get taken over: the code that registers your account goes to someone else. Then your account asks your friends." Prevention: "Turn on Kettle's two-step PIN." `already_clicked.entered_details`: "Typed the code? Open Kettle's linked devices and log out any you don't know, set the app up again with your own number, turn on two-step, and warn your contacts another way." Habit card `codes-are-only-for-you`.
+
+**5-3 `warsaw-03-collect-your-payment`** · fraud (MCP) · messenger → browser · diff 3 · timer 45; pusher at 25 s (same number): "Courier comes at 5! Please collect it now 🙏" · levers helpfulness, urgency, greed (small) · Kettle, Swaploft (claimed), look-alike `swaploft-safe-delivery.example` (registered)
+- **Message:** Kettle, new contact (CR-19) "+48 5•• ••• •12". Polish with translation: "Hi! I'm the buyer for your rucksack on Swaploft 🙂 I've paid already, courier delivery included. Collect your payment here: swaploft-safe-delivery.example/collect/4471". `request: open_link`; `ask` = "Collect your payment here"; `claims[0]` = "I've paid already, courier delivery included."; `references: ["your rucksack on Swaploft"]`.
+- **Checkables (5; R 3):** `sender.detail` **R** ("Not in your contacts: a number writing about your Swaploft listing, outside Swaploft. A real buyer talks to you in the Swaploft chat.") · `link` **R** ("swaploft-safe-delivery.example. Read the end: the owner part is swaploft-safe-delivery.example, not swaploft.example.") · `request` **R** ("A link to collect money. When you're paid, it shows inside Swaploft; nobody sends you a link to receive it.") · `claim` **D** ("Says they've paid. A real buyer might say so too; if it's true, it shows in your Swaploft sales, so the message can't prove anything either way.") · `reference` **D** (neutral: "Names your real listing. It's public, so it can't prove anything either way.").
+- **Actions:** "Open the link and collect it" (`open_link` → `collect_page`, target) · "Open your Swaploft sales yourself" (`check_with_platform` ★★★; outcome "No sale, no payment on the rucksack. Real payments show here.") · "Block and report the number" (`block` ★★) · "Ignore it" (ignore ★★).
+- **`collect_page` (training page, label "Swaploft Safe Delivery"):** "Collect €35.00 · Enter your card to receive the payment": card number, expiry, security code (read-only demo values, nothing sent). Checkables: `page.address` R, `page.info` D, `request` R ("Asks for your card's security code to pay you. Nobody needs that to send you money."). Actions: "Enter your card to collect" (`enter_details`, fall) · "Close it and open Swaploft yourself" (`check_with_platform`, ★★) · "Close the page" (ignore, ★★).
+- **Fall:** narrative "'Processing your payout…' Ten minutes later your Larchwick app shows €349.00 paid to an online shop. Nothing came in." Damage control (6, 2 harmful): `block_card_in_bank_app` (stop) · `tell_trusted_adult` (stop) · `keep_evidence` (secure) · `report_buyer_in_app` (report, new) · harmful `ask_buyer_to_cancel` (new) · harmful `wait_for_money` (new). Layer 2 adds "Then call your bank on the number on your card; some payments can still be stopped." (MCP §5.1.)
+- **Debrief L1 (≈18):** tell "A buyer off Swaploft, with a link to collect your money." · what works "Open Swaploft yourself: real payments show there." Habit card `stay-on-the-platform` (first shown here).
+
+**5-4 `warsaw-04-kasia-twelve-euros`** · genuine, high · messenger → banking · diff 4 · timer 45; honest pusher at 30 s (Kasia): "Off now! Tonight's fine 🎻" · `pattern: hijacked-friend-payment-code` (twin of 5-6) · Kettle, Larchwick · cast Kasia
+- **Message:** Kasia's saved contact "Kasia (Warsaw)" (`earlier[]`: "Kasia: Tape's in the hall if you need it 📦"). "Leaving for rehearsal! Can you send me the €12 for the tape and boxes from this morning? To my account as usual, in your Larchwick app. Tonight's fine 🙂" `request: pay`; `ask` = "Can you send me the €12 for the tape and boxes from this morning?"; `references: ["the tape and boxes from this morning"]`; `honest_deadline` "Tonight's fine". **Interrupt** at 15 s, Mateus (genuine, small talk): "Lamp's sold. Twenty minutes. I'm framing the photo."
+- **Checkables (G, 3):** `sender.detail` (W2 neutral, money request) · `reference` (neutral: "The tape and boxes you agreed this morning, in person.") · `request` ("Asks for the €12 you agreed in person, to her own account, by a transfer you start yourself. No code, no link.").
+- **Banking `kasia_transfer`** (`start_transfer`): payee typed from her contact, "Kasia Wójcik", IBAN `PL•• … 3308`, €12.00. Result **match**. `payee.name_check` (P3 neutral) · `payee.iban` (neutral). Actions: "Send €12" (`proceed` ★★★) · "Cancel and call Kasia first" (`call_back_known` ★★★) · "Cancel" (`ignore`, dismiss on genuine high, 0; "You didn't send the €12 you'd agreed. Kasia was real.").
+- **Actions (message):** "Pay her in the Larchwick app" (`start_transfer`, target) · "Call Kasia's saved number first" (`call_back_known` ★★★; "Kasia, on the stairs: 'Yes, me! Tonight's fine.'") · "Report the message" (0, −5) · "Ignore it" (ignore, 0).
+- **Debrief L1 (genuine):** tell "Money you agreed in person, to her own name, by a normal transfer." · what works "Paying was fine; a call never hurts." Layer 2: "A real friend asks for a transfer you start yourself, to their own account, and is happy to take a call. Remember that shape." Habit card `call-the-number-you-know` (scope line: requests you didn't agree in person).
+
+**Arc beat (`warsaw-arc-alex-NN`).** Placed between 5-4 and 5-5, after a genuine friend payment and before a marketplace scam: never next to 5-6, so a "friend asks for money in a chat" debrief can't be read against the arc.
+
+**5-5 `warsaw-05-card-photo-in-app`** · fraud (MCP) · marketplace (Swaploft chat inside the app, CR-33) · diff 4 · timer 45 · levers helpfulness, authority · Swaploft
+- **Message:** Swaploft in-app chat, buyer "user 2208" on your stove listing (Polish with translation): "Hi! I'll take the stove for €40. Swaploft verifies sellers before payout: send me a photo of your card, both sides, so the money can reach you. Their rules: swaploft.example/help/payouts". `request: enter_details`; `ask` = "send me a photo of your card, both sides, so the money can reach you"; `claims[0]` = "Swaploft verifies sellers before payout"; `references: ["your stove listing"]`. **Interrupt** at 20 s, Mateus: "Does this lamp photo need more light? Be honest."
+- **Checkables (5; R 1; difficulty 4: on the real platform, a real help link):** `sender.detail` **D** (W1: "A buyer's account inside Swaploft's own chat, as a real buyer's would be. Anyone can open an account, so it can't prove anything either way.") · `link` **D** (W3: "swaploft.example: Swaploft's own address. Anyone can paste a real link, so it can't prove anything either way.") · `reference` D · `claim` **D** ("Says Swaploft checks sellers. Platforms do run checks, inside their own settings; a buyer saying so can't prove anything either way.") · `request` **R** ("A photo of your card, sent to a buyer. Being paid never needs your card details, and the platform never asks for them through a buyer.").
+- **Actions:** "Send a photo of your card" (`enter_details`, target, fall) · "Check your Swaploft settings yourself" (`check_with_platform` ★★★; "Payouts go to the bank account saved in Settings. Swaploft never asks for card photos, and never through chat.") · "Report the buyer in Swaploft" (report ★★) · "Ignore it" (ignore ★★).
+- **Fall:** damage control as 5-3 (block card = stop).
+- **Debrief L1 (≈17):** tell "Even inside Swaploft: being paid never needs your card." · what works "Check your settings yourself; report the buyer." Layer 2: "Staying on the platform helps, but it isn't proof. What the buyer asks for is." Habit card `stay-on-the-platform`.
+
+**5-6 `warsaw-06-kasia-payment-code`** · fraud (HFC; the chapter's only code scenario) · messenger · diff 4 · timer 45; pusher at 20 s (same chat): "Please, they're waiting at the till 😬" · levers affection, urgency, small_amount, helpfulness · Kettle, Larchwick · cast Kasia (account taken over)
+- **Message:** Kasia's saved contact, her real chat (`earlier[]`: "Kasia: Tape's in the hall if you need it 📦" · "Kasia: Leaving for rehearsal!"). "Help! I'm at the music shop for new strings and my card's been declined 😩 Can you send me a 6-digit payment code from your Larchwick app? I'll pay you back tonight, promise." `request: share_code`; `ask` = "Can you send me a 6-digit payment code from your Larchwick app?"; `claims` = ["my card's been declined", "I'll pay you back tonight, promise."]. **Interrupt** at 12 s, Noor: "inspector, quick q: is Warsaw cold?? packing for a trip".
+- **Checkables (4; R 1):** `sender.detail` **D** (W2) · `claim` **D** ("An excuse for asking. Real friends' cards do get declined, so it can't prove anything either way.") · `claim#2` **D** (neutral promise) · `request` **R** ("A payment code from your banking app. A code like this pays **from your account** once you confirm, wherever it's typed. Never send it to anyone, even a friend.").
+- **Actions:** "Make a code and send it to her" (`share_code`, target, fall) · "Call Kasia's saved number (a normal call)" (`call_back_known` ★★★; "Kasia picks up between pieces: 'Strings? I'm in rehearsal, my phone was in my bag. Someone's in my Kettle!'") · "Report the chat" (report ★★; outcome "Reported. Now call Kasia on her number, a normal call, so she can get her account back.") · "Ignore it" (ignore ★★).
+- **Fall** narrative (CR-34 fallback until it lands): "You send the code. Your Larchwick app asks: 'Confirm €249.00 to TREMOLIK?' You confirm, as you would at a till. 'Thanks!! 😘' Then: 'It didn't go through, can you send one more?'" (second request: generic friend-in-need pattern, HFC §2.3). Damage control (6, 2 harmful): `call_bank_stop_payment` (stop) · `tell_trusted_adult` (stop) · `tell_real_person` (warn: Kasia, by a normal call) · `report_account_in_app` (report, new) · harmful `send_code_to_cancel` (new) · harmful `reply_ask_money_back`.
+- **With CR-34:** the code send opens the Larchwick confirmation (`code_confirm` beat) where the player can still read the recipient (§25.5).
+- **Debrief L1 (≈18):** tell "Her real chat, but a code from your bank app." · what works "Never send a code. Call her on her saved number." Layer 2: "A Kettle call goes to whoever holds the account; a normal phone call goes to her SIM." (as Amsterdam 2-8) · "Read who gets the money before you confirm anything in your app." · "Compare this afternoon's real request: a normal transfer, to her own name, that you start yourself." `already_clicked.shared_code`: "Sent a code? If the app asks you to confirm, don't. If you already confirmed, call your bank now on the number on your card. Then call your friend another way." Habit card `codes-are-only-for-you`.
+
+**5-7 `warsaw-07-mateus-asks`** (drill, unscored; damage control for Mateus, like Home 0-5) · messenger · cast Mateus · `pattern: hijacked-friend-payment-code`
+- **Message:** Mateus's saved contact "Mateus (work phone)": "Um. 'Kasia' asked me for a payment code an hour ago. I sent it AND confirmed in my app, didn't even read it. €249 to some music shop. Kasia just rang from rehearsal: it wasn't her. What do I do first? 😬" It works whatever the player did in 5-6 (Mateus got the message on his own phone).
+- **Actions:** "Talk Mateus through it, step by step" (`proceed` → outcome `helping_mateus`, with recovery list) · "Tell him it's only €249, let it go" (`reply` → outcome "Mateus: 'Mm. I'll still call the bank, it's free.' He does, and comes back: 'Glad I did.'"; no damage control, no stars).
+- **`helping_mateus` recovery (6, 2 harmful):** `call_bank_stop_payment` (stop) · `keep_evidence` (secure: the chat and the app's payment record) · `report_account_in_app` (report: Kasia's account, in Kettle) · `report_to_police` (report) · harmful `send_code_to_cancel` (feedback in Mateus's voice: "Another code? That's how they'd take more. Bank first.") · harmful `keep_quiet` (feedback: "Feeling embarrassed is normal. 'Call the bank straight away, without feeling ashamed' is exactly the advice. I'm calling.").
+- **Whatever the player picks, Mateus calls his bank first** (outcome narrative after damage control): "Mateus calls Larchwick on the number on his card, then reports Kasia's account. 'Done. Thanks for staying calm for me.'" So the placed beat and the resolution are true in every branch (STORY §3.11 (7)). Engine: CR-32.
+- **Debrief (drill):** tell "He told someone fast, and the bank came first." · what works "Stop the damage first: call the bank on the card's number." Layer 2: "Experts get caught too. What counts is the next ten minutes." Habit card `stop-the-damage-first`.
+
+**5-8 `warsaw-08-atlas-lines`** · genuine, low, off-focus · email · diff 3 · calm · Waymarker
+- **Message:** from adaeze.okafor-lind@waymarker-network.example: "Hi! Could you send me three lines on Warsaw for the Atlas by Thursday? The draft is here: desk.waymarker-network.example/atlas/warsaw. No rush. A." `request: reply`; `ask` = "Could you send me three lines on Warsaw for the Atlas by Thursday?"
+- **Checkables (G, 3):** `sender.detail` ("It fits: Waymarker's own domain and Adaeze's address in the staff directory…") · `link` ("It fits: desk.waymarker-network.example, Waymarker's own address…") · `request` ("Asks for three lines of writing. No money, no code, no login request.").
+- **Actions:** "Reply: on it, Thursday's fine" (`proceed` ★★★) · "Ask Adaeze through the staff directory first" (`ask_someone` ★★★, off-focus double check) · report (0, −5) · "Leave it" (ignore ★★).
+- **Debrief L1 (genuine):** tell "Your coordinator, asking for writing." · what works "Reply as normal." Habit card `calm-not-paranoid`.
+
+### 25.5 Device moments
+- **Swaploft in the app vs. outside it (CR-33).** The marketplace view (5-1, 5-5, boss beat 1) shows a Swaploft header, the listing card and, for system notices, a "Swaploft" sender row; buyer chats show the buyer's handle. The contrast the chapter builds: **5-1** (a real sale, money held, nothing to collect) → **5-3** (off the app, a link to collect) → **5-5** (on the app, but asking for your card) → **boss** (on, then off, then card, then bank login). Being in the app is evidence to weigh, never proof (W1).
+- **The collect page.** A training page labelled "Swaploft Safe Delivery" with a card panel (5-3, boss beat 2) or a bank-login panel (boss beat 3). Read-only demo values, watermark, "Training page" title and landmark, no network (Red Line 2). Never a Swaploft sign-in page (producer constraint 4).
+- **The code confirmation (CR-34).** In 5-6, sending the code opens the Larchwick app's confirmation: "Confirm payment · €249.00 · to TREMOLIK · Confirm / Decline". The recipient is a checkable (`payee.name`, red flag: "Not Kasia: a shop you're not in."). Scoring with CR-34: Confirm = fall; Decline or "Decline and call Kasia" = ★ (5 points; you sent a code, but read the confirmation). Without CR-34 the confirmation is narrated in the fall (§25.4).
+
+### 25.6 Boss 5-9 `warsaw-09-boss-stove`
+- **Setup:** "Evening. Kasia is at her concert and Mateus is packing. Your stove listing has a new message."
+- **Levers:** helpfulness, urgency, greed (small). Pusher on beat 3 at 20 s: "Courier's downstairs!!"
+
+**Beat 1, Swaploft chat (start, 40 s).** Buyer "user 3150" (Polish with translation): "Hi! I'll take the stove for €40 and add €5 for a quick pick-up 🙂 I'm hardly ever on here, let's continue on Kettle: +48 5•• ••• •31. This one: swaploft.example/item/…" `request: reply`; `ask` = "let's continue on Kettle"; `phone_numbers: ["+48 5•• ••• •31"]`; `claims` none.
+- Checkables (5; R 1): `sender.detail` D (W1) · `link` D (W3) · `reference` D (the listing) · `phone_number` D ("A number for chatting. Real buyers share numbers too, so it can't prove anything either way. What matters is leaving Swaploft.") · `request` **R** ("Asks you to leave Swaploft's chat for Kettle. Off the platform, Swaploft can't see the deal or protect it.").
+- Actions: "Move the chat to Kettle" (`reply`, target; **CR-35**: an engage that ends a boss beat, ★★) · "Keep it in Swaploft: check your sales" (`check_with_platform` ★★★; "Nothing paid yet. Real offers and payments show here. Then Kettle pings anyway.") · "Report the buyer in Swaploft" (report ★★) · "Ignore it" (ignore ★★).
+
+**Beat 2, Kettle (`arrives_after: 45`, 40 s, `covered_by: [start]`).** From "+48 5•• ••• •31" (CR-19 new contact): "It's the stove buyer 🙂 I've paid already, courier delivery included. To receive the money, collect your payment here: swaploft-safe-delivery.example/collect/3150. The courier comes in an hour." `request: enter_details`; `ask` = "To receive the money, collect your payment here"; `claims[0]` = "I've paid already, courier delivery included."
+- Checkables (5; R 2): `sender.detail` D ("Not in your contacts: the number the buyer gave you in Swaploft. It is the buyer, so it can't tell you anything either way.") · `claim` D (as 5-3) · `reference` D · `link` **R** (as 5-3) · `request` **R** (as 5-3).
+- Actions (no engage on boss beats): "Enter your card details through the link" (`enter_details`, target) · "Open your Swaploft sales yourself" (`check_with_platform` ★★★) · "Block and report" (`block` ★★) · "Ignore it" (ignore ★★).
+
+**Beat 3, Kettle (`arrives_after: 45`, 40 s, `covered_by: [start, collect]`).** Same number: "Courier's here in 30 min! Your payment is on hold until you confirm with your bank. Log in here to release it: swaploft-safe-delivery.example/release/3150". `request: log_in`; `ask` = "Log in here to release it"; `claims[0]` = "Courier's here in 30 min!"
+- Checkables (4; R 2): `sender.detail` D · `claim` D (neutral pressure line; deadlines are never checkables, but this is a claim about a courier, not a deadline: the writer keeps it free of times if the sceptic reads it as one) · `link` **R** · `request` **R** ("A bank login to receive money. Nobody needs your banking password to pay you.").
+- Actions: "Log in with your bank through the link" (`enter_details`, target) · "Open your Swaploft sales yourself" (`check_with_platform` ★★★) · "Block and report" (★★) · "Ignore it" (★★).
+
+**Interrupt** (`after_beat: release`, genuine, `on_fall: skip`): Kasia: "Concert done! I think I played well 🎻 Home by eleven." Actions: "Reply: bravo, see you soon!" (`proceed`) · "Report the message" (report; genuine report; "You reported it. Careful is good; this one really was Kasia, back on her own account.").
+
+- **Counts:** R = 1 + 2 + 2 = 5; decoys on scheduled beats 4 + 3 + 2 = 9. Max **51**.
+- **After a fall** (merged, cap 6): `block_card_in_bank_app` (stop; beat 2) · `call_bank_known_number` (stop; beat 3: bank login typed) · `change_password` (secure: "from the real app") · `report_buyer_in_app` (report) · harmful `ask_buyer_to_cancel` · harmful `wait_for_money`. Every fall outcome sets `warsaw_card_blocked` (story only). Beat 1's ★★ is not a fall.
+- **Layer 1 for the boss and stamp screen** (≈18): tell **"Off Swaploft, a link to collect, then your bank login."** · what works **"Money comes to you inside the app. Check there."**
+- **Layer 2, per beat:** beat 1 "Leaving the platform is the first step of this scam." · beat 2 "A link to collect money, on a look-alike address." · beat 3 "A bank login 'to release' a payment: nobody needs it to pay you." `already_clicked.entered_details`: "Typed card details? Block the card in your banking app now. Typed a bank login? Call your bank on the number on your card and change the password from the real app."
+
+### 25.7 Strategy check (as §7.2)
+**Assumptions:** CR-17/18/30/33/35 landed; R counts scheduled beats only; flags on `vote_page`, `code_page`, `collect_page`, `kasia_transfer` and the CR-34 confirmation count toward spotted, not R.
+- **Standard fraud:** 5-2 R 2 (19), 5-3 R 3 (21), 5-5 R 1 (17), 5-6 R 1 (17) = **74**. Decoys on scheduled beats: 5-2 2, 5-3 2, 5-5 4, 5-6 3, boss 9 = 20.
+- **Genuine:** 45. Own checkables: 5-1 5, 5-4 3, 5-8 3 = 11.
+- **Boss:** R 5, max 51 (beat 1's best is ★★★ via `check_with_platform`; "Move the chat" is ★★ under CR-35).
+- **Totals:** max = 74 + 45 + 51 = **170**. R = 7 + 5 = **12**: silver ≥ **4**, gold ≥ **8**.
+
+| # | Strategy | Points arithmetic | Pts | Rating | Spotted | Stamp |
+|---|---|---|---|---|---|---|
+| 1 | Ideal | 74 + 45 + 51 | 170 | 100% | 12 | **Gold** |
+| 2 | Ideal + asks Adaeze about 5-8 (off-focus) | same | 170 | 100% | 12 | Silver |
+| 3 | Ideal but moves the boss chat to Kettle, then verifies beats 2–3 | 170 − 5 | 165 | 97.1% | 12 | **Gold** |
+| 4 | Careful reporter | (14+16+12+12) + 45 + (30+6) | 135 | 79.4% | 12 | Silver |
+| 5 | Ideal but reports Kasia's real €12 request | 170 − 20 | 150 | 88.2% | 12 | Silver |
+| 6 | Tag everything + always verify | 60 + 45 + 45 | 150 | 88.2% | 12 − 31 = −19 | Bronze |
+| 6a | Random single tag + always verify | 150 + 2×(½+⅗+⅕+¼) + ≈0.5 | ≈154 | ≈90.6% | 2.65 − 7.35 ≈ −4.7 | Bronze (silver only with all 7 hits: about 1 in 1,700) |
+| 6b | Sender + link + always verify | 150 + 0 (5-3 tags sender R and link R: +4) | 154 | 90.6% | 5 − 13 = −8 | Bronze |
+| 6c | Always tag the request + always verify | 150 + 2 (5-3) + 2 (5-5) + 2 (5-6) + 6 | 162 | 95.3% | 6 − 4 = 2 | Bronze |
+| 6d | Request + every claim | 150 + 4 (5-2: claim R, request D → void) … | 150 | 88.2% | 7 − 11 = −4 | Bronze |
+| 6e | Request + every link | 150 + 4 (5-3) | 154 | 90.6% | 10 − 8 = 2 | Bronze |
+| 7 | Blind always-verify | 60 + 45 + 45 | 150 | 88.2% | 0 | Bronze |
+| 8 | Blind always-report | 40 + 30 − 15 | 55 | 32.4% | 0 | Bronze + tip |
+| 9 | Blind always-dismiss | 40 + 30 + 10 + 0 + 10 | 90 | 52.9% | 0 | Bronze |
+| 10 | Always trust, perfect damage control | 45 + 4 × 9 + 9 | 90 | 52.9% | 0 | Bronze |
+| 11 | **"Inside the app is safe"**: trusts anything in Swaploft, checks everything else | 5-5 fall 9; boss b1 10 (moves), b2–b3 verify 30 + 6; rest ideal | 154 | 90.6% | 11 | Silver (rating) / gold blocked only by rating < 90? see note |
+
+Row notes:
+- **6a:** hit chances 5-2 2/4, 5-3 3/5, 5-5 1/5, 5-6 1/4, b1 1/5, b2 2/5, b3 2/4; product ≈ 1/1,700.
+- **6c:** the request is R on 5-3, 5-5, 5-6 and all boss beats, a decoy on 5-2 (the ordinary favour, as Paris 3-5), and a genuine detail on 5-1, 5-4, 5-8. Net 6 − 4 = 2.
+- **6e:** links R on 5-2, 5-3, b2, b3 (4); decoy links on 5-5 and b1 (2); genuine links 5-1, 5-8 (2). Correct 6 + 4 = 10; wrong 1 + 3 + 2 + 2 = 8. Net 2.
+- **Row 11** lands at 90.6% with 11 spotted (the 5-5 request untagged), so **gold** under today's rules. This is Paris's Q3 again (one well-recovered fall can still reach gold). Recorded for the parked `stamps.gold.max_falls` decision (§23.12 Q3).
+
+### 25.8 Warsaw reveal rulings
+- **W1. Swaploft senders.** A Swaploft **system notice inside the app the player opened** (5-1) may use "It fits" (something the player opened, about their own listing). A **buyer's account inside Swaploft chat** (5-5, boss beat 1) is neutral: anyone can open one.
+- **W2. Saved contacts on money, code or login requests are neutral** (ruling 1, §22.8): Ola (5-2), Kasia (5-4 genuine and 5-6 fraud alike).
+- **W3. Swaploft's real domain in a buyer's message is neutral** (5-5, boss beat 1); only a system notice in the app may say "It fits" on it (5-1).
+- **W4. "Collect your payment"** is the debrief wording; "Swaploft Safe Delivery" appears only as the fake page's label.
+- **W5. A new number writing about your listing outside Swaploft** is a red flag (5-3), but on boss beat 2 the number is one the buyer gave you in beat 1, so it is neutral there: the tell has already happened (leaving the platform).
+
+### 25.9 New brands, cast, content
+- **Votelark** (new, scam-only): a "school contest" voting page that asks for your phone number and the code you get. Host `votelark-vote.example`. Training pages only. Alternatives "Cheerpoll", "Tunepoll". BRAND_CHECK against voting and poll apps (Strawpoll, Mentimeter, Slido, Doodle) and Polish contest sites.
+- **TREMOLIK** (new; merchant name on the Larchwick confirmation, 5-6 and drill 5-7): a fictional online music shop, never a real one, no domain. Alternatives "Smykowo", "Basovia". Check against Polish music retailers (e.g. large chains and instrument shops) and payment descriptors.
+- **Swaploft:** `swaploft-safe-delivery.example` (registered) gains paths `/collect/<id>` and `/release/<id>`; real-domain paths `/sales/<id>`, `/item/<id>`, `/help/payouts`. The fake page label "Swaploft Safe Delivery" is already implied by the look-alike; `ux-artist` notes it in `role_in_game`. Add Swappie and Swapfiets to `checked_against` (open STATUS follow-up).
+- **Larchwick:** a "6-digit instant payment code" feature (5-6 only), generic, never styled after a real payment scheme (HFC §1).
+- **Trundle:** named only as the locker for posting in 5-1.
+- **Cast (`content/cast.yaml`):** `kasia` "Kasia Wójcik", role "Music student, Waymarker volunteer (Warsaw)", known channel "Saved contact: Kasia (Warsaw)"; notes: her real Kettle account is taken over in 5-6 (never her fault, never shown how); she is never the one who falls.
+- **Cast proposal (contact only, for STORY's name register):** **Ola**, a fellow Waymarker volunteer, saved contact "Ola (volunteers)". Never drawn, never in a scene, no lines outside 5-2. Her real account is taken over in 5-2.
+- **Recovery steps (new):** `report_buyer_in_app` ("Report the buyer with the app's own report button") · `report_account_in_app` ("Report the taken-over account in the app") · harmful `ask_buyer_to_cancel` ("Message the buyer and ask them to cancel it"; feedback "It feels like the quickest fix, but the 'buyer' is the scammer and won't undo anything. Block the card in your banking app first.") · harmful `wait_for_money` ("Wait until the money arrives"; feedback "Hoping the payment is on its way is natural, but no money is coming, and every minute counts. Block the card now.") · harmful `send_code_to_cancel` ("Send another code to cancel the payment"; feedback "A code only ever makes a payment; it can't cancel one. Call your bank on the number on your card instead.").
+- **Habit cards:**
+  - **New `stay-on-the-platform` (LO-10).** Title "Stay on the platform". Habit: "Keep the deal and the money inside the marketplace app you opened yourself. If you've been paid, it shows there. Receiving money never needs your card details or bank login." Example (first shown at 5-3; no scam domain): "A buyer you've never met says they've paid and sends a link to collect it? Open Swaploft yourself: real payments show there." Already clicked: "Typed card details? Block the card in your banking app now and call your bank on the number on your card. Typed a bank login? Call the bank and change the password from the real app."
+  - `codes-are-only-for-you` habit gains: "A payment code from your banking app is money: only type it where you are paying yourself, and read what you're confirming."
+  - `call-the-number-you-know`, `stop-the-damage-first` unchanged.
+- **Atlas page:** `atlas_cards: [codes-are-only-for-you, stay-on-the-platform, call-the-number-you-know, stop-the-damage-first]` (STORY §3.5).
+- **"Where to report and get help" (Poland) card:** wording in `docs/patterns/ch5-warsaw-sources.md` ("Poland help card"), linked from layer 2 of every Warsaw debrief.
+- **Chapter file:** `content/chapters/warsaw.yaml`: slot 5; `patterns: [marketplace-collect-payment-link, hijacked-friend-payment-code]`; `callbacks: [messenger-account-takeover-code]`; am `[01, 02, 03]` (stop point after 03), pm `[04, arc, 05, 06, 07, 08, 09]`; `boss: warsaw-09-boss-stove`; rules as §25.1; `scenes: { arrival: warsaw-arrival, turn: warsaw-turn, resolution: warsaw-resolution, placed: [{ scene: warsaw-kasia-back, after: warsaw-07-mateus-asks }] }`.
+
+### 25.10 Engine and schema change requests (CR-32 to CR-35)
+- **CR-32 (non-blocker): damage control for a cast member in a drill.** An outcome may set `recovery_for: <cast id>`. The prompt reads "Pick the step {name} should take first, then 2 more." and the harmful-pick feedback may be voiced by that person (scenario `feedback` overrides already exist). Points and LO-16 count exactly as in Home 0-5. Interim: Home 0-5's generic prompt, with Mateus's message asking "What do I do first?".
+- **CR-33 (blocker for 5-1, 5-5, boss beat 1, or fallback): marketplace view.** New device `marketplace` (or `messenger` with `message.app: swaploft`): Swaploft header, a listing card (`message.listing: { title, price }`, checkable as `reference`), system notices with a "Swaploft" sender row, and buyer chats with a handle. Same Check, tag, translation and timer behaviour as `messenger`. Fallback: `messenger` with sender detail "Swaploft app · notice" / "Swaploft chat · user 2208"; checkables and §25.7 unchanged.
+- **CR-34 (non-blocker): code then confirm.** A `share_code` action may set `next_beat` to a `banking` beat with `payee.code_confirm: true` (renders "Confirm payment · amount · to {name}", checkable `payee.name`). That `share_code` is non-terminal and caps the group at ★ (5 points); on the confirmation beat Confirm (`pay`) is the fall and Decline (dismiss) or "Decline and call {friend}" (verify) keep the ★ cap. Fallback: terminal `share_code` with the confirmation narrated (§25.4).
+- **CR-35 (blocker for boss beat 1, or fallback): an engage that ends a boss beat.** On a scheduled boss beat, an engage action without `next_beat` may end that beat's group when a later scheduled beat continues the same conversation; it scores ★★ (the engage cap). Validator: allowed only if a later scheduled beat names it in `covered_by` or shares its sender thread. Fallback: beat 1 offers no move action; the tempting wrong action becomes "Send your Kettle number and wait" as `reply` is not allowed, so instead the beat keeps only verify/report/dismiss plus "Agree the price in Swaploft and share your card for 'pick-up'" (`enter_details`); §25.7 rows 3 and 11 are then re-run.
+- CR-30 (§24.9) is shared: Warsaw needs `ask` on `none` (5-1), `open_link` (5-3) and `log_in` (5-2, boss beat 3).
+
+### 25.11 Open questions for the producer (Warsaw)
+1. **One code scenario.** 5-6 is the only scored code scenario; drill 5-7 is the same message on Mateus's phone, which keeps STORY's If-then line (Mateus, codes) word for word. Accept, or move Mateus's fall to the "collect your payment" page (High confidence, MCP §8) and ask `learning-psychologist` to reword his If-then line?
+2. **Kasia as the hijacked account.** It makes the afternoon coherent (her real €12 request, then her taken-over account) and puts "it wasn't really me" in her mouth. Accept, or use an off-screen friend of Mateus's?
+3. **CR-35 vs. its fallback** for the "move to Kettle" step in the boss.
+4. **Row 11** (one in-app fall still reaches gold): feed into the parked `stamps.gold.max_falls` decision.
+5. **For fraud-researcher:** (a) the vote request (5-2) as the MAT callback with the CERT vote-takeover advisory; (b) the card-photo request inside the platform's own chat (5-5; MCP §3.6 names the request, not the channel); (c) the "bank login to release the payment" beat (MCP §2.3 "or your bank login"); (d) the €349 and €249 loss amounts (invented, small, plausible); (e) "Swaploft holds the payment until delivery" as the genuine flow (MCP §7 calls the genuine flow a design inference).
+
 ## 18. Chapters 2–10 (map owned by `fraud-researcher`)
 **2 Amsterdam (slot 2, diff 2–3).** *Full chapter spec: §22, which replaces this summary.*
 - Patterns: the "Hi Mum / new number" messenger scam, and the **task / easy-work job scam**.
@@ -1306,14 +1795,9 @@ Either way the relief is about acting fast, not about the money, and there is no
 
 **3 Paris (slot 3, diff 2–4).** Replaced by §23 (producer, 2026-11-19).
 
-**4 Madrid (slot 4, diff 2–4).**
-- Patterns: a spoofed Larchwick Bank SMS inside a genuine thread, then a "bank employee" call to move money to "safety" (LO-08, LO-05, LO-01).
-- Genuine bank alerts with honest timers as twins.
+**4 Madrid (slot 4, diff 2–4).** Replaced by §24 (game-designer, 2026-11-19; in review).
 
-**5 Warsaw (slot 5, diff 3–4).**
-- Patterns: Swaploft "safe delivery" links while you sell something (LO-10), and code requests from a hacked friend (LO-05, LO-07).
-- Mateus falls, and you guide his damage control (LO-16).
-- Echo of earlier account choices.
+**5 Warsaw (slot 5, diff 3–4).** Replaced by §25 (game-designer, 2026-11-19; in review).
 
 **6 Rome (slot 6, diff 3–4).**
 - Patterns: calls from "police" or "Larchwick Bank" with a **spoofed caller ID**, and family-emergency messages or calls using a **cloned voice** or a **"new number" on Kettle**. Doorstep and utility-visit content is cut (Red Line 8).
@@ -1383,6 +1867,12 @@ Requests to `frontend-engineer`:
 - **CR-24** (Paris, blocker for boss beat 3; voice-call fallback) Video-call variant: illustration and transcript only, no synthetic audio. §23.11.
 - **CR-25** (Paris, non-blocker) Earlier messages in email threads. §23.11.
 - **CR-26** (Paris, non-blocker) Business-account context in the bank app. §23.11.
+- **CR-30** (Madrid and Warsaw, blocker for request parity from slot 4) `ask` on every request type, required from slot 4. §24.9.
+- **CR-31** (Madrid, non-blocker) On-call bar over a banking beat reached from a call. §24.5, §24.9.
+- **CR-32** (Warsaw, non-blocker) Damage control for a cast member in a drill (`recovery_for`). §25.10.
+- **CR-33** (Warsaw, blocker for 5-1, 5-5 and boss beat 1, or fallback) Marketplace view. §25.10.
+- **CR-34** (Warsaw, non-blocker) Code then confirm: non-terminal `share_code` into a confirmation banking beat, ★ cap. §25.4, §25.10.
+- **CR-35** (Warsaw, blocker for boss beat 1, or fallback) An engage that ends a boss beat at ★★. §25.10.
 
 ## 20. Hand-offs
 - **frontend-engineer:** §3–§9, §14, CR-01 to CR-13, `balance.yaml` v3.

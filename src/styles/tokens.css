@@ -462,6 +462,21 @@
   --brand-zonelet-primary: #333847;
   --brand-zonelet-on-primary: #ffffff;     /* 11.68 */
   --brand-zonelet-accent: #c9b6f2;         /* 6.37 on primary */
+
+  /* Postwick (social network, Dublin; renamed from Natterly) */
+  --brand-postwick-primary: #6b2737;
+  --brand-postwick-on-primary: #ffffff;    /* 10.66 */
+  --brand-postwick-accent: #f6d9a8;        /* 7.82 on primary */
+
+  /* Ellisfen Invest (authorised in-world firm, Dublin; renamed from Tollmere) */
+  --brand-ellisfen-primary: #5e4a12;
+  --brand-ellisfen-on-primary: #ffffff;    /* 8.52 */
+  --brand-ellisfen-accent: #f3e6c4;        /* 6.87 on primary */
+
+  /* Kindhand Support (non-functional "helper" app, scam prop; Stockholm, Brussels) */
+  --brand-kindhand-primary: #1e6b52;
+  --brand-kindhand-on-primary: #ffffff;    /* 6.40 */
+  --brand-kindhand-accent: #fbd9c4;        /* non-text on primary: 4.82 */
 }
 
 /* ------------------------------------------------------------------------- */

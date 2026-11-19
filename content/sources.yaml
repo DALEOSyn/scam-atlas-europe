@@ -2717,7 +2717,7 @@ sources:
     accessed: "2026-11-19"
     region: IE
     tier: 3
-    used_for: [investment-ad-fake-platform, recovery-scam, remote-access-support-call, MAP-ch8, campaign-catalogue]
+    used_for: [investment-ad-fake-platform, recovery-scam, remote-access-support-call, MAP-ch8, campaign-catalogue, arc]
     notes: "Offers via search, social-media ads, texts, WhatsApp or calls; links to cloned or fake sites; 'Fake charts and graphs' show apparent gains; products 'appear to be endorsed by celebrities or high-profile names'; victims asked to install remote-access software (a named real product: not to be shown); contact cut off when the victim tries to cash out; 'recovery experts' for a fee are 'usually just an extension of the fraud'. 'Calls can be masked or spoofed'. Advice: check the Central Bank register and unauthorised-firms list; don't invest from social-media ads; 'NEVER allow anyone to access your computer'; don't send more money to 'retrieve' an investment; if defrauded, stop sending money and contact your bank, the Gardai and the Central Bank. Figures 2024: older, keep off screen. Does NOT mention withdrawal fees."
 
   - id: ie-fraudsmart-state-scheme-ads-2026
@@ -2740,7 +2740,7 @@ sources:
     accessed: "2026-11-19"
     region: BE
     tier: 3
-    used_for: [investment-ad-fake-platform, recovery-scam, remote-access-support-call, MAP-ch8, MAP-ch10, campaign-catalogue, WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [investment-ad-fake-platform, recovery-scam, remote-access-support-call, MAP-ch8, MAP-ch10, campaign-catalogue, WHERE_TO_REPORT, help-where-to-report-en, arc]
     notes: "Starts with 'A fake advertisement in which a celebrity is mentioned', fake profiles, unsolicited messages; after a deposit the platform 'manipulates the transactions to give the impression that significant profits have been achieved' and the money is never invested; larger withdrawals are met with excuses (high costs, taxes) and never paid; some offer to take over the device to make transfers; recovery offers for a fee are often another fraud. Victims: stop transactions, cut contact, tell your bank at once, keep records, report to the FSMA and the police. Main source for the dashboard and withdrawal-fee beats."
 
   - id: de-evz-online-trading-scam-2026

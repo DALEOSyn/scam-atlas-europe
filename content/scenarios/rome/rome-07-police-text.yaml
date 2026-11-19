@@ -1,0 +1,209 @@
+# 6-7 "Police Info" text: call the officer in charge (GDD §26.4 6-7; multichannel-support-callback,
+# with spoofed-authority-call on the follow-up call). Fraud, difficulty 4, timer 45 s, pusher at 25 s
+# (same thread, Italian), interrupt from Noor at 15 s (genuine small talk). Levers authority, fear, urgency.
+# R 2: the number given in the text and the request. D 2: the "Police Info" sender name (the sender-or-link
+# decoy) and the bank named (reference).
+# "Call the number in the text" is engage (call_number_in_message) into officer_line, the call the player
+# placed (not in R). There the "inspector" asks you to tap Approve on a Larchwick new-device sign-in prompt
+# (a banner, no actions; a generic design analogue of "approve a request in your banking app", GDD §26.11
+# Q5a). Hang up opens "What now?": the number on your card and the police (both call_back_known extras with
+# outcomes; the beat is already capped at ★★ by the engage).
+# Fall: the stop step is call_bank_known_number (ask it to block access). The harmful "call them back"
+# step is Madrid's call_back_text_number (the player dialled the number from the text; the spec's
+# call_back_caller_number says "the number that called you"). Reported as a small deviation.
+id: rome-07-police-text
+chapter: rome
+role: standard
+pattern: multichannel-support-callback
+theme: authority
+learning_objectives: [LO-08, LO-09, LO-01]
+difficulty: 4
+is_fraud: true
+device: sms
+brands: [larchwick, kettle]
+cast: [noor]
+pressure:
+  timer: true
+  levers: [authority, fear, urgency]
+  pusher:
+    messages:
+      - { at_seconds: 25, text: "Promemoria: chiami oggi per evitare il blocco della carta.", lang: it, translation: "Reminder: call today to avoid your card being blocked." }
+
+message:
+  sender: { display: "Police Info", detail: "Sender name: Police Info" }
+  body: "AVVISO: la sua carta Larchwick risulta collegata a un'indagine per frode. Chiami oggi l'agente incaricato: 06 •••• ••41."
+  lang: it
+  translation: "NOTICE: your Larchwick card is linked to a fraud investigation. Call the officer in charge today: 06 •••• ••41."
+  request: call
+  ask: { text: "Chiami oggi l'agente incaricato", translation: "Call the officer in charge today" }
+  references: ["la sua carta Larchwick"]
+  phone_numbers: ["06 •••• ••41"]
+  l10n_note: "Italian in-world text is intentional (Rome chapter); the translation is shown inline. 'Police Info' is a generic sender label, never a real force's name."
+
+inspectables:
+  - target: sender.detail
+    reveal: "An official-sounding sender name. Anyone can set a sender name, so it can't prove anything either way."
+    red_flag: false
+    type: sender
+  - target: reference
+    reveal: "Names your bank. A guess or a detail that's easy to find, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: phone_number
+    reveal: "A number given in the text. To reach the police or your bank, dial a number you looked up yourself."
+    red_flag: true
+    type: phone_number
+  - target: request
+    reveal: "Asks you to call a number it gives you, today. That's how this call is set up for you."
+    red_flag: true
+    type: request
+
+actions:
+  - id: call_officer_number
+    label: "Call the number in the text"
+    kind: call_number_in_message
+    next_beat: officer_line
+    pressure_target: true
+  - id: call_police_yourself_text
+    label: "Call the police yourself"
+    kind: call_back_known
+    outcome: police_didnt_text
+  - id: open_larchwick_text
+    label: "Open the Larchwick app yourself"
+    kind: verify_in_app
+    outcome: card_active_nothing_pending
+  - id: report_police_text
+    label: "Report the text"
+    kind: report
+    outcome: police_text_reported
+  - id: delete_police_text
+    label: "Delete it"
+    kind: delete
+    outcome: police_text_deleted
+
+beats:
+  - id: officer_line
+    device: call
+    message:
+      sender: { display: "06 •••• ••41", detail: "The number from the text" }
+      transcript:
+        - { speaker: caller, text: "Inspector's office." }
+        - { speaker: caller, text: "A gang is using your card. Don't worry, you're not under suspicion." }
+        - { speaker: caller, text: "I'm sending a request to your Larchwick app now. Tap Approve, and it freezes your card." }
+      request: approve
+      ask: { text: "I'm sending a request to your Larchwick app now. Tap Approve, and it freezes your card." }
+      claims:
+        - { text: "A gang is using your card. Don't worry, you're not under suspicion." }
+    banner:
+      device: banking
+      message:
+        sender: { display: "Larchwick" }
+        body: "Larchwick: Approve sign-in to your account on a new device? Open the app to Approve or Deny."
+        request: none
+    inspectables:
+      - target: caller_id
+        reveal: "You dialled this number, but it came from the text, not from a source you looked up. A number on screen proves nothing either way; this one's source is the problem: it reaches whoever sent the text."
+        red_flag: true
+        type: caller_id
+      - target: claim
+        reveal: "Says a gang is using your card, and you're not under suspicion. Real calls and fake ones both reassure you, so it can't prove anything either way."
+        red_flag: false
+        type: claim
+      - target: request
+        reveal: "Approve a sign-in you didn't start. The prompt says what it does: \"Approve sign-in to your account on a new device?\" That lets someone into your account; it freezes nothing."
+        red_flag: true
+        type: request
+    actions:
+      - id: tap_approve
+        label: "Tap Approve as they say"
+        kind: approve_prompt
+        outcome: approved_new_device
+        pressure_target: true
+      - id: hang_up_officer
+        label: "Hang up"
+        kind: hang_up
+        outcome: officer_call_left
+    what_now:
+      outcomes:
+        report: officer_call_reported
+        done: officer_call_left
+      extra:
+        - id: call_card_after_officer
+          label: "Call the number on your card"
+          kind: call_back_known
+          outcome: bank_no_request
+        - id: call_police_after_officer
+          label: "Call the police yourself"
+          kind: call_back_known
+          outcome: police_didnt_text
+
+interrupts:
+  - id: noor_rome_hot
+    at_seconds: 15
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Noor", detail: "Saved contact: Noor" }
+      from_cast: noor
+      body: "inspector!! is Rome as hot as everyone says"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Noor's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what she asks for: the weather."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_noor_hot
+        label: "Reply: hotter!"
+        kind: proceed
+        outcome: noor_jealous
+        pressure_target: true
+      - id: report_noor_hot
+        label: "Report the message"
+        kind: report
+        outcome: noor_hot_reported
+
+outcomes:
+  approved_new_device:
+    narrative: "\"Card frozen. Don't use the app tonight.\" Ten minutes later your Larchwick app shows a payment you didn't make."
+    recovery:
+      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: change_password_sign_out, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: call_back_text_number, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  police_didnt_text:
+    narrative: "You dial 112 yourself. \"Police don't send texts like that, and never ask you to approve anything in your bank app. Calling us yourself was exactly right.\""
+  card_active_nothing_pending:
+    narrative: "You open the Larchwick app yourself. Your card is active. Nothing is pending."
+  bank_no_request:
+    narrative: "Larchwick, on the number on your card: \"Your card's fine, and there's no investigation. Please don't approve anything you didn't start.\""
+  police_text_reported:
+    narrative: "Reported. Your phone files the text under spam."
+  police_text_deleted:
+    narrative: "Deleted. Your card and your app are as they were."
+  officer_call_reported:
+    narrative: "Reported. Keep the text and a note of the time: your bank and the police can use them."
+  officer_call_left:
+    narrative: "You hang up and leave it there. You approved nothing."
+  noor_jealous:
+    narrative: "Noor: \"ugh. jealous. send gelato pics\""
+  noor_hot_reported:
+    narrative: "You reported it. Careful is good; this one really was Noor, asking about the weather."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A 'police' text with a number to call, then 'tap Approve'."
+    what_works: "Call the police or your bank yourself."
+  layer2:
+    message_flags: []
+    notes: "A text can set up the call: the number it gives reaches whoever sent it. Read what the app asks. \"Approve sign-in on a new device\" never freezes anything."
+  device_tip: "On a real phone, don't dial a number from a text. Look up the number yourself: the emergency number for the police, the number on your card for your bank."
+  habit_card: hang-up-call-back
+  already_clicked:
+    clicked: "Called the number? Hang up and call your bank on the number on your card."
+    shared_code: "Tapped Approve? Call your bank now on the number on your card and ask it to block access to your account."
+  sources: [it-mur-smishing-vishing, it-bdi-educazione-cyber, eu-epc-threats-2025, pl-cert-fake-consultants, de-vzhh-fake-bank-calls-2025, se-polisen-campaign-2026]

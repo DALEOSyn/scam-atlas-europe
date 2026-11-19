@@ -1,0 +1,70 @@
+# Arc beat, slot 7 (GDD §28.5 slot-7 row, word for word; §10.1, §10.2; STORY §1.4: arc slot N plays by
+# play position, so the line is city-agnostic). Warning sign: pay to get money out.
+# Single-branch fallback until the engine supports arc_branch_on (alex_invested): this file plays §28.5's
+# "Not invested" line and options for everyone. When arc_branch_on lands, add the "Invested" branch
+# ("Weird: Glimmerfund says you pay a €40 release fee…"; Refuse and report → report · Pay → pay +40).
+# Options (§28.5, not invested): Say it sounds like a scam and report → report (a report at slots 7–9
+# closes the arc as ending B) · Say it's probably normal → reply · Ask someone → ask_someone.
+# No pay option on this branch, so no figure and no alex_invested change. No damage control at the beat
+# (it would unmask the arc, §10.2). Layer 1 is §28.5's (IAF §4a line; D-S1 wording).
+# Glimmerfund is the arc-only brand (§28.5); it is never named in a scored scenario or debrief.
+# Placed between 7-6 and 7-7 (GDD §27.3).
+id: lisbon-arc-alex-07
+chapter: lisbon
+role: arc
+arc_slot: 7
+learning_objectives: [LO-14]
+is_fraud: true
+device: messenger
+brands: [wordswap, glimmerfund]
+cast: [alex, teo]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Alex", detail: "Practice partner from Wordswap" }
+  from_cast: alex
+  body: |
+    Mine's stuck. Glimmerfund wants a 'release fee' before I can withdraw. That's normal, right?
+  request: reply
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows Alex, your practice partner from Wordswap, as any profile would. A profile name can't prove anything either way."
+    red_flag: false
+    type: sender
+
+actions:
+  - id: say_probably_normal
+    label: "Say it's probably normal"
+    kind: reply
+    outcome: told_alex_normal
+    pressure_target: true
+  - id: ask_someone_release_fee
+    label: "Ask someone"
+    kind: ask_someone
+    outcome: teo_on_release_fee
+  - id: say_scam_and_report
+    label: "Say it sounds like a scam, and report"
+    kind: report
+    outcome: alex_told_scam_reported
+
+outcomes:
+  told_alex_normal:
+    narrative: "You write back: \"Probably, I think?\" Alex: \"Phew. Thought so 😅\""
+  teo_on_release_fee:
+    narrative: "You ask Teo. Teo: \"Pay to get your own money out? That's the trap, kiddo. The balance on screen isn't real.\""
+  alex_told_scam_reported:
+    narrative: "You tell Alex it sounds like a scam, and report the profile to Wordswap."
+
+debrief:
+  variant: arc
+  layer1:
+    tell: "Paying to get your own money out."
+    what_works: "If you have to pay to get your money out, the balance on screen isn't real. Stop paying."
+  layer2:
+    message_flags: []
+    notes: "A real platform doesn't ask for a fee before you can withdraw your own money. Once a \"release fee\" appears, more fees usually follow, and the money never comes out. Talk to someone you trust before anyone sends anything."
+  already_clicked:
+    clicked: "Told Alex it's probably normal? It's fine to say you've thought again: a fee to get money out is a warning sign. Tell someone you trust."
+    paid: "If you've already paid a 'withdrawal fee', stop paying, call your bank on the number on your card, and keep the chat history."
+  sources: [ie-garda-crimecall-investment-2024, be-fsma-trading-platforms-2025, de-evz-online-trading-scam-2026, be-police-romance-2026]

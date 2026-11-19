@@ -2,10 +2,10 @@
 
 _Updated by the producer at the end of every session. Keep it readable in under a minute._
 
-**Phase:** 2 — Vertical slice (started 2026-11-18) · **Next gate:** G2 (Roman plays tutorial + Berlin) · **Last update:** 2026-11-19
+**Phase:** 3 — Content production (started 2026-11-19) · **Next gate:** G3 (all chapters in English pass review) · **Last update:** 2026-11-19
 
 ## Summary
-Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR #2) are merged. The design, the UI spec and the brands are in the G1 design PR. G1 approved by Roman (all as recommended). Phase 2 (vertical slice) has started.
+Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR #2) are merged. The design, the UI spec and the brands are in the G1 design PR. G1 approved by Roman (all as recommended). Phase 2 (vertical slice) is done: tutorial and Berlin merged (PRs #10–#15), G2 approved by Roman on 2026-11-19 after playing the private preview. Phase 3 (chapters 2–10, up to two in parallel) has started.
 
 ## Done
 - [x] T-1.1/1.2 | frontend-engineer | Scaffold, schema, red-line linter, CI | PR #2 | sceptic: FAIL → FAIL → PASS (producer exception for a third round) | CI green

@@ -58,6 +58,8 @@ Play the tutorial + first city chapter yourself (link to preview build). Approve
 
 **D-S1, decided by Roman 2026-11-19: "Illustrated story layer".** Comic-style scenes, character portraits, city backdrops and an illustrated map around the existing device scenarios, built in Phase 3 (track S). Not chosen: a walkable 2D city, or graphics after G3. ✅
 
+**D-S2, producer clarification 2026-11-19 (pending Roman's confirmation at G3): what "no AI-generated images" means.** Art in `public/art/**` is SVG written element by element as code by the AI-assisted agent team, and each file header says so. Not allowed: image-generation models, auto-vectorised rasters, traced references, stock assets. Reason: hand-written SVG code has no training-image provenance risk and stays reviewable line by line. Raised by `sceptic-reviewer` as a public provenance claim; Roman may change it at G3 (including a human illustrator).
+
 ## G3 — Content complete (state: Open)
 All chapters in English pass review. Approve sources list and "Where to report" pages. Decide on external expert review (e.g. a contact at a CERT or consumer body), optional, including the proposed human review of story tone and emotional safety (PLAN.md track S5).
 

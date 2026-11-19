@@ -46,7 +46,7 @@ inspectables:
     red_flag: false
     type: caller_id
   - target: claim
-    reveal: "Loan fraud is real, so it can't prove anything either way. Your app would show it."
+    reveal: "Loan fraud is real, so it can't prove anything either way. Check by calling the number on your card."
     red_flag: false
     type: claim
   - target: claim#2
@@ -99,11 +99,11 @@ beats:
         red_flag: false
         type: prompt
       - target: prompt.where
-        reveal: "Göteborg: not where you are."
+        reveal: "Göteborg: not where you are. A clue, not proof: you didn't start it."
         red_flag: true
         type: prompt
       - target: prompt.device
-        reveal: "A Windows computer: not your phone."
+        reveal: "A Windows computer: not your phone. A clue, not proof: you didn't start it."
         red_flag: true
         type: prompt
       - target: prompt.when
@@ -167,7 +167,7 @@ outcomes:
       - { step: approve_again_to_cancel, category: harmful }
       - { step: call_back_caller_number, category: harmful }
   card_no_loan:
-    narrative: "Larchwick, on the number on your card: \"No loan, and we'd never ask you to log in on a call.\""
+    narrative: "Larchwick, on the number on your card: \"No loan, and we'd never call you and ask you to log in.\""
   loan_prompt_denied:
     narrative: "You deny it and hang up. Nobody gets in."
   loan_call_reported:

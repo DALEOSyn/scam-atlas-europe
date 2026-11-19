@@ -93,7 +93,7 @@ beats:
         red_flag: false
         type: prompt
       - target: prompt.device
-        reveal: "A Windows computer: not your phone."
+        reveal: "A Windows computer: not your phone. A clue, not proof: you didn't start it."
         red_flag: true
         type: prompt
       - target: prompt.when

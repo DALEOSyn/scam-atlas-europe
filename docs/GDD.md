@@ -2746,7 +2746,7 @@ Shared rules as §24.4. Swedish numbers masked `08-••• •• NN` (landlin
 | 6 | Tag everything + always verify | 60 + 45 + 45 | 150 | 88.2% | 13 − (15 + 13) = −15 | Bronze |
 | 6a | Random single tag + always verify (expected) | 150 + 2×(½+½+⅖+⅓) + boss 0.125×6 | ≈154 | ≈90.7% | 3.2 − 3.8 − 3 ≈ −3.6 | Bronze (silver unreachable: 7 − 3 = 4) |
 | 6b | Always tag the sender / caller ID + always verify | 150 + 2 (9-6) | 152 | 89.4% | 1 − 6 = −5 | Bronze |
-| 6c | **Always tag the request** + always verify | 150 + 2 (9-2) + 2 (9-5) + 2 (9-8) + 4 (b1, b2) | 160 | 94.1% | 5 − 2 = 3 | Bronze |
+| 6c | **Always tag the request** + always verify | 150 + 2 (9-2) + 2 (9-5) + 4 (b1, b2) | 158 | 92.9% | 4 − 2 = 2 | Bronze |
 | 6d | Request + every claim + always verify | 150 + 2 (9-2); 9-5, 9-6, 9-8, boss void | 152 | 89.4% | 11 − 7 = 4 | Bronze |
 | 6e | Tag the place and device on every prompt + always verify | 150 (always-verify never reaches a fraud prompt) | 150 | 88.2% | 0 − 4 = −4 | Bronze |
 | 7 | Blind always-verify | 60 + 45 + 45 | 150 | 88.2% | 0 | Bronze |
@@ -2759,7 +2759,7 @@ Shared rules as §24.4. Swedish numbers masked `08-••• •• NN` (landlin
 Row notes:
 - **6a hit chances:** 9-2 2/4, 9-5 2/4, 9-6 2/5, 9-8 1/3, b1 2/4, b2 2/4, b3 2/4; boss bonus only if all three hit (⅛).
 - **6b:** the sender or caller ID is a decoy on 9-2, 9-5, 9-8 and every boss beat, and R only on 9-6. Genuine prompts and the laptop's login page have no sender.
-- **6c:** the request is R on 9-2, 9-5, 9-8, b1, b2; 9-6 and b3 have no `request` checkable (`scan_qr` carries no `ask`). Without the genuine prompts' `ask`, this row would net 5 = silver: **the `ask` on genuine auth prompts is required** (§29.4; validator note for the writer).
+- **6c:** the request is R on 9-2, 9-5, b1, b2; 9-6, 9-8 and b3 have no `request` checkable (`scan_qr` and `install` carry no `ask`; 9-8's install sentence is authored as `claim#2`, T-3.11 review round 1). Without the genuine prompts' `ask`, this row would net 5 = silver: **the `ask` on genuine auth prompts is required** (§29.4; validator note for the writer).
 - **6d:** correct = 9-2 request, 9-5 claim#2 and request, 9-6 claim#2, 9-8 claim#2, b1 claim#2 and request, b2 claim#2 and request, b3 both claims = 11; wrong = 9-5, 9-6, 9-8, b1, b2 first claims (5) + genuine requests 9-1, 9-3 (2) = 7. Net 4, one short of silver; recorded for the balancing pass.
 - **Row 11** lands at 75.9% with 6 spotted: silver, just. Trusting callers loses two scenarios and two boss beats.
 - **Row 12:** two well-recovered QR falls still reach gold, as Dublin row 12. Input to R15 (§28.11 Q3).

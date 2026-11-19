@@ -8,7 +8,8 @@
 # Fall stops at the request (RAS §6, S-S1): "You stop and hang up. The app is still on your phone." Nothing
 # about what the app can do beyond "they could see and do what you can" (layer 2). Damage control starts
 # from there: go offline, call the bank from another phone, change passwords from another device, get the
-# device checked; harmful: let the caller finish, wait and see.
+# device checked (in already_clicked and the habit card; the list holds 6), tell a trusted adult; harmful: let the caller
+# finish, wait and see.
 # Interrupt after "What now?" (genuine): Lina, so a reassuring message never lands while the player chooses.
 id: stockholm-08-support-call
 chapter: stockholm
@@ -115,8 +116,8 @@ outcomes:
     recovery:
       - { step: go_offline, category: stop }
       - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
       - { step: change_password, category: secure }
-      - { step: get_device_checked, category: secure }
       - { step: let_caller_finish, category: harmful }
       - { step: wait_and_see, category: harmful }
   gatewren_devices_fine:

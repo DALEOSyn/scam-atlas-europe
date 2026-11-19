@@ -328,7 +328,7 @@ describe('Stockholm: Gatewren prompts and calls', () => {
     const st = run(s, T(), [act('install_kindhand')]);
     expect(st.phase === 'damage_control' || st.phase === 'consequence').toBe(true);
     const o = s.outcomes.kindhand_installed;
-    expect(o?.recovery?.map((r) => r.step)).toEqual(['go_offline', 'call_bank_known_number', 'change_password', 'get_device_checked', 'let_caller_finish', 'wait_and_see']);
+    expect(o?.recovery?.map((r) => r.step)).toEqual(['go_offline', 'call_bank_known_number', 'tell_trusted_adult', 'change_password', 'let_caller_finish', 'wait_and_see']);
     expect(o?.narrative).toMatch(/You stop and hang up/);
   });
 });
@@ -356,14 +356,14 @@ describe('Stockholm boss: three asks for your Gatewren', () => {
   });
 });
 
-describe('Stockholm: every fall offers exactly two harmful steps, at most six, and tell_trusted_adult on money falls', () => {
+describe('Stockholm: every fall offers exactly two harmful steps, at most six, and tell_trusted_adult as a stop step', () => {
   it('holds for every fall outcome', () => {
     for (const s of all.values()) {
       for (const [key, o] of Object.entries(s.outcomes)) {
         if (!o.recovery) continue;
         expect([s.id, key, o.recovery.filter((r) => r.category === 'harmful').length]).toEqual([s.id, key, 2]);
         expect(o.recovery.length).toBeLessThanOrEqual(6);
-        if (s.id !== 'stockholm-08-support-call') expect([s.id, key, o.recovery.find((r) => r.step === 'tell_trusted_adult')?.category]).toEqual([s.id, key, 'stop']);
+        expect([s.id, key, o.recovery.find((r) => r.step === 'tell_trusted_adult')?.category]).toEqual([s.id, key, 'stop']);
       }
     }
   });

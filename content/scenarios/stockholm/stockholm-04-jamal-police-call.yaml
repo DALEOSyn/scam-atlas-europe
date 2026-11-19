@@ -45,7 +45,7 @@ inspectables:
 
 actions:
   - id: say_no_call_police
-    label: "No. Hang up, call police on 114 14."
+    label: "No. Hang up, call the police: 114 14."
     kind: proceed
     outcome: jamal_hung_up_rude
     pressure_target: true
@@ -76,7 +76,7 @@ debrief:
   variant: standard
   layer1:
     tell: "'Police' asking you to identify yourself with your e-ID."
-    what_works: "Hang up. Police never ask for it."
+    what_works: "Hang up. Police never call for it."
   layer2:
     message_flags: []
     notes: "Police never call and ask you to identify yourself with your e-ID. Whoever it is, hang up and call the police or your bank yourself. Where to report and get help (Sweden) is on the help screen."

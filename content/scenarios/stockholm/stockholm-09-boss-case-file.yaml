@@ -238,7 +238,7 @@ outcomes:
       - { step: approve_again_to_cancel, category: harmful }
       - { step: call_back_caller_number, category: harmful }
   bank_signed:
-    narrative: "Gatewren: \"Signed.\" \"Perfect. You're protected now,\" says the caller. The line goes dead. Your Larchwick app shows 48 000 kr to Skarvlund Trygg AB."
+    narrative: "Gatewren: \"Signed.\" \"Perfect. You're protected now,\" says the caller. The line goes dead. Your Larchwick app shows the payment to Skarvlund Trygg AB."
     sets_flags: [stockholm_bank_called]
     recovery:
       - { step: call_bank_known_number, category: stop }
@@ -258,7 +258,7 @@ outcomes:
       - { step: approve_again_to_cancel, category: harmful }
       - { step: call_back_caller_number, category: harmful }
   police_didnt_call:
-    narrative: "You dial 114 14 yourself. \"We didn't call you. Hanging up was exactly right.\" As you put the phone down, it rings: \"Larchwick Bank\"."
+    narrative: "You dial 114 14 yourself. \"Police never call and ask for your e-ID. Hanging up was exactly right.\" As you put the phone down, it rings: \"Larchwick Bank\"."
   card_no_case_b1:
     narrative: "Larchwick, on the number on your card: \"No case, and we'd never tell you not to call us.\" As you put the phone down, it rings: \"Larchwick Bank\"."
   police_call_reported:
@@ -266,13 +266,13 @@ outcomes:
   police_call_left:
     narrative: "You hang up and leave it there. Then your phone rings: \"Larchwick Bank\"."
   card_nothing_moved:
-    narrative: "Larchwick, on the number on your card: \"We'd never ask you to sign anything on a call. Your money's where it was.\""
+    narrative: "Larchwick, on the number on your card: \"We'd never call you and ask you to sign anything. Your money's where it was.\""
   bank_call_reported:
     narrative: "You deny the request, hang up and report the call. Keep a note of the time and what was said."
   bank_prompt_denied:
     narrative: "You deny it. Nothing is signed. You hang up while the caller is still talking."
   police_not_ours:
-    narrative: "You call the police yourself on 114 14. \"That's not one of ours. You did right to check.\""
+    narrative: "You call the police yourself on 114 14. \"We'd never contact you and ask you to log in or scan with your e-ID. You did right to check.\""
   case_number_blocked:
     narrative: "You block and report the number. The chat goes quiet."
   case_message_ignored:
@@ -285,7 +285,7 @@ outcomes:
 debrief:
   variant: standard
   layer1:
-    tell: "'Police', 'the bank', then a code: all after your Gatewren."
+    tell: "'Police', 'the bank', then a code: each wanted your Gatewren."
     what_works: "Approve only what you started. Call your bank yourself."
   layer2:
     message_flags:

@@ -128,11 +128,11 @@ beats:
         red_flag: false
         type: prompt
       - target: prompt.where
-        reveal: "Malmö: not where you are."
+        reveal: "Malmö: not where you are. A clue, not proof: you didn't start it."
         red_flag: true
         type: prompt
       - target: prompt.device
-        reveal: "A Windows computer: not your phone."
+        reveal: "A Windows computer: not your phone. A clue, not proof: you didn't start it."
         red_flag: true
         type: prompt
       - target: prompt.when
@@ -171,7 +171,7 @@ outcomes:
   no_pending_payment:
     narrative: "You open the Larchwick app yourself. No pending payment. Nothing to stop."
   card_no_pending:
-    narrative: "Larchwick, on the number on your card: \"There's no pending payment, and we'd never ask you to identify yourself with Gatewren on a call.\""
+    narrative: "Larchwick, on the number on your card: \"There's no pending payment, and we'd never call you and ask you to identify yourself with Gatewren.\""
   erik_prompt_denied:
     narrative: "You deny it and hang up. Nobody gets in."
   erik_reported:

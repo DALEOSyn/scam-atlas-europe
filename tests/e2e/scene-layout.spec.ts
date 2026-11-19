@@ -49,6 +49,22 @@ test.describe('scene player layout (harness)', () => {
   }
 
   for (const size of PHONES) {
+    test(`CR-27: on open the sticky footer does not cover the end of the first panel, at ${size.width}×${size.height}`, async ({ page }) => {
+      await openScene(page, 'harness-long', size);
+      await imagesLoaded(page);
+      const gap = await page.evaluate(() => {
+        const panel = document.querySelector('li[data-panel="1"]')?.getBoundingClientRect();
+        const foot = document.querySelector('[data-scene="next"]')?.parentElement?.getBoundingClientRect();
+        const h1 = document.querySelector('h1')?.getBoundingClientRect();
+        return panel && foot && h1 ? { overlap: panel.bottom - foot.top, h1Top: h1.top } : null;
+      });
+      if (!gap) throw new Error('scene not laid out');
+      // Either the first panel ends above the footer, or the heading would have had to leave the screen.
+      if (gap.overlap > 0.5) expect(gap.h1Top).toBeLessThanOrEqual(0.5);
+      else expect(gap.overlap).toBeLessThanOrEqual(0.5);
+      await expect(page.locator('h1')).toBeFocused();
+    });
+
     test(`item 4: Next stays on screen after every press, focus on the new panel, at ${size.width}×${size.height}`, async ({ page }) => {
       await openScene(page, 'harness-long', size);
       const total = await page.evaluate(() => Number(/of (\d+)/.exec(document.querySelector('li[data-panel] span')?.textContent ?? '')?.[1] ?? 0));

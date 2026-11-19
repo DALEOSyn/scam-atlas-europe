@@ -47,6 +47,12 @@ export interface DebriefWrongTag {
 export type OverCaution = 'report_genuine' | 'dismiss_genuine' | 'dismiss_started';
 
 /** A line in layer 2 "Your other choices" (ruling L1 item 3): with its beat's stars on a boss. */
+/** The beat a choice line belongs to, for a "{beat}: …" prefix. */
+function beatOfLine(s: Scenario, line: ChoiceLine): { device: Device; message: Message } | null {
+  const def = beatById(s, line.beatId);
+  return def ? { device: def.device, message: def.message } : null;
+}
+
 export interface OtherChoice {
   line: ChoiceLine;
   stars: number;
@@ -63,10 +69,23 @@ export interface OtherChoice {
  * `what_now` = a built-in "What now?" choice (label from i18n).
  */
 export type ChoiceLine =
-  | { beatId: string; kind: 'action'; label: string }
-  | { beatId: string; kind: 'what_now'; choice: WhatNowBuiltin }
+  | { beatId: string; kind: 'action'; label: string; path?: ChoicePath }
+  | { beatId: string; kind: 'what_now'; choice: WhatNowBuiltin; path?: ChoicePath }
   | { beatId: string; kind: 'over_caution'; which: OverCaution; label?: string }
   | { beatId: string; kind: 'timer' };
+
+/** The final choice after an engage (CR-27): an authored label, or a What-now built-in. */
+export type ChoiceThen = { label: string } | { builtin: WhatNowBuiltin };
+
+/**
+ * CR-27: the whole path of a beat where an engage was followed by another final choice ("Call back the
+ * number he gave", then "Leave it there"). Layer 2 renders it ("You chose: {engage}, then {then}.",
+ * choiceText.ts choicePathText); layer 1 keeps one budgeted line (the 40-word rule).
+ */
+export interface ChoicePath {
+  engage: string;
+  then: ChoiceThen;
+}
 
 /** Which "pressure button" callout to show (GDD §8), at most once each per game. */
 export type PressureCallout = 'first_any' | 'first_genuine' | null;
@@ -126,6 +145,13 @@ export interface DebriefData {
      * lead line comes first.
      */
     youChoseOther: OtherChoice[];
+    /**
+     * CR-27 (round 2, psych M4): "Step by step", the path of the layer-1 line only, when an engage was
+     * followed by another final choice ("You chose: Call back the number he gave. Then: Leave it there.";
+     * choicePathText). A "Your other choices" row with a path shows the path in its own row instead.
+     * `beat` (for a "{beat}: {line}" prefix) is set when the scenario has more than one scored beat.
+     */
+    choicePaths: { line: ChoiceLine; beat: { device: Device; message: Message } | null }[];
     flags: DebriefFlag[];
     wrongTags: DebriefWrongTag[];
     /** "You spotted {marked} of {could} you could mark." */
@@ -275,6 +301,7 @@ export function debriefOf(
       deadline: r.timerExpired ? deadlineLine(s.is_fraud, r.fell) : null,
       honestDeadline: s.pressure.honest_deadline ?? null,
       youChoseOther,
+      choicePaths: youChose.filter((l) => (l.kind === 'action' || l.kind === 'what_now') && !!l.path).map((line) => ({ line, beat: lines.length > 1 ? beatOfLine(s, line) : null })),
       flags,
       wrongTags,
       spotted: { marked, could },
@@ -316,13 +343,39 @@ function labelOf(s: Scenario, id: string): string | undefined {
   return undefined;
 }
 
+/**
+ * A group's final choice for the "then" part: an authored action or What-now extra by its label, or a
+ * What-now built-in (its `call_back_label` when authored, else the built-in, labelled by the catalogue).
+ */
+function finalChoice(s: Scenario, g: GroupState, actionId: string, via: string | undefined): ChoiceThen | undefined {
+  if (via === 'what_now' && (WHAT_NOW_BUILTINS as readonly string[]).includes(actionId)) {
+    const wn = g.visited.map((id) => beatById(s, id)?.what_now).find((x) => x !== undefined);
+    if (actionId === 'call_back_known' && wn?.call_back_label) return { label: wn.call_back_label };
+    return { builtin: actionId as WhatNowBuiltin };
+  }
+  const label = labelOf(s, actionId);
+  return label ? { label } : undefined;
+}
+
 export function choiceLine(s: Scenario, g: GroupState, beat: BeatResult): ChoiceLine | null {
   if (beat.stars >= 3 && !beat.fell) return null;
   if (beat.timerExpired) return { beatId: g.beatId, kind: 'timer' };
   const d = g.decision;
   // A fall always names the decisive action. Otherwise an engage cap names the first engage action, even
   // when the later choice was a dismiss or report (producer ruling, T-2.1: it teaches more).
-  if (!beat.fell && beat.capped && g.firstEngage) return { beatId: g.beatId, kind: 'action', label: g.firstEngage.label };
+  if (!beat.fell && beat.capped && g.firstEngage) {
+    const engage = g.firstEngage;
+    const then = d && d.actionId !== engage.id ? finalChoice(s, g, d.actionId, d.via) : undefined;
+    const path = then ? { engage: engage.label, then } : undefined;
+    // CR-27 (Paris QA): after an engage, a final report or dismiss scores what it always scores (★★), so
+    // "You chose" names that final choice, and the line agrees with the stars. Only a final verify loses a
+    // star to the engage cap: then the engage is what cost it, and it is named. Layer 2 shows the path.
+    if (d && then && d.cls !== 'verify') {
+      if ('builtin' in then) return { beatId: g.beatId, kind: 'what_now', choice: then.builtin, ...(path ? { path } : {}) };
+      return { beatId: g.beatId, kind: 'action', label: then.label, ...(path ? { path } : {}) };
+    }
+    return { beatId: g.beatId, kind: 'action', label: engage.label, ...(path ? { path } : {}) };
+  }
   if (!d) return null;
   // Over-caution on a genuine message gets its kind line, whichever button got there (ruling L4).
   const which = overCautionOf(beat.cls, truthOf(s), s.player_started === true);

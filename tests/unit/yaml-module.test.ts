@@ -49,7 +49,9 @@ describe('runtime scenario data carries schema defaults (vite content plugin)', 
     const file = resolve(ROOT, 'content/brands.yaml');
     const data = yamlModuleData(file, readFileSync(file, 'utf8'), SCENARIOS) as Record<string, unknown>[];
     expect(data.length).toBeGreaterThan(0);
-    for (const b of data) expect(Object.keys(b).every((k) => ['id', 'name', 'short_name', 'mark'].includes(k))).toBe(true);
+    for (const b of data) expect(Object.keys(b).every((k) => ['id', 'name', 'short_name', 'mark', 'sub_brands'].includes(k))).toBe(true);
+    // CR-27: sub-brands (bank header names) ship id and name only, never their domain or purpose.
+    for (const b of data) for (const sb of (b.sub_brands as Record<string, unknown>[] | undefined) ?? []) expect(Object.keys(sb).sort()).toEqual(['id', 'name']);
     expect(data.find((b) => b.id === 'kettle')).toMatchObject({ name: 'Kettle', mark: 'brands/kettle-mark.svg' });
     expect(JSON.stringify(data)).not.toMatch(/checked_against|rationale|web_check/);
   });

@@ -38,6 +38,8 @@ export interface DeviceProps {
    * `gotIt` is true only when the player pressed "Got it": only then is the mark recorded as seen.
    */
   onCoachMark: (id: string, open: boolean, gotIt?: boolean) => void;
+  /** CR-27: checkable targets of this beat whose inspectable has `context: quoted` (quote block in chats). */
+  quoted?: readonly string[];
   /** The payee-check result is on screen (true) or still "Checking…" (false), per beat (CR-23). */
   onNameCheck?: (beatId: string, ready: boolean) => void;
   /** Heading text and ref (focus target on arrival). */

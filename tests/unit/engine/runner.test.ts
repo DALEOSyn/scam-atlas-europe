@@ -36,13 +36,16 @@ describe('runner: actions, beats and outcomes', () => {
     expect(v.checkables.find((c) => c.target === 'reference')).toMatchObject({ checked: true, reveal: undefined });
   });
 
-  it('engage then dismiss on the follow-up page: capped at ★★ and the debrief names the engage (producer ruling)', () => {
+  it('engage then dismiss on the follow-up page: ★★; "You chose" names the final choice, layer 2 the path (CR-27)', () => {
     const s = fraud();
     const { st, r } = play(s, ctx(), [act('tap_link'), act('close_page')]);
     expect(r).toMatchObject({ stars: 2, points: 10 });
     expect(r.beats[0]?.capped).toBe(true);
     const d = debriefOf(s, st, r, seen);
-    expect(d.layer1.youChose).toEqual([{ beatId: 'start', kind: 'action', label: 'Open the link' }]);
+    const close = s.beats[0]?.actions.find((a) => a.id === 'close_page')?.label ?? '';
+    const path = { engage: 'Open the link', then: { label: close } };
+    expect(d.layer1.youChose).toEqual([{ beatId: 'start', kind: 'action', label: close, path }]);
+    expect(d.layer2.choicePaths).toEqual([{ line: { beatId: 'start', kind: 'action', label: close, path }, beat: null }]);
   });
 
   it('a fall runs damage control: ★ and its points when ≥ 6, else 0', () => {

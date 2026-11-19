@@ -144,12 +144,12 @@ describe('q. an after_beat interrupt can wait for the "What now?" choice', () =>
     expect(st.phase).toBe('interrupt');
     expect(viewOf(s, c, st).interrupts.map((i) => i.id)).toEqual(['jonas']);
   });
-  it('without the flag the old timing stays (arrives as "What now?" opens); the flag needs after_beat', () => {
+  it('without the flag it also waits for the choice since CR-27 (the ruling made it the default); the flag needs after_beat', () => {
     const s = jonasAfter('support_call');
     const c = ctx();
     const cont = { type: 'continue' } as const;
     const st = step(s, c, run(s, c, [act('open_app'), cont, act('report_2'), cont]), act('hang_up'));
-    expect(st.interrupts[0]?.arrived).toBe(true);
+    expect(st.interrupts[0]?.arrived).toBe(false);
     const raw = structuredClone(s) as unknown as Raw;
     (raw.interrupts as Raw[])[0] = { ...(raw.interrupts as Raw[])[0], after_beat: undefined, at_seconds: 5, after_what_now: true };
     expect(issues(raw).join('\n')).toMatch(/after_what_now needs after_beat/);

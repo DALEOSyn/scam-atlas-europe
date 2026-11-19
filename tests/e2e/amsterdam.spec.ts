@@ -36,6 +36,11 @@ test('Amsterdam 2-3: open the transfer, the name check says no match, cancel and
   await page.goto('/');
   await page.getByRole('button', { name: 'Chapters' }).click();
   await page.getByRole('button', { name: 'Play Amsterdam' }).click();
+  // CR-27: the chapter intro first (its rules), axe clean, then Start.
+  const intro = page.locator('[data-chapter-intro]');
+  await expect(intro.getByRole('heading', { level: 1, name: 'Amsterdam' })).toBeFocused();
+  await axeClean(page);
+  await intro.getByRole('button', { name: 'Start' }).click();
 
   // 2-1: Teo's new mobile (genuine): save and reply.
   await page.getByRole('button', { name: /Save the number and reply/ }).click();

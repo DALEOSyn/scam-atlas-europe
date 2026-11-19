@@ -355,29 +355,44 @@ h3.interruptMeta:focus-visible {
   outline-offset: var(--focus-ring-offset);
 }
 /* "Jump to your options" (QA M6): sticks to the bottom of the screen while the tray is out of view. */
+/* CR-27: in the flow at the top of the scenario, sticky under the HUD (it covered targets at the bottom). */
 .jump {
   position: sticky;
-  bottom: max(var(--space-2), env(safe-area-inset-bottom));
+  top: calc(var(--hud-h-live, 0px) + var(--space-2));
   z-index: var(--z-toast);
   justify-self: stretch;
   min-height: var(--tap-min);
   padding: var(--space-2) var(--space-4);
-  border: 0;
+  /* Quiet secondary style (CR-27 round 2, psych M5): it is a shortcut, not a call to act. */
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-pill);
-  background: var(--color-accent);
-  color: var(--color-on-accent);
+  background: var(--color-surface);
+  color: var(--color-text);
   font: inherit;
-  font-weight: var(--fw-bold);
-  box-shadow: var(--shadow-2);
+  font-weight: normal;
+  box-shadow: none;
   cursor: pointer;
 }
 .jump:focus-visible {
   outline: var(--focus-ring-w) solid var(--color-focus);
   outline-offset: var(--focus-ring-offset);
-  box-shadow: 0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-w)) var(--color-focus-halo);
+}
+.jumpIdle {
+  visibility: hidden;
 }
 @media (min-width: 1024px) {
   .jump {
     display: none;
   }
+}
+
+/* CR-27: a scenario's setup lead-in above its first beat ("18:40, the last working day…"). */
+.setup {
+  margin: 0;
+  max-width: 40rem;
+  color: var(--color-text);
+}
+.setup:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
 }

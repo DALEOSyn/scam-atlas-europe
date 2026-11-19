@@ -9,7 +9,7 @@
  */
 import type { ComponentChildren } from 'preact';
 import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
-import { assetUrl, brandById, brandForName } from '../../content/brands.ts';
+import { assetUrl, brandById, brandForName, headerBrand, type BrandMark } from '../../content/brands.ts';
 import type { Device, Message } from '../../content/schema.ts';
 import type { ActionView } from '../../engine/runner.ts';
 import { t } from '../../i18n/index.ts';
@@ -18,7 +18,7 @@ import { Icon } from '../Icon.tsx';
 import { Host, RichText } from '../RichText.tsx';
 import { DemoField, SimPill, SimulatedForm } from '../SimulatedForm.tsx';
 import { hostParts, segmentMessage } from '../text.ts';
-import { Avatar, BrandBar, Chips, LaptopFrame, MessageBody, PhoneFrame, Segments, Translate } from './parts.tsx';
+import { Avatar, BrandBar, ChatBody, Chips, LaptopFrame, MessageBody, PhoneFrame, Segments, Translate } from './parts.tsx';
 import { QrGraphic } from './QrGraphic.tsx';
 import type { DeviceProps } from './types.ts';
 import styles from './devices.module.css';
@@ -234,7 +234,10 @@ function Mail(p: DeviceProps) {
                 <span class={styles.inboxText}>
                   <strong>{r.sender?.display}</strong>
                   {r === m ? <span class={styles.vh}> {t('mail_unread')}</span> : null}
-                  <span class={styles.inboxSubject}>{r.subject}</span>
+                  {/* CR-27 (WCAG 3.1.2): a French subject is read in French in the inbox list too. */}
+                  <span class={styles.inboxSubject} lang={r.lang && r.lang !== 'en' ? r.lang : undefined}>
+                    {r.subject}
+                  </span>
                 </span>
               </li>
             ))}
@@ -358,7 +361,7 @@ function Chat(p: DeviceProps) {
                 </div>
               ))}
             <div class={styles.bubbleIn}>
-              <MessageBody message={m} />
+              <ChatBody message={m} quoted={new Set(p.quoted ?? [])} />
               <Chips items={segs.leftover} />
               {m.image && p.device !== 'messenger' ? <ImageBox alt={m.image.alt} /> : null}
               {m.payee ? <BankDetails m={m} /> : null}
@@ -622,6 +625,31 @@ export function actionsInDevice(device: Device, m: Message): boolean {
   return device === 'banking' && !!m.payee?.name_check && !m.payee.payment_request;
 }
 
+/**
+ * The payee-name check result line (CR-23), or undefined without a check. Holder name only on a close
+ * match (Reg. (EU) 2024/886 Art. 5c); never on a no match. Also the Check card's "You see" (CR-27).
+ */
+export function nameCheckText(m: Message, bankName: string): string | undefined {
+  const payee = m.payee;
+  switch (payee?.name_check) {
+    case 'match':
+      return t('bank_check_match', { name: payee.name });
+    case 'close_match':
+      return t('bank_check_close', { holder: payee.holder ?? '' });
+    case 'mismatch':
+      return t('bank_check_mismatch', { bank: bankName });
+    case 'unavailable':
+      return t('bank_check_unavailable');
+    default:
+      return undefined;
+  }
+}
+
+/** The bank app a banking beat shows (CR-27: `message.bank.brand`, a bank brand or its sub-brand; default Larchwick). */
+export function bankOf(m: Message): BrandMark | undefined {
+  return (m.bank ? headerBrand(m.bank.brand) : undefined) ?? brandById('larchwick');
+}
+
 /** Coach-mark ids (save.coachMarks): shown once per game. */
 export const COACH_PAYEE_CHECK = 'payee_check';
 
@@ -684,16 +712,7 @@ function NameCheckCard(p: DeviceProps & { bankName: string }) {
     p.onNameCheck?.(p.beatId, !checking);
   }, [checking, p.beatId]);
   if (!payee || !result) return null;
-  // Holder name only on a close match (Reg. (EU) 2024/886 Art. 5c); never on a no match (CR-23).
-  const text = checking
-    ? t('bank_check_checking')
-    : result === 'match'
-      ? t('bank_check_match', { name: payee.name })
-      : result === 'close_match'
-        ? t('bank_check_close', { holder: payee.holder ?? '' })
-        : result === 'mismatch'
-          ? t('bank_check_mismatch', { bank: p.bankName })
-          : t('bank_check_unavailable');
+  const text = checking ? t('bank_check_checking') : (nameCheckText(p.message, p.bankName) ?? '');
   const cls = checking ? styles.checkChecking : result === 'match' ? styles.checkMatch : result === 'close_match' ? styles.checkClose : result === 'mismatch' ? styles.checkMismatch : styles.checkUnavailable;
   const icon = result === 'match' ? 'tick' : result === 'mismatch' ? 'warning' : 'info';
   const seen = p.coachMarks.includes(COACH_PAYEE_CHECK);
@@ -704,7 +723,8 @@ function NameCheckCard(p: DeviceProps & { bankName: string }) {
       </h3>
       <p class={styles.checkResult} role="status" id={nameCheckResultId(p.beatId)} tabIndex={-1} ref={resultRef}>
         {checking ? null : <Icon name={icon} />}
-        <span>{text}</span>
+        {/* CR-27: the result itself is the `payee.name_check` checkable ("Name check result"), not the payee field. */}
+        {checking ? <span>{text}</span> : <Checkable target="payee.name_check">{text}</Checkable>}
       </p>
       {checking ? null : (
         <>
@@ -743,7 +763,8 @@ function Field({ label, children }: { label: string; children: ComponentChildren
 function Bank(p: DeviceProps) {
   const m = p.message;
   const payee = m.payee;
-  const bank = brandById('larchwick');
+  // CR-27: content may set the bank app in the header (a brand or sub-brand id, e.g. Larchwick Pro); default Larchwick.
+  const bank = bankOf(m);
   const bankName = bank?.short_name ?? bank?.name ?? '';
   const segs = segmentMessage(m);
   const request = !!payee?.payment_request;
@@ -771,9 +792,8 @@ function Bank(p: DeviceProps) {
         </>
       ) : (
         <Field label={t('bank_payee')}>
-          <Checkable target="payee.name_check" class={styles.fieldValue}>
-            {payee.name}
-          </Checkable>
+          {/* With a name check, the result paragraph below is the checkable (CR-27); a transfer without one keeps the name plain. */}
+          <span class={styles.fieldValue}>{payee.name}</span>
         </Field>
       )}
       {payee.iban ? (

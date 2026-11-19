@@ -4,7 +4,7 @@ import { readAll } from './scene-helpers.ts';
 
 /**
  * S4 story scenes in the real build (T-S4b): the Amsterdam arrival before 2-1, and the sensitive local
- * problem ("Sanne's story") through replay, which always opens on the chapter's content note. Saves are
+ * problem ("Sanne's story") through replay, which opens on the chapter's content note (once per replay session, CR-28). Saves are
  * seeded locally only (Red Line 7).
  */
 const WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];

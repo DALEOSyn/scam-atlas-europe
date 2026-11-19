@@ -239,12 +239,17 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
 
   /** Chapter runs (by city) whose content note was already shown in a scene (review T-S3 item 13). */
   const notedRuns = useRef(new Set<string>());
+  /**
+   * CR-28 (T-S4b QA S3): a replay session shows the content note once, on its first sensitive scene; the
+   * session ends when the player leaves the replay list (it is reset when the list is opened from the chapters).
+   */
+  const replayNoted = useRef(false);
 
   /**
    * Play a story scene, then `then()`. A missing scene (or none placed) simply carries on, so a chapter
    * without scenes plays unchanged. The scene is recorded as seen when it ends, finished or skipped.
-   * The content note gates the first sensitive scene of a chapter run and every replay [P]; later
-   * sensitive scenes of the same run keep only the "Need to talk?" label.
+   * The content note gates the first sensitive scene of a chapter run and of a replay session [P, CR-28];
+   * later sensitive scenes of the same run or session keep only the "Need to talk?" label.
    */
   const playScene = async (id: string | null | undefined, then: () => void, c: Chapter | null, opts: { replay?: boolean } = {}) => {
     if (!id) return then();
@@ -263,9 +268,10 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
     }
     // Interludes all share one chapter key, so each sensitive interlude gates on its own id.
     const noteKey = scene.slot === 'interlude' ? scene.id : scene.chapter;
-    const gate = !!opts.replay || !notedRuns.current.has(noteKey);
+    const gate = opts.replay ? !replayNoted.current : !notedRuns.current.has(noteKey);
     const note = scene.sensitive && gate ? (scene.content_note ?? chapterNote(c ?? undefined, current)) : null;
-    if (note && !opts.replay) notedRuns.current.add(noteKey);
+    if (note && opts.replay) replayNoted.current = true;
+    else if (note) notedRuns.current.add(noteKey);
     const flags = c ? [...runFlags(current, c.city)] : [...current.flags];
     const home = scene.chapter === INTERLUDES ? null : (c ?? chapters.find((x) => x.city === scene.chapter) ?? null);
     setScreen({
@@ -530,6 +536,7 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
           }}
           onReplay={(c) => {
             const ch = chapters.find((x) => x.city === c);
+            replayNoted.current = false; // a new replay session
             if (ch) void openReplay(ch);
           }}
           onAtlas={hasScenes && save.story.postcards.length > 0 ? () => void openAtlas('chapters') : undefined}
@@ -620,7 +627,10 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
                 scenes={screen.scenes}
                 focus={screen.focus}
                 onPlay={(id) => void playScene(id, () => void openReplay(c, id), c, { replay: true })}
-                onBack={() => setScreen({ kind: 'chapters', focus: { kind: 'replay', city: c.city } })}
+                onBack={() => {
+                  replayNoted.current = false; // leaving the replay list ends the session
+                  setScreen({ kind: 'chapters', focus: { kind: 'replay', city: c.city } });
+                }}
               />
             );
           })()

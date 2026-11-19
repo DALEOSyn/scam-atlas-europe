@@ -140,14 +140,21 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     // [P] Item 8: shown = flipped, before any tap.
     expect(onFlip).toHaveBeenCalledWith('berlin');
-    expect(screen.getByText('Remember what they did? Flip it over.')).toBeTruthy();
+    // CR-28 (S6): STORY §3.12's caption, word for word.
+    expect(screen.getByText('Remember what they did? Tap to flip.')).toBeTruthy();
     const card = container.querySelector('[data-flip-card]') as HTMLElement;
     expect(card.textContent).toContain('If a parcel message wants money or a click…');
     expect(card.textContent).not.toContain('then I open');
-    fireEvent.click(within(card).getByRole('button', { name: 'Flip' }));
+    const flipBtn = within(card).getByRole('button', { name: 'Flip' });
+    expect(flipBtn.getAttribute('aria-pressed')).toBe('false');
+    fireEvent.click(flipBtn);
     expect(card.textContent).toContain("then I open the courier's app myself.");
-    fireEvent.click(within(card).getByRole('button', { name: 'Flip' }));
+    // CR-28 (S6): the button carries its state.
+    const back = within(card).getByRole('button', { name: 'Flip back' });
+    expect(back.getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(back);
     expect(card.textContent).not.toContain('then I open');
+    expect(within(card).getByRole('button', { name: 'Flip' }).getAttribute('aria-pressed')).toBe('false');
     expect(onFlip).toHaveBeenCalledTimes(1);
     cleanup();
     render(<ScenePlayer scene={scene} heading="Between cities" flip={null} onDone={() => undefined} />);
@@ -333,7 +340,7 @@ describe('App: scenes around scenarios (retrofit hooks)', () => {
     fireEvent.click(await screen.findByRole('button', { name: /^Back/ }));
     await waitFor(() => expect(document.activeElement?.getAttribute('data-title-button')).toBe('atlas'));
   });
-  it('[P] the content note gates only the first sensitive scene of a run, and every replay (item 13)', async () => {
+  it('[P] the content note gates only the first sensitive scene of a run, and of a replay session (item 13, CR-28)', async () => {
     const noted = chapterSchema.parse({ ...chapter, content_note: 'This chapter includes a family-emergency story. Everyone ends up safe.' });
     const sensitive: SceneRef[] = refs.map((r) => ({ ...r, load: async () => ({ ...(await r.load()), sensitive: true }) }));
     render(<App chapters={[noted]} load={async () => ex} sceneRefs={sensitive} store={createStore(memory())} />);
@@ -357,7 +364,20 @@ describe('App: scenes around scenarios (retrofit hooks)', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Back to the chapters' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Story scenes: Berlin' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Watch: Later' }));
-    // A replay always shows the note.
+    // CR-28: a replay session shows the note once, on its first sensitive scene…
+    await screen.findByRole('heading', { level: 1, name: 'Before this story scene' });
+    fireEvent.click(screen.getByRole('button', { name: 'Show the scene' }));
+    await screen.findByText(/Berlin · Later/);
+    fireEvent.click(screen.getByRole('button', { name: 'Skip story' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Watch: Before you go' }));
+    await screen.findByText(/Berlin · Before you go/);
+    expect(screen.queryByRole('heading', { name: 'Before this story scene' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Need to talk? Where to get help' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Skip story' }));
+    // …and leaving the replay list ends the session: the next one shows it again.
+    fireEvent.click(await screen.findByRole('button', { name: 'Back to the chapters' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Story scenes: Berlin' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Watch: Arrival' }));
     await screen.findByRole('heading', { level: 1, name: 'Before this story scene' });
   });
   it('a tampered run (restarted by beginChapter) still plays the arrival (item 18)', async () => {

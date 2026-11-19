@@ -119,3 +119,51 @@ test('Amsterdam 2-3 bank card at 720×450: payee and IBAN are never under the ju
     }
   }
 });
+
+test('CR-28 (Paris QA r3): Shift+Tab to a bank checkable at 720×450 leaves it fully below the jump bar', async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.setViewportSize({ width: 720, height: 450 });
+  await open(page, seed({ home: { ...done, position: 0 }, berlin: { ...done, position: 1 } }), 'Amsterdam');
+  const next = async () => {
+    const consequence = page.getByRole('heading', { level: 3, name: 'What happened' });
+    const debrief = page.getByRole('heading', { level: 1, name: /This was (a scam|genuine):/ });
+    await expect(consequence.or(debrief)).toBeVisible();
+    if (await consequence.isVisible()) await page.getByRole('button', { name: 'Continue' }).click();
+    await expect(debrief).toBeVisible();
+    await page.getByRole('button', { name: 'Continue' }).click();
+  };
+  await page.getByRole('button', { name: /Save the number and reply/ }).click();
+  await next();
+  await page.getByRole('button', { name: /Look up Klaverwerk Staffing yourself/ }).click();
+  await next();
+  await page.getByRole('button', { name: /Pay her in the Larchwick app/ }).click();
+  await expect(page.locator('[id^="name-check-result-"]')).toContainText("The name doesn't match this account.", { timeout: 5_000 });
+  const gotIt = page.getByRole('button', { name: 'Got it' });
+  if (await gotIt.isVisible()) await gotIt.click();
+  // Scroll the result line out of view above (the bar shows), keep focus on a card action below it.
+  await page.evaluate(() => {
+    const r = document.querySelector('[id^="name-check-result-"]') as HTMLElement;
+    window.scrollBy(0, r.getBoundingClientRect().bottom + 4);
+    (document.querySelector('[id^="bank-options-"] button') as HTMLElement).focus({ preventScroll: true });
+  });
+  await expect(page.locator('[data-jump]')).toBeVisible();
+  const geometry = () =>
+    page.evaluate(() => {
+      const bar = document.querySelector<HTMLElement>('[data-jump]');
+      const el = document.activeElement as HTMLElement | null;
+      if (!bar || !el) return null;
+      const shown = getComputedStyle(bar).visibility !== 'hidden';
+      return { shown, barBottom: bar.getBoundingClientRect().bottom, top: el.getBoundingClientRect().top, check: el.getAttribute('data-check') };
+    });
+  let found = false;
+  for (let i = 0; i < 10 && !found; i++) {
+    await page.keyboard.press('Shift+Tab');
+    // Let the focus scroll and the bar's show/hide settle (the bar may appear after the scroll).
+    await page.evaluate(() => new Promise((r) => setTimeout(r, 300)));
+    const g = await geometry();
+    // Shown or only reserved (it can show at any moment): the focused element is fully below it.
+    if (g) expect(g.top, `${g.check ?? 'focus'} top vs jump bar bottom (bar shown: ${g.shown})`).toBeGreaterThanOrEqual(g.barBottom);
+    found = g?.check === 'payee.iban';
+  }
+  expect(found).toBe(true);
+});

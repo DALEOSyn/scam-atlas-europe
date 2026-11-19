@@ -42,7 +42,7 @@ export interface ScenePlayerProps {
   onFlip?: (city: string) => void;
   /**
    * Text of the content note to show before this sensitive scene (null: none). The app passes it for the
-   * first sensitive scene of a chapter run and on every replay; the Help label changes on every sensitive scene.
+   * first sensitive scene of a chapter run and of every replay session (CR-28); the Help label changes on every sensitive scene.
    */
   contentNote?: string | null;
   onDone: (how: 'finished' | 'skipped') => void;
@@ -127,21 +127,14 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
     if (f.kind === 'panel') {
       const el = items.current[f.i];
       if (!el) return;
-      el.focus();
-      if (typeof el.scrollIntoView === 'function') el.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'nearest' });
+      el.focus({ preventScroll: true });
+      revealPanel(el, footerRef.current, prefersReducedMotion() ? 'auto' : 'smooth');
     } else if (f.kind === 'reply') replies.current[f.i]?.focus();
     else {
       heading.current?.focus();
-      // CR-27 (STATUS follow-up): on open at 320×568 the sticky footer covered the end of the first panel.
-      // Scroll just enough to lift the panel's end above the footer, as long as the heading stays in view.
+      // CR-27 / CR-28 (T-S4b QA M1): on open the sticky footer must not cover the first panel's text.
       const first = items.current[0];
-      const foot = footerRef.current;
-      const h = heading.current;
-      if (view === 'panels' && shown === 1 && first && foot && h && typeof window.scrollBy === 'function') {
-        const overlap = first.getBoundingClientRect().bottom - foot.getBoundingClientRect().top;
-        const room = h.getBoundingClientRect().top;
-        if (overlap > 0 && room > 0) window.scrollBy(0, Math.min(overlap, room));
-      }
+      if (view === 'panels' && shown === 1 && first) revealPanel(first, footerRef.current, 'auto');
     }
   }, [view, shown, picked]);
 
@@ -319,6 +312,28 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
       </section>
     </main>
   );
+}
+
+/** Room (px) kept between a revealed panel and the viewport top or the footer's top edge. */
+const REVEAL_MARGIN = 8;
+
+/**
+ * CR-28 (T-S4b QA M1): scroll so the panel's figcaption (its text, postcard or flip card) ends above the
+ * sticky footer's top edge. When the whole panel fits between the viewport top and the footer, it is shown
+ * whole; when it is taller than that room, the caption end wins over the top of the art. Before this,
+ * `scrollIntoView({ block: 'nearest' })` showed the art and left the caption under the footer.
+ */
+export function revealPanel(li: HTMLElement, footer: HTMLElement | null, behavior: ScrollBehavior): void {
+  if (typeof window === 'undefined' || typeof window.scrollBy !== 'function') return;
+  const cap = li.querySelector('figcaption') ?? li;
+  const bottomEdge = (footer ? footer.getBoundingClientRect().top : window.innerHeight) - REVEAL_MARGIN;
+  const top = li.getBoundingClientRect().top;
+  const capEnd = cap.getBoundingClientRect().bottom;
+  // Down by what the caption runs under the footer; else up to show the panel's top, as long as the
+  // caption end still clears the footer.
+  let dy = capEnd > bottomEdge ? capEnd - bottomEdge : 0;
+  if (dy === 0 && top < REVEAL_MARGIN) dy = Math.max(top - REVEAL_MARGIN, capEnd - bottomEdge);
+  if (Math.abs(dy) >= 1) window.scrollBy({ top: dy, behavior });
 }
 
 function captionClass(p: ScenePanel): string {

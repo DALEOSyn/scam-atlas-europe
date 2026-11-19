@@ -4,7 +4,7 @@
  * play (the authored scenes in content/scenes are played by the production e2e).
  * Review T-S3 items 3 (listener beside the speaker), 4 (Next stays on screen) and 5 (HUD one row).
  *
- * `?view=scene&id=<fixture id>` plays a fixture scene; `?view=hud&coach=1|0` shows the HUD with the
+ * `?view=scene&id=<fixture id>` plays a fixture scene; `?view=real&id=<scene id>` an authored scene (CR-28); `?view=hud&coach=1|0` shows the HUD with the
  * coach-mark freeze on or off. Data comes from vite.harness.config.ts (fixtures parsed by sceneSchema).
  */
 import { render } from 'preact';
@@ -16,6 +16,10 @@ import '../../../src/styles/tokens.css';
 import '../../../src/global.css';
 
 declare const __HARNESS_SCENES__: Scene[];
+declare const __HARNESS_REAL_SCENES__: Scene[];
+
+/** A fixed postcard for flip panels, so every authored panel is laid out (CR-28). */
+const FLIP = { city: 'home', cityName: 'Home', ifThen: { cue: 'If a message rushes you to act,', action: 'then I stop and check it another way.' } };
 
 function hudView(coach: boolean): RunnerView {
   const view: Pick<RunnerView, 'timer' | 'stress' | 'pause'> = {
@@ -41,6 +45,12 @@ function Harness() {
         menu={{ checkMode: false, onCheckMode: noop, callLines: 'auto', onCallLines: noop, onTimeLeft: noop, onQuit: noop, onOpen: noop }}
       />
     );
+  }
+  if (q.get('view') === 'real') {
+    const real = __HARNESS_REAL_SCENES__.find((s) => s.id === q.get('id'));
+    if (!real) return <p>No such scene.</p>;
+    const city = real.chapter === 'interludes' ? '' : real.chapter.charAt(0).toUpperCase() + real.chapter.slice(1);
+    return <ScenePlayer key={real.id} scene={real} heading={city ? `${city} · ${real.slot}` : 'Between cities'} chapterName={city} flip={FLIP} vars={{ count: 3, lastCity: 'Amsterdam' }} onDone={(how) => document.body.setAttribute('data-done', how)} />;
   }
   const scene = __HARNESS_SCENES__.find((s) => s.id === q.get('id')) ?? __HARNESS_SCENES__[0];
   if (!scene) return <p>No fixture scenes.</p>;

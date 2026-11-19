@@ -21,4 +21,9 @@ scenario_order:
   pm: [paris-05-salary-change, paris-06-solene-urgent, paris-07-agency-new-account, paris-arc-alex-03, paris-08-supplier-thread-match, paris-09-boss-pont]
 boss: paris-09-boss-pont
 arc_beat: paris-arc-alex-03
-intro: "Paris, the last working day before a long weekend. Ruchelune, a print-and-design cooperative, needs an extra pair of hands: Bastien from accounts is on leave, so you prepare payments in Larchwick Pro and Solène, the director, approves them. Pinned by the screen: \"Payments at Ruchelune. 1. New payee or changed bank details: call the number in our file, never one in the message. 2. Every payment: one person prepares, Solène or Bastien approves. No exceptions, however urgent.\""
+intro: "Paris, the last working day before a long weekend. Ruchelune, a print-and-design cooperative, needs an extra pair of hands. Bastien from accounts is on leave, so you prepare payments in Larchwick Pro and Solène, the director, approves them.\n\nPinned by the screen:"
+rules:
+  title: "Payments at Ruchelune"
+  items:
+    - "New payee or changed bank details: call the number in our file, never one in the message."
+    - "Every payment: one person prepares, Solène or Bastien approves. No exceptions, however urgent."

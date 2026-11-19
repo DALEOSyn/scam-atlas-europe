@@ -34,7 +34,12 @@ test('Paris 3-1 and 3-2: the payee check shows a close match, then "couldn\'t ch
   // CR-27: the chapter intro (Ruchelune's payment procedure) first, axe clean, then Start.
   const intro = page.locator('[data-chapter-intro]');
   await expect(intro.getByRole('heading', { level: 1, name: 'Paris' })).toBeFocused();
-  await expect(intro).toContainText('No exceptions, however urgent.');
+  await expect(intro).toContainText('Pinned by the screen:');
+  // CR-27 round 2: the procedure is a pinned rules card on the intro.
+  const rules = intro.locator('[data-chapter-rules]');
+  await expect(rules.getByRole('heading', { level: 2, name: 'Payments at Ruchelune' })).toBeVisible();
+  await expect(rules.getByRole('listitem')).toHaveCount(2);
+  await expect(rules.getByRole('listitem').nth(1)).toContainText('No exceptions, however urgent.');
   await axeClean(page);
   await intro.getByRole('button', { name: 'Start' }).click();
 

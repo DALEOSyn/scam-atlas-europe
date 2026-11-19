@@ -258,6 +258,10 @@ describe('B1: chapters, Start continues the next unfinished unlocked chapter', (
     expect(within(list).getByRole('button', { name: 'Play Testcity' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Back to the start' }));
     fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+    // CR-27: a fresh chapter run opens on its intro (h1 = chapter name, focused), then "Start".
+    const intro = await screen.findByRole('heading', { level: 1, name: 'Testcity' });
+    await waitFor(() => expect(document.activeElement).toBe(intro));
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }));
     await waitFor(() => screen.getByRole('button', { name: 'Check in the app first' }));
     expect(screen.getByRole('img', { name: /1 of 2/ })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Check in the app first' }));

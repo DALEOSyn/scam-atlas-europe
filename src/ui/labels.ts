@@ -12,7 +12,7 @@ const ELEMENT_KEYS: Record<string, MessageKey> = {
   'qr.destination': 'element_qr',
   'page.address': 'element_page_address',
   'page.info': 'element_page_info',
-  'payee.name_check': 'element_payee_name',
+  'payee.name_check': 'element_name_check',
   'payee.name': 'element_payee_name_plain',
   'payee.iban': 'element_payee_iban',
   'prompt.service': 'element_prompt_service',

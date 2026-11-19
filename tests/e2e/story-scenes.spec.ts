@@ -1,5 +1,6 @@
-import { expect, test, type Locator, type Page } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { readAll } from './scene-helpers.ts';
 
 /**
  * S4 story scenes in the real build (T-S4b): the Amsterdam arrival before 2-1, and the sensitive local
@@ -21,19 +22,6 @@ async function seed(page: Page, save: unknown) {
   }, save);
 }
 
-/** Reveal every panel with Next; every portrait and backdrop must load. */
-async function readAll(scene: Locator) {
-  const next = scene.getByRole('button', { name: 'Next' });
-  while (await next.isVisible()) {
-    await next.click();
-    await expect(scene.locator('li[tabindex="-1"]').last()).toBeFocused();
-  }
-  const broken = await scene.locator('img').evaluateAll((imgs) => (imgs as HTMLImageElement[]).filter((i) => !i.complete || i.naturalWidth === 0).map((i) => i.getAttribute('src')));
-  expect(broken).toEqual([]);
-  // Let the last panel's fade-in finish, so contrast is measured on the end state.
-  await scene.page().waitForFunction(() => document.getAnimations().every((a) => a.playState !== 'running'));
-}
-
 test('Amsterdam arrival plays before 2-1: Sanne, the Dutch greeting with its translation, Mateus at breakfast', async ({ page }) => {
   await seed(page, { version: 1, settings, chapters: { home: { ...done, position: 0 }, berlin: { ...done, position: 1 } } });
   await page.goto('/');
@@ -49,6 +37,10 @@ test('Amsterdam arrival plays before 2-1: Sanne, the Dutch greeting with its tra
   await expect(scene.getByText('Next morning, at breakfast.')).toBeVisible();
   await axeClean(page);
   await scene.getByRole('button', { name: 'Continue' }).click();
+  // CR-27: the chapter intro comes after the Arrival scene, then the first scenario.
+  const intro = page.locator('[data-chapter-intro]');
+  await expect(intro.getByRole('heading', { level: 1, name: 'Amsterdam' })).toBeFocused();
+  await intro.getByRole('button', { name: 'Start' }).click();
   await expect(page.getByRole('heading', { name: /Teo/ }).first()).toBeVisible();
 });
 

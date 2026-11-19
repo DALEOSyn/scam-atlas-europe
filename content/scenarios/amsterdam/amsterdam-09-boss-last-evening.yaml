@@ -229,6 +229,8 @@ interrupts:
   - id: real_mateus_landed
     after_beat: mateus_voice_call
     after_what_now: true
+    # CR-27: after a fall, no cheerful "All fine here" lands right after damage control.
+    on_fall: skip
     is_fraud: false
     device: messenger
     message:

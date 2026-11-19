@@ -125,18 +125,42 @@ describe('4. after_beat interrupts (QA M6)', () => {
     expect(issues(bad).join('\n')).toMatch(/after_beat "nowhere" is not a beat id/);
   });
 
-  it('hang up: it arrives as "What now?" opens, with its stress', () => {
+  it('hang up: it waits until the "What now?" choice is made (CR-27 ruling), then arrives with its stress', () => {
     const s = jonasAfter('support_call');
     const before = run(s, c, [act('open_app'), cont, act('report_2'), cont]);
-    const st = step(s, c, before, act('hang_up'));
+    let st = step(s, c, before, act('hang_up'));
     expect(st.phase).toBe('what_now');
+    expect(st.interrupts[0]?.arrived).toBe(false);
+    expect(viewOf(s, c, st).interrupts).toEqual([]);
+    st = step(s, c, st, { type: 'what_now', choice: 'report' });
+    expect(st.interrupts[0]).toMatchObject({ arrived: false, due: true });
+    const preArrival = st;
+    while (st.phase === 'consequence') st = step(s, c, st, cont);
+    expect(st.phase).toBe('interrupt');
     expect(st.interrupts[0]?.arrived).toBe(true);
-    expect(st.stress).toBe(before.stress + B.stress.on_interrupt);
+    expect(st.stress).toBe(preArrival.stress + B.stress.on_interrupt);
+    expect(run(s, c, [act('open_app'), cont, act('report_2'), cont, act('hang_up'), { type: 'what_now', choice: 'report' }])).toMatchObject({ phase: 'interrupt', stress: st.stress });
     expect(viewOf(s, c, st).interrupts.map((i) => i.id)).toEqual(['jonas']);
   });
 
-  it('a fall: it waits until after damage control, as its own step, and the debrief waits for the answer', () => {
+  it('a fall: on_fall skip (default) drops it, no cheerful message after damage control (CR-27)', () => {
     const s = jonasAfter('support_call');
+    let st = step(s, c, run(s, c, [act('open_app'), cont, act('report_2'), cont]), act('read_code'));
+    expect(st.phase).toBe('consequence');
+    expect(st.interrupts[0]?.skipped).toBe(true);
+    st = step(s, c, st, cont);
+    expect(st.phase).toBe('damage_control');
+    st = step(s, c, st, { type: 'recovery', picks: ['block_card_in_bank_app'] });
+    expect(st.phase).toBe('done');
+    expect(st.interrupts[0]?.arrived).toBe(false);
+    const d = debriefOf(s, st, resultOf(s, B, st), none);
+    expect(d.layer2.narratives).not.toContain('Jonas: see you later.');
+  });
+
+  it('a fall with on_fall: show: it waits until after damage control, as its own step, and the debrief waits for the answer', () => {
+    const raw = structuredClone(jonasAfter('support_call')) as unknown as Raw;
+    (raw.interrupts as Raw[])[0] = { ...(raw.interrupts as Raw[])[0], on_fall: 'show' };
+    const s = scenario(raw);
     let st = step(s, c, run(s, c, [act('open_app'), cont, act('report_2'), cont]), act('read_code'));
     expect(st.phase).toBe('consequence');
     expect(viewOf(s, c, st).interrupts).toEqual([]);
@@ -154,6 +178,12 @@ describe('4. after_beat interrupts (QA M6)', () => {
     expect(st.phase).toBe('done');
     const d = debriefOf(s, st, resultOf(s, B, st), none);
     expect(d.layer2.narratives.at(-1)).toBe('Jonas: see you later.');
+  });
+
+  it('on_fall is for after_beat interrupts only', () => {
+    const raw = structuredClone(jonasAfter('support_call')) as unknown as Raw;
+    (raw.interrupts as Raw[])[0] = { ...(raw.interrupts as Raw[])[0], after_beat: undefined, at_seconds: 5, on_fall: 'show' };
+    expect(issues(raw).join('\n')).toMatch(/on_fall is for after_beat interrupts/);
   });
 
   it('a beat that is not the last: it arrives when the next beat starts', () => {

@@ -15,11 +15,11 @@ import type { RecoveryOption } from '../engine/recovery.ts';
 import type { ScenarioResult } from '../engine/result.ts';
 import type { Settings } from '../engine/save.ts';
 import type { TimerMode } from '../engine/timer.ts';
-import type { CheckableView, RunnerContext, RunnerLogEntry, RunnerState, RunnerView } from '../engine/runner.ts';
+import { beatById, type CheckableView, type RunnerContext, type RunnerLogEntry, type RunnerState, type RunnerView } from '../engine/runner.ts';
 import { t } from '../i18n/index.ts';
 import { AnnounceContext } from './Announcer.tsx';
 import { CheckCard, CheckContext, DetailsList, type CheckApi } from './check/Check.tsx';
-import { actionsInDevice, channelKind, DeviceView, deviceHeading, nameCheckResultId, visibleLines } from './devices/Device.tsx';
+import { actionsInDevice, bankOf, channelKind, DeviceView, deviceHeading, nameCheckResultId, nameCheckText, visibleLines } from './devices/Device.tsx';
 import { Translate } from './devices/parts.tsx';
 import type { CallStage } from './devices/types.ts';
 import { BreathPanel, formatTime, Hud } from './Hud.tsx';
@@ -27,7 +27,7 @@ import { Icon } from './Icon.tsx';
 import { deadlineText, WHAT_NOW_KEYS } from './labels.ts';
 import { RichText } from './RichText.tsx';
 import { SettingsPanel } from './Settings.tsx';
-import { unrevealedTargets, words } from './text.ts';
+import { readingHoldSeconds, unrevealedTargets, words } from './text.ts';
 import styles from './ScenarioView.module.css';
 
 export interface ScenarioViewProps {
@@ -67,12 +67,15 @@ export function linePace(text: string): number {
   return Math.max(1.5, 0.3 * words(text));
 }
 
-function logAnnouncement(s: Scenario, e: RunnerLogEntry): { category: 3 | 4 | 5; text: string; key?: string } | null {
+function logAnnouncement(s: Scenario, e: RunnerLogEntry): { category: 3 | 4 | 5; text: string; key?: string; foreign?: { text: string; lang: string } } | null {
   switch (e.type) {
     case 'beat_arrived':
       return e.beatId === 'start' ? null : { category: 5, text: t('announce_new_message') };
-    case 'pusher':
-      return { category: 5, text: t('announce_pusher', { text: e.text }) };
+    case 'pusher': {
+      // CR-27 (WCAG 3.1.2): a follow-up in another language is spoken with its own lang.
+      const lang = s.pressure.pusher?.messages[e.index]?.lang;
+      return { category: 5, text: t('announce_pusher', { text: e.text }), ...(lang && lang !== 'en' ? { foreign: { text: e.text, lang } } : {}) };
+    }
     case 'interrupt': {
       // Its own slot: never coalesced into "2 new messages" or replaced by a pusher (QA M3).
       const def = s.interrupts.find((i) => i.id === e.id);
@@ -279,7 +282,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
     for (const e of fresh) {
       const a = logAnnouncement(scenario, e);
       // Once the scenario has ended, timer/stress/message news is stale (QA B6, m5); a closing interrupt still needs its answer.
-      if (a && (!endedRef.current || a.key === 'interrupt')) announce.polite(a.category, a.text, a.category === 5 && !a.key ? (n) => t('announce_new_messages', { count: n }) : undefined, a.key);
+      if (a && (!endedRef.current || a.key === 'interrupt')) announce.polite(a.category, a.text, a.category === 5 && !a.key ? (n) => t('announce_new_messages', { count: n }) : undefined, a.key, a.foreign);
       if (e.type === 'timer' && e.what === 'escalated') setChip(t('timer_escalated_chip', { seconds: ctx.balance.timers.escalation_extra_seconds }));
     }
   }, [state.log, announce, ctx.balance.timers.escalation_extra_seconds, scenario]);
@@ -322,8 +325,26 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
   // ---- focus (UI_SPEC §10.3)
   const focusKey = `${view.phase}:${beat?.id ?? ''}`;
   const interruptHeading = (id: string) => document.getElementById(`interrupt-${id}-h`);
+  // CR-27: the scenario's `setup` lead-in sits above its first beat; on arrival focus starts there, so the
+  // lead-in is read before the device heading (reading order = visual order).
+  const setupRef = useRef<HTMLParagraphElement>(null);
+  const showSetup = !!scenario.setup && beat?.id === 'start';
+  // CR-27 round 2 (psych M3): the lead-in is read on arrival, so it freezes the timer (and the clock) for its
+  // reading time, max(1.5 s, 0.3 s × words), in every timer mode; the same hold as an auto-opened translation.
+  const setupHeld = useRef<string | null>(null);
   useEffect(() => {
-    if (view.phase === 'playing') deviceHeadingRef.current?.focus();
+    if (!showSetup || view.phase !== 'playing' || !scenario.setup || setupHeld.current === scenario.id) return undefined;
+    setupHeld.current = scenario.id;
+    runner.freeze('setup', true);
+    const id = setTimeout(() => runner.freeze('setup', false), readingHoldSeconds(scenario.setup) * 1000);
+    return () => {
+      clearTimeout(id);
+      runner.freeze('setup', false);
+    };
+  }, [scenario.id, showSetup, view.phase === 'playing']);
+  useEffect(() => {
+    if (view.phase === 'playing' && showSetup && setupRef.current) setupRef.current.focus();
+    else if (view.phase === 'playing') deviceHeadingRef.current?.focus();
     else if (view.phase === 'what_now') whatNowRef.current?.focus();
     else if (view.phase === 'consequence') consequenceRef.current?.focus();
     // The closing "New notification" step (ruling QA M6): its message is the only thing on screen.
@@ -376,7 +397,6 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
   // ---- "Jump to your options" (QA M6): a sticky bar at the bottom of the screen on phones while the
   // tray is out of view; it moves focus to the tray. Hidden on the desk (the rail is always in view).
   const [trayInView, setTrayInView] = useState(true);
-  const showJumpRef = useRef(false);
   // On a payee-check beat the options sit in the device, under the result (Amsterdam QA o): the bar
   // watches the result paragraph there, so it hides once the player's options are in view.
   const inDeviceOptions = !!beat && actionsInDevice(beat.device, beat.message);
@@ -397,7 +417,9 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
     const apply = () => {
       const h = el ? Math.ceil(el.getBoundingClientRect().height) : 0;
       root.style.setProperty('--hud-h-live', `${h}px`);
-      root.style.scrollPaddingTop = `${h + 8}px`;
+      // Plus the jump bar under the HUD when it shows (CR-27).
+      const jump = parseInt(root.style.getPropertyValue('--jump-h-live'), 10) || 0;
+      root.style.scrollPaddingTop = `${h + 8 + jump}px`;
     };
     apply();
     const ro = el && typeof ResizeObserver === 'function' ? new ResizeObserver(apply) : null;
@@ -408,21 +430,39 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
       root.style.scrollPaddingTop = '';
     };
   }, [view.phase === 'playing' || view.phase === 'what_now']);
-  // Scroll padding at the bottom = the jump bar's measured height + its gap (Amsterdam QA o: it covered
-  // the bank IBAN at 320 px and 720×450), so a focused or scrolled-to element is never under it.
+  // CR-27 (Paris QA): the jump bar sat sticky at the bottom of the screen and covered attachments, the
+  // Translate toggle (375/320 px) and the bank payee/IBAN (720×450), failing axe target-size. It now
+  // sits in the flow at the top of the scenario, under the HUD, and sticks there; its space stays
+  // reserved for the rest of the beat once shown (no layout jump when it hides). Scroll padding at the
+  // top = HUD + bar, so a focused element is never under either (WCAG 2.4.11).
   const jumpRef = useRef<HTMLButtonElement>(null);
+  // Runs in the live phases only (playing, "What now?"), when the bar shows or hides; it follows the bar's
+  // size while shown. Cleanup puts the scroll padding back to the HUD's alone (or nothing without a HUD).
+  const jumpLive = view.phase === 'playing' || view.phase === 'what_now';
+  const jumpShown = jumpLive && !desk && !trayInView;
   useEffect(() => {
     const root = typeof document !== 'undefined' ? document.documentElement : null;
-    if (!root) return undefined;
-    const bar = jumpRef.current;
-    const h = showJumpRef.current && bar ? Math.ceil(bar.getBoundingClientRect().height) + 16 : 0;
-    root.style.scrollPaddingBottom = h ? `${h}px` : '';
-    root.style.setProperty('--jump-h-live', `${h}px`);
-    return () => {
-      root.style.scrollPaddingBottom = '';
-      root.style.removeProperty('--jump-h-live');
+    if (!root || !jumpLive) return undefined;
+    const hudOnly = () => {
+      const hud = parseInt(root.style.getPropertyValue('--hud-h-live'), 10);
+      return Number.isNaN(hud) ? '' : `${hud + 8}px`;
     };
-  });
+    const bar = jumpShown ? jumpRef.current : null;
+    const apply = () => {
+      const h = bar ? Math.ceil(bar.getBoundingClientRect().height) + 8 : 0;
+      const hud = parseInt(root.style.getPropertyValue('--hud-h-live'), 10) || 0;
+      root.style.setProperty('--jump-h-live', `${h}px`);
+      root.style.scrollPaddingTop = hud || h ? `${hud + 8 + h}px` : '';
+    };
+    apply();
+    const ro = bar && typeof ResizeObserver === 'function' ? new ResizeObserver(apply) : null;
+    if (bar) ro?.observe(bar);
+    return () => {
+      ro?.disconnect();
+      root.style.removeProperty('--jump-h-live');
+      root.style.scrollPaddingTop = hudOnly();
+    };
+  }, [jumpLive, jumpShown]);
   /**
    * On a payee-check beat the options sit inside the result card: skip and jump links go to the result
    * paragraph, so reading runs result → footer → tip → options (learning-psychologist T-3.3).
@@ -438,6 +478,9 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
     if (typeof el?.scrollIntoView === 'function') el.scrollIntoView({ block: 'start', behavior: 'auto' });
     el?.focus();
   };
+
+  // CR-27: the beat's `context: quoted` checkables (quote block in chat bubbles).
+  const quotedTargets = useMemo(() => (beat ? (beatById(scenario, beat.id)?.inspectables ?? []).filter((i) => i.context === 'quoted').map((i) => i.target) : []), [scenario, beat?.id]);
 
   // ---- Check
   const items = useMemo(() => {
@@ -457,9 +500,16 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
     (c: CheckableView): string => {
       if (c.target === 'sender.detail' || c.target === 'caller_id') return sender?.display ?? c.shown ?? '';
       if (c.target === 'page.info') return t('page_info_visible');
+      // CR-27: the name check is checked on its result line, so "You see" is that line.
+      if (c.target === 'payee.name_check' && beat) {
+        // Until the bank card reports the check done, the Details row says what the card says ("Checking…").
+        if (!nameCheckReady[beat.id]) return t('bank_check_checking');
+        const bank = bankOf(beat.message);
+        return nameCheckText(beat.message, bank?.short_name ?? bank?.name ?? '') ?? c.shown ?? '';
+      }
       return c.shown ?? '';
     },
-    [sender],
+    [sender, beat, nameCheckReady],
   );
   const doCheck = (c: CheckableView) => {
     if (!c.checked && view.timer && ctx.balance.timers.inspect_cost_seconds > 0) setChip(t('timer_cost_chip', { seconds: ctx.balance.timers.inspect_cost_seconds }));
@@ -498,8 +548,13 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
   const card = openItem ? <CheckCard item={openItem} visibleText={visible(openItem)} sender={sender} modal={modal} onTag={doTag} onClose={closeCard} /> : null;
   const live = view.phase === 'playing' || view.phase === 'what_now';
   const blocked = modal || settingsOpen;
-  const showJump = !desk && live && !trayInView;
-  showJumpRef.current = showJump;
+  const showJump = jumpShown;
+  // The bar's place is kept for the rest of the beat once it has shown (CR-27).
+  const [jumpBeat, setJumpBeat] = useState<string | null>(null);
+  useEffect(() => {
+    if (showJump && beat && jumpBeat !== beat.id) setJumpBeat(beat.id);
+  }, [showJump, beat?.id]);
+  const jumpReserved = !desk && live && !!beat && jumpBeat === beat.id;
 
   return (
     <div class={styles.play}>
@@ -537,6 +592,13 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
       ) : null}
       <main class={beat ? styles.main : `${styles.main} ${styles.solo}`} inert={blocked}>
         <CheckContext.Provider value={api}>
+          {showJump || jumpReserved ? (
+            // Hidden (not unmounted) once the options are in view: it keeps its place, and visibility:hidden
+            // takes it out of the tab order and the accessibility tree.
+            <button type="button" class={showJump ? styles.jump : `${styles.jump} ${styles.jumpIdle}`} onClick={jumpToOptions} data-jump="" ref={jumpRef} aria-hidden={showJump ? undefined : 'true'} tabIndex={showJump ? undefined : -1}>
+              {t('jump_to_options')}
+            </button>
+          ) : null}
           <div class={view.stress.state === 'overwhelmed' ? `${styles.stage} ${styles.vignette}` : styles.stage}>
             {/* Device banner for an interrupt (UI_SPEC §2.3, QA M3): focus never moves by itself; "View" brings it in. */}
             {live
@@ -555,6 +617,11 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                 ))
               : null}
             {view.pause.open ? <BreathPanel onBack={runner.endPause} /> : null}
+            {showSetup ? (
+              <p class={styles.setup} id="scenario-setup" ref={setupRef} tabIndex={-1} data-setup="">
+                {scenario.setup}
+              </p>
+            ) : null}
             {beat ? (
               <DeviceView
                 key={beat.id}
@@ -569,6 +636,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                 canAct={view.phase === 'playing'}
                 onAct={doAct}
                 onNameCheck={onNameCheck}
+                quoted={quotedTargets}
                 onTranslation={onTranslation}
                 alwaysTranslate={alwaysTranslate}
                 coachMarks={deviceCoachMarks}
@@ -629,11 +697,6 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                 </div>
               ))}
             </aside>
-          ) : null}
-          {showJump ? (
-            <button type="button" class={styles.jump} onClick={jumpToOptions} data-jump="" ref={jumpRef}>
-              {t('jump_to_options')}
-            </button>
           ) : null}
           <section id="options" class={styles.tray} aria-labelledby={view.phase === 'consequence' ? 'consequence-h' : 'actions-h'} tabIndex={-1} ref={optionsRef}>
             {/* No empty "Your options" during the consequence step: its own heading labels the panel (QA F4). */}

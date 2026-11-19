@@ -8,7 +8,7 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
 import { habitCard } from '../content/habitCards.ts';
 import type { ChoiceLine, DebriefData, DebriefWrongTag, OtherChoice } from '../engine/debrief.ts';
-import { choiceLineText, nextTimeText } from '../engine/choiceText.ts';
+import { choiceLineText, choicePathText, nextTimeText } from '../engine/choiceText.ts';
 import { lookup, t, type MessageKey } from '../i18n/index.ts';
 import { deviceHeading } from './devices/Device.tsx';
 import { Icon } from './Icon.tsx';
@@ -52,7 +52,8 @@ function choiceText(c: ChoiceLine): string {
 
 /** "Your other choices" (ruling L1 item 3): on a boss, "{beat} ({stars} of 3 stars): {line}". */
 function otherChoiceText(o: OtherChoice): string {
-  const line = choiceText(o.line);
+  // CR-27 round 2 (psych M4): a row whose beat had an engage before the final choice shows the whole path.
+  const line = choicePathText(o.line, lookup) ?? choiceText(o.line);
   return o.beat ? t('debrief_other_choice', { beat: deviceHeading(o.beat.device, o.beat.message), stars: o.stars, line }) : line;
 }
 
@@ -201,6 +202,16 @@ export function DebriefView({ data, onContinue, onAgain, onTellMeNow }: DebriefV
                 <li key={i}>{otherChoiceText(c)}</li>
               ))}
             </ul>
+          </section>
+        ) : null}
+        {l2.choicePaths.length > 0 ? (
+          // CR-27: the layer-1 line's whole path, where an engage came before the final choice.
+          <section aria-labelledby="choice-path-h" data-choice-path="">
+            <h2 id="choice-path-h">{t('debrief_choice_path')}</h2>
+            {l2.choicePaths.map((c, i) => {
+              const line = choicePathText(c.line, lookup) ?? '';
+              return <p key={i}>{c.beat ? t('debrief_choice_path_beat', { beat: deviceHeading(c.beat.device, c.beat.message), line }) : line}</p>;
+            })}
           </section>
         ) : null}
         {flagged || l2.wrongTags.length > 0 ? (

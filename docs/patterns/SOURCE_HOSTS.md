@@ -159,6 +159,64 @@ www.europeanpaymentscouncil.eu | European Payments Council | 3 | candidate
 
 The Paris research also cites new pages on www.europol.europa.eu and www.cybermalveillance.gouv.fr (already listed above).
 
+## New hosts from T-3.8r (Rome + Lisbon research, verified help list, 2026-11-19): all **new**, not yet checked against `scripts/lib/source-hosts.ts`
+
+### EU level
+eba.europa.eu | European Banking Authority (host without www, as opened; ESAs factsheet IT edition) | 1 | covered by the `europa.eu` suffix entry if suffix matching applies
+
+### Italy
+www.agcom.it | AGCOM (telecom regulator) | 3 | **new**
+www.bancaditalia.it | Banca d'Italia | 3 | **new**
+www.unipr.it | University of Parma, hosting a Ministry of University and Research (MUR) brochure | 3 | **new** (publisher is the ministry; host is a mirror)
+www.minori.gov.it | National childhood documentation centre (Department for Family Policies) | 3 | **new**
+www.telefonoamico.it | Telefono Amico Italia (NGO helpline operator; help screen only) | 4 | **new**
+www.open.online | Open *(news, supporting)* | 4 | **new**
+
+### Portugal
+www.bportugal.pt | Banco de Portugal | 3 | **new**
+www.gov.pt | Governo de Portugal (gov.pt guides and news) | 3 | **new**
+portugal.gov.pt | Governo de Portugal (government news) | 3 | **new**
+www.rtp.pt | RTP (public broadcaster) *(news, supporting)* | 4 | **new**
+
+### Netherlands
+www.nji.nl | Nederlands Jeugdinstituut (youth knowledge institute; supporting) | 4 | **new**
+en.kerkrade.nl | Gemeente Kerkrade (municipality) | 3 | **new**
+nltimes.nl | NL Times *(news, supporting)* | 4 | **new**
+
+### Germany
+gesund.bund.de | Federal Ministry of Health health portal | 3 | **new**
+www.hilfe-info.de | Federal Ministry of Justice and Consumer Protection (victims' information portal) | 3 | **new**
+
+### France
+www.sante.fr | Santé.fr (public health information service) | 3 | **new**
+www.solidarites.gouv.fr | Ministère des Solidarités | 3 | **new**
+
+### Spain
+www.sanidad.gob.es | Ministerio de Sanidad | 3 | **new**
+www.caib.es | Govern de les Illes Balears (regional government) | 3 | **new**
+www.anar.org | Fundación ANAR (NGO, 116 111 operator; supporting) | 4 | **new**
+
+### Poland
+www.gov.pl | Polish government (Ministry of Digital Affairs pages) | 3 | **new**
+www.policja.pl | Polish Police (national site) | 3 | **new**
+
+### Ireland
+www2.hse.ie | Health Service Executive | 3 | **new**
+
+### Sweden
+ki.se | Karolinska Institutet, NASP (national centre for suicide research and prevention) | 3 | **new**
+
+### Belgium
+be.brussels | Brussels-Capital Region portal | 3 | **new**
+
+### Luxembourg (supporting for Lisbon QR)
+www.vdl.lu | Ville de Luxembourg (City of Luxembourg) | 3 | **new**
+
+T-3.8r also cites new pages on hosts already listed: www.dn.pt, www.deco.proteste.pt, www.rijksoverheid.nl, polisen.se, febelfin.be, www.police.be, www.evz.de (re-opened).
+
+### Help-screen link targets only (not sources)
+17cyber.gouv.fr | 17Cyber (French government online assistance; live site opened 2026-11-19) | 2
+
 ## Notes for the engineer
 - **New to `scripts/lib/source-hosts.ts`** (not in the allow-list yet, per sceptic review 2026-11-18): `politie.nl` (no www), `moje.cert.pl`, `wiedza.cert.pl`, `www.nummergegenkummer.de`, `www.bmbfsfj.bund.de`, `www.bacs.admin.ch`, `www.verbraucherzentrale-niedersachsen.de`, and `incydent.cert.pl` (help file only). The last two were already used in `content/sources.yaml` before T-2.5 but never added to the allow-list.
 - `www.incibe.es` gained new sources in T-2.5 and is already in the allow-list.

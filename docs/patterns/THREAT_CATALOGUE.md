@@ -216,7 +216,8 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Red flags:** a request for money; secrecy; not being allowed to hang up.
 - **Habit:** hang up, then call the relative or 112 on a number you know.
 - **Reported in:** IT, EU. **Status:** used (planned: Rome ch6; scenarios end at the call). **Fit:** high. **Conf.:** High.
-- **Sources:** it-carabinieri-contro-truffe, eu-epc-threats-2025.
+- **Sources:** it-carabinieri-contro-truffe, eu-epc-threats-2025, it-mur-smishing-vishing, it-agcom-antispoofing-2025, it-bdi-truffe-cyber, eu-esas-ai-scams-factsheet-it.
+- **T-3.8r note (2026-11-19):** brief `spoofed-authority-call.md`. IT telecom regulator rules block foreign calls showing Italian numbers (fixed from 2025-08-19, mobile from 2025-11-19), but spoofing from inside Italy remains possible, so the caller ID is still a neutral decoy. Italian police sites refused automated access; no IT police URL is shown on screen.
 
 **A4.4 `e-id-sign-on-call`**: a caller talks you into logging in or signing with your e-ID
 - **Sees:** a "bank" or "authority" caller asks you to open your e-ID app and confirm "to stop fraud".
@@ -316,7 +317,8 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Red flags:** urgency plus a new number; a voice alone is not proof.
 - **Habit:** call back on the known number; use a family code word.
 - **Reported in:** EU (no prevalence figure). **Status:** used (planned: Rome ch6). **Fit:** high. **Conf.:** Medium.
-- **Sources:** eu-esas-ai-scams-factsheet-nl, eu-epc-threats-2025, de-bsi-deepfakes.
+- **Sources:** eu-esas-ai-scams-factsheet-nl, eu-esas-ai-scams-factsheet-it, eu-epc-threats-2025, de-bsi-deepfakes, it-mur-smishing-vishing, nl-veiliginternetten-voice-cloning.
+- **T-3.8r note (2026-11-19):** brief `cloned-voice-family-emergency.md`. Official sources speak of fake audio imitating a voice; none found describes a cloned voice note in a messenger chat specifically, so that variant is Low–Medium confidence and its tell is "new number + money + no call". No prevalence figures on screen.
 
 ## A7 Marketplaces and fake shops
 
@@ -506,7 +508,8 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Red flags:** leaving the platform; paying before viewing.
 - **Habit:** book, chat and pay only inside the platform.
 - **Reported in:** PT (via news), DE, EU. **Status:** used (planned: Lisbon ch7). **Fit:** high. **Conf.:** Medium.
-- **Sources:** de-evz-rental-fraud, pt-dn-psp-airbnb-2026, pt-rr-psp-rentals-2026.
+- **Sources:** de-evz-rental-fraud, pt-dn-psp-airbnb-2026, pt-rr-psp-rentals-2026, pt-rtp-gnr-rentals-2026, pt-dn-psp-cncs-campaign-2025, pt-bdp-ficaadica-2023.
+- **T-3.8r note (2026-11-19):** brief `rental-offplatform-payment.md` (variants A and B). Portuguese facts come via news reports quoting the national police forces; keep Portuguese figures off screen.
 
 **A13.2 `booking-platform-login-phishing`**: "your booking needs confirmation, log in here"
 - **Sees:** a message styled like the rental platform asks you to log in or re-enter card details via a link.
@@ -514,7 +517,8 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Red flags:** a login link in a message.
 - **Habit:** open the platform's app yourself.
 - **Reported in:** DE, PT. **Status:** used (planned: Lisbon ch7). **Fit:** high. **Conf.:** Medium.
-- **Sources:** de-evz-rental-fraud, pt-dn-psp-airbnb-2026.
+- **Sources:** de-evz-rental-fraud, pt-dn-psp-airbnb-2026, nl-nltimes-booking-phishing-2026, pt-bdp-ficaadica-2023.
+- **T-3.8r note (2026-11-19):** brief `rental-offplatform-payment.md` (variant C). The "message from your accommodation asking to pay again" variant is NL news-only evidence (optional beat).
 
 **A13.3 `ticket-resale-scam`**: tickets for a sold-out concert or match
 - **Sees:**
@@ -533,8 +537,9 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Channel:** QR. **Audience:** adult. **ATT&CK:** T1566.002 (closest), T1036.
 - **Red flags:** a sticker on top; the preview domain isn't the operator's.
 - **Habit:** type the official address or use the official app.
-- **Reported in:** IE, BE, PT. **Status:** used (planned: Lisbon ch7). **Fit:** high. **Conf.:** Medium–High.
-- **Sources:** ie-ncsc-qr-guide, be-safeonweb-qr-chargers, pt-portugalpost-gnr-quishing-2026.
+- **Reported in:** IE, BE, LU, PT. **Status:** used (planned: Lisbon ch7). **Fit:** high. **Conf.:** Medium–High.
+- **Sources:** ie-ncsc-qr-guide, be-safeonweb-qr-chargers, lu-vdl-parking-qr, eu-epc-threats-2025, pt-portugalpost-gnr-quishing-2026, pt-deco-qrishing-2024.
+- **T-3.8r note (2026-11-19):** brief `qr-sticker-parking.md`. The lesson is the destination address; the sticker is a supporting clue. The Portuguese evidence is news plus a consumer body (Medium).
 
 **A14.2 `qr-code-in-email`**: a QR code in an email ("scan to keep your account active")
 - **Sees:** an email with a QR code instead of a link, often for a login or payment; scanning moves you to your phone, outside work filters.

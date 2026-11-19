@@ -79,6 +79,51 @@ Shown as found. Formats follow the source. Phone numbers are real and must appea
 - Banco de Portugal pages (unreachable this session);
 - INCIBE's incident-report email address.
 
+## 3b. T-3.8r verified help list (2026-11-19): every chapter country
+For each chapter country there is now a checked entry for the reporting route, police, bank step, emotional-support line and child line, except where the table marks "fallback" or a caveat. All entries are in `docs/patterns/where-to-report.draft.en.yaml`, with a coverage block in §4b. Everything below was read on the body's own site or an official page on 2026-11-19, unless a row says otherwise.
+
+| Country | Role | Contact | Notes | Source id |
+|---|---|---|---|---|
+| **Belgium** | bank | **Card Stop / Fraudstop 078 170 170**, 24/7 | Since 22 Jun 2026 the same number also blocks banking apps via your bank. One local police page still shows the old 070 344 344: never use it | be-febelfin-fraudstop-2026, be-brussels-hulpdiensten |
+| Belgium | support | Tele-Onthaal **106** (Dutch); Télé-Accueil **107** (French, free, 24/7) | 106: no cost/hours on the regional page | be-police-autres-numeros, be-brussels-hulpdiensten |
+| Belgium | child | Awel **102** (Dutch); Écoute-Enfants **103** (French, free, 10:00–24:00) | No 116 111 found | be-police-ecoute-enfants, be-brussels-hulpdiensten |
+| **Germany** | police / report | Online report (Onlinewache) in most states; otherwise any station | 13 Länder online; BY, SL, TH contact form. No Länder URLs shown | de-hilfeinfo-onlinewache |
+| Germany | bank | **116 116** to block cards (+49 116 116), then your bank | Number from the federal justice ministry page; operator site not opened | de-hilfeinfo-onlinewache |
+| Germany | support | TelefonSeelsorge **116 123**, free, 24/7 | | de-gesundbund-krisen-2026 |
+| **France** | report | **17Cyber** (17cyber.gouv.fr): government online assistance | Describe as the live site does (no 24/7 or chat claim) | fr-cybermalveillance-17cyber-2024 |
+| France | bank | Your bank at once; ask for a fraud recall | | fr-bdf-fraude-moyens-paiement |
+| France | support | **116 006** victims' line (free, 9:00–19:00); SOS Amitié **09 72 39 40 50** (free, 24/7) | | fr-santefr-lignes-ecoute |
+| France | child | **3018** (online harassment or violence, free, 9:00–23:00) | No 116 111 found; 119 (children in danger) and Fil Santé Jeunes 0 800 235 236 also verified | fr-solidarites-numeros-2025, fr-santefr-lignes-ecoute |
+| **Ireland** | bank | Your bank, after clicking or giving details | | ie-ncsc-phishing-guide |
+| Ireland | support | Samaritans **116 123**, freephone, 24/7 | | ie-hse-urgent-help |
+| Ireland | child | Childline **1800 66 66 66**, freephone | Text HELLO to 50808 (free, 24/7) also listed | ie-hse-urgent-help |
+| **Italy** | report | Polizia Postale e delle comunicazioni | Named by the central bank; police site blocked automated access, so **no URL** | it-bdi-truffe-cyber |
+| Italy | bank | Your bank through official channels; then *reclamo*; then Arbitro Bancario Finanziario | | it-bdi-truffe-cyber |
+| Italy | support | Telefono Amico Italia **02 2327 2327**, 24 h, free service (normal call cost) | Operator's site only (NGO) | it-telefonoamico-home |
+| Italy | child | **114** Emergenza Infanzia, free, 24 h | Government line; no 116 111 page found | it-minori-114-2024 |
+| **Netherlands** | bank | Your own bank, at once | | nl-veiligbankieren-meld-fraude |
+| Netherlands | support | De Luisterlijn **088 0767 000**, 24/7, **normal call rate** | Municipal notice + NJI | nl-kerkrade-luisterlijn, nl-nji-bellen-chatten |
+| Netherlands | child | De Kindertelefoon **0800 0432**, free (ages 8–18, 11:00–21:00) | 116 111 not stated | nl-rijksoverheid-kindertelefoon, nl-nji-bellen-chatten |
+| **Poland** | police | Police: report suspected fraud | Merge with T-3.6r's pl-police | pl-policja-oszukany |
+| Poland | bank | Your bank straight away | | pl-policja-oszukany, pl-cert-fake-consultants |
+| Poland | support / child | **116 123** adults; **116 111** children and young people; both free, anonymous, 24/7 | | pl-gov-cyfryzacja-116-2025 |
+| **Portugal** | police / report | PSP, GNR or PJ | Online portal and CNCS form **not verified** | pt-bdp-ficaadica-2023 |
+| Portugal | bank | Your bank immediately; cancel access details if typed | | pt-bdp-ficaadica-2023 |
+| Portugal | support | SNS 24 psychological counselling **808 24 24 24** (PT/EN) | Cost, hours, menu option not stated | pt-gov-sns24-psych-2022 |
+| Portugal | child | **116 111** Linha de Apoio à Criança, free, 24 h | | pt-gov-emergency-contacts-2026 |
+| **Spain** | bank | Your bank now; ask to stop or recall | T-3.6r adds the complaint route | es-incibe-smishing-bank-callback-2025 |
+| Spain | support | **024** (suicidal thoughts; free, 24/7) | Crisis line only; no general listening line verified | es-sanidad-024 |
+| Spain | child | **116 111** (ANAR), free, 24/7 | Regional government page + operator | es-caib-116111, es-anar-116111-carta |
+| **Sweden** | police / report | 112 now; 114 14 otherwise; some online reports with a Swedish ID number | | se-polisen-bedragerier-anmalan |
+| Sweden | bank | **Fallback** (generic) | No SE-specific source | eu-esas-ai-scams-factsheet-nl |
+| Sweden | support | Mind Självmordslinjen **90101** (24/7, crisis); Jourhavande medmänniska 08-702 16 80 (21:00–06:00) | Cost not stated | se-ki-nasp-hjalplinjer |
+| Sweden | child | BRIS **116 111**, 24/7 | Cost not stated | se-ki-nasp-hjalplinjer |
+| **EU / home** | all | Europol signpost; ECC-Net; generic fallbacks for police, bank, support (no number) and child line (no number) | | eu-europol-report-cybercrime, eu-eccnet-about, eu-esas-ai-scams-factsheet-nl |
+
+**Decisions for sceptic and learning-psychologist:**
+- Should crisis lines be shown on a scam help screen: ES 024, SE 90101 and PT 1411 (listed but not shown)?
+- How to show lines that are not free (NL Luisterlijn) or whose cost is unknown (SE, BE 102/106, PT SNS 24)?
+
 ## 4. Open items before G3
 - Safeonweb's Dec 2025 article mentions both suspicious@ and verdacht@ addresses. The English address is used above; confirm language variants.
 - Decide with sceptic-reviewer whether real phone numbers are allowed on the help screen. Recommendation: yes, with the per-row "checked" date shown and a link to the official page.

@@ -124,6 +124,17 @@ www.polizei-beratung.de | Police crime prevention (ProPK), www host (the host wi
 
 T-2.4b also cites a new page on www.europol.europa.eu (already listed).
 
+## New hosts from phase 3, chapter 2 (Amsterdam briefs, 2026-11-19): all marked **new**, not yet in `scripts/lib/source-hosts.ts`
+
+veiligbankieren.nl | Veilig Bankieren (Dutch Banking Association, NVB), host without www as opened | 3 | **new**
+www.veiligbankieren.nl | Veilig Bankieren (Dutch Banking Association, NVB) | 3 | **new**
+www.nvb.nl | Nederlandse Vereniging van Banken (Dutch Banking Association) | 3 | **new**
+veiliginternetten.nl | Veiliginternetten.nl (Ministry of Economic Affairs, NCSC-NL and ECP) | 3 | **new**
+www.rijksoverheid.nl | Rijksoverheid (Government of the Netherlands) | 3 | **new**
+www.rvig.nl | Rijksdienst voor Identiteitsgegevens (RvIG), incl. Centraal Meldpunt Identiteitsfraude | 3 | **new**
+
+The chapter-2 briefs also cite new pages on hosts already listed: www.politie.nl, www.fraudehelpdesk.nl, www.betaalvereniging.nl.
+
 ## Notes for the engineer
 - **New to `scripts/lib/source-hosts.ts`** (not in the allow-list yet, per sceptic review 2026-11-18): `politie.nl` (no www), `moje.cert.pl`, `wiedza.cert.pl`, `www.nummergegenkummer.de`, `www.bmbfsfj.bund.de`, `www.bacs.admin.ch`, `www.verbraucherzentrale-niedersachsen.de`, and `incydent.cert.pl` (help file only). The last two were already used in `content/sources.yaml` before T-2.5 but never added to the allow-list.
 - `www.incibe.es` gained new sources in T-2.5 and is already in the allow-list.

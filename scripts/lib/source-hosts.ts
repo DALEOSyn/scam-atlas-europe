@@ -23,6 +23,12 @@ export const SOURCE_HOST_ALLOWLIST: readonly string[] = [
   'ncsc.nl',
   'politie.nl',
   'fraudehelpdesk.nl',
+  'rijksoverheid.nl',
+  'rvig.nl',
+  'veiliginternetten.nl',
+  'veiligbankieren.nl',
+  'nvb.nl',
+  'betaalvereniging.nl',
   'safeonweb.be',
   // Ireland
   'garda.ie',

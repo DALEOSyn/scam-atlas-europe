@@ -19,8 +19,9 @@
 <path d="M424.5 210a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0 -7 0ZM454.5 210a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0 -7 0ZM484.5 210a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0 -7 0ZM514.5 210a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0 -7 0ZM542.5 210a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0 -7 0Z" fill="#8a6a4f"/>
 <use href="#ag-key" x="428" y="210"/><use href="#ag-key" x="458" y="210"/><use href="#ag-key" x="518" y="210"/><use href="#ag-key" x="546" y="210"/>
 <path d="M720 470V425H750V380H780V335H810V290H840V245H870V200H900V155H930V110H960V470Z" fill="#b9a88f"/>
-<path d="M720 425H750M750 380H780M780 335H810M810 290H840M840 245H870M870 200H900M900 155H930M930 110H960" stroke="#9c8c76" stroke-width="6" stroke-linecap="round"/>
-<path d="M704 400L944 64" stroke="#8a6a4f" stroke-width="7" stroke-linecap="round"/>
+<path d="M720 425H750M750 380H780M780 335H810" stroke="#9c8c76" stroke-width="6" stroke-linecap="round"/>
+<path d="M810 290H840M840 245H870M870 200H900M900 155H930M930 110H960" stroke="#9c8c76" stroke-width="3" stroke-linecap="round"/>
+<path d="M704 400L754 340" stroke="#8a6a4f" stroke-width="7" stroke-linecap="round"/>
 <path d="M704 400V470" stroke="#8a6a4f" stroke-width="8" stroke-linecap="round"/>
 <rect y="470" width="960" height="70" fill="#c9b28f"/>
 <path d="M0 504H960M80 470V504M240 470V504M400 470V504M560 470V504M720 470V504M880 470V504M160 504V540M320 504V540M480 504V540M640 504V540M800 504V540" stroke="#b49c7a" stroke-width="3"/>

@@ -3,14 +3,15 @@
 <defs><linearGradient id="lc-air" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfdde6"/><stop offset="1" stop-color="#d9e6f6"/></linearGradient>
 <g id="lc-ba"><rect x="0" y="-58" width="18" height="58" rx="2" fill="#8fae8b"/><rect x="20" y="-66" width="22" height="66" rx="2" fill="#e3a6a0"/><rect x="44" y="-52" width="16" height="52" rx="2" fill="#f1e4c8"/><rect x="62" y="-62" width="24" height="62" rx="2" fill="#d9a441"/><rect x="88" y="-56" width="18" height="56" rx="2" fill="#8fa3b5"/><rect x="108" y="-64" width="20" height="64" rx="2" fill="#c8714f"/><rect x="130" y="-50" width="16" height="50" rx="2" fill="#9fb39b"/><rect x="148" y="-60" width="22" height="60" rx="2" fill="#f1e4c8"/></g>
 <g id="lc-bb"><rect x="0" y="-62" width="22" height="62" rx="2" fill="#d9a441"/><rect x="24" y="-54" width="16" height="54" rx="2" fill="#8fa3b5"/><rect x="42" y="-66" width="20" height="66" rx="2" fill="#f1e4c8"/><rect x="64" y="-58" width="18" height="58" rx="2" fill="#e3a6a0"/><rect x="84" y="-50" width="24" height="50" rx="2" fill="#8fae8b"/><rect x="110" y="-64" width="18" height="64" rx="2" fill="#c8714f"/><rect x="130" y="-56" width="22" height="56" rx="2" fill="#9fb39b"/><rect x="154" y="-60" width="14" height="60" rx="2" fill="#e7d3b0"/></g>
+<g id="lc-bq"><rect y="-60" width="60" height="60" rx="3" fill="#e3d3b4"/><rect x="62" y="-56" width="56" height="56" rx="3" fill="#f1e4c8"/><rect x="120" y="-62" width="50" height="62" rx="3" fill="#e7d3b0"/></g>
 <g id="lc-cup"><path d="M0 0H18V10Q18 17 9 17Q0 17 0 10Z" fill="#fffaf0"/><path d="M18 3Q25 3 25 8Q25 12 18 12" fill="none" stroke="#ddcca9" stroke-width="3"/></g>
 </defs>
 <rect width="960" height="540" fill="#e7d3b0"/>
 <rect width="960" height="24" fill="#d6bf98"/>
 <rect x="0" y="40" width="200" height="430" fill="#d6bf98"/><rect x="760" y="40" width="200" height="430" fill="#d6bf98"/>
 <path d="M0 116H200M0 216H200M0 316H200M0 416H200M760 116H960M760 216H960M760 316H960M760 416H960" stroke="#b9a88f" stroke-width="8"/>
-<use href="#lc-ba" x="14" y="112"/><use href="#lc-bb" x="14" y="212"/><use href="#lc-ba" x="14" y="312"/><use href="#lc-bb" x="14" y="412"/>
-<use href="#lc-bb" x="776" y="112"/><use href="#lc-ba" x="776" y="212"/><use href="#lc-bb" x="776" y="312"/><use href="#lc-ba" x="776" y="412"/>
+<use href="#lc-ba" x="14" y="112"/><use href="#lc-bq" x="14" y="212"/><use href="#lc-bq" x="14" y="312"/><use href="#lc-bb" x="14" y="412"/>
+<use href="#lc-bb" x="776" y="112"/><use href="#lc-bq" x="776" y="212"/><use href="#lc-bq" x="776" y="312"/><use href="#lc-ba" x="776" y="412"/>
 <path d="M370 270V120Q370 60 480 60Q590 60 590 120V270Z" fill="#f6efe2"/>
 <path d="M384 262V124Q384 74 480 74Q576 74 576 124V262Z" fill="url(#lc-air)"/>
 <path d="M480 74V262M384 168H576" stroke="#f6efe2" stroke-width="6"/>
@@ -29,11 +30,11 @@
 <path d="M326 272a30 8 0 1 0 60 0a30 8 0 1 0 -60 0Z" fill="#9c978a"/><path d="M350 262a6 6 0 1 0 12 0a6 6 0 1 0 -12 0Z" fill="#9c978a"/>
 <rect x="346" y="334" width="20" height="8" rx="3" fill="#5d6672"/><rect x="320" y="362" width="72" height="8" rx="3" fill="#9c978a"/>
 <use href="#lc-cup" x="408" y="350"/><use href="#lc-cup" x="440" y="350"/><use href="#lc-cup" x="424" y="333"/>
-<path d="M522 364a46 6 0 1 0 92 0a46 6 0 1 0 -92 0Z" fill="#fffaf0"/><rect x="564" y="340" width="8" height="24" fill="#f6efe2"/><path d="M528 340a40 5 0 1 0 80 0a40 5 0 1 0 -80 0Z" fill="#fffaf0"/>
-<path d="M536 336V300Q568 290 600 300V336Q568 342 536 336Z" fill="#f1e4c8"/>
-<path d="M536 300Q568 290 600 300Q600 310 590 312Q584 304 578 312Q570 304 562 312Q554 304 548 312Q540 306 536 300Z" fill="#e3a6a0"/>
-<path d="M600 300L580 320V340L600 336Z" fill="#e7d3b0"/>
-<path d="M555 288a5 5 0 1 0 10 0a5 5 0 1 0 -10 0Z" fill="#c8714f"/>
+<path d="M524 366a44 6 0 1 0 88 0a44 6 0 1 0 -88 0Z" fill="#fffaf0"/>
+<path d="M538 364V334Q568 326 598 334V364Q568 370 538 364Z" fill="#f1e4c8"/>
+<path d="M538 334Q568 326 598 334Q598 342 589 344Q583 337 577 344Q569 337 561 344Q553 337 547 344Q540 339 538 334Z" fill="#e3a6a0"/>
+<path d="M598 334L580 350V368L598 364Z" fill="#e7d3b0"/>
+<path d="M556 326a4 4 0 1 0 8 0a4 4 0 1 0 -8 0Z" fill="#c8714f"/>
 <path d="M500 364h40l-4 4h-32Z" fill="#fffaf0"/><path d="M506 356L532 356L522 364Z" fill="#f1e4c8"/>
 <path d="M200 400H272V412H200ZM206 412V500M266 412V500M206 330H266V400H206Z" fill="none" stroke="#bd8a2c" stroke-width="10" stroke-linejoin="round"/>
 <rect x="196" y="398" width="82" height="14" rx="4" fill="#d9a441"/>

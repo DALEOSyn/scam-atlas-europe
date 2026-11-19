@@ -25,7 +25,7 @@
 <rect x="408" y="466" width="144" height="10" rx="3" fill="#d6bf98"/>
 <path d="M0 540L180 470H780L960 540Z" fill="#c9b28f"/>
 <path d="M150 490Q300 482 420 492M120 512Q330 500 520 514M560 494Q700 486 820 496M600 518Q760 508 900 520M300 532Q480 524 660 534" fill="none" stroke="#b49c7a" stroke-width="3" stroke-linecap="round"/>
-<rect x="560" y="352" width="112" height="120" rx="6" fill="#b8b4a6"/><path d="M560 392H672M560 432H672M597 352V472M635 352V472" stroke="#9c978a" stroke-width="3"/><rect x="574" y="362" width="18" height="6" rx="2" fill="#9c978a"/>
+<rect x="560" y="352" width="112" height="120" rx="6" fill="#b8b4a6"/><path d="M560 392H672M560 432H672M597 352V472M635 352V472" stroke="#9c978a" stroke-width="3"/>
 <path d="M584 380h6M622 380h6M660 380h6M584 420h6M622 420h6M660 420h6M584 460h6M622 460h6M660 460h6" stroke="#9c978a" stroke-width="3" stroke-linecap="round"/>
 <rect x="246" y="412" width="44" height="60" rx="6" fill="#8fa3b5"/><rect x="242" y="404" width="52" height="12" rx="4" fill="#7a8c9c"/><rect x="300" y="412" width="44" height="60" rx="6" fill="#9fb39b"/><rect x="296" y="404" width="52" height="12" rx="4" fill="#879d83"/>
 <path d="M380 472V446Q380 436 392 436H396M442 446Q442 436 430 436H426" fill="none" stroke="#8a6a4f" stroke-width="5"/>

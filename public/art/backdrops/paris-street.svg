@@ -1,4 +1,4 @@
-<!-- Scam Atlas: Europe. City backdrop: a generic Paris street of cream stone apartment buildings with grey zinc mansard roofs, chimney pots, one high balcony, a carriage door, a blank shopfront and plane trees; no lettering, no sign, no landmark, no brand mark. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<!-- Scam Atlas: Europe. City backdrop: a generic Paris street of cream stone apartment buildings with grey zinc mansard roofs, chimney pots, a carriage door, a blank shopfront and plane trees; no lettering, no sign, no landmark, no brand mark. Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="pa-t"><title id="pa-t">A street of cream stone buildings with grey roofs, plane trees and a carriage door</title>
 <defs><linearGradient id="pa-air" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfdde6"/><stop offset="1" stop-color="#d9e6f6"/></linearGradient>
 <g id="pa-w"><rect width="44" height="84" rx="4" fill="#f6efe2"/><rect x="5" y="5" width="34" height="74" rx="2" fill="#cfdde6"/><path d="M22 5V79" stroke="#f6efe2" stroke-width="3"/></g>
@@ -24,7 +24,7 @@
 <path d="M0 508H960" stroke="#9c978a" stroke-width="4"/>
 <path d="M682 486a18 4 0 1 0 36 0a18 4 0 1 0 -36 0ZM762 486a18 4 0 1 0 36 0a18 4 0 1 0 -36 0Z" fill="#9c978a"/><path d="M700 486V500M780 486V500" stroke="#5d6672" stroke-width="3"/>
 <path d="M686 472h28v4h-28ZM766 472h28v4h-28Z" fill="#5d6672"/>
-<rect x="74" y="250" width="16" height="230" rx="6" fill="#8a6a4f"/><rect x="884" y="250" width="16" height="230" rx="6" fill="#8a6a4f"/>
-<path d="M18 190a64 64 0 1 0 128 0a64 64 0 1 0 -128 0ZM-6 250a40 40 0 1 0 80 0a40 40 0 1 0 -80 0ZM86 250a44 44 0 1 0 88 0a44 44 0 1 0 -88 0Z" fill="#9db58a"/><path d="M74 230a26 26 0 1 0 52 0a26 26 0 1 0 -52 0ZM30 214a20 20 0 1 0 40 0a20 20 0 1 0 -40 0Z" fill="#86a175"/>
-<path d="M828 190a64 64 0 1 0 128 0a64 64 0 1 0 -128 0ZM900 250a40 40 0 1 0 80 0a40 40 0 1 0 -80 0ZM800 250a44 44 0 1 0 88 0a44 44 0 1 0 -88 0Z" fill="#9db58a"/><path d="M848 230a26 26 0 1 0 52 0a26 26 0 1 0 -52 0ZM904 214a20 20 0 1 0 40 0a20 20 0 1 0 -40 0Z" fill="#86a175"/>
+<rect x="404" y="250" width="16" height="230" rx="6" fill="#8a6a4f"/><rect x="540" y="250" width="16" height="230" rx="6" fill="#8a6a4f"/>
+<path d="M354 186a58 58 0 1 0 116 0a58 58 0 1 0 -116 0ZM334 240a36 36 0 1 0 72 0a36 36 0 1 0 -72 0ZM414 244a38 38 0 1 0 76 0a38 38 0 1 0 -76 0Z" fill="#9db58a"/><path d="M404 226a24 24 0 1 0 48 0a24 24 0 1 0 -48 0ZM366 210a18 18 0 1 0 36 0a18 18 0 1 0 -36 0Z" fill="#86a175"/>
+<path d="M490 186a58 58 0 1 0 116 0a58 58 0 1 0 -116 0ZM554 240a36 36 0 1 0 72 0a36 36 0 1 0 -72 0ZM470 244a38 38 0 1 0 76 0a38 38 0 1 0 -76 0Z" fill="#9db58a"/><path d="M508 226a24 24 0 1 0 48 0a24 24 0 1 0 -48 0ZM558 210a18 18 0 1 0 36 0a18 18 0 1 0 -36 0Z" fill="#86a175"/>
 </svg>

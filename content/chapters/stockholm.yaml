@@ -18,10 +18,10 @@
 # wording is in the chapter 9 sources file in docs/patterns ("Sweden help card"). Real bodies appear only
 # there and on the help screen (Red Line 1). The schema has no per-chapter help-card field yet.
 # No content note proposed (none in GDD §29 or STORY §5.6 for Stockholm).
-# Story scenes (GDD §29.2, STORY §3.9: stockholm-arrival before 9-1, stockholm-turn at the stop point after
-# 9-3, stockholm-resolution after the boss, variant stockholm_bank_called set by every boss fall outcome) are
-# a later ticket; `scenes` is added with them:
-#   scenes: { arrival: stockholm-arrival, turn: stockholm-turn, resolution: stockholm-resolution }
+# Story scenes (GDD §29.2, STORY §3.9; T-S4j): stockholm-arrival before 9-1, stockholm-turn at the stop point
+# after 9-3 (drill 9-4 follows), stockholm-resolution after the boss (variant stockholm_bank_called, set by
+# every boss fall outcome, opens it). No placed beat. The map invitation (Birgitta) is not built yet (ENGINE
+# "Not in S3").
 slot: 9
 city: stockholm
 name: "Stockholm"
@@ -41,3 +41,7 @@ rules:
     - "If someone contacted you, don't log in, sign or scan for them. Hang up: rudeness is free."
     - "Approve only what you started: you opened it, you chose it, and the request names it."
 atlas_cards: [only-approve-what-you-started, nobody-needs-your-screen, hang-up-call-back]
+scenes:
+  arrival: stockholm-arrival
+  turn: stockholm-turn
+  resolution: stockholm-resolution

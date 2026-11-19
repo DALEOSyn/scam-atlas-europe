@@ -1,0 +1,145 @@
+# 9-8 "Gatewren Support" wants you to install a helper app (GDD §29.4; remote-access-support-call, preview
+# for LO-15; the Brussels boss owns the full story). Fraud, difficulty 5, call 30 s, pusher at 18 s
+# (caller). Levers fear, helpfulness, authority. Gatewren claimed; Kindhand Support is the scam prop (a
+# fictional, non-functional helper app, named in the call only; no store page, no link, no icon).
+# Scheduled beat (R 1; difficulty 5: the main tell is the request): claim#2 (the install request, authored as
+# a claim because `install` carries no `ask`, CR-30). Decoys: caller_id (SK1, the sender-or-link decoy),
+# claim ("used on another device").
+# Fall stops at the request (RAS §6, S-S1): "You stop and hang up. The app is still on your phone." Nothing
+# about what the app can do beyond "they could see and do what you can" (layer 2). Damage control starts
+# from there: go offline, call the bank from another phone, change passwords from another device, get the
+# device checked; harmful: let the caller finish, wait and see.
+# Interrupt after "What now?" (genuine): Lina, so a reassuring message never lands while the player chooses.
+id: stockholm-08-support-call
+chapter: stockholm
+role: standard
+pattern: remote-access-support-call
+theme: support
+learning_objectives: [LO-15, LO-08]
+difficulty: 5
+is_fraud: true
+device: call
+setup: "Late afternoon, back in your room. Your phone rings."
+brands: [gatewren, kindhand, kettle]
+cast: [lina]
+pressure:
+  timer: true
+  levers: [fear, helpfulness, authority]
+  pusher:
+    messages:
+      - { at_seconds: 18, text: "Have you found it in the store?" }
+
+message:
+  sender: { display: "Gatewren Support", detail: "08-••• •• 12 · Not a saved contact" }
+  transcript:
+    - { speaker: caller, text: "Hi, Gatewren Support. Your Gatewren was just used on another device." }
+    - { speaker: caller, text: "I can check your settings for you. Install Kindhand Support from your app store and read me the code it shows." }
+  request: install
+  claims:
+    - { text: "Your Gatewren was just used on another device." }
+    - { text: "Install Kindhand Support from your app store and read me the code it shows." }
+
+inspectables:
+  - target: caller_id
+    reveal: "Shows Gatewren Support. A caller can set the name and number on your screen, so it can't prove anything either way."
+    red_flag: false
+    type: caller_id
+  - target: claim
+    reveal: "Accounts are misused, so it can't prove anything either way. Your Gatewren app would show your devices."
+    red_flag: false
+    type: claim
+  - target: claim#2
+    reveal: "An app so a stranger can see your screen, and a code to let them in. Nobody needs your screen."
+    red_flag: true
+    type: claim
+
+actions:
+  - id: install_kindhand
+    label: "Install it and read out the code"
+    kind: install_or_remote
+    outcome: kindhand_installed
+    pressure_target: true
+  - id: open_gatewren_devices
+    label: "Hang up and open Gatewren yourself"
+    kind: verify_in_app
+    outcome: gatewren_devices_fine
+  - id: hang_up_support
+    label: "Hang up"
+    kind: hang_up
+    outcome: support_call_left
+
+what_now:
+  call_back_label: "Contact Gatewren through its own app"
+  outcomes:
+    call_back_known: gatewren_devices_fine
+    report: support_call_reported
+    done: support_call_left
+  extra:
+    - id: call_back_this_number_support
+      label: "Call back this number"
+      kind: call_number_in_message
+      note: "That's the number that just called. A caller can set the number on your screen, so you can't tell whose line it is. Open the Gatewren app yourself instead."
+
+interrupts:
+  - id: lina_swedish_homework
+    after_beat: start
+    after_what_now: true
+    on_fall: skip
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Lina (downstairs)", detail: "Saved contact: Lina (downstairs)" }
+      from_cast: lina
+      body: "Can you check my Swedish homework? Dad says his grammar is 'experimental'."
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Lina's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what she asks for: help with homework, nothing more."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_lina_homework
+        label: "Reply: show me after fika!"
+        kind: proceed
+        outcome: lina_homework_thanks
+        pressure_target: true
+      - id: report_lina_homework
+        label: "Report the message"
+        kind: report
+        outcome: lina_homework_reported
+
+outcomes:
+  kindhand_installed:
+    narrative: "You install it and read out the code. A banner says \"Someone is viewing your screen.\" \"Now open your bank app so I can check it,\" he says. You stop and hang up. The app is still on your phone."
+    recovery:
+      - { step: go_offline, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: change_password, category: secure }
+      - { step: get_device_checked, category: secure }
+      - { step: let_caller_finish, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  gatewren_devices_fine:
+    narrative: "You open Gatewren yourself. Your devices: just this phone. Nothing used anywhere else."
+  support_call_reported:
+    narrative: "Reported. Keep a note of the time and what was said."
+  support_call_left:
+    narrative: "You hang up and leave it there. Nothing was installed."
+  lina_homework_thanks:
+    narrative: "Lina: \"Deal. Grab a red pen. Dad's sentences need it.\""
+  lina_homework_reported:
+    narrative: "You reported it. Careful is good; this one really was Lina, with her homework."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A support caller asking you to install an app."
+    what_works: "Nobody needs your screen. Hang up."
+  layer2:
+    message_flags: []
+    notes: "With an app like that, they could see and do what you can. Contact a company yourself, through its own app, card or website. Where to report and get help (Sweden) is on the help screen."
+  device_tip: "On a real phone, never install an app because a caller asked. End the call and open the company's own app, or call the number on its website or your card."
+  habit_card: nobody-needs-your-screen
+  already_clicked:
+    clicked: "Installed something for them? Turn on airplane mode, call your bank from another phone if you can, change your passwords from another device, and get the device checked."
+  sources: [eu-esas-ai-scams-factsheet-sv, se-konsumentverket-investment-fraud, eu-europol-iocta-2026]

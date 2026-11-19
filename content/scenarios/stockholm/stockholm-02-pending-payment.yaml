@@ -1,0 +1,198 @@
+# 9-2 "Larchwick" text with a number to call about a pending payment (GDD §29.4; callback
+# multichannel-support-callback, leading into e-id-approval-on-call A). Fraud, difficulty 3, timer 35 s,
+# pusher at 18 s in the same thread (Swedish, translated). Levers fear, urgency, authority. Larchwick named.
+# Swedish in-world text with inline translation; the language is never a red flag.
+# Scheduled beat (R 2): phone_number, request. Decoys: sender.detail (the sender-or-link decoy), reference.
+# Follow-ups (not in R; flags count toward spotted only):
+# - security_line: the call you placed to the number from the text (caller ID authored as a red flag: it is
+#   the number the text gave you, P6). "Open Gatewren as he asks" is engage (reply) → security_prompt.
+# - security_prompt: the Gatewren login the caller asked for, shown with the on-call bar (CR-39(a)). Where and
+#   device are R (SK2 game clues), service and when D. The prompt carries its own line as `ask` like every
+#   Gatewren prompt in the chapter (request-checkable parity with the genuine prompts, GDD §29.4).
+# Calling the number is engage (call_number_in_message), so everything after it scores at most ★★.
+# Fall: damage control with call_back_text_number (Madrid's step: the player dialled the number from the
+# text) and approve_again_to_cancel as the two harmful steps. Never shows how the login is used (SK4).
+id: stockholm-02-pending-payment
+chapter: stockholm
+role: standard
+pattern: multichannel-support-callback
+theme: bank
+learning_objectives: [LO-08, LO-09, LO-03]
+difficulty: 3
+is_fraud: true
+device: sms
+brands: [larchwick, gatewren]
+pressure:
+  timer: true
+  levers: [fear, urgency, authority]
+  pusher:
+    messages:
+      - { at_seconds: 18, text: "Betalningen genomförs om 10 minuter.", lang: sv, translation: "The payment goes through in 10 minutes." }
+      - { at_seconds: 6, beat: security_prompt, text: "Just tap Approve. It only takes a second." }
+
+message:
+  sender: { display: "Larchwick", detail: "Sender name: Larchwick" }
+  body: "Larchwick: Ett kortköp på 4 890 kr väntar. Inte du? Ring vår säkerhetsavdelning nu på 08-••• •• 41."
+  lang: sv
+  translation: "Larchwick: A card payment of 4 890 kr is pending. Not you? Call our security team now on 08-••• •• 41."
+  request: call
+  ask: { text: "Ring vår säkerhetsavdelning nu på 08-••• •• 41", translation: "Call our security team now on 08-••• •• 41" }
+  references: ["Ett kortköp på 4 890 kr"]
+  phone_numbers: ["08-••• •• 41"]
+  l10n_note: "Swedish in-world text is intentional; the translation is shown inline. The amount is illustrative, never typical."
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows 'Larchwick'. Anyone can set a sender name, so it can't prove anything either way."
+    red_flag: false
+    type: sender
+  - target: reference
+    reveal: "An amount. Real or invented, your app would show it, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: phone_number
+    reveal: "A number in a text, not the one on your card or in your app."
+    red_flag: true
+    type: phone_number
+  - target: request
+    reveal: "Call a number from a text about a payment. Open the Larchwick app yourself instead."
+    red_flag: true
+    type: request
+
+actions:
+  - id: call_text_number
+    label: "Call the number"
+    kind: call_number_in_message
+    next_beat: security_line
+    pressure_target: true
+  - id: open_larchwick_app
+    label: "Open the Larchwick app yourself"
+    kind: verify_in_app
+    outcome: no_pending_payment
+  - id: report_pending_text
+    label: "Report the text"
+    kind: report
+    outcome: pending_text_reported
+  - id: delete_pending_text
+    label: "Delete it"
+    kind: delete
+    outcome: pending_text_deleted
+
+beats:
+  - id: security_line
+    device: call
+    message:
+      sender: { display: "08-••• •• 41", detail: "The number from the text" }
+      transcript:
+        - { speaker: caller, text: "Larchwick security, this is Erik." }
+        - { speaker: caller, text: "I can stop the payment. First I need to verify you: open Gatewren and identify yourself." }
+        - { speaker: caller, text: "It only takes a second." }
+      request: approve
+      ask: { text: "First I need to verify you: open Gatewren and identify yourself." }
+    inspectables:
+      - target: caller_id
+        reveal: "The number from the text. You dialled it, but it came with the text, so it reaches whoever sent it."
+        red_flag: true
+        type: caller_id
+      - target: request
+        reveal: "Identify yourself with Gatewren for someone on the phone. That is how someone else logs in."
+        red_flag: true
+        type: request
+    actions:
+      - id: open_gatewren_for_erik
+        label: "Open Gatewren as he asks"
+        kind: reply
+        next_beat: security_prompt
+        pressure_target: true
+      - id: hang_up_erik
+        label: "Hang up"
+        kind: hang_up
+        outcome: erik_left
+    what_now:
+      call_back_label: "Call the number on your card"
+      outcomes:
+        call_back_known: card_no_pending
+        report: erik_reported
+        done: erik_left
+
+  - id: security_prompt
+    device: auth
+    message:
+      prompt: { type: sign_in, service: "Larchwick internet bank", where: "Malmö, Sweden", device: "Windows computer", when: "Just now" }
+      body: "Log in to Larchwick internet bank?"
+      request: approve
+      ask: { text: "Log in to Larchwick internet bank?" }
+    inspectables:
+      - target: prompt.service
+        reveal: "Your bank, as the caller said. The name is right; it's still a login you didn't start."
+        red_flag: false
+        type: prompt
+      - target: prompt.where
+        reveal: "Malmö: not where you are."
+        red_flag: true
+        type: prompt
+      - target: prompt.device
+        reveal: "A Windows computer: not your phone."
+        red_flag: true
+        type: prompt
+      - target: prompt.when
+        reveal: "'Just now'. Every request says that, so it can't prove anything either way."
+        red_flag: false
+        type: prompt
+      - target: request
+        reveal: "A login to your bank that you didn't start: the caller asked for it. Approving lets someone else in."
+        red_flag: true
+        type: request
+    actions:
+      - id: approve_for_erik
+        label: "Approve"
+        kind: approve_prompt
+        outcome: erik_logged_in
+        pressure_target: true
+      - id: deny_call_card_erik
+        label: "Deny, hang up and call your card's number"
+        kind: call_back_known
+        outcome: card_no_pending
+      - id: deny_erik_prompt
+        label: "Deny"
+        kind: deny_prompt
+        outcome: erik_prompt_denied
+
+outcomes:
+  erik_logged_in:
+    narrative: "Gatewren: \"Logged in.\" Erik thanks you. Ten minutes later your Larchwick app shows a new payee, then a payment you didn't make."
+    recovery:
+      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: keep_call_evidence, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: approve_again_to_cancel, category: harmful }
+      - { step: call_back_text_number, category: harmful }
+  no_pending_payment:
+    narrative: "You open the Larchwick app yourself. No pending payment. Nothing to stop."
+  card_no_pending:
+    narrative: "Larchwick, on the number on your card: \"There's no pending payment, and we'd never ask you to identify yourself with Gatewren on a call.\""
+  erik_prompt_denied:
+    narrative: "You deny it and hang up. Nobody gets in."
+  erik_reported:
+    narrative: "Reported. Keep the text and a note of the call: your bank and the police can use them."
+  erik_left:
+    narrative: "You hang up and leave it there. Nobody gets in."
+  pending_text_reported:
+    narrative: "Reported. Your phone files the text under spam."
+  pending_text_deleted:
+    narrative: "Deleted. The thread goes quiet."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A text with a number to call about a payment."
+    what_works: "Open your bank app yourself."
+  layer2:
+    message_flags: []
+    notes: "On that call, they'd ask you to identify yourself with Gatewren. Never do that for someone who contacted you. Where to report and get help (Sweden) is on the help screen."
+  device_tip: "On a real phone, open your banking app from your home screen to check a payment, and call only the number on your card or in the app."
+  habit_card: hang-up-call-back
+  already_clicked:
+    shared_code: "Approved it? Call your bank now on the number on your card. Banks answer day and night."
+  sources: [se-polisen-campaign-2026, eu-epc-threats-2025, se-polisen-telefonbedrageri, se-polisen-vishing-2026]

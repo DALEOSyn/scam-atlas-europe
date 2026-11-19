@@ -1,0 +1,194 @@
+# 9-5 "Larchwick Bank" calls about a loan in your name (GDD §29.4; e-id-approval-on-call A, core).
+# Fraud, difficulty 4, call 30 s, pusher at 16 s (caller). Levers fear, authority, urgency. Larchwick named.
+# Scheduled beat (R 2): claim#2 ("stay on the line"), the request. Decoys: caller_id (SK1, the sender-or-link
+# decoy), claim (loan fraud is real).
+# "Open Gatewren as they ask" is engage (reply) → loan_prompt: the Gatewren login the caller asked for, under
+# the on-call bar (CR-39(a)), with the beat-bound caller line "Just tap Approve, then it's blocked." Where and
+# device are R there (SK2 game clues), service and when D; the prompt carries its line as `ask` like every
+# Gatewren prompt in the chapter. Following the caller caps the group at ★★ (row 3: 170 − 5).
+# Interrupt at 10 s: Birgitta knocks (genuine). Fall: the second harmful step is call_back_caller_number
+# (an incoming call, not a number from a text). No mechanism shown (SK4).
+id: stockholm-05-loan-call
+chapter: stockholm
+role: standard
+pattern: e-id-approval-on-call
+theme: bank
+learning_objectives: [LO-09, LO-08]
+difficulty: 4
+is_fraud: true
+device: call
+setup: "Mid-afternoon. Your phone rings."
+brands: [larchwick, gatewren, kettle]
+cast: [birgitta]
+pressure:
+  timer: true
+  levers: [fear, authority, urgency]
+  pusher:
+    messages:
+      - { at_seconds: 16, text: "Are you still there? It's going through." }
+      - { at_seconds: 4, beat: loan_prompt, text: "Just tap Approve, then it's blocked." }
+
+message:
+  sender: { display: "Larchwick Bank", detail: "08-••• •• 00 · Not a saved contact" }
+  transcript:
+    - { speaker: caller, text: "Hej, Larchwick security. Someone is taking out a loan in your name right now." }
+    - { speaker: caller, text: "To stop it, open Gatewren and log in, so we can see it's you and block the loan." }
+    - { speaker: caller, text: "Stay on the line; it's urgent." }
+  request: approve
+  ask: { text: "To stop it, open Gatewren and log in, so we can see it's you and block the loan." }
+  claims:
+    - { text: "Someone is taking out a loan in your name right now." }
+    - { text: "Stay on the line; it's urgent." }
+
+inspectables:
+  - target: caller_id
+    reveal: "Shows Larchwick Bank. A caller can set the name and number on your screen, so it can't prove anything either way."
+    red_flag: false
+    type: caller_id
+  - target: claim
+    reveal: "Loan fraud is real, so it can't prove anything either way. Your app would show it."
+    red_flag: false
+    type: claim
+  - target: claim#2
+    reveal: "Keeps you on the line so you can't check."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "Log in with Gatewren for a caller. Real banks never call and ask you to log in."
+    red_flag: true
+    type: request
+
+actions:
+  - id: open_gatewren_for_loan
+    label: "Open Gatewren as they ask"
+    kind: reply
+    next_beat: loan_prompt
+    pressure_target: true
+  - id: call_card_loan
+    label: "Hang up, call the number on your card"
+    kind: call_back_known
+    outcome: card_no_loan
+  - id: hang_up_loan
+    label: "Hang up"
+    kind: hang_up
+    outcome: loan_call_left
+
+what_now:
+  call_back_label: "Call the number on your card"
+  outcomes:
+    call_back_known: card_no_loan
+    report: loan_call_reported
+    done: loan_call_left
+  extra:
+    - id: call_back_this_number_loan
+      label: "Call back this number"
+      kind: call_number_in_message
+      note: "That's the number that just called. A caller can set the number on your screen, so you can't tell whose line it is. Use the number on your card."
+
+beats:
+  - id: loan_prompt
+    device: auth
+    message:
+      prompt: { type: sign_in, service: "Larchwick internet bank", where: "Göteborg, Sweden", device: "Windows computer", when: "Just now" }
+      body: "Log in to Larchwick internet bank?"
+      request: approve
+      ask: { text: "Log in to Larchwick internet bank?" }
+    inspectables:
+      - target: prompt.service
+        reveal: "Your bank, as the caller said. The name is right; it's still a login you didn't start."
+        red_flag: false
+        type: prompt
+      - target: prompt.where
+        reveal: "Göteborg: not where you are."
+        red_flag: true
+        type: prompt
+      - target: prompt.device
+        reveal: "A Windows computer: not your phone."
+        red_flag: true
+        type: prompt
+      - target: prompt.when
+        reveal: "'Just now'. Every request says that, so it can't prove anything either way."
+        red_flag: false
+        type: prompt
+      - target: request
+        reveal: "A login to your bank that you didn't start: the caller asked for it. Approving lets someone else in."
+        red_flag: true
+        type: request
+    actions:
+      - id: approve_loan_prompt
+        label: "Approve"
+        kind: approve_prompt
+        outcome: loan_logged_in
+        pressure_target: true
+      - id: deny_call_card_loan
+        label: "Deny, hang up and call your card's number"
+        kind: call_back_known
+        outcome: card_no_loan
+      - id: deny_loan_prompt
+        label: "Deny"
+        kind: deny_prompt
+        outcome: loan_prompt_denied
+
+interrupts:
+  - id: birgitta_fika_in_ten
+    at_seconds: 10
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Birgitta (fika host)", detail: "Saved contact: Birgitta (fika host)" }
+      from_cast: birgitta
+      body: "*knock knock* Fika in ten! ☕"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Birgitta's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what she asks for: nothing, it's coffee."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_birgitta_fika
+        label: "Reply: coming soon!"
+        kind: proceed
+        outcome: birgitta_fika_thanks
+        pressure_target: true
+      - id: report_birgitta_fika
+        label: "Report the message"
+        kind: report
+        outcome: birgitta_fika_reported
+
+outcomes:
+  loan_logged_in:
+    narrative: "Gatewren: \"Logged in.\" The caller thanks you warmly and hangs up. Ten minutes later a new payee appears in your Larchwick app."
+    recovery:
+      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: keep_call_evidence, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: approve_again_to_cancel, category: harmful }
+      - { step: call_back_caller_number, category: harmful }
+  card_no_loan:
+    narrative: "Larchwick, on the number on your card: \"No loan, and we'd never ask you to log in on a call.\""
+  loan_prompt_denied:
+    narrative: "You deny it and hang up. Nobody gets in."
+  loan_call_reported:
+    narrative: "Reported. Keep a note of the time and what was said: your bank and the police can use them."
+  loan_call_left:
+    narrative: "You hang up and leave it there. Nobody gets in."
+  birgitta_fika_thanks:
+    narrative: "Birgitta: \"Cardamom buns. Lina made the icing. Come hungry.\""
+  birgitta_fika_reported:
+    narrative: "You reported it. Careful is good; this one really was Birgitta, at your door."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A caller wanting a Gatewren login you didn't start."
+    what_works: "Deny it. Hang up, call your card's number."
+  layer2:
+    message_flags: []
+    notes: "Read the prompt, not the caller: it was a login you didn't start. It's fine to hang up. Rudeness is free. Where to report and get help (Sweden) is on the help screen."
+  device_tip: "On a real phone, end the call yourself, then dial the number on your card or in your bank's app. Approve a login only when you opened the app or site yourself."
+  habit_card: only-approve-what-you-started
+  already_clicked:
+    shared_code: "Approved it? Call your bank now on the number on your card. Banks answer day and night."
+  sources: [se-polisen-telefonbedrageri, se-polisen-vishing-2026, se-polisen-campaign-2026, se-konsumentverket-investment-fraud]

@@ -125,6 +125,12 @@ describe('CR-30: ask on every request type, required from slot 4', () => {
     msg(r).request = 'scan_qr';
     expect(schemaErrors(r).join('\n')).toMatch(/ask is only for messages whose request is/);
   });
+  it('exempts scan_qr and install from the slot-4 ask rule: they cannot carry an ask (GDD §29.4, CR-39(b))', () => {
+    for (const request of ['scan_qr', 'install']) {
+      const f = rawFraud('f4', { message: { ...(rawFraud().message as Raw), request } });
+      expect(chapterWith(9, [f]), request).not.toMatch(/CR-30/);
+    }
+  });
 });
 
 // ---------------------------------------------------------------------------

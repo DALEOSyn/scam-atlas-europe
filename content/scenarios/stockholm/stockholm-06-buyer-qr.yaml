@@ -1,0 +1,184 @@
+# 9-6 A "buyer" sends a Gatewren login code to "confirm the seller" (GDD §29.4; e-id-approval-on-call B,
+# Medium: EU-level sources only, no debrief says it is Swedish). Fraud, difficulty 4, calm (no timer).
+# Levers helpfulness, greed (small). Kettle chat from a new number (CR-19) about your Swaploft listing,
+# with the code in the chat bubble (CR-39(b)): the QR destination gatewren.example, payload /qr/<id> only.
+# Opener per the producer's Stockholm Q2 ruling: a would-be buyer who hasn't paid asks whether the lamp is
+# still for sale and wants a seller "check" by QR (unlike Warsaw 5-3's "I've paid, collect it here" link).
+# Scheduled beat (R 2): sender.detail, claim#2. Decoys: reference, the QR destination (SK3: it opens Gatewren
+# itself), claim (a promise to pay). No `ask`: scan_qr carries none (CR-30 exempts it), so no request
+# checkable on this beat (GDD §29.7 row 6c).
+# "Scan it with Gatewren" is engage (scan_qr_and_open) → buyer_prompt: a QR login to your bank. Service and
+# device are R there (SK2: "log in to your bank", not "confirm the seller"), where and when D.
+# Interrupt at 15 s: Jamal (genuine). Fall: keep_evidence, harmful wait_and_see (no number was called).
+id: stockholm-06-buyer-qr
+chapter: stockholm
+role: standard
+pattern: e-id-approval-on-call
+theme: marketplace
+learning_objectives: [LO-09, LO-02]
+difficulty: 4
+is_fraud: true
+device: messenger
+setup: "You listed your old bike lamp on Swaploft last week. A Kettle message arrives from a number you don't know."
+brands: [kettle, swaploft, gatewren, larchwick]
+cast: [jamal]
+pressure: { timer: false, levers: [helpfulness, greed] }
+
+message:
+  sender: { display: "+46 7•• ••• •19", detail: "+46 7•• ••• •19", new_contact: true }
+  body: "Hej! Is your bike lamp still for sale? 🙂 It's for my son's bike. Before I pay, please confirm you're the seller: scan this with Gatewren. Then I'll send the money straight away."
+  qr: { payload: /qr/stockholm-buyer-login, destination: gatewren.example }
+  request: scan_qr
+  references: ["your bike lamp"]
+  claims:
+    - { text: "Then I'll send the money straight away." }
+    - { text: "please confirm you're the seller: scan this with Gatewren." }
+
+inspectables:
+  - target: sender.detail
+    reveal: "Not in your contacts, writing about your listing outside Swaploft."
+    red_flag: true
+    type: sender
+  - target: reference
+    reveal: "Names your real listing. It's public, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: qr.destination
+    reveal: "gatewren.example: it opens Gatewren itself. That's why it's dangerous: a login code made for someone else's login. The address can't help you here."
+    red_flag: false
+    type: qr
+  - target: claim
+    reveal: "A promise to pay. If money comes, it shows in your Swaploft sales, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: claim#2
+    reveal: "Nobody needs your e-ID to buy from you. A login code sent to you starts someone else's login."
+    red_flag: true
+    type: claim
+
+actions:
+  - id: scan_buyer_code
+    label: "Scan it with Gatewren"
+    kind: scan_qr_and_open
+    next_beat: buyer_prompt
+    pressure_target: true
+  - id: open_swaploft_listing
+    label: "Open your Swaploft listing yourself"
+    kind: check_with_platform
+    outcome: lamp_still_listed
+  - id: block_buyer_number
+    label: "Block and report the number"
+    kind: block
+    outcome: buyer_blocked
+  - id: ignore_buyer
+    label: "Ignore it"
+    kind: ignore
+    outcome: buyer_ignored
+
+beats:
+  - id: buyer_prompt
+    device: auth
+    message:
+      prompt: { type: qr_login, service: "Larchwick internet bank", where: "Uppsala, Sweden", device: "Windows computer", when: "Just now" }
+      body: "Log in to Larchwick internet bank?"
+      request: approve
+      ask: { text: "Log in to Larchwick internet bank?" }
+    inspectables:
+      - target: prompt.service
+        reveal: "Log in to your bank, not 'confirm the seller'."
+        red_flag: true
+        type: prompt
+      - target: prompt.where
+        reveal: "Uppsala. A place can be anywhere, even near you, so it can't prove anything either way."
+        red_flag: false
+        type: prompt
+      - target: prompt.device
+        reveal: "A Windows computer: not your phone."
+        red_flag: true
+        type: prompt
+      - target: prompt.when
+        reveal: "'Just now'. Every request says that, so it can't prove anything either way."
+        red_flag: false
+        type: prompt
+      - target: request
+        reveal: "A login to your bank that you didn't start: the code came from the 'buyer'. Approving lets someone else in."
+        red_flag: true
+        type: request
+    actions:
+      - id: approve_buyer_prompt
+        label: "Approve"
+        kind: approve_prompt
+        outcome: buyer_logged_in
+        pressure_target: true
+      - id: deny_open_swaploft
+        label: "Deny and open Swaploft yourself"
+        kind: check_with_platform
+        outcome: lamp_still_listed
+      - id: deny_buyer_prompt
+        label: "Deny"
+        kind: deny_prompt
+        outcome: buyer_prompt_denied
+
+interrupts:
+  - id: jamal_thanks_maths
+    at_seconds: 15
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Jamal (downstairs)", detail: "Saved contact: Jamal (downstairs)" }
+      from_cast: jamal
+      body: "Lina says thank you for the maths help. I say thank you for the patience."
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Jamal's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what he asks for: nothing, it's a thank-you."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_jamal_maths
+        label: "Reply: any time!"
+        kind: proceed
+        outcome: jamal_maths_thanks
+        pressure_target: true
+      - id: report_jamal_maths
+        label: "Report the message"
+        kind: report
+        outcome: jamal_maths_reported
+
+outcomes:
+  buyer_logged_in:
+    narrative: "Gatewren: \"Logged in.\" The buyer stops replying. That evening Larchwick texts: a new device was added to your internet bank."
+    recovery:
+      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: keep_evidence, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: approve_again_to_cancel, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  lamp_still_listed:
+    narrative: "Your lamp is still listed. No message from a buyer in Swaploft, and Swaploft never asks sellers to scan anything."
+  buyer_prompt_denied:
+    narrative: "You deny it. Nobody gets in. The 'buyer' goes quiet."
+  buyer_blocked:
+    narrative: "You block and report the number. The lamp waits for a real buyer."
+  buyer_ignored:
+    narrative: "You leave it. The chat goes quiet, and the lamp waits for a real buyer."
+  jamal_maths_thanks:
+    narrative: "Jamal: \"She says fractions are 'basically pizza' now. I don't ask.\""
+  jamal_maths_reported:
+    narrative: "You reported it. Careful is good; this one really was Jamal, saying thank you."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A login code sent to you, to 'confirm' you're the seller."
+    what_works: "Scan login codes only on screens you opened."
+  layer2:
+    message_flags: []
+    notes: "A QR code can open the real app and still be a trap: this one started someone else's login. Where to report and get help (Sweden) is on the help screen."
+  device_tip: "On a real phone, keep buyers' messages inside the marketplace app, and scan a login code only on a site or app you opened yourself."
+  habit_card: only-approve-what-you-started
+  already_clicked:
+    shared_code: "Approved it? Call your bank now on the number on your card. Banks answer day and night."
+  sources: [eu-epc-threats-2025, eu-esas-ai-scams-factsheet-sv]

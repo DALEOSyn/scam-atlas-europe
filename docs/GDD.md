@@ -431,7 +431,7 @@ The decoy reveal rule (docs/CONTENT_GUIDE.md) is applied to every Home decoy and
 Scenes are 1–3 illustrated panels with ≤ 25 words each, and skippable. They never hint at a later scenario's verdict. Track S (PLAN.md) owns art and layout.
 1. **Arrival (calm).** A canal bridge full of bikes. **Sanne** (19, student, works the desk at your guesthouse) hands over your key and laughs that in Amsterdam "you pay your friends back before the coffee's cold". Panel 2: Sanne says her rent went up, so she is job hunting too; you both applied to the Thimble & Pine warehouse. *Calm.*
 2. **The local problem (worried → relieved).** Shown at the half-day stop point, after 2-3 and 2-4. **Sanne tells it in her own words. The panels show no message bubble, phone screen, number or IBAN.** Her mum got a message "from Sanne" on a new number, with Sanne's own photo, asking for money for a broken phone. Sanne worries it was her fault for having a public profile photo. You (≤ 25 words): "Scammers copy photos from anywhere. Locking your profile helps, but this is on them, not you." The last panel shows Sanne relieved. Cast: Sanne. *Worried, ending relieved.*
-3. **Mid-chapter turn (worried → determined).** The start of the afternoon. Sanne: "Mum didn't pay. She rang my real number first and I picked up." She'll do the same with her little brother: "Money by message he didn't expect, or to someone else's account? Then a call from me, on the number he already has." This sets up the afternoon's money requests without saying which are real. Cast: Sanne, Noor (on a video call, waving). *Worried, then determined.*
+3. **Mid-chapter turn (worried → determined).** The start of the afternoon. Sanne: "Mum didn't pay. She rang my real number first and I picked up." She'll do the same with her little brother: "Money by message he didn't expect, or to someone else's account? Then he calls me, on the number he already has." This sets up the afternoon's money requests without saying which are real. Cast: Sanne, Noor (on a video call, waving). *Worried, then determined.*
 4. **Resolution (relieved).** After the boss. Mateus (real, his saved contact "Mateus (work phone)") sends a "made it" photo from the next city. Sanne and you both got Thimble & Pine interviews. She reads out "paid monthly into your account" and adds: "And if a 'job' wants money first, I walk." Teo calls on his new mobile: "New mobile, me again. Saved it yet?" The closing panel stacks the habit cards "Call the number you already know" (the LO-07 title) and "Easy money costs you". Cast: Sanne, Mateus, Teo. *Relieved.*
 
 Notes: Sanne is a local like Jonas (`content/cast.yaml`, known channel "Guesthouse desk"). She never sends a scored message, and no scam impersonates her in a scored scenario. Her mum's near-miss happens off screen and is resolved by the habit (FI §4, §8 tone: capable parent; the lever is love and urgency).
@@ -534,15 +534,15 @@ Shared rules for this chapter: action order follows the validator (`action_order
 - **Good picks** (FI §4 prevention):
   - Turn on Kettle's two-step PIN.
   - Share fewer photos and family details publicly. Noor's reply frames it as lowering risk, not blame: "ok, fewer for them to copy. still their fault though, right?" You: "Right."
-  - Agree as a family that money requests mean a call from them, on the number you already have, plus a question only you'd know.
+  - Agree as a family that money requests mean you call them, on the number you already have, plus a question only you'd know.
 - **Weak pick:** "Just ignore it". Noor: "and let them try Grandad next? nope."
-- **Pick "I paid it, actually 😬"** (the player speaks for themselves). Noor: "not your fault, it's built to fool people who care. call the bank now, and tell your mum/dad or someone you trust." This opens the generic "Already paid?" steps; nothing is scored.
+- **Pick "I paid it, actually 😬"** (the player speaks for themselves). Noor: "not your fault, it's built to fool people who care. call the bank now, and tell a parent or someone you trust." This opens the generic "Already paid?" steps; nothing is scored.
 - Noor closes with "also I'm looking for a summer job, if you hear of anything 👀". This seeds the finale (§18 Brussels) without a lesson here.
 - The family code word stays in Rome (§18).
 
 **2-5 Thimble & Pine interview** (`amsterdam-05-warehouse-interview`; genuine, low; email; diff 3; honest timer 55, `honest_deadline` "Reply by 17:00 today to get a Thursday slot"; Thimble & Pine; you started it: you applied)
 - **Message:** a Dutch email from jobs@thimbleandpine.example. Thanks for your application for weekend warehouse assistant; "can you do a 15-minute video call on Thursday, 10:00 or 14:00?" Then: "€15.50 an hour, paid monthly into your account. Please bring your ID on your first day, before you start." The application link is on thimbleandpine.example. `request: reply`, with `ask` = the video-call sentence.
-- **Pay rate:** €15.50, above the adult minimum wage (€14.99 an hour since July 2026). If the fact-check prefers, the rate is dropped rather than changed.
+- **Pay rate:** €15.50, above the Dutch adult minimum wage (checked by fraud-researcher on business.gov.nl, 2026-11-19; never shown on screen). If the fact-check prefers, the rate is dropped rather than changed.
 - **Checkables (G):**
   - `sender.detail` and `link`: "It fits: Thimble & Pine's own domain, and the job you applied for…"
   - `reference`: the application number, neutral.
@@ -575,7 +575,7 @@ Shared rules for this chapter: action order follows the validator (`action_order
   - "Ignore the request" (`ignore`).
 - **Actions (banking beat):**
   - "Pay €18" (`proceed`) ★★★.
-  - "Not now" (`ignore`): dismiss on genuine high stakes, 0 stars ("you missed something real").
+  - "Decline the request" (`ignore`): dismiss on genuine high stakes, 0 stars. Verdict: "You declined money you'd agreed to pay, and it really was Mateus."
 - **Scoring unchanged:** proceed and verify both earn ★★★.
 - **Debrief, which leads with the habit:**
   - Tell: "Money you agreed, to his own name: fine to pay."
@@ -661,7 +661,7 @@ Shared rules for this chapter: action order follows the validator (`action_order
   - Checkables: **R** `sender.detail` (a new number, not his saved contact "Mateus (work phone)"). **R** `request`. **D** `link` (Larchwick's real domain, neutral, ruling 2). **D** `image`.
   - **Actions:**
     - "Open the request in the Larchwick app" (`start_transfer`, class `step`, target → `hotel_request`).
-    - "Call Mateus on his saved work phone" (`call_back_known`). Outcome: "No answer: his phone is off, he's still in the air. Can't reach him? Then don't pay. You message Adaeze through the staff directory: 'He lands at nine. Whoever that is, it isn't him.'"
+    - "Call Mateus on his saved work phone" (`call_back_known`). Outcome: "No answer: his phone is off, he's still in the air. Can't reach him? Then don't pay. You message Adaeze through the staff directory. Adaeze replies: 'He lands at nine. Whoever that is, it isn't him.'"
     - "Report the chat" (`report`).
     - "Ignore it" (`ignore`).
   - **`hotel_request` (banking, request page, not scheduled):** "Request from **R. ••••** · €260 · 'Hotel'". The person's name is masked. It is never "Mateus" and never a hotel.
@@ -739,7 +739,7 @@ Row 6d: the wrong claims are 2-3 and 2-8 claim#2 ("pay you back") and the boss b
 **Banking paths (re-run for `step`):**
 - 2-3: start → no-match → "Cancel and call" scores ★★★ + tags. "Cancel" scores ★★. "Send anyway" is a fall.
 - 2-8: start → match → the same three outcomes.
-- 2-6: start → "Pay €18" scores ★★★. "Not now" is dismiss on genuine high stakes, 0.
+- 2-6: start → "Pay €18" scores ★★★. "Decline the request" is dismiss on genuine high stakes, 0.
 - Boss beat 2: start → request page → "Close it and call" scores ★★★. "Close it" scores ★★. "Pay €260" is a fall (0, damage control once).
 - None of these changes rows 1–2 or 4–10. Rows 3a and 3b are new.
 

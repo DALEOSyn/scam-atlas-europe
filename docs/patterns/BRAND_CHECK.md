@@ -143,7 +143,7 @@ Same method and limits as above (web, app-store and company-directory check via 
   - **Vlietwerk** ("Vliet" canal + "work"). Queries: `"Vlietwerk"`; `"Vlietwerk" OR "Vliet Werk" uitzendbureau OR staffing OR recruitment OR B.V.`. No exact hits, only the Vliet canal and place names. However, **Veldwerk Uitzendbureau** (a real Dutch staffing agency, Creditsafe NL05125245) has the same "V…-werk" shape in the same sector. **Low–Medium.** Sender ID `VLIETWERK` (9).
   - **Polderstaf** ("polder" + "staff"). Queries: `"Polderstaf"`; `"Polderstaf" OR "Polder Staf" uitzendbureau OR werving`. No exact hits. The nearest is **Poldervast B.V.** (Opmeer, company register listing; sector not shown). **Low–Medium.** Sender ID `POLDERSTAF` (10).
   - *Not proposed:* Kadewerk. The query `"Kadewerk" uitzendbureau OR werk OR bedrijf` found no exact hit, but "kade" is a common street and quay word, and the search showed only generic agencies. It was not researched further.
-- **Recommendation:** **Klaverwerk**, presented as "Klaverwerk Staffing" if the English context needs it. Host `klaverwerk-staffing.example`, or `klaverwerk-staffing.example` to match the GDD's pattern. Sender ID `KLAVERWERK`.
+- **Recommendation:** **Klaverwerk**, presented as "Klaverwerk Staffing" if the English context needs it. Host `klaverwerk-staffing.example` (the GDD pattern). Sender ID `KLAVERWERK`.
 
 ### 9b. Tasklyn: High, reject
 - **Searched:** `"Tasklyn"`; `"Tasklyn" app OR platform OR software`.

@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
-import { readAll } from './scene-helpers.ts';
+import { playScene, readAll } from './scene-helpers.ts';
 
 /**
  * S4 story scenes in the real build (T-S4b): the Amsterdam arrival before 2-1, and the sensitive local
@@ -72,3 +72,23 @@ test("Sanne's story (sensitive): replay opens on the content note, ends relieved
   await scene.getByRole('button', { name: 'Continue' }).click();
   await expect(page.getByRole('button', { name: "Watch: Sanne's story" })).toBeFocused();
 });
+
+for (const { city, id, first } of [
+  { city: 'Madrid', id: 'madrid-arrival', first: "Madrid. Your host's spare room" },
+  { city: 'Warsaw', id: 'warsaw-arrival', first: 'Everything must go, except the cello.' },
+]) {
+  test(`${city} arrival (T-S4e) plays before the chapter intro and its pinned card; art loads, axe clean`, async ({ page }) => {
+    await seed(page, { version: 1, settings, chapters: { home: { ...done, position: 0 }, berlin: { ...done, position: 1 } } });
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Chapters' }).click();
+    await page.getByRole('button', { name: `Play ${city}` }).click();
+    const scene = page.locator(`main[data-scene-id="${id}"]`);
+    await expect(scene.getByRole('heading', { level: 1 })).toContainText(`${city} · Arrival`);
+    await expect(page.getByText('Before this story scene')).toHaveCount(0);
+    await expect(scene.getByText(first, { exact: false })).toBeVisible();
+    await playScene(page, id, { axe: true });
+    const intro = page.locator('[data-chapter-intro]');
+    await expect(intro.getByRole('heading', { level: 1, name: city })).toBeFocused();
+    await expect(intro.locator('[data-chapter-rules]')).toBeVisible();
+  });
+}

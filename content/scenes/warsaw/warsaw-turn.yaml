@@ -1,0 +1,27 @@
+# Warsaw turn (GDD §25.2 beat 2, STORY §3.5; calm → focused): stop point, after 5-3. Kasia's rule is a
+# general habit (never wrong on the genuine 5-4); her rehearsal line sets up why she can't be asked in
+# person later but a call reaches her, which is true for her real message in 5-4 too (no verdict).
+id: warsaw-turn
+chapter: warsaw
+slot: turn
+panels:
+  - backdrop: warsaw-flat
+    crop: left
+    speaker: kasia
+    expression: focused
+    flip: true
+    line: "I sell a lot. My rule is simple: the deal and the money stay inside Swaploft."
+    alt: "Kasia, concentrating, by the fridge with its pinned card."
+  - backdrop: warsaw-flat
+    crop: left
+    speaker: mateus
+    expression: thinking
+    flip: true
+    line: "Good rule. I might borrow it."
+    alt: "Mateus, thinking, by the boxes and the lamp."
+  - backdrop: warsaw-flat
+    crop: left
+    speaker: kasia
+    expression: warm
+    line: "Rehearsal at four, concert tonight. Phone on silent, but I'll pick up between pieces."
+    alt: "Kasia smiling, her cello case on her shoulder."

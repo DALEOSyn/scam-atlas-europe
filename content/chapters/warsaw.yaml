@@ -10,10 +10,8 @@
 # Help card: layer 2 of every Warsaw debrief points to "Where to report and get help (Poland)"; its wording
 # is in the chapter 5 sources file in docs/patterns ("Poland help card"). Real bodies appear only there and on
 # the help screen (Red Line 1). The schema has no per-chapter help-card field yet, so this is the pointer.
-# Story scenes (GDD §25.2) come in a later ticket. When they exist, add:
-#   scenes: { arrival: warsaw-arrival, turn: warsaw-turn, resolution: warsaw-resolution,
-#             placed: [{ scene: warsaw-kasia-back, after: warsaw-07-mateus-asks }] }
-# (content:validate rejects scene ids that have no file yet, so the block is left out for now.)
+# Story scenes (GDD §25.2, STORY §3.5; T-S4e): warsaw-arrival, warsaw-turn (stop point), warsaw-kasia-back
+# (placed after drill 5-7), warsaw-resolution (variant flag warsaw_bank_called, ruling R17).
 slot: 5
 city: warsaw
 name: "Warsaw"
@@ -33,3 +31,9 @@ rules:
     - "The deal and the money stay inside Swaploft."
     - "Paid? It shows in the Swaploft app. Check there, not in a message."
 atlas_cards: [codes-are-only-for-you, stay-on-the-platform, call-the-number-you-know, stop-the-damage-first]
+scenes:
+  arrival: warsaw-arrival
+  turn: warsaw-turn
+  resolution: warsaw-resolution
+  placed:
+    - { scene: warsaw-kasia-back, after: warsaw-07-mateus-asks }

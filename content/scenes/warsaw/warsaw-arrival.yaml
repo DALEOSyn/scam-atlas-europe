@@ -1,0 +1,31 @@
+# Warsaw arrival (GDD §25.2 beat 1, STORY §3.5; calm): before the chapter intro with Kasia's selling rules
+# (CR-27), then 5-1. A flat half packed for a move; Kasia keeps the cello; Mateus photographs a lamp (the
+# alt only says what is drawn: no camera pose exists); Kasia pins her rules to the fridge (the card is
+# drawn as abstract ruled bars and matches the intro's rules card; named in the alt where it appears).
+# The fridge sits at the left of the backdrop (x 60–180): fridge panels use crop left with Kasia flipped
+# to the right, so she never covers the card.
+id: warsaw-arrival
+chapter: warsaw
+slot: arrival
+panels:
+  - backdrop: warsaw-flat
+    crop: left
+    speaker: kasia
+    expression: warm
+    line: "Everything must go, except the cello."
+    alt: "Kasia smiling with her cello case among taped moving boxes."
+  - backdrop: warsaw-flat
+    crop: left
+    speaker: mateus
+    expression: laughing
+    flip: true
+    with: { id: kasia, expression: warm }
+    line: "Good photos sell. Trust me, I'm a professional."
+    alt: "Mateus laughing by the boxes and the lamp; Kasia listens, smiling."
+  - backdrop: warsaw-flat
+    crop: left
+    speaker: kasia
+    expression: focused
+    flip: true
+    caption: "Kasia pins her two selling rules to the fridge."
+    alt: "Kasia, concentrating, by the fridge with its pinned rules card."

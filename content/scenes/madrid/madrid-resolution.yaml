@@ -1,0 +1,43 @@
+# Madrid resolution (GDD §24.2 beat 3, STORY §3.4; relieved): after the boss debrief and damage control.
+# The locals' money is never in a scored scenario, so "they got the flat" is true in every branch.
+# Variant madrid_money_moved (story-only flag, set by the boss's fall outcomes): Lucía's bank-step line
+# plays FIRST (psych S1), so the player's loss is acknowledged before the hosts' good news; same merged
+# wording as Paris R6, "straight away", no refund promise. The keys panel uses crop right (the keys sit
+# at the table's left end, x 341–383; in the left crop they fall under the flipped speaker's shoulder,
+# sceptic render, T-S4e round 1), with Andrés flipped to the right third so he never covers them. Lucía's If-then panel: phone at the ear (the number on her card).
+id: madrid-resolution
+chapter: madrid
+slot: resolution
+panels:
+  - backdrop: madrid-kitchen
+    crop: right
+    speaker: lucia
+    expression: calm
+    if_flag: madrid_money_moved
+    line: "The bank was called straight away, the right first step. We'll see what it can recall."
+    alt: "Lucía, calm, in the kitchen."
+  - backdrop: madrid-kitchen
+    crop: right
+    speaker: andres
+    expression: proud
+    flip: true
+    caption: "Two days later. Keys on the table: they got the flat."
+    line: "Signed. And I checked every step in the app myself."
+    alt: "Andrés, proud, in the kitchen, with a set of keys on the table."
+  - backdrop: madrid-kitchen
+    crop: left
+    speaker: lucia
+    expression: warm
+    with: { id: andres, expression: calm }
+    line: "Sleepy or not, same rule."
+    alt: "Lucía smiling in the kitchen; Andrés listens, calm."
+  - backdrop: madrid-kitchen
+    crop: right
+    speaker: lucia
+    expression: calm-phone-ear
+    flip: true
+    if_then:
+      cue: "If someone says my money isn't safe,"
+      action: "then I hang up and call the number on my card."
+      extra: "No real bank asks you to move your money to keep it safe."
+    alt: "Lucía, calm, phone to her ear, in the kitchen."

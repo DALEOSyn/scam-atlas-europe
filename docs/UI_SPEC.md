@@ -134,6 +134,8 @@ Common rules:
 ### 3.1 Mail (`email`)
 - **Inbox row** (72 px): avatar (§2.5), display name (bold + visually hidden "Unread" when unread), subject, first line (muted), time.
 - **Thread**: subject `h2` (`--fs-xl`), sender line "**{display name}**" + "to me" + time. Display name → Check reveals the full address with owner part boxed. Attachments: chips (icon + filename + size), checkable. Bottom bar icons are decorative (`aria-hidden`) unless an authored action maps to them.
+- **Quoted earlier emails** (`message.earlier`, CR-25; max 3): below today's message under a separator "Earlier", each a muted quote (`--color-text-muted`, 3 px left border `--color-border`) with a bold `--fs-sm` meta line "{from} · {when}" (from optional). Never checkable; links show as plain text. Foreign text keeps its Translate toggle.
+- Bank-details card on email: as §3.3.
 - SR: "From {display name}." The Details list follows (§4.6).
 
 ### 3.2 SMS (`sms`)
@@ -145,7 +147,8 @@ Common rules:
 
 ### 3.3 Messenger (`messenger`, Kettle)
 - Kettle header (`--brand-kettle-primary` bar, white title), illustrated avatars, outgoing bubbles `--brand-kettle-bubble-out`.
-- **New-contact banner** (top, `--color-surface-sunken` with info icon, not warn colours, so it is neutral): "Not in your contacts · {masked number}". Checkable. It appears for *every* unknown number, genuine or not.
+- **New-contact banner** (`sender.new_contact`, CR-19; top, `--color-surface-sunken` with info icon, never warn colours, so it is neutral): "Not in your contacts · {detail}" (masked number). The number stays checkable through the sender. It appears for *every* unknown number, genuine or not. `message.image` on messenger is the profile photo checkable.
+- **Bank-details card** (`payee` on `email` or `messenger` only, CR-22; never on letters or other devices): a stylised card titled "Bank details" (1 px `--color-border`, `--radius-md`) with rows "Account name", "IBAN" (mono, grouped in 4s) and optional amount. Our own layout, never a real bank's details-slip format. Only the IBAN is checkable; **no name check, holder or request fields** outside `banking`.
 - Group chats: sender name above incoming bubbles. Typing indicator: static dots + text "typing…".
 - **Wordswap (Alex arc)** uses the same component with the Wordswap header. **Friendship only**: no hearts, "match", "date", swiping or ratings; reactions limited to thumbs-up, laugh and "useful phrase" bookmark. Alex's avatar is an illustration.
 - **Quoted screenshots** (e.g. Teo's screenshot of a fake text, Berlin 1-4): rendered as a framed card inside the bubble, `--color-surface-sunken`, 1 px border, caption "Screenshot from Teo", real text inside (not an image). Its elements are checkables with `context: quoted`; the card carries visually hidden text "Quoted example" before its content so SR users know they are inside a quote.
@@ -154,6 +157,8 @@ Common rules:
 - **Incoming**: caller line (contact name, or masked number + "Unknown"), sub-line ("Mobile" / "Withheld"). Caller ID is checkable ("Caller ID can be faked. This shows what the network was told, not who is calling."). Two 64 px circular buttons **with text labels**: "Answer" and "Decline".
 - **In call**: caller + elapsed time on top; **transcript** in the middle (always visible, speaker-labelled rows "Caller:", "You:"); bottom (fixed): **Hang up** (labelled), **Call a known number** (opens the dialler sheet with known channels: "Number on the back of your Larchwick card", "Adaeze — staff directory"), and the beat's actions in the tray.
 - **Pacing** [U9]: lines are revealed at reading pace (max(1.5 s, 0.3 s × words)). The **beat timer starts only after the last line of the beat is shown.** Setting "Call lines: Auto / Step through" (default Auto; Step through in the Calm preset): in Step through, a "Next line" button (Space when focused) reveals each line. Opening Pause or Settings halts auto reveal (2.2.2).
+- **Recorded message** (`message.recorded`, CR-20): once answered, the header shows the text label "Recorded message"; "You:" lines are not shown and the reading-pace reveal counts only the shown lines.
+- **Video call** (`message.video`, CR-24): the ringing screen keeps the avatar plus the label "Video call". Once answered, the heading is "Video call from {caller}" and the avatar is replaced by a **still, stylised SVG illustration** (`public/art/video/<id>.svg`, ART_DIRECTION §12) in a `<figure>`, with the transcript below as usual. It is a checkable ("Face and voice", target `video`); the visible caption is `aria-hidden` so the description is read once via the button name "Video: {alt}". **No `<audio>` or `<video>` element, no synthesised voice, no motion or glitch effects.** The `hang_up` action is labelled "End the call" (GDD §23.11 CR-24) and opens "What now?" as usual.
 - **Audio** (optional, off by default): "Play audio" toggle; while on, the line being spoken is bold with a left bar; never auto-plays.
 - SR: transcript is `role="log"` (polite) — top priority in the announcement queue (§10.5).
 
@@ -177,12 +182,21 @@ Common rules:
 - **Transactions**: grouped by date; amounts prefixed "−"/"+" **and** labelled "Paid"/"Received"; "Pending" as text.
 - **Card controls**: "Freeze card" switch with "On/Off" text; "Report card lost or stolen".
 - **Transfer form** (training page, §5): payee name, IBAN (checksum-invalid, grouped in 4s, mono), amount, reference.
-- **Payee-name banners** (fictional, GDD §5), shown after the IBAN, each icon + text, `role="status"`:
-  - "Name matches" — check-seal, `--color-ok-bg`/`--color-ok-text`.
-  - "Name doesn't match. The account holder is 'J. Doe Trading'." — info-triangle, `--color-warn-bg`/`--color-warn-text`. Buttons: "Change details" / "Continue anyway".
-  - "Close match: 'Thimble and Pine Ltd'." — info icon, warn colours.
-  - "Couldn't check the name." — info icon, neutral surface.
-  Banners are content-driven and appear on genuine and fraud transfers alike. The holder name is checkable.
+- **Payee-name check** (invented Larchwick screen, GDD §23.5, CR-23). Runs on transfer forms with `payee.name_check`, genuine and fraud alike, after payee name + IBAN + amount (read-only demo values, nothing sent). One result card (`<section aria-labelledby>`, visually hidden heading "Name check"; 1 px `--color-border`, `--radius-md`, `--space-3` padding):
+  - **Checking state:** one `role="status"` paragraph (`#name-check-result-<beat>`, `tabindex=-1`) is mounted from the start and only its text changes: "Checking the name with the payee's bank…" (italic, `--color-surface-sunken`) → the result after 0.8 s (at once in reduced motion, no spinner), so the result is announced.
+  - **Four results** (icon + text; colour is never the only signal):
+
+    | Result | Text | Icon | Surface | Holder name |
+    |---|---|---|---|---|
+    | Matches | "Name matches. The account is held by '{typed name}'." | tick | neutral: `--color-surface-sunken` / `--color-text`. **No seal, shield or badge, no green** | the typed name only |
+    | Close match | "Close match. The account is held by '{holder}'. Is that who you mean to pay?" | info | information styling: `--color-surface-sunken` / `--color-text` + 4 px inset left bar `--color-accent`. Never warning colours | **shown** (the only result that shows a holder) |
+    | Doesn't match | "The name doesn't match this account. The money may go to someone else. If you pay anyway, Larchwick may not be responsible." | warning triangle | `--color-warn-bg` / `--color-warn-text`: **the only result in warning colours** | **never shown** |
+    | Couldn't check | "We couldn't check the name for this account." | info | neutral `--color-surface-sunken` | none |
+  - **Footer on all four cards**, identical, in normal text colour and size (it is the lesson, never small print): "Larchwick checks the name against the account. It can't tell you whether the request is genuine."
+  - After the check: result → footer → coach mark on first use (§4.5) → the beat's actions as full-width buttons **inside the card**, in authored `action_order`. "Pay anyway" stays available after every result (the check never blocks). The tray shows "Your options are in the bank app, under the name check." with "Go to the options"; that button and the "Skip/Jump to your options" links focus the result paragraph.
+  - Checkables: the payee name (`payee.name_check`, its reveal is authored) and the IBAN. Validator: `holder` exactly when `close_match`; a `match` reveal never starts with "It fits".
+- **Payment-request page** (`payee.payment_request`, CR-18c): header sub-label "Payment request"; "Request from {name}" (checkable `payee.name`), amount, optional "Note". **No name check runs and there are no card or form fields** (no TrainingForm).
+- **Business account** (`message.account`, CR-26): bank header sub-label "Business account" and a "From account" row with the nickname (e.g. "Ruchelune · current account") above the payee, so the player sees whose money it is.
 - Consequence playback: a new debit row appears with `--color-warn-bg` for 1 s (reduced motion: static for 3 s).
 
 ### 3.8 Sign-in and e-ID prompts (`auth`, Gatewren)
@@ -207,7 +221,7 @@ When:   Just now
 ### 3.9 Letter (`letter`)
 - Paper card (`--letter-paper`, `--letter-ink`, `--font-letter`, `--shadow-2`, rotated −1°; 0° in reduced motion). Max 560 px; on `sm` full width minus 16 px; pinch-zoom allowed plus **+ / −** buttons (40–200 %).
 - Types: official letter (letterhead), delivery card (A6, dashed tear-off edge, tick-boxes, optional QR), doorstep note (italic `--font-letter`, lined paper; no script fonts).
-- Checkables: letterhead, reference, payee/IBAN, masked phone number, QR destination. Foreign text has the inline Translate toggle.
+- Checkables: letterhead, reference, masked phone number, QR destination (no payee or IBAN on letters: `payee` is rejected outside banking, email and messenger, CR-22). Foreign text has the inline Translate toggle.
 - Real text in `<article aria-label="Letter from …">`; paper texture is CSS only.
 
 ### 3.10 Social feed (`social`)
@@ -255,13 +269,14 @@ Card: avatar, name, "Sponsored" (text), illustration (fictional people only), bo
 └─────────────────────────────────────────────┘
 ```
 - **Owner-part rule (settled)** [sceptic]: the owner part is the **last two labels** of the host (`<name>.<tld>`), where the TLD is one of the reserved single-label TLDs the game uses (`example`, `test`, `invalid`). The game uses no multi-label suffixes, so no public-suffix list is needed. Examples: `trundle.example` → `trundle.example`; `desk.waymarker-network.example-sso.test` → `example-sso.test`; email `it-desk@waymarker-helpdesk.example` → `waymarker-helpdesk.example`. Validator: every host ends in one of the three TLDs and has no label equal to a TLD-like suffix list (`co`, `com`, `org`…) immediately before it.
-- Sender anatomy: "Shown as: Trundle" / "Actually from: +49 ••• ••• 0173". Payee anatomy: "You typed: Trundle GmbH" / "Account holder: J. Doe Trading".
+- Sender anatomy: "Shown as: Trundle" / "Actually from: +49 ••• ••• 0173". Payee anatomy: "You typed: Trundle GmbH" plus the authored reveal. The Check card never states an account holder; the holder name appears only in the close-match result card (§3.7).
 - Never "red flag", "scam", "safe", "fake", "legit". Reviewers check `reveal` strings for this.
 - The card contains **no translation** [U7].
 - Close: ✕, Esc, scrim tap, swipe-down (button alternative). Focus returns to the element.
 
-### 4.5 Coach marks (chapter 0 only)
-One mechanic per scenario (GDD §16). Coach bubbles are `role="note"`, skippable, never block the tray.
+### 4.5 Coach marks
+Coach bubbles are `role="note"`, skippable, never block the tray. Chapter 0 introduces one mechanic per scenario (GDD §16). Later chapters may add a coach mark for a new device moment, shown **once per game** on first use and recorded in `save.coachMarks` (snake_case id):
+- **Payee check** (`payee_check`, GDD §23.5, CR-23): appears inside the name-check card after the footer, title "Tip", text "Doesn't match? Stop and call. Close match? Compare the name it shows with your own papers. Matches? It only shows whose account it is." While open, the timer is **frozen** (freeze reason `coach_mark`) and the HUD timer reads "Paused while the tip is open". It closes on "Got it" (focus returns to the result paragraph), on any card action, or on any Check use.
 
 ### 4.6 "Details you can check" list [U10, coordinator correction]
 - Disclosure button in the tray/rail. Expanded: one row per checkable, labelled by *what* it is ("Sender", "Link in the message", "Page address", "Payee name"), in reading order.
@@ -317,7 +332,7 @@ Accessible names **start with the visible text**; explanations go in `aria-descr
 - Neutral (`--color-text` on `--color-surface-sunken`) until 10 s; then `--color-warn-bg`/`--color-warn-text` **and** a static diagonal stripe on the bar **and** the text adds " left". Never red, never blinking.
 - Cost chip "−2 s" overlaps the pill corner for 1 s (reduced motion: 2 s, no movement).
 - Expiry 1: in-device escalation, "+20 s" chip. Expiry 2: tray locks, scored as dismiss.
-- **Freezes** [U9] while any of these is open: pause menu, Settings, Help, debrief, "Take a breath", any expanded translation (balance `freeze_while_open`). A frozen timer shows a pause glyph and the visually hidden text "paused".
+- **Freezes** [U9] while any of these is open: pause menu, Settings, Help, debrief, "Take a breath", any expanded translation (balance `freeze_while_open`), an open coach mark (freeze reason `coach_mark`; the pill text reads "Paused while the tip is open", §4.5). A frozen timer shows a pause glyph and the visually hidden text "paused".
 - **Modes**: Standard, Extended (×2), Off. Chosen in onboarding **before the first timed scenario** (0-3); **Extended is pre-selected when the device asks for reduced motion**; changeable any time in Settings. No score depends on the mode.
 - **Calm preset** = timers Off + Pushy follow-ups Off + Call lines: Step through. With timers Off the pill becomes a "Timers off" chip (breath icon + text).
 - SR: `role="timer"` with `aria-live="off"`; announcements only at **half time** and at **10 s** (§10.5); a **"Time left"** item in the menu (and `T` shortcut if enabled) announces the remaining time on demand.

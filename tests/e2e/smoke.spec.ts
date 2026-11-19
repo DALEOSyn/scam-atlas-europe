@@ -63,6 +63,18 @@ async function ownersOneLine(page: Page) {
   expect(split).toEqual([]);
 }
 
+/** The timing screen (GDD §8, QA m7): pick Standard and press Continue. */
+async function chooseStandard(page: Page) {
+  await page.getByRole('radio', { name: /^Standard timer/ }).check();
+  await page.getByRole('button', { name: 'Continue' }).click();
+}
+
+/** The half-day stop screen after the morning (QA M8). */
+async function keepGoing(page: Page) {
+  await expect(page.getByRole('heading', { level: 1, name: 'Good place to take a break' })).toBeFocused();
+  await page.getByRole('button', { name: 'Keep going' }).click();
+}
+
 /** Answer a call and wait for the actions (lines arrive at reading pace). */
 async function answerCall(page: Page) {
   await page.getByRole('button', { name: 'Answer' }).click();
@@ -116,8 +128,10 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
 
   // 0-3: timing is chosen first (GDD §8); the page opens on the browser, then the reset email.
   await expect(page.getByRole('heading', { name: 'How much time do you want?' })).toBeFocused();
+  // Reduced motion is off here, so Standard is pre-selected (QA m7).
+  await expect(page.getByRole('radio', { name: /^Standard timer/ })).toBeChecked();
   await axeClean(page);
-  await page.getByRole('button', { name: 'Standard timer' }).click();
+  await chooseStandard(page);
   await expect(page.getByRole('region', { name: 'Laptop: Browser' })).toBeVisible();
   await expect(page.getByRole('timer')).toContainText(/\d:\d\d/);
   await expect(page.getByRole('meter', { name: 'Stress' })).toBeVisible();
@@ -128,6 +142,11 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
   await passConsequence(page);
   await expect(page.getByRole('img', { name: '3 of 3 stars' })).toBeVisible();
   await continueToNext(page);
+  // Half-day stop after the morning (QA M8): progress is saved, the player chooses.
+  await expect(page.getByRole('heading', { level: 1, name: 'Good place to take a break' })).toBeFocused();
+  await expect(page.getByText('3 messages left today. Your progress is saved.')).toBeVisible();
+  await axeClean(page);
+  await keepGoing(page);
 
   // 0-4 SMS with a timer and pushers: Take a breath, then open Kettle yourself.
   await expect(page.getByRole('region', { name: 'Phone: Messages' })).toBeVisible();
@@ -179,7 +198,7 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
   await continueToNext(page);
 
   await expect(page.getByRole('heading', { level: 1, name: 'Chapter complete' })).toBeFocused();
-  await expect(page.getByText(/Passport stamp:/)).toBeVisible();
+  await expect(page.getByText(/^Passport stamp: Home, (bronze|silver|gold)$/)).toBeVisible();
   await expect(page.getByText(/Red flags you spotted: 0 of \d+ · Marks on safe details: \d+ · Genuine messages you reported: 0/)).toBeVisible();
   await expect(page.getByText(/To reach silver next time:/)).toBeVisible();
   await axeClean(page);
@@ -187,6 +206,12 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
   // Progress is saved locally only (Red Line 7).
   const saved = await page.evaluate(() => localStorage.getItem('scam-atlas-europe:save'));
   expect(JSON.parse(saved ?? '{}')).toMatchObject({ version: 1, settings: { timerMode: 'standard' }, chapters: { home: { finished: true } } });
+
+  // Back to the chapter list (QA B1): Home is finished and can be replayed.
+  await page.getByRole('button', { name: 'Back to the chapters' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Chapters' })).toBeFocused();
+  await expect(page.getByRole('button', { name: 'Replay Home' })).toBeVisible();
+  await axeClean(page);
   expect(foreign).toEqual([]);
   expect(consoleErrors).toEqual([]);
 });
@@ -325,10 +350,11 @@ async function reachBossCall(page: Page) {
   await continueToNext(page);
   await page.getByRole('button', { name: /Open Waymarker mail yourself/ }).click();
   await continueToNext(page);
-  await page.getByRole('button', { name: 'Standard timer' }).click();
+  await chooseStandard(page);
   await page.getByRole('button', { name: 'Go to your inbox' }).click();
   await page.getByRole('button', { name: /Use the link and set a new password/ }).click();
   await continueToNext(page);
+  await keepGoing(page);
   await page.getByRole('button', { name: /Open Kettle yourself/ }).click();
   await continueToNext(page);
   await page.getByRole('button', { name: /Talk Teo through/ }).click();
@@ -478,4 +504,56 @@ test('production build ships a CSP that blocks form submission and a web app man
   expect(csp).toContain("form-action 'none'");
   expect(csp).toContain("connect-src 'self'");
   await expect(page.locator('link[rel="manifest"]')).toHaveCount(1);
+});
+
+test('start screen: Chapters list, Settings page; Start continues the next unfinished chapter (QA B1, M7)', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Chapters' }).click();
+  await expect(page.getByRole('heading', { level: 1, name: 'Chapters' })).toBeFocused();
+  await expect(page.locator('[data-chapter="home"]')).toContainText('Not started');
+  await axeClean(page);
+  await page.getByRole('button', { name: 'Back to the start' }).click();
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
+  await page.getByRole('checkbox', { name: 'Always show translations' }).check();
+  await axeClean(page);
+  await page.getByRole('button', { name: 'Done' }).click();
+  const saved = await page.evaluate(() => localStorage.getItem('scam-atlas-europe:save'));
+  expect(JSON.parse(saved ?? '{}')).toMatchObject({ settings: { alwaysTranslate: true } });
+  await page.getByRole('button', { name: 'Start' }).click();
+  await expect(page.getByRole('heading', { name: 'Email from Adaeze Okafor-Lind' })).toBeFocused();
+});
+
+test('in a scenario: sticky HUD, Settings dialog from the menu, Jump to your options on a small phone (QA M5, M6, M7)', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 560 });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await expect(page.getByRole('heading', { name: 'Email from Adaeze Okafor-Lind' })).toBeFocused();
+  await page.evaluate(() => window.scrollTo(0, 0));
+
+  // The tray is below the fold: the jump bar is shown and moves focus to the options.
+  const jump = page.getByRole('button', { name: 'Jump to your options' });
+  await expect(jump).toBeVisible();
+  await axeClean(page);
+  await jump.click();
+  await expect(page.locator('#options')).toBeFocused();
+  await expect(jump).toHaveCount(0);
+
+  // Scrolled down, the HUD stays at the top of the viewport.
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  const menu = page.getByRole('button', { name: 'Menu' });
+  await expect(menu).toBeInViewport();
+  const top = await menu.evaluate((el) => el.getBoundingClientRect().top);
+  expect(top).toBeLessThan(80);
+
+  // Settings is a modal dialog; Escape returns focus to the menu control.
+  await menu.click();
+  await page.getByRole('button', { name: 'Settings' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Settings' });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText('Timer and follow-up changes apply from the next message.')).toBeVisible();
+  await axeClean(page);
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+  await expect(menu).toBeFocused();
 });

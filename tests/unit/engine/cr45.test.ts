@@ -206,14 +206,15 @@ describe('item 6: timer expiry on a genuine beat (ruling R21)', () => {
   });
 });
 
-describe('shipped content (after merging CR-36…39, Rome and Lisbon)', () => {
+describe('shipped content (after merging CR-36…44, Rome, Lisbon, Stockholm and Dublin)', () => {
   const cities = readdirSync(join(ROOT, 'content', 'scenarios'));
   const shipped = cities.flatMap((c) => readdirSync(join(ROOT, 'content', 'scenarios', c)).filter((f) => f.endsWith('.yaml')).map((f) => content(`${c}/${f}`)));
   const slotOf = new Map(readdirSync(join(ROOT, 'content', 'chapters')).map((f) => [f.replace(/\.yaml$/, ''), chapterSchema.parse(readYaml(join(ROOT, 'content', 'chapters', f))).slot]));
 
-  it('call beats: only Rome 6-7 officer_line is dialled; every other call (incl. CR-36 voice calls) rings', () => {
+  it('call beats: only Rome 6-7 officer_line and Stockholm 9-2 security_line are dialled; every other call (incl. CR-36 voice calls) rings', () => {
     const dirs = shipped.flatMap((s) => s.beats.filter((b) => b.device === 'call').map((b) => `${s.id}/${b.id}:${callDirectionOf(s, b.id)}`));
-    expect(dirs.filter((d) => d.endsWith(':outgoing'))).toEqual(['rome-07-police-text/officer_line:outgoing']);
+    // Both are reached only by "Call the number" in a text (call_number_in_message).
+    expect(dirs.filter((d) => d.endsWith(':outgoing')).sort()).toEqual(['rome-07-police-text/officer_line:outgoing', 'stockholm-02-pending-payment/security_line:outgoing']);
     expect(dirs.length).toBeGreaterThan(5);
   });
 
@@ -229,6 +230,8 @@ describe('shipped content (after merging CR-36…39, Rome and Lisbon)', () => {
   const EXPIRY: Record<string, [number, number]> = {
     'amsterdam-05-warehouse-interview': [2, 10],
     'berlin-06-payment-failed': [0, 0], // R21: was ★, 5
+    'dublin-01-tea-money': [0, 0], // R21 (merged from main)
+    'dublin-05-ellisfen-sheet': [2, 10],
     'home-03-password-reset': [1, 5], // slot 0 grace: "Close the page" scores ★, 5
     'lisbon-01-graca-studio': [0, 0], // R21: was ★, 5
     'lisbon-05-printed-meter': [2, 10],
@@ -237,6 +240,8 @@ describe('shipped content (after merging CR-36…39, Rome and Lisbon)', () => {
     'rome-01-breakfast-till-ten': [2, 10],
     'rome-02-teo-calls-you': [2, 10],
     'rome-05-laundry': [0, 0], // R21: was ★, 5
+    'stockholm-01-desk-login': [0, 0], // R21 (merged from main)
+    'stockholm-03-birgitta-shopping': [0, 0], // R21 (merged from main)
     'warsaw-01-rucksack-sold': [2, 10],
     'warsaw-04-kasia-twelve-euros': [0, 0], // R21: was ★, 5
   };

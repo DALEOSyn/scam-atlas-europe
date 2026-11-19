@@ -19,6 +19,7 @@ export interface BannerLike {
 /** Every target name the engine knows (for the red-line linter's non-domain list). */
 export const CHECKABLE_TARGETS = [
   'sender.detail',
+  'forwarded.sender',
   'caller_id',
   'link',
   'attachment',
@@ -82,7 +83,9 @@ function numbered(base: string, count: number): string[] {
  */
 export function deriveCheckables(device: Device, m: Message): string[] {
   const out: string[] = [];
-  if (m.sender) out.push(device === 'call' ? 'caller_id' : 'sender.detail');
+  // CR-40: in a forwarded message the forwarder's own bubble is never checkable; the forwarded sender is.
+  if (m.forwarded) out.push('forwarded.sender');
+  else if (m.sender) out.push(device === 'call' ? 'caller_id' : 'sender.detail');
   // CR-36: "Sounds like {name}" right under the caller ID.
   if (m.voice && device === 'call') out.push('voice');
   // CR-24: the video frame ("Face and voice") on a video call.
@@ -94,7 +97,9 @@ export function deriveCheckables(device: Device, m: Message): string[] {
     if (m.prompt.number !== undefined) out.push('prompt.number');
   }
   const transcript = m.transcript?.map((l) => l.text).join('\n');
-  out.push(...numbered('link', linksIn(m.body).length + linksIn(transcript).length));
+  // CR-40 / CR-42: links are read in the message text: the forwarded message, a page overlay, else the body.
+  const text = m.forwarded?.body ?? m.page?.overlay?.body ?? m.body;
+  out.push(...numbered('link', linksIn(text).length + linksIn(transcript).length));
   out.push(...numbered('attachment', m.attachments?.length ?? 0));
   out.push(...numbered('reference', referencesOf(m).length));
   out.push(...numbered('phone_number', m.phone_numbers?.length ?? 0));

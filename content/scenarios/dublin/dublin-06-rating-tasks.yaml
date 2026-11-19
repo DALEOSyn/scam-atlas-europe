@@ -1,0 +1,163 @@
+# 8-6 Kettle, new number: "Aisling from Tallyfern", €45 an hour to rate finance apps (GDD §28.4 8-6; task-job-scam
+# callback, Tallyfern is Amsterdam's task platform). Fraud, difficulty 4, timer 40 s; follow-up in the same chat at
+# 22 s. Interrupt (Declan, small talk) at 12 s. Levers greed, urgency, helpfulness.
+# Checkables (4; R 2): sender R (a stranger with a job you never applied for; CR-19 banner) · reference D (the
+# clinic is advertised publicly; fraud-researcher §28.11 Q6(b)) · claim R (€45 an hour for easy tasks) ·
+# request D (recruiters do ask for a reply).
+# Spec wording: the ask is "Interested? Reply YES to start" (the validator needs at least 4 words).
+# task_intro (chat, not in R): the top-up to "unlock" paid tasks. Damage control: tell_trusted_adult is a
+# stop step (personal-money fall), so keep_evidence moves to layer 2 and already_clicked.
+id: dublin-06-rating-tasks
+chapter: dublin
+role: standard
+pattern: task-job-scam
+theme: job
+learning_objectives: [LO-12, LO-18]
+difficulty: 4
+is_fraud: true
+device: messenger
+brands: [kettle, tallyfern, larchwick]
+cast: [declan]
+pressure:
+  timer: true
+  levers: [greed, urgency, helpfulness]
+  pusher:
+    messages:
+      - { at_seconds: 22, text: "Only 3 spots left today 😊" }
+
+message:
+  sender: { display: "Aisling · Tallyfern", detail: "+353 8• ••• ••31", new_contact: true }
+  body: "Hi! Aisling from Tallyfern 🙂 We pay €45 an hour to rate finance apps from home, paid daily. Saw your money clinic online, perfect fit! Interested? Reply YES to start"
+  request: reply
+  ask: { text: "Interested? Reply YES to start" }
+  references: ["Saw your money clinic online"]
+  claims: [{ text: "We pay €45 an hour to rate finance apps from home, paid daily." }]
+
+inspectables:
+  - target: sender.detail
+    reveal: "Not in your contacts: a stranger with a job you never applied for."
+    red_flag: true
+    type: sender
+  - target: reference
+    reveal: "Mentions the clinic. It's advertised publicly, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: claim
+    reveal: "€45 an hour to tap stars. Pay like that for easy tasks is the tell."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "Asks for a reply. Recruiters do ask, so it can't prove anything either way."
+    red_flag: false
+    type: request
+
+actions:
+  - id: reply_yes_tallyfern
+    label: "Reply YES"
+    kind: reply
+    next_beat: task_intro
+    pressure_target: true
+  - id: ask_coordinator
+    label: "Ask the clinic's volunteer coordinator"
+    kind: ask_someone
+    outcome: coordinator_on_tasks
+  - id: block_aisling
+    label: "Block and report the number"
+    kind: block
+    outcome: aisling_blocked
+  - id: ignore_aisling
+    label: "Ignore it"
+    kind: ignore
+    outcome: aisling_ignored
+
+beats:
+  - id: task_intro
+    device: messenger
+    message:
+      sender: { display: "Aisling · Tallyfern", detail: "+353 8• ••• ••31", new_contact: true }
+      body: "Great! Do 3 trial ratings, then top up €40 to unlock paid tasks (refunded with your earnings)."
+      request: pay
+      ask: { text: "top up €40 to unlock paid tasks" }
+    inspectables:
+      - target: request
+        reveal: "Paying to start a job. A real job pays you; it never asks you to pay in."
+        red_flag: true
+        type: request
+    actions:
+      - id: top_up_forty
+        label: "Top up €40"
+        kind: pay
+        outcome: topped_up_forty
+        pressure_target: true
+      - id: ask_coordinator_topup
+        label: "Ask the coordinator first"
+        kind: ask_someone
+        outcome: coordinator_on_tasks
+      - id: block_aisling_topup
+        label: "Block and report the number"
+        kind: block
+        outcome: aisling_blocked
+
+interrupts:
+  - id: declan_retraining
+    at_seconds: 12
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Declan (clinic)", detail: "Saved contact: Declan (clinic)" }
+      from_cast: declan
+      body: "Róisín's college says retraining courses open next week. Fancy that."
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Declan's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what he asks for: nothing, just news."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_retraining
+        label: "Reply: worth a look!"
+        kind: proceed
+        outcome: declan_retraining_reply
+        pressure_target: true
+      - id: report_retraining
+        label: "Report the message"
+        kind: report
+        outcome: declan_retraining_reported
+
+outcomes:
+  topped_up_forty:
+    narrative: "The €40 \"unlocks\" tasks. Your balance says €112 earned. To withdraw, Tallyfern wants another €90."
+    recovery:
+      - { step: stop_paying, category: stop }
+      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: report_to_police_online, category: report }
+      - { step: pay_last_fee, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  coordinator_on_tasks:
+    narrative: "The coordinator: \"A job that finds you in a chat and pays €45 to rate apps? Those nearly always end with a top-up.\""
+  aisling_blocked:
+    narrative: "You block and report the number. Kettle goes quiet."
+  aisling_ignored:
+    narrative: "You leave it. \"Aisling\" sends one more 😊, then nothing."
+  declan_retraining_reply:
+    narrative: "Declan: \"Might do. Logistics, maybe. I know a lot about boxes.\""
+  declan_retraining_reported:
+    narrative: "You reported it. Careful is good; this one really was Declan, sharing news."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A stranger offering easy money for easy tasks."
+    what_works: "A real job pays you. Never pay to work."
+  layer2:
+    message_flags:
+      - "The follow-up: a €40 top-up to \"unlock\" paid tasks. Paying to work is the trap."
+    notes: "A balance that grows but needs a top-up to withdraw is the same trick as a fake investment dashboard. Keep the chats and any payment records."
+  device_tip: "On a real phone, don't save or reply to a stranger offering work in a chat. Look the company up yourself and apply through its own website."
+  habit_card: easy-money-costs-you
+  already_clicked:
+    clicked: "Replied but paid nothing? Block the number and don't top anything up."
+    paid: "Topped up already? Stop paying: no last fee releases the money. Call your bank on the number on your card, and keep the chats."
+  sources: [nl-fraudehelpdesk-vacature-alert-2025, nl-fraudehelpdesk-baan-aangeboden, nl-veiliginternetten-thuiswerk-2025, nl-politie-crypto-job-fraud-2025, eu-epc-threats-2025]

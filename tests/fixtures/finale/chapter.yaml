@@ -1,0 +1,29 @@
+# Test fixture (CR-43, CR-44): a finale chapter. Not game content.
+slot: 10
+city: fxfinale
+name: "Finale fixture"
+status: draft
+patterns: [remote-access-support-call]
+lo_focus: [LO-08]
+scenario_order:
+  am: [fx-finale-01-warning]
+  pm: []
+intro: "The fixture finale: one scenario, then the arc block."
+arc_finale:
+  close: fx-finale-arc-close
+  recovery_offer: fx-finale-arc-recovery
+  teo: fx-finale-arc-teo
+  reveal_names: ["Alex", "Robin", "Sacha"]
+  reveal:
+    tell: "Same picture, other names."
+    habit: "A photo check and a trusted person beat a feeling."
+  damage_control:
+    - { step: stop_paying, category: stop }
+    - { step: call_bank_known_number, category: stop }
+    - { step: keep_evidence, category: secure }
+    - { step: report_to_police_online, category: report }
+    - { step: pay_last_fee, category: harmful, feedback: "Paying more only adds to the loss." }
+    - { step: pay_recovery_service, category: harmful }
+scenes:
+  resolution: [fx-finale-open, fx-finale-ending-c, fx-finale-ending-a, fx-finale-ending-b, fx-finale-evening]
+atlas_cards: [ask-someone]

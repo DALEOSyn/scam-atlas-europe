@@ -152,20 +152,22 @@ describe('CR-38: Fairmeasure', () => {
 });
 
 describe('CR-38 (psych M1): no empty register in the menu', () => {
-  it('offered only when the register lists an authorised firm: absent with the shipped brands.yaml, present with the fixture register', () => {
+  it('offered only when the register lists an authorised firm: present with the shipped brands.yaml (Dublin, T-3.10) and the fixture register, absent without one', () => {
     const shipped = brandProjection(parse(readFileSync(join(ROOT, 'content', 'brands.yaml'), 'utf8')));
     const fixtureBrands = brandProjection(parse(readFileSync(join(ROOT, 'tests', 'fixtures', 'brands-register.yaml'), 'utf8')));
-    expect(registerAvailable(registerEntries(shipped))).toBe(false);
-    expect(registerAvailable(registerEntries([...shipped, ...fixtureBrands]))).toBe(true);
+    // Dublin registers Ellisfen Invest (authorised) and Brindlecove Bonds (warning list) in content/brands.yaml.
+    expect(registerAvailable(registerEntries(shipped))).toBe(true);
+    expect(registerAvailable(registerEntries(fixtureBrands))).toBe(true);
+    expect(registerAvailable(registerEntries(shipped.filter((b) => b.register?.status !== 'authorised')))).toBe(false);
     // A warning list alone is not a register to look things up in.
     expect(registerAvailable([{ name: 'Brindlecove Bonds', status: 'warning_list' }])).toBe(false);
   });
-  it('the HUD menu of a scenario has no "Fairmeasure register" item with the shipped brands', () => {
+  it('the HUD menu of a scenario offers the "Fairmeasure register" item with the shipped brands (an authorised firm is listed)', () => {
     const s = fixture('cr36-voice-call.yaml');
     const { container } = render(<ScenarioView scenario={s} ctx={{ balance, slot: 4, settings: { timerMode: 'off', pushers: true }, stress: 10 }} onDone={() => undefined} />);
     fireEvent.click(container.querySelector('[data-hud="menu"]') as HTMLElement);
     expect(container.querySelector('#hud-menu')?.hasAttribute('hidden')).toBe(false);
-    expect(container.querySelector('[data-menu="register"]')).toBeNull();
+    expect(container.querySelector('[data-menu="register"]')).not.toBeNull();
   });
 });
 

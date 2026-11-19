@@ -1,0 +1,48 @@
+# Chapter 8 — Dublin. GDD §28. Slot 8, difficulty 3–5, boss 5. 8 scored scenarios (3 genuine = 37.5%),
+# plus 1 drill (8-4, Declan's two ads) and 1 arc beat (Alex; the engine plays arc slot N by play position,
+# STORY §1.4; this file carries slot 8, the default).
+# Habit (H): "Before you pay, look the firm up yourself on the regulator's register, and contact it only
+# through the details the register gives. If you're asked to pay to get your money out, or back: stop."
+# New patterns: investment-ad-fake-platform (8-2, 8-5 genuine twin, 8-7, boss) and recovery-scam (8-3,
+# 8-8 genuine twin, boss beat 3). Callback: task-job-scam (8-6). 8-1 (calibration) carries
+# the family-impersonation chat pattern for the scored-pattern rule; it is high stakes, so the off-focus rule is unaffected.
+# Mix (GDD §28.1): truth G F F · G F F G F(boss) (max run 2); themes clinic 8-1; investment 8-2, 8-5, 8-7,
+# boss; recovery 8-3, 8-8; job 8-6 (never adjacent); pressure parity genuine 2/3 (8-1, 8-5 honest timers)
+# vs fraud 4/5 (8-2, 8-6, 8-7, boss); genuine at difficulty 3, 4 and 5; sender-or-link decoys in 8-2 (link),
+# 8-3 (sender, link), 8-7 (caller ID). 8-3 and 8-8 are calm on purpose.
+# Arc: first beat after the intro, before 8-1 (GDD §28.3, §28.11 Q1, producer): every other gap neighbours an
+# investment, recovery or easy-money debrief. Stop point after 8-3.
+# Fairmeasure (CR-38): the register is a home-screen tool; content/brands.yaml lists Ellisfen Invest
+# (authorised, with the register's own address and masked phone) and Brindlecove Bonds (warning list).
+# Help card: layer 2 of every Dublin debrief points to "Where to report and get help (Ireland)"; its wording
+# is in the chapter 8 sources file in docs/patterns ("Ireland help card"). Real bodies appear only there and
+# on the help screen (Red Line 1). The schema has no per-chapter help-card field yet, so this is the pointer.
+# Story scenes (GDD §28.2, STORY §3.8): arrival before the arc beat and 8-1, the turn at the stop point after
+# 8-3 (drill 8-4 follows), resolution after the boss debrief (variant dublin_bank_called, set by every boss
+# fall outcome, opens it). No placed beat: "You and Declan report the 'state-backed' bond" stays the caption
+# on drill 8-4's outcomes (GDD §28.4). No scene is sensitive; the content note below is shown on the map.
+# Map invitation (Róisín, STORY §3.8) is not built yet (ENGINE "Not in S3").
+slot: 8
+city: dublin
+name: "Dublin"
+status: complete
+patterns: [investment-ad-fake-platform, recovery-scam]
+callbacks: [task-job-scam]
+lo_focus: [LO-13, LO-16, LO-04, LO-18, LO-12, LO-06, LO-02, LO-17, LO-14, LO-08]
+scenario_order:
+  am: [dublin-arc-alex-08, dublin-01-tea-money, dublin-02-presenter-ad, dublin-03-recovery-offer]
+  pm: [dublin-04-declan-two-ads, dublin-05-ellisfen-sheet, dublin-06-rating-tasks, dublin-07-adviser-call, dublin-08-regulator-reply, dublin-09-boss-clone-bond]
+boss: dublin-09-boss-clone-bond
+arc_beat: dublin-arc-alex-08
+intro: "Dublin: Waymarker runs a free money clinic in a community centre this week, and you're helping. Since you looked up savings accounts for it, your own feeds are full of money ads."
+content_note: "This chapter touches on job loss and on losing money to investment scams. You can pause or skip any story scene, and help is one tap away."
+rules:
+  title: "The money clinic's rules"
+  items:
+    - "Before you pay, find the firm on the register yourself, and contact it only on the register's details."
+    - "If you're asked to pay to get your money out, or back: stop."
+atlas_cards: [if-its-guaranteed-and-high-its-not, stop-the-damage-first, ask-someone]
+scenes:
+  arrival: dublin-arrival
+  turn: dublin-turn
+  resolution: dublin-resolution

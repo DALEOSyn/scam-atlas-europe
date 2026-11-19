@@ -1,0 +1,125 @@
+# 8-1 Róisín: "€10 for the hall's tea and biscuits" (GDD §28.4 8-1). Genuine, high stakes (pay), difficulty 3,
+# honest timer 40 s with the honest deadline "Any time before Friday". Calibration: no Dublin pattern; it
+# carries the family-impersonation chat pattern (a money request in a known chat, as Rome 6-5) so the scored-pattern
+# rule holds. High stakes, so the gold off-focus rule (low-stakes double checks) does not apply.
+# Checkables (G, 3): sender (neutral on a money request, §22.8 ruling 1), the reference ("It fits"), the request.
+# tea_transfer: her name typed from her saved contact; payee check match (CR-23; never "It fits" on a match).
+# R21 note: the engine scores a timer expiry on a genuine high-stakes beat as ★ (balance timer_expiry.genuine_high),
+# above "Ignore it" (0). R21 (expiry never above the dismiss option) is a balance/engine change; no content override.
+id: dublin-01-tea-money
+chapter: dublin
+role: standard
+pattern: messenger-family-impersonation
+theme: clinic
+learning_objectives: [LO-17, LO-06]
+difficulty: 3
+is_fraud: false
+stakes: high
+device: messenger
+brands: [kettle, larchwick]
+cast: [roisin]
+pressure:
+  timer: true
+  levers: []
+  honest_deadline: "Any time before Friday"
+
+message:
+  sender: { display: "Róisín (clinic)", detail: "Saved contact: Róisín (clinic)" }
+  from_cast: roisin
+  body: "Morning! Doors at 10 ☕ Could you send me €10 for the hall's tea and biscuits? Any time before Friday. Dad's bringing more biscuits, God help us."
+  request: pay
+  ask: { text: "Could you send me €10 for the hall's tea and biscuits?" }
+  references: ["Doors at 10"]
+  earlier:
+    - { when: "Sunday 19:40", body: "See you Monday! Dad's practising his handshake 😄" }
+  l10n_note: "\"God help us\" is affectionate teasing about her dad; adapt to a local equivalent. The outcome's \"Go raibh maith agat\" is Irish for thank you (small talk, translated inline, never a red flag)."
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows Róisín's saved contact, in your usual chat. An account can be taken over and show the same, so it can't prove anything either way. Judge the request."
+    red_flag: false
+    type: sender
+  - target: reference
+    reveal: "It fits: the clinic opens at 10. That isn't proof on its own."
+    red_flag: false
+    type: reference
+    reassures: true
+  - target: request
+    reveal: "€10 for tea you'll drink, by a transfer you start yourself, to her own account. No link, no code."
+    red_flag: false
+    type: request
+
+actions:
+  - id: pay_roisin_app
+    label: "Pay her in the Larchwick app"
+    kind: start_transfer
+    next_beat: tea_transfer
+    pressure_target: true
+  - id: ask_roisin_hall
+    label: "Ask Róisín at the hall first"
+    kind: ask_someone
+    outcome: roisin_at_hall
+  - id: report_tea
+    label: "Report the message"
+    kind: report
+    outcome: tea_reported
+  - id: ignore_tea
+    label: "Ignore it"
+    kind: ignore
+    outcome: tea_unpaid
+
+beats:
+  - id: tea_transfer
+    device: banking
+    message:
+      account: { nickname: "Your current account" }
+      payee: { name: "Róisín Byrne", iban: "IE•• … 7712", name_check: match, amount: "€10.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "Name matches: the account is held by Róisín Byrne, the name in your saved contact. That shows whose account it is; what she asked for, and the clinic at 10, make the rest fit."
+        red_flag: false
+        type: payee
+        reassures: true
+      - target: payee.iban
+        reveal: "Her account, from her saved contact. An account number on its own can't prove anything either way."
+        red_flag: false
+        type: payee
+    actions:
+      - id: send_roisin_ten
+        label: "Send €10"
+        kind: proceed
+        outcome: tea_paid
+        pressure_target: true
+      - id: cancel_ask_roisin
+        label: "Cancel and ask her first"
+        kind: ask_someone
+        outcome: roisin_at_hall
+      - id: cancel_tea_transfer
+        label: "Cancel"
+        kind: ignore
+        outcome: tea_cancelled
+
+outcomes:
+  tea_paid:
+    narrative: "Sent. Róisín, a minute later: \"Go raibh maith agat! (Thank you!) The urn is on 🫖\""
+  roisin_at_hall:
+    narrative: "Róisín, at the hall: \"Yes, me! Thanks for checking.\" You pay her the €10 there and then."
+  tea_reported:
+    narrative: "Reported. Róisín, at the hall, puzzled: \"My message didn't reach you? It was only the tea money.\""
+  tea_unpaid:
+    narrative: "You leave it for now. She said any time before Friday."
+  tea_cancelled:
+    narrative: "You cancel. Nothing is sent, and the €10 is still to pay before Friday."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Her saved chat and name, for tea you'll share."
+    what_works: "Paying was fine; asking is never wrong."
+  layer2:
+    message_flags: []
+    notes: "A real request is for something you know about, to the person's own account, and can wait for a question."
+  device_tip: "On a real phone, check a money request against something you already know, like the clinic's opening time, and type the payee's name yourself."
+  habit_card: calm-not-paranoid
+  sources: [nl-politie-hulpvraagfraude-2025, nl-veiliginternetten-hulpvraag, eu-ec-ipr-vop-2025, eu-ecb-ipr]

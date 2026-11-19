@@ -1,0 +1,145 @@
+# 8-2 A Postwick sponsored post: presenter Orla Fennick "recommends" Quorvex (GDD §28.4 8-2;
+# investment-ad-fake-platform stage A). Fraud, difficulty 3, timer 40 s; follow-up (a comment from the same
+# page) at 20 s. Levers authority (a famous face), greed, urgency, social proof.
+# Checkables (5; R 2): sender D (a "Sponsored" page) · image R (ruling 2 of §28.8) · claim R ("guaranteed", and high) ·
+# link D (ruling 4 of §28.8: the platform's own tidy address, the sender-or-link decoy) · request D (ads ask you to sign up).
+# The verify is the Fairmeasure register (CR-38), opened from the home screen, never from the ad: Quorvex is
+# not on the register and the warning list is clean, which proves nothing (ruling 1 of §28.8).
+# Orla Fennick is fictional and always illustrated, never photo-realistic (image alt); no deepfake-making shown.
+# signup_page: read-only training page (Red Line 2), not in R. Spec deviation: §28.4 puts the R flag on
+# page info, but page info is the browser's padlock/connection detail in every chapter (never a red flag), so the
+# "an adviser will call" flag sits on the page's request (its ask) and page info keeps the shared padlock wording.
+id: dublin-02-presenter-ad
+chapter: dublin
+role: standard
+pattern: investment-ad-fake-platform
+theme: investment
+learning_objectives: [LO-13, LO-04]
+difficulty: 3
+is_fraud: true
+device: social
+brands: [postwick, orla-fennick, quorvex, fairmeasure]
+pressure:
+  timer: true
+  levers: [authority, greed, urgency, social_proof]
+  pusher:
+    messages:
+      - { at_seconds: 20, text: "Only 12 places left tonight!" }
+
+message:
+  sender: { display: "Money Today with Orla", detail: "Sponsored · page created 2 weeks ago" }
+  body: "\"I moved my savings into Quorvex. It pays 2% a week, guaranteed.\" Orla Fennick on how ordinary people are building wealth. Start with Quorvex: quorvex-invest.example/start"
+  image: { alt: "An illustrated TV-studio 'interview': presenter Orla Fennick smiling beside a rising chart." }
+  request: open_link
+  ask: { text: "Start with Quorvex: quorvex-invest.example/start" }
+  claims: [{ text: "It pays 2% a week, guaranteed." }]
+
+inspectables:
+  - target: sender.detail
+    reveal: "A page with a friendly name and a \"Sponsored\" tag. Anyone can pay for an ad, so it can't prove anything either way."
+    red_flag: false
+    type: sender
+  - target: link
+    reveal: "quorvex-invest.example, the platform's own address. A scam platform can have a tidy address too, so it can't prove anything either way. Check the firm, not the address."
+    red_flag: false
+    type: link
+  - target: image
+    reveal: "A famous face \"recommending\" an investment. Endorsements like this are often fake, sometimes made with AI, and the person never agreed."
+    red_flag: true
+    type: image
+  - target: claim
+    reveal: "\"Guaranteed\", and high. Real investments can lose money; nobody can guarantee 2% a week."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "Asks you to sign up. Ads do that, so it can't prove anything either way. Who the firm is matters."
+    red_flag: false
+    type: request
+
+actions:
+  - id: open_signup_page
+    label: "Open the sign-up page"
+    kind: open_link
+    next_beat: signup_page
+    pressure_target: true
+  - id: check_quorvex_register
+    label: "Look Quorvex up on the Fairmeasure register yourself"
+    kind: check_official_list
+    outcome: quorvex_not_listed
+  - id: report_orla_ad
+    label: "Report the ad on Postwick"
+    kind: report
+    outcome: orla_ad_reported
+  - id: scroll_past_orla
+    label: "Scroll past"
+    kind: ignore
+    outcome: scrolled_past_orla
+
+beats:
+  - id: signup_page
+    device: browser
+    message:
+      page: { address: "quorvex-invest.example/start", title: "Quorvex · Start" }
+      body: "Leave your details and an adviser will call you in 10 minutes. Spaces at this rate are limited."
+      request: enter_details
+      ask: { text: "Leave your details and an adviser will call you in 10 minutes." }
+    inspectables:
+      - target: page.address
+        reveal: "Still quorvex-invest.example, the platform's own address. A tidy address can't prove anything either way. Check the firm."
+        red_flag: false
+        type: page_address
+      - target: page.info
+        reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
+        red_flag: false
+        type: padlock
+      - target: request
+        reveal: "An \"adviser\" will call: the ad leads to a sales call, not to an authorised firm."
+        red_flag: true
+        type: request
+    actions:
+      - id: send_details_quorvex
+        label: "Send your details"
+        kind: enter_details
+        outcome: adviser_keeps_calling
+        pressure_target: true
+      - id: close_check_register
+        label: "Close it and check the register"
+        kind: check_official_list
+        outcome: quorvex_not_listed
+      - id: close_signup_page
+        label: "Close the page"
+        kind: ignore
+        outcome: scrolled_past_orla
+
+outcomes:
+  adviser_keeps_calling:
+    narrative: "Seven minutes later a friendly \"adviser\" rings. You say you'll think about it. He rings again the next day, and the next."
+    recovery:
+      - { step: block_adviser_number, category: stop }
+      - { step: report_ad_on_platform, category: report }
+      - { step: report_firm_to_regulator, category: report }
+      - { step: keep_evidence, category: secure }
+      - { step: pay_first_deposit, category: harmful }
+      - { step: wait_and_see, category: harmful }
+  quorvex_not_listed:
+    narrative: "You open the Fairmeasure register from your home screen. No firm called Quorvex is authorised. The warning list has nothing either, and that proves nothing: scammers change names. Not on the register means don't pay."
+    register: { firm: "Quorvex", result: not_listed }
+  orla_ad_reported:
+    narrative: "You report the ad on Postwick. Reports help the platform take it down for the next person."
+  scrolled_past_orla:
+    narrative: "You scroll past. Orla is still smiling three posts down, now \"recommending\" something else."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A famous face promising guaranteed returns."
+    what_works: "Look the firm up on the register yourself."
+  layer2:
+    message_flags: []
+    notes: "Not on the register means don't pay. A clean warning list proves nothing: scammers change names. A professional page, a tidy address and a growing balance prove nothing either."
+  device_tip: "On a real phone, don't follow an investment ad. Open the financial regulator's own website yourself and look the firm up on its register of authorised firms."
+  habit_card: if-its-guaranteed-and-high-its-not
+  already_clicked:
+    clicked: "Opened the page but typed nothing? Close it, and look the firm up on the register yourself."
+    entered_details: "Gave your number? Expect calls. Don't pay anything, block the number, and report the ad."
+  sources: [ie-fraudsmart-investment-2025, ie-fraudsmart-state-scheme-ads-2026, ie-ccpc-investment-scams, ie-cbi-avoiding-scams, ie-cbi-unauthorised-firms, se-konsumentverket-investment-fraud, eu-esas-ai-scams-factsheet-sv]

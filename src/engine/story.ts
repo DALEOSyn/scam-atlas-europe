@@ -13,6 +13,7 @@
  *   recent first) and seen scenes.
  */
 import type { Chapter, Scene, ScenePanel } from '../content/schema.ts';
+import type { ArcEnding } from './arc.ts';
 
 /** The folder and `chapter` value of interludes (mirrors INTERLUDE_FOLDER in schema.ts; no Zod at runtime). */
 export const INTERLUDES = 'interludes';
@@ -47,8 +48,27 @@ export function turnSceneId(c: Placement): string | null {
   return c.scenes?.turn ?? null;
 }
 
+/** The resolution scene that ends the chapter (the last one when there are several, CR-43(d)): its If-then panel is the postcard. */
 export function resolutionSceneId(c: Placement): string | null {
-  return c.scenes?.resolution ?? null;
+  const r = c.scenes?.resolution;
+  return (typeof r === 'string' ? r : r?.at(-1)) ?? null;
+}
+
+/** Every resolution scene in order (one, or the finale's list, CR-43(d)). */
+export function resolutionSceneIds(c: Placement): string[] {
+  const r = c.scenes?.resolution;
+  return r === undefined ? [] : typeof r === 'string' ? [r] : [...r];
+}
+
+/**
+ * CR-43(d): does this finale resolution scene play for the run? A scene with `if_arc_ending` plays only for those
+ * endings (none known: it does not play), and only when its scene-level `if_flag` / `unless_flag` hold (`flags`
+ * holds the run's flags plus the arc variables that are set).
+ */
+export function scenePlaysFor(scene: Pick<Scene, 'if_arc_ending' | 'if_flag' | 'unless_flag'>, ending: ArcEnding | null, flags: ReadonlySet<string> = new Set()): boolean {
+  if (!scene.if_arc_ending) return true;
+  if (ending === null || !scene.if_arc_ending.includes(ending)) return false;
+  return (scene.if_flag === undefined || flags.has(scene.if_flag)) && (scene.unless_flag === undefined || !flags.has(scene.unless_flag));
 }
 
 /** Spec-placed beats after a scenario's debrief (Amsterdam's local problem, Paris's turn after 3-5). */
@@ -66,17 +86,34 @@ export function chapterSceneIds(c: Placement): string[] {
   const turn = turnSceneId(c);
   if (turn) out.push(turn);
   for (const id of c.scenario_order.pm) out.push(...scenesAfter(c, id));
-  const res = resolutionSceneId(c);
-  if (res) out.push(res);
+  out.push(...resolutionSceneIds(c));
   return out;
 }
 
 // ---------------------------------------------------------------------------
 // Panels
 
-/** The panels this run sees: story-only variant flags (STORY §4.2 rule 5) pick panels; nothing else branches. */
-export function visiblePanels(scene: Pick<Scene, 'panels'>, flags: ReadonlySet<string>): ScenePanel[] {
-  return scene.panels.filter((p) => (p.if_flag === undefined || flags.has(p.if_flag)) && (p.unless_flag === undefined || !flags.has(p.unless_flag)));
+/**
+ * The panels this run sees: story-only variant flags (STORY §4.2 rule 5) pick panels, and in the finale the arc
+ * ending (CR-43(d), `if_arc_ending`); nothing else branches. In the finale `flags` also holds the arc variables
+ * that are set (e.g. alex_invested above 0), so `if_flag: alex_invested` works.
+ */
+export function visiblePanels(scene: Pick<Scene, 'panels'>, flags: ReadonlySet<string>, ending: ArcEnding | null = null): ScenePanel[] {
+  return scene.panels.filter(
+    (p) =>
+      (p.if_flag === undefined || flags.has(p.if_flag)) &&
+      (p.unless_flag === undefined || !flags.has(p.unless_flag)) &&
+      (p.if_arc_ending === undefined || (ending !== null && p.if_arc_ending.includes(ending))),
+  );
+}
+
+/** CR-44(b): the end screen's epigraph: the resolution panel marked `epigraph` (its speaker id and line). */
+export function epigraphOf(scenes: readonly (Pick<Scene, 'panels'> | undefined)[]): { speaker: string; line: string } | null {
+  for (const sc of scenes) {
+    const p = sc?.panels.find((x) => x.epigraph);
+    if (p?.line && p.speaker && p.speaker !== 'you') return { speaker: p.speaker, line: p.line };
+  }
+  return null;
 }
 
 export interface StoryVars {

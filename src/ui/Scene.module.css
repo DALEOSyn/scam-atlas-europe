@@ -481,3 +481,41 @@
     min-height: 0;
   }
 }
+
+/* CR-44(b): the end screen "Your Atlas". */
+.epigraph {
+  margin: var(--space-3) 0;
+  padding: var(--space-3);
+  border-inline-start: 4px solid var(--color-border);
+  background: var(--color-surface-sunken);
+}
+.epigraph blockquote {
+  margin: 0;
+  font-size: 1.125rem;
+}
+.epigraph figcaption {
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+}
+.endCards {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+.endCards > li {
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 8px);
+  background: var(--color-surface);
+}
+.goldMark {
+  color: var(--color-stamp-gold);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+@media print {
+  .buttons {
+    display: none;
+  }
+}

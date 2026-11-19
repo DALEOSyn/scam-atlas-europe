@@ -53,9 +53,13 @@ export function starsFor(
   return table.stars[cls][truth];
 }
 
-/** A fall: comply or proceed on fraud (GDD §7.1). Scored by damage control instead of stars. */
-export function isFall(cls: ActionClass, truth: Truth): boolean {
-  return truth === 'fraud' && (cls === 'comply' || cls === 'proceed');
+/**
+ * A fall: comply or proceed on fraud (GDD §7.1). Scored by damage control instead of stars.
+ * CR-40: `advise_comply` (bad advice to a cast member, who never acts on it) is comply but never a fall: it scores
+ * 0 with no damage control, no stress penalty and no "This could happen to anyone." line.
+ */
+export function isFall(cls: ActionClass, truth: Truth, kind?: ActionKind | 'done' | 'timer_expiry'): boolean {
+  return truth === 'fraud' && (cls === 'comply' || cls === 'proceed') && kind !== 'advise_comply';
 }
 
 /**
@@ -156,7 +160,7 @@ export function scoreGroup(
   const capped = (opts.engagedOnFraud || codeCapped) && truth === 'fraud';
   if (opts.engagedOnFraud && truth === 'fraud') stars = Math.min(stars, b.points.engage_on_fraud.star_cap);
   if (codeCapped) stars = Math.min(stars, b.points.code_then_confirm.star_cap);
-  const fell = !expired && isFall(cls, truth);
+  const fell = !expired && isFall(cls, truth, decision?.kind);
   if (fell) return { cls, stars: 0, points: 0, fell, timerExpired: expired, capped };
   let points = stars * b.points.per_star;
   if (cls === 'report' && truth !== 'fraud') points = b.points.exceptions.report_on_legit;

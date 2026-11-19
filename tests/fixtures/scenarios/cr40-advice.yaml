@@ -1,0 +1,75 @@
+# CR-40: an advice scenario. Noor forwards a DM and asks you; you advise her. Noor never acts on bad advice:
+# advise_comply scores 0 but is not a fall (no damage control, no stress penalty, no kind line).
+id: fx-cr40-advice
+chapter: fixtures
+role: standard
+pattern: money-mule-recruitment
+theme: easy-money
+learning_objectives: [LO-12, LO-18]
+difficulty: 4
+is_fraud: true
+device: messenger
+brands: [kettle, swaploft]
+cast: [noor]
+advice: { for: noor }
+pressure: { timer: false, levers: [greed, social_proof] }
+
+message:
+  sender: { display: "Noor (cousin)", detail: "Saved contact: Noor" }
+  from_cast: noor
+  body: "Can I ask you now? Someone sent me this. It's just a few transfers. Is this legit??"
+  request: enter_details
+  forwarded:
+    app: swaploft
+    sender: { display: "Quick Cash Crew", detail: "@quick_cash_crew · 2 mutual friends" }
+    body: "Hey Noor! Want easy money this week? I just need to use your account for a few transfers. Send me your banking-app login and card details. Loads of people at your school already do it."
+  ask: { text: "Send me your banking-app login and card details." }
+  claims:
+    - text: "I just need to use your account for a few transfers."
+  references: ["Loads of people at your school already do it."]
+
+inspectables:
+  - target: forwarded.sender
+    reveal: "Two mutual friends. Friends' accounts can be faked or tricked too, so it can't prove anything either way."
+    red_flag: false
+  - target: reference
+    reveal: "Says others at her school do it. Anyone can say that, so it can't prove anything either way."
+    red_flag: false
+  - target: claim
+    reveal: "Easy money you didn't ask for, for 'a few transfers'."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "Her banking-app login and card details. Nobody needs those to pay you."
+    red_flag: true
+    type: request
+
+actions:
+  - { id: probably_fine, label: "A few transfers? Probably fine", kind: advise_comply, outcome: noor_checks, pressure_target: true }
+  - { id: tell_mum, label: "It's a trap. Tell your mum", kind: ask_someone, outcome: telling_mum }
+  - { id: report_it, label: "Let's report the account in the app", kind: report, outcome: reported }
+  - { id: block_it, label: "Ignore it and block them", kind: ignore, outcome: blocked }
+
+outcomes:
+  telling_mum:
+    narrative: "Noor: \"Okay. Telling Mum now.\""
+  reported:
+    narrative: "Noor: \"Reported. And I'm telling Mum too.\""
+  blocked:
+    narrative: "Noor: \"Blocked. I'll tell Mum as well, just in case.\""
+  noor_checks:
+    narrative: "Noor: \"Hmm. I'll check with Mum too.\" Later: \"Mum says no way. I'm not sending anything.\""
+
+debrief:
+  layer1:
+    tell: "Easy money for using your account."
+    what_works: "Never lend your account. Say no and ask someone."
+  layer2:
+    message_flags: []
+    notes: "Letting someone use your account like this is a crime, and the account holder can be held responsible. If it's already happened, getting help early is the right move."
+  device_tip: "Never send a login or card details in a chat, whoever asks."
+  habit_card: easy-money-costs-you
+  advice_line: "Noor asked, and that was the smart bit. With an offer like this, the answer is always no."
+  already_clicked:
+    entered_details: "If you've already shared it, it's not too late: change your login, call your bank on the number on your card, and tell a trusted adult."
+  sources: [eu-europol-mule-jobs]

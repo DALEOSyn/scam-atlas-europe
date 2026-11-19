@@ -15,6 +15,7 @@ import { choiceLineText, nextTimeText, overCautionOf } from '../../src/engine/ch
 import type { ChoiceLine } from '../../src/engine/debrief.ts';
 import { lookup } from '../../src/i18n/index.ts';
 import {
+  ASK_REQUESTS,
   CR17_ASK_REQUESTS,
   CR30_ASK_DEVICES,
   CR30_FROM_SLOT,
@@ -26,6 +27,7 @@ import {
   SCORED_ROLES,
   type Action,
   type ActionClass,
+  type ActionKind,
   type Balance,
   type CastMember,
   type Chapter,
@@ -196,7 +198,7 @@ export function anyFall(s: Scenario, balance: Registries['balance']): boolean {
   const truth = truthOf(s);
   return beatsOf(s)
     .filter((b) => !b.interrupt)
-    .some((b) => b.actions.some((a) => isFall(classOf(balance, a.kind), truth)));
+    .some((b) => b.actions.some((a) => isFall(classOf(balance, a.kind), truth, a.kind)));
 }
 
 /**
@@ -212,9 +214,10 @@ export function anyFall(s: Scenario, balance: Registries['balance']): boolean {
  */
 export function choiceLines(s: Scenario, balance: Registries['balance']): string[] {
   const truth = truthOf(s);
-  const below3 = (cls: ReturnType<typeof classOf>) => {
+  const below3 = (cls: ReturnType<typeof classOf>, kind?: ActionKind) => {
     // Pause and start_transfer (step, CR-18) never decide, so they never name a "You chose" line.
-    if (isUnscoredClass(cls) || isFall(cls, truth)) return false;
+    // CR-40: advise_comply is comply but not a fall, so its "You chose" line names the advice.
+    if (isUnscoredClass(cls) || isFall(cls, truth, kind)) return false;
     if (cls === 'engage') return true;
     const st = starsFor(balance, cls, truth);
     return typeof st === 'number' ? st < 3 : true;
@@ -236,7 +239,7 @@ export function choiceLines(s: Scenario, balance: Registries['balance']): string
       // CR-31(b): a capped start_transfer is named like an engage; CR-34: a shared payment code before the
       // confirmation is named when the player then declines (★).
       const named = (a.kind === 'start_transfer' && a.cap === 'engage') || (a.kind === 'share_code' && a.next_beat !== undefined);
-      if (below3(cls) || named) {
+      if (below3(cls, a.kind) || named) {
         lines.push(named ? { beatId: b.where, kind: 'action', label: a.label } : lineFor(b.where, cls, { beatId: b.where, kind: 'action', label: a.label }));
         classes.add(cls);
       }
@@ -245,7 +248,7 @@ export function choiceLines(s: Scenario, balance: Registries['balance']): string
   for (const [, wn] of whatNowsOf(s)) {
     for (const x of wn.extra) {
       const cls = classOf(balance, x.kind);
-      if (below3(cls)) lines.push(lineFor('what_now', cls, { beatId: 'what_now', kind: 'action', label: x.label }));
+      if (below3(cls, x.kind)) lines.push(lineFor('what_now', cls, { beatId: 'what_now', kind: 'action', label: x.label }));
     }
     for (const [choice, cls] of Object.entries(WHAT_NOW_BUILTIN_CLASS) as [keyof typeof WHAT_NOW_BUILTIN_CLASS, ActionClass][]) {
       if (below3(cls)) {
@@ -339,7 +342,8 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
       if (!reg.cast.has(m.voice.sounds_like)) errors.push(`${b.where}: voice.sounds_like "${m.voice.sounds_like}" is not in content/cast.yaml (CR-36)`);
       else if (!s.cast.includes(m.voice.sounds_like)) errors.push(`${b.where}: voice.sounds_like "${m.voice.sounds_like}" is missing from the scenario's cast list (CR-36)`);
     }
-    const arcLine = s.role === 'arc' || (m.from_cast !== undefined && reg.cast.get(m.from_cast)?.arc_character === true);
+    // CR-43: the finale's scenarios (a recovery firm's email, Teo's chat) are not Alex speaking.
+    const arcLine = (s.role === 'arc' && s.finale === undefined) || (m.from_cast !== undefined && reg.cast.get(m.from_cast)?.arc_character === true);
     if (arcLine && wordCount(m.body) > arcLimit) errors.push(`${b.where}: arc lines are at most ${arcLimit} words (has ${wordCount(m.body)})`);
     if (wordCount(m.body) > session.max_message_words) warnings.push(`${b.where}: body has ${wordCount(m.body)} words (guideline ${session.max_message_words})`);
 
@@ -368,7 +372,7 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
       }
     }
   }
-  if (s.role === 'arc') {
+  if (s.role === 'arc' && s.finale === undefined) {
     const speaker = s.message.from_cast;
     if (!speaker || reg.cast.get(speaker)?.arc_character !== true) errors.push('arc beats are spoken by an arc character: set message.from_cast');
   }
@@ -427,9 +431,19 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
     if (!b.actions.some((x) => cls(x) === 'dismiss')) errors.push(`${b.where}: the code confirmation needs a dismiss action ("Decline") (CR-34)`);
     if (b.actions.some((x) => x.kind !== 'pay' && !['verify', 'dismiss', 'report'].includes(cls(x)))) errors.push(`${b.where}: the code confirmation offers only Confirm (pay), Decline (dismiss), a verify or a report (CR-34)`);
   }
-  // CR-32: recovery_for names a cast member from content/cast.yaml.
+  // CR-32: recovery_for names a cast member from content/cast.yaml (CR-41: voiced_by does).
   for (const [key, o] of Object.entries(s.outcomes)) {
-    if (o.recovery_for !== undefined && !reg.cast.has(o.recovery_for)) errors.push(`outcomes.${key}.recovery_for: "${o.recovery_for}" is not in content/cast.yaml (CR-32)`);
+    const voice = o.recovery_for === undefined ? undefined : typeof o.recovery_for === 'string' ? o.recovery_for : o.recovery_for.voiced_by;
+    if (voice !== undefined && !reg.cast.has(voice)) errors.push(`outcomes.${key}.recovery_for: "${voice}" is not in content/cast.yaml (CR-32, CR-41)`);
+  }
+  // CR-40: the advised person is a cast member.
+  if (s.advice && !reg.cast.has(s.advice.for)) errors.push(`advice.for: "${s.advice.for}" is not in content/cast.yaml (CR-40)`);
+  // CR-42: the overlay's "Close" picks the beat's one dismiss action; nothing on it is a training form.
+  for (const b of beats) {
+    if (!b.message.page?.overlay) continue;
+    const dismiss = b.actions.filter((x) => cls(x) === 'dismiss');
+    if (dismiss.length !== 1) errors.push(`${b.where}: a page overlay's "Close" picks the beat's dismiss action: it needs exactly one (has ${dismiss.length}) (CR-42)`);
+    if (b.actions.some((x) => x.kind === 'enter_details' || x.kind === 'pay')) errors.push(`${b.where}: a page with a warning overlay is not a training form (CR-42)`);
   }
   // CR-23: "Matches" only says whose account it is, on genuine and fraud alike; its reveal never opens like a genuine fit.
   for (const b of beats) {
@@ -562,11 +576,12 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
   }
 
   // Damage control (CR-07).
-  if (s.is_fraud && s.role !== 'arc') {
+  // CR-43: the finale's arc scenarios run damage control after a fall too. CR-40: advise_comply is never a fall.
+  if (s.is_fraud && (s.role !== 'arc' || s.finale !== undefined)) {
     for (const b of story) {
       for (const a of b.actions) {
         const c = cls(a);
-        if ((c === 'comply' || c === 'proceed') && a.outcome && !s.outcomes[a.outcome]?.recovery) {
+        if ((c === 'comply' || c === 'proceed') && a.kind !== 'advise_comply' && a.outcome && !s.outcomes[a.outcome]?.recovery) {
           errors.push(`action "${a.id}" is a fall on fraud: outcome "${a.outcome}" needs recovery options`);
         }
       }
@@ -624,9 +639,35 @@ export function chapterRules(c: Chapter, fileBase: string, scenarios: Scenario[]
 
   const order = [...c.scenario_order.am, ...c.scenario_order.pm];
   for (const id of order) if (!byId.has(id)) errors.push(`scenario_order: "${id}" is not a scenario in content/scenarios/${c.city}/`);
-  for (const s of scenarios) if (!order.includes(s.id)) errors.push(`scenario "${s.id}" is missing from scenario_order`);
+  const finale = c.arc_finale;
+  const finaleIds = finale ? [finale.close, finale.recovery_offer, finale.teo] : [];
+  for (const s of scenarios) if (!order.includes(s.id) && !finaleIds.includes(s.id)) errors.push(`scenario "${s.id}" is missing from scenario_order`);
   if (c.boss && byId.get(c.boss)?.role !== 'boss') errors.push(`boss "${c.boss}" must be a scenario with role: boss`);
   if (c.arc_beat && byId.get(c.arc_beat)?.role !== 'arc') errors.push(`arc_beat "${c.arc_beat}" must be a scenario with role: arc`);
+  // CR-43(f): arc slot N plays in the Nth chapter played; the slot-N beat is the arc beat of the chapter with map slot N.
+  const beat = c.arc_beat ? byId.get(c.arc_beat) : undefined;
+  if (beat?.role === 'arc' && beat.arc_slot !== undefined && beat.arc_slot !== c.slot) errors.push(`arc_beat "${beat.id}" has arc_slot ${beat.arc_slot}; the engine plays slot N in the Nth chapter played and finds it in the chapter with slot N, so it must be ${c.slot} (CR-43(f))`);
+  if (beat?.finale !== undefined) errors.push(`arc_beat "${beat.id}" is a finale scenario (finale: ${beat.finale}), not a slot beat`);
+  for (const s of scenarios) if (s.finale !== undefined && !finaleIds.includes(s.id)) errors.push(`scenario "${s.id}" has finale: ${s.finale} but the chapter's arc_finale does not name it (CR-43)`);
+  if (finale) {
+    for (const key of ['close', 'recovery_offer', 'teo'] as const) {
+      const f = byId.get(finale[key]);
+      if (!f) errors.push(`arc_finale.${key}: "${finale[key]}" is not a scenario in content/scenarios/${c.city}/`);
+      else if (f.role !== 'arc' || f.finale !== key) errors.push(`arc_finale.${key}: "${f.id}" must be role: arc with finale: ${key} (CR-43)`);
+    }
+    const close = byId.get(finale.close);
+    if (close && !Object.values(close.outcomes).some((o) => o.reveal)) errors.push(`arc_finale.close: "${close.id}" opens the reveal card: an outcome needs reveal: true (GDD §30.6)`);
+    const teo = byId.get(finale.teo);
+    if (teo && !Object.values(teo.outcomes).some((o) => o.reveal)) errors.push(`arc_finale.teo: "${teo.id}" plays the reveal inside it: an outcome needs reveal: true (GDD §30.6)`);
+    const offer = byId.get(finale.recovery_offer);
+    if (offer && !offer.is_fraud) errors.push(`arc_finale.recovery_offer: "${offer.id}" is the recovery-agency test: is_fraud: true (GDD §30.6)`);
+    const arcName = [...reg.cast.values()].find((m) => m.arc_character)?.name.split(/\s+/u)[0];
+    if (arcName && finale.reveal_names[0] !== arcName) errors.push(`arc_finale.reveal_names: the first name is the arc character's ("${arcName}"), the picture the player knows (CR-43(b))`);
+    finale.damage_control.forEach((x, i) => {
+      if (!reg.recoverySteps.has(x.step)) errors.push(`arc_finale.damage_control.${i}: step "${x.step}" is not in content/recovery_steps.yaml`);
+      if (x.feedback && x.category !== 'harmful') errors.push(`arc_finale.damage_control.${i}: feedback is for harmful steps`);
+    });
+  }
   for (const s of scenarios) if (s.role === 'boss' && s.id !== c.boss) errors.push(`scenario "${s.id}" is a boss but the chapter's boss is "${c.boss ?? '(none)'}"`);
 
   // The ask (ruling QA L1): from slot 1 on, every scored beat whose message asks for a code or an
@@ -662,12 +703,15 @@ export function chapterRules(c: Chapter, fileBase: string, scenarios: Scenario[]
   // CR-30 (Madrid, Warsaw): from slot 4 on, every scored scheduled beat on a message device quotes what it asks
   // (or, on request: none, what it tells the reader to do) in message.ask, whatever the request, genuine or
   // fraud alike, so the request checkable exists on every one of them. Not banking, interrupts, follow-up beats
-  // reached by next_beat, or `scored: false` boss beats.
+  // reached by next_beat, or `scored: false` boss beats. Requests that cannot carry an ask (scan_qr, install:
+  // not in ASK_REQUESTS) are exempt: a chat QR code (CR-39(b)) or an install request on a call quotes its
+  // sentence as a claim instead (GDD §29.4, 9-6, 9-8, Stockholm boss beat 3).
   if (c.slot >= CR30_FROM_SLOT) {
     for (const s of scenarios) {
       if (!SCORED_ROLES.includes(s.role)) continue;
       for (const b of beatsOf(s)) {
         if (b.interrupt || !b.scheduled || !b.scored || !CR30_ASK_DEVICES.includes(b.device)) continue;
+        if (!ASK_REQUESTS.includes(b.message.request)) continue;
         if (!b.message.ask) {
           errors.push(`scenario "${s.id}" ${b.where}: request ${b.message.request} needs message.ask from slot ${CR30_FROM_SLOT} on (CR-30: every scored scheduled beat on ${CR30_ASK_DEVICES.join(', ')} quotes its ask)`);
         }

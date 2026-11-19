@@ -125,6 +125,11 @@ export interface DebriefData {
     /** null on arc beats and drills (no stars, no points). */
     stars: number | null;
     alreadyClicked: { situation: AlreadySituation; text: string } | null;
+    /**
+     * CR-40: after `advise_comply` in an advice scenario, the authored line shown without blame under the "You
+     * chose" line ("Noor asked, and that was the smart bit. …"). null otherwise.
+     */
+    adviceLine: string | null;
   };
   layer2: {
     /**
@@ -289,6 +294,7 @@ export function debriefOf(
       bestLine: bestLineOf(s, r),
       stars: unscored ? null : r.stars,
       alreadyClicked: alreadyClickedLine(s, r.situation) ?? null,
+      adviceLine: st.groups.some((g) => g.decision?.kind === 'advise_comply') ? (d.advice_line ?? null) : null,
     },
     layer2: {
       // A boss can reach the same outcome on several beats: say it once (QA E4). Interrupts the player

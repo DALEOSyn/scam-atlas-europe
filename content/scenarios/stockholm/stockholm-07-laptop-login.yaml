@@ -1,0 +1,119 @@
+# 9-7 A login code on a page you opened yourself, on Birgitta's laptop (GDD §29.4; e-id-approval-on-call,
+# in-focus genuine of 9-6 and boss beat 3). Genuine, low stakes (scanning a code is not high stakes),
+# difficulty 5, calm (no timer). Interrupt at 15 s: Noor.
+# Moved off a library computer in review round 1: the fraud prompts' "Windows computer" stays a clue; this
+# genuine login reads "Laptop · Stockholm" in the outcome.
+# Spec gap: CR-39(b) puts a QR code on qr, letter and chat beats only (QR_DEVICES), not on a browser
+# page, so the code is the page's image (alt text) and its checkable is `image` in place of the QR destination
+# (same count, 3; SK3 wording: "It fits … on a screen you opened yourself"). No /qr/ payload is needed, and
+# none is shown. Switch to message.qr when browser pages can carry one.
+# Checkables (G, 3): the page address ("It fits": you typed it), the page info (shared padlock wording), image.
+# Not twin_of 9-6: its opening has 5 checkables to this page's 3 (twin parity is ±1); the pairing is in the
+# pattern and the debrief.
+id: stockholm-07-laptop-login
+chapter: stockholm
+role: standard
+pattern: e-id-approval-on-call
+theme: bank
+player_started: true
+learning_objectives: [LO-09, LO-02, LO-17]
+difficulty: 5
+is_fraud: false
+stakes: low
+device: browser
+setup: "Your phone's at 3%, so you borrow Birgitta's laptop to pay your phone bill. You opened larchwick-bank.example yourself and chose 'Log in with Gatewren'."
+brands: [larchwick, gatewren, kettle]
+cast: [birgitta, noor]
+pressure: { timer: false, levers: [] }
+
+message:
+  page: { address: larchwick-bank.example/login, title: "Log in with Gatewren: scan the code with your app" }
+  image: { alt: "A Gatewren login code (a QR code) on the Larchwick login page" }
+  request: scan_qr
+
+inspectables:
+  - target: page.address
+    reveal: "It fits: larchwick-bank.example, which you typed yourself."
+    red_flag: false
+    type: page_address
+    reassures: true
+  - target: page.info
+    reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
+    red_flag: false
+    type: padlock
+  - target: image
+    reveal: "It fits: a Gatewren login code, on a screen you opened yourself, for a login you chose. That's the difference from a code someone sends you."
+    red_flag: false
+    type: qr
+
+actions:
+  - id: scan_laptop_code
+    label: "Scan it with Gatewren and approve"
+    kind: proceed
+    outcome: laptop_logged_in
+    pressure_target: true
+  - id: charge_use_app
+    label: "Charge your phone, use the Larchwick app"
+    kind: verify_in_app
+    outcome: app_after_charging
+  - id: report_laptop_page
+    label: "Report the page"
+    kind: report
+    outcome: laptop_page_reported
+  - id: close_laptop_page
+    label: "Close the page"
+    kind: ignore
+    outcome: laptop_page_closed
+
+interrupts:
+  - id: noor_coffee_word
+    at_seconds: 15
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Noor", detail: "Saved contact: Noor" }
+      from_cast: noor
+      body: "is it true swedes have a word for coffee break. asking for Grandad"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Noor's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what she asks: a word for coffee break, nothing more."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_noor_fika
+        label: "Reply: fika! Tell Teo it's a lifestyle"
+        kind: proceed
+        outcome: noor_fika_thanks
+        pressure_target: true
+      - id: report_noor_fika
+        label: "Report the message"
+        kind: report
+        outcome: noor_fika_reported
+
+outcomes:
+  laptop_logged_in:
+    narrative: "Gatewren: \"Log in to Larchwick internet bank · Laptop · Stockholm.\" That's you, on Birgitta's laptop. You approve, pay your phone bill, and log out."
+  app_after_charging:
+    narrative: "Twenty minutes on the charger, then the Larchwick app. Phone bill paid."
+  laptop_page_reported:
+    narrative: "You report it. Larchwick replies: \"That's our real login page, and the code was for your own login.\" You log in later."
+  laptop_page_closed:
+    narrative: "You close the page and pay the bill later from your phone."
+  noor_fika_thanks:
+    narrative: "Noor: \"FIKA. Grandad says he's been doing it for 70 years without knowing 😂\""
+  noor_fika_reported:
+    narrative: "You reported it. Careful is good; this one really was Noor, with a question for Grandad."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "A code on a screen you opened, for a login you chose."
+    what_works: "Scanning that was fine."
+  layer2:
+    message_flags: []
+    notes: "Same kind of code as the 'buyer's'. The difference is who started it. Log out when you finish on someone else's computer. Where to report and get help (Sweden) is on the help screen."
+  device_tip: "On a real computer, type your bank's address yourself or use a saved bookmark, scan the login code only there, and log out when you finish."
+  habit_card: calm-not-paranoid
+  sources: [eu-epc-threats-2025, se-polisen-telefonbedrageri]

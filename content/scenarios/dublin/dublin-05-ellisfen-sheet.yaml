@@ -1,0 +1,144 @@
+# 8-5 Ellisfen Invest: the information sheet you asked for (GDD §28.4 8-5; investment-ad-fake-platform, the
+# in-focus genuine twin of boss beat 1). Genuine, low stakes, difficulty 4, honest timer 40 s with the honest
+# deadline "This rate holds for 14 days". You started it: you found Ellisfen on the register and rang the
+# register's number. Interrupt (Róisín, small talk) at 15 s.
+# Checkables (G, 6): sender (ruling 1 of §28.8 "It fits" with the clone clause), attachment (neutral), link ("It fits"),
+# reference ("It fits"), claim (neutral: early-withdrawal terms set out up front, nobody asks for a payment),
+# request. Layer 2 never names the boss's domain. The proceed is "Reply: thanks, I'll read it", never "invest"
+# (§28.11 Q7).
+id: dublin-05-ellisfen-sheet
+chapter: dublin
+role: standard
+pattern: investment-ad-fake-platform
+theme: investment
+twin_of: dublin-09-boss-clone-bond
+learning_objectives: [LO-13, LO-17]
+difficulty: 4
+is_fraud: false
+stakes: low
+player_started: true
+device: email
+setup: "Yesterday you found Ellisfen Invest on the Fairmeasure register and rang the number listed there about a savings bond for your travel fund. They said they'd email the details."
+brands: [ellisfen, fairmeasure]
+cast: [roisin]
+pressure:
+  timer: true
+  levers: []
+  honest_deadline: "This rate holds for 14 days"
+
+message:
+  sender: { display: "Ellisfen Invest", detail: "savings@ellisfen.example" }
+  subject: "The fixed-term bond you asked about"
+  body: |
+    Hi Sam, thanks for your call. Attached is the information sheet for our 1-year fixed-term bond. Take your time and talk it over: this rate holds for 14 days.
+
+    Reply with any questions, or apply at ellisfen.example/apply when you're ready. Page 2 sets out the terms for taking money out early, including any charges.
+
+    Ellisfen Invest · Savings team
+  request: reply
+  attachments: [{ name: "Information sheet.pdf", size: "180 KB" }]
+  ask: { text: "Reply with any questions, or apply at ellisfen.example/apply when you're ready." }
+  references: ["thanks for your call"]
+  claims: [{ text: "Page 2 sets out the terms for taking money out early, including any charges." }]
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: ellisfen.example, the address the register lists for Ellisfen. That isn't proof on its own, so weigh it with what it asks."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: link
+    reveal: "It fits: ellisfen.example, the register's address."
+    red_flag: false
+    type: link
+    reassures: true
+  - target: attachment
+    reveal: "An information sheet you asked for."
+    red_flag: false
+    type: attachment
+  - target: reference
+    reveal: "It fits: your call, on the register's number."
+    red_flag: false
+    type: reference
+    reassures: true
+  - target: claim
+    reveal: "Says the terms for taking money out early, in writing. Real products set out any charges up front; nobody asks you to send new money to get yours out."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "Questions, or apply when you're ready. No deadline today, no transfer, nobody pushing."
+    red_flag: false
+    type: request
+
+actions:
+  - id: reply_thanks_read
+    label: "Reply: thanks, I'll read it"
+    kind: proceed
+    outcome: ellisfen_thanks
+    pressure_target: true
+  - id: check_ellisfen_again
+    label: "Check Ellisfen on the register again"
+    kind: check_official_list
+    outcome: ellisfen_on_register
+  - id: report_ellisfen_sheet
+    label: "Report the email"
+    kind: report
+    outcome: ellisfen_reported
+  - id: delete_ellisfen_sheet
+    label: "Delete it"
+    kind: ignore
+    outcome: ellisfen_deleted
+
+interrupts:
+  - id: roisin_biscuit_investment
+    at_seconds: 15
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Róisín (clinic)", detail: "Saved contact: Róisín (clinic)" }
+      from_cast: roisin
+      body: "Dad's asking if biscuits count as an investment 🙄"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Róisín's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what she asks for: a joke."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_biscuit_returns
+        label: "Reply: only if they're chocolate"
+        kind: proceed
+        outcome: roisin_biscuit_reply
+        pressure_target: true
+      - id: report_biscuit_investment
+        label: "Report the message"
+        kind: report
+        outcome: roisin_biscuit_reported
+
+outcomes:
+  ellisfen_thanks:
+    narrative: "You reply: \"Thanks, I'll read it.\" Ellisfen: \"Of course. Ring us on the same number with any questions.\""
+  ellisfen_on_register:
+    narrative: "You open the Fairmeasure register from your home screen. Ellisfen Invest: authorised. The address and number on the register match this email and the number you rang."
+    register: { firm: "Ellisfen Invest", result: authorised, address: "ellisfen.example", phone: "+353 1 ••• ••60" }
+  ellisfen_reported:
+    narrative: "Reported. Next day Ellisfen rings you on the register's number: \"Did our email reach you? You asked for the sheet.\""
+  ellisfen_deleted:
+    narrative: "Deleted. The sheet you asked for is gone; you can ask Ellisfen again on the register's number."
+  roisin_biscuit_reply:
+    narrative: "Róisín: \"Chocolate ones only. Noted for the clinic 😂\""
+  roisin_biscuit_reported:
+    narrative: "You reported it. Careful is good; this one really was Róisín, joking about biscuits."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Found on the register, at the address it lists, no rush."
+    what_works: "Reading it calmly was right."
+  layer2:
+    message_flags: []
+    notes: "You found the firm and rang the register's number yourself. Copies of real firms exist, so that's the part that counts."
+  device_tip: "On a real phone, compare the sender's address and any phone number with the details on the regulator's register, which you open yourself."
+  habit_card: calm-not-paranoid
+  sources: [ie-cbi-avoiding-scams, ie-ccpc-investment-scams, ie-cbi-unauthorised-firms]

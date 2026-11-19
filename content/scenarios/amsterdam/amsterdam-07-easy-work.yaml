@@ -1,0 +1,252 @@
+# 2-7 Easy-work thread (GDD §22.3; brief task-job-scam §2, §3, §4, §5, §8). Fraud, difficulty 3, timer
+# (call beat, then the slot length), beat-bound pushers (CR-21). Levers: greed, fear, urgency,
+# small_amount (sunk cost has no lever value yet, GDD §22.3).
+# The recruitment -> small payout -> deposit thread, chained by the player's own engage choices:
+#   start (recorded call, CR-20) -> mentor_chat (Kettle) -> trial_payout (training page + €6 banner)
+#   -> top_up (training page, "not enough tasks done, top up to finish the set", TJ §2.5, §10).
+# Opening checkables: caller_id D (an unknown number, as a real recruiter's call might be), link D
+# (Klaverwerk's real site named in the recording; producer answer 3), claim R (pay offer, TJ §3.3),
+# request R (save this number and move to Kettle, TJ §3.4, §3.2).
+# Hang up -> "What now?": the extra "Look up Klaverwerk and call its number" (call_back_known; replaces
+# the generic call-back built-in), plus report and "Leave it there". Verify at the call = ★★★; every
+# engage caps at ★★ (design ruling 4 §22.8).
+# Teo is the trusted person (ask_someone). Training pages: read-only, nothing is sent (Red Line 2).
+# Layer 1: GDD §22.3's tell ("A job you never asked for, pay too good to be true, and a fee before you
+# get paid.", 19 words) plus "A real job pays you. Stop and ask." is 27 authored words; with the fixed
+# copy (14) the budget (40) is gone before any "You chose" line. Shortened, same three tells; flagged.
+# Engine note: the top_up follow-up is bound to a page, so the engine shows it with the channel and
+# sender of the group's scheduled beat (the opening call). Reported to frontend.
+id: amsterdam-07-easy-work
+chapter: amsterdam
+role: standard
+pattern: task-job-scam
+theme: job-offer
+learning_objectives: [LO-12, LO-02, LO-04, LO-18, LO-16]
+difficulty: 3
+is_fraud: true
+device: call
+brands: [klaverwerk, tallyfern, kettle, larchwick]
+cast: [teo]
+pressure:
+  timer: true
+  levers: [greed, fear, urgency, small_amount]
+  pusher:
+    messages:
+      - { at_seconds: 40, text: "Still there? 😊 Today's task spots fill up fast", beat: mentor_chat }
+      - { at_seconds: 20, text: "Only 11 tasks to go! Finish before midnight or the fine applies", beat: top_up }
+
+message:
+  sender: { display: "+31 6 •• •• •• 52", detail: "Mobile number +31 6 •• •• •• 52 (not in your contacts)" }
+  recorded: true
+  transcript:
+    - { speaker: caller, text: "Hello! This is a message from Klaverwerk Staffing, klaverwerk-staffing.example." }
+    - { speaker: caller, text: "We have flexible online work: about an hour a day, €100 to €300 a day, no experience needed." }
+    - { speaker: caller, text: "Interested? Save this number and send us a message on Kettle. A mentor will get you started today." }
+  request: reply
+  ask: { text: "Save this number and send us a message on Kettle." }
+  claims:
+    - { text: "about an hour a day, €100 to €300 a day, no experience needed" }
+
+inspectables:
+  - target: caller_id
+    reveal: "Shows a mobile number you don't have saved, as a real recruiter's call might: agencies do call from numbers you don't know. It can't prove anything either way."
+    red_flag: false
+    type: caller_id
+  - target: link
+    reveal: "klaverwerk-staffing.example: Klaverwerk Staffing's own site, said in the recording. Naming a real company's site costs nothing, so it can't prove anything either way."
+    red_flag: false
+    type: link
+  - target: claim
+    reveal: "€100 to €300 for about an hour a day, no experience needed: pay far above normal for very little work. Too good to be true is a common job-scam sign."
+    red_flag: true
+    type: claim
+  - target: request
+    reveal: "A job you never applied for, and they want you to save an unknown number and carry on in a chat app. Moving you to a chat app is a common job-scam step."
+    red_flag: true
+    type: request
+
+actions:
+  - id: message_on_kettle
+    label: "Message them on Kettle"
+    kind: reply
+    next_beat: mentor_chat
+    pressure_target: true
+  - id: hang_up_recording
+    label: "Hang up"
+    kind: hang_up
+    outcome: recording_left
+
+what_now:
+  outcomes:
+    report: recording_reported
+    done: recording_left
+  extra:
+    - id: look_up_klaverwerk_call
+      label: "Look up Klaverwerk and call its number"
+      kind: call_back_known
+      outcome: klaverwerk_never_hires_by_chat
+
+beats:
+  - id: mentor_chat
+    device: messenger
+    message:
+      sender: { display: "Klaverwerk mentor", detail: "Saved just now: +31 6 •• •• •• 52" }
+      body: |
+        Welcome! 😊 I'm your mentor. The work: rate hotels online, 30 tasks a day, paid daily. Start with three free trial tasks, paid straight away: tallyfern-earn.example/trial
+      request: open_link
+    inspectables:
+      - target: link
+        reveal: "tallyfern-earn.example. Read the end: the owner part is tallyfern-earn.example, a site you don't know, not Klaverwerk's klaverwerk-staffing.example."
+        red_flag: true
+        type: link
+    actions:
+      - id: open_trial
+        label: "Try the trial"
+        kind: open_link
+        next_beat: trial_payout
+        pressure_target: true
+      - id: look_up_klaverwerk_chat
+        label: "Look up Klaverwerk Staffing yourself"
+        kind: verify_in_app
+        outcome: klaverwerk_site_no_mentor
+      - id: block_mentor
+        label: "Block and report"
+        kind: block
+        outcome: mentor_blocked
+      - id: stop_replying_mentor
+        label: "Stop replying"
+        kind: ignore
+        outcome: mentor_ignored
+
+  - id: trial_payout
+    device: browser
+    banner:
+      device: banking
+      message:
+        body: "Larchwick: You received €6.00 from TALLYFERN."
+        request: none
+    message:
+      page: { address: "tallyfern-earn.example/trial", title: "Tallyfern" }
+      body: "Trial complete! €6.00 paid to your account. Today's set: 30 tasks. Ready?"
+      request: open_link
+    inspectables:
+      - target: page.address
+        reveal: "tallyfern-earn.example. Read the end: the owner part is tallyfern-earn.example, not Klaverwerk's site. The job was offered in Klaverwerk's name, but the work happens somewhere else."
+        red_flag: true
+        type: page_address
+      - target: page.info
+        reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
+        red_flag: false
+        type: padlock
+    actions:
+      - id: start_task_set
+        label: "Start today's 30-task set"
+        kind: open_link
+        next_beat: top_up
+        pressure_target: true
+      - id: ask_teo_trial
+        label: "Ask Teo what he thinks"
+        kind: ask_someone
+        outcome: teo_six_euros
+      - id: close_trial
+        label: "Close the site"
+        kind: ignore
+        outcome: trial_closed
+
+  - id: top_up
+    device: browser
+    message:
+      page: { address: "tallyfern-earn.example/tasks", title: "Tallyfern · Today's set" }
+      body: "Task 19 of 30. Not enough tasks done to finish the set. Top up €40 to continue and unlock your €86.40. Unfinished sets get a €25 fine."
+      request: pay
+      ask: { text: "Top up €40 to continue and unlock your €86.40." }
+    inspectables:
+      - target: page.address
+        reveal: "tallyfern-earn.example. Still not Klaverwerk's site: the owner part is tallyfern-earn.example."
+        red_flag: true
+        type: page_address
+      - target: page.info
+        reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
+        red_flag: false
+        type: padlock
+      - target: request
+        reveal: "It asks you to pay €40 to keep working and to get the money you \"earned\". A real job pays you; it never asks you to pay in."
+        red_flag: true
+        type: request
+    actions:
+      - id: top_up_40
+        label: "Top up €40 to finish the set"
+        kind: pay
+        outcome: topped_up
+        pressure_target: true
+      - id: stop_ask_teo
+        label: "Stop and ask Teo"
+        kind: ask_someone
+        outcome: teo_pay_to_get_paid
+      - id: look_up_klaverwerk_topup
+        label: "Look up Klaverwerk Staffing yourself"
+        kind: verify_in_app
+        outcome: klaverwerk_site_bait
+      - id: report_task_site
+        label: "Report the site"
+        kind: report
+        outcome: task_site_reported
+      - id: close_task_site
+        label: "Close it and stop"
+        kind: ignore
+        outcome: task_site_closed
+
+outcomes:
+  topped_up:
+    narrative: "\"Set complete! Bonus set unlocked: top up €120 to withdraw.\" The balance says €86.40, but there is no way to take it out. The amounts keep growing."
+    recovery:
+      - { step: stop_paying, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: call_bank_known_number, category: secure }
+      - { step: contact_fraud_helpline, category: report }
+      - { step: pay_last_fee, category: harmful }
+      - step: keep_quiet
+        category: harmful
+        feedback: "Feeling embarrassed is normal, and it's what keeps people paying and silent. There is no need to feel ashamed: anyone can fall for this. Telling a trusted adult and your bank early is what limits the damage."
+  klaverwerk_never_hires_by_chat:
+    narrative: "You type klaverwerk-staffing.example yourself and ring the number on its contact page. \"No, we don't make recorded calls, and we never hire through chat apps. We never ask you to pay.\""
+  recording_reported:
+    narrative: "Reported. You block the number, too."
+  recording_left:
+    narrative: "You hang up and leave it there. The number doesn't call again today."
+  klaverwerk_site_no_mentor:
+    narrative: "You type klaverwerk-staffing.example. No \"mentor\", no rating work, and a notice: \"We never ask you to pay, and we don't hire through chat apps. Got a message in our name? Call us on the number on this page.\" You stop replying."
+  mentor_blocked:
+    narrative: "Blocked and reported. The \"mentor\" disappears from your chats."
+  mentor_ignored:
+    narrative: "You stop replying. Two more \"Still there? 😊\" messages, then silence."
+  teo_six_euros:
+    narrative: "Teo rings back at once: \"Six euros to try it? Clever. They'll want money from you next, you'll see. Real jobs pay you, full stop. Glad you asked before going further, kiddo.\""
+  trial_closed:
+    narrative: "You close the site. Six euros richer, and nothing more to lose."
+  teo_pay_to_get_paid:
+    narrative: "Teo: \"Pay to get paid? No. You did the right thing stopping here, kiddo. Plenty of people get pulled in this far; it's built that way. Close it, and keep the chat in case you report it.\""
+  klaverwerk_site_bait:
+    narrative: "You type klaverwerk-staffing.example. No \"mentor\", no rating work, and a notice: \"We never ask you to pay, and we don't hire through chat apps.\" The €6 was bait."
+  task_site_reported:
+    narrative: "Reported. You close the page with nothing paid."
+  task_site_closed:
+    narrative: "You close it and stop. The balance on the page was never yours to take out."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Unasked-for job, too-good pay, then a fee to get paid."
+    what_works: "A real job pays you. Stop and ask."
+  layer2:
+    message_flags:
+      - "A recorded call offering work you never applied for."
+      - "A small early payout is part of the trick, not proof the job is real."
+      - "\"Not enough tasks done\" and a fine for unfinished sets: reasons why you get less, or nothing."
+    notes: "If you'd kept going: (1) an offer you never asked for, (2) a move to Kettle with a friendly \"mentor\", (3) a €6 payout that seems to prove it's real, (4) top-ups that keep growing, with a balance you can never take out. If you paid: stop, tell a trusted adult, call your bank, keep the chats, and report it to the police. Beware of anyone who later offers to get your money back for a fee. And if a \"job\" ever wants to use your bank account, that's a different trap."
+  device_tip: "On a real phone, search for the company yourself and use the contact details on its own site. Don't save a number or switch apps because a recording asks."
+  habit_card: easy-money-costs-you
+  already_clicked:
+    clicked: "Replied or opened the site? Stop there, pay nothing, and keep the chat."
+    paid: "Stop paying: no last fee releases the money. Tell a trusted adult, call your bank on the number on your card, keep the chats."
+  sources: [nl-fraudehelpdesk-vacature-alert-2025, nl-fraudehelpdesk-baan-aangeboden, nl-veiliginternetten-thuiswerk-2025, nl-politie-crypto-job-fraud-2025, eu-epc-threats-2025, nl-politie-ik-ben-opgelicht, nl-veiligbankieren-meld-fraude]

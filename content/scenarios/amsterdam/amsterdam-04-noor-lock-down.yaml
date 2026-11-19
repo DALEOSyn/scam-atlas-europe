@@ -1,0 +1,90 @@
+# 2-4 Drill: help Noor lock it down (GDD §22.3; family-impersonation brief §4 prevention,
+# §5 recovery). Unscored; the real Noor from her saved contact. The text works whatever the player did in
+# 2-3 ("Mum says someone's texting the family as me").
+# One pick, one Noor reply (outcomes). Good picks: two-step PIN, fewer public photos (framed as lowering
+# risk, never blame), a family "money request = a call" agreement. Weak pick: "Just ignore it".
+# "I paid it, actually" (the player speaks for themselves): kind reply-to-Noor, but its outcome carries
+# the generic "Already paid?" steps as damage control (drills run damage control when the outcome has
+# recovery options; never scored). The family code word stays in Rome (GDD §18).
+# Noor's closing line seeds the finale (summer job).
+id: amsterdam-04-noor-lock-down
+chapter: amsterdam
+role: drill
+pattern: messenger-family-impersonation
+learning_objectives: [LO-18, LO-07]
+difficulty: 2
+is_fraud: false
+device: messenger
+brands: [kettle]
+cast: [noor]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Noor", detail: "Saved contact: Noor" }
+  from_cast: noor
+  body: |
+    Mum says someone's texting the family as me from a new number 😳 Did you get one? How do I stop it happening again?
+  request: reply
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: Noor's saved contact, the one you always use. That isn't proof on its own, so weigh it with what she asks for: advice, not money or a code."
+    red_flag: false
+    type: sender
+    reassures: true
+
+actions:
+  - id: advise_two_step_pin
+    label: "Turn on Kettle's two-step PIN"
+    kind: proceed
+    outcome: noor_pin_on
+    pressure_target: true
+  - id: advise_fewer_photos
+    label: "Share fewer photos and family details publicly"
+    kind: proceed
+    outcome: noor_fewer_photos
+  - id: advise_family_call_rule
+    label: "Agree: family money requests mean a call"
+    kind: proceed
+    outcome: noor_family_rule
+  - id: admit_paid
+    label: "I paid it, actually 😬"
+    kind: reply
+    outcome: noor_you_paid
+  - id: advise_ignore
+    label: "Just ignore it"
+    kind: ignore
+    outcome: noor_not_ignoring
+
+outcomes:
+  noor_pin_on:
+    narrative: "Noor: \"Done ✅ Two-step PIN on. Now nobody can set up my Kettle on another phone without it. Telling Mum to do hers too. Also, I'm looking for a summer job, if you hear of anything 👀\""
+  noor_fewer_photos:
+    narrative: "Noor: \"ok, fewer for them to copy. still their fault though, right?\" You: \"Right.\" Noor: \"Good. Profile on contacts-only. Also, I'm looking for a summer job, if you hear of anything 👀\""
+  noor_family_rule:
+    narrative: "Noor: \"Family chat rule from today: anyone asks for money by message, we call them on the number we already have. Grandad says he's always done that 😂 Also, I'm looking for a summer job, if you hear of anything 👀\""
+  noor_not_ignoring:
+    narrative: "Noor: \"and let them try Grandad next? nope. I'm turning on the two-step PIN and telling the family to call before paying anyone. Also, I'm looking for a summer job, if you hear of anything 👀\""
+  noor_you_paid:
+    narrative: "Noor: \"not your fault, it's built to fool people who care. call the bank now, and tell a parent or someone you trust.\""
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: report_to_police_online, category: report }
+      - { step: tell_real_person, category: warn }
+      - { step: pay_second_request, category: harmful }
+      - { step: reply_ask_money_back, category: harmful }
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Noor wanted to stop it happening again."
+    what_works: "Two-step PIN, fewer public photos, and a call before any money."
+  layer2:
+    message_flags: []
+    notes: "No setting makes impersonation impossible, and it's never the fault of the person whose photo was copied. What helps: the two-step PIN stops someone setting up your account on another phone; fewer public photos and family details give scammers less to copy; and a family agreement that money requests mean a call, on the number you already have, beats every script."
+  device_tip: "On a real phone, look in your chat app's settings for two-step verification and a PIN, and set who can see your profile photo."
+  habit_card: call-the-number-you-know
+  already_clicked:
+    paid: "Call your bank now on the number on your card (with a parent or trusted adult if you're under 18). Save the chat, report it, and don't pay a second request."
+  sources: [nl-fraudehelpdesk-hulpvraag-campaign, nl-fraudehelpdesk-takeover-alert-2026, nl-politie-hulpvraagfraude-2025]

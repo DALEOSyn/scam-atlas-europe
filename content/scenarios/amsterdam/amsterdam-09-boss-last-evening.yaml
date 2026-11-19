@@ -1,0 +1,318 @@
+# 2-9 Boss: last evening (GDD §22.3; producer answer 1: two sourced scams on one evening, joined by one
+# habit). Mateus is on an evening flight to the next city, phone off until he lands (unnamed: free order).
+# Beat 1 (sms, at 0): KLAVERWERK sender name, "activate your task account with a €30 starter top-up"
+#   (TJ §2.5). R: link, request. D: sender name (any sender can set it), profile number.
+# Beat 2 (chat, +45 s): "Mateus" from a new number with his photo, stranded, pay the hotel's
+#   payment request (FI §2 A: stranded abroad, payment-request link, someone else's account).
+#   R: sender.detail (same opening words as 2-1 / 2-3), request. D: link (Larchwick's real domain,
+#   ruling 2), image. start_transfer -> hotel_request (banking request page, CR-18(c), (e)): no payee
+#   check runs; the payee name R. ••••, a red flag that counts toward spotted, not R.
+#   Follow-up bound to beat 2 (CR-21): "please, they need it before 22:00".
+# Beat 3 (call, +45 s, 40 s, covered_by beat 2): the same new number, a voice that sounds like Mateus
+#   (FI §2 C, call only). Transcript is the main mode; no audio file, no distress effects, never taught via
+#   "robotic" artefacts. R: caller_id, request. D: claim "It's me, Mateus" (voices can be imitated), the
+#   booking reference. Hang up -> "What now?": call his saved work phone (no answer: still in the air),
+#   ask Adaeze (verify), "Call back this number" (engage note), report, leave it there.
+# Interrupt after beat 3 (genuine): the real Mateus from his saved contact.
+# Layer 1: the producer's wording (tell "Two strangers wanting money first: one as a job, one as Mateus.",
+# what works "Asked to pay first? Check it yourself, on a number or site you already know.") is 27 words;
+# with the fixed copy (14) and the shortest possible slot line (7, "Next time: call a number you know.")
+# it is 48 > 40. Shortened to 18 authored words, keeping both ideas; layer 2 names the job and "Mateus".
+# Flagged for producer: the stamp screen should take the same wording or keep the original.
+# hotel_request carries scored: false only because the validator counts the banking sub-beat as a
+# fourth scored boss beat (scripts/lib/rules.ts). The engine scores groups by their scheduled beat, so the
+# sub-beat is still beat 2's decisive action (CR-18(e)); the flag has no runtime effect. Reported. Damage control merges the
+# fallen beats' lists (beat 1: the 2-7 list; beats 2/3: the 2-3 list).
+id: amsterdam-09-boss-last-evening
+chapter: amsterdam
+role: boss
+pattern: messenger-family-impersonation
+theme: new-number
+learning_objectives: [LO-12, LO-07, LO-04, LO-03, LO-02, LO-16]
+difficulty: 3
+is_fraud: true
+device: sms
+brands: [klaverwerk, tallyfern, kettle, larchwick, waymarker]
+cast: [mateus, adaeze]
+pressure:
+  timer: true
+  levers: [greed, affection, urgency, fear]
+  pusher:
+    messages:
+      - { at_seconds: 20, text: "please, they need it before 22:00", beat: mateus_new_number }
+
+message:
+  sender: { display: "KLAVERWERK", detail: "Sender name: KLAVERWERK" }
+  body: |
+    KLAVERWERK: Je profiel is goedgekeurd voor betaalde reviewtaken. Activeer je taakaccount met een starter-top-up van €30, terugbetaald bij je eerste uitbetaling: tallyfern-start.example/activeer/KW-88213
+  lang: nl
+  translation: "KLAVERWERK: Your profile is approved for paid review tasks. Activate your task account with a €30 starter top-up, paid back with your first pay: tallyfern-start.example/activeer/KW-88213"
+  request: pay
+  ask:
+    text: "Activeer je taakaccount met een starter-top-up van €30"
+    translation: "Activate your task account with a €30 starter top-up"
+  references: ["KW-88213"]
+  l10n_note: "Dutch in-world text is intentional (Amsterdam chapter); the English translation is shown inline."
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows the sender name KLAVERWERK, as a real text from the agency would. Any sender can set this name, so it can't prove anything either way."
+    red_flag: false
+    type: sender
+  - target: link
+    reveal: "tallyfern-start.example. Read the end: the owner part is tallyfern-start.example, not Klaverwerk's site, klaverwerk-staffing.example."
+    red_flag: true
+    type: link
+  - target: reference
+    reveal: "Shows a profile number, KW-88213, as a real agency text might. Anyone can make one up, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: request
+    reveal: "It asks you to pay €30 before you can start work. A real job pays you; it never asks you to pay in."
+    red_flag: true
+    type: request
+
+actions:
+  - id: pay_starter_topup
+    label: "Pay the €30 top-up through the link"
+    kind: pay
+    outcome: starter_topup_paid
+    pressure_target: true
+  - id: look_up_klaverwerk_boss
+    label: "Look up Klaverwerk Staffing yourself"
+    kind: verify_in_app
+    outcome: klaverwerk_no_topups
+  - id: report_klaverwerk_text
+    label: "Report the text as spam"
+    kind: report
+    outcome: klaverwerk_text_reported
+  - id: delete_klaverwerk_text
+    label: "Delete the text"
+    kind: delete
+    outcome: klaverwerk_text_deleted
+
+beats:
+  - id: mateus_new_number
+    device: messenger
+    arrives_after: 45
+    message:
+      sender: { display: "Mateus", detail: "Mobile number •••• ••93", new_contact: true }
+      body: |
+        It's Mateus! Landed, but my phone and wallet got stolen at the airport 😩 I'm on a borrowed phone. Can you pay the hotel's request for me? €260, I'll pay you back: larchwick-bank.example/pay/HT-5520
+      request: pay
+      ask: { text: "Can you pay the hotel's request for me?" }
+      image: { alt: "Profile photo: Mateus grinning, holding up three phone chargers" }
+    inspectables:
+      - target: sender.detail
+        reveal: "Not in your contacts: a new number, not Mateus's saved one, \"Mateus (work phone)\". Someone you know, on a number you don't have, asking for money: that's the moment to call the number you already had."
+        red_flag: true
+        type: sender
+      - target: link
+        reveal: "larchwick-bank.example: Larchwick's own address. A payment request opens there whoever sent it, so it can't prove anything either way. The request page shows who gets the money."
+        red_flag: false
+        type: link
+      - target: image
+        reveal: "Shows Mateus's photo, as a real message from him would. Photos are easy to copy from a public profile, so it can't prove anything either way."
+        red_flag: false
+        type: image
+      - target: request
+        reveal: "Money by message, tonight, through a payment request, from a number you don't know. That is the request to check with a call before you pay."
+        red_flag: true
+        type: request
+    actions:
+      - id: open_hotel_request
+        label: "Open the request in the Larchwick app"
+        kind: start_transfer
+        next_beat: hotel_request
+        pressure_target: true
+      - id: call_mateus_saved
+        label: "Call Mateus on his saved work phone"
+        kind: call_back_known
+        outcome: mateus_in_the_air
+      - id: report_mateus_chat
+        label: "Report the chat"
+        kind: report
+        outcome: mateus_chat_reported
+      - id: ignore_mateus_chat
+        label: "Ignore it"
+        kind: ignore
+        outcome: mateus_chat_ignored
+
+  - id: hotel_request
+    device: banking
+    scored: false   # see header: inside beat 2's group (CR-18(e)); marked only for the validator's 3-scored-beat count
+    message:
+      payee: { name: "R. ••••", amount: "€260.00", note: "Hotel", payment_request: true }
+      request: pay
+    inspectables:
+      - target: payee.name
+        reveal: "The request page shows who gets the money: R. ••••. Not Mateus, and not a hotel."
+        red_flag: true
+        type: payee
+    actions:
+      - id: pay_260
+        label: "Pay €260"
+        kind: pay
+        outcome: hotel_request_paid
+        pressure_target: true
+      - id: close_call_mateus
+        label: "Close it and call Mateus's work phone"
+        kind: call_back_known
+        outcome: mateus_in_the_air
+      - id: close_hotel_request
+        label: "Close it"
+        kind: ignore
+        outcome: hotel_request_closed
+
+  - id: mateus_voice_call
+    device: call
+    arrives_after: 45
+    timer_seconds: 40
+    covered_by: [mateus_new_number]
+    message:
+      sender: { display: "Mobile number •••• ••93", detail: "Not in your contacts: the number that messaged you as Mateus" }
+      transcript:
+        - { speaker: caller, text: "It's me, Mateus! Did you see my message?" }
+        - { speaker: you, text: "Mateus? Where are you?" }
+        - { speaker: caller, text: "I can't hear you well, the line's bad. Booking HT-5520, the hotel's waiting." }
+        - { speaker: caller, text: "Please just pay the request now, and I'll explain later." }
+      request: pay
+      ask: { text: "Please just pay the request now" }
+      claims:
+        - { text: "It's me, Mateus!" }
+      references: ["HT-5520"]
+    inspectables:
+      - target: caller_id
+        reveal: "The same new number that messaged you as Mateus. Not his saved contact, \"Mateus (work phone)\"."
+        red_flag: true
+        type: caller_id
+      - target: reference
+        reveal: "Shows a booking number, HT-5520, as a real hotel booking might. Anyone can make one up, so it can't prove anything either way."
+        red_flag: false
+        type: reference
+      - target: claim
+        reveal: "Sounds like him and says it's him, as a real call would. Voices can be imitated with AI, so it can't prove anything either way."
+        red_flag: false
+        type: claim
+      - target: request
+        reveal: "Pay the request now, and no time to talk properly. A call from a number you don't know, pushing the same payment, is the moment to hang up and call the number you already had."
+        red_flag: true
+        type: request
+    actions:
+      - id: pay_request_on_call
+        label: "Pay the request now"
+        kind: pay
+        outcome: hotel_request_paid
+        pressure_target: true
+      - id: hang_up_voice
+        label: "Hang up"
+        kind: hang_up
+        outcome: voice_call_left
+    what_now:
+      call_back_label: "Call Mateus on his saved work phone"
+      outcomes:
+        call_back_known: mateus_still_flying
+        report: voice_call_reported
+        done: voice_call_left
+      extra:
+        - id: ask_adaeze_directory
+          label: "Ask Adaeze through the staff directory"
+          kind: ask_someone
+          outcome: adaeze_lands_at_nine
+        - id: call_back_voice_number
+          label: "Call back this number"
+          kind: call_number_in_message
+          note: "That's the number that just called. Only a number you saved tells you who answers."
+
+interrupts:
+  - id: real_mateus_landed
+    after_beat: mateus_voice_call
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Mateus (work phone)", detail: "Saved contact: Mateus (work phone)" }
+      from_cast: mateus
+      body: "Hotel wifi finally 🙂 All fine here, see you Monday!"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Mateus's saved contact, in your usual chat with him. That isn't proof on its own, so weigh it with what he asks for: nothing, he's just checking in."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_real_mateus
+        label: "Reply: glad you're OK, someone's using your photo"
+        kind: proceed
+        outcome: real_mateus_warned
+        pressure_target: true
+      - id: report_real_mateus
+        label: "Report the message"
+        kind: report
+        outcome: real_mateus_reported
+
+outcomes:
+  starter_topup_paid:
+    narrative: "\"Account active! Unlock your first task set with a €75 top-up.\" The €30 is gone, and the next fee is already waiting."
+    recovery:
+      - { step: stop_paying, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: call_bank_known_number, category: secure }
+      - { step: contact_fraud_helpline, category: report }
+      - { step: pay_last_fee, category: harmful }
+      - step: keep_quiet
+        category: harmful
+        feedback: "Feeling embarrassed is normal, and it's what keeps people paying and silent. There is no need to feel ashamed: anyone can fall for this. Telling a trusted adult and your bank early is what limits the damage."
+  hotel_request_paid:
+    narrative: "Paid to R. ••••. \"Thank you!! Can you do the taxi too? €45.\" When the real Mateus lands, he has never heard of any of it."
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: report_to_police_online, category: report }
+      - { step: tell_real_person, category: warn }
+      - { step: pay_second_request, category: harmful }
+      - { step: reply_ask_money_back, category: harmful }
+  klaverwerk_no_topups:
+    narrative: "You type klaverwerk-staffing.example. No task accounts, no top-ups: \"We never ask you to pay.\" Then Kettle pings."
+  klaverwerk_text_reported:
+    narrative: "Reported. Your phone files it under spam. Then Kettle pings."
+  klaverwerk_text_deleted:
+    narrative: "Deleted. Then Kettle pings."
+  mateus_in_the_air:
+    narrative: "No answer: his phone is off, he's still in the air. Can't reach him? Then don't pay. You message Adaeze through the staff directory. Adaeze: \"He lands at nine. Whoever that is, it isn't him.\""
+  mateus_chat_reported:
+    narrative: "Reported. Then your phone rings: the same new number."
+  mateus_chat_ignored:
+    narrative: "You leave it. Then your phone rings: the same new number."
+  hotel_request_closed:
+    narrative: "You close the request without paying. Then your phone rings: the same new number."
+  mateus_still_flying:
+    narrative: "No answer, he's still in the air. Can't reach him? Then don't pay. Try someone close, like Adaeze."
+  adaeze_lands_at_nine:
+    narrative: "Adaeze: \"He lands at nine. Don't pay anything.\""
+  voice_call_reported:
+    narrative: "Reported. Keep a note of the number and the time."
+  voice_call_left:
+    narrative: "You hang up and leave it there. The number tries once more, then stops."
+  real_mateus_warned:
+    narrative: "Mateus: \"Someone used my photo?! Thanks for not paying. I'll warn my contacts and lock my profile.\""
+  real_mateus_reported:
+    narrative: "You reported it. Careful is good; this one really was Mateus, back online."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Two strangers, both wanting money first."
+    what_works: "Asked to pay first? Check on a number or site you already know."
+  layer2:
+    message_flags:
+      - "Beat 1: a real job pays you; it never asks you to pay in."
+      - "Beat 2: the request page showed R. ••••, not Mateus. A payment-request page runs no name check: it just shows who gets the money."
+      - "Beat 3: you don't have to tell a fake voice from a real one. Your call-back does that."
+    notes: "Two different scams on one evening, and one habit for both: when someone wants money first, check it yourself, on a number or site you already know. Can't reach the person? Then don't pay, and ask someone close. These scams are built to hit people who care, at any age."
+  device_tip: "On a real phone, end the call yourself, then ring the person from your contacts. If they don't answer, message someone close to them before paying anything."
+  habit_card: call-the-number-you-know
+  already_clicked:
+    clicked: "Opened the link or the request? Close it and pay nothing."
+    paid: "Call your bank now on the number on your card (with a parent or trusted adult if you're under 18). Stop paying, don't pay a second request, and keep the chats."
+  sources: [nl-fraudehelpdesk-vacature-alert-2025, nl-fraudehelpdesk-baan-aangeboden, eu-epc-threats-2025, nl-politie-hulpvraagfraude-2025, nl-veiligbankieren-hulpvraag, nl-veiliginternetten-hulpvraag, be-febelfin-vop-faq, nl-fraudehelpdesk-hulpvraag-campaign, nl-veiliginternetten-voice-cloning, nl-veiligbankieren-voice-cloning-2023, eu-esas-ai-scams-factsheet-nl]

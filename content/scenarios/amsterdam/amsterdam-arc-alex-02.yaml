@@ -1,0 +1,66 @@
+# Arc beat, slot 2 (GDD §10.1, §10.2, §22.3). Alex suggests moving the chat to Kettle. Warning sign:
+# off-platform. Friendship only; Alex's line is ≤ 25 words, generic, no persuasion copy.
+# Options per §10.1 slot 2: Move → reply · Mention it to Teo → ask_someone · Stay on Wordswap → ignore.
+# Debrief per §10.2 slot 2 (layer 1 words fixed there), with the safeguarding line.
+# Placement: before 2-7 (GDD §22.3). the story bible §1.4 / §3.2: arc slots will follow play position (engine
+# ticket S3); until then this file carries arc_slot 2 and a city-agnostic line, so it reads the same
+# whichever slot ends up playing here. game-designer rechecks the placement reason (STORY §3.2).
+id: amsterdam-arc-alex-02
+chapter: amsterdam
+role: arc
+arc_slot: 2
+learning_objectives: [LO-14]
+is_fraud: true
+device: messenger
+brands: [wordswap, kettle]
+cast: [alex, teo]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Alex", detail: "Wordswap practice partner" }
+  from_cast: alex
+  body: |
+    Wordswap keeps lagging for me 🙄 Shall we move to Kettle? Easier to chat there. Add me?
+  request: reply
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows Alex, your practice partner on Wordswap, as any profile would. A profile name can't prove anything either way."
+    red_flag: false
+    type: sender
+
+actions:
+  - id: move_to_kettle
+    label: "Move the chat to Kettle"
+    kind: reply
+    outcome: moved_to_kettle
+    pressure_target: true
+  - id: mention_to_teo
+    label: "Mention it to Teo"
+    kind: ask_someone
+    outcome: teo_on_moving_apps
+  - id: stay_on_wordswap
+    label: "Stay on Wordswap"
+    kind: ignore
+    outcome: stayed_on_wordswap
+
+outcomes:
+  moved_to_kettle:
+    narrative: "You add Alex on Kettle. Alex sends a wave and a sticker of a cat in sunglasses."
+  teo_on_moving_apps:
+    narrative: "Teo: \"Someone you met on an app wants to move to another one? Nothing wrong with Alex being friendly, kiddo, but stay where you met until you know them. And tell me if it ever gets odd.\""
+  stayed_on_wordswap:
+    narrative: "You reply on Wordswap: \"Let's keep it here for now.\" Alex: \"Sure, no worries!\""
+
+debrief:
+  variant: arc
+  layer1:
+    tell: "Leaving the app you met on is a common scam step."
+    what_works: "Stay on Wordswap until you know someone."
+  layer2:
+    message_flags: []
+    notes: "Most people who suggest another app just find it easier. But moving a chat off the app you met on also takes it away from that app's safety tools and reporting, which is why it is a common early step in online scams and grooming. You don't have to decide alone: tell someone you trust."
+  safeguarding_line: "Asked to switch apps or keep secrets? Tell a trusted adult."
+  already_clicked:
+    clicked: "Moved already? That's fine. Keep chatting if you like, and if anyone asks you to keep a secret or send money, tell someone you trust first."
+  sources: [de-propk-cybergrooming-2026, de-polizei-lippe-cybergrooming, eu-bik-grooming-2020, be-police-romance-2026]

@@ -170,7 +170,7 @@ brands:
       shop that fake shops imitate in Lisbon. Product line is deliberately non-craft: no sewing, knitting,
       embroidery or craft kits, to stay clear of craft-kit sellers with similar names.
     domain: thimbleandpine.example
-    email_addresses: ["orders@thimbleandpine.example"]
+    email_addresses: ["orders@thimbleandpine.example", "jobs@thimbleandpine.example"]   # jobs@: Amsterdam 2-5 (genuine interview email; vacancies under thimbleandpine.example/jobs)
     palette:
       primary: "#2F5D3A"       # pine
       on_primary: "#FFFFFF"    # 7.64:1
@@ -311,6 +311,49 @@ brands:
     web_check: "Low–Medium. Hits are word games, not language exchange; it is a setting, never a spoofed brand (BRAND_CHECK §8). Fallback if the sceptic wants zero overlap: Talktangle."
     lookalike_examples: []
     trademark_search: "web-checked 2026-11-18; formal TMview/EUIPO pending before G4"
+    status: draft
+
+  # -------------------------------------------------------------------------------------------
+  # Added by scenario-writer for Amsterdam (T-3.4, 2026-11-19), names per BRAND_CHECK §9 (producer
+  # rename Tidewell -> Klaverwerk, Tasklyn -> Tallyfern). No logo or palette: neither is drawn yet
+  # (text-only sender names and training pages). sceptic-reviewer: brand-resemblance check pending.
+  - id: klaverwerk
+    name: "Klaverwerk Staffing"
+    short_name: "Klaverwerk"
+    sector: staffing agency (genuine)
+    role_in_game: >
+      A genuine in-world staffing agency whose name scammers borrow in task / "easy work" job scams
+      (Amsterdam 2-2, 2-7, boss beat 1). Its own site is a verify destination ("We never ask you to pay").
+    domain: klaverwerk-staffing.example
+    sms_sender_id: "KLAVERWERK"     # spoofed in boss 2-9 beat 1
+    known_channels: "Its own site, typed by the player: klaverwerk-staffing.example. No phone number shown."
+    rationale:
+      name: "Dutch-sounding coinage: 'klaver' (clover) + 'werk' (work). No exact hits (BRAND_CHECK §9a)."
+      colour_shape: "Not drawn yet; text-only in Amsterdam."
+    checked_against: ["Tidewell Hospice (US)", "Veldwerk Uitzendbureau (NL)", "Klavierwerke (piano makers)", "klaverjas card-game apps"]
+    web_check: "Low. No company or agency named Klaverwerk (BRAND_CHECK §9a)."
+    lookalike_examples: []          # scams in Amsterdam send people to Tallyfern hosts, not to look-alikes of Klaverwerk
+    trademark_search: "web-checked 2026-11-19; formal TMview/EUIPO pending before G4 (classes 35, 42)"
+    status: draft
+
+  # -------------------------------------------------------------------------------------------
+  - id: tallyfern
+    name: "Tallyfern"
+    sector: review-task platform (scam-only)
+    role_in_game: >
+      SCAM-ONLY "review-task platform" in the task / "easy work" job scam (Amsterdam 2-7, boss beat 1).
+      Never genuine, never styled after a real job, review or crypto site. Training pages only: read-only,
+      watermarked, no network (Red Line 2). It has no genuine domain; its hosts are listed as look-alikes.
+    sms_sender_id: "TALLYFERN"      # payer name on the €6 "payout" banner in 2-7
+    rationale:
+      name: "'Tally' (counting earnings) + 'fern'. No exact hits (BRAND_CHECK §9b)."
+      colour_shape: "Not drawn; training pages use the generic training-page frame."
+    checked_against: ["Tasklyn (task apps)", "Tallyfy", "Tally forms", "TallyExpress", "Gleam (giveaways platform)"]
+    web_check: "Low. Only fern plants and unrelated 'Tally…' products (BRAND_CHECK §9b)."
+    lookalike_examples:
+      - "tallyfern-earn.example"    # 2-7 trial and task pages
+      - "tallyfern-start.example"   # boss 2-9 beat 1 "starter top-up" link
+    trademark_search: "web-checked 2026-11-19; formal TMview/EUIPO pending before G4 (classes 9, 35, 42)"
     status: draft
 
 # Not yet registered (request ux-artist before writing these scenarios): streaming service (0-4 now

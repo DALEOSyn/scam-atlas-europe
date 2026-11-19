@@ -58,3 +58,22 @@ cards:
     habit: "An unexpected call from your bank, the police or any official? Hang up, then call back on a number you find yourself. Caller ID proves nothing."
     example: "The phone shows your bank's name? End the call, then dial the number on the back of your card."
     already_clicked: "Read out a code or approved something? Call your bank now on the number on your card and ask it to block the card and stop or recall the payment."
+  # Amsterdam (GDD §22.5; titles from docs/LEARNING_OBJECTIVES.md, LO-06 retitled by producer answer 4).
+  - id: call-the-number-you-know
+    lo: LO-07
+    title: "Call the number you already know"
+    habit: "Asked by message for money you didn't expect, or to an account that isn't theirs? Call a number you already had. For requests you didn't agree in person."
+    example: "Teo's new mobile? A call from you, on the home number you already had."
+    already_clicked: "Call your bank now on the number on your card (with a parent or trusted adult if you're under 18). Don't pay a second request."
+  - id: easy-money-costs-you
+    lo: LO-12
+    title: "Easy money costs you"
+    habit: "A real job pays you. If a 'job' wants a deposit, a top-up, a fee or a fine before you can earn or withdraw, or your ID copy before any contract, stop and talk to someone you trust."
+    example: "A job you never applied for wants your ID by chat? Look the agency up yourself."
+    already_clicked: "Stop paying: no last fee releases the money. Tell a trusted adult, call your bank on the number on your card, and keep the chats."
+  - id: check-who-gets-the-money
+    lo: LO-06
+    title: "Check who gets the money"
+    habit: "If a friend, a relative or a supplier asks you to pay a new or different account, or it's urgent or secret: call them on a number you already had. If your bank says the name doesn't match: stop. If it matches: it only shows whose account it is, so still call."
+    example: "A friend asks you to pay their landlord directly? The name can match and the story still be false. A call to your friend settles it."
+    already_clicked: "Paid already? Call your bank now on the number on your card and ask it to stop or recall the payment. Then tell the real person, with a call to their saved number."

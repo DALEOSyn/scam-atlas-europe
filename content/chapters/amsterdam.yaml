@@ -1,0 +1,24 @@
+# Chapter 2 — Amsterdam. GDD §22. Slot 2, difficulty 2–3, boss 3. 8 scored scenarios (3 genuine =
+# 37.5%), plus 1 drill (2-4) and 1 arc beat (Alex, slot 2). Goal (H): "Asked by message for money you
+# didn't expect, or to an account that isn't theirs? Call a number you already had." For work: a real
+# job pays you; it never asks you to pay in.
+# New patterns: family impersonation (2-1 genuine twin, 2-3, drill 2-4, 2-6 genuine twin, 2-8,
+# boss beats 2–3) and task-job-scam (2-2, 2-5 genuine twin, 2-7, boss beat 1). No callbacks as separate
+# scenarios: 2-8 points back to Berlin 1-5 in layer 2 only.
+# Mix (GDD §22.2): truth G F F · G G F F F; themes new-number 2-1, 2-3, boss; job-offer 2-2, 2-5, 2-7;
+# friend-money 2-6, 2-8 (never adjacent); pressure parity genuine 2/3 (2-5 timer, 2-6 pusher) vs fraud
+# 4/5 (2-3, 2-7, 2-8, boss); genuine at difficulty 2 and 3; sender-or-link decoys in 2-2, 2-7, 2-8, boss.
+# Story scenes (GDD §22.1) are placed by the scene engine; the stop point follows 2-4.
+slot: 2
+city: amsterdam
+name: "Amsterdam"
+status: complete
+patterns: [messenger-family-impersonation, task-job-scam]
+callbacks: []
+lo_focus: [LO-01, LO-02, LO-03, LO-04, LO-06, LO-07, LO-12, LO-14, LO-16, LO-17, LO-18]
+scenario_order:
+  am: [amsterdam-01-teo-new-number, amsterdam-02-id-photo, amsterdam-03-noor-new-number, amsterdam-04-noor-lock-down]
+  pm: [amsterdam-05-warehouse-interview, amsterdam-06-boat-tour-share, amsterdam-arc-alex-02, amsterdam-07-easy-work, amsterdam-08-jonas-rent, amsterdam-09-boss-last-evening]
+boss: amsterdam-09-boss-last-evening
+arc_beat: amsterdam-arc-alex-02
+intro: "Amsterdam: everyone settles up by payment request, and your travel allowance doesn't go far. You've applied for a weekend shift at the Thimble & Pine warehouse."

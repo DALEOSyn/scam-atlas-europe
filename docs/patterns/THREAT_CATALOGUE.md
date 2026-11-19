@@ -217,7 +217,7 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Habit:** hang up, then call the relative or 112 on a number you know.
 - **Reported in:** IT, EU. **Status:** used (planned: Rome ch6; scenarios end at the call). **Fit:** high. **Conf.:** High.
 - **Sources:** it-carabinieri-contro-truffe, eu-epc-threats-2025, it-mur-smishing-vishing, it-agcom-antispoofing-2025, it-bdi-truffe-cyber, eu-esas-ai-scams-factsheet-it.
-- **T-3.8r note (2026-11-19):** brief `spoofed-authority-call.md`. IT telecom regulator rules block foreign calls showing Italian numbers (fixed from 2025-08-19, mobile from 2025-11-19), but spoofing from inside Italy remains possible, so the caller ID is still a neutral decoy. Italian police sites refused automated access; no IT police URL is shown on screen.
+- **T-3.8r note (2026-11-19):** brief `spoofed-authority-call.md`. Since 2025, phone companies must block calls from abroad that show an Italian number (fixed from 2025-08-19, mobile from 2025-11-19); state the rule, never its effect. Spoofing from inside Italy remains possible, so the caller ID is still a neutral decoy. Italian police sites refused automated access; no IT police URL is shown on screen.
 
 **A4.4 `e-id-sign-on-call`**: a caller talks you into logging in or signing with your e-ID
 - **Sees:** a "bank" or "authority" caller asks you to open your e-ID app and confirm "to stop fraud".
@@ -265,7 +265,7 @@ Runners-up: `browser-popup-scareware`, `gov-refund-phishing`, `malicious-browser
 - **Sees:** after a loss, someone offers recovery for an upfront fee, sometimes posing as a lawyer or authority.
 - **Channel:** call, email, social media. **Audience:** prior victims. **ATT&CK:** T1684.001, T1657.
 - **Red flags:** a fee before recovery; they contact you.
-- **Habit:** genuine recovery never needs a fee; go to your bank and the police.
+- **Habit:** anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam; go to your bank and the police.
 - **Reported in:** IE, BE. **Status:** used (planned: Dublin ch8; cross-cutting in debriefs). **Fit:** high. **Conf.:** High.
 - **Sources:** ie-bpfi-recovery-2024, be-police-fake-police-messages-2026.
 

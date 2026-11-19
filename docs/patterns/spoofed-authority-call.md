@@ -45,7 +45,7 @@ This brief covers the **authority-first** call. Someone claiming to be police, t
 
 ## 3. Red flags a normal person can spot
 1. **A number on your screen proves nothing.** It can be faked, even when it shows a real police or bank number [it-mur-smishing-vishing], [eu-esas-ai-scams-factsheet-it], [pl-cert-fake-consultants].
-   - Italy now blocks many calls from abroad that show Italian numbers, but spoofing is still possible [it-agcom-antispoofing-2025]. Don't teach "a local number is safe".
+   - Wording to use: "Since 2025, phone companies must block calls from abroad that show an Italian number. Even so, a number on your screen proves nothing." [it-agcom-antispoofing-2025]. Spoofing from inside Italy is still possible. State the rule only, never its effect, and don't teach "a local number is safe".
 2. **Police never ask you for money**, and never ask you to move it or hand it over [it-carabinieri-contro-truffe].
 3. **Your bank never asks you to move money to keep it safe, or to read out a code or password on the phone** [eu-epc-threats-2025], [de-vzhh-fake-bank-calls-2025], [pl-cert-fake-consultants].
 4. **They want you to stay on the line** and not hang up to check [it-carabinieri-21-arresti-2025].
@@ -62,7 +62,7 @@ This brief covers the **authority-first** call. Someone claiming to be police, t
 - Prevention: agree with family how you would really ask for help, and a code word for money requests [eu-esas-ai-scams-factsheet-it] (see `cloned-voice-family-emergency.md`).
 
 ## 5. Already caught? (generic + Italy where verified 2026-11-19)
-1. **Call your bank now**, through its official channels (the number on your card or in the app). Ask it to stop or recall the payment and to block the card or app access [it-bdi-truffe-cyber], [eu-esas-ai-scams-factsheet-it].
+1. **Call your bank now**, through its official channels (the number on your card or in the app). Tell it at once so it can act [it-bdi-truffe-cyber], [eu-esas-ai-scams-factsheet-it]. Generic advice (not from these sources): ask it to try to stop or recall the payment and to block the card or app access.
 2. **Typed a password or approved something?** Change the password from the real app and log out other devices [pl-cert-fake-consultants], [fr-cybermalveillance-fiche-hameconnage].
 3. **Keep evidence:** the call log with times, the number shown, and any texts.
 4. **Report to the police.** In Italy the Banca d'Italia sends victims to the Polizia Postale e delle comunicazioni (its offices or online channels) [it-bdi-truffe-cyber].
@@ -71,7 +71,7 @@ This brief covers the **authority-first** call. Someone claiming to be police, t
 7. **Under 18:** tell a parent or trusted adult first; they call the bank with you (help-screen safeguarding step).
 
 ## 6. Variations by country
-- **IT:** fake Carabinieri, police or lawyers calling about a relative; fake bank operators; numbers that look like bank helplines [it-carabinieri-contro-truffe], [it-bdi-educazione-cyber]. A regulator blocks faked Italian numbers from abroad [it-agcom-antispoofing-2025].
+- **IT:** fake Carabinieri, police or lawyers calling about a relative; fake bank operators; numbers that look like bank helplines [it-carabinieri-contro-truffe], [it-bdi-educazione-cyber]. Since 2025, phone companies must block calls from abroad that show an Italian number; spoofing from inside Italy is still possible [it-agcom-antispoofing-2025].
 - **SE:** vishing often starts with an SMS that gives a number to call. Police never collect cards or valuables, and you should never log in with your e-ID for a caller [se-polisen-campaign-2026].
 - **PL:** "fake consultants" spoof caller ID and names, ask for "safe account" transfers or remote-access apps [pl-cert-fake-consultants].
 - **DE:** callers claim a push-TAN "stops" a debit; it authorises it [de-vzhh-fake-bank-calls-2025].

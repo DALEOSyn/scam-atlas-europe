@@ -250,6 +250,17 @@ sources:
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
     notes: "Added in rework (finding 4). Lists 116 111 'helpline for children' and 116 006 'helpline for crime victims'. The 116 numbers are 'usable in most EU countries (though coverage is not yet EU-wide)'. No per-country list."
 
+  - id: eu-dec-2007-116
+    publisher: European Commission (EUR-Lex)
+    title: "Commission Decision 2007/116/EC of 15 February 2007 on reserving the national numbering range beginning with '116' for harmonised numbers for harmonised services of social value"
+    url: https://eur-lex.europa.eu/eli/dec/2007/116(1)/oj/eng
+    published: 2007-02-17 (OJ L 49; amended, consolidated version 2023-03-06 not opened)
+    accessed: 2026-11-19
+    region: EU
+    tier: 1
+    used_for: [WHERE_TO_REPORT]
+    notes: "Recital 3: the harmonised numbers 'should be freephone numbers, without this meaning that operators would be obliged to carry calls to 116 numbers at their own expense'. Art. 4(d): no payment or payment commitment as a prerequisite to use the service. Not an obligation that the call is free, so it does NOT back 'free' for any single 116 line; check each country's page."
+
   - id: chi-116111-eu
     publisher: Child Helpline International (NGO)
     title: "116 111 EU"
@@ -438,7 +449,7 @@ sources:
     region: IE
     tier: 3
     used_for: [MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
-    notes: "Recovery scams: an upfront 'retainer' or 'processing' fee to get lost money back; losses of EUR 1,000-10,000 seen. Genuine recovery never needs a fee."
+    notes: "Recovery scams: an upfront 'retainer' or 'processing' fee to get lost money back; losses of EUR 1,000-10,000 seen. Player wording: 'Anyone who contacts you offering to get your money back for a fee is almost certainly running a second scam.'"
 
   # ---------------------------------------------------------------- France
   - id: fr-cybermalveillance-fiche-hameconnage
@@ -1803,7 +1814,7 @@ sources:
     region: IT
     tier: 3
     used_for: [spoofed-authority-call, MAP-ch6, campaign-catalogue]
-    notes: "Telecom regulator. International carriers must block calls from abroad that show an Italian fixed-line number (from 2025-08-19) or an Italian mobile number not roaming abroad (from 2025-11-19), plus non-geographic and unassigned numbers. Spoofing is 'in larga parte' from abroad, but national spoofing remains possible (e.g. unverified CLI on VoIP traffic) and measures for it were still under review. Use only as: 'Italy now blocks many faked Italian numbers from abroad, but a number on your screen still proves nothing.' No effectiveness claim."
+    notes: "Telecom regulator. International carriers must block calls from abroad that show an Italian fixed-line number (from 2025-08-19) or an Italian mobile number not roaming abroad (from 2025-11-19), plus non-geographic and unassigned numbers. Spoofing is 'in larga parte' from abroad, but national spoofing remains possible (e.g. unverified CLI on VoIP traffic) and measures for it were still under review. Use only as: 'Since 2025, phone companies must block calls from abroad that show an Italian number. Even so, a number on your screen proves nothing.' State the rule, never its effect."
 
   - id: it-mur-smishing-vishing
     publisher: Ministero dell'Università e della Ricerca (MUR), 'Cyber Sapere' series (copy hosted by the University of Parma)
@@ -1957,8 +1968,19 @@ sources:
     accessed: 2026-11-19
     region: PT
     tier: 3
-    used_for: [WHERE_TO_REPORT]
-    notes: "New prevention line 1411 for people in risk situations, integrated in SNS 24 but autonomous, answered by psychologists and mental-health nurses; coordinated by SPMS. Cost and hours not stated. Crisis line: not shown as a general emotional-support line (designer/sceptic decision)."
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "New prevention line 1411 for people in risk situations, integrated in SNS 24 but autonomous, answered by psychologists and mental-health nurses; coordinated by SPMS; started 2025-09-10. Cost and hours not stated. Crisis line: shown only as a role-crisis row, never as support."
+
+  - id: pt-deco-1411-2025
+    publisher: DECO PROteste (Portuguese consumer association)
+    title: "Linha de prevenção do suicídio funciona 24 horas por dia"
+    url: https://www.deco.proteste.pt/saude/saude-mental/noticias/linha-prevencao-suicidio-funciona-24-horas-por-dia
+    published: 2025-09-09
+    accessed: 2026-11-19
+    region: PT
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Consumer body, not the operator. 1411: 'Todos os dias do ano, 24 horas por dia'; 'O serviço é gratuito'; answered by clinical and health psychologists and specialist mental-health nurses; starts 10 September. Backs 'free, day and night' on the crisis row; confirm on an SNS 24 page at G3."
 
   # ---------------------------------------------------------------- Netherlands (T-3.8r)
   - id: nl-nltimes-booking-phishing-2026
@@ -2132,6 +2154,17 @@ sources:
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
     notes: "BRIS Barnens telefon 116 111, 'dygnet runt alla dagar'; Mind Självmordslinjen 90101, open around the clock; Jourhavande medmänniska 08-702 16 80, daily 21-06. Cost and ages not stated. 116 123 not mentioned."
 
+  - id: se-krisinformation-phone-numbers
+    publisher: Krisinformation.se (Swedish government crisis-information service)
+    title: "Important phone numbers"
+    url: https://www.krisinformation.se/en/finding-help-and-services/important-phone-numbers
+    published: n/d ('Updated' label without a date)
+    accessed: 2026-11-19
+    region: SE
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Jourhavande medmänniska 08-702 16 80 'every night between 9 pm and 6 am'; Mind Självmordslinjen 90101, for people thinking about suicide or worried about a loved one, chat also available; BRIS support line for children 116 111, 'Open 24 hours a day'. No cost stated for any of these (only Teletal is called free). The page names no publisher in the fetched text; krisinformation.se is run by the Swedish Civil Contingencies Agency (not re-checked on the page)."
+
   - id: se-polisen-bedragerier-anmalan
     publisher: Polisen
     title: "Bedrägerier (polisanmälan)"
@@ -2187,6 +2220,17 @@ sources:
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
     notes: "Tele-Onthaal 106 (Dutch-speaking), Télé-Accueil 107 (French-speaking), Awel 102 (youth), Zelfmoordlijn 1813, Card Stop +32 (0)78 170 170. Cost and hours not stated on this page."
+
+  - id: be-vlaanderen-awel
+    publisher: Vlaamse overheid (vlaanderen.be)
+    title: "Awel"
+    url: https://www.vlaanderen.be/gezin/kinderen/jeugdhulp/awel
+    published: n/d
+    accessed: 2026-11-19
+    region: BE
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Awel listens to all children and young people; 'via het gratis nummer 102'; phone daily 16:00-22:00 except Sundays and public holidays; chat daily 18:00-22:00 (same exception); 'Awel werkt volledig anoniem'. No age range given."
 
   # ---------------------------------------------------------------- Luxembourg (T-3.8r, supporting for Lisbon QR)
   - id: lu-vdl-parking-qr

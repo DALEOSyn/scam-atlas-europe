@@ -205,14 +205,16 @@ www2.hse.ie | Health Service Executive | 3 | **new**
 
 ### Sweden
 ki.se | Karolinska Institutet, NASP (national centre for suicide research and prevention) | 3 | **new**
+www.krisinformation.se | Krisinformation.se (government crisis-information service; round 2) | 3 | **new**
 
 ### Belgium
 be.brussels | Brussels-Capital Region portal | 3 | **new**
+www.vlaanderen.be | Flemish government (round 2) | 3 | **new**
 
 ### Luxembourg (supporting for Lisbon QR)
 www.vdl.lu | Ville de Luxembourg (City of Luxembourg) | 3 | **new**
 
-T-3.8r also cites new pages on hosts already listed: www.dn.pt, www.deco.proteste.pt, www.rijksoverheid.nl, polisen.se, febelfin.be, www.police.be, www.evz.de (re-opened).
+T-3.8r also cites new pages on hosts already listed: www.dn.pt, www.deco.proteste.pt (incl. round 2 1411 page), www.rijksoverheid.nl, polisen.se, febelfin.be, www.police.be, www.evz.de (re-opened), eur-lex.europa.eu (round 2, 116 decision).
 
 ### Help-screen link targets only (not sources)
 17cyber.gouv.fr | 17Cyber (French government online assistance; live site opened 2026-11-19) | 2

@@ -34,4 +34,5 @@ Companion to GDD §18 (Lisbon summary) until the full chapter spec exists.
 3. **Report the listing or host to the platform** where you found it. (de-evz-rental-fraud)
 4. **Bought from a business in another EU country?** ECC-Net, free advice. (eu-eccnet-about)
 5. **Under 18?** Linha de Apoio à Criança **116 111**, free, 24 hours (pt-gov-emergency-contacts-2026).
-   - **Need to talk?** SNS 24 psychological counselling **808 24 24 24**, in Portuguese and English (pt-gov-sns24-psych-2022). Cost and hours were not stated on the official page.
+   - **Need to talk?** SNS 24 psychological counselling **808 24 24 24**, in Portuguese and English. Label: "Call costs may apply." The official page gives no cost or hours (pt-gov-sns24-psych-2022).
+6. **Crisis row, last and on its own:** "Thinking about ending your life, or worried about someone?" Body: "1411 is free, day and night. In danger now? Call 112." Number and service from the government page (pt-gov-1411-2025); "free" and "day and night" come from the consumer body (pt-deco-1411-2025). Confirm at G3. Never shown as the support line; the wording goes to the G3 human review.

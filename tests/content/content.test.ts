@@ -239,6 +239,8 @@ describe('scenario cross-checks', () => {
     it('sender addresses, qr.destination and page.address in beats are checked', () => {
       const s = example();
       msgOf(s).sender = { display: 'Trundle', detail: 'service@trundle-mail.test' };
+      // CR-39(b): a QR code is shown on qr, letter and messenger beats.
+      s.device = 'messenger';
       msgOf(s).qr = { payload: '/qr/x', destination: 'trundle-qr.example' };
       const [beat] = s.beats as Raw[];
       if (beat) (beat.message as Raw).page = { address: 'https://trundle-pay.invalid/x' };

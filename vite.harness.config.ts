@@ -7,19 +7,30 @@ import { defineConfig, type Plugin } from 'vite';
 import preact from '@preact/preset-vite';
 import { cpSync, readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { parse } from 'yaml';
+import { parse, stringify } from 'yaml';
 import { sceneSchema, scenarioSchema } from './src/content/schema.ts';
 import { fixturePublicDir, fixtureScene } from './tests/content/scene-fixtures.ts';
 import type { Scenario, Scene } from './src/content/schema.ts';
 import { yamlModuleSource } from './scripts/lib/yaml-module.ts';
 
-/** content/*.yaml as data, exactly as the game build emits it (cast.yaml for speaker labels). */
+/**
+ * content/*.yaml as data, exactly as the game build emits it (cast.yaml for speaker labels). CR-38: the
+ * harness adds the test-only register entries (tests/fixtures/brands-register.yaml) to brands.yaml, so the
+ * Fairmeasure view has firms on both lists. Harness only; the game build never sees that file.
+ */
 function yamlPlugin(): Plugin {
   const scenarios = resolve(import.meta.dirname, 'content', 'scenarios');
+  const brandsFile = resolve(import.meta.dirname, 'content', 'brands.yaml');
+  const extraBrands = (parse(readFileSync(resolve(import.meta.dirname, 'tests', 'fixtures', 'brands-register.yaml'), 'utf8')) as { brands: unknown[] }).brands;
   return {
     name: 'harness-yaml',
     transform(code, id) {
-      return /\.ya?ml$/.test(id) ? { code: yamlModuleSource(id, code, scenarios), map: null } : null;
+      if (!/\.ya?ml$/.test(id)) return null;
+      if (resolve(id) === brandsFile) {
+        const doc = parse(code) as { brands: unknown[] };
+        return { code: yamlModuleSource(id, stringify({ ...doc, brands: [...doc.brands, ...extraBrands] }), scenarios), map: null };
+      }
+      return { code: yamlModuleSource(id, code, scenarios), map: null };
     },
   };
 }

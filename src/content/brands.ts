@@ -13,6 +13,16 @@ export interface BrandMark {
   mark?: string;
   /** CR-27: sub-brands (e.g. Larchwick Pro), id and name only. */
   sub_brands?: { id: string; name: string }[];
+  /** CR-38: the firm's entry with the in-world regulator (Fairmeasure). */
+  register?: { status: 'authorised' | 'warning_list'; address?: string; phone?: string };
+}
+
+/** CR-38: one line of the Fairmeasure register or warning list. */
+export interface RegisterEntry {
+  name: string;
+  status: 'authorised' | 'warning_list';
+  address?: string;
+  phone?: string;
 }
 
 const brands = data as BrandMark[];
@@ -53,4 +63,11 @@ export function brandForName(display: string | undefined): BrandMark | undefined
 
 export function assetUrl(path: string): string {
   return `${import.meta.env.BASE_URL}${path}`;
+}
+
+/** CR-38: firms on the Fairmeasure register and warning list (brands.yaml `register`), sorted by name. */
+export function registerEntries(registry: readonly BrandMark[] = brands): RegisterEntry[] {
+  return registry
+    .flatMap((b) => (b.register ? [{ name: b.name, ...b.register }] : []))
+    .sort((a, b) => a.name.localeCompare(b.name, 'en'));
 }

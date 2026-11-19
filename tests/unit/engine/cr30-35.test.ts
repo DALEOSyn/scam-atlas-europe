@@ -8,7 +8,7 @@ import { readdirSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { lintPaths, loadConfig } from '../../../scripts/redline-lint.ts';
 import { chapterRules, choiceLines, continuesConversation, scenarioRules } from '../../../scripts/lib/rules.ts';
-import { checkScenario, loadBrands, loadSources, readYaml, type ContentReport } from '../../../scripts/lib/content.ts';
+import { checkScenario, loadSources, readYaml, type ContentReport } from '../../../scripts/lib/content.ts';
 import { deriveCheckables } from '../../../src/content/checkables.ts';
 import { chapterSchema, scenarioSchema, type Scenario } from '../../../src/content/schema.ts';
 import { choiceLine } from '../../../src/engine/debrief.ts';
@@ -18,6 +18,7 @@ import { callBehind, startScenario, step, viewOf, type RunnerState } from '../..
 import { scoreGroup } from '../../../src/engine/scoring.ts';
 import { CONTENT, ROOT, rawFraud, rawGenuine, realRegistries, scenario } from '../../content/fixtures.ts';
 import { act, B, ctx, play, run, tick, type Raw } from './helpers.ts';
+import { fixtureBrands } from './fixture-brands.ts';
 import { rawTransfer } from './cr-fixtures.ts';
 
 const reg = realRegistries();
@@ -41,7 +42,7 @@ function ruleErrors(r: Raw): string[] {
 }
 function crossErrors(r: Raw): string[] {
   const report: ContentReport = { errors: [], warnings: [], scenarios: new Map() };
-  checkScenario('fixture.yaml', r, loadBrands(CONTENT, report), loadSources(CONTENT, report), report);
+  checkScenario('fixture.yaml', r, fixtureBrands(report), loadSources(CONTENT, report), report);
   return report.errors;
 }
 const clone = <T>(x: T): T => structuredClone(x);

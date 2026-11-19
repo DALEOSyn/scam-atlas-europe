@@ -30,6 +30,8 @@ export interface HudMenu {
   onOpen: (open: boolean) => void;
   /** Opens Settings (QA M7); absent when there is nowhere to save them. */
   onSettings?: (() => void) | undefined;
+  /** CR-38: opens the Fairmeasure regulator view (a home-screen tool in every chapter). */
+  onRegister?: (() => void) | undefined;
 }
 
 export function Hud({ view, progress, chip, timersOff, onPause, menu }: { view: RunnerView; progress: { index: number; total: number } | null; chip: string | null; timersOff: boolean; onPause: () => void; menu: HudMenu }) {
@@ -123,6 +125,19 @@ export function Hud({ view, progress, chip, timersOff, onPause, menu }: { view: 
           <button type="button" class={styles.menuItem} aria-pressed={menu.callLines === 'step'} onClick={() => menu.onCallLines(menu.callLines === 'step' ? 'auto' : 'step')}>
             {t('menu_call_lines_step')}
           </button>
+          {menu.onRegister ? (
+            <button
+              type="button"
+              class={styles.menuItem}
+              data-menu="register"
+              onClick={() => {
+                toggle(false);
+                menu.onRegister?.();
+              }}
+            >
+              {t('register_menu')}
+            </button>
+          ) : null}
           {menu.onSettings ? (
             <button
               type="button"

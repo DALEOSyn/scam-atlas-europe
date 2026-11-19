@@ -1,0 +1,87 @@
+# CR-39(a): the on-call bar over a Gatewren prompt the caller asked for (an auth beat reached from a call).
+# The caller's line bound to the prompt beat shows inside the bar; Hang up goes to the prompt's own options.
+id: fx-cr39a-call-auth
+chapter: fixtures
+role: standard
+pattern: e-id-approval-on-call
+theme: e-id-call
+learning_objectives: [LO-08, LO-09]
+difficulty: 4
+is_fraud: true
+device: call
+brands: [larchwick, gatewren]
+pressure:
+  timer: true
+  levers: [fear, authority, urgency]
+  pusher:
+    messages:
+      - { at_seconds: 4, beat: loan_prompt, text: "Just tap Approve, then it's blocked." }
+
+message:
+  sender: { display: "Larchwick Bank", detail: "Caller ID: Larchwick Bank · 08-••• •• 41" }
+  transcript:
+    - { speaker: caller, text: "Larchwick Bank. Someone is taking out a loan in your name." }
+    - { speaker: caller, text: "I won't ask for any codes." }
+    - { speaker: caller, text: "Open Gatewren and log in so we can stop it." }
+  request: approve
+  ask: { text: "Open Gatewren and log in so we can stop it." }
+  claims: [{ text: "I won't ask for any codes." }]
+
+inspectables:
+  - target: caller_id
+    reveal: "Shows Larchwick Bank, as a real call would. A name on screen can be faked, so it can't prove anything either way."
+    red_flag: false
+    type: caller_id
+  - target: claim
+    reveal: "No codes. That sounds safe, so it can't prove anything either way."
+    red_flag: false
+    type: claim
+  - target: request
+    reveal: "Log in with Gatewren for someone on the phone. That is how someone else gets in."
+    red_flag: true
+    type: request
+
+actions:
+  - { id: open_gatewren, label: "Open Gatewren as they ask", kind: reply, next_beat: loan_prompt, pressure_target: true }
+  - { id: call_card, label: "Hang up and call your card's number", kind: call_back_known, outcome: no_loan }
+  - { id: hang_up, label: "Hang up", kind: hang_up, outcome: hung_up }
+
+beats:
+  - id: loan_prompt
+    device: auth
+    message:
+      prompt: { type: sign_in, service: "Larchwick internet bank", where: "Göteborg, Sweden", device: "Windows computer", when: "Just now" }
+      request: approve
+    inspectables:
+      - target: prompt.where
+        reveal: "Göteborg: not where you are."
+        red_flag: true
+      - target: prompt.device
+        reveal: "A Windows computer: not your phone."
+        red_flag: true
+    actions:
+      - { id: approve, label: "Approve", kind: approve_prompt, outcome: approved, pressure_target: true }
+      - { id: deny_call_card, label: "Deny, then call your card's number", kind: call_back_known, outcome: no_loan }
+      - { id: deny, label: "Deny", kind: deny_prompt, outcome: denied }
+
+outcomes:
+  approved:
+    narrative: "The prompt closes. Someone on a Windows computer is now logged in to your bank."
+    recovery:
+      - { step: call_bank_known_number, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: change_password, category: secure }
+      - { step: report_to_police, category: report }
+      - { step: wait_and_see, category: harmful }
+      - { step: pay_recovery_service, category: harmful }
+  denied: { narrative: "You deny it. Nobody gets in." }
+  no_loan: { narrative: "Larchwick: 'No loan, and we'd never ask you to log in on a call.'" }
+  hung_up: { narrative: "You hang up." }
+
+debrief:
+  layer1: { tell: "A login you didn't start, asked for on a call.", what_works: "Deny it. Hang up and call your card's number." }
+  device_tip: "Approve a login only when you opened the app or site yourself."
+  habit_card: hang-up-call-back
+  already_clicked:
+    shared_code: "Approved it? Call your bank now on the number on your card."
+  sources: [se-polisen-vishing-2026]

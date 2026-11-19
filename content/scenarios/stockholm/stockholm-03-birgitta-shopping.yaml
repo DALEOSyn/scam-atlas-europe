@@ -1,0 +1,127 @@
+# 9-3 Paying Birgitta back for the fika shopping (GDD §29.4; pattern e-id-approval-on-call, genuine).
+# Genuine, high stakes (a signature for a payment), difficulty 4, honest timer 35 s with the honest deadline
+# "Gatewren requests expire after 3 minutes". The player started it in the Larchwick app; Gatewren asks to
+# sign. Checkables (G, 5): the four prompt details (SK2; `when` neutral) and the request (the prompt's line).
+# Interrupt at 14 s: Lina (small talk only; never money, codes or e-ID).
+# Signing is `proceed`; deny is the dismiss option (0 on genuine high; R21 applies once CR-45 lands).
+id: stockholm-03-birgitta-shopping
+chapter: stockholm
+role: standard
+pattern: e-id-approval-on-call
+theme: home
+player_started: true
+learning_objectives: [LO-09, LO-17]
+difficulty: 4
+is_fraud: false
+stakes: high
+device: auth
+setup: "Birgitta bought the fika shopping. In the Larchwick app you opened, you've typed in her saved account to pay her back 236 kr, and tapped Pay."
+brands: [gatewren, larchwick, kettle]
+cast: [birgitta, lina]
+pressure:
+  timer: true
+  levers: [urgency]
+  honest_deadline: "Gatewren requests expire after 3 minutes"
+
+message:
+  prompt: { type: signature, service: "Larchwick: pay 236 kr to Birgitta Lind", where: "Stockholm, Sweden", device: "This phone", when: "Just now" }
+  body: "Sign the payment to Birgitta Lind?"
+  request: approve
+  ask: { text: "Sign the payment to Birgitta Lind?" }
+  l10n_note: "Amounts are in kronor (kr) for the Stockholm chapter; keep the currency when adapting."
+
+inspectables:
+  - target: prompt.service
+    reveal: "It fits: the payment you just made, to Birgitta, the amount you typed. That isn't proof on its own, so weigh it with what you started."
+    red_flag: false
+    type: prompt
+    reassures: true
+  - target: prompt.where
+    reveal: "It fits: here, in Stockholm."
+    red_flag: false
+    type: prompt
+  - target: prompt.device
+    reveal: "It fits: this phone."
+    red_flag: false
+    type: prompt
+  - target: prompt.when
+    reveal: "'Just now'. Every request says that, so it can't prove anything either way."
+    red_flag: false
+    type: prompt
+  - target: request
+    reveal: "A signature for the payment you just made. Signing is right."
+    red_flag: false
+    type: request
+
+actions:
+  - id: sign_birgitta_payment
+    label: "Sign it"
+    kind: proceed
+    outcome: birgitta_paid
+    pressure_target: true
+  - id: check_payment_in_app
+    label: "Check the payment in the Larchwick app first"
+    kind: verify_in_app
+    outcome: payment_checked_then_signed
+  - id: report_birgitta_signature
+    label: "Report the request"
+    kind: report
+    outcome: birgitta_signature_reported
+  - id: deny_birgitta_signature
+    label: "Deny it"
+    kind: deny_prompt
+    outcome: birgitta_no_rush
+
+interrupts:
+  - id: lina_kanelbullar
+    at_seconds: 14
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Lina (downstairs)", detail: "Saved contact: Lina (downstairs)" }
+      from_cast: lina
+      body: "Dad burnt the kanelbullar 😭 Birgitta says they're 'rustic'"
+      request: reply
+      l10n_note: "'Kanelbullar' (cinnamon buns) is a Swedish word in an English message; keep it as local flavour."
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Lina's saved contact, in your usual chat. That isn't proof on its own, so weigh it with what she asks for: nothing, it's bun news."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_lina_rustic
+        label: "Reply: rustic is the best kind!"
+        kind: proceed
+        outcome: lina_rustic_thanks
+        pressure_target: true
+      - id: report_lina_rustic
+        label: "Report the message"
+        kind: report
+        outcome: lina_rustic_reported
+
+outcomes:
+  birgitta_paid:
+    narrative: "Gatewren: \"Signed.\" The Larchwick app: \"236 kr sent to Birgitta Lind.\" Birgitta, from the kitchen: \"Tack, dear!\""
+  payment_checked_then_signed:
+    narrative: "The Larchwick app shows your payment waiting: 236 kr to Birgitta Lind. You sign it."
+  birgitta_signature_reported:
+    narrative: "You report it. Larchwick replies: \"That was your own payment to Birgitta Lind. Nothing to worry about.\" You pay her later."
+  birgitta_no_rush:
+    narrative: "You deny it. Birgitta: \"No rush, dear. But the cardamom was expensive.\""
+  lina_rustic_thanks:
+    narrative: "Lina: \"Telling him you said that 😂\""
+  lina_rustic_reported:
+    narrative: "You reported it. Careful is good; this one really was Lina, reporting on the buns."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Your payment, your amount, signed on your phone."
+    what_works: "Signing was right."
+  layer2:
+    message_flags: []
+    notes: "Read what you sign: who gets the money and how much. Here it matched what you did. Where to report and get help (Sweden) is on the help screen."
+  device_tip: "On a real phone, read the payee and the amount on the signing screen before you sign, and sign only payments you just made yourself."
+  habit_card: calm-not-paranoid
+  sources: [se-polisen-telefonbedrageri, se-polisen-vishing-2026]

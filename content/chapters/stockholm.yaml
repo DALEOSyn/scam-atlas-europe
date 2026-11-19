@@ -1,0 +1,43 @@
+# Chapter 9 — Stockholm. GDD §29. Slot 9, difficulty 3–5, boss 5. 8 scored scenarios (3 genuine = 37.5%),
+# plus 1 drill (9-4, Jamal's "police" call) and 1 arc beat (Alex; the engine plays arc slot N by play
+# position, STORY §1.4; this file carries slot 9, the default, placed between 9-6 and 9-7).
+# Habit (H): "Never approve a sign-in, signature or QR login you didn't start. Whoever is on the phone, hang
+# up and call your bank on the number on your card or in its app."
+# New patterns: e-id-approval-on-call (9-1, 9-3, 9-7 genuine; 9-5, 9-6, boss) and remote-access-support-call
+# (9-8, preview; Brussels owns the full story). Callbacks: multichannel-support-callback (9-2) and
+# spoofed-authority-call (drill 9-4, boss beat 1).
+# Mix (GDD §29.1): truth G F G · F F G F F(boss) (max run 2); themes work 9-1; bank 9-2, 9-5, 9-7; home 9-3;
+# marketplace 9-6; support 9-8; authority boss (never adjacent); pressure parity genuine 2/3 (9-1, 9-3 honest
+# timers) vs fraud 4/5 (9-2, 9-5, 9-8, boss); genuine at difficulty 3, 4 and 5; sender-or-link decoys in
+# 9-2, 9-5, 9-8 and the boss.
+# R 13 (silver 5, gold 9), max 170 (GDD §29.7). First use of the `auth` device (Gatewren prompts, each with
+# its line as `ask`), CR-39(a) on-call bar (9-2, 9-5) and CR-39(b) QR in a chat (9-6, boss beat 3).
+# Police numbers (SK6): 114 14 appears on the player's side only (drill pick, boss action labels and
+# outcomes, the boss device tip); never in a scam message, transcript or caller ID, never a link.
+# Help card: layer 2 of every Stockholm debrief points to "Where to report and get help (Sweden)"; its
+# wording is in the chapter 9 sources file in docs/patterns ("Sweden help card"). Real bodies appear only
+# there and on the help screen (Red Line 1). The schema has no per-chapter help-card field yet.
+# No content note proposed (none in GDD §29 or STORY §5.6 for Stockholm).
+# Story scenes (GDD §29.2, STORY §3.9: stockholm-arrival before 9-1, stockholm-turn at the stop point after
+# 9-3, stockholm-resolution after the boss, variant stockholm_bank_called set by every boss fall outcome) are
+# a later ticket; `scenes` is added with them:
+#   scenes: { arrival: stockholm-arrival, turn: stockholm-turn, resolution: stockholm-resolution }
+slot: 9
+city: stockholm
+name: "Stockholm"
+status: complete
+patterns: [e-id-approval-on-call, remote-access-support-call]
+callbacks: [multichannel-support-callback, spoofed-authority-call]
+lo_focus: [LO-09, LO-08, LO-15, LO-02, LO-04, LO-18, LO-16, LO-17, LO-14]
+scenario_order:
+  am: [stockholm-01-desk-login, stockholm-02-pending-payment, stockholm-03-birgitta-shopping]
+  pm: [stockholm-04-jamal-police-call, stockholm-05-loan-call, stockholm-06-buyer-qr, stockholm-arc-alex-09, stockholm-07-laptop-login, stockholm-08-support-call, stockholm-09-boss-case-file]
+boss: stockholm-09-boss-case-file
+arc_beat: stockholm-arc-alex-09
+intro: "Stockholm: you're staying in Birgitta's spare room. Her new neighbour Jamal moved here three weeks ago for a hospital job, with his daughter Lina: new flat, new bank, new e-ID."
+rules:
+  title: "Birgitta's rules"
+  items:
+    - "If someone contacted you, don't log in, sign or scan for them. Hang up: rudeness is free."
+    - "Approve only what you started: you opened it, you chose it, and the request names it."
+atlas_cards: [only-approve-what-you-started, nobody-needs-your-screen, hang-up-call-back]

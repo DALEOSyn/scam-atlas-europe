@@ -1,0 +1,42 @@
+<!-- Scam Atlas: Europe. Style sample for docs/ART_DIRECTION.md (character rig: Grandpa Teo; open as is for warm, or with the fragment #x-thinking). Original artwork written as SVG code by the project's AI-assisted team, element by element; no image-generation model, auto-vectorised raster, tracing, stock or reference photo. Fictional, not a likeness of any real person, sign or brand. CC BY-SA 4.0. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 300" role="img" aria-labelledby="teo-t"><title id="teo-t">Grandpa Teo (sample portrait)</title>
+<style>.x{display:none}.x-default{display:inline}.x:target{display:inline}.x:target~.x-default{display:none}</style>
+<defs>
+<g id="teo-sil"><path d="M30 300C30 240 62 200 120 196C178 200 210 240 210 300Z"/><ellipse cx="120" cy="125" rx="50" ry="56"/><ellipse cx="70" cy="130" rx="10" ry="14"/><ellipse cx="170" cy="130" rx="10" ry="14"/><circle cx="76" cy="100" r="13"/><circle cx="69" cy="116" r="11"/><circle cx="86" cy="86" r="12"/><circle cx="164" cy="100" r="13"/><circle cx="171" cy="116" r="11"/><circle cx="154" cy="86" r="12"/></g>
+</defs>
+<use href="#teo-sil" fill="#fffaf0" stroke="#fffaf0" stroke-width="10" stroke-linejoin="round"/>
+<g stroke="#2b2433" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+<path d="M30 300C30 240 62 200 120 196C178 200 210 240 210 300Z" fill="#8fae8b"/>
+<path d="M152 206C180 218 198 250 202 300H170Z" fill="#76966f" stroke="none"/>
+<rect x="104" y="166" width="32" height="34" rx="10" fill="#93603a"/>
+<path d="M100 198L120 236L140 198Z" fill="#f1e4c8"/>
+<path d="M100 198L114 300M140 198L126 300" fill="none"/>
+<circle cx="110" cy="254" r="3" fill="#f1e4c8" stroke-width="2"/><circle cx="108" cy="278" r="3" fill="#f1e4c8" stroke-width="2"/>
+<ellipse cx="70" cy="130" rx="10" ry="14" fill="#b07548"/><ellipse cx="170" cy="130" rx="10" ry="14" fill="#b07548"/>
+<ellipse cx="120" cy="125" rx="50" ry="56" fill="#b07548"/>
+<path d="M88 168C100 180 140 180 152 168C146 178 134 184 120 184C106 184 94 178 88 168Z" fill="#93603a" stroke="none"/>
+<g fill="#ece8e1"><circle cx="76" cy="100" r="13"/><circle cx="69" cy="116" r="11"/><circle cx="86" cy="86" r="12"/><circle cx="164" cy="100" r="13"/><circle cx="171" cy="116" r="11"/><circle cx="154" cy="86" r="12"/></g>
+<path d="M104 78Q112 70 120 76Q128 70 136 78" fill="none" stroke-width="2.5"/>
+<path d="M98 92Q120 86 142 92" fill="none" stroke="#93603a" stroke-width="2"/>
+<rect x="168" y="86" width="7" height="34" rx="3" fill="#c98f2e" stroke-width="2" transform="rotate(18 171 103)"/>
+<ellipse cx="120" cy="142" rx="9" ry="10" fill="#93603a" stroke="none"/>
+<path d="M98 154C104 146 116 146 120 151C124 146 136 146 142 154C136 161 126 159 120 156C114 159 104 161 98 154Z" fill="#ece8e1" stroke-width="2"/>
+<g fill="none"><circle cx="101" cy="124" r="14"/><circle cx="139" cy="124" r="14"/><path d="M115 122Q120 118 125 122"/></g>
+<path d="M80 122L76 119M80 128L76 130M160 122L164 119M160 128L164 130" stroke="#93603a" stroke-width="2"/>
+</g>
+<g id="x-thinking" class="x" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round">
+<path d="M88 104Q100 94 112 102" fill="#ece8e1" stroke-width="2.5"/><path d="M128 108Q140 106 152 108" fill="#ece8e1" stroke-width="2.5"/>
+<ellipse cx="101" cy="125" rx="7" ry="5.5" fill="#fffdf8" stroke-width="2"/><ellipse cx="139" cy="125" rx="7" ry="5.5" fill="#fffdf8" stroke-width="2"/>
+<circle cx="104" cy="122" r="3.2" fill="#2b2433" stroke="none"/><circle cx="142" cy="122" r="3.2" fill="#2b2433" stroke="none"/>
+<path d="M112 167L130 164" fill="none" stroke-width="3"/>
+<path d="M146 300L196 300C188 260 172 224 156 204C150 198 140 196 132 198Z" fill="#76966f" stroke-width="3"/>
+<path d="M108 192C108 180 118 176 128 178L142 184C148 190 146 200 138 202L118 202C112 202 108 198 108 192Z" fill="#b07548" stroke-width="3"/>
+<path d="M118 186L132 188M118 194L132 195" fill="none" stroke="#93603a" stroke-width="2"/>
+</g>
+<g id="x-warm" class="x x-default" stroke="#2b2433" stroke-linecap="round" stroke-linejoin="round">
+<path d="M88 106Q100 98 112 104" fill="#ece8e1" stroke-width="2.5"/><path d="M128 104Q140 98 152 106" fill="#ece8e1" stroke-width="2.5"/>
+<path d="M94 127Q101 119 108 127M132 127Q139 119 146 127" fill="none" stroke-width="3"/>
+<path d="M106 163Q120 175 134 163" fill="none" stroke-width="3"/>
+<ellipse cx="90" cy="148" rx="7" ry="4" fill="#c98468" stroke="none" opacity=".6"/><ellipse cx="150" cy="148" rx="7" ry="4" fill="#c98468" stroke="none" opacity=".6"/>
+</g>
+</svg>

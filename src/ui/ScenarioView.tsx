@@ -600,6 +600,8 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
       const hidden = unrevealedTargets(beat.message, call.ended || call.shown >= lines.length ? Infinity : (lines[call.shown]?.index ?? Infinity));
       list = list.filter((c) => c.beatId !== beat.id || !hidden.has(c.target));
     }
+    // CR-45: a dialled call's caller ID is the number the player dialled.
+    if (beat?.outgoing) list = list.map((c) => (c.beatId === beat.id ? { ...c, outgoing: true } : c));
     return list;
   }, [view.checkables, call?.answered, call?.shown, call?.ended, beat]);
   const itemMap = useMemo(() => new Map(items.map((c) => [c.target, c])), [items]);

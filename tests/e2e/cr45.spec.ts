@@ -107,6 +107,7 @@ for (const width of [320, 1280]) {
     await press(page, 'Call the number in the text');
     await expect(page.locator('#device-heading')).toHaveText('Call to 9•• ••• •14');
     await expect(page.locator('[data-call-state]')).toHaveText('Calling…');
+    await expect(page.locator('[data-dialled-detail]')).toHaveText('The number from the text');
     await expect(page.getByRole('button', { name: 'Answer', exact: true })).toHaveCount(0);
     await expect(page.getByRole('button', { name: 'Decline', exact: true })).toHaveCount(0);
     await expect(page.getByText('Incoming call')).toHaveCount(0);

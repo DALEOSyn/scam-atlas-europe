@@ -29,9 +29,14 @@ describe('item 1: a dialled call', () => {
     expect(screen.queryByRole('button', { name: 'Answer' })).toBeNull();
     expect(screen.queryByRole('button', { name: 'Decline' })).toBeNull();
     expect(document.body.textContent).toContain('Connecting the call…');
+    // QA: where the number came from, while dialling; the Check label says it is the number you dialled.
+    expect(container.querySelector('[data-dialled-detail]')?.textContent).toBe('The number from the text');
     expect(document.body.textContent).not.toContain('Incoming call');
     await waitFor(() => expect(container.querySelector('[data-call-state]')?.textContent?.trim()).toBe('Connected'), { timeout: 4000 });
     expect(screen.getByRole('button', { name: 'Hang up' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /Details you can check/ }));
+    expect(container.textContent).toContain('Number you dialled');
+    expect(container.textContent).not.toContain('Caller ID');
     expect(screen.getByRole('button', { name: 'Follow their steps in your app' })).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Decline' })).toBeNull();
   });
@@ -94,14 +99,14 @@ describe('item 3: inline language spans', () => {
 });
 
 describe('item 5: debrief sub-headings', () => {
-  it('"Called the number" for a call scenario; an authored heading wins ("Moved money")', () => {
+  it('"Called the number they gave" for a call scenario; an authored heading wins ("Moved money")', () => {
     const s = fixture('cr45-dialled-call.yaml');
     const st = run(s, ctx({ timerMode: 'off' }), [act('open_app'), { type: 'continue' }]);
     const data = debriefOf(s, st, resultOf(s, B, st), none);
     render(<DebriefView data={data} onContinue={() => undefined} onAgain={() => undefined} />);
     fireEvent.click(screen.getByRole('button', { name: 'More' }));
     const dts = [...document.querySelectorAll('dt')].map((d) => d.textContent);
-    expect(dts).toEqual(['Called the number', 'Moved money']);
+    expect(dts).toEqual(['Called the number they gave', 'Moved money']);
     expect(document.body.textContent).not.toContain('Clicked the link');
   });
 });

@@ -13,7 +13,7 @@
 import { z } from 'zod';
 import { deriveCheckables } from './checkables.ts';
 import { ICU_MESSAGE_RE, SPOTTED_EXPR_RE } from './constants.ts';
-import { firstLang, langMarkupIssues } from './inlineLang.ts';
+import { firstLang, langMarkupIssues, strayLangMarkers } from './inlineLang.ts';
 import { DIAL_KINDS, parentKinds } from './callDirection.ts';
 
 /** Lower-case kebab-case identifier, e.g. `berlin-03-parcel-customs`. */
@@ -792,9 +792,14 @@ export const scenarioSchema = z
     if ((s.role === 'arc') !== (s.debrief.variant === 'arc')) issue(['debrief', 'variant'], 'debrief.variant is arc exactly for arc beats');
     if (s.pressure.honest_deadline && s.is_fraud) issue(['pressure', 'honest_deadline'], 'honest_deadline is for genuine messages');
     if (s.twin_of === s.id) issue(['twin_of'], 'a scenario cannot be its own twin');
+    // CR-45 (sceptic): inline language spans render only in action labels and outcome narratives; a marker
+    // anywhere else would show as raw text, so it is an error.
+    for (const at of strayLangMarkers(s)) issue(at, 'inline language markers ({lang:xx}…{/lang}) are only for action labels and outcome narratives (CR-45); mark a whole message with message.lang');
     // CR-45: one opening action only on an opener that asks nothing, and then it leads on (next_beat).
+    // Sceptic B1: only a real setup step (isSetupStep): genuine, request: none, a proceed with next_beat. The
+    // class check (proceed) needs balance.yaml, so it is in scripts/lib/rules.ts.
     if (s.actions.length === 1) {
-      if (s.message.request !== 'none') issue(['actions'], 'a scenario offers 2–5 actions (only an opener with request: none may offer a single setup step)');
+      if (s.is_fraud || s.message.request !== 'none') issue(['actions'], 'a scenario offers 2–5 actions (only a genuine opener with request: none may offer a single setup step)');
       else if (s.actions[0]?.next_beat === undefined) issue(['actions', 0, 'next_beat'], 'a single opening action is a setup step: it needs next_beat (CR-45)');
     }
 

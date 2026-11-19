@@ -860,6 +860,8 @@ export interface CheckableView {
   /** CR-27: language of `shown` when it is message text in another language, and its English translation. */
   lang?: string | undefined;
   translation?: string | undefined;
+  /** CR-45: on a call the player dialled, set by the UI: the caller ID is "Number you dialled". */
+  outgoing?: boolean;
 }
 
 /** A beat that speaks with a sender of its own (not a page and not the banking app). */

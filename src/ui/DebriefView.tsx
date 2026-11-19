@@ -46,6 +46,7 @@ const CLICKED_VIA_KEYS: Record<ClickedVia, MessageKey> = {
   call: 'debrief_called',
   reply: 'debrief_replied',
   qr: 'debrief_scanned',
+  mixed: 'debrief_clicked_mixed',
 };
 
 /**

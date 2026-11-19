@@ -72,7 +72,8 @@ export type ChoiceLine =
   | { beatId: string; kind: 'action'; label: string; path?: ChoicePath }
   | { beatId: string; kind: 'what_now'; choice: WhatNowBuiltin; path?: ChoicePath }
   | { beatId: string; kind: 'over_caution'; which: OverCaution; label?: string }
-  | { beatId: string; kind: 'timer' };
+  /** `genuine` (CR-45, psych M2): the timer ran out on a genuine message (`you_chose_timer_genuine`). */
+  | { beatId: string; kind: 'timer'; genuine?: true };
 
 /** The final choice after an engage (CR-27): an authored label, or a What-now built-in. */
 export type ChoiceThen = { label: string } | { builtin: WhatNowBuiltin };
@@ -363,7 +364,7 @@ function finalChoice(s: Scenario, g: GroupState, actionId: string, via: string |
 
 export function choiceLine(s: Scenario, g: GroupState, beat: BeatResult): ChoiceLine | null {
   if (beat.stars >= 3 && !beat.fell) return null;
-  if (beat.timerExpired) return { beatId: g.beatId, kind: 'timer' };
+  if (beat.timerExpired) return { beatId: g.beatId, kind: 'timer', ...(s.is_fraud ? {} : { genuine: true as const }) };
   const d = g.decision;
   // CR-34: a payment code shared, then the confirmation declined: the code is what cost the third star (★★, ruling R18), so it is
   // named, with the final choice as the path ("You chose: Make a code and send it. Then: Decline.").

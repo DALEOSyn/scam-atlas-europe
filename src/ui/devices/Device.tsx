@@ -586,6 +586,12 @@ function Call(p: DeviceProps) {
           <span class={styles.callerSub} data-call-state={ended ? 'ended' : answered ? 'connected' : outgoing ? 'dialling' : 'ringing'}>
             {ended ? t('call_ended') : answered ? (outgoing ? t('call_connected') : t('call_in_progress')) : outgoing ? t('call_dialling') : t('call_incoming')}
           </span>
+          {/* CR-45 (QA): while dialling, where the number came from ("The number from the text"). */}
+          {outgoing && !answered && !ended && m.sender?.detail ? (
+            <span class={styles.callerSub} data-dialled-detail="">
+              {m.sender.detail}
+            </span>
+          ) : null}
           {/* Known only once the call is answered (sceptic T-3.3). */}
           {m.recorded && answered ? <span class={styles.callKind} data-recorded="">{t('call_recorded')}</span> : null}
           {/* CR-36: who the voice sounds like, once answered. A label only: no audio is ever played. */}

@@ -8,8 +8,9 @@ import { describe, expect, it } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { readYaml } from '../../../scripts/lib/content.ts';
+import { choiceLines, layer1Overhead, LAYER1_OVERHEAD, scenarioRules } from '../../../scripts/lib/rules.ts';
 import { callDirectionOf, inferredDirection } from '../../../src/content/callDirection.ts';
-import { firstLang, langMarkupIssues, langPieces, stripLang } from '../../../src/content/inlineLang.ts';
+import { firstLang, langMarkupIssues, langPieces, strayLangMarkers, stripLang } from '../../../src/content/inlineLang.ts';
 import { chapterSchema, scenarioSchema, type Scenario } from '../../../src/content/schema.ts';
 import { debriefOf } from '../../../src/engine/debrief.ts';
 import { expiryDismissOf } from '../../../src/engine/result.ts';
@@ -17,7 +18,7 @@ import { clickedViaOf } from '../../../src/engine/recovery.ts';
 import { viewOf } from '../../../src/engine/runner.ts';
 import { classOf, scoreGroup } from '../../../src/engine/scoring.ts';
 import { logAnnouncement } from '../../../src/ui/ScenarioView.tsx';
-import { ROOT, rawFraud, rawGenuine, scenario } from '../../content/fixtures.ts';
+import { ROOT, rawFraud, rawGenuine, realRegistries, scenario } from '../../content/fixtures.ts';
 import { act, B, ctx, play, run, tick, type Raw } from './helpers.ts';
 
 const FIX = resolve(ROOT, 'tests', 'fixtures', 'scenarios');
@@ -100,7 +101,7 @@ describe('item 3: inline language spans', () => {
   });
   it('rejects bad markup: unclosed, bad tag, English, empty', () => {
     expect(langMarkupIssues('Reply: {lang:es}¡sí!')).toHaveLength(1);
-    expect(langMarkupIssues('{lang:Spanish}hola{/lang}').join()).toMatch(/BCP 47/);
+    expect(langMarkupIssues('{lang:Spanish}hola{/lang}').join()).toMatch(/not a valid language tag: use a BCP 47 tag, e\.g\. \{lang:es\}/);
     expect(langMarkupIssues('{lang:en}hi{/lang}').join()).toMatch(/English/);
     expect(langMarkupIssues('{lang:es} {/lang}').join()).toMatch(/empty/);
   });
@@ -135,12 +136,14 @@ describe('item 4: call announcements', () => {
 });
 
 describe('item 5: "If you already…" sub-headings', () => {
-  it('clickedVia follows the scenario\'s own "click": call, link, mixed → link', () => {
+  it('clickedVia follows the scenario\'s own "click": call, link, several kinds → mixed; interrupts do not count', () => {
     expect(clickedViaOf(fixture('cr45-dialled-call.yaml'))).toBe('call');
     expect(clickedViaOf(scenario(rawFraud()))).toBe('link');
     const mixed = clone(raw('cr45-dialled-call.yaml'));
     (mixed.actions as Raw[]).push({ id: 'open_l', label: 'Open the link', kind: 'reply', outcome: 'text_reported' });
-    expect(clickedViaOf(scenarioSchema.parse(mixed))).toBe('link');
+    expect(clickedViaOf(scenarioSchema.parse(mixed))).toBe('mixed');
+    // The interrupt's "Reply: ¡sí, gracias!" is small talk, not this scenario's "click".
+    expect(clickedViaOf(fixture('cr45-personal-account.yaml'))).toBe('link');
   });
   it('the debrief carries authored headings and clickedVia', () => {
     const s = fixture('cr45-dialled-call.yaml');
@@ -175,12 +178,13 @@ describe('item 6: timer expiry on a genuine beat (ruling R21)', () => {
   it('tutorial grace (slot 0): the dismiss scores ★, 5 points, and so does the expiry', () => {
     expect(play(s, ctx({ slot: 0 }), expire).r.beats[0]).toMatchObject({ stars: 1, points: 5, timerExpired: true });
   });
-  it('no dismiss option on the beat: ★, 5 points as before', () => {
+  it('no dismiss option on the message: the bank card\'s Cancel, later in the group, counts (psych M1)', () => {
     const r = clone(raw('cr45-personal-account.yaml'));
     r.actions = (r.actions as Raw[]).filter((a) => a.id !== 'leave_cleaning');
     delete (r.outcomes as Record<string, Raw>).cleaning_unpaid;
     const s2 = scenarioSchema.parse(r);
-    expect(play(s2, ctx({ slot: 4 }), expire).r.beats[0]).toMatchObject({ stars: 1, points: 5, timerExpired: true });
+    expect(play(s2, ctx({ slot: 4 }), expire).r.beats[0]).toMatchObject({ stars: 0, points: 0, timerExpired: true });
+    expect(expiryDismissOf(s2, B, { current: 'start', timerExpired: true }).map((d) => d.actionId)).toEqual(['cancel_cleaning']);
   });
   it('low stakes: an authored score override on the dismiss caps the expiry too; fraud is untouched', () => {
     const low = rawGenuine('g-low', { pressure: { timer: true, levers: [] } });
@@ -257,9 +261,9 @@ describe('shipped content (after merging CR-36…39, Rome and Lisbon)', () => {
 });
 
 describe('item 7: you_chose_dismiss_started is generic', () => {
-  it('no longer names a reset', () => {
+  it('no longer names a reset (and avoids "You started this")', () => {
     const ui = JSON.parse(readFileSync(join(ROOT, 'content', 'i18n', 'en', 'ui.json'), 'utf8')) as Record<string, string>;
-    expect(ui.you_chose_dismiss_started).toBe('You left it. You started this; it was safe.');
+    expect(ui.you_chose_dismiss_started).toBe('You left it. This one was safe; it was yours.');
   });
 });
 
@@ -284,9 +288,102 @@ describe('extra (coordinator): a single setup step on an opener that asks nothin
   it('request: none with one setup step (next_beat) is valid', () => {
     expect(errors(opener('none', [wait]))).toEqual([]);
   });
+  it('sceptic B1: only a real setup step: never on fraud, never a non-proceed action', () => {
+    const fraud = rawFraud('f-one', { message: { ...(rawFraud().message as Raw), request: 'none' }, actions: [{ id: 'tap_link', label: 'Open the link', kind: 'open_link', next_beat: 'fee_page', pressure_target: true }] });
+    expect(errors(fraud).join('\n')).toMatch(/only a genuine opener with request: none may offer a single setup step/);
+    const report = opener('none', [{ id: 'report_first', label: 'Report it', kind: 'report', next_beat: 'next' }]);
+    expect(errors(report)).toEqual([]);
+    expect(scenarioRules(scenarioSchema.parse(report), realRegistries()).errors.join('\n')).toMatch(/single opening action must be a setup step \(a proceed-class action with next_beat\), not report/);
+    expect(scenarioRules(scenarioSchema.parse(opener('none', [wait])), realRegistries()).errors.join('\n')).not.toMatch(/single opening action/);
+  });
   it('one action anywhere else is still rejected (2–5)', () => {
     expect(errors(opener('pay', [wait])).join('\n')).toMatch(/a scenario offers 2–5 actions/);
     expect(errors(opener('none', [{ id: 'go', label: 'Pick it up', kind: 'proceed', outcome: 'done' }])).join('\n')).toMatch(/single opening action is a setup step/);
     expect(errors(opener('none', [])).join('\n')).toMatch(/2–5 actions/);
+  });
+});
+
+describe('psych M1: R21 on a one-action opener (Madrid 4-6 shape)', () => {
+  /** A timed genuine high-stakes opener with only "Wait for the code"; the code text offers "Leave it". */
+  const codeOpener = (): Raw =>
+    rawGenuine('g-code', {
+      stakes: 'high',
+      pressure: { timer: true, levers: ['urgency'], honest_deadline: 'Code valid 5 minutes' },
+      message: { sender: { display: 'Trundle', detail: 'TRUNDLE' }, body: 'Confirm with your bank. We have sent a code.', request: 'none', references: ['TR-2'], phone_numbers: ['0800 ••• 4410'] },
+      actions: [{ id: 'wait_code', label: 'Wait for the code', kind: 'proceed', next_beat: 'code_text' }],
+      beats: [
+        {
+          id: 'code_text',
+          device: 'sms',
+          message: { sender: { display: 'Trundle', detail: 'TRUNDLE' }, body: 'Code 4••••• for your payment.', request: 'enter_details' },
+          actions: [
+            { id: 'type_code', label: 'Type the code on the page', kind: 'proceed', outcome: 'done' },
+            { id: 'check_app', label: 'Check in the app first', kind: 'verify_in_app', outcome: 'done' },
+            { id: 'leave_it', label: 'Leave it, buy it later', kind: 'ignore', outcome: 'left' },
+          ],
+        },
+      ],
+      outcomes: { done: { narrative: 'Paid.' }, left: { narrative: 'You leave it for now.' } },
+    });
+  it('expiry on the opener scores what the later "Leave it" scores, never more', () => {
+    const s = scenario(codeOpener());
+    expect(errors(codeOpener())).toEqual([]);
+    const c = ctx({ slot: 4 });
+    const left = play(s, c, [act('wait_code'), act('leave_it')]).r.beats[0];
+    const onOpener = play(s, c, expire).r.beats[0];
+    expect(onOpener).toMatchObject({ timerExpired: true, stars: 0, points: 0 });
+    expect([onOpener?.stars, onOpener?.points]).toEqual([left?.stars, left?.points]);
+    expect(expiryDismissOf(s, B, { current: 'start', timerExpired: true }).map((d) => d.actionId)).toEqual(['leave_it']);
+  });
+  it('no dismiss option anywhere in the group: ★, 5 points as before', () => {
+    const r = codeOpener();
+    const beat = (r.beats as Raw[])[0] as Raw;
+    beat.actions = (beat.actions as Raw[]).filter((a) => a.id !== 'leave_it');
+    delete (r.outcomes as Record<string, Raw>).left;
+    expect(play(scenario(r), ctx({ slot: 4 }), expire).r.beats[0]).toMatchObject({ timerExpired: true, stars: 1, points: 5 });
+  });
+});
+
+describe('psych M2: "You chose" after a genuine expiry', () => {
+  it('genuine: "You let the timer run out. This one was safe to act on."; fraud keeps the plain line', () => {
+    const g = fixture('cr45-personal-account.yaml');
+    const pg = play(g, ctx({ slot: 4 }), expire);
+    expect(debriefOf(g, pg.st, pg.r, none).layer1.youChose).toEqual([{ beatId: 'start', kind: 'timer', genuine: true }]);
+    const f = fixture('cr45-dialled-call.yaml');
+    const pf = play(f, ctx({ slot: 4 }), expire);
+    expect([...debriefOf(f, pf.st, pf.r, none).layer1.youChose, ...debriefOf(f, pf.st, pf.r, none).layer2.youChoseOther.map((o) => o.line)]).toContainEqual({ beatId: 'start', kind: 'timer' });
+  });
+  it('the layer-1 validator counts the genuine line (and only on genuine)', () => {
+    const lines = choiceLines(fixture('cr45-personal-account.yaml'), realRegistries().balance);
+    expect(lines).toContain('You let the timer run out. This one was safe to act on.');
+    expect(lines).not.toContain('You let the timer run out.');
+    expect(choiceLines(fixture('cr45-dialled-call.yaml'), realRegistries().balance)).toContain('You let the timer run out.');
+  });
+});
+
+describe('sceptic: inline language markers only where they render', () => {
+  it('a marker in a message body, a reveal or the debrief is an error; labels and narratives are fine', () => {
+    expect(strayLangMarkers({ actions: [{ label: '{lang:es}sí{/lang}' }], outcomes: { a: { narrative: '{lang:es}¡Vale!{/lang}' } } })).toEqual([]);
+    const r = clone(raw('cr45-personal-account.yaml'));
+    (r.message as Raw).body = 'Hi! {lang:es}¡Hola!{/lang} Your half of the cleaning is €12, to my account as on the note on the fridge. Any time this week.';
+    ((r.debrief as Raw).layer1 as Raw).tell = 'Her saved chat, {lang:es}claro{/lang}.';
+    const e = errors(r).join('\n');
+    expect(e).toMatch(/message\.body: inline language markers/);
+    expect(e).toMatch(/debrief\.layer1\.tell: inline language markers/);
+    expect(errors(raw('cr45-personal-account.yaml'))).toEqual([]);
+  });
+});
+
+describe('layer-1 budget counts what renders (genuine expiry line, psych M2)', () => {
+  it('the already-clicked link (8 words) is counted only when the debrief has already_clicked', () => {
+    expect(layer1Overhead(fixture('cr45-dialled-call.yaml'))).toBe(LAYER1_OVERHEAD.standard);
+    expect(layer1Overhead(fixture('cr45-personal-account.yaml'))).toBe(LAYER1_OVERHEAD.standard - 8);
+  });
+  it('a genuine timed debrief with already_clicked still pays for the link and fails over 40 words', () => {
+    const r = clone(raw('cr45-personal-account.yaml'));
+    (r.debrief as Raw).already_clicked = { paid: 'Paid the wrong account? Call your bank on the number on your card.' };
+    ((r.debrief as Raw).layer1 as Raw).tell = 'Her saved chat and her own account, for the cleaning you share in the flat.';
+    const e = scenarioRules(scenarioSchema.parse(r), realRegistries()).errors.join('\n');
+    expect(e).toMatch(/debrief\.layer1 is 4\d words in the worst case \(authored \d+ \+ fixed 14 \+ slot 13: "You let the timer run out\. This one was safe to act on\."\)/);
   });
 });

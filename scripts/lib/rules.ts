@@ -73,6 +73,17 @@ export const LAYER1_OVERHEAD = {
   arc: wcKey('debrief_the_habit') + wcKey('debrief_already_link_arc'),
 } as const;
 
+/**
+ * The fixed copy this scenario's layer 1 really shows (CR-45; STATUS follow-up "compute genuine-scenario
+ * layer-1 overhead without … the already-clicked link"): the already-clicked link renders only when the
+ * debrief has `already_clicked` (DebriefView), so a debrief without it does not count its words.
+ */
+export function layer1Overhead(s: Pick<Scenario, 'debrief'>): number {
+  const v = s.debrief.variant;
+  if (s.debrief.already_clicked) return LAYER1_OVERHEAD[v];
+  return LAYER1_OVERHEAD[v] - wcKey(v === 'arc' ? 'debrief_already_link_arc' : 'debrief_already_link');
+}
+
 /** "That is the habit that works." / "Acting on it was right here." (`outcome_best`, `outcome_best_acted`): the ★★★ line in the layer-1 slot. */
 export const BEST_LINE_WORDS = Math.max(wcKey('outcome_best'), wcKey('outcome_best_acted'));
 
@@ -216,7 +227,7 @@ export function choiceLines(s: Scenario, balance: Registries['balance']): string
     return which ? { beatId, kind: 'over_caution', which } : plain;
   };
   if (s.pressure.timer) {
-    lines.push({ beatId: 'start', kind: 'timer' });
+    lines.push({ beatId: 'start', kind: 'timer', ...(s.is_fraud ? {} : { genuine: true as const }) });
     classes.add(balance.stars.timer_expiry);
   }
   for (const b of beatsOf(s).filter((x) => !x.interrupt)) {
@@ -298,6 +309,8 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
   // Verify extras in "What now?" are offered to the player like actions (GDD §16: Adaeze, Desk, known desk).
   const whatNowVerify = whatNowsOf(s).flatMap(([, wn]) => wn.extra.filter((x) => x.outcome !== undefined));
   const cls = (a: Action) => classOf(balance, a.kind);
+  // CR-45 (sceptic B1): a one-action opener is a setup step (isSetupStep): its action is proceed-class.
+  if (s.actions.length === 1 && s.actions[0] && cls(s.actions[0]) !== 'proceed') errors.push(`a single opening action must be a setup step (a proceed-class action with next_beat), not ${s.actions[0].kind}`);
 
   // Registries.
   for (const lo of s.learning_objectives) if (reg.los && !reg.los.has(lo)) errors.push(`learning objective ${lo} is not in docs/LEARNING_OBJECTIVES.md`);
@@ -535,7 +548,7 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
   // deadline_fake are shown in the consequence step, not in layer 1, so they count 0.
   {
     const arcDebrief = s.debrief.variant === 'arc';
-    const overhead = LAYER1_OVERHEAD[s.debrief.variant];
+    const overhead = layer1Overhead(s);
     const authored = wordCount(s.debrief.layer1.tell) + wordCount(s.debrief.layer1.what_works) + (arcDebrief ? wordCount(s.debrief.safeguarding_line) : 0);
     const slot = arcDebrief
       ? { words: anyFall(s, balance) ? wcKey('debrief_no_shame') : 0, source: 'the kind line after a fall' }

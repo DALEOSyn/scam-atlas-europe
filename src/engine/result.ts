@@ -85,12 +85,29 @@ function groupTags(s: Scenario, st: RunnerState, g: GroupState): { correct: numb
 
 /**
  * Ruling R21 (CR-45): the deliberate dismiss options of the beat the group's timer expired on (its current
- * beat), as decisions. A genuine expiry scores like the lowest of them (scoreGroup `expiryDismiss`).
+ * beat), else of the beats reachable from it by next_beat, as decisions. A genuine expiry scores like the
+ * lowest of them (scoreGroup `expiryDismiss`); none anywhere → `timer_expiry` as before.
  */
 export function expiryDismissOf(s: Scenario, b: EngineBalance, g: Pick<GroupState, 'current' | 'timerExpired'>): Decision[] {
   if (!g.timerExpired) return [];
-  const beat = beatById(s, g.current);
-  return (beat?.actions ?? []).filter((a) => classOf(b, a.kind) === 'dismiss').map((a) => decisionOf(b, a));
+  const dismissOf = (id: string): Decision[] => (beatById(s, id)?.actions ?? []).filter((a) => classOf(b, a.kind) === 'dismiss').map((a) => decisionOf(b, a));
+  const own = dismissOf(g.current);
+  if (own.length > 0) return own;
+  // Psych M1 (option a): no dismiss option where the timer ran out (e.g. a one-action opener, "Wait for the
+  // code"): the lowest dismiss option of the beats the group can still reach from here (next_beat chains).
+  const later: Decision[] = [];
+  const seen = new Set([g.current]);
+  const queue = [g.current];
+  while (queue.length > 0) {
+    const id = queue.shift() as string;
+    for (const a of beatById(s, id)?.actions ?? []) {
+      if (a.next_beat === undefined || seen.has(a.next_beat)) continue;
+      seen.add(a.next_beat);
+      queue.push(a.next_beat);
+      later.push(...dismissOf(a.next_beat));
+    }
+  }
+  return later;
 }
 
 /** Red flags on the scheduled, scored beats of a scenario (R for stamps and max points). */

@@ -38,6 +38,26 @@ export function firstLang(text: string): string | undefined {
   return langPieces(text).find((p) => p.lang !== undefined)?.lang;
 }
 
+/** Fields where inline language spans are rendered (paths in a scenario, numeric indexes as `N`). */
+export const LANG_SPAN_FIELDS: readonly RegExp[] = [
+  /^actions\.N\.label$/,
+  /^(?:beats|interrupts)\.N\.actions\.N\.label$/,
+  /^(?:beats\.N\.)?what_now\.extra\.N\.label$/,
+  /^outcomes\.[^.]+\.narrative$/,
+];
+
+/** Paths (dotted) of strings anywhere in `value` that carry a language marker outside LANG_SPAN_FIELDS. */
+export function strayLangMarkers(value: unknown, path: (string | number)[] = []): (string | number)[][] {
+  if (typeof value === 'string') {
+    if (!value.includes('{lang:') && !value.includes('{/lang}')) return [];
+    const shape = path.map((p) => (typeof p === 'number' ? 'N' : p)).join('.');
+    return LANG_SPAN_FIELDS.some((re) => re.test(shape)) ? [] : [path];
+  }
+  if (Array.isArray(value)) return value.flatMap((v, i) => strayLangMarkers(v, [...path, i]));
+  if (value && typeof value === 'object') return Object.entries(value).flatMap(([k, v]) => strayLangMarkers(v, [...path, k]));
+  return [];
+}
+
 /** Authoring errors in the markup: bad tags, unclosed or stray markers, nesting, empty or English spans. */
 export function langMarkupIssues(text: string): string[] {
   const issues: string[] = [];
@@ -47,7 +67,7 @@ export function langMarkupIssues(text: string): string[] {
       if (p.text.includes('{lang:') || p.text.includes('{/lang}')) issues.push('an inline language marker is not closed: write {lang:es}…{/lang}');
       continue;
     }
-    if (!LANG_TAG_RE.test(p.lang)) issues.push(`"${p.lang}" is not a BCP 47 language tag such as es or pt-PT`);
+    if (!LANG_TAG_RE.test(p.lang)) issues.push(`"${p.lang}" is not a valid language tag: use a BCP 47 tag, e.g. {lang:es} or {lang:pt-PT}`);
     else if (p.lang === 'en') issues.push('{lang:en} marks nothing: English is the page language');
     if (p.text.trim() === '') issues.push('an inline language span is empty');
     if (p.text.includes('{lang:')) issues.push('inline language spans cannot be nested');

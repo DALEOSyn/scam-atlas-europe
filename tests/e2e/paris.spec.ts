@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
+import { playScene } from './scene-helpers.ts';
 
 /**
  * Paris (T-3.5): a cheap play-through into the payee-check screen (CR-23). Home and Berlin are seeded as
@@ -31,6 +32,8 @@ test('Paris 3-1 and 3-2: the payee check shows a close match, then "couldn\'t ch
   await page.goto('/');
   await page.getByRole('button', { name: 'Chapters' }).click();
   await page.getByRole('button', { name: 'Play Paris' }).click();
+  // S4: the Paris Arrival scene (street, Solène, Inès and the procedure card) plays before the intro.
+  await playScene(page, 'paris-arrival', { axe: true });
   // CR-27: the chapter intro (Ruchelune's payment procedure) first, axe clean, then Start.
   const intro = page.locator('[data-chapter-intro]');
   await expect(intro.getByRole('heading', { level: 1, name: 'Paris' })).toBeFocused();

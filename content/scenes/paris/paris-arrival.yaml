@@ -1,0 +1,27 @@
+# Paris arrival (GDD §23.13 beats 1 and 2, STORY §3.3): before the chapter intro and rules screen (CR-27),
+# then 3-1. Beat 1 (calm): your studio, the walk to Ruchelune, Inès and the procedure card. Beat 2
+# (worried, not panicked): Solène explains why she asked for an extra pair of hands. Merged into one
+# three-panel scene that ends on Inès, calm (psychologist: never end the arrival on worried). No panel
+# names Volet Bleu, Feuillemont or Platinoir before their scenarios. The card is drawn as abstract ruled
+# bars and matches the intro's rules card; its alt text names it where it first appears.
+id: paris-arrival
+chapter: paris
+slot: arrival
+panels:
+  - backdrop: paris-street
+    crop: centre
+    caption: "Your studio is three floors up. Ruchelune's workshop is round the corner."
+    alt: "Cream stone buildings with zinc roofs, a carriage door and a shopfront."
+  - backdrop: paris-workshop
+    crop: left
+    speaker: solene
+    expression: worried
+    line: "Bastien's on leave, the festival order is late, and it's our busiest week. So I asked Waymarker for an inspector."
+    alt: "Solène in the print workshop, looking worried, by the big table and paper stacks."
+  - backdrop: paris-workshop
+    crop: right
+    speaker: ines
+    expression: calm
+    flip: true
+    line: "That card is how we pay anyone. Solène wrote it. She means it."
+    alt: "Inès, calm, beside the procedure card pinned by the screen."

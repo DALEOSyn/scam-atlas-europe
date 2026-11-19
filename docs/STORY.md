@@ -138,8 +138,8 @@ Each block lists the patterns from MAP.md or the chapter spec (the scene never s
 - **Beats (spec, unchanged):**
   1. *Arrival* (calm): your studio, then Ruchelune's workshop; Inès shows the procedure card ("Solène wrote it. She means it.").
   2. *Whose problem it is* (in the intro, worried): Solène between meetings explains why she asked for an inspector.
-  3. *Turn* (after 3-5, before 3-6; worried → calm): Inès learns someone used her name; Solène: "This is why the card says no exceptions." Variant on `paris_pay_redirected`.
-  4. *Resolution* (relieved): the real Solène calls you on the directory number; on Tuesday the three add "A call or video call never replaces the sign-off" to the card; Inès has shown her mum. Variant on `paris_boss_sent` (acted fast, no refund promise).
+  3. *Turn* (after 3-5, before 3-6; worried → calm): Inès learns someone used her name; Solène: "None of this is on you, Inès. This is why the card says no exceptions." Variant on `paris_pay_redirected`.
+  4. *Resolution* (relieved): you ring the real Solène on the directory number (plain-wall panel, not a video call; DECISIONS R4, R5); on Tuesday the three add "A call or video call never replaces the sign-off" to the card; Inès has shown her mum. Variant on `paris_boss_sent` (acted fast, no refund promise): one merged line, "The bank was called straight away, the right first step. We'll see what it can recall." until a damage-control-pick hook exists (R6). Bastien is calm throughout (R7). Beats 1 and 2 play as one Arrival scene, the studio as a caption only (R8).
 - **Glue (added to beat 4):**
   - **If-then panel (Solène):** "If a payment is new, changed, urgent or secret, then we call the number in our file, and two of us sign off." Extra line under it: "A matching name only tells you whose account it is."
   - **Map invitation (Solène):** "Our accounts officer is on leave before a long weekend. Could an inspector sit with us for a day?"

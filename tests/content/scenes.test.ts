@@ -239,8 +239,10 @@ describe('scene validator (cross-file rules)', () => {
   it('validateScenes reads content/scenes and the art; the real scenes are valid', () => {
     const real = validateContent(CONTENT);
     expect(real.errors).toEqual([]);
-    // Every scene file under content/scenes is read (S4: Home, Berlin, Amsterdam, I1).
+    // Every scene file under content/scenes is read, whichever chapters have scenes so far.
     expect(real.scenes?.size).toBe(listFiles(join(CONTENT, 'scenes'), ['.yaml']).length);
+    expect(real.scenes?.has('paris-arrival')).toBe(true);
+    expect(real.scenes?.has('home-arrival')).toBe(true);
     // A content dir with the fixture scenes and the real registries.
     const contentDir = mkdtempSync(join(tmpdir(), 'sae-content-'));
     mkdirSync(join(contentDir, 'scenes', 'berlin'), { recursive: true });

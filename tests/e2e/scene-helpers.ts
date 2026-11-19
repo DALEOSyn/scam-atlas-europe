@@ -2,9 +2,9 @@ import { expect, type Locator, type Page } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
 /**
- * Shared e2e steps for story scenes (S4). Home, Berlin and Amsterdam now open on an Arrival scene, then
- * the chapter intro (CR-27), then the first scenario. Tests about devices skip the scene; scene tests
- * read it panel by panel.
+ * Shared e2e steps for story scenes (S4). A chapter with an Arrival scene plays it first, then the chapter
+ * intro (CR-27), then the first scenario. Tests about devices skip the scene; scene tests read it panel
+ * by panel.
  */
 const WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'];
 

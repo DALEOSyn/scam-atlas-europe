@@ -243,7 +243,8 @@ Allowed cues: building typology, roof shapes, window rhythm, materials, plants, 
 | `amsterdam-canal` | Amsterdam arrival | narrow gabled houses, a small arched bridge, bikes, water | named boats, houseboat numbers, tram |
 | `amsterdam-guesthouse` | local problem, turn, resolution | small reception desk, key hooks, plants, steep stair | hotel or booking-site look |
 | `paris-studio` | Paris arrival (your studio flat) | small top-floor room, zinc-grey roofs through the window, chimney pots | famous skyline silhouettes |
-| `paris-workshop` | Ruchelune scenes | print-and-design cooperative: big table, paper stacks, a generic printing press, procedure card on the wall as a blank card | machine maker names; no lettering |
+| `paris-workshop` | Ruchelune scenes | print-and-design cooperative: big table, paper stacks, a generic printing press, procedure card on the wall with abstract ruled bars, no lettering | machine maker names; no lettering |
+| `paris-street` | Paris arrival, the walk to Ruchelune | generic cream stone apartment facades, grey zinc mansard roofs with dormers and chimney pots, a carriage door, a blank shopfront under a plain awning, café tables, plane trees | famous skyline silhouettes or monuments, shop or café names, street signs and house numbers, transit stops or vehicles in livery |
 | `madrid-kitchen` | Madrid all scenes | sunny 8 a.m. kitchen, balcony with geraniums, rooftops, tiled floor | football colours, bank leaflets |
 | `warsaw-flat` | Warsaw all scenes | flat with moving boxes (plain), cello case, lamp, big windows | courier logos on boxes, marketplace UI |
 | `rome-bnb` | Rome all scenes | small B&B courtyard, lemon tree, shutters, terracotta | ancient monuments, religious symbols |

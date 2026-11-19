@@ -834,6 +834,14 @@ Row 6d: the wrong claims are 2-3 and 2-8 claim#2 ("pay you back") and the boss b
 5. Provisionally accepted (`R. ••••`); the sceptic rules at scenario review.
 6. Accepted.
 7. Done: MAP Ch 2 aligned.
+**Producer rulings at scenario writing (T-3.4, 2026-11-19):**
+1. 40-word layer 1: the shortened tells in 2-1, 2-7 and the boss are accepted. In 2-1 the short habit line "Asked for money by message? Call a number you already had." is the layer-1 form; the full sentence stays in layer 2 and on the habit card. Boss layer 1 and stamp screen: tell "Two strangers, both wanting money first.", what works "Asked to pay first? Check on a number or site you already know."
+2. 2-6: the verify option "Call Mateus on his saved work phone" (★★★) is accepted; every bank screen opened from a message offers a verify action.
+3. 2-3: Noor's phone "went in the bath", not "in the canal" (no location clue the game doesn't teach).
+4. Boss request page `scored: false` is accepted as a workaround; the validator will ignore pages reached from a scheduled beat (engine follow-up).
+5. Engine-generated verdict lines are not authored; the spec's verdict wording opens the outcome text instead.
+6. Mateus being on a flight is set up in the Amsterdam story scene before the boss (track S4), not in the scenario.
+
 ## 23. Chapter 3 — Paris
 Status: **spec for review** (Phase 3, Paris step 2, game-designer, 2026-11-19). Briefs: `docs/patterns/ceo-fraud-bec.md`, `docs/patterns/payment-detail-change.md` (both draft, 2026-11-19). Every red flag, habit and recovery step below comes from those briefs; anything the briefs list as unverified is kept off screen (§23.9).
 - **Placement:** set by the producer. The section sits after §17 on this branch; Amsterdam is §22 on its own branch, and nothing is renumbered.

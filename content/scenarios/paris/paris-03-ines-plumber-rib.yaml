@@ -1,0 +1,85 @@
+# 3-3 Drill: Inès spots one, a near miss (GDD §23.4 3-3; payment-detail-change brief, faux-RIB variant).
+# Unscored. Inès, from her saved Kettle contact, shares the email her mum nearly paid: the plumber's
+# "new bank" for the balance. She called the number on his quote; he never changed bank.
+# The quote sits inside her genuine message (context: quoted). Quoted red flag: the look-alike link in
+# the email's footer (owner part cuivrelin-factures.example; the quote says cuivrelin.example). The
+# sender line of the quote shows the same host but is plain text (an e-mail address is not a checkable).
+# Decoys inside the quote: the invoice number and the forwarded RIB (a tidy RIB proves nothing).
+# Creditors named on screen are only the sourced ones (rework 1, item 5): landlord, tradesperson, energy
+# or phone company. Includes the 14+ line (GDD §23.9).
+id: paris-03-ines-plumber-rib
+chapter: paris
+role: drill
+pattern: payment-detail-change
+learning_objectives: [LO-18, LO-06, LO-01]
+difficulty: 2
+is_fraud: false
+device: messenger
+brands: [kettle, cuivrelin]
+cast: [ines]
+pressure: { timer: false, levers: [] }
+
+message:
+  sender: { display: "Inès (Ruchelune)", detail: "Saved contact: Inès (Ruchelune)" }
+  from_cast: ines
+  body: |
+    Mum got this email from "Cuivrelin", the plumber who fixed our boiler. She nearly paid it! It felt off, so I called the number on his quote: he never changed bank 😮‍💨 Mum's reporting it. What would you have spotted?
+
+    From factures@cuivrelin-factures.example: Balance of invoice 2026-088: €640. Following a change of bank, please pay to our new RIB attached, within 48 h. Questions: cuivrelin-factures.example/contact
+  request: reply
+  attachments: [{ name: "RIB_Cuivrelin.pdf (forwarded)" }]
+  references: ["Invoice 2026-088"]
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: Inès's saved contact, in your usual chat with her. That isn't proof on its own, so weigh it with what she asks for: what you'd have spotted, not money or a code."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: link
+    reveal: "In Inès's quote: cuivrelin-factures.example. Read the end: the owner part is cuivrelin-factures.example, not cuivrelin.example, the address on the plumber's quote."
+    red_flag: true
+    type: link
+    context: quoted
+  - target: attachment
+    reveal: "In Inès's quote: the new RIB. A real RIB and a fake one look just as tidy, so it can't prove anything either way."
+    red_flag: false
+    type: attachment
+    context: quoted
+  - target: reference
+    reveal: "In Inès's quote: invoice 2026-088, the real job. Invoice numbers can be copied from earlier mail, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+    context: quoted
+
+actions:
+  - id: reply_well_spotted
+    label: "Reply: well spotted, and good call phoning him"
+    kind: proceed
+    outcome: ines_compares_notes
+    pressure_target: true
+  - id: ask_what_else
+    label: "Ask what else she noticed"
+    kind: reply
+    outcome: ines_explains
+
+outcomes:
+  ines_compares_notes:
+    narrative: "Inès: \"Thanks! The address was off too: cuivrelin-factures, not cuivrelin. But what really did it was new bank details right when the bill was due. So I rang the number on his quote, not the one in the email.\""
+  ines_explains:
+    narrative: "Inès: \"New bank details right when the bill was due, and 'within 48 h'. Then the address: cuivrelin-factures, not cuivrelin. The RIB looked perfect, so that told us nothing. I rang the number on his quote instead.\""
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "New bank details by email as the bill fell due."
+    what_works: "Call the number you already had, like Inès."
+  layer2:
+    message_flags:
+      - "In the quote: a new bank just as the balance fell due, with a 48-hour deadline."
+    notes: "Anyone you pay regularly can be imitated like this: a landlord, a tradesperson, an energy or phone company. If it's a family bill, show the message to the adult who pays it. Under 18? Tell a parent or guardian straight away and call the bank with them: that call is the urgent step. They can make the complaint; some online complaint services are for adults only. And report it even when nothing was paid, as Inès's mum did."
+  device_tip: "On a real phone, find the number on the quote, invoice or contract you already have, and call that, not a number in the email."
+  habit_card: ask-someone
+  already_clicked:
+    paid: "Call your bank at once on the number you already have and ask it to try to stop or recall the transfer (with a parent or guardian if you're under 18). Then warn the real tradesperson on the number you already have."
+  sources: [fr-cybermalveillance-fiche-faux-rib, fr-fbf-cles-faux-rib-2025, fr-inc-iban-rib-fraudes-2025, eu-europol-ceo-bec-leaflet, fr-justice-thesee-messagerie-2025]

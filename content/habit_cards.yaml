@@ -57,7 +57,7 @@ cards:
     title: "Hang up, call back"
     habit: "An unexpected call from your bank, the police or any official? Hang up, then call back on a number you find yourself. Caller ID proves nothing."
     example: "The phone shows your bank's name? End the call, then dial the number on the back of your card."
-    already_clicked: "Read out a code or approved something? Call your bank now on the number on your card and ask it to block the card and stop or recall the payment."
+    already_clicked: "Read out a code or approved something? Call your bank now on the number on your card and ask it to block the card and try to stop or recall the payment."
   # Amsterdam (GDD §22.5; titles from docs/LEARNING_OBJECTIVES.md, LO-06 retitled by producer answer 4).
   - id: call-the-number-you-know
     lo: LO-07
@@ -74,6 +74,6 @@ cards:
   - id: check-who-gets-the-money
     lo: LO-06
     title: "Check who gets the money"
-    habit: "Asked to pay a new or different account, or it's urgent or secret? Call the person on a number you already had. Name doesn't match? Stop. Name matches? Still call: it only shows whose account it is."
-    example: "A friend asks you to pay their landlord directly? The name can match and the story still be false. A call to your friend settles it."
-    already_clicked: "Paid already? Call your bank now on the number on your card and ask it to stop or recall the payment. Then tell the real person, with a call to their saved number."
+    habit: "New or different account, or urgent or secret? Call the person on a number you already have. Name doesn't match? Stop. Matches? Still call: it only shows whose account it is. At work, keep the two-person sign-off."
+    example: "Paying a bill or a new payee? Type the name from your own papers, not the message. No papers? Call first."
+    already_clicked: "Paid already? Call your bank now on the number you already have and ask it to try to stop or recall the payment. Then tell the real person, on a number you already have."

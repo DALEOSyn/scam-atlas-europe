@@ -1,0 +1,207 @@
+# 3-8 Platinoir from its real address, in the real thread: new account, "no need to call" (GDD §23.4 3-8;
+# payment-detail-change brief §7 design rule: one fake from a real, misused mailbox; how it was misused is
+# never shown). Fraud, difficulty 4 (one subtle flag, real details mixed in), timer (slot length);
+# interrupt at 20 s (Inès, small talk). Supplier twin of paris-04-supplier-new-bank (same five checkables).
+# Red flag (R = 1): request, the ask "your bank's name check is all the proof you need, so no need to
+# call us" (rework 1: sourced to the vigilance and known-number callback sources; the EPC coaching tactic
+# is support only). Decoys (4): sender (the real address, P1: the chapter's sender decoy), reference
+# (the real invoice), attachment (a real-looking invoice), the IBAN (P2).
+# Thread history (CR-25): Platinoir's real invoice three weeks ago and Bastien's "paid" reply.
+# Banking beat: you type "N. Vardoulec" as the email says; the check says it matches (P3 neutral, same
+# suffix as 3-4 and the boss). N. Vardoulec is shown in full: the player types it (GDD §23 rework 1,
+# brand-checked); an exception to the masked-surname rule.
+# Fall: Solène approves it (she sees the same thread and the same match; sign-off can't catch a fake
+# supplier). Damage control: 6 options, 2 harmful (keep_evidence moves to layer 2, GDD §23.4).
+id: paris-08-supplier-thread-match
+chapter: paris
+role: standard
+pattern: payment-detail-change
+theme: supplier
+twin_of: paris-04-supplier-new-bank
+learning_objectives: [LO-06, LO-01, LO-18]
+difficulty: 4
+is_fraud: true
+device: email
+brands: [platinoir, ruchelune, larchwick, kettle]
+cast: [ines, solene, bastien]
+pressure:
+  timer: true
+  levers: [urgency, helpfulness]
+
+message:
+  sender: { display: "Platinoir · Facturation", detail: "facturation@platinoir.example" }
+  subject: "RE: Maintenance presse · facture P-7713"
+  body: |
+    Bonjour,
+
+    Merci pour le règlement de la dernière facture. Pour la facture P-7713 (2 860 €, ci-jointe), nous changeons de banque avant le pont : merci de régler sur le compte ci-dessous, au nom de N. Vardoulec, notre responsable comptable. La vérification du bénéficiaire par votre banque suffit comme preuve, inutile de nous appeler.
+
+    Bon week-end !
+    Platinoir · Facturation
+  lang: fr
+  translation: "Hello, thanks for paying the last invoice. For invoice P-7713 (€2,860, attached), we're changing banks before the long weekend: please pay to the account below, in the name of N. Vardoulec, our accounts manager. Your bank's name check is all the proof you need, so no need to call us. Have a good weekend! Platinoir · Billing"
+  request: pay
+  ask:
+    text: "La vérification du bénéficiaire par votre banque suffit comme preuve, inutile de nous appeler."
+    translation: "Your bank's name check is all the proof you need, so no need to call us."
+  payee: { name: "N. Vardoulec", iban: "FR•••••••••••••••••••••••19" }
+  attachments: [{ name: "Facture_P-7713.pdf", size: "96 KB" }]
+  references: ["P-7713"]
+  earlier:
+    - from: "Platinoir · Facturation"
+      when: "3 weeks ago"
+      body: "Bonjour, veuillez trouver ci-joint la facture P-7598 pour la révision de la presse. Bonne journée !"
+      lang: fr
+      translation: "Hello, please find attached invoice P-7598 for the press service. Have a good day!"
+    - from: "Bastien Morel"
+      when: "2 weeks ago"
+      body: "Bonjour, facture P-7598 réglée ce jour. Merci ! Bastien"
+      lang: fr
+      translation: "Hello, invoice P-7598 paid today. Thanks! Bastien"
+  l10n_note: "French in-world text is intentional (Paris chapter); the English translation is shown inline. 'Le pont' is the long weekend."
+
+inspectables:
+  - target: sender.detail
+    reveal: "Shows facturation@platinoir.example, the address in your supplier file and this thread, as a real Platinoir email would. A real mailbox can be misused, so it can't prove anything either way."
+    red_flag: false
+    type: sender
+  - target: attachment
+    reveal: "Opens invoice P-7713 for the press maintenance. A real invoice and a fake one look just as tidy, so it can't prove anything either way."
+    red_flag: false
+    type: attachment
+  - target: reference
+    reveal: "Shows invoice P-7713, which matches the press service in your supplier file. Invoice numbers can be copied from earlier mail, so it can't prove anything either way."
+    red_flag: false
+    type: reference
+  - target: payee.iban
+    reveal: "A new account, as the email says. A real change and a fake one look the same here, so it can't prove anything either way. The number in your supplier file can."
+    red_flag: false
+    type: payee
+  - target: request
+    reveal: "Asks you to pay a new account before the long weekend, and says your bank's name check is all the proof you need, so there's no need to call. A name check only shows whose account it is. Being steered away from the call is the tell."
+    red_flag: true
+    type: request
+
+actions:
+  - id: setup_platinoir_payment
+    label: "Set up the payment in Larchwick Pro"
+    kind: start_transfer
+    next_beat: platinoir_transfer
+    pressure_target: true
+  - id: call_platinoir_file
+    label: "Call Platinoir on your supplier file's number"
+    kind: call_back_known
+    outcome: platinoir_no_change
+  - id: report_platinoir
+    label: "Report it to Ruchelune IT"
+    kind: report
+    outcome: platinoir_reported
+  - id: leave_platinoir
+    label: "Leave it for now"
+    kind: ignore
+    outcome: platinoir_left
+
+beats:
+  - id: platinoir_transfer
+    device: banking
+    message:
+      bank: { brand: larchwick-pro }
+      account: { nickname: "Ruchelune · current account" }
+      payee: { name: "N. Vardoulec", iban: "FR•••••••••••••••••••••••19", name_check: match, amount: "€2,860.00" }
+      request: pay
+    inspectables:
+      - target: payee.name_check
+        reveal: "Name matches: the account is held by N. Vardoulec, the name the email gave you. That shows whose account it is. Only a call on a number you already had shows the request is real."
+        red_flag: false
+        type: payee
+      - target: payee.iban
+        reveal: "A new account, as the email says. A real change and a fake one look the same here, so it can't prove anything either way. The number in your supplier file can."
+        red_flag: false
+        type: payee
+    actions:
+      - id: pay_vardoulec
+        label: "Pay it and send for approval"
+        kind: pay
+        outcome: platinoir_paid
+        pressure_target: true
+      - id: cancel_call_platinoir
+        label: "Cancel and call your supplier file's number"
+        kind: call_back_known
+        outcome: match_then_call
+      - id: cancel_report_platinoir
+        label: "Cancel and report it"
+        kind: report
+        outcome: platinoir_reported
+      - id: cancel_platinoir
+        label: "Cancel"
+        kind: ignore
+        outcome: platinoir_cancelled
+
+interrupts:
+  - id: ines_coffee
+    at_seconds: 20
+    is_fraud: false
+    device: messenger
+    message:
+      sender: { display: "Inès (Ruchelune)", detail: "Saved contact: Inès (Ruchelune)" }
+      from_cast: ines
+      body: "Coffee run, want one? ☕"
+      request: reply
+    inspectables:
+      - target: sender.detail
+        reveal: "It fits: Inès's saved contact, in your usual chat with her. That isn't proof on its own, so weigh it with what she asks for: nothing, just coffee."
+        red_flag: false
+        type: sender
+        reassures: true
+    actions:
+      - id: reply_ines_coffee
+        label: "Reply: yes please, un crème!"
+        kind: proceed
+        outcome: ines_coffee_thanks
+        pressure_target: true
+      - id: report_ines_coffee
+        label: "Report the message"
+        kind: report
+        outcome: ines_coffee_reported
+
+outcomes:
+  platinoir_paid:
+    narrative: "Solène approves it: she sees the same real thread and the same matching name, so she can't know either. An hour later Platinoir rings Ruchelune's front desk: their mailbox was misused, and they never changed banks."
+    recovery:
+      - { step: call_bank_recall_transfer, category: stop }
+      - { step: warn_creditor_known_number, category: warn }
+      - { step: tell_management_known_channel, category: warn }
+      - { step: file_complaint_police, category: report }
+      - step: reply_to_sender
+        category: harmful
+        feedback: "Replying feels like the quickest way to ask, but the reply may go straight to whoever misused Platinoir's mailbox. Call the bank now, then Platinoir on the number in your supplier file."
+      - { step: wait_until_after_long_weekend, category: harmful }
+  platinoir_no_change:
+    narrative: "Platinoir, on the number in your supplier file: \"We haven't changed banks. We'll check our email account. Thank you.\""
+  match_then_call:
+    narrative: "A match only shows whose account it is. Your call settled it. Good stop. Platinoir, on the number in your file: \"We haven't changed banks. We'll check our email account. Thank you.\""
+  platinoir_reported:
+    narrative: "Reported to Ruchelune IT, and nothing goes out. A call to Platinoir on the number in your file would also warn them that their mailbox is being misused."
+  platinoir_left:
+    narrative: "You leave it, and nothing goes out today. But Platinoir doesn't know its mailbox is being misused; a call on the number in your file would tell them."
+  platinoir_cancelled:
+    narrative: "You cancel, and nothing goes out. A call to Platinoir on the number in your file would tell them their mailbox is being misused."
+  ines_coffee_thanks:
+    narrative: "Inès: \"Un crème, noted. Back in ten.\""
+  ines_coffee_reported:
+    narrative: "You reported it. Careful is good; this one really was Inès, offering coffee."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Real address, real invoice, new account, and \"no need to call\"."
+    what_works: "Call the number in your supplier file."
+  layer2:
+    message_flags:
+      - "New bank details right before the long weekend, just as the invoice falls due."
+    notes: "A match only shows whose account it is. The payee name came from the email, so the bank matched it; had it been Platinoir, the name in your own file, the check should have flagged it. Use names from your own records, and call. The sign-off catches a fake Solène, not a fake supplier: she sees the same details you took from the email. If it happens for real, keep the emails, bank details and transfer record."
+  device_tip: "In a real banking app, type the payee name from your own records, not from the email, so the name check can warn you. Then call anyway."
+  habit_card: check-who-gets-the-money
+  already_clicked:
+    paid: "Call your bank at once on the number you already have and ask it to try to stop or recall the transfer for fraud. Then warn Platinoir on the number in your supplier file, tell Solène through the directory, and keep the emails."
+  sources: [fr-bdf-fraude-moyens-paiement, eu-epc-vop-scheme, fr-cybermalveillance-fiche-faux-rib, fr-fbf-cles-faux-rib-2025, fr-cybermalveillance-fiche-fovi, eu-europol-ceo-bec-leaflet, eu-epc-threats-2025, eu-esas-ai-scams-factsheet-nl, eu-ecb-ipr, fr-gendarmerie-fovi]

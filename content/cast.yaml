@@ -38,3 +38,19 @@ cast:
     role: "Guesthouse desk, Amsterdam"
     known_channel: { label: "Guesthouse desk", detail: "Sanne (guesthouse desk)" }
     notes: "Local, Amsterdam (GDD §22.1, STORY §2.3): 19, student, job hunting after a rent rise. Story scenes only: she never sends a scored message and no scam impersonates her in a scored scenario. Her mum (capable, rang Sanne's real number first) and her little brother stay off screen."
+  # Paris (GDD §23.10, story bible §3.3). Margaux (front desk) is a directory entry, not cast.
+  - id: solene
+    name: "Solène Arbogast"
+    role: "Director, Ruchelune (Paris)"
+    known_channel: { label: "Ruchelune directory", detail: "Solène Arbogast, director" }
+    notes: "Stretched thin, firm on the procedure card. Her real mailbox is misused in the boss (never her fault); a face and voice like hers are used on the boss video call."
+  - id: bastien
+    name: "Bastien Morel"
+    role: "Accounts officer, Ruchelune (on leave)"
+    known_channel: { label: "Ruchelune directory", detail: "Bastien Morel, accounts" }
+    notes: "On leave for the long weekend; co-signs payments with Solène. Named in scam scripts (\"not even Bastien\"), never a speaker in scored scenarios."
+  - id: ines
+    name: "Inès Roussel"
+    role: "Apprentice designer, Ruchelune (17)"
+    known_channel: { label: "Saved contact", detail: "Inès (Ruchelune)" }
+    notes: "Capable: spots the plumber fake herself (drill 3-3); her name is used in 3-5. Never the one who falls."

@@ -14,7 +14,7 @@ import { chapterSchema, type Scene } from '../../src/content/schema.ts';
 import { createStore, freshSave, SAVE_KEY, type StorageLike } from '../../src/engine/save.ts';
 import { AtlasScreen } from '../../src/ui/Atlas.tsx';
 import { ChapterDone } from '../../src/ui/ChapterDone.tsx';
-import { HelpList, ScenePlayer, sceneHeading, scenePart } from '../../src/ui/ScenePlayer.tsx';
+import { HelpList, revealPanel, ScenePlayer, sceneHeading, scenePart } from '../../src/ui/ScenePlayer.tsx';
 import { fixtureScene } from '../content/scene-fixtures.ts';
 import { loadExample } from './helpers.ts';
 
@@ -172,12 +172,41 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
   });
   it('reduced motion: panels and postcards still render their end state (durations are 0 via tokens)', () => {
     document.documentElement.dataset.motion = 'reduced';
-    const scroll = vi.fn();
-    Element.prototype.scrollIntoView = scroll;
+    const scroll = vi.spyOn(window, 'scrollBy').mockImplementation(() => undefined);
     render(<ScenePlayer scene={arrival()} heading="Berlin · Arrival" chapterName="Berlin" onDone={() => undefined} />);
+    scroll.mockClear();
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
-    expect(scroll).toHaveBeenCalledWith({ behavior: 'auto', block: 'nearest' });
-    delete (Element.prototype as Partial<Element>).scrollIntoView;
+    // CR-28: the reveal scroll is instant with reduced motion.
+    expect(scroll).toHaveBeenCalledWith(expect.objectContaining({ behavior: 'auto' }));
+    scroll.mockRestore();
+  });
+  it('CR-28 revealPanel: the caption end goes above the footer; a panel that fits is shown whole; else the caption wins', () => {
+    const scroll = vi.spyOn(window, 'scrollBy').mockImplementation(() => undefined);
+    const box = (top: number, bottom: number) => ({ top, bottom, left: 0, right: 0, width: 0, height: bottom - top, x: 0, y: top, toJSON: () => ({}) }) as DOMRect;
+    const make = (liTop: number, capBottom: number) => {
+      const li = document.createElement('li');
+      const cap = document.createElement('figcaption');
+      li.append(cap);
+      li.getBoundingClientRect = () => box(liTop, capBottom);
+      cap.getBoundingClientRect = () => box(capBottom - 50, capBottom);
+      return li;
+    };
+    const footer = document.createElement('div');
+    footer.getBoundingClientRect = () => box(500, 568);
+    // Caption runs 60 px under the footer (edge 500 − 8): scroll down by 68.
+    revealPanel(make(200, 560), footer, 'smooth');
+    expect(scroll).toHaveBeenLastCalledWith({ top: 68, behavior: 'smooth' });
+    // Fits but its top is above the viewport: scroll up to show the top (8 px margin).
+    revealPanel(make(-100, 300), footer, 'auto');
+    expect(scroll).toHaveBeenLastCalledWith({ top: -108, behavior: 'auto' });
+    // Taller than the room: only as far up as keeps the caption end above the footer.
+    revealPanel(make(-400, 450), footer, 'auto');
+    expect(scroll).toHaveBeenLastCalledWith({ top: -42, behavior: 'auto' });
+    // Already clear: no scroll.
+    scroll.mockClear();
+    revealPanel(make(100, 400), footer, 'auto');
+    expect(scroll).not.toHaveBeenCalled();
+    scroll.mockRestore();
   });
 });
 

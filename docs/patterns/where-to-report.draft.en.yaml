@@ -4,6 +4,7 @@
 # emotional-support line, child/youth line) for DE, NL, FR, ES, PL, IT, PT, IE, SE, BE + the generic EU entry.
 # ES and PL entries from T-3.6r (Madrid/Warsaw research) and T-3.8r merged 2026-11-19; one entry per id.
 # T-3.10r (2026-11-19, Dublin/Stockholm): IE adds ie-garda-confidential and ie-cbi-report; SE adds se-bank.
+# T-3.12r (2026-11-19, Brussels): BE updates be-police (URL, Police on Web vs station), adds be-fsma (advice) and be-crisis.
 #
 # LOCATION: parked under docs/ because it trips redline:lint under content/. The engineer adds a path-specific
 # exemption plus a dedicated checker, then moves it back to content/help/where-to-report.en.yaml.
@@ -36,7 +37,7 @@
 #                  child      = line for young people (card heading "Under 18? Lines for young people")
 #                  crisis     = suicide/crisis line: its own calm final row, never rendered as support.
 #                               Row title for every country: "Thinking about ending your life, or worried about someone?"
-#                               Wording goes to the G3 human review. Verified for ES, SE, PT, FR only.
+#                               Wording goes to the G3 human review. Verified for ES, SE, PT, FR, BE (T-3.12r) only.
 #                  harassment = online harassment / sextortion line: shown ONLY on that help card, not on the scam help screen
 #   Cost wording (T-3.8r round 2): write "free" only where an official or operator page says so; known normal rate:
 #                "Normal call rate." (IT: "Normal call cost."); unknown: "Call costs may apply."
@@ -186,10 +187,20 @@ countries:
       review_note: "T-3.8r: since 2026-06-22 the same number is also 'Fraudstop' (Febelfin). Cost not stated. One local police page (zone 5329) still lists the OLD Card Stop number 070 344 344: never show it."
     - id: be-police
       role: police
-      name: "Local police"
-      body: "File a complaint after a fraud."
-      checked: 2026-11-18
-      sources: [be-police-romance-2026]
+      name: "Police"
+      body: "File a complaint after a fraud. A local police station is best, so first steps can be taken quickly; with a Belgian identity card you can also use Police on Web for some non-urgent facts. Bring screenshots and the numbers or accounts used."
+      url: https://www.police.be/5998/fr/a-propos/campagnes-de-communication/campagne-scam/porter-plainte-pour-une-arnaque-en-ligne
+      checked: 2026-11-19
+      sources: [be-police-plainte-arnaque-en-ligne, be-police-romance-2026]
+      review_note: "T-3.12r: police.be SCAM campaign page (French; no English version opened) says Police on Web needs a Belgian identity card and covers 'certains faits non urgents'; a local station is 'préférable'. Not checked: whether under-18s can use Police on Web (young-people help text should say 'go with a parent or trusted adult')."
+    - id: be-fsma
+      role: advice
+      name: "FSMA (financial regulator) warnings list"
+      body: "Offered an investment, or someone offering to get your lost money back? Check the firm here. The list isn't complete, so not being on it doesn't prove a firm is safe. Never pay a fee to get money back."
+      url: https://www.fsma.be/en/warnings-list-companies-operating-unlawfully-belgium
+      checked: 2026-11-19
+      sources: [be-fsma-warnings-list, be-fsma-recovery-room, be-fsma-trading-platforms-2025]
+      review_note: "T-3.12r (Brussels ending C). The page says the list 'cannot be considered as exhaustive' and points to the FSMA consumer contact form (form URL not opened on its own; not shown). FSMA recovery-room page: such firms always ask for a fee first; supervisors never contact victims for this."
     - id: be-listening-line
       role: support
       name: "Tele-Onthaal (Dutch) / Télé-Accueil (French)"
@@ -214,6 +225,18 @@ countries:
       checked: 2026-11-19
       sources: [be-police-ecoute-enfants, be-brussels-hulpdiensten, be-vlaanderen-awel]
       review_note: "103 free, anonymous, daily 10:00-24:00 per police.be (zone 5300). Round 2: 102 free, anonymous, phone daily 16:00-22:00 except Sundays and public holidays per the Flemish government page (vlaanderen.be, undated, opened 2026-11-19). No 116 111 in BE found."
+    - id: be-crisis
+      role: crisis
+      name: "Thinking about ending your life, or worried about someone?"
+      body: "1813 (Dutch) and 0800 32 123 (French) are free, day and night. In danger now? Call 112."
+      phones:
+        - number: "1813"
+          label: "Zelfmoordlijn (Dutch): free, anonymous, day and night"
+        - number: "0800 32 123"
+          label: "Suicide prevention line (French): free, day and night"
+      checked: 2026-11-19
+      sources: [be-zelfmoord1813, be-police-autres-numeros, be-brussels-hulpdiensten]
+      review_note: "T-3.12r. 1813: operator site (zelfmoord1813.be) says anonymous, free, phone 24/7; also on the Brussels Region portal. 0800 32 123: police.be (zone 5329) says suicide prevention line, free, 24/7; the French-language operator's own site was NOT opened, so its name is not shown. Crisis wording goes to the G3 human review."
 
   DE:
     - id: de-116111
@@ -728,7 +751,7 @@ countries:
 #   PT  report: pt-police (no online channel verified)   police: pt-police   bank: pt-bank   support: pt-sns24-psych (cost unknown)   child: pt-116111   crisis: pt-1411 (free/24h from consumer body)
 #   IE  report: ie-garda, ie-cbi-report (unauthorised firms)   police: ie-garda, ie-garda-confidential (investment fraud only)   bank: ie-bank   support: ie-samaritans   child: ie-childline   crisis: none
 #   SE  report: se-police   police: se-police   bank: se-bank (T-3.10r)   support: se-jourhavande (21:00-06:00, cost unknown)   child: se-bris (cost unknown)   crisis: se-mind
-#   BE  report: be-safeonweb-forward   police: be-police   bank: be-card-stop (cost unknown)   support: be-listening-line (106 cost unknown)   child: be-youth-line   crisis: none
+#   BE  report: be-safeonweb-forward   advice: be-fsma (T-3.12r)   police: be-police (updated T-3.12r)   bank: be-card-stop (cost unknown)   support: be-listening-line (106 cost unknown)   child: be-youth-line   crisis: be-crisis (T-3.12r)
 #   EU / home (generic): eu.europol-report-signpost, eu.ecc-net + fallbacks.police / bank / support / child_helpline; no crisis row
 
 # ---------------------------------------------------------------- 5. Not included on purpose (keep out until verified)
@@ -745,6 +768,9 @@ countries:
 #   "suspected investment fraud". Not shown: the Central Bank's third-party report-form URL (link the centralbank.ie page);
 #   the Swedish financial supervisor's warning list and report route (named by the consumer agency, own pages not opened);
 #   the Swedish crime-victim authority (named by the consumer agency, not opened); the Swedish e-ID provider's own pages (not found).
+# - T-3.12r (2026-11-19): Belgian federal consumer contact point (pointdecontact.belgique.be: own site returned
+#   unreadable content, not verified); FSMA consumer contact form URL (only linked from the warnings list); a Safeonweb
+#   page on remote-access scams (none found); name of the French-language crisis line's operator (own site not opened).
 # - phishing@ncsc.gov.ie: scoped to suspected fake QR codes only (NCSC Ireland QR guide).
 # - Fraudehelpdesk phone number / report URL, German Länder police portals, Portuguese online complaint portal,
 #   INCIBE incident-report email, Safeonweb language variants (verdacht@): not verified.

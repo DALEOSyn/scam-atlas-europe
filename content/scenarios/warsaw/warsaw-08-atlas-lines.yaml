@@ -1,0 +1,89 @@
+# 5-8 Adaeze: "Three lines on Warsaw for the Atlas by Thursday?" (GDD §25.4 5-8). Genuine, low stakes,
+# off-focus (pattern email-phishing-credential is not in Warsaw's patterns, so a double check here costs
+# gold; §25.7 row 2). Difficulty 3, calm. Theme work.
+# Checkables (3): sender ("It fits": Waymarker's own domain, her directory address), link ("It fits":
+# Waymarker Desk's own address), request (writing, nothing high-stakes). No fraud claim, no sources needed
+# for a pattern; the debrief cites the general phishing leaflet for the "own domain" habit.
+id: warsaw-08-atlas-lines
+chapter: warsaw
+role: standard
+pattern: email-phishing-credential
+theme: work
+learning_objectives: [LO-17]
+difficulty: 3
+is_fraud: false
+stakes: low
+device: email
+brands: [waymarker]
+cast: [adaeze]
+pressure:
+  timer: false
+  levers: []
+
+message:
+  sender: { display: "Adaeze Okafor-Lind", detail: "adaeze.okafor-lind@waymarker-network.example" }
+  from_cast: adaeze
+  subject: "Atlas: Warsaw"
+  body: |
+    Hi! Could you send me three lines on Warsaw for the Atlas by Thursday? The draft is here: desk.waymarker-network.example/atlas/warsaw
+
+    No rush. A.
+  request: reply
+  ask: { text: "Could you send me three lines on Warsaw for the Atlas by Thursday?" }
+
+inspectables:
+  - target: sender.detail
+    reveal: "It fits: Waymarker's own domain and Adaeze's address in the staff directory. That isn't proof on its own, so weigh it with what the email asks for."
+    red_flag: false
+    type: sender
+    reassures: true
+  - target: link
+    reveal: "It fits: desk.waymarker-network.example, Waymarker's own address, where the Atlas drafts live. That isn't proof on its own, so weigh it with what the email asks for."
+    red_flag: false
+    type: link
+    reassures: true
+  - target: request
+    reveal: "Asks for three lines of writing. No money, no code, no login request."
+    red_flag: false
+    type: request
+
+actions:
+  - id: reply_atlas_thursday
+    label: "Reply: on it, Thursday's fine"
+    kind: proceed
+    outcome: atlas_reply
+    pressure_target: true
+  - id: ask_adaeze_directory_atlas
+    label: "Ask Adaeze through the staff directory first"
+    kind: ask_someone
+    outcome: adaeze_confirms_atlas
+  - id: report_atlas_email
+    label: "Report the email"
+    kind: report
+    outcome: atlas_reported
+  - id: leave_atlas_email
+    label: "Leave it"
+    kind: ignore
+    outcome: atlas_left
+
+outcomes:
+  atlas_reply:
+    narrative: "You reply: \"On it, Thursday's fine.\" Adaeze: \"Lovely. Mention the boxes.\""
+  adaeze_confirms_atlas:
+    narrative: "Adaeze, through the directory: \"Yes, that's me! Thursday's fine.\" You write your three lines."
+  atlas_reported:
+    narrative: "You reported it. Careful is good; this one was Adaeze, asking for three lines."
+  atlas_left:
+    narrative: "You leave it. On Thursday Adaeze sends a gentle reminder."
+
+debrief:
+  variant: standard
+  layer1:
+    tell: "Your coordinator, asking for writing."
+    what_works: "Reply as normal."
+  layer2:
+    message_flags: []
+    notes: "Most messages are fine. This one came from Waymarker's own domain and asked for nothing but a few lines of writing, so replying was right. Save your extra checks for requests for money, codes or logins."
+  device_tip: "On a real phone, tap the sender's name to see the full address behind it, and read the end."
+  habit_card: calm-not-paranoid
+  sources: [eu-europol-phishing-leaflet]

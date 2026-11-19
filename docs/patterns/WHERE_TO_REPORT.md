@@ -10,7 +10,7 @@
 ---
 
 ## 1. First steps, wherever you are in Europe (generic)
-0. **Under 18? Tell a parent, carer or another adult you trust first.** You are not in trouble for asking for help. They can call the bank or the police with you. *(Safeguarding step; no source needed. It reflects the game's 14+ audience. Wording to be checked by sceptic-reviewer and qa-playtester.)*
+0. **Under 18? Tell a parent, carer or another adult you trust first.** Getting help early is the right move. Asking for help is never the wrong thing to do. They can call the bank or the police with you. *(Safeguarding step; no source needed. It reflects the game's 14+ audience. Wording to be checked by sceptic-reviewer and qa-playtester.)*
 1. **Money or card details involved? Call your bank or card issuer now.**
    - Use the number on your card or in your banking app, never one from the message.
    - Ask them to block the card or payments and to try to recall the transfer. Speed matters [fr-gendarmerie-fovi], [es-incibe-smishing-bank-callback-2025], [eu-esas-ai-scams-factsheet-nl].

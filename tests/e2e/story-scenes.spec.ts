@@ -74,7 +74,7 @@ test("Sanne's story (sensitive): replay opens on the content note, ends relieved
 });
 
 for (const { city, id, first } of [
-  { city: 'Madrid', id: 'madrid-arrival', first: "Madrid. Your host's spare room" },
+  { city: 'Madrid', id: 'madrid-arrival', first: "Madrid. Your hosts' spare room" },
   { city: 'Warsaw', id: 'warsaw-arrival', first: 'Everything must go, except the cello.' },
 ]) {
   test(`${city} arrival (T-S4e) plays before the chapter intro and its pinned card; art loads, axe clean`, async ({ page }) => {

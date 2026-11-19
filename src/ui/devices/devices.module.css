@@ -212,6 +212,13 @@
   text-decoration: underline dotted;
   text-underline-offset: 3px;
 }
+/* Amsterdam QA m: no line break between a highlighted checkable and the punctuation after it. */
+.keepPunct {
+  white-space: nowrap;
+}
+.keepPunct > * {
+  white-space: normal;
+}
 .chips {
   list-style: none;
   margin: 0;

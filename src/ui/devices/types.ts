@@ -33,8 +33,11 @@ export interface DeviceProps {
   onNextLine: () => void;
   /** Coach marks already shown in this game (save.coachMarks). */
   coachMarks: readonly string[];
-  /** A coach mark opened or closed: the timer is frozen while it is open (freeze reason coach_mark). */
-  onCoachMark: (id: string, open: boolean) => void;
+  /**
+   * A coach mark opened or closed: the timer is frozen while it is open (freeze reason coach_mark).
+   * `gotIt` is true only when the player pressed "Got it": only then is the mark recorded as seen.
+   */
+  onCoachMark: (id: string, open: boolean, gotIt?: boolean) => void;
   /** The payee-check result is on screen (true) or still "Checking…" (false), per beat (CR-23). */
   onNameCheck?: (beatId: string, ready: boolean) => void;
   /** Heading text and ref (focus target on arrival). */

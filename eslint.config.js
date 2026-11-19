@@ -6,7 +6,7 @@ const FORM_ONLY_IN_SIMULATED =
   'Render forms only through src/ui/SimulatedForm.tsx (Red Line 2: game forms never submit anywhere).';
 
 export default tseslint.config(
-  { ignores: ['dist/', 'dev-dist/', 'coverage/', 'playwright-report/', 'test-results/', 'node_modules/'] },
+  { ignores: ['dist/', 'dist-harness/', 'dev-dist/', 'coverage/', 'playwright-report/', 'test-results/', 'node_modules/'] },
   js.configs.recommended,
   ...tseslint.configs.strict,
   {

@@ -1,0 +1,23 @@
+# Test fixture (S3), not game content.
+id: berlin-resolution
+chapter: berlin
+slot: resolution
+panels:
+  - backdrop: berlin-courtyard
+    speaker: jonas
+    expression: relieved
+    line: "Your documents came to me. And look: Mia's present was in a locker all along."
+    alt: "Jonas in the courtyard, relieved, holding two parcels."
+  - backdrop: berlin-courtyard
+    speaker: jonas
+    expression: warm
+    if_flag: berlin_test_variant
+    line: "Whatever happened today, you're here and so are the parcels."
+    alt: "Jonas smiling by the locker."
+  - backdrop: berlin-courtyard
+    speaker: jonas
+    expression: proud
+    if_then:
+      cue: "If a parcel message wants money or a click,"
+      action: "then I open the courier's app myself."
+    alt: "Jonas taps his own chest, proud. A postcard frame shows his words."

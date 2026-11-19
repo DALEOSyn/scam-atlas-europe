@@ -143,7 +143,7 @@ describe('m1: the fake-deadline line after a fall', () => {
 });
 
 describe('L2: damage control after several falls in a boss', () => {
-  it('merges the steps of every fall, in beat order, without repeats', () => {
+  it('merges the steps of every fall, in beat order, without repeats, at most 6', () => {
     const s = structuredClone(boss()) as Scenario;
     s.outcomes.code_gone = {
       narrative: 'The payment goes through.',
@@ -159,9 +159,8 @@ describe('L2: damage control after several falls in a boss', () => {
     const { st } = play(s, ctx({ timerMode: 'off' }), [act('tap_link'), act('enter_card'), cont, act('report_2'), cont, act('read_code')]);
     expect(st.phase).toBe('damage_control');
     const steps = st.recovery?.options.map((o) => o.step) ?? [];
-    expect(new Set(steps)).toEqual(
-      new Set(['block_card_in_bank_app', 'call_bank_known_number', 'report_to_police_online', 'reply_ask_money_back', 'wait_and_see', 'call_bank_stop_payment', 'refuse_codes_to_callers']),
-    );
-    expect(steps.length).toBe(7);
+    // Follow-up f: de-duplicated and capped at 6 options; the first fallen beat's steps are always kept.
+    expect(new Set(steps)).toEqual(new Set(['block_card_in_bank_app', 'call_bank_known_number', 'report_to_police_online', 'reply_ask_money_back', 'wait_and_see', 'call_bank_stop_payment']));
+    expect(steps.length).toBe(6);
   });
 });

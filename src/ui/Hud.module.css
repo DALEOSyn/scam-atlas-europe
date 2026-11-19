@@ -86,7 +86,9 @@
 .segs i.filled {
   background: var(--color-text);
 }
-@media (max-width: 439px) {
+/* Icon-only Pause and Menu below 540 px: at 440–539 px the labelled buttons wrapped the HUD, with or
+   without the "Paused" note (review T-S3 item 5, measured in tests/e2e/scene-layout.spec.ts). */
+@media (max-width: 539px) {
   .segs {
     display: none;
   }
@@ -234,5 +236,31 @@
 .frozenNote {
   font-size: var(--fs-xs);
   font-weight: var(--fw-regular);
-  white-space: normal;
+  white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Review T-S3 item 5: only "Paused" below 720 px so the HUD keeps one row with the tip open
+   (measured in tests/e2e/scene-layout.spec.ts); "Paused: tip open" from 720 px (CI fonts wrapped at 608 px). */
+.frozenNarrow {
+  display: none;
+}
+@media (max-width: 719px) {
+  .frozenWide {
+    display: none;
+  }
+  .frozenNarrow {
+    display: inline;
+  }
+}
+/* Tighter gaps and pill padding pay for "Paused" at 320–399 px. */
+@media (max-width: 399px) {
+  .hud {
+    column-gap: var(--space-1);
+  }
+  .progress,
+  .timer {
+    padding: 0 var(--space-2);
+  }
 }

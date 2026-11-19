@@ -480,6 +480,12 @@ export const interruptSchema = z
      * before the debrief. The debrief waits until it is answered.
      */
     after_beat: z.string().min(1).optional(),
+    /**
+     * With after_beat (Amsterdam QA q): wait until that beat's "What now?" choice is made, so a reassuring
+     * message (e.g. the real colleague: "Just landed, all fine here") does not give the answer away
+     * while the player is still choosing. Without "What now?" it changes nothing.
+     */
+    after_what_now: z.boolean().default(false),
     is_fraud: z.boolean(),
     ...beatBody,
   })
@@ -631,6 +637,7 @@ export const scenarioSchema = z
       if (b.after_beat !== undefined && b.after_beat !== 'start' && !s.beats.some((x) => x.id === b.after_beat)) {
         issue(['interrupts', i, 'after_beat'], `after_beat "${b.after_beat}" is not a beat id`);
       }
+      if (b.after_what_now && b.after_beat === undefined) issue(['interrupts', i, 'after_what_now'], 'after_what_now needs after_beat');
     });
     const beatIds = new Set<string>(['start']);
     s.beats.forEach((b, i) => {
@@ -841,9 +848,47 @@ export const chapterSchema = z
     boss: slug.optional(),
     arc_beat: slug.optional(),
     intro: z.string().min(1),
+    /**
+     * Story scenes (S3, STORY §3, §6): `arrival` before the first scenario, `turn` at the half-day stop
+     * point (after "Keep going"), `resolution` after the last debrief and before the summary (it ends on
+     * the If-then panel). `placed` holds spec-placed beats that play after a named scenario's debrief
+     * (Amsterdam's local problem, Paris's turn after 3-5). All optional: a chapter plays without scenes.
+     */
+    scenes: z
+      .object({
+        arrival: slug.optional(),
+        turn: slug.optional(),
+        resolution: slug.optional(),
+        placed: z.array(z.object({ scene: slug, after: slug }).strict()).max(3).default([]),
+      })
+      .strict()
+      .optional(),
+    /** Content note shown before the chapter starts (STORY §5.6, exact wording), with a way out. */
+    content_note: z.string().min(1).optional(),
+    /** Brussels: the note when the Alex arc already closed with "Tell me now" (STORY §5.6). */
+    content_note_arc_closed: z.string().min(1).optional(),
+    /** Habit cards the chapter's Atlas page links to (STORY §1.3; an Atlas page = If-then line + these). */
+    atlas_cards: z.array(slug).max(5).optional(),
   })
   .strict()
   .superRefine((c, ctx) => {
+    if (c.content_note_arc_closed && !c.content_note) ctx.addIssue({ code: 'custom', path: ['content_note_arc_closed'], message: 'needs content_note too' });
+    for (const key of ['content_note', 'content_note_arc_closed'] as const) {
+      const text = c[key];
+      if (text) for (const what of sceneArtefacts(text)) ctx.addIssue({ code: 'custom', path: [key], message: `no scam artefacts in content notes: this looks like ${what}` });
+    }
+    if (c.scenes) {
+      const all = [...c.scenario_order.am, ...c.scenario_order.pm];
+      c.scenes.placed.forEach((p, i) => {
+        if (!all.includes(p.after)) ctx.addIssue({ code: 'custom', path: ['scenes', 'placed', i, 'after'], message: `"${p.after}" is not in scenario_order` });
+      });
+      const ids = [c.scenes.arrival, c.scenes.turn, c.scenes.resolution, ...c.scenes.placed.map((p) => p.scene)].filter((x): x is string => !!x);
+      const dupScene = ids.find((id, i) => ids.indexOf(id) !== i);
+      if (dupScene) ctx.addIssue({ code: 'custom', path: ['scenes'], message: `scene "${dupScene}" is placed twice` });
+      if (c.scenes.turn && (c.scenario_order.am.length === 0 || c.scenario_order.pm.length === 0)) {
+        ctx.addIssue({ code: 'custom', path: ['scenes', 'turn'], message: 'the turn plays at the half-day stop point; this chapter has no stop point (place it with `placed` instead)' });
+      }
+    }
     const all = [...c.scenario_order.am, ...c.scenario_order.pm];
     const dup = all.find((id, i) => all.indexOf(id) !== i);
     if (dup) ctx.addIssue({ code: 'custom', path: ['scenario_order'], message: `"${dup}" appears twice in scenario_order` });
@@ -855,6 +900,260 @@ export const chapterSchema = z
   });
 export type Chapter = z.infer<typeof chapterSchema>;
 
+// ---------------------------------------------------------------------------
+// Story scenes (S3; STORY §4, ART_DIRECTION §4–§9). content/scenes/<city>/<id>.yaml and
+// content/scenes/interludes/<id>.yaml. Scenes carry people, places and habits, never scams.
+
+export const SCENE_SLOTS = ['arrival', 'turn', 'resolution', 'beat', 'interlude'] as const;
+export type SceneSlot = (typeof SCENE_SLOTS)[number];
+/** The folder interludes live in (they belong to no city: keyed to play position, STORY §3.12). */
+export const INTERLUDE_FOLDER = 'interludes';
+
+/** The shared expression set (STORY §2, ART_DIRECTION §4.4). */
+export const EXPRESSIONS = ['calm', 'warm', 'laughing', 'thinking', 'worried', 'relieved', 'sheepish', 'proud', 'focused'] as const;
+export type Expression = (typeof EXPRESSIONS)[number];
+/** ART_DIRECTION §9.7: the fixed alt-text word per expression; it must appear in the panel's alt. */
+export const EXPRESSION_ALT_WORDS: Record<Expression, string> = {
+  calm: 'calm',
+  warm: 'smiling',
+  laughing: 'laughing',
+  thinking: 'thinking',
+  worried: 'looking worried',
+  relieved: 'relieved',
+  sheepish: 'with a sheepish smile',
+  proud: 'proud',
+  focused: 'concentrating',
+};
+/** A sensitive scene never ends on these (ART_DIRECTION §14 F, STORY §5.3). */
+export const NEVER_LAST_ON_SENSITIVE: readonly Expression[] = ['worried', 'sheepish'];
+/** Listeners are never more expressive than the speaker: calm or warm only (ART_DIRECTION §7.1). */
+export const LISTENER_EXPRESSIONS: readonly Expression[] = ['calm', 'warm'];
+/** STORY §4.1: lines ≤ 25 words; the If-then line too (§4.4). */
+export const SCENE_LINE_MAX_WORDS = 25;
+export const SCENE_MAX_PANELS = 6;
+export const INTERLUDE_MAX_PANELS = 4;
+/** ART_DIRECTION §9.2 and §9.8. */
+export const SCENE_ALT_MAX = 150;
+export const SCENE_ALT_BACKDROP_MAX = 80;
+/** Interlude placeholders (STORY §3.12): cities done and the last city's name. */
+export const SCENE_PLACEHOLDERS = ['count', 'lastCity'] as const;
+
+/** `calm`, `relieved-parcels`, `warm-phone-ear`: an expression, optionally with a pose (ART_DIRECTION §4.4). */
+export const expressionId = z
+  .string()
+  .regex(new RegExp(`^(?:${EXPRESSIONS.join('|')})(?:-[a-z0-9]+)*$`), `an expression from the shared set (${EXPRESSIONS.join(', ')}), optionally with a pose, e.g. relieved-parcels`);
+
+export function baseExpression(id: string): Expression {
+  return (id.split('-')[0] ?? 'calm') as Expression;
+}
+
+export function sceneWordCount(text: string | undefined): number {
+  return text ? text.trim().split(/\s+/u).filter((w) => /[\p{L}\p{N}]/u.test(w)).length : 0;
+}
+
+/**
+ * STORY §4.2 rule 1: no scam artefacts in scenes. Stricter than redline:lint (which allows fictional
+ * domains and masked numbers in device content): a scene line has no address of any kind, no number that
+ * could be a phone, code, IBAN or amount, and no masked digits.
+ */
+const TLDS = 'com|net|org|info|biz|example|test|invalid|eu|de|nl|fr|es|it|pl|pt|ie|se|be|at|ch|uk|co|io|app|online|shop|site';
+const SCENE_ARTEFACTS: { re: RegExp; what: string }[] = [
+  { re: /(?<![\p{L}\p{N}])(?:h[tx]{2}ps?|ftp|mailto|javascript):|(?<![\p{L}\p{N}])www\s*\./iu, what: 'a link' },
+  // A dot with no space on either side, or with spaces on both sides ("www . parcel . example"); a sentence end has neither.
+  { re: /[\p{L}\p{N}-]+(?:(?:\.|\s+\.\s+)[\p{L}\p{N}-]+)*(?:\.|\s+\.\s+)\p{L}{2,}(?![\p{L}])/u, what: 'a web address or domain' },
+  { re: new RegExp(`(?<![\\p{L}])(?:dot|punkt|point|punto)\\s+(?:${TLDS})(?![\\p{L}])`, 'iu'), what: 'a spelled-out web address' },
+  { re: /(?<![\p{L}])slash(?![\p{L}])/iu, what: 'a spelled-out web address' },
+  { re: /\S@\S/u, what: 'an e-mail address or handle' },
+  { re: /\/qr\//i, what: 'a QR route' },
+  { re: /(?<![\p{L}\p{N}])[A-Z]{2}\p{Nd}{2}(?:[ ]?[A-Z0-9]{2,4}){2,}/u, what: 'an IBAN' },
+  { re: /\+\s?\p{Nd}|\p{Nd}(?:[ ().-]?\p{Nd}){5,}/u, what: 'a phone number' },
+  { re: /\p{Nd}{4,}|\p{Nd}(?:\s\p{Nd}){3,}/u, what: 'a code or long number (write numbers in words)' },
+  { re: /[•*]{2,}|\p{Nd}[•*]|[•*]\p{Nd}/u, what: 'a masked number' },
+  { re: /[€£$¥₺]|\p{Nd}\s?(?:eur|euro|euros|usd|gbp|chf|pln|sek|kr|zł)(?!\p{L})|(?<!\p{L})(?:eur|euro|euros)\s?\p{Nd}/iu, what: 'an amount of money' },
+];
+
+/**
+ * Fold look-alike characters before matching: NFKC (full-width ０-９ ＋ ＠ ．, mathematical digits),
+ * zero-width and other format characters (removed), ideographic full stops, and defanged dots ("[.]", "(.)", "{dot}").
+ */
+export function normaliseSceneText(text: string): string {
+  return text
+    .normalize('NFKC')
+    .replace(/\p{Cf}/gu, '')
+    .replace(/[。．｡]/g, '.')
+    .replace(/\s*[[({]\s*(?:\.|dot)\s*[\])}]\s*/giu, '.');
+}
+
+export function sceneArtefacts(text: string): string[] {
+  // Placeholders ({count}) and the ellipsis "…" are fine; dotted abbreviations ("a.m.") have 1-letter parts.
+  const clean = normaliseSceneText(text).replace(/\{(?:count|lastCity)\}/g, ' ');
+  return [...new Set(SCENE_ARTEFACTS.filter((a) => a.re.test(clean)).map((a) => a.what))];
+}
+
+const sceneText = z.string().min(1);
+
+export const sceneLocalPhraseSchema = z
+  .object({ text: sceneText, lang: z.string().regex(/^[a-z]{2,3}(?:-[A-Z]{2})?$/, 'a BCP 47 language tag such as de or nl-NL'), translation: sceneText })
+  .strict();
+
+export const scenePanelSchema = z
+  .object({
+    /** public/art/backdrops/<backdrop>.svg; absent = a plain wall (video calls, captions). */
+    backdrop: slug.optional(),
+    /** ART_DIRECTION §6.1: one backdrop, three camera positions. */
+    crop: z.enum(['left', 'centre', 'right']).default('centre'),
+    /** A cast id (content/cast.yaml), `you` (the player: label "You", never drawn), or absent (narration). */
+    speaker: z.union([slug, z.literal('you')]).optional(),
+    /** Required for a cast speaker; `x-<expression>` must exist in public/art/cast/<speaker>.svg. */
+    expression: expressionId.optional(),
+    /** Speaker stands on the right, facing the centre (ART_DIRECTION §7.1). */
+    flip: z.boolean().default(false),
+    /** One listener, calm or warm only (ART_DIRECTION §7.1). */
+    with: z.object({ id: slug, expression: expressionId }).strict().optional(),
+    /** Video-call panel (ART_DIRECTION §7.6): caption "On a video call". */
+    video: z.boolean().default(false),
+    line: sceneText.optional(),
+    /** At most one local-language phrase per scene, with its inline translation (STORY §4.1). */
+    local: sceneLocalPhraseSchema.optional(),
+    /** Narration ("Later that evening."): no tail, sunken background (ART_DIRECTION §7.4). */
+    caption: sceneText.optional(),
+    /** The If-then panel (STORY §4.4): last panel of a resolution; caption "Postcard to Teo" is added by the player. */
+    if_then: z
+      .object({
+        cue: sceneText.refine((t) => /^If\b/.test(t), 'the cue starts with "If"'),
+        action: sceneText.refine((t) => /^then\b/.test(t), 'the action starts with "then"'),
+        /** An extra line under it on the postcard and Atlas page ("A real job pays you."), never inside the line. */
+        extra: sceneText.optional(),
+      })
+      .strict()
+      .optional(),
+    /** Flip the postcard (STORY §3.12): the engine picks the line; the player taps to flip. Unscored. */
+    flip_postcard: z.literal(true).optional(),
+    /** Optional rehearsal choice (STORY §4.1): 2–3 options, one shared reply; never scores and sets no flag. */
+    choice: z
+      .object({
+        prompt: sceneText,
+        options: z.array(sceneText).min(2).max(3),
+        reply: sceneText,
+      })
+      .strict()
+      .optional(),
+    /** Story-only variant flags (STORY §4.2 rule 5): the panel shows only when the chapter run has (or lacks) the flag. */
+    if_flag: flagName.optional(),
+    unless_flag: flagName.optional(),
+    /** ART_DIRECTION §9: who → expression word → doing → where; ≤ 150 characters (≤ 80 backdrop-only). */
+    alt: sceneText,
+  })
+  .strict()
+  .superRefine((p, ctx) => {
+    const drawn = p.speaker !== undefined && p.speaker !== 'you';
+    if (drawn && !p.expression) ctx.addIssue({ code: 'custom', path: ['expression'], message: 'a cast speaker needs an expression' });
+    if (!drawn && p.expression) ctx.addIssue({ code: 'custom', path: ['expression'], message: 'only a cast speaker has an expression (the player and narration are never drawn)' });
+    if (p.speaker === 'you' && p.flip) ctx.addIssue({ code: 'custom', path: ['flip'], message: 'the player is never drawn' });
+    if (!p.line && !p.caption && !p.if_then && !p.flip_postcard) ctx.addIssue({ code: 'custom', path: ['line'], message: 'a panel needs a line, a caption, an if_then or flip_postcard' });
+    if (p.line && !p.speaker) ctx.addIssue({ code: 'custom', path: ['speaker'], message: 'a line needs a speaker (use caption for narration)' });
+    if (p.if_then && !drawn) ctx.addIssue({ code: 'custom', path: ['if_then'], message: 'the If-then line is spoken by a cast member (STORY §4.4)' });
+    if (p.if_then && p.choice) ctx.addIssue({ code: 'custom', path: ['choice'], message: 'no choice on the If-then panel' });
+    if (p.flip_postcard && (p.if_then || p.choice)) ctx.addIssue({ code: 'custom', path: ['flip_postcard'], message: 'flip the postcard is a panel of its own' });
+    if (p.if_flag && p.unless_flag) ctx.addIssue({ code: 'custom', path: ['unless_flag'], message: 'use if_flag or unless_flag, not both' });
+    if (p.with) {
+      if (!LISTENER_EXPRESSIONS.includes(baseExpression(p.with.expression)) || p.with.expression.includes('-')) {
+        ctx.addIssue({ code: 'custom', path: ['with', 'expression'], message: 'a listener is calm or warm only (ART_DIRECTION §7.1)' });
+      }
+      if (p.with.id === p.speaker) ctx.addIssue({ code: 'custom', path: ['with', 'id'], message: 'the listener is not the speaker' });
+      if (!drawn) ctx.addIssue({ code: 'custom', path: ['with'], message: 'a listener stands with a drawn speaker' });
+    }
+    const texts: [string, string | undefined][] = [
+      ['line', p.line],
+      ['caption', p.caption],
+      ['local.text', p.local?.text],
+      ['local.translation', p.local?.translation],
+      ['if_then.extra', p.if_then?.extra],
+      ['choice.prompt', p.choice?.prompt],
+      ['choice.reply', p.choice?.reply],
+      ...(p.choice?.options ?? []).map((o, i): [string, string] => [`choice.options.${i}`, o]),
+    ];
+    for (const [path, text] of texts) {
+      if (text !== undefined && sceneWordCount(text) > SCENE_LINE_MAX_WORDS) ctx.addIssue({ code: 'custom', path: path.split('.'), message: `at most ${SCENE_LINE_MAX_WORDS} words (has ${sceneWordCount(text)})` });
+    }
+    if (p.if_then && sceneWordCount(`${p.if_then.cue} ${p.if_then.action}`) > SCENE_LINE_MAX_WORDS) {
+      ctx.addIssue({ code: 'custom', path: ['if_then'], message: `the If-then line is at most ${SCENE_LINE_MAX_WORDS} words` });
+    }
+    for (const [path, text] of [...texts, ['if_then.cue', p.if_then?.cue], ['if_then.action', p.if_then?.action], ['alt', p.alt]] as [string, string | undefined][]) {
+      if (text === undefined) continue;
+      for (const what of sceneArtefacts(text)) ctx.addIssue({ code: 'custom', path: path.split('.'), message: `no scam artefacts in scenes: this looks like ${what} (STORY §4.2 rule 1)` });
+      if (path !== 'alt' && /\{(?!count\}|lastCity\})[^}]*\}/.test(text)) ctx.addIssue({ code: 'custom', path: path.split('.'), message: 'only {count} and {lastCity} placeholders are supported' });
+    }
+    // Alt text (ART_DIRECTION §9).
+    if (/^\s*(?:image|picture|illustration) of\b/i.test(p.alt)) ctx.addIssue({ code: 'custom', path: ['alt'], message: 'alt text does not start with "Image of"' });
+    const max = drawn || p.with ? SCENE_ALT_MAX : SCENE_ALT_BACKDROP_MAX;
+    if (p.alt.length > max) ctx.addIssue({ code: 'custom', path: ['alt'], message: `alt text is at most ${max} characters (has ${p.alt.length})` });
+    if (drawn && p.expression) {
+      const word = EXPRESSION_ALT_WORDS[baseExpression(p.expression)];
+      if (!p.alt.toLowerCase().includes(word)) ctx.addIssue({ code: 'custom', path: ['alt'], message: `alt text must contain "${word}" for ${baseExpression(p.expression)} (ART_DIRECTION §9.7)` });
+    }
+    if (p.line && p.alt.trim().toLowerCase().includes(p.line.trim().toLowerCase())) ctx.addIssue({ code: 'custom', path: ['alt'], message: 'alt text does not repeat the line (ART_DIRECTION §9.3)' });
+  });
+export type ScenePanel = z.infer<typeof scenePanelSchema>;
+
+export const sceneSchema = z
+  .object({
+    id: slug,
+    /** The city (chapter id), or `interludes` for travel interludes. */
+    chapter: slug,
+    slot: z.enum(SCENE_SLOTS),
+    /**
+     * Overrides the slot title ("Arrival", "Later", "Story", "Before you go"; interludes "Between cities")
+     * in the heading and on the replay button ("Watch: {title}") [P] (review T-S3 item 6).
+     */
+    title: sceneText.max(40).optional(),
+    /** true → content note before the scene and a prominent "Need to talk?" help link (STORY §5). */
+    sensitive: z.boolean().default(false),
+    /** The note shown before a sensitive scene; defaults to the chapter's content_note. */
+    content_note: sceneText.optional(),
+    /** Interludes only: shown after this many middle cities are finished (STORY §3.12: 2, 4, 6, 8). */
+    after_middle: z.union([z.literal(2), z.literal(4), z.literal(6), z.literal(8)]).optional(),
+    panels: z.array(scenePanelSchema).min(1).max(SCENE_MAX_PANELS),
+    notes: z.string().optional(),
+  })
+  .strict()
+  .superRefine((sc, ctx) => {
+    const interlude = sc.slot === 'interlude';
+    if (sc.title) for (const what of sceneArtefacts(sc.title)) ctx.addIssue({ code: 'custom', path: ['title'], message: `no scam artefacts in scenes: this looks like ${what} (STORY §4.2 rule 1)` });
+    if (sc.content_note) for (const what of sceneArtefacts(sc.content_note)) ctx.addIssue({ code: 'custom', path: ['content_note'], message: `no scam artefacts in scenes: this looks like ${what} (STORY §4.2 rule 1)` });
+    if (interlude !== (sc.chapter === INTERLUDE_FOLDER)) ctx.addIssue({ code: 'custom', path: ['chapter'], message: `interludes (and only they) use chapter: ${INTERLUDE_FOLDER}` });
+    if (interlude !== (sc.after_middle !== undefined)) ctx.addIssue({ code: 'custom', path: ['after_middle'], message: 'after_middle is required on interludes and only there' });
+    if (interlude && sc.panels.length > INTERLUDE_MAX_PANELS) ctx.addIssue({ code: 'custom', path: ['panels'], message: `an interlude has at most ${INTERLUDE_MAX_PANELS} panels` });
+    const ifThen = sc.panels.map((p, i) => (p.if_then ? i : -1)).filter((i) => i >= 0);
+    if (ifThen.length > 1) ctx.addIssue({ code: 'custom', path: ['panels'], message: 'at most one If-then panel per scene' });
+    for (const i of ifThen) {
+      if (sc.slot !== 'resolution') ctx.addIssue({ code: 'custom', path: ['panels', i, 'if_then'], message: 'the If-then panel is in a resolution scene' });
+      if (i !== sc.panels.length - 1) ctx.addIssue({ code: 'custom', path: ['panels', i, 'if_then'], message: 'the If-then panel is the last panel (STORY §3)' });
+      if (sc.panels[i]?.if_flag || sc.panels[i]?.unless_flag) ctx.addIssue({ code: 'custom', path: ['panels', i], message: 'the If-then panel is shown to everyone (no variant flag)' });
+    }
+    const count = (f: (p: ScenePanel) => unknown) => sc.panels.filter(f).length;
+    if (count((p) => p.choice) > 1) ctx.addIssue({ code: 'custom', path: ['panels'], message: 'at most one choice per scene (STORY §4.1)' });
+    if (count((p) => p.local) > 1) ctx.addIssue({ code: 'custom', path: ['panels'], message: 'at most one local-language phrase per scene (STORY §4.1)' });
+    if (count((p) => p.flip_postcard) > 1) ctx.addIssue({ code: 'custom', path: ['panels'], message: 'at most one flip-the-postcard panel per scene' });
+    sc.panels.forEach((p, i) => {
+      if (p.flip_postcard && sc.slot !== 'interlude' && sc.slot !== 'resolution') ctx.addIssue({ code: 'custom', path: ['panels', i, 'flip_postcard'], message: 'flip the postcard is for interludes and the Open Evening (resolution)' });
+      if (!interlude && /\{(?:count|lastCity)\}/.test(`${p.line ?? ''} ${p.caption ?? ''}`)) ctx.addIssue({ code: 'custom', path: ['panels', i], message: '{count} and {lastCity} are for interludes' });
+    });
+    // A sensitive scene never ends on worried or sheepish; every panel that can be last is checked (variants).
+    if (sc.sensitive) {
+      for (let i = sc.panels.length - 1; i >= 0; i--) {
+        const p = sc.panels[i];
+        if (!p) break;
+        if (p.expression && NEVER_LAST_ON_SENSITIVE.includes(baseExpression(p.expression))) {
+          ctx.addIssue({ code: 'custom', path: ['panels', i, 'expression'], message: `a sensitive scene never ends on ${baseExpression(p.expression)} (STORY §5.3, ART_DIRECTION §14 F)` });
+        }
+        if (!p.if_flag && !p.unless_flag) break;
+      }
+    }
+    if (sc.panels.every((p) => p.if_flag || p.unless_flag)) ctx.addIssue({ code: 'custom', path: ['panels'], message: 'at least one panel is shown to everyone' });
+  });
+export type Scene = z.infer<typeof sceneSchema>;
+
 /** content/cast.yaml (CR-12). Scammers are never cast members. */
 export const castMemberSchema = z
   .object({
@@ -865,6 +1164,8 @@ export const castMemberSchema = z
     known_channel: z.object({ label: z.string().min(1), detail: z.string().min(1).optional() }).strict().optional(),
     /** Arc characters' lines are limited to balance session.arc_line_max_words. */
     arc_character: z.boolean().default(false),
+    /** Recurring story cast (STORY §2): drawn in every chapter's scenes; art checks derive their list from this. */
+    recurring: z.boolean().default(false),
     notes: z.string().optional(),
   })
   .strict()

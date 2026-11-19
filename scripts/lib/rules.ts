@@ -69,8 +69,8 @@ export const LAYER1_OVERHEAD = {
   arc: wcKey('debrief_the_habit') + wcKey('debrief_already_link_arc'),
 } as const;
 
-/** "That is the habit that works." (ui.json `outcome_best`): the ★★★ line in the layer-1 slot. */
-export const BEST_LINE_WORDS = wcKey('outcome_best');
+/** "That is the habit that works." / "Acting on it was right here." (`outcome_best`, `outcome_best_acted`): the ★★★ line in the layer-1 slot. */
+export const BEST_LINE_WORDS = Math.max(wcKey('outcome_best'), wcKey('outcome_best_acted'));
 
 export function wordCount(text: string | undefined): number {
   return text ? text.trim().split(/\s+/u).filter((w) => /[\p{L}\p{N}]/u.test(w)).length : 0;
@@ -473,7 +473,9 @@ export function scenarioRules(s: Scenario, reg: Registries): RuleResult {
     }
   }
   if (s.role === 'boss') {
-    const scoredBeats = story.filter((b) => b.scored).length;
+    // Scored beat groups: the opening and scored scheduled beats. Banking or request pages reached from a
+    // scheduled beat (next_beat) score inside their parent beat, so they never count here (follow-up e).
+    const scoredBeats = story.filter((b) => b.scheduled && b.scored).length;
     const max = balance.multi_step.boss.scored_beats_max;
     if (scoredBeats > max) errors.push(`a boss has at most ${max} scored beats (has ${scoredBeats}); mark later beats scored: false`);
   }

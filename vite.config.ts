@@ -87,6 +87,9 @@ export default defineConfig({
         // Precache only the game's own build output. No runtimeCaching: nothing
         // from other origins is ever fetched or cached.
         globPatterns: ['**/*.{js,css,html,svg,webmanifest}'],
+        // Story art is precached for offline play, except review material that the game never loads
+        // (ART_DIRECTION §11, §12.1: art/samples and art/rig).
+        globIgnores: ['**/art/samples/**', '**/art/rig/**'],
         navigateFallback: 'index.html',
         cleanupOutdatedCaches: true,
         runtimeCaching: [],

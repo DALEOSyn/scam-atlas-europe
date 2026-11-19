@@ -6,20 +6,24 @@ cast:
     name: "Adaeze Okafor-Lind"
     role: "Coordinator, Brussels"
     known_channel: { label: "Staff directory", detail: "Adaeze Okafor-Lind, Coordinator" }
+    recurring: true
     notes: "Never asks for money or secrecy; she says so herself in the welcome email (home-01). Known channel for every work check (home-06)."
   - id: mateus
     name: "Mateus Ferreira"
     role: "Field partner"
     known_channel: { label: "Saved contact", detail: "Mateus (work phone)" }
+    recurring: true
   - id: teo
     name: "Grandpa Teo"
     role: "Family back home"
     known_channel: { label: "Saved contact", detail: "Grandpa Teo (home)" }
+    recurring: true
     notes: "Sharp and funny. Slips once in home-05 and asks you for help; teaches you later (Berlin, Rome)."
   - id: noor
     name: "Noor"
     role: "Cousin"
     known_channel: { label: "Saved contact", detail: "Noor" }
+    recurring: true
   - id: alex
     name: "Alex"
     role: "Friend met on Wordswap"

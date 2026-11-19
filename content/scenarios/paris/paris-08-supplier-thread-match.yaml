@@ -105,6 +105,7 @@ beats:
   - id: platinoir_transfer
     device: banking
     message:
+      bank: { brand: larchwick-pro }
       account: { nickname: "Ruchelune · current account" }
       payee: { name: "N. Vardoulec", iban: "FR•••••••••••••••••••••••19", name_check: match, amount: "€2,860.00" }
       request: pay

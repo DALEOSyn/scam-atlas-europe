@@ -89,6 +89,7 @@ beats:
   - id: feuillemont_new
     device: banking
     message:
+      bank: { brand: larchwick-pro }
       account: { nickname: "Ruchelune · current account" }
       payee: { name: "Feuillemont", iban: "FR•••••••••••••••••••••••47", name_check: match, amount: "€1,960.00" }
       request: pay

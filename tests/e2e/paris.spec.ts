@@ -31,6 +31,12 @@ test('Paris 3-1 and 3-2: the payee check shows a close match, then "couldn\'t ch
   await page.goto('/');
   await page.getByRole('button', { name: 'Chapters' }).click();
   await page.getByRole('button', { name: 'Play Paris' }).click();
+  // CR-27: the chapter intro (Ruchelune's payment procedure) first, axe clean, then Start.
+  const intro = page.locator('[data-chapter-intro]');
+  await expect(intro.getByRole('heading', { level: 1, name: 'Paris' })).toBeFocused();
+  await expect(intro).toContainText('No exceptions, however urgent.');
+  await axeClean(page);
+  await intro.getByRole('button', { name: 'Start' }).click();
 
   // 3-1: Volet Bleu's rent notice (genuine). Pay with the details from your lease.
   await page.getByRole('button', { name: /Pay it with the details from your lease/ }).click();
@@ -55,6 +61,8 @@ test('Paris 3-1 and 3-2: the payee check shows a close match, then "couldn\'t ch
   await page.getByRole('button', { name: /Set up the transfer in Larchwick Pro/ }).click();
   await expect(result).toContainText("We couldn't check the name for this account.", { timeout: 5_000 });
   await expect(page.getByText('Ruchelune · current account')).toBeVisible();
+  // CR-27: the business account shows the Larchwick Pro header.
+  await expect(page.getByText('Larchwick Pro').first()).toBeVisible();
   await axeClean(page);
   await page.getByRole('button', { name: /Send it to Solène for her sign-off/ }).click();
   await expect(consequenceHeading(page)).toBeFocused();

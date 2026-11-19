@@ -88,6 +88,7 @@ beats:
   - id: ceo_transfer
     device: banking
     message:
+      bank: { brand: larchwick-pro }
       account: { nickname: "Ruchelune · current account" }
       payee: { name: "Tessivane SAS", iban: "FR•••••••••••••••••••••••58", name_check: unavailable, amount: "€18,400.00" }
       request: pay

@@ -220,6 +220,16 @@ describe('Paris boss (CR-18(e) four-eyes sub-beat, held call, covered_by, video 
     expect(r.points).toBe(9);
     expect(r.flagsSet).toContain('paris_boss_sent');
   });
+
+  it('after a fall, Inès\'s "Have a good long weekend!" is dropped (on_fall: skip, CR-27)', () => {
+    let st = run(s, c(), [act('call_solene_boss'), cont, act('hang_up_lawyer'), whatNow('done'), cont, act('send_on_her_word')]);
+    while (st.phase === 'consequence') st = step(s, c(), st, cont);
+    expect(st.phase).toBe('damage_control');
+    st = step(s, c(), st, recover(['call_bank_recall_transfer', 'tell_management_known_channel', 'secure_mailbox_owner']));
+    while (st.phase === 'consequence') st = step(s, c(), st, cont);
+    expect(st.phase).toBe('done');
+    expect(st.interrupts.find((i) => i.id === 'ines_long_weekend')?.skipped).toBe(true);
+  });
 });
 
 describe('Paris strategy rows (GDD §23.7)', () => {

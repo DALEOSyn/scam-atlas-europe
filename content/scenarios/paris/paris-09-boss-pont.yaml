@@ -15,7 +15,7 @@
 #   D: caller ID, face and voice. "What now?": directory call-back or "Message Adaeze through the staff
 #   directory" (ask_someone, verify): the DGSI case (ended the call, alerted management).
 # Interrupt after beat 3 (genuine): Inès says goodbye from her saved contact, after the "What now?" choice
-# (after_what_now). on_fall (CR-27) is not in this schema yet, so it is not set.
+# (after_what_now, now the default for after_beat) and never after a fall (on_fall: skip, CR-27).
 # After a beat-1 fall the later asks say "Has it gone? If not…" and pay outcomes say "you send €38,500",
 # which is true for a first payment and for a further one (QA rework).
 # Damage control: the same six steps for every fall (engine merges and caps at 6), sets paris_boss_sent
@@ -99,6 +99,7 @@ beats:
     device: banking
     scored: false   # see header: inside beat 1's group (CR-18(e)); marked only for the validator's 3-scored-beat count
     message:
+      bank: { brand: larchwick-pro }
       account: { nickname: "Ruchelune · current account" }
       payee: { name: "Morvenac SAS", iban: "FR•••••••••••••••••••••••64", name_check: match, amount: "€38,500.00" }
       request: pay
@@ -246,6 +247,7 @@ interrupts:
   - id: ines_long_weekend
     after_beat: video_call
     after_what_now: true
+    on_fall: skip   # the default, set explicitly: no "Have a good long weekend!" after a loss (CR-27)
     is_fraud: false
     device: messenger
     message:

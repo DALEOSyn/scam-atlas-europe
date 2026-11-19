@@ -97,9 +97,9 @@ interrupts:
     message:
       sender: { display: "Lucía (Madrid)", detail: "Saved contact: Lucía (Madrid)" }
       from_cast: lucia
-      body: "¡Despierta! ¿Café? ☕"
+      body: "¡Ya estoy despierta! ¿Café? ☕"
       lang: es
-      translation: "Wake up! Coffee? ☕"
+      translation: "I'm up! Coffee? ☕"
       request: reply
     inspectables:
       - target: sender.detail

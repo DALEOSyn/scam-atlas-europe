@@ -64,7 +64,7 @@ outcomes:
   lucia_app_checked:
     narrative: "Lucía: \"App says no new sign-in. Phew. Deleting it.\""
   lucia_card_line:
-    narrative: "Lucía: \"Card line says they'd never ask me to move money. And the number to call them on? Only ever the number on my card.\""
+    narrative: "Lucía: \"Card line says no new sign-in. And to reach them, it's the number on my card or the one in the app, never one a text gives me.\""
   lucia_uses_card_anyway:
     narrative: "Lucía: \"Hmm. Texts can land in the real chat, can't they? I'll use the number on my card instead.\""
 

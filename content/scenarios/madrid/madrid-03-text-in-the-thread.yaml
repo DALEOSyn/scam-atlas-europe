@@ -134,7 +134,7 @@ outcomes:
   app_no_transfer:
     narrative: "You open the Larchwick app yourself. No transfer, nothing pending. Your balance is as it was."
   card_line_no_transfer:
-    narrative: "Larchwick, on the number on your card: \"No such transfer. We'd never ask you to move money, and the number on your card is the only number to call us on. Thanks for checking.\""
+    narrative: "Larchwick, on the number on your card: \"No such transfer. We'd never ask you to move money, and the number on your card, or the one in your app, is the way to reach us. Thanks for checking.\""
   text_reported:
     narrative: "Reported. Your phone files the text under spam. Your balance hasn't moved."
   text_deleted:
@@ -158,4 +158,5 @@ debrief:
   already_clicked:
     clicked: "Called the number? Hang up, then call the number on your card and tell your bank what happened."
     paid: "Moved money? Call your bank now on the number on your card and ask it to try to stop or recall the transfer. Keep the texts and the call log."
+    headings: { paid: "Moved your money" }   # QA re-check: the advice is about a transfer, not a card
   sources: [es-incibe-smishing-bank-callback-2025, es-bde-sms-callerid-spoofing-2022, es-incibe-sms-banks-2022, eu-epc-threats-2025, es-boe-orden-tdf-149-2025, es-boe-cnmc-circular-3-2026, es-cnmc-alias-callout-2026, es-bde-msr2025-fraude]

@@ -199,12 +199,12 @@ const HEADINGS: Record<string, Partial<Record<'clicked' | 'entered_details' | 's
   'lisbon-07-parking-slip': { clicked: "Scanned the QR code", entered_details: "Entered your details" },
   'lisbon-09-boss-thursday-flat': { entered_details: "Entered your details", paid: "Paid or gave card details" },
   'lisbon-arc-alex-07': { clicked: "Replied, moved to another app or kept a secret", paid: "Sent money" },
-  'madrid-03-text-in-the-thread': { clicked: "Called the number they gave", paid: "Paid or gave card details" },
+  'madrid-03-text-in-the-thread': { clicked: "Called the number they gave", paid: "Moved your money" }, // paid authored (QA re-check)
   'madrid-04-lucia-slept-on-it': { clicked: "Called the number they gave" }, // authored (auto: "Clicked the link")
-  'madrid-05-reserve-account-call': { clicked: "Followed the caller's steps", paid: "Paid or gave card details" }, // clicked authored, as Rome 6-4
+  'madrid-05-reserve-account-call': { clicked: "Followed the caller's steps", paid: "Moved your money" }, // both authored (clicked as Rome 6-4)
   'madrid-07-cancellation-code': { shared_code: "Shared a code or approved a request" },
   'madrid-08-card-paused-link': { clicked: "Clicked the link", entered_details: "Entered your details" },
-  'madrid-09-boss-reserve': { clicked: "Called the number they gave", paid: "Paid or gave card details" }, // clicked authored (beat 1's call-and-follow is a pay)
+  'madrid-09-boss-reserve': { clicked: "Called the number they gave", paid: "Moved your money" }, // both authored (beat 1's call-and-follow is a pay)
   'madrid-arc-alex-04': { clicked: "Replied, moved to another app or kept a secret", paid: "Sent money" },
   'paris-02-ceo-lookalike': { paid: "Paid or gave card details" },
   'paris-03-ines-plumber-rib': { paid: "Paid or gave card details" },

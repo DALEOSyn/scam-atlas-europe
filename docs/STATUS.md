@@ -2,7 +2,7 @@
 
 _Updated by the producer at the end of every session. Keep it readable in under a minute._
 
-**Phase:** 2 — Vertical slice (started 2026-11-18) · **Next gate:** G2 (Roman plays tutorial + Berlin) · **Last update:** 2026-11-18
+**Phase:** 2 — Vertical slice (started 2026-11-18) · **Next gate:** G2 (Roman plays tutorial + Berlin) · **Last update:** 2026-11-19
 
 ## Summary
 Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR #2) are merged. The design, the UI spec and the brands are in the G1 design PR. G1 approved by Roman (all as recommended). Phase 2 (vertical slice) has started.
@@ -20,9 +20,9 @@ Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR 
 - [x] T-1.7 | fraud-researcher | Brand-name web collision check (renamed Nodkey, Corvelle, Hoardly) | docs/patterns/BRAND_CHECK.md
 - [x] T-2.6 | game-designer | GDD/UI_SPEC follow-ups (1-9 caller, high-stakes set, layer-1 budget, snake_case flags) | sceptic: FAIL → PASS
 - [x] T-2.4a | scenario-writer | Tutorial chapter scenarios (0-1…0-6) + linter schema-id exemption, registered-host rule, runtime defaults | fraud-researcher: FAIL → PASS · sceptic: FAIL → PASS · qa: FAIL → PASS
+- [x] T-2.3 | frontend-engineer | Devices (mail, SMS/chat incl. Kettle, call with transcript + What now?, browser with owner-part highlight + SimulatedForm, QR (stylised, /qr/<id> only; no finder patterns, invalid format strips, ZXing + jsQR test), bank, auth prompt, letter, banners, interrupts, pushers), HUD + Take a breath, Check card + tag + Details list, announcer queue, two-layer debrief, chapter screen; T-2.1 QA carry-overs fixed; `request` checkable for banners; recovery `feedback` (keep_quiet + harmful steps); QA E8; bundle guard after build; CR-14 (pusher translations), CR-15 (one "You chose" in boss layer 1) | branch phase2/devices | sceptic: FAIL → FAIL → FAIL → PASS (producer exception for rounds 3–4) · qa: FAIL → FAIL → PASS | rounds fixed: QR not decodable (ZXing + jsQR, geometry from rendered SVG), call reveal, focus, zoom/owner-part §1.5, announcer, layer-1 budget ruling (consequence step, kind line, shared choice-line helper), genuine timer expiry → deadline_real
 
 ## Next up (Phase 2)
-- [ ] T-2.3 | frontend-engineer | Devices (mail, SMS/chat incl. Kettle, call with transcript + What now?, browser with owner-part highlight + SimulatedForm, QR (stylised, /qr/<id> only; no finder patterns, invalid format strips, ZXing + jsQR test), bank, auth prompt, letter, banners, interrupts, pushers), HUD + Take a breath, Check card + tag + Details list, announcer queue, two-layer debrief, chapter screen; T-2.1 QA carry-overs fixed; `request` checkable for banners; recovery `feedback` (keep_quiet + harmful steps); QA E8; bundle guard after build; CR-14 (pusher translations), CR-15 (one "You chose" in boss layer 1) | branch phase2/devices | in progress: rework after review (round 1 on 30788fb: QR blocker, B1–B10 fixed in 3807ef6; round 2 on 3807ef6: R1–R5, QR geometry from the rendered SVG, masked-number name, layer-1 budget ruling of 2026-11-19 (consequence step after every scenario, kind line takes the slot, shared choice-line helper) fixed; awaiting re-review)
 - [ ] T-2.4 | scenario-writer | Tutorial (ch0) + Berlin (ch1) scenarios | reviewers: fraud-researcher, sceptic, qa
 
 ## Follow-ups (non-blocking, from reviews)
@@ -47,3 +47,5 @@ _(none)_
 - G0 Kickoff: Approved 2026-11-18
 - G1 Design: Approved 2026-11-18
 - G2 Vertical slice: Open
+- Validator: require `pressure.honest_deadline` on genuine timed scenarios (or use neutral copy), so `deadline_real` is always true (sceptic, T-2.3).
+- UI polish (QA, T-2.3): consequence step inside the device per UI_SPEC §7, or Enter/click-anywhere to continue; ux-artist ruling on the letter device showing the QR destination without a scan step.

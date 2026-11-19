@@ -428,7 +428,7 @@ Status: **spec for review** (Phase 3, Paris step 2, game-designer, 2026-11-19). 
   | Encrevive | Feuillemont |
   | Pressoria | Platinoir (`platinoir.example`) |
   | Maître Lenoir | Maître Vellacourt |
-  | 3-8 holder | N. Vardoulec |
+  | 3-8 holder | N. Vardoulec (shown in full, an exception to the masked-surname rule: the player must type it; brand-checked) |
   | 3-2 holder | Tessivane SAS |
   | Boss holder | Morvenac SAS |
   | "Project Ardoise" | "Projet Lys" |
@@ -476,8 +476,8 @@ All four payee-check results appear: close match (3-1, genuine), couldn't check 
 The decision often happens in the banking app, after the email. That needs the "start the transfer" action, **CR-18 `start_transfer` (shared with Amsterdam)**. By producer ruling, these semantics are CR-18 for both chapters; they supersede Amsterdam's earlier "class engage", and Amsterdam re-runs its strategy table:
 - **`start_transfer`** ("Pay it in the Larchwick app", "Set up the transfer in Larchwick Pro"): class `step`. Non-terminal, **never decisive, no star cap**, allowed on genuine and fraud, in standard scenarios and bosses. It must have `next_beat` to a `banking` beat with a `payee`. The banking beat's action decides the stars.
 - **Inside a boss** (rework 1, item 21), a banking beat reached by `start_transfer`:
-  - gets its own timer, `boss_beat` (40 s) by default;
-  - holds the next scheduled beat until the result card closes. The clock for that beat's `arrives_after` resumes then, so a call never rings over the bank form.
+  - follows CR-18(e) (§22.7, the single definition): the beat timer carries over with a 40 s floor for the banking card;
+  - holds the next scheduled beat until the banking card closes; that beat then arrives as normal, so a call never rings over the bank form.
 - **Why no ★★ cap (unlike engage):** opening your own banking app exposes nothing, and the name check is built for exactly this moment. Stopping at a warning and calling the known number is the habit the brief asks for ("If your bank says the name doesn't match, stop and check"), so it earns ★★★ like calling first.
 - **Banking beat actions** (action_order): comply (`pay`: "Pay anyway", "Send it now, signing off alone"), verify (`call_back_known`: "Cancel and call … on the number in your file / lease / directory"; `ask_someone`: "Send it to Solène for her sign-off"), report ("Cancel and report it"), dismiss ("Cancel"). Validator: every banking beat reached by `start_transfer` offers ≥ 1 verify and a dismiss.
 - **Paying genuine new details without the call** is `pay` (comply, ★ on genuine high stakes), as Berlin 1-6. Paying unchanged details you already hold (3-1) is `proceed` (★★★).

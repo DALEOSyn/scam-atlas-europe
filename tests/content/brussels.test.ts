@@ -14,7 +14,7 @@ import { join } from 'node:path';
 import { parse } from 'yaml';
 import { listFiles, validateContent } from '../../scripts/lib/content.ts';
 import { chapterRules, scenarioRules } from '../../scripts/lib/rules.ts';
-import { chapterSchema, scenarioSchema, ARC_TOLD_SOMEONE, type Scenario } from '../../src/content/schema.ts';
+import { balanceSchema, chapterSchema, scenarioSchema, ARC_CHECKED, ARC_TOLD_SOMEONE, type Scenario } from '../../src/content/schema.ts';
 import { CONTENT, realRegistries } from './fixtures.ts';
 import { maxPointsOfScenario, redFlagCount } from '../../src/engine/result.ts';
 import { deriveCheckables } from '../../src/content/checkables.ts';
@@ -105,6 +105,24 @@ describe('Brussels chapter file (GDD §30.1, §30.11)', () => {
     const res = chapterRules(plain, 'brussels', [...scenarios.values()], realRegistries());
     expect(res.errors.join('\n')).toMatch(/mix: 5 callbacks; at most 2/);
   });
+  it('CR-52 (R27): the exemption comes from balance.yaml difficulty.callback_cap_exempt, not from code', () => {
+    const reg = realRegistries();
+    expect(reg.balance.difficulty.callback_cap_exempt).toEqual(['arc_finale']);
+    const noExempt = { ...reg, balance: { ...reg.balance, difficulty: { ...reg.balance.difficulty, callback_cap_exempt: [] } } };
+    const res = chapterRules(brussels, 'brussels', [...scenarios.values()], noExempt);
+    expect(res.errors.join('\n')).toMatch(/mix: 5 callbacks; at most 2/);
+  });
+  it('CR-52: the schema allows only arc_finale in callback_cap_exempt; absent means no exemption', () => {
+    const raw = yaml(join(CONTENT, 'balance.yaml')) as { difficulty: Record<string, unknown> };
+    const withList = (list: unknown) => ({ ...raw, difficulty: { ...raw.difficulty, callback_cap_exempt: list } });
+    expect(balanceSchema.safeParse(withList(['arc_finale'])).success).toBe(true);
+    expect(balanceSchema.safeParse(withList(['boss'])).success).toBe(false);
+    expect(balanceSchema.safeParse(withList('arc_finale')).success).toBe(false);
+    const rest = { ...raw.difficulty };
+    delete rest.callback_cap_exempt;
+    const parsed = balanceSchema.safeParse({ ...raw, difficulty: rest });
+    expect(parsed.success && parsed.data.difficulty.callback_cap_exempt).toEqual([]);
+  });
   it('every Brussels scenario passes the per-scenario rules', () => {
     const reg = realRegistries({ flagsSet: new Set(['brussels_bank_called', ARC_TOLD_SOMEONE]) });
     for (const s of scenarios.values()) expect(scenarioRules(s, reg).errors, s.id).toEqual([]);
@@ -172,7 +190,7 @@ describe('Fall lists (GDD §9, §30.4 shared rule)', () => {
     expect(falls.map(([k]) => k).sort()).toEqual(['logged_in_phone_off', 'pointer_moves_b1', 'pointer_moves_b2']);
     for (const [, x] of falls) expect(x.sets_flags).toEqual(['brussels_bank_called']);
     for (const k of ['pointer_moves_b1', 'pointer_moves_b2']) expect(o[k]?.recovery?.map((r) => r.step)).toEqual(['go_offline', 'call_bank_known_number', 'tell_trusted_adult', 'get_device_checked', 'let_caller_finish', 'pay_to_unlock']);
-    expect(o['logged_in_phone_off']?.recovery?.map((r) => r.step)).toEqual(['call_bank_known_number', 'tell_trusted_adult', 'change_password', 'report_to_police_online', 'approve_again_to_cancel', 'wait_and_see']);
+    expect(o['logged_in_phone_off']?.recovery?.map((r) => r.step)).toEqual(['call_bank_known_number', 'tell_trusted_adult', 'change_password', 'report_to_police', 'approve_again_to_cancel', 'wait_and_see']);
     for (const [key, x] of Object.entries(o)) if (!x.recovery) expect(x.sets_flags, key).toBeUndefined();
   });
 });
@@ -197,7 +215,7 @@ describe('10-4 advice scenario: Noor never shares (CR-40, R19(1), BX7)', () => {
   it('the consequence sentence is in layer 2, followed by the pressure line and the next step', () => {
     expect(s.debrief.layer2.notes?.startsWith(`${CONSEQUENCE} ${PRESSURE} Asking for help is never the wrong thing to do.`)).toBe(true);
     expect(s.debrief.advice_line).toBe('Noor asked, and that was the smart bit. With an offer like this, the answer is always no.');
-    expect(s.debrief.already_clicked?.entered_details).toBe("If you've already shared it, it's not too late: change your login, call your bank on the number on your card, and tell a trusted adult.");
+    expect(s.debrief.already_clicked?.entered_details).toBe("Already shared it? It's not too late: stop replying, tell someone you trust today and call your bank on the number on your card. Then change your login.");
   });
   it('no outcome or layer-1 line calls anyone a criminal or mentions punishment, liability or "trouble"', () => {
     const shown = [...Object.values(s.outcomes).map((o) => o.narrative), s.debrief.layer1.tell, s.debrief.layer1.what_works, s.debrief.advice_line ?? ''].join(' ');
@@ -305,7 +323,10 @@ describe('Finale scenarios (GDD §30.6; CR-43, R22)', () => {
         const o = a.outcome ? s.outcomes[a.outcome] : undefined;
         expect(o?.reveal, `${id} ${a.id}`).toBe(true);
         const told = o?.sets_flags?.includes(ARC_TOLD_SOMEONE) === true;
-        expect(told, `${id} ${a.id}`).toBe(['verify_identity', 'report', 'ask_someone'].includes(a.kind));
+        // R25(5), CR-51, T-3.13i: re-pinned. The close beat's solo photo check sets arc_checked instead; Teo's chat is unchanged.
+        const solo = id === 'brussels-arc-close' && a.kind === 'verify_identity';
+        expect(told, `${id} ${a.id}`).toBe(!solo && ['verify_identity', 'report', 'ask_someone'].includes(a.kind));
+        expect(o?.sets_flags?.includes(ARC_CHECKED) === true, `${id} ${a.id} arc_checked`).toBe(solo);
       }
     }
   });
@@ -382,6 +403,9 @@ describe('Registries (GDD §30.11)', () => {
     const easy = cards.cards.find((c) => c.id === 'easy-money-costs-you');
     expect(easy?.habit).toBe("A real job pays you. If a 'job' wants a deposit, a top-up, a fee or a fine before you can earn or withdraw, or your ID copy before any contract, stop and talk to someone you trust.");
     expect(easy?.example).toContain("Someone online wants to 'use your account for a few transfers'? Say no and ask someone.");
-    expect(easy?.already_clicked).toContain('Shared your login or card? Change your login, call your bank on the number on your card, and tell a trusted adult.');
+    // R27, T-3.13g: one de-duplicated line in MMR §7 order, then the money-mule case (fraud-researcher to confirm).
+    expect(easy?.already_clicked).toBe(
+      "It's not too late: paid, or shared your login or card? Stop: no last fee releases the money. Tell someone you trust today, call your bank on the number on your card, then change your login. Keep the chats. Money arrived in your account? Don't pass it on; tell your bank.",
+    );
   });
 });

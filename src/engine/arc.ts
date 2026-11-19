@@ -8,6 +8,7 @@
  * - The arc closes at a report, at "Tell me now", at a second "Close the app"
  *   (an `ignore` on the slot-1 beat), or at the finale. Ending rule: first match wins.
  */
+import { ARC_TOLD_KINDS, ARC_TOLD_SOMEONE } from '../content/constants.ts';
 import type { ScenarioResult } from './result.ts';
 
 /** The arc variable that holds money put in (GDD §10.3 `alex.invested`, snake_case). */
@@ -84,28 +85,43 @@ export function arcEnding(arc: ArcState): ArcEnding {
   return 'B';
 }
 
+/**
+ * CR-51 (R25(5)): game flags the engine sets for an arc slot beat. Any slot decided by `report` or `ask_someone`
+ * sets ARC_TOLD_SOMEONE, so ending lines that say "you told someone" are true for players who did it earlier in the
+ * arc (not only at the close beat or in Teo's chat).
+ */
+export function arcSlotFlags(decisiveKind: string | undefined): string[] {
+  return decisiveKind !== undefined && ARC_TOLD_KINDS.includes(decisiveKind) ? [ARC_TOLD_SOMEONE] : [];
+}
+
 export function setFlags(flags: readonly string[], add: readonly string[]): string[] {
   return [...new Set([...flags, ...add])];
 }
 
 // ---------------------------------------------------------------------------
-// CR-43(f): arc slots follow play position (STORY §1.4)
+// CR-43(f), CR-49 (R25(1)): arc slots play in slot order
+
+/** The last arc slot before the finale (slot 9 is the climax the close beat reuses). */
+export const LAST_ARC_SLOT = 9;
 
 /**
  * The arc slot that plays in a chapter at this play position (Home 0, Berlin 1, the middle chapters 2–9 in the
- * order played; the finale 10 has none). Slot N plays in the Nth chapter played, so slot 9 is always the last
- * one before the finale. After one "Close the app" at slot 1 (GDD §10.2), Alex messages once more in the next
- * chapter: slot 1 plays again there, once (timeline exactly [1]); slot 2 is then skipped (accepted, R22; for the
- * balancing pass). null: no arc beat here (Home, the finale, a closed arc, a slot already played). A replayed
- * (finished) chapter never plays an arc beat: the caller passes null for it.
+ * order first started; the finale 10 has none). CR-49 (R25(1)): the next arc beat is the lowest slot not yet
+ * played, whatever the position, so interleaved runs (start Berlin, leave before its arc beat, finish Amsterdam)
+ * still play the arc in order: slot 1 first, slot 9 last. After one "Close the app" at slot 1 (GDD §10.2) the
+ * next arc beat is the slot-1 repeat, once (timeline exactly [1]); slot 2 is then skipped (accepted, R22, R25(2)).
+ * Never above 9. null: no arc beat here (Home, the finale, a closed arc, every slot played). A replayed
+ * (finished) chapter never plays an arc beat: the caller passes null for it (`arcSlotForRun`).
  */
 export function arcSlotAt(arc: ArcState, position: number | null): number | null {
-  if (arc.closed || position === null || position < 1 || position > 9) return null;
-  // QA B1: the paused slot-1 repeat is offered once, on the first visit to position 2 (only slot 1 played so far).
-  if (arcPaused(arc) && position === 2 && arc.timeline.length === 1 && arc.timeline[0] === 1) return 1;
-  // Position 2 already played the slot-1 repeat: nothing more there (slot 2 is skipped, R22).
-  if (position === 2 && arc.timeline.filter((x) => x === 1).length > 1) return null;
-  return arc.timeline.includes(position) ? null : position;
+  if (arc.closed || position === null || position < 1 || position > LAST_ARC_SLOT) return null;
+  // QA B1: the paused slot-1 repeat is offered once, as the next arc beat after the first Close.
+  if (arcPaused(arc) && arc.timeline.length === 1 && arc.timeline[0] === 1) return 1;
+  const played = new Set(arc.timeline);
+  // The slot-1 repeat took slot 2's place: slot 2 is skipped (R22).
+  if (arc.timeline.filter((x) => x === 1).length > 1) played.add(2);
+  for (let slot = 1; slot <= LAST_ARC_SLOT; slot++) if (!played.has(slot)) return slot;
+  return null;
 }
 
 /** The arc slot for a chapter run: none in a replayed (finished) chapter (QA B1), else `arcSlotAt` its position. */

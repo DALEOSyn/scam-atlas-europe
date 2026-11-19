@@ -148,7 +148,7 @@ outcomes:
       - { step: block_card_in_bank_app, category: stop }
       - { step: call_bank_known_number, category: stop }
       - { step: tell_trusted_adult, category: stop }
-      - { step: report_to_police_online, category: report }
+      - { step: report_to_police, category: report }
       - { step: wait_and_see, category: harmful }
       - step: reply_ask_money_back
         category: harmful

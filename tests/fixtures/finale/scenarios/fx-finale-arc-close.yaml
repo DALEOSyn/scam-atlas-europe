@@ -32,7 +32,8 @@ outcomes:
   same_picture:
     narrative: "The photo check finds the same picture on other profiles."
     reveal: true
-    sets_flags: [arc_told_someone]
+    # R25(5), CR-51: the close beat's solo photo check sets arc_checked, not arc_told_someone.
+    sets_flags: [arc_checked]
   reported_profile:
     narrative: "You report the profile. The photo check runs as part of the report."
     reveal: true

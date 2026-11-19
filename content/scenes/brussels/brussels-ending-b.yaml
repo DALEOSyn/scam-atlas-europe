@@ -1,10 +1,13 @@
 # Brussels ending B (GDD §30.6, STORY §3.10 part 1; sensitive; 2 panels of 3): nothing went in and the arc was
 # not closed early by a report at slot up to 6. Plays after the timeline walk-through ("Adaeze's resolution
 # panel after it", GDD §30.6).
-# Who reaches B: (a) the arc still open on entry: the close beat, whose photo check and report both set
-# arc_told_someone, so Adaeze's line word for word from STORY §3.10, "You told someone, and the timeline did
-# the rest. That's the whole trick."; (b) a report at slot 7–9: the reveal only, no flag, so the truthful
-# variant "You reported it, …" (R22(2): "you told someone" only with the flag).
+# Who reaches B (R25(5), CR-51): (a) the arc still open on entry: the close beat, whose report sets
+# arc_told_someone and whose solo photo check sets arc_checked instead (checking alone is not telling someone);
+# (b) a report at slot 7–9, which sets arc_told_someone (CR-51: any arc slot decided by a report or by asking
+# someone). With the flag, Adaeze's line word for word from STORY §3.10, "You told someone, and the timeline did
+# the rest. That's the whole trick."; without it (the photo check only, nobody told), the truthful variant "You
+# never sent any money, and the timeline did the rest. Next time, telling someone early makes it even easier."
+# (GDD §30.6, BALANCE_PASS §4, psych wording).
 # The first panel is shown to every B player (the validator needs one shared panel): the pattern in general
 # words, put on the plan, not the player (STORY §5.2). Added wording; names no message, amount or app.
 id: brussels-ending-b
@@ -32,5 +35,5 @@ panels:
     speaker: adaeze
     expression: calm
     unless_flag: arc_told_someone
-    line: "You reported it, and the timeline did the rest. That's the whole trick."
+    line: "You never sent any money, and the timeline did the rest. Next time, telling someone early makes it even easier."
     alt: "Adaeze, calm, at the desk by the small projector, a high window behind her."

@@ -161,7 +161,7 @@ outcomes:
       - { step: call_bank_stop_payment, category: stop }
       - { step: warn_creditor_known_number, category: warn }
       - { step: keep_transfer_evidence, category: secure }
-      - { step: report_to_police_online, category: report }
+      - { step: report_to_police, category: report }
       - step: reply_ask_money_back
         category: harmful
         feedback: "Asking for it back feels fair, but the reply goes to whoever is misusing the mailbox. Call your bank and Ruchelune on the numbers you already have."

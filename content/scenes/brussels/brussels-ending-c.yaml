@@ -1,13 +1,16 @@
-# Brussels ending C (GDD §30.6, STORY §3.10 part 1; sensitive; 4 panels of 5): money went in and "Tell me now"
+# Brussels ending C (GDD §30.6, STORY §3.10 part 1; sensitive; 3 panels of 4): money went in and "Tell me now"
 # was not used. Plays after the arc damage control, the recovery-agency test and the timeline.
-# Lines word for word from STORY §3.10: Adaeze (warm) puts the blame on the lie; Adaeze (calm) gives the
-# recovery panel, true in every branch, no refund promise and no amount; Teo (warm) last, his own Home slip as
-# the coping model ("It happens").
-# Psych note (GDD §30.14 item 9): never "you checked before anything else" when money went in. Who reaches C:
-# (a) the arc still open on entry: the close beat, whose photo check and report both set arc_told_someone, so
-# "And you checked in the end. That's what works."; (b) the arc closed earlier by a report, with money in: the
-# reveal only, no flag, so the truthful variant "And you reported it. That's what works." (no "told someone"
-# without the flag, R22(2)).
+# Ending C trim (R25(4), T-3.13h, BALANCE_PASS §4d): 3 panels. Adaeze's warm panel ("The lie was theirs, not
+# yours.") is dropped: the arc damage control just opened with that line (R22(4)), and the feelings scene covers
+# "you were real". Kept: Adaeze's line on what the player did, Adaeze's recovery panel (the only scene panel with
+# next steps and the help link, STORY §5.4, §5.8; true in every branch, no refund promise and no amount), and
+# Teo (warm) last, his own Home slip as the coping model ("It happens").
+# Psych note (GDD §30.14 item 9): never "you checked before anything else" when money went in. Who reaches C
+# (R25(5), CR-51): (a) the arc still open on entry: the close beat, whose solo photo check sets arc_checked, so
+# "You checked in the end. That's what works."; its report sets arc_told_someone; (b) the arc closed earlier by
+# a report, with money in. Every C player without arc_checked reported (the close beat's report or an earlier
+# one), so the truthful variant is "You reported it. That's what works." No leading "And": it opens the scene
+# (psych round 2).
 # Deviation (GDD §30.2 part 2 note): "The list below" is now "The Help link", since the scene's help link
 # ("Need to talk? Where to get help") sits in the heading row, above the panels.
 id: brussels-ending-c
@@ -19,22 +22,16 @@ panels:
   - backdrop: brussels-office
     crop: centre
     speaker: adaeze
-    expression: warm
-    line: "You were kind to someone who turned out not to exist. The lie was theirs, not yours."
-    alt: "Adaeze smiling gently at the desk by the small projector, a high window behind her."
-  - backdrop: brussels-office
-    crop: centre
-    speaker: adaeze
     expression: calm
-    if_flag: arc_told_someone
-    line: "And you checked in the end. That's what works."
+    if_flag: arc_checked
+    line: "You checked in the end. That's what works."
     alt: "Adaeze, calm, at the desk by the small projector, a high window behind her."
   - backdrop: brussels-office
     crop: centre
     speaker: adaeze
     expression: calm
-    unless_flag: arc_told_someone
-    line: "And you reported it. That's what works."
+    unless_flag: arc_checked
+    line: "You reported it. That's what works."
     alt: "Adaeze, calm, at the desk by the small projector, a high window behind her."
   - backdrop: brussels-office
     crop: left

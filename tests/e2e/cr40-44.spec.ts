@@ -160,7 +160,7 @@ test('CR-43/44, ending C: reveal card, damage control, recovery offer, timeline,
   await press(page, 'Continue');
   await expect(page.getByText('You were kind to someone who turned out not to exist.')).toBeVisible();
   await expect(page.getByText('Good thing I asked you.')).toHaveCount(0);
-  // R22 (psych M1): the photo check set arc_told_someone, so the told-someone line plays.
+  // R25(5), CR-51: the close beat's photo check set arc_checked, so the checked line plays.
   await storyUntil(page, "text=And you checked before anything else. That's what works.");
   await storyUntil(page, '[data-postcard-pick]');
   const pick = page.locator('[data-postcard-pick]');
@@ -227,8 +227,17 @@ test('R22, "Tell me now" with money in: arc damage control first, then the recov
     if (await cont.first().isVisible()) await cont.first().click();
     await expect(page.locator('[data-step]').first()).toBeVisible({ timeout: 500 });
   }).toPass({ timeout: 10_000 });
-  for (const st of ['stop_paying', 'call_bank_known_number', 'keep_evidence']) await pressOn(page, page.locator(`[data-step="${st}"]`), st);
-  await press(page, 'Done');
-  await expect(page.locator('[data-recovery-note]')).toHaveText("Recovery offers often follow a loss because scammers share victims' details. That says nothing about you.");
+  // R25(4), CR-53: re-pinned. Right after the arc damage control, the recovery test's fall shows "Your steps"
+  // read-only (no second scored pick): the note first, then the helpful steps; the harmful steps the arc damage
+  // control just offered are not repeated.
+  const steps = page.locator('[data-recovery-readonly]');
+  await expect(steps.getByRole('heading', { name: 'Your steps' })).toBeFocused();
+  await expect(steps.locator('[data-recovery-note]')).toHaveText("Recovery offers often follow a loss because scammers share victims' details. That says nothing about you.");
+  await expect(steps.locator('[data-step]')).toHaveCount(4);
+  await expect(steps.locator('[data-step="pay_recovery_service"]')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Done' })).toHaveCount(0);
   await axeClean(page);
+  await press(page, 'Continue');
+  // The debrief still carries the already-clicked advice (Red Line 4).
+  await expect(page.locator('#debrief-more')).toContainText('Paid a fee already? Stop paying');
 });

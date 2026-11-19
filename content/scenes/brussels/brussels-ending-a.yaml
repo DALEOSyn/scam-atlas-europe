@@ -3,11 +3,12 @@
 # Teo's fixed line "Same picture, different name. Good thing I asked you." is split over two panels, word for
 # word, to show "sheepish, then proud" (STORY §3.10). It is true in every branch of Teo's chat: he asked you.
 # Psych note (GDD §30.14 item 9): every A player already reported earlier, so the "never too late to start"
-# line is not in this scene (it is in A′ only, and gated there). Adaeze's line, one of two (R22(2)):
-# - arc_told_someone (Teo's chat: the photo check together, or "Tell him to report the profile"): "Teo asked
-#   you, and you helped him. That's what works."
-# - otherwise (Teo's chat: "stop replying" or "A little can't hurt"): the player's own early report, in plain
-#   words, "And you reported yours early. That's what works." (no "told someone" without the flag).
+# line is not in this scene (it is in A′ only, and gated there).
+# R28 (T-3.13h): CR-51 sets arc_told_someone at the early report itself, so every A player has that flag and it
+# can no longer tell Teo's chat branches apart. Adaeze's line is gated on the story flag arc_helped_teo instead
+# (set by Teo's chat: the photo check together, or "Tell him to report the profile"): "Teo asked you, and you
+# helped him. That's what works."; otherwise ("stop replying", "A little can't hurt", or Teo asking Adaeze) the
+# player's own early report, in plain words, "And you reported yours early. That's what works."
 id: brussels-ending-a
 chapter: brussels
 slot: resolution
@@ -31,13 +32,13 @@ panels:
     crop: centre
     speaker: adaeze
     expression: calm
-    if_flag: arc_told_someone
+    if_flag: arc_helped_teo
     line: "Teo asked you, and you helped him. That's what works."
     alt: "Adaeze, calm, at the desk by the small projector, a high window behind her."
   - backdrop: brussels-office
     crop: centre
     speaker: adaeze
     expression: calm
-    unless_flag: arc_told_someone
+    unless_flag: arc_helped_teo
     line: "And you reported yours early. That's what works."
     alt: "Adaeze, calm, at the desk by the small projector, a high window behind her."

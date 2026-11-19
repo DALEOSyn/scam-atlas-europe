@@ -199,7 +199,8 @@ describe('producer rulings', () => {
       expect(r).toMatchObject(want);
       const dd = debriefOf(s, st, r, { pressureAny: true, pressureGenuine: true });
       expect(dd.layer1.allBest).toBe(false);
-      expect(dd.layer2.deadline).toBe('genuine');
+      // R26(2), CR-50: re-pinned. A 0-star genuine expiry (slot 1) gets `genuine_missed`, never "Nothing is lost yet"; ★ (slot 0) keeps `genuine`.
+      expect(dd.layer2.deadline).toBe(slot === 0 ? 'genuine' : 'genuine_missed');
     }
   });
 

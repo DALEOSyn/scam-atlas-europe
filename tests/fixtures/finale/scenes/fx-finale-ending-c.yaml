@@ -11,6 +11,7 @@ panels:
     alt: "Adaeze smiling gently, sitting beside you."
   - speaker: adaeze
     expression: calm
-    if_flag: arc_told_someone
+    # R25(5), CR-51: the close beat's photo check sets arc_checked.
+    if_flag: arc_checked
     line: "And you checked before anything else. That's what works."
     alt: "Adaeze, calm, nodding."

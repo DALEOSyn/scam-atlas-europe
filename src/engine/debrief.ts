@@ -140,7 +140,8 @@ export interface DebriefData {
     /**
      * Timer expiry line under "What happened", gated like the consequence caption: `fake` on fraud
      * ("The deadline was fake…"), `fake_fell` on fraud after a fall (no "Nothing happened", QA m1),
-     * `genuine` on genuine ("Time's up in the game, not in real life…", ruling QA L4), else null.
+     * `genuine` on genuine ("Time's up in the game, not in real life…", ruling QA L4) at ★/★★, `genuine_missed` when
+     * the genuine expiry scored 0 stars (CR-50, R26(2)), else null.
      */
     deadline: DeadlineLine;
     /** pressure.honest_deadline, for the genuine line's {deadline}. */
@@ -308,7 +309,8 @@ export function debriefOf(
           ],
         ),
       ],
-      deadline: r.timerExpired ? deadlineLine(s.is_fraud, r.fell) : null,
+      // CR-50 (R26(2)): a genuine expiry that scored 0 stars gets `genuine_missed` (the expired group's stars).
+      deadline: r.timerExpired ? deadlineLine(s.is_fraud, r.fell, r.beats.find((x) => x.timerExpired)?.stars ?? null) : null,
       honestDeadline: s.pressure.honest_deadline ?? null,
       youChoseOther,
       choicePaths: youChose.filter((l) => (l.kind === 'action' || l.kind === 'what_now') && !!l.path).map((line) => ({ line, beat: lines.length > 1 ? beatOfLine(s, line) : null })),

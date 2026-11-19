@@ -351,7 +351,8 @@ describe('CR-43(f): arc slots follow play position (STORY §1.4)', () => {
     expect(arcSlotAt(arc({ timeline: [1] }), 2)).toBe(2);
     expect(arcSlotAt(arc({ timeline: [1, 2, 3, 4, 5, 6, 7, 8] }), 9)).toBe(9);
     expect(arcSlotAt(arc({ timeline: [1, 2, 3, 4, 5, 6, 7, 8, 9] }), 10)).toBeNull();
-    expect(arcSlotAt(arc({ timeline: [1, 2] }), 2)).toBeNull();
+    // R25(1), CR-49: re-pinned. Slots play in slot order, so a chapter at position 2 with slots 1 and 2 played plays slot 3 (was null).
+    expect(arcSlotAt(arc({ timeline: [1, 2] }), 2)).toBe(3);
     expect(arcSlotAt(arc({ closed: true }), 3)).toBeNull();
     expect(arcSlotAt(arc(), null)).toBeNull();
   });
@@ -363,13 +364,14 @@ describe('CR-43(f): arc slots follow play position (STORY §1.4)', () => {
   it('QA B1: the slot-1 repeat is offered once; position 2 plays nothing more; a replayed chapter plays no arc beat', () => {
     const once = applyArcBeat(arc(), 1, res(), 'ignore');
     const repeated = applyArcBeat(once, 1, res(), 'reply'); // timeline [1, 1], still one close
-    expect(arcSlotAt(repeated, 2)).toBeNull();
+    // R25(1), CR-49: re-pinned. After the repeat the next arc beat is slot 3 (slot 2 skipped), wherever it plays (was null at position 2).
+    expect(arcSlotAt(repeated, 2)).toBe(3);
     expect(arcSlotForRun(once, { finished: false, position: 2 })).toBe(1);
     expect(arcSlotForRun(once, { finished: true, position: 2 }), 'replaying Berlin\'s successor').toBeNull();
     expect(arcSlotForRun(arc({ timeline: [1, 2, 3] }), { finished: true, position: 3 })).toBeNull();
     expect(arcSlotForRun(arc({ timeline: [1, 2] }), { finished: false, position: 3 })).toBe(3);
-    // A slot-2 arc beat is never offered at position 2 after a pause (skipped, R22).
-    expect(arcSlotAt(arc({ closes: 1, timeline: [1, 1] }), 2)).toBeNull();
+    // A slot-2 arc beat is never offered after the slot-1 repeat (skipped, R22); R25(1), CR-49: the next is slot 3 (was null at position 2).
+    expect(arcSlotAt(arc({ closes: 1, timeline: [1, 1] }), 2)).toBe(3);
   });
   it('validator: a chapter\'s arc beat carries the chapter\'s map slot; the finale has none', () => {
     const c = chapterRaw();
@@ -461,7 +463,8 @@ describe('R22: round-1 review fixes (finale)', () => {
   });
   it('psych M1: arc_told_someone is set by a report, a photo check or asking someone, never by stepping away', () => {
     const close = clone(rawFinale('fx-finale-arc-close.yaml'));
-    delete (outcomes(close).same_picture as Raw).sets_flags;
+    // R25(5), CR-51: re-pinned on the report (the close beat's photo check now sets arc_checked, see the CR-51 tests).
+    delete (outcomes(close).reported_profile as Raw).sets_flags;
     expect(schemaErrors(close).join('\n')).toMatch(/a report, photo check or asking someone sets arc_told_someone/);
     const teo = clone(rawFinale('fx-finale-arc-teo.yaml'));
     (outcomes(teo).stopped as Raw).sets_flags = [ARC_TOLD_SOMEONE];

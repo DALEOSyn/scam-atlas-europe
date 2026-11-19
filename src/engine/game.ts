@@ -4,7 +4,7 @@
  * hook persists after every scenario (balance session.save_points).
  */
 import type { Chapter, Scenario } from '../content/schema.ts';
-import { applyArcBeat, bankArcPoints, setFlags } from './arc.ts';
+import { applyArcBeat, arcSlotFlags, bankArcPoints, setFlags } from './arc.ts';
 import { betterStamp, nextIndex, recordOf, sequenceOf, summarise, type ChapterSummary } from './chapter.ts';
 import { pressureCalloutFor } from './debrief.ts';
 import { demonstratedLos, recordHabits } from './habits.ts';
@@ -70,7 +70,10 @@ export function commitScenario(
     pressureGenuine: save.callouts.pressureGenuine || callout === 'first_genuine',
   };
   let arc = save.arc;
-  if (s.role === 'arc' && s.arc_slot !== undefined) arc = applyArcBeat(arc, s.arc_slot, r, st.groups[0]?.decision?.kind);
+  const decisive = st.groups[0]?.decision?.kind;
+  if (s.role === 'arc' && s.arc_slot !== undefined) arc = applyArcBeat(arc, s.arc_slot, r, decisive);
+  // CR-51 (R25(5)): an arc slot decided by a report or by asking someone sets arc_told_someone.
+  const engineFlags = s.role === 'arc' && s.arc_slot !== undefined ? arcSlotFlags(decisive) : [];
   // CR-43: the finale's scenarios bank their points (damage control after a fall) as arc points, never a chapter score.
   if (s.role === 'arc' && s.finale !== undefined) arc = bankArcPoints(arc, r.points);
   const habits = recordHabits(save.habits, demonstratedLos(s, b, st, r), s.id, s.difficulty);
@@ -78,7 +81,7 @@ export function commitScenario(
   return {
     ...save,
     // Echo flags belong to this run (a replay starts clean); only arc flags are game-wide.
-    flags: s.role === 'arc' ? setFlags(save.flags, r.flagsSet) : save.flags,
+    flags: s.role === 'arc' ? setFlags(save.flags, [...r.flagsSet, ...engineFlags]) : save.flags,
     arc,
     habits,
     callouts,

@@ -4,6 +4,9 @@
 # before Teo asks, and he never does). "Robin" is a scam-side name (BRAND_CHECK BR3), one of the reveal names.
 # R22 (psych M1): every option opens the reveal card; the photo check and the report set arc_told_someone,
 # stepping away and "A little can't hurt" do not. After advise_comply the advice_line shows, without blame.
+# R28 (T-3.13h): the photo check together and the report also set the story flag arc_helped_teo, which gates
+# ending A's and A′'s "Teo asked you, and you helped him." (CR-51 sets arc_told_someone for every A player, so
+# that flag can no longer tell Teo's chat branches apart).
 # Unscored for the chapter (arc points only); no timer (R22).
 # Fact M1 (round 1): no "praise" claim (unsourced); "secret" is kept with ie-ccpc-investment-scams (secrecy as a red
 # flag); steering to money from someone met online is be-fsma-dating-platforms-2026.
@@ -75,11 +78,11 @@ outcomes:
   teo_same_picture:
     narrative: "You run the photo check together. Teo: \"Well. That settles it.\""
     reveal: true
-    sets_flags: [arc_told_someone]
+    sets_flags: [arc_told_someone, arc_helped_teo]
   teo_reported_profile:
     narrative: "Teo reports the profile on Wordswap. Its check finds the same picture on other profiles, with other names."
     reveal: true
-    sets_flags: [arc_told_someone]
+    sets_flags: [arc_told_someone, arc_helped_teo]
   teo_stopped_replying:
     narrative: "Teo stops replying. That evening he runs a photo check anyway, just to be sure, and sends nothing."
     reveal: true

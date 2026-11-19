@@ -5,8 +5,9 @@
 # Teo's R line "Sometimes you just want to know. Asking is never wrong." closes both branches: it is the panel
 # every R player sees (the validator needs one shared panel), and it is true for both, since "Tell me now" was
 # asking (deviation from STORY §3.10, which gives it to R without money only).
-# No "you told someone" line: R players have no arc_told_someone unless Teo's chat set it, and the R line says
-# what they did in other words (R22(2)). No "never too late to start" (psych note, GDD §30.14 item 9).
+# No "you told someone" line: R players have arc_told_someone only if Teo's chat or an arc slot decided by
+# asking someone set it (CR-51), and the R line says what they did in other words (R22(2)), true for every R
+# player whatever the flags. No "never too late to start" (psych note, GDD §30.14 item 9).
 # Teo's fixed line "Same picture, different name. Good thing I asked you." is split over two panels, word for
 # word, to show "sheepish, then proud" (STORY §3.10).
 id: brussels-ending-r

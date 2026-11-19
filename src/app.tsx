@@ -443,8 +443,8 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
         let s = await load(c.city, id);
         if (!s) throw new Error(`scenario ${id} is not bundled`);
         if (s.role === 'arc' && s.arc_slot !== undefined) {
-          // CR-43(f), STORY §1.4: the chapter's arc beat plays the slot of its play position (slot N in the Nth
-          // chapter played), found in the chapter with map slot N. A closed arc ("Tell me now", a report, a second
+          // CR-43(f), CR-49 (R25(1)): the chapter's arc beat plays the lowest arc slot not yet played (slot order,
+          // whatever the chapter order), found in the chapter with map slot N. A closed arc ("Tell me now", a report, a second
           // close, GDD §10.3) or a slot already played plays nothing here, and a replayed (finished) chapter never
           // plays an arc beat (QA B1).
           const slot = arcSlotForRun(started.arc, chapterProgress(started, c.city));
@@ -680,6 +680,7 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
           onCoachMarkSeen={(id) => update((sv) => (sv.coachMarks.includes(id) ? sv : { ...sv, coachMarks: [...sv.coachMarks, id] }))}
           onQuit={toTitle}
           revealNames={screen.progress.finale ? (revealNames() ?? undefined) : undefined}
+          recoveryOffered={screen.progress.finale === 'recovery_offer' ? chapter.arc_finale?.damage_control.map((x) => x.step) : undefined}
           onDone={(st, r) => onDone(screen.scenario, st, r, screen.progress)}
         />
       ) : null}

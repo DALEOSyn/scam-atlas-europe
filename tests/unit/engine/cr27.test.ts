@@ -26,10 +26,10 @@ describe('CR-27 schema', () => {
   });
   it('message.bank (the bank app header) is for banking beats only', () => {
     const raw = rawTransfer();
-    (beatOf(raw, 'bank').message as Raw).bank = { brand: 'larchwick-pro' };
+    (beatOf(raw, 'bank').message as Raw).bank = { brand: 'larchwick-business' };
     expect(issues(raw)).toEqual([]);
     const bad = rawTransfer();
-    (bad.message as Raw).bank = { brand: 'larchwick-pro' };
+    (bad.message as Raw).bank = { brand: 'larchwick-business' };
     expect(issues(bad).join('\n')).toMatch(/bank \(the bank app header\) is for banking beats/);
   });
   it('interrupt on_fall defaults to skip', () => {
@@ -98,7 +98,9 @@ describe('CR-27 item 7: "You chose" after an engage and another final choice', (
     const d = debriefOf(s, st, r, none);
     const line = [...d.layer1.youChose, ...d.layer2.youChoseOther.map((x) => x.line)].find((l) => l.beatId === 'support_call');
     expect(line && choiceLineText(line, lookup)).toBe('You hung up and left it there.');
-    expect(d.layer2.choicePaths.map((l) => choicePathText(l, lookup))).toEqual(['You chose: Call back this number, then Leave it there.']);
+    // Psych M4: "Step by step" holds the layer-1 line's path only, with its beat (a boss has several scored beats).
+    expect(d.layer2.choicePaths.map((l) => choicePathText(l.line, lookup))).toEqual(['You chose: Call back this number. Then: Leave it there.']);
+    expect(d.layer2.choicePaths[0]?.beat?.device).toBe('call');
   });
   it('engage extra, then the call-back: the engage cost the star, so it is named; the path uses call_back_label', () => {
     const st = run(s, c, [...toCall, { type: 'what_now', choice: 'call_this_number' }, { type: 'what_now', choice: 'call_back_known' }]);
@@ -107,7 +109,25 @@ describe('CR-27 item 7: "You chose" after an engage and another final choice', (
     const d = debriefOf(s, st, r, none);
     const line = [...d.layer1.youChose, ...d.layer2.youChoseOther.map((x) => x.line)].find((l) => l.beatId === 'support_call');
     expect(line && choiceLineText(line, lookup)).toBe('You chose: Call back this number.');
-    expect(d.layer2.choicePaths.map((l) => choicePathText(l, lookup))).toEqual(['You chose: Call back this number, then Call the number on your card.']);
+    expect(d.layer2.choicePaths.map((l) => choicePathText(l.line, lookup))).toEqual(['You chose: Call back this number. Then: Call the number on your card.']);
+  });
+  it('a path on a "Your other choices" row stays in that row, not in "Step by step" (psych M4)', () => {
+    let st = run(s, c, [act('tap_link'), act('close_page'), cont, act('pay_invoice')]);
+    for (let i = 0; i < 8 && st.phase !== 'done'; i++) {
+      st =
+        st.phase === 'damage_control'
+          ? step(s, c, st, { type: 'recovery', picks: [] })
+          : st.phase === 'playing'
+            ? step(s, c, st, act('hang_up'))
+            : st.phase === 'what_now'
+              ? step(s, c, st, { type: 'what_now', choice: 'done' })
+              : step(s, c, st, cont);
+    }
+    const d = debriefOf(s, st, resultOf(s, B, st), none);
+    expect(d.layer1.youChose).toEqual([]);
+    expect(d.layer2.choicePaths).toEqual([]);
+    const row = d.layer2.youChoseOther.find((x) => x.line.beatId === 'start');
+    expect(row && choicePathText(row.line, lookup)).toBe('You chose: Open the link. Then: Close the page.');
   });
   it('a covered beat with an engage on it is not "already checked": the caption never contradicts ★★', () => {
     const raw = rawBoss();

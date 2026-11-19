@@ -134,9 +134,12 @@ describe('4. after_beat interrupts (QA M6)', () => {
     expect(viewOf(s, c, st).interrupts).toEqual([]);
     st = step(s, c, st, { type: 'what_now', choice: 'report' });
     expect(st.interrupts[0]).toMatchObject({ arrived: false, due: true });
-    st = run(s, c, [act('open_app'), cont, act('report_2'), cont, act('hang_up'), { type: 'what_now', choice: 'report' }]);
+    const preArrival = st;
+    while (st.phase === 'consequence') st = step(s, c, st, cont);
     expect(st.phase).toBe('interrupt');
     expect(st.interrupts[0]?.arrived).toBe(true);
+    expect(st.stress).toBe(preArrival.stress + B.stress.on_interrupt);
+    expect(run(s, c, [act('open_app'), cont, act('report_2'), cont, act('hang_up'), { type: 'what_now', choice: 'report' }])).toMatchObject({ phase: 'interrupt', stress: st.stress });
     expect(viewOf(s, c, st).interrupts.map((i) => i.id)).toEqual(['jonas']);
   });
 

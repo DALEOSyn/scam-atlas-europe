@@ -26,7 +26,7 @@ export interface ChapterRow {
 const STAMP_WORD: Record<Stamp, MessageKey> = { bronze: 'stamp_word_bronze', silver: 'stamp_word_silver', gold: 'stamp_word_gold' };
 
 /** Where focus lands when coming back (review T-S3 item 16): the button that opened the page we left. */
-export type ChapterListFocus = { kind: 'atlas' } | { kind: 'replay'; city: string };
+export type ChapterListFocus = { kind: 'atlas' } | { kind: 'replay'; city: string } | { kind: 'play'; city: string };
 
 export function ChapterList({
   rows,
@@ -47,7 +47,7 @@ export function ChapterList({
   const heading = useRef<HTMLHeadingElement>(null);
   const main = useRef<HTMLElement>(null);
   useEffect(() => {
-    const sel = focus?.kind === 'atlas' ? '[data-chapters-atlas]' : focus?.kind === 'replay' ? `[data-replay-chapter="${focus.city}"]` : null;
+    const sel = focus?.kind === 'atlas' ? '[data-chapters-atlas]' : focus?.kind === 'replay' ? `[data-replay-chapter="${focus.city}"]` : focus?.kind === 'play' ? `[data-play-chapter="${focus.city}"]` : null;
     const btn = sel ? main.current?.querySelector<HTMLElement>(sel) : null;
     (btn ?? heading.current)?.focus();
   }, []);
@@ -76,7 +76,7 @@ export function ChapterList({
                 </p>
               ) : null}
               {!r.locked ? (
-                <button type="button" class={r.finished && !r.inProgress ? styles.secondary : styles.primary} onClick={() => onPlay(r.city)}>
+                <button type="button" class={r.finished && !r.inProgress ? styles.secondary : styles.primary} data-play-chapter={r.city} onClick={() => onPlay(r.city)}>
                   {t(r.inProgress ? 'chapter_continue' : r.finished ? 'chapter_replay' : 'chapter_play', { city: r.name })}
                 </button>
               ) : null}

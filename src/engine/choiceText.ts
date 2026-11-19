@@ -8,7 +8,8 @@
  *   never the button label. Falls back to "You chose: <built-in label>." if the key is missing.
  * - `you_chose_report_genuine` / `_dismiss_genuine` / `_dismiss_started`: over-caution on a genuine
  *   message never gets a bare label next to low stars (ruling L4, game-wide copy).
- * - `you_chose_then`: layer 2's path line after an engage and another final choice (CR-27).
+ * - `you_chose_then`: layer 2's path line after an engage and another final choice (CR-27): in "Step by step"
+ *   for the layer-1 line, in the row itself for "Your other choices".
  * - `next_time_after_hang_up`: the "Next time" pointer (ruling L1, budget ruling 2026-11-19).
  */
 import { format } from '../i18n/format.ts';
@@ -61,7 +62,7 @@ export function choiceLineText(c: ChoiceLine, msg: CatalogueLookup): string {
 
 /**
  * CR-27: the whole path of a beat where an engage was followed by another final choice, for layer 2:
- * "You chose: Call back the number he gave, then Leave it there." null when the line has no path.
+ * "You chose: Call back the number he gave. Then: Leave it there." null when the line has no path.
  */
 export function choicePathText(c: ChoiceLine, msg: CatalogueLookup): string | null {
   if ((c.kind !== 'action' && c.kind !== 'what_now') || !c.path) return null;

@@ -52,7 +52,7 @@ export interface RunnerContext {
  * starts only after the last line of the beat is shown).
  */
 /** `coach_mark`: a coach mark is open (GDD §8, CR-23: the first payee-name check). */
-export type FreezeReason = 'pause_menu' | 'settings' | 'help' | 'debrief' | 'take_a_breath' | 'translation' | 'call_lines' | 'coach_mark';
+export type FreezeReason = 'pause_menu' | 'settings' | 'help' | 'debrief' | 'take_a_breath' | 'translation' | 'call_lines' | 'coach_mark' | 'setup';
 /**
  * `interrupt`: an `after_beat` interrupt still waits for an answer at the end of the scenario (ruling
  * QA M6): its own "New notification" step before the debrief.

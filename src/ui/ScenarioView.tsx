@@ -27,7 +27,7 @@ import { Icon } from './Icon.tsx';
 import { deadlineText, WHAT_NOW_KEYS } from './labels.ts';
 import { RichText } from './RichText.tsx';
 import { SettingsPanel } from './Settings.tsx';
-import { unrevealedTargets, words } from './text.ts';
+import { readingHoldSeconds, unrevealedTargets, words } from './text.ts';
 import styles from './ScenarioView.module.css';
 
 export interface ScenarioViewProps {
@@ -329,6 +329,19 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
   // lead-in is read before the device heading (reading order = visual order).
   const setupRef = useRef<HTMLParagraphElement>(null);
   const showSetup = !!scenario.setup && beat?.id === 'start';
+  // CR-27 round 2 (psych M3): the lead-in is read on arrival, so it freezes the timer (and the clock) for its
+  // reading time, max(1.5 s, 0.3 s × words), in every timer mode; the same hold as an auto-opened translation.
+  const setupHeld = useRef<string | null>(null);
+  useEffect(() => {
+    if (!showSetup || view.phase !== 'playing' || !scenario.setup || setupHeld.current === scenario.id) return undefined;
+    setupHeld.current = scenario.id;
+    runner.freeze('setup', true);
+    const id = setTimeout(() => runner.freeze('setup', false), readingHoldSeconds(scenario.setup) * 1000);
+    return () => {
+      clearTimeout(id);
+      runner.freeze('setup', false);
+    };
+  }, [scenario.id, showSetup, view.phase === 'playing']);
   useEffect(() => {
     if (view.phase === 'playing' && showSetup && setupRef.current) setupRef.current.focus();
     else if (view.phase === 'playing') deviceHeadingRef.current?.focus();
@@ -384,7 +397,6 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
   // ---- "Jump to your options" (QA M6): a sticky bar at the bottom of the screen on phones while the
   // tray is out of view; it moves focus to the tray. Hidden on the desk (the rail is always in view).
   const [trayInView, setTrayInView] = useState(true);
-  const showJumpRef = useRef(false);
   // On a payee-check beat the options sit in the device, under the result (Amsterdam QA o): the bar
   // watches the result paragraph there, so it hides once the player's options are in view.
   const inDeviceOptions = !!beat && actionsInDevice(beat.device, beat.message);
@@ -424,18 +436,33 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
   // reserved for the rest of the beat once shown (no layout jump when it hides). Scroll padding at the
   // top = HUD + bar, so a focused element is never under either (WCAG 2.4.11).
   const jumpRef = useRef<HTMLButtonElement>(null);
+  // Runs in the live phases only (playing, "What now?"), when the bar shows or hides; it follows the bar's
+  // size while shown. Cleanup puts the scroll padding back to the HUD's alone (or nothing without a HUD).
+  const jumpLive = view.phase === 'playing' || view.phase === 'what_now';
+  const jumpShown = jumpLive && !desk && !trayInView;
   useEffect(() => {
     const root = typeof document !== 'undefined' ? document.documentElement : null;
-    if (!root) return undefined;
-    const bar = jumpRef.current;
-    const h = showJumpRef.current && bar ? Math.ceil(bar.getBoundingClientRect().height) + 8 : 0;
-    const hud = hudRef.current ? Math.ceil(hudRef.current.getBoundingClientRect().height) : 0;
-    root.style.setProperty('--jump-h-live', `${h}px`);
-    if (hud || h) root.style.scrollPaddingTop = `${hud + 8 + h}px`;
-    return () => {
-      root.style.removeProperty('--jump-h-live');
+    if (!root || !jumpLive) return undefined;
+    const hudOnly = () => {
+      const hud = parseInt(root.style.getPropertyValue('--hud-h-live'), 10);
+      return Number.isNaN(hud) ? '' : `${hud + 8}px`;
     };
-  });
+    const bar = jumpShown ? jumpRef.current : null;
+    const apply = () => {
+      const h = bar ? Math.ceil(bar.getBoundingClientRect().height) + 8 : 0;
+      const hud = parseInt(root.style.getPropertyValue('--hud-h-live'), 10) || 0;
+      root.style.setProperty('--jump-h-live', `${h}px`);
+      root.style.scrollPaddingTop = hud || h ? `${hud + 8 + h}px` : '';
+    };
+    apply();
+    const ro = bar && typeof ResizeObserver === 'function' ? new ResizeObserver(apply) : null;
+    if (bar) ro?.observe(bar);
+    return () => {
+      ro?.disconnect();
+      root.style.removeProperty('--jump-h-live');
+      root.style.scrollPaddingTop = hudOnly();
+    };
+  }, [jumpLive, jumpShown]);
   /**
    * On a payee-check beat the options sit inside the result card: skip and jump links go to the result
    * paragraph, so reading runs result → footer → tip → options (learning-psychologist T-3.3).
@@ -475,12 +502,14 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
       if (c.target === 'page.info') return t('page_info_visible');
       // CR-27: the name check is checked on its result line, so "You see" is that line.
       if (c.target === 'payee.name_check' && beat) {
+        // Until the bank card reports the check done, the Details row says what the card says ("Checking…").
+        if (!nameCheckReady[beat.id]) return t('bank_check_checking');
         const bank = bankOf(beat.message);
         return nameCheckText(beat.message, bank?.short_name ?? bank?.name ?? '') ?? c.shown ?? '';
       }
       return c.shown ?? '';
     },
-    [sender, beat],
+    [sender, beat, nameCheckReady],
   );
   const doCheck = (c: CheckableView) => {
     if (!c.checked && view.timer && ctx.balance.timers.inspect_cost_seconds > 0) setChip(t('timer_cost_chip', { seconds: ctx.balance.timers.inspect_cost_seconds }));
@@ -519,8 +548,7 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
   const card = openItem ? <CheckCard item={openItem} visibleText={visible(openItem)} sender={sender} modal={modal} onTag={doTag} onClose={closeCard} /> : null;
   const live = view.phase === 'playing' || view.phase === 'what_now';
   const blocked = modal || settingsOpen;
-  const showJump = !desk && live && !trayInView;
-  showJumpRef.current = showJump;
+  const showJump = jumpShown;
   // The bar's place is kept for the rest of the beat once it has shown (CR-27).
   const [jumpBeat, setJumpBeat] = useState<string | null>(null);
   useEffect(() => {

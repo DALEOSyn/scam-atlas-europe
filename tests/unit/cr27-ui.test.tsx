@@ -15,6 +15,17 @@ import { rawFraud, scenario } from '../content/fixtures.ts';
 import { beatOf, rawTransfer } from './engine/cr-fixtures.ts';
 import { ctx, type Raw } from './engine/helpers.ts';
 import { useContext } from 'preact/hooks';
+import { App } from '../../src/app.tsx';
+import { headerBrand } from '../../src/content/brands.ts';
+import { debriefOf } from '../../src/engine/debrief.ts';
+import { resultOf } from '../../src/engine/result.ts';
+import { step } from '../../src/engine/runner.ts';
+import { DebriefView } from '../../src/ui/DebriefView.tsx';
+import { act, B, boss, run } from './engine/helpers.ts';
+import type { Chapter } from '../../src/content/schema.ts';
+import { createStore, freshSave, type StorageLike } from '../../src/engine/save.ts';
+import { rawGenuine } from '../content/fixtures.ts';
+import { readingHoldSeconds } from '../../src/ui/text.ts';
 
 beforeEach(() => {
   document.documentElement.dataset.motion = 'reduced';
@@ -93,6 +104,31 @@ describe('CR-27 item 1: chapter intro and scenario setup', () => {
     expect(p && heading && p.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Open the link' }));
     await waitFor(() => expect(container.querySelector('[data-setup]')).toBeNull());
+  });
+  it('setup: the lead-in freezes the timer for its reading time, then the timer runs (psych M3)', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'performance', 'Date'] });
+    const setup = '18:40, the last working day before the long weekend. Everyone else has already left the office.';
+    const s = scenario({ ...rawFraud(), setup, pressure: { timer: true, levers: ['urgency'] } });
+    const { container } = render(<ScenarioView scenario={s} ctx={ctx()} onDone={() => undefined} />);
+    const timer = () => container.querySelector('[role="timer"]')?.textContent ?? '';
+    await flush(() => {
+      vi.advanceTimersByTime(300);
+    });
+    const start = timer();
+    expect(start).toMatch(/paused/);
+    const hold = readingHoldSeconds(setup);
+    expect(hold).toBeGreaterThan(1.5);
+    await flush(() => {
+      vi.advanceTimersByTime(hold * 1000 - 600);
+    });
+    expect(timer()).toBe(start);
+    for (let i = 0; i < 8; i++) {
+      await flush(() => {
+        vi.advanceTimersByTime(500);
+      });
+    }
+    expect(timer()).not.toMatch(/paused/);
+    expect(timer()).not.toBe(start);
   });
   it('no setup, no lead-in', () => {
     const { container } = render(<ScenarioView scenario={scenario(rawFraud())} ctx={ctx({ timerMode: 'off' })} onDone={() => undefined} />);
@@ -225,6 +261,24 @@ describe('CR-27 item 5: the name-check result is the checkable', () => {
   });
 });
 
+describe('CR-27 round 2: the name-check Details row waits for the check', () => {
+  it('says "Checking…" until the bank card reports the result, then the result', async () => {
+    delete document.documentElement.dataset.motion;
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+    const { container } = render(<ScenarioView scenario={scenario(rawTransfer())} ctx={ctx({ timerMode: 'off' })} onDone={() => undefined} coachMarks={['payee_check']} />);
+    fireEvent.click(container.querySelector('[data-action="start_transfer"]') as HTMLElement);
+    await flush(() => undefined);
+    fireEvent.click(screen.getByRole('button', { name: /Details you can check/ }));
+    const row = () => container.querySelector<HTMLElement>('[data-check-row="payee.name_check"]');
+    expect(row()?.textContent).toContain("Checking the name with the payee's bank…");
+    expect(row()?.textContent).not.toContain("doesn't match");
+    await flush(() => {
+      vi.advanceTimersByTime(1000);
+    });
+    expect(row()?.textContent).toContain("The name doesn't match this account.");
+  });
+});
+
 describe('CR-27 item 6: a quoted message inside a chat bubble', () => {
   const body = 'Mum got this email. She nearly paid it!\n\nFrom factures@cuivrelin-factures.example: Balance of invoice 2026-088: €640. Questions: cuivrelin-factures.example/contact\n\nWhat would you have spotted?';
   const m: Message = { sender: { display: 'Inès', detail: 'Saved contact' }, body, request: 'reply', references: ['2026-088'], attachments: [{ name: 'RIB_Cuivrelin.pdf (forwarded)' }] };
@@ -263,12 +317,130 @@ describe('CR-27: content sets the bank header', () => {
       return label;
     };
     expect(header(pay())).toContain('Larchwick Bank');
-    expect(header(pay({ brand: 'waymarker-desk' }))).toContain('Waymarker Desk');
     expect(header(pay({ brand: 'nope' }))).toContain('Larchwick Bank');
+  });
+  it('headerBrand: a bank sub-brand keeps the bank\'s id (palette) and mark, with its own name', () => {
+    // Fixture registry: main ships no bank sub-brand yet (Paris adds larchwick-pro).
+    const reg = [{ id: 'larchwick', name: 'Larchwick Bank', mark: 'brands/larchwick.svg', sub_brands: [{ id: 'larchwick-business', name: 'Larchwick Business' }] }];
+    expect(headerBrand('larchwick-business', reg)).toEqual({ id: 'larchwick', name: 'Larchwick Business', mark: 'brands/larchwick.svg' });
+    expect(headerBrand('larchwick', reg)?.name).toBe('Larchwick Bank');
+    expect(headerBrand('nope', reg)).toBeUndefined();
   });
   it('fixtures: a banking beat may set it (schema)', () => {
     const raw = rawTransfer();
-    (beatOf(raw, 'bank').message as Raw).bank = { brand: 'waymarker-desk' };
-    expect(scenario(raw).beats[0]?.message.bank).toEqual({ brand: 'waymarker-desk' });
+    (beatOf(raw, 'bank').message as Raw).bank = { brand: 'larchwick-business' };
+    expect(scenario(raw).beats[0]?.message.bank).toEqual({ brand: 'larchwick-business' });
+  });
+});
+
+describe('CR-27 round 2: chapter rules card, resume and the way back (psych M1, M2)', () => {
+  const rules = { title: 'Payments at Ruchelune', items: ['Check the payee name.', 'Call the supplier on the number in the file.'] };
+  it('rules render after the intro as a pinned card: section labelled by its h2, an ordered list', async () => {
+    const onBack = vi.fn();
+    render(<ChapterIntro name="Paris" intro="Paris, the last working day." rules={rules} onStart={() => undefined} onBack={onBack} />);
+    const card = screen.getByRole('region', { name: 'Payments at Ruchelune' });
+    expect(within(card).getByRole('heading', { level: 2 })).toBeTruthy();
+    expect(within(card).getAllByRole('listitem').map((x) => x.textContent)).toEqual(rules.items);
+    expect(card.querySelector('ol')).not.toBeNull();
+    expect(screen.getByText('Paris, the last working day.').compareDocumentPosition(card) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Back to the map' }));
+    expect(onBack).toHaveBeenCalledOnce();
+  });
+
+  function memory(): StorageLike {
+    const m = new Map<string, string>();
+    return { getItem: (k) => m.get(k) ?? null, setItem: (k, v) => void m.set(k, v), removeItem: (k) => void m.delete(k) };
+  }
+  const ch = (city: string, name: string, over: Partial<Chapter> = {}): Chapter => ({
+    slot: 1,
+    city,
+    name,
+    status: 'draft',
+    patterns: ['smishing-parcel-fee'],
+    callbacks: [],
+    lo_focus: ['LO-01'],
+    scenario_order: { am: ['t1'], pm: ['t2'] },
+    intro: 'x',
+    ...over,
+  });
+  const byId = { t1: scenario(rawGenuine('t1')), t2: scenario(rawGenuine('t2')) };
+  const seeded = () => {
+    const store = createStore(memory());
+    store.save({ ...freshSave(), chapters: { home: { finished: true, bestStamp: 'gold', bestRating: 100, position: 0, run: null } } });
+    return store;
+  };
+  async function playMorning(name: string) {
+    fireEvent.click(screen.getByRole('button', { name: 'Chapters' }));
+    fireEvent.click(screen.getByRole('button', { name: `Play ${name}` }));
+    await screen.findByRole('heading', { level: 1, name });
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Check in the app first' }));
+    await waitFor(() => screen.getByRole('heading', { level: 3, name: 'What happened' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    await waitFor(() => screen.getByRole('heading', { level: 1, name: /This was genuine/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    await waitFor(() => screen.getByRole('heading', { level: 1, name: 'Good place to take a break' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Back to the chapters' }));
+  }
+
+  it('a resumed run of a chapter with rules shows the intro again, with "Continue"; "Back to the map" focuses its button', async () => {
+    render(<App store={seeded()} chapters={[ch('home', 'Home', { slot: 0, scenario_order: { am: ['h1'], pm: [] } }), ch('paris', 'Paris', { rules })]} load={async (_c, id) => byId[id as 't1']} />);
+    await playMorning('Paris');
+    fireEvent.click(await screen.findByRole('button', { name: 'Continue Paris' }));
+    const h1 = await screen.findByRole('heading', { level: 1, name: 'Paris' });
+    await waitFor(() => expect(document.activeElement).toBe(h1));
+    expect(screen.getByRole('region', { name: 'Payments at Ruchelune' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Start' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Back to the map' }));
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Continue Paris' })));
+    fireEvent.click(screen.getByRole('button', { name: 'Continue Paris' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Continue' }));
+    await waitFor(() => screen.getByRole('img', { name: /2 of 2/ }));
+  });
+
+  it('a resumed run of a chapter without rules goes straight on; a chapter without intro text has no intro', async () => {
+    render(<App store={seeded()} chapters={[ch('home', 'Home', { slot: 0, scenario_order: { am: ['h1'], pm: [] } }), ch('testcity', 'Testcity')]} load={async (_c, id) => byId[id as 't1']} />);
+    await playMorning('Testcity');
+    fireEvent.click(await screen.findByRole('button', { name: 'Continue Testcity' }));
+    await waitFor(() => screen.getByRole('img', { name: /2 of 2/ }));
+    expect(screen.queryByRole('heading', { level: 1, name: 'Testcity' })).toBeNull();
+    cleanup();
+    render(<App store={seeded()} chapters={[ch('home', 'Home', { slot: 0, scenario_order: { am: ['h1'], pm: [] } }), ch('bare', 'Bare', { intro: '' })]} load={async (_c, id) => byId[id as 't1']} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Chapters' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Play Bare' }));
+    await waitFor(() => screen.getByRole('img', { name: /1 of 2/ }));
+    expect(screen.queryByRole('heading', { level: 1, name: 'Bare' })).toBeNull();
+  });
+});
+
+describe('CR-27 round 2: the choice path in the debrief (psych M4)', () => {
+  const none = { pressureAny: false, pressureGenuine: false };
+  const cont = { type: 'continue' } as const;
+  const c = ctx({ timerMode: 'off' });
+  it('layer-1 path: "Step by step" with the beat heading on a boss', () => {
+    const s = boss();
+    const st = run(s, c, [act('open_app'), cont, act('report_2'), cont, act('hang_up'), { type: 'what_now', choice: 'call_this_number' }, { type: 'what_now', choice: 'done' }]);
+    const { container } = render(<DebriefView data={debriefOf(s, st, resultOf(s, B, st), none)} onContinue={() => undefined} onAgain={() => undefined} />);
+    const path = container.querySelector('[data-choice-path]');
+    expect(path?.querySelectorAll('p')).toHaveLength(1);
+    expect(path?.querySelector('p')?.textContent).toMatch(/^.+: You chose: Call back this number\. Then: Leave it there\.$/);
+    expect(container.querySelector('#other-choices-h ~ ul')?.textContent ?? '').not.toContain('Then:');
+  });
+  it('a path on another beat is shown in its "Your other choices" row; no "Step by step"', () => {
+    const s = boss();
+    let st = run(s, c, [act('tap_link'), act('close_page'), cont, act('pay_invoice')]);
+    for (let i = 0; i < 8 && st.phase !== 'done'; i++) {
+      st =
+        st.phase === 'damage_control'
+          ? step(s, c, st, { type: 'recovery', picks: [] })
+          : st.phase === 'playing'
+            ? step(s, c, st, act('hang_up'))
+            : st.phase === 'what_now'
+              ? step(s, c, st, { type: 'what_now', choice: 'done' })
+              : step(s, c, st, cont);
+    }
+    const { container } = render(<DebriefView data={debriefOf(s, st, resultOf(s, B, st), none)} onContinue={() => undefined} onAgain={() => undefined} />);
+    expect(container.querySelector('[data-choice-path]')).toBeNull();
+    expect(container.querySelector('#other-choices-h ~ ul')?.textContent).toContain('You chose: Open the link. Then: Close the page.');
   });
 });

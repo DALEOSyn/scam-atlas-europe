@@ -160,6 +160,11 @@ export function registeredHosts(brands: Map<string, Brand>): Set<string> {
   return new Set([...brands.values()].flatMap((b) => brandHosts(b).map((h) => h.toLowerCase())));
 }
 
+/** A bank-sector brand: its registry `sector` names a bank ("retail bank (player's own bank)"). CR-27. */
+export function isBankBrand(b: Brand): boolean {
+  return /\bbank\b/iu.test(b.sector ?? '');
+}
+
 /** Validate a single scenario object (already parsed) against schema + registries. */
 export function checkScenario(
   file: string,
@@ -192,11 +197,12 @@ export function checkScenario(
       (opts.strict ? report.errors : report.warnings).push(`${file}: brands: "${id}" is still a placeholder brand`);
     }
   }
-  // CR-27: a banking header brand must be a registered brand or sub-brand.
-  const bankIds = new Set([...brands.values()].flatMap((b) => [b.id, ...(b.sub_brands ?? []).map((x) => x.id)]));
+  // CR-27: a banking header brand must be a bank-sector brand (registry `sector` names a bank) or one
+  // of its sub-brands, e.g. a bank's business app.
+  const bankIds = new Set([...brands.values()].filter(isBankBrand).flatMap((b) => [b.id, ...(b.sub_brands ?? []).map((x) => x.id)]));
   for (const b of beatsOf(s)) {
     const id = b.message.bank?.brand;
-    if (id && !bankIds.has(id)) report.errors.push(`${file}: ${b.where}: message.bank.brand "${id}" is not a brand or sub-brand id in content/brands.yaml`);
+    if (id && !bankIds.has(id)) report.errors.push(`${file}: ${b.where}: message.bank.brand "${id}" is not a bank brand or a bank's sub-brand in content/brands.yaml`);
   }
   report.errors.push(...unregisteredHostIssues(s, registeredHosts(brands)).map((e) => `${file}: ${e}`));
   return s;

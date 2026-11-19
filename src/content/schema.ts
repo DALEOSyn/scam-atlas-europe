@@ -187,8 +187,9 @@ export const messageSchema = z
       .strict()
       .optional(),
     /**
-     * CR-27: the bank app shown in the banking header, a brand id or a sub-brand id from content/brands.yaml
-     * (e.g. `larchwick-pro` → "Larchwick Pro"). Banking only. Default: the player's bank (Larchwick).
+     * CR-27: the bank app shown in the banking header: a bank-sector brand id from content/brands.yaml, or
+     * one of its sub-brand ids (e.g. a bank sub-brand such as Paris's larchwick-pro). Banking only.
+     * content:validate rejects non-bank ids. Default: the player's bank (Larchwick).
      */
     bank: z.object({ brand: slug }).strict().optional(),
     /** CR-26: whose money it is, on banking beats ("Ruchelune · current account"). */
@@ -866,6 +867,12 @@ export const chapterSchema = z
     boss: slug.optional(),
     arc_beat: slug.optional(),
     intro: z.string().min(1),
+    /**
+     * The chapter's rules as a framed "pinned card" on the chapter intro, after the intro text (CR-27
+     * round 2, psych M1), e.g. a company's payment procedure the player is scored on. Shown again with
+     * "Continue" when a run resumes (psych M2).
+     */
+    rules: z.object({ title: z.string().min(1), items: z.array(z.string().min(1)).min(1) }).strict().optional(),
     /**
      * Story scenes (S3, STORY §3, §6): `arrival` before the first scenario, `turn` at the half-day stop
      * point (after "Keep going"), `resolution` after the last debrief and before the summary (it ends on

@@ -363,19 +363,19 @@ h3.interruptMeta:focus-visible {
   justify-self: stretch;
   min-height: var(--tap-min);
   padding: var(--space-2) var(--space-4);
-  border: 0;
+  /* Quiet secondary style (CR-27 round 2, psych M5): it is a shortcut, not a call to act. */
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-pill);
-  background: var(--color-accent);
-  color: var(--color-on-accent);
+  background: var(--color-surface);
+  color: var(--color-text);
   font: inherit;
-  font-weight: var(--fw-bold);
-  box-shadow: var(--shadow-2);
+  font-weight: normal;
+  box-shadow: none;
   cursor: pointer;
 }
 .jump:focus-visible {
   outline: var(--focus-ring-w) solid var(--color-focus);
   outline-offset: var(--focus-ring-offset);
-  box-shadow: 0 0 0 calc(var(--focus-ring-offset) + var(--focus-ring-w)) var(--color-focus-halo);
 }
 .jumpIdle {
   visibility: hidden;
@@ -390,8 +390,7 @@ h3.interruptMeta:focus-visible {
 .setup {
   margin: 0;
   max-width: 40rem;
-  font-style: italic;
-  color: var(--color-text-muted);
+  color: var(--color-text);
 }
 .setup:focus-visible {
   outline: var(--focus-ring-w) solid var(--color-focus);

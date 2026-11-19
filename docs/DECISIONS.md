@@ -68,3 +68,9 @@ Approve going public: deploy to GitHub Pages (or other host), domain, announceme
 
 ## G5 — Localization waves (state: Open)
 Approve each additional locale before it ships.
+
+## Producer rulings (no gate)
+Rulings by the producer on spec trade-offs. They need no gate; Roman may overturn any of them.
+- **R1 (2026-11-19, CR-27): Check card "Translation" row.** Non-English messages show an English "Translation" row inside the Check card, a verbatim copy of the message's authored translation. Accepted exception to "never inside a Check card" (UI_SPEC §4.4, §4.8, [U7]) for second-language players.
+- **R2 (2026-11-19, CR-27): translation freeze.** A translation auto-opened by "Always show translations" freezes the timer for reading time only, max(1.5 s, 0.3 s × words). A translation opened by hand freezes it while open (UI_SPEC §4.8, §6.1).
+- **R3 (2026-11-19, CR-27): jump bar at the top.** "Jump to your options" stays sticky at the top, under the HUD. The trade-off against UI_SPEC principle 7 (reach) is accepted: the bar covering targets at the bottom was worse.

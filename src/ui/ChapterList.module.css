@@ -84,3 +84,38 @@
   flex-wrap: wrap;
   gap: var(--space-2);
 }
+/* Chapter intro rules: a framed "pinned card" (CR-27 round 2, psych M1). */
+.pinned {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-bg);
+  border: var(--border-w) solid var(--color-border);
+  border-left-width: 4px;
+  border-radius: var(--radius-md);
+}
+.pinnedTitle {
+  margin: 0;
+  font-size: var(--fs-md);
+}
+.pinnedList {
+  margin: 0;
+  padding-left: var(--space-5);
+  display: grid;
+  gap: var(--space-1);
+}
+/* A quiet secondary route back (text link look, 44 px target). */
+.quiet {
+  min-height: var(--tap-min);
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  background: none;
+  color: var(--color-text);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.quiet:focus-visible {
+  outline: var(--focus-ring-w) solid var(--color-focus);
+  outline-offset: var(--focus-ring-offset);
+}

@@ -134,12 +134,16 @@ export function scoreGroup(
   if (fell) return { cls, stars: 0, points: 0, fell, timerExpired: expired, capped };
   let points = stars * b.points.per_star;
   if (cls === 'report' && truth !== 'fraud') points = b.points.exceptions.report_on_legit;
-  // Grace applies to a choice the player made, never to a timer running out.
+  // Grace applies to a choice the player made, never to a timer running out. Order: star table, then
+  // grace, then an authored `score` override (CR-01) on the deciding action, which sets the points
+  // only. The override is the author's explicit, per-action decision, reviewed with the scenario, so
+  // it wins over every table rule, grace included; it never changes the stars.
   const grace = expired ? undefined : graceFor(b, opts.slot, cls, truth);
   if (grace) {
     stars = grace.stars;
     points = grace.points;
   }
+  // (an authored override, if any, comes last: see above)
   if (!expired && decision?.override !== undefined) points = decision.override;
   return { cls, stars, points, fell, timerExpired: expired, capped };
 }

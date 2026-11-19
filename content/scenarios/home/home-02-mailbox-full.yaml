@@ -38,7 +38,7 @@ inspectables:
     red_flag: true
     type: link
   - target: reference
-    reveal: "WM-20931 looks like a ticket number. Anyone can type one; real and look-alike messages both have them."
+    reveal: "WM-20931 looks like a ticket number, just as a real IT message would show. Anyone can type one, so it can't prove anything either way."
     red_flag: false
     type: reference
   - target: phone_number

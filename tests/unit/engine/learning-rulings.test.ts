@@ -111,7 +111,7 @@ describe('L1 "What now?" built-ins', () => {
     expect(choiceLineText({ beatId: 'x', kind: 'what_now', choice: 'report' }, lookup)).toBe('You hung up and reported the call.');
     expect(choiceLineText({ beatId: 'x', kind: 'what_now', choice: 'call_back_known' }, lookup)).toBe('You hung up and called a number you know.');
     expect(lookup('what_now_done')).toBe('Leave it there');
-    expect(nextTimeText('after_hang_up', lookup)).toBe('Next time: report, or call a known number.');
+    expect(nextTimeText('after_hang_up', lookup)).toBe('Next time: call a number you know.');
   });
 
   it('home-06: ★★★ displayed after "Leave it there" on the call → no "You chose", the Next time pointer, the line in layer 2 with its stars', () => {
@@ -151,7 +151,7 @@ describe('L2 caller ID stays a decoy; the wrong mark says "Fair instinct"', () =
     expect(ins).toMatchObject({
       red_flag: false,
       type: 'caller_id',
-      reveal: 'Shows "Waymarker IT", the same name a real IT call would show. Caller ID can be faked, so it can\'t prove anything either way. Judge what the caller asks for.',
+      reveal: 'Shows "Waymarker IT": the number matches a saved contact, as a real call would. Faked numbers can match too, so it can\'t prove anything either way. Judge the request.',
     });
     const { st, r } = play(s, ctx({ slot: 0 }), [
       act('open_desk_bookmark'), { type: 'continue' },
@@ -214,5 +214,41 @@ describe('Home strategy check (slot 0, GDD §16): grace does not lift always-rep
     expect(sum.stamp).toBe('bronze');
     // Grace: the two genuine reports score 0 points each instead of −5.
     expect(records.filter((x) => x.genuineReported > 0).map((x) => [x.stars, x.points])).toEqual([[1, 0], [1, 0]]);
+  });
+});
+
+describe('T-2.7 review round 1', () => {
+  it('the "Next time" pointer names a ★★★ habit: on home-06 the call verifies score ★★★, report only ★★', () => {
+    const s = home('home-06-boss-new-portal');
+    const toCall = [act('open_desk_bookmark'), { type: 'continue' as const }, act('ask_adaeze_chat'), { type: 'continue' as const }, act('hang_up_it_call')];
+    for (const choice of ['call_it_desk_known', 'hang_up_ask_adaeze', 'hang_up_open_desk']) {
+      expect(play(s, ctx({ slot: 0 }), [...toCall, { type: 'what_now', choice }]).r.beats[2], choice).toMatchObject({ stars: 3 });
+    }
+    expect(play(s, ctx({ slot: 0 }), [...toCall, { type: 'what_now', choice: 'report' }]).r.beats[2]).toMatchObject({ stars: 2 });
+    expect(lookup('next_time_after_hang_up')).toBe('Next time: call a number you know.');
+  });
+
+  it('nextTime is only ever set on a boss (the validator counts it only there)', () => {
+    const s = { ...home('home-06-boss-new-portal'), role: 'standard' as const };
+    const h = home('home-06-boss-new-portal');
+    const { st, r } = play(h, ctx({ slot: 0 }), [act('open_desk_bookmark'), { type: 'continue' }, act('ask_adaeze_chat'), { type: 'continue' }, act('hang_up_it_call'), { type: 'what_now', choice: 'done' }]);
+    expect(debriefOf(h, st, r, none).layer1.nextTime).toBe('after_hang_up');
+    expect(debriefOf(s, st, r, none).layer1.nextTime).toBeNull();
+  });
+
+  it('an authored score override comes after grace: it sets the points, never the stars', () => {
+    const dec: Decision = { cls: 'report', kind: 'report', actionId: 'r', override: 3 };
+    expect(scoreGroup(B, 'legit_low', dec, { ...plain, slot: 0 })).toMatchObject({ stars: 1, points: 3 });
+    expect(scoreGroup(B, 'legit_low', dec, { ...plain, slot: 1 })).toMatchObject({ stars: 0, points: 3 });
+  });
+
+  it('every home padlock reveal reads the same, and none opens with "It fits"', () => {
+    const reveals = ['home-02-mailbox-full', 'home-03-password-reset', 'home-04-kettle-locked'].flatMap((id) => {
+      const s = home(id);
+      return [s.inspectables, ...s.beats.map((b) => b.inspectables)].flat().filter((i) => i.type === 'padlock').map((i) => i.reveal);
+    });
+    expect(reveals).toHaveLength(3);
+    expect(new Set(reveals).size).toBe(1);
+    expect(reveals[0]).toBe("The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way.");
   });
 });

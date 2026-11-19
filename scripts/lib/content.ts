@@ -8,7 +8,7 @@ import { parseDocument } from 'yaml';
 import { yamlStructureIssues } from './yaml-safety.ts';
 import type { z } from 'zod';
 import { isAllowedSourceHost } from './source-hosts.ts';
-import { chapterRules, scenarioRules, unregisteredHostIssues, type Registries } from './rules.ts';
+import { chapterRules, padlockRevealIssues, scenarioRules, unregisteredHostIssues, type Registries } from './rules.ts';
 import {
   balanceSchema,
   brandsFileSchema,
@@ -391,6 +391,7 @@ export function validateContent(contentDir: string, opts: ValidateOptions = {}):
     report.errors.push(...r.errors.map((e) => `${file}: ${e}`));
     report.warnings.push(...r.warnings.map((w) => `${file}: ${w}`));
   }
+  for (const p of padlockRevealIssues(all)) report.errors.push(`${fileOf.get(p.id) ?? p.id}: ${p.message}`);
   for (const [base, { file, chapter }] of chapters) {
     report.chapters?.set(chapter.city, chapter);
     const r = chapterRules(chapter, base, all.filter((s) => s.chapter === chapter.city), reg);

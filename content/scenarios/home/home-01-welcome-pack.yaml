@@ -43,7 +43,7 @@ inspectables:
     type: link
     reassures: true
   - target: reference
-    reveal: "WN-1187 is the staff number from your contract. Nothing secret: it isn't a password."
+    reveal: "WN-1187 is the staff number from your contract, the same a real email would show. Nothing secret: it isn't a password, and anyone who knows it can quote it, so it can't prove anything either way."
     red_flag: false
     type: reference
 

@@ -87,7 +87,7 @@ export interface DebriefData {
     youChose: ChoiceLine[];
     /**
      * Ruling L1: displayed ★★★ but the lead beat ended dismiss-class on fraud (hang up + "Leave it
-     * there", ignore, timer): "Next time: report, or call a known number." in the slot. Else null.
+     * there", ignore, timer) on a boss: "Next time: call a number you know." in the slot. Else null.
      */
     nextTime: 'after_hang_up' | null;
     /** Every scored beat earned ★★★ without a fall: the slot may hold "That is the habit that works." */
@@ -208,7 +208,9 @@ export function debriefOf(
   const others = lines.filter((x) => x !== lead);
   const strip = ({ line, stars, beat }: OtherChoice): OtherChoice => ({ line, stars, beat });
   const youChoseOther = (lead && !leadInLayer1 ? [lead, ...others] : others).map(strip);
-  const nextTime = lead && !leadInLayer1 && !r.fell && r.stars === 3 && s.is_fraud && lead.cls === 'dismiss' ? ('after_hang_up' as const) : null;
+  // Only a boss can show ★★★ over a lower beat; the role check keeps the engine and the validator
+  // (scripts/lib/rules.ts counts this line only on a boss) in step.
+  const nextTime = s.role === 'boss' && lead && !leadInLayer1 && !r.fell && r.stars === 3 && s.is_fraud && lead.cls === 'dismiss' ? ('after_hang_up' as const) : null;
 
   return {
     variant: d.variant,

@@ -34,7 +34,7 @@ message:
 
 inspectables:
   - target: sender.detail
-    reveal: "Shows \"Kettle\", the same name a real Kettle text would show. Any sender can set the name a text shows, so it can't prove anything either way."
+    reveal: "Shows \"Kettle\", the same name a real Kettle text would show. A text's sender name is easy to fake, so it can't prove anything either way."
     red_flag: false
     type: sender
   - target: link

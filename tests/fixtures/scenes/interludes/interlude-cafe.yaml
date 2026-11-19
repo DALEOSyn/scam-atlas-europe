@@ -1,0 +1,25 @@
+# Test fixture (S3), not game content.
+id: interlude-cafe
+chapter: interludes
+slot: interlude
+after_middle: 2
+panels:
+  - backdrop: home-kitchen
+    speaker: teo
+    expression: warm
+    line: "Your postcards are a hit. {count} cities so far, the last one {lastCity}."
+    alt: "Teo at the library café, smiling, with a plate of cake."
+  - backdrop: home-kitchen
+    speaker: teo
+    expression: thinking
+    flip_postcard: true
+    alt: "Teo holds up one of your postcards, thinking."
+  - backdrop: home-kitchen
+    speaker: teo
+    expression: warm
+    line: "Made any friends on your travels?"
+    alt: "Teo, smiling, pours tea."
+    choice:
+      prompt: "Made any friends on your travels?"
+      options: ["A few", "Mostly work so far"]
+      reply: "Good. Same rule for old friends and new: if anyone asks for money or secrets, tell me."

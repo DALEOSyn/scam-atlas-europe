@@ -1,0 +1,22 @@
+# Test fixture (S3), not game content.
+id: berlin-arrival
+chapter: berlin
+slot: arrival
+panels:
+  - backdrop: berlin-courtyard
+    speaker: jonas
+    expression: warm
+    line: "I take in everyone's parcels. Bikes, boxes, birthday presents."
+    alt: "Jonas in the courtyard, smiling, by the parcel locker."
+  - backdrop: berlin-courtyard
+    crop: right
+    speaker: mateus
+    expression: laughing
+    flip: true
+    with: { id: jonas, expression: calm }
+    line: "Questions? I have answers and cables."
+    alt: "Mateus laughing, holding three chargers; Jonas listens."
+  - backdrop: berlin-courtyard
+    speaker: you
+    line: "Good to meet you both."
+    alt: "The courtyard in the morning."

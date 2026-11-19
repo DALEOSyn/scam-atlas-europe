@@ -6,6 +6,7 @@
  * content/chapters/<city>.yaml, and enforces the per-scenario and per-chapter
  * mix rules (scripts/lib/rules.ts). Mix rules are errors for `status: complete`
  * chapters and warnings for `status: draft` chapters.
+ * Also validates story scenes (content/scenes/, S3) and the story-layer art budget and rig (public/art).
  * --strict also fails on placeholder sources/brands (use from G1 on).
  */
 import { resolve } from 'node:path';
@@ -22,4 +23,4 @@ if (report.errors.length > 0) {
   console.error(`\ncontent:validate FAILED: ${report.errors.length} error(s).`);
   process.exit(1);
 }
-console.log(`content:validate OK: ${report.scenarios.size} scenario(s), ${report.warnings.length} warning(s).`);
+console.log(`content:validate OK: ${report.scenarios.size} scenario(s), ${report.scenes?.size ?? 0} scene(s), ${report.warnings.length} warning(s).`);

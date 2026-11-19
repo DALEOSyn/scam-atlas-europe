@@ -4,6 +4,8 @@
  */
 import { useEffect, useRef } from 'preact/hooks';
 import type { ChapterSummary } from '../engine/chapter.ts';
+import type { IfThen } from '../engine/story.ts';
+import { Postcard } from './Postcard.tsx';
 import { t, type MessageKey } from '../i18n/index.ts';
 import styles from './DebriefView.module.css';
 
@@ -16,7 +18,18 @@ const NEED_KEYS: Record<NonNullable<ChapterSummary['nextTier']>['needs'][number]
 
 const TIER_WORD: Record<'bronze' | 'silver' | 'gold', MessageKey> = { bronze: 'stamp_word_bronze', silver: 'stamp_word_silver', gold: 'stamp_word_gold' };
 
-export function ChapterDone({ summary, city, onBack }: { summary: ChapterSummary; city?: string; onBack: () => void }) {
+export function ChapterDone({
+  summary,
+  city,
+  postcard = null,
+  onBack,
+}: {
+  summary: ChapterSummary;
+  city?: string;
+  /** The chapter's postcard to Teo (S3): given for finishing, whatever the score. */
+  postcard?: { ifThen: IfThen; backdrop?: string | undefined } | null;
+  onBack: () => void;
+}) {
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => heading.current?.focus(), []);
   const next = summary.nextTier;
@@ -52,6 +65,12 @@ export function ChapterDone({ summary, city, onBack }: { summary: ChapterSummary
             doubles: summary.doubleChecks,
           })}
         </p>
+        {postcard ? (
+          <section aria-labelledby="chapter-postcard-h" data-chapter-postcard="">
+            <h2 id="chapter-postcard-h">{t('chapter_done_postcard')}</h2>
+            <Postcard ifThen={postcard.ifThen} city={city ?? ''} backdrop={postcard.backdrop} />
+          </section>
+        ) : null}
         <details class={styles.points}>
           <summary>{t('debrief_points')}</summary>
           <p>{t('chapter_rating', { rating: Math.round(summary.rating) })}</p>

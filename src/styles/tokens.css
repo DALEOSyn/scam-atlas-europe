@@ -99,6 +99,10 @@
 [data-theme="light"] {
   color-scheme: light;
 
+  /* Illustration (ART_DIRECTION §3.6, §13): dusk over backdrops only in dark theme; player lines. */
+  --art-dusk: transparent;
+  --scene-you-bg: var(--p-sea-100);            /* text 12.92 (UI_SPEC §13) */
+
   --color-bg: var(--p-paper-50);               /* app background, map paper */
   --color-surface: var(--p-paper-0);           /* cards, sheets */
   --color-surface-sunken: var(--p-paper-100);  /* wells, list backgrounds */
@@ -168,6 +172,8 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
+    --art-dusk: rgb(20 22 46 / 0.45);
+    --scene-you-bg: var(--p-sea-900d);         /* text 10.43 */
     --color-bg: var(--p-ink-950);
     --color-surface: var(--p-ink-850);
     --color-surface-sunken: var(--p-ink-800);
@@ -217,6 +223,8 @@
 
 [data-theme="dark"] {
   color-scheme: dark;
+  --art-dusk: rgb(20 22 46 / 0.45);
+  --scene-you-bg: var(--p-sea-900d);
   --color-bg: var(--p-ink-950);
   --color-surface: var(--p-ink-850);
   --color-surface-sunken: var(--p-ink-800);

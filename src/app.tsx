@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { balance } from './content/balance.ts';
 import { listChapters } from './content/chapters.ts';
-import type { Chapter, Scenario } from './content/schema.ts';
+import type { Chapter, Scenario, Scene } from './content/schema.ts';
 import { listScenarios } from './content/scenarios.ts';
+import { listScenes, type SceneRef } from './content/scenes.ts';
 import { tellMeNow } from './engine/arc.ts';
 import type { ChapterSummary } from './engine/chapter.ts';
 import { debriefOf, type DebriefData } from './engine/debrief.ts';
@@ -12,6 +13,24 @@ import { useSave } from './engine/hooks.ts';
 import type { ScenarioResult } from './engine/result.ts';
 import type { RunnerContext, RunnerState } from './engine/runner.ts';
 import { calmPreset, type SaveState, type SaveStore, type Settings } from './engine/save.ts';
+import {
+  arrivalSceneId,
+  atlasPages,
+  chapterSceneIds,
+  dueInterlude,
+  ifThenOf,
+  INTERLUDES,
+  markSeen,
+  middleFinished,
+  pickFlip,
+  recordFlip,
+  resolutionSceneId,
+  scenesAfter,
+  storyVars,
+  turnSceneId,
+  type AtlasPage,
+  type IfThen,
+} from './engine/story.ts';
 import { defaultTimerMode, type TimerMode } from './engine/timer.ts';
 import { t } from './i18n/index.ts';
 import { AnnouncerProvider } from './ui/Announcer.tsx';
@@ -19,6 +38,8 @@ import { ChapterDone } from './ui/ChapterDone.tsx';
 import { ChapterList, type ChapterRow } from './ui/ChapterList.tsx';
 import { DebriefView } from './ui/DebriefView.tsx';
 import { ArcReveal } from './ui/ArcReveal.tsx';
+import { AtlasScreen, SceneReplayList } from './ui/Atlas.tsx';
+import { ScenePlayer, type FlipPick } from './ui/ScenePlayer.tsx';
 import { ScenarioView } from './ui/ScenarioView.tsx';
 import { SettingsPanel } from './ui/Settings.tsx';
 import { StopScreen } from './ui/StopScreen.tsx';
@@ -38,7 +59,11 @@ type Screen =
   | { kind: 'debrief'; scenario: Scenario; data: DebriefData; progress: Progress }
   | { kind: 'stop'; done: number; total: number; left: number }
   | { kind: 'reveal'; timeline: { slot: number; tell: string }[] }
-  | { kind: 'chapter_done'; summary: ChapterSummary; city: string };
+  | { kind: 'chapter_done'; summary: ChapterSummary; city: string; postcard: { ifThen: IfThen; backdrop?: string | undefined } | null }
+  /** A story scene (S3). `then` runs after it ends (finished or skipped). */
+  | { kind: 'scene'; scene: Scene; place: string | null; flip: FlipPick | null; note: string | null; flags: string[]; then: () => void }
+  | { kind: 'atlas'; pages: AtlasPage[]; loading: boolean }
+  | { kind: 'replay'; city: string };
 
 export interface AppProps {
   /** Injected in tests: play this one scenario as the whole chapter. */
@@ -49,6 +74,8 @@ export interface AppProps {
   chapters?: Chapter[];
   /** Injected in tests: scenario lookup (defaults to the lazily loaded content chunks). */
   load?: (city: string, id: string) => Promise<Scenario | undefined>;
+  /** Injected in tests: story scenes (defaults to the lazily loaded content/scenes chunks). */
+  sceneRefs?: SceneRef[];
 }
 
 /** A one-scenario stand-in chapter (tests, or no chapter file). */
@@ -148,9 +175,18 @@ export function chapterRows(chapters: readonly Chapter[], save: SaveState): Chap
   });
 }
 
-export function App({ loadFirst, store, chapters: injected, load = loadScenario }: AppProps) {
+/** The content note for a chapter (STORY §5.6): the Brussels variant when the arc closed with "Tell me now". */
+export function chapterNote(c: Pick<Chapter, 'content_note' | 'content_note_arc_closed'> | undefined, save: SaveState): string | null {
+  if (!c?.content_note) return null;
+  return save.arc.tellMeNow && c.content_note_arc_closed ? c.content_note_arc_closed : c.content_note;
+}
+
+export function App({ loadFirst, store, chapters: injected, load = loadScenario, sceneRefs: injectedScenes }: AppProps) {
   const [screen, setScreen] = useState<Screen>({ kind: 'title' });
-  const [save, update] = useSave(store);
+  const [save, update, currentSave] = useSave(store);
+  // Story scenes (S3). With none bundled the game plays exactly as before (no Atlas button, no scene screens).
+  const sceneRefs = useMemo(() => (loadFirst ? [] : (injectedScenes ?? listScenes())), [injectedScenes, loadFirst]);
+  const hasScenes = sceneRefs.length > 0;
   const [solo, setSolo] = useState<Scenario | null>(null);
   const [soloDone, setSoloDone] = useState(false);
   const chapters = useMemo(() => injected ?? listChapters(), [injected]);
@@ -179,19 +215,81 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario 
     else setScreen({ kind: 'playing', scenario, attempt: Date.now(), progress });
   };
 
-  const endChapter = (current: SaveState, c: Chapter) => {
+  const sceneById = async (id: string | null | undefined): Promise<Scene | undefined> => {
+    const ref = id ? sceneRefs.find((r) => r.id === id) : undefined;
+    return ref ? ref.load().catch(() => undefined) : undefined;
+  };
+
+  /** If-then lines of these cities' resolution scenes (postcards, flip the postcard, Atlas pages). */
+  const ifThenLines = async (cities: readonly string[]): Promise<Map<string, IfThen>> => {
+    const out = new Map<string, IfThen>();
+    for (const city of cities) {
+      const c = chapters.find((x) => x.city === city);
+      const line = ifThenOf(await sceneById(c ? resolutionSceneId(c) : null));
+      if (line) out.set(city, line);
+    }
+    return out;
+  };
+
+  /**
+   * Play a story scene, then `then()`. A missing scene (or none placed) simply carries on, so a chapter
+   * without scenes plays unchanged. The scene is recorded as seen when it ends, finished or skipped.
+   */
+  const playScene = async (id: string | null | undefined, then: () => void, c: Chapter | null) => {
+    const scene = id ? await sceneById(id) : undefined;
+    if (!scene) return then();
+    const current = currentSave();
+    let flip: FlipPick | null = null;
+    if (scene.panels.some((p) => p.flip_postcard)) {
+      const lines = await ifThenLines(current.story.postcards);
+      // The Open Evening (a resolution) lets you pick from every postcard; interludes use the spacing rule.
+      const city = pickFlip(current.story, (x) => lines.has(x), scene.slot === 'resolution');
+      const line = city ? lines.get(city) : undefined;
+      if (city && line) flip = { city, cityName: chapters.find((x) => x.city === city)?.name ?? city, ifThen: line };
+    }
+    const note = scene.sensitive ? (scene.content_note ?? chapterNote(c ?? undefined, current)) : null;
+    const flags = c ? [...runFlags(current, c.city)] : [...current.flags];
+    setScreen({
+      kind: 'scene',
+      scene,
+      place: scene.chapter === INTERLUDES ? null : (c?.name ?? chapters.find((x) => x.city === scene.chapter)?.name ?? null),
+      flip,
+      note,
+      flags,
+      then: () => {
+        update((sv) => ({ ...sv, story: markSeen(sv.story, scene.id) }));
+        then();
+      },
+    });
+  };
+
+  /** Several scenes in a row (spec-placed beats after one scenario), then `then()`. */
+  const playScenes = (ids: readonly string[], then: () => void, c: Chapter | null) => {
+    const [first, ...rest] = ids;
+    if (!first) return then();
+    void playScene(first, () => playScenes(rest, then, c), c);
+  };
+
+  const endChapter = async (current: SaveState, c: Chapter) => {
     const r = finishChapter(current, balance, c);
     update(() => r.save);
     setSoloDone(false);
     setStress(null);
-    setScreen({ kind: 'chapter_done', summary: r.summary, city: c.name });
+    // The postcard to Teo comes with finishing the chapter, whatever the score (STORY §1.3).
+    const resolution = await sceneById(resolutionSceneId(c));
+    const ifThen = ifThenOf(resolution);
+    const backdrop = resolution?.panels.at(-1)?.backdrop;
+    setScreen({ kind: 'chapter_done', summary: r.summary, city: c.name, postcard: ifThen ? { ifThen, backdrop } : null });
   };
+
+  /** Resolution scene (after the last debrief, before the summary), then the chapter end. */
+  const finishWithResolution = (c: Chapter) => playScene(resolutionSceneId(c), () => void endChapter(currentSave(), c), c);
 
   const next = async (current: SaveState, c: Chapter = chapter) => {
     setScreen({ kind: 'loading' });
     try {
       if (loadFirst) {
-        if (soloDone) return endChapter(current, c);
+        if (soloDone) return void endChapter(current, c);
         const s = await loadFirst();
         setSolo(s);
         const started = beginChapter(current, s.chapter);
@@ -206,7 +304,7 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario 
       for (;;) {
         const i = nextIndex(c, from, () => [], flags);
         const id = i < 0 ? undefined : sequenceOf(c)[i]?.id;
-        if (!id) return endChapter(started, c);
+        if (!id) return void finishWithResolution(c);
         const s = await load(c.city, id);
         if (!s) throw new Error(`scenario ${id} is not bundled`);
         // A closed Alex arc ("Tell me now", a report, a second close) plays no more arc beats (GDD §10.3).
@@ -224,6 +322,10 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario 
   const startChapter = (c: Chapter) => {
     setCity(c.city);
     setStress(null);
+    // Arrival scene (STORY §3) before the first scenario of a fresh run; a resumed run goes straight on.
+    const p = chapterProgress(save, c.city);
+    const fresh = !p.run || (p.run.index === 0 && p.run.records.length === 0);
+    if (fresh && arrivalSceneId(c)) return void playScene(arrivalSceneId(c), () => void next(currentSave(), c), c);
     void next(save, c);
   };
 
@@ -241,13 +343,52 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario 
   /** Debrief "Continue": the half-day stop screen after the morning block (UI_SPEC §8.3, FI-2), else the next message. */
   const afterDebrief = (progress: Progress) => {
     const at = progress.index - 1;
-    if (!loadFirst && isStopPointAfter(chapter, at)) {
-      const left = messagesLeft(chapter, at + 1).today;
-      setScreen({ kind: 'stop', done: chapter.scenario_order.am.length, total: sequenceOf(chapter).length, left });
-      return;
-    }
-    void next(save);
+    const c = chapter;
+    const go = () => {
+      if (!loadFirst && isStopPointAfter(c, at)) {
+        const left = messagesLeft(c, at + 1).today;
+        setScreen({ kind: 'stop', done: c.scenario_order.am.length, total: sequenceOf(c).length, left });
+        return;
+      }
+      void next(currentSave(), c);
+    };
+    // Spec-placed beats after this scenario's debrief (STORY §3.2, §3.3), then the stop screen or the next message.
+    const id = sequenceOf(c)[at]?.id;
+    const placed = !loadFirst && id ? scenesAfter(c, id) : [];
+    if (placed.length === 0) return go();
+    playScenes(placed, go, c);
   };
+
+  /** "Keep going" at the stop point: the turn scene (STORY §3), then the afternoon. */
+  const keepGoing = () => {
+    const c = chapter;
+    void playScene(loadFirst ? null : turnSceneId(c), () => void next(currentSave(), c), c);
+  };
+
+  /** Back on the chapter list (the map): a travel interlude first when its play position is reached (STORY §3.12). */
+  const toMap = async () => {
+    setStress(null);
+    if (loadFirst) return setScreen({ kind: 'title', from: 'elsewhere' });
+    const refs = sceneRefs.filter((r) => r.folder === INTERLUDES);
+    if (refs.length > 0) {
+      const current = currentSave();
+      const interludes = (await Promise.all(refs.map((r) => r.load().catch(() => undefined)))).filter((x): x is Scene => !!x);
+      const done = middleFinished(chapters, (city) => chapterProgress(current, city).finished);
+      const id = dueInterlude(interludes, done, current.story.seen);
+      if (id) return void playScene(id, () => setScreen({ kind: 'chapters' }), null);
+    }
+    setScreen({ kind: 'chapters' });
+  };
+
+  const openAtlas = async () => {
+    setScreen({ kind: 'atlas', pages: [], loading: true });
+    const current = currentSave();
+    const lines = await ifThenLines(current.story.postcards);
+    setScreen({ kind: 'atlas', pages: atlasPages(chapters, current.story, lines), loading: false });
+  };
+
+  /** Scenes of a chapter the player has seen, in play order (replay from the chapter menu). */
+  const replayable = (c: Chapter, sv: SaveState) => chapterSceneIds(c).filter((id) => sv.story.seen.includes(id));
 
   /** "Tell me now" (GDD §10.2): closes the arc and shows the reveal with the timeline so far. */
   const onTellMeNow = async (current: DebriefData) => {
@@ -303,6 +444,11 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario 
                 <button type="button" class={styles.start} onClick={onStart}>
                   {resumable ? t('app_continue') : t('app_start')}
                 </button>
+                {hasScenes && save.story.postcards.length > 0 ? (
+                  <button type="button" class={styles.secondary} data-title-button="atlas" onClick={() => void openAtlas()}>
+                    {t('atlas_open')}
+                  </button>
+                ) : null}
                 {!loadFirst && chapters.length > 0 ? (
                   <button type="button" class={styles.secondary} data-title-button="chapters" onClick={() => setScreen({ kind: 'chapters' })}>
                     {t('chapters_title')}
@@ -325,10 +471,13 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario 
           ) : null}
         </main>
       ) : null}
-      {screen.kind === 'chapters' ? <ChapterList rows={chapterRows(chapters, save)} onPlay={(c) => {
+      {screen.kind === 'chapters' ? <ChapterList rows={chapterRows(chapters, save).map((r) => {
+        const ch = chapters.find((x) => x.city === r.city);
+        return { ...r, note: !r.locked ? chapterNote(ch, save) : null, replay: !!ch && hasScenes && replayable(ch, save).length > 0 };
+      })} onPlay={(c) => {
         const ch = chapters.find((x) => x.city === c);
         if (ch) startChapter(ch);
-      }} onBack={() => setScreen({ kind: 'title', from: 'chapters' })} /> : null}
+      }} onReplay={(c) => setScreen({ kind: 'replay', city: c })} onBack={() => setScreen({ kind: 'title', from: 'chapters' })} /> : null}
       {screen.kind === 'settings' ? (
         <main class={styles.shell}>
           <SettingsPanel settings={save.settings} defaultTimer={defaultTimerMode(reduced)} onChange={saveSettings} onClose={() => setScreen({ kind: 'title', from: 'settings' })} />
@@ -361,9 +510,39 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario 
           onTellMeNow={screen.data.variant === 'arc' && !save.arc.closed ? () => void onTellMeNow(screen.data) : undefined}
         />
       ) : null}
-      {screen.kind === 'stop' ? <StopScreen done={screen.done} total={screen.total} left={screen.left} onKeepGoing={() => void next(save)} onBack={toChapters} /> : null}
+      {screen.kind === 'stop' ? <StopScreen done={screen.done} total={screen.total} left={screen.left} onKeepGoing={keepGoing} onBack={toChapters} /> : null}
       {screen.kind === 'reveal' ? <ArcReveal timeline={screen.timeline} onContinue={() => void next(save)} /> : null}
-      {screen.kind === 'chapter_done' ? <ChapterDone summary={screen.summary} city={screen.city} onBack={toChapters} /> : null}
+      {screen.kind === 'chapter_done' ? <ChapterDone summary={screen.summary} city={screen.city} postcard={screen.postcard} onBack={() => void toMap()} /> : null}
+      {screen.kind === 'scene' ? (
+        <ScenePlayer
+          key={screen.scene.id}
+          scene={screen.scene}
+          place={screen.place}
+          flags={new Set(screen.flags)}
+          vars={storyVars(save.story, chapters)}
+          flip={screen.flip}
+          onFlip={(c) => update((sv) => ({ ...sv, story: recordFlip(sv.story, c) }))}
+          contentNote={screen.note}
+          onDone={() => screen.then()}
+        />
+      ) : null}
+      {screen.kind === 'atlas' ? <AtlasScreen pages={screen.pages} loading={screen.loading} onBack={() => setScreen({ kind: 'title', from: 'elsewhere' })} /> : null}
+      {screen.kind === 'replay'
+        ? (() => {
+            const c = chapters.find((x) => x.city === screen.city);
+            if (!c) return null;
+            const slotName = (id: string) =>
+              id === c.scenes?.arrival ? t('scene_slot_arrival') : id === c.scenes?.turn ? t('scene_slot_turn') : id === c.scenes?.resolution ? t('scene_slot_resolution') : t('scene_slot_beat');
+            return (
+              <SceneReplayList
+                city={c.name}
+                scenes={replayable(c, save).map((id) => ({ id, label: slotName(id) }))}
+                onPlay={(id) => void playScene(id, () => setScreen({ kind: 'replay', city: c.city }), c)}
+                onBack={() => setScreen({ kind: 'chapters' })}
+              />
+            );
+          })()
+        : null}
     </AnnouncerProvider>
   );
 }

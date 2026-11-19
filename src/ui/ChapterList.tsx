@@ -17,11 +17,15 @@ export interface ChapterRow {
   inProgress: boolean;
   finished: boolean;
   stamp: Stamp | null;
+  /** Content note shown on the map before the chapter (STORY §5.6). */
+  note?: string | null;
+  /** The player has seen some of this chapter's story scenes: offer "Story scenes" (replay). */
+  replay?: boolean;
 }
 
 const STAMP_WORD: Record<Stamp, MessageKey> = { bronze: 'stamp_word_bronze', silver: 'stamp_word_silver', gold: 'stamp_word_gold' };
 
-export function ChapterList({ rows, onPlay, onBack }: { rows: ChapterRow[]; onPlay: (city: string) => void; onBack: () => void }) {
+export function ChapterList({ rows, onPlay, onReplay, onBack }: { rows: ChapterRow[]; onPlay: (city: string) => void; onReplay?: (city: string) => void; onBack: () => void }) {
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(() => heading.current?.focus(), []);
   return (
@@ -43,9 +47,19 @@ export function ChapterList({ rows, onPlay, onBack }: { rows: ChapterRow[]; onPl
             <li key={r.city} class={r.locked ? `${styles.row} ${styles.locked}` : styles.row} data-chapter={r.city}>
               <h2 class={styles.name}>{r.name}</h2>
               <p class={styles.status}>{status}</p>
+              {r.note ? (
+                <p class={styles.status} data-content-note={r.city}>
+                  {t('chapter_content_note', { note: r.note })}
+                </p>
+              ) : null}
               {!r.locked ? (
                 <button type="button" class={r.finished && !r.inProgress ? styles.secondary : styles.primary} onClick={() => onPlay(r.city)}>
                   {t(r.inProgress ? 'chapter_continue' : r.finished ? 'chapter_replay' : 'chapter_play', { city: r.name })}
+                </button>
+              ) : null}
+              {r.replay && onReplay ? (
+                <button type="button" class={styles.secondary} data-replay-chapter={r.city} onClick={() => onReplay(r.city)}>
+                  {t('chapters_story', { city: r.name })}
                 </button>
               ) : null}
             </li>

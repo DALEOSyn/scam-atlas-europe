@@ -16,4 +16,5 @@ export * from './arc.ts';
 export * from './habits.ts';
 export * from './save.ts';
 export * from './game.ts';
+export * from './story.ts';
 export * from './hooks.ts';

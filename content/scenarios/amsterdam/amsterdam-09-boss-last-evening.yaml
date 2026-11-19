@@ -24,8 +24,7 @@
 # Flagged for producer: the stamp screen should take the same wording or keep the original.
 # hotel_request carries scored: false only because the validator counts the banking sub-beat as a
 # fourth scored boss beat (scripts/lib/rules.ts). The engine scores groups by their scheduled beat, so the
-# sub-beat is still beat 2's decisive action (CR-18(e)); the flag has no runtime effect. Reported. Damage control merges the
-# fallen beats' lists (beat 1: the 2-7 list; beats 2/3: the 2-3 list).
+# sub-beat is still beat 2's decisive action (CR-18(e)); the flag has no runtime effect. Reported.
 id: amsterdam-09-boss-last-evening
 chapter: amsterdam
 role: boss
@@ -261,7 +260,7 @@ outcomes:
       - { step: call_bank_stop_payment, category: stop }
       - { step: tell_trusted_adult, category: stop }
       - { step: contact_fraud_helpline, category: report }
-      - { step: tell_real_person, category: warn }
+      - { step: keep_evidence, category: secure }
       - { step: pay_second_request, category: harmful }
       - step: keep_quiet
         category: harmful
@@ -272,7 +271,7 @@ outcomes:
       - { step: call_bank_stop_payment, category: stop }
       - { step: tell_trusted_adult, category: stop }
       - { step: contact_fraud_helpline, category: report }
-      - { step: tell_real_person, category: warn }
+      - { step: keep_evidence, category: secure }
       - { step: pay_second_request, category: harmful }
       - step: keep_quiet
         category: harmful
@@ -283,7 +282,7 @@ outcomes:
       - { step: call_bank_stop_payment, category: stop }
       - { step: tell_trusted_adult, category: stop }
       - { step: contact_fraud_helpline, category: report }
-      - { step: tell_real_person, category: warn }
+      - { step: keep_evidence, category: secure }
       - { step: pay_second_request, category: harmful }
       - step: keep_quiet
         category: harmful

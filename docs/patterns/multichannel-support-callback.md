@@ -23,7 +23,7 @@
 
 ## 3. Red flags a normal person can spot
 1. **Caller ID can be faked.** The bank's name or real number on screen is not proof [pl-cert-fake-consultants], [ch-ncsc-double-phishing-2026], [eu-epc-threats-2025].
-2. **A caller asks you to read out a code or approve something in your banking app**, even "to stop" or "cancel" a charge. Read what the code or approval is actually for; your bank doesn't need your code to block a payment [ch-ncsc-double-phishing-2026], [pl-cert-phishing-kb-2026], [pl-cert-fake-consultants].
+2. **A caller asks you to read out a code or approve something in your banking app**, even "to stop" or "cancel" a charge. Read what the code or approval is actually for; your bank doesn't need your code to block a payment [ch-ncsc-double-phishing-2026], [pl-cert-phishing-kb-2026], [pl-cert-fake-consultants], [de-vzhh-fake-bank-calls-2025].
 3. **A message that asks you to call a number it gives you** [eu-epc-threats-2025], [se-polisen-campaign-2026], [es-incibe-smishing-bank-callback-2025].
 4. **A customs or delivery fee asked for by email or link.** In Germany genuine customs assessments come by post, or the carrier collects at the door [de-zoll-phishing].
 5. **Pressure to stay on the line or act right now,** so you can't check [ch-ncsc-double-phishing-2026], [pl-cert-fake-consultants].
@@ -60,7 +60,7 @@ GDD §17, 1-9: **done (T-2.6, game-designer).** The call-back target is now "the
 - Don't depict how numbers are spoofed; only that they can be.
 
 ## 9. Sources (all accessed 2026-11-18)
-eu-epc-threats-2025 · eu-enisa-etl-2026 · eu-europol-phishing-leaflet · es-incibe-smishing-bank-callback-2025 · se-polisen-campaign-2026 · pl-cert-fake-consultants · pl-cert-phishing-kb-2026 · pl-cert-monthly-2025-12 · nl-fraudehelpdesk-2025 · de-zoll-phishing · de-vz-paketdienst-sms · de-bnetza-zoll-sms-2023 · ch-ncsc-double-phishing-2026 (supporting) · ch-ncsc-parcel-calls-2022 (supporting)
+eu-epc-threats-2025 · eu-enisa-etl-2026 · eu-europol-phishing-leaflet · es-incibe-smishing-bank-callback-2025 · se-polisen-campaign-2026 · pl-cert-fake-consultants · de-vzhh-fake-bank-calls-2025 · pl-cert-phishing-kb-2026 · pl-cert-monthly-2025-12 · nl-fraudehelpdesk-2025 · de-zoll-phishing · de-vz-paketdienst-sms · de-bnetza-zoll-sms-2023 · ch-ncsc-double-phishing-2026 (supporting) · ch-ncsc-parcel-calls-2022 (supporting)
 
 ## 10. Confidence
 **High** for the habit (hang up, call the bank back on the number on your card or in its app) and red flags 1–5: EU-level EPC plus CERTs and police in four countries.

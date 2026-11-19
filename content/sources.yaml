@@ -1324,6 +1324,17 @@ sources:
     used_for: []
     notes: "OLDER (2017). Supporting EU-level evidence only. Offenders typically approach a child on a social networking site and then deliberately move the communication to another platform, such as an anonymous messaging app. Does NOT describe offenders asking for secrecy (mentions only 'prohibiting disclosure' in general terms). Supports: move apps. Explicit-content parts of the report are not used anywhere in the game."
 
+  - id: de-vzhh-fake-bank-calls-2025
+    publisher: Verbraucherzentrale Hamburg
+    title: "Warnung vor falschen Bank-Anrufen"
+    url: https://www.vzhh.de/themen/finanzen/konto-karte/warnung-vor-falschen-bank-anrufen
+    published: "2025-05-14"
+    accessed: "2026-11-19"
+    region: DE
+    tier: 3
+    used_for: [multichannel-support-callback]
+    notes: "Fraudsters claim a push-TAN will stop suspicious debits, but it authorises transfers; being asked by phone for passwords or TANs is always a sign of fraud; banks generally don't call unprompted."
+
   # ------------------------------------------------ placeholders (example scenario only)
   - id: europol-scam-smishing
     title: "PLACEHOLDER: Europol guidance on SMS phishing (to be filled by fraud-researcher)"

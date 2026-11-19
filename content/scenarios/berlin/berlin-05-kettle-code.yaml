@@ -39,7 +39,7 @@ message:
   body: |
     Kettle: Für Ihr Konto liegt ein Löschantrag vor (Antrag K-7710). Waren Sie das nicht? Dann senden Sie den 6-stelligen Code, den wir Ihnen gerade geschickt haben, innerhalb von 10 Minuten per SMS an +49 1•• •••• ••90. Sonst wird Ihr Konto mit allen Chats gelöscht.
   lang: de
-  translation: "Kettle: We have received a request to delete your account (request K-7710). Wasn't you? Then text the 6-digit code we just sent you to +49 1•• •••• ••90 within 10 minutes. Otherwise your account and all your chats will be deleted."
+  translation: "Kettle: We have received a request to delete your account (request K-7710). Wasn't that you? Then text the 6-digit code we just sent you to +49 1•• •••• ••90 within 10 minutes. Otherwise your account and all your chats will be deleted."
   request: share_code
   references: ["K-7710"]
   phone_numbers: ["+49 1•• •••• ••90"]

@@ -61,15 +61,15 @@ inspectables:
     type: logo
 
 actions:
-  - id: open_shop_update
-    label: "Open Thimble & Pine yourself and check"
-    kind: verify_in_app
-    outcome: card_updated_in_account
   - id: update_via_link
     label: "Update your card through the link"
     kind: enter_details
     outcome: card_updated_via_link
     pressure_target: true
+  - id: open_shop_update
+    label: "Open Thimble & Pine yourself and check"
+    kind: verify_in_app
+    outcome: card_updated_in_account
   - id: report_payment_email
     label: "Report it as phishing"
     kind: report

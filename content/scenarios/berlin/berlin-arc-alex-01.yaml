@@ -48,11 +48,11 @@ outcomes:
 debrief:
   variant: arc
   layer1:
-    tell: "Nothing to notice yet. One compliment is normal; a flood of them, fast, is the sign."
+    tell: "Nothing to notice yet. Being friendly isn't a warning sign."
     what_works: "Keep chats on the app you met on."
   layer2:
     message_flags: []
-    notes: "Most people you meet on a language app are just practising, like you. Friendly is fine, and one compliment is normal. Things worth noticing later would be: a flood of compliments, fast; asking to move to another app; asking you to keep secrets; or anything to do with money."
+    notes: "Most people you meet on a language app are just practising, like you. Friendly is fine. Whatever happens in any chat, you can always tell someone you trust."
   already_clicked:
     clicked: "Chatting is fine. Keep it on Wordswap. If anyone you met online asks you to move apps, keep a secret or send money, tell someone you trust first."
   sources: [de-propk-cybergrooming-2026, de-polizei-lippe-cybergrooming, eu-bik-grooming-2020, be-police-romance-2026]

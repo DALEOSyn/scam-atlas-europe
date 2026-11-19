@@ -50,7 +50,7 @@ actions:
     next_beat: fee_page
     pressure_target: true
   - id: open_trundle_app_fee
-    label: "Open the Trundle app yourself"
+    label: "Type trundle.example yourself and look up the parcel"
     kind: verify_in_app
     outcome: no_fee_found
   - id: report_fee_text
@@ -102,7 +102,7 @@ outcomes:
       - { step: reply_ask_money_back, category: harmful }
       - { step: pay_recovery_service, category: harmful }
   no_fee_found:
-    narrative: "The Trundle app shows no parcel at customs and nothing to pay. No TR-30F6-92 either."
+    narrative: "You type trundle.example yourself and look up TR-30F6-92: \"No parcel found.\" Nothing at customs, nothing to pay."
   fee_text_reported:
     narrative: "Reported. Your phone files the text under spam."
   fee_text_deleted:
@@ -114,7 +114,7 @@ debrief:
   variant: standard
   layer1:
     tell: "A same-day customs fee, from a mobile number, via trundle-zoll.example."
-    what_works: "Pause, then open the Trundle app yourself."
+    what_works: "Pause, then type trundle.example yourself."
   layer2:
     message_flags:
       - "A fee asked for by text link before delivery."

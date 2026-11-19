@@ -32,9 +32,9 @@ pressure:
   pusher:
     messages:
       - at_seconds: 30
-        text: "TRUNDLE: Erinnerung: Ohne Zahlung geht Ihre Sendung heute um 18 Uhr zurück."
+        text: "TRUNDLE: Erinnerung: Ohne Zahlung geht Ihre Sendung heute um 18 Uhr an den Absender zurück."
         lang: de
-        translation: "TRUNDLE: Reminder: without payment, your parcel goes back today at 6 pm."
+        translation: "TRUNDLE: Reminder: without payment, your parcel goes back to the sender today at 6 pm."
       - { at_seconds: 115, text: "Caller: \"Are you still there? The payment is almost through.\"" }
 
 message:
@@ -135,7 +135,7 @@ beats:
     arrives_after: 45
     timer_seconds: 40
     message:
-      sender: { display: "Larchwick Bank", detail: "Caller ID: Larchwick Bank · +49 30 •••• ••40" }
+      sender: { display: "Larchwick Bank", detail: "Caller ID: Larchwick Bank (saved contact) · +49 30 •••• ••40" }
       transcript:
         - { speaker: caller, text: "Good afternoon, this is the Larchwick Bank fraud team. Am I speaking to the card holder?" }
         - { speaker: caller, text: "We can see a card payment of €489.00 to an online shop going through right now. Was that you?" }
@@ -155,7 +155,7 @@ beats:
         request: none
     inspectables:
       - target: caller_id
-        reveal: "Shows \"Larchwick Bank\". Caller ID shows whatever name and number the network was given, and the caller can set that, even to the bank's real number."
+        reveal: "Shows \"Larchwick Bank\": the number matches the Larchwick contact saved in your phone, as a real call from your bank would. Faked numbers can match too, so it can't prove anything either way."
         red_flag: false
         type: caller_id
       - target: phone_number
@@ -271,7 +271,7 @@ debrief:
     message_flags:
       - "A customs fee by text and then by email, before delivery."
       - "In Germany, the carrier usually collects duties at the door; otherwise a letter by post asks you to collect the parcel at the customs office. German customs never asks for payment by SMS or email."
-      - "A real fraud team never needs your code or an approval to stop a payment."
+      - "A real bank won't ask you to read out a code or approve anything in your app to stop a payment. If a caller asks, hang up."
       - "Three channels telling one story. More channels is more pressure, not more proof."
     notes: "Hang up. Call Larchwick back on the number on your card or in the Larchwick app you open yourself. Caller ID can be faked, even to show the bank's real number, so you can't tell whose line it is. Read what a code or approval is for. And a logo or familiar name proves nothing: scammers copy them perfectly, even into a real thread."
   device_tip: "On a real phone, end the call yourself, then dial the number on the back of your card. Don't use redial or the call log."
@@ -280,4 +280,4 @@ debrief:
     clicked: "Close the page and type nothing. Delete the text or email, or report it."
     entered_details: "Read out a code? Call Larchwick now on the number on your card and ask it to block the card and stop or recall the payment. Keep the numbers and times, and report it to the police."
     paid: "Block your card in the Larchwick app, call Larchwick on the number on your card and ask about a chargeback. Then ignore anyone who calls offering to stop the payment for a code."
-  sources: [ch-ncsc-double-phishing-2026, pl-cert-fake-consultants, es-incibe-smishing-bank-callback-2025, eu-epc-threats-2025, se-polisen-campaign-2026, de-zoll-phishing, de-vz-paketdienst-sms]
+  sources: [ch-ncsc-double-phishing-2026, de-vzhh-fake-bank-calls-2025, pl-cert-fake-consultants, es-incibe-smishing-bank-callback-2025, eu-epc-threats-2025, se-polisen-campaign-2026, de-zoll-phishing, de-vz-paketdienst-sms]

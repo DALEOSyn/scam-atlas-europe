@@ -4,7 +4,8 @@
 # Checkables (G): sender.detail and link "It fits" (owner part thimbleandpine.example, the shop's own
 # domain, and a job you applied for; low stakes, so allowed by CONTENT_GUIDE and ruling 1 §22.8),
 # reference neutral, claim (the pay) neutral, request (pick an interview time).
-# Pay rate: €15.50 an hour (fraud-researcher, the Dutch government business portal, 2026-11-19; never shown as a statistic).
+# Pay rate: €15.50 an hour, above the 2026 adult minimum wage (source nl-rijksoverheid-minimumloon-2026, designer
+# context only; never shown as a statistic).
 # Showing ID in person on the first day is normal (TJ §3.8, §7): the tell is paying in, or an ID photo by chat.
 id: amsterdam-05-warehouse-interview
 chapter: amsterdam
@@ -101,7 +102,7 @@ outcomes:
   interview_email_reported:
     narrative: "Reported. The next morning your application says \"Interview slots closed\". It really was Thimble & Pine; you write to jobs@thimbleandpine.example to ask for a new slot."
   interview_email_left:
-    narrative: "By the evening the Thursday slots have gone. Your application says \"Waiting for your reply\"."
+    narrative: "By the evening the Thursday slots have gone. Your application says \"Waiting for your reply\". You can still write to jobs@thimbleandpine.example for a new slot."
 
 debrief:
   variant: standard

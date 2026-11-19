@@ -58,7 +58,7 @@ actions:
 
 outcomes:
   noor_pin_on:
-    narrative: "Noor: \"Done ✅ Two-step PIN on. Now nobody can set up my Kettle on another phone without it. Telling Mum to do hers too. Also, I'm looking for a summer job, if you hear of anything 👀\""
+    narrative: "Noor: \"Done ✅ Two-step PIN on. Now it's much harder for anyone to set up my Kettle on another phone. Telling Mum to do hers too. Also, I'm looking for a summer job, if you hear of anything 👀\""
   noor_fewer_photos:
     narrative: "Noor: \"ok, fewer for them to copy. still their fault though, right?\" You: \"Right.\" Noor: \"Good. Profile on contacts-only. Also, I'm looking for a summer job, if you hear of anything 👀\""
   noor_family_rule:
@@ -82,7 +82,7 @@ debrief:
     what_works: "Two-step PIN, fewer public photos, and a call before any money."
   layer2:
     message_flags: []
-    notes: "No setting makes impersonation impossible, and it's never the fault of the person whose photo was copied. What helps: the two-step PIN stops someone setting up your account on another phone; fewer public photos and family details give scammers less to copy; and a family agreement that money requests mean a call, on the number you already have, beats every script."
+    notes: "No setting makes impersonation impossible, and it's never the fault of the person whose photo was copied. What helps: the two-step PIN makes it much harder to take over your real account (it can't stop a copycat on a new number, which is why the call rule matters most); fewer public photos and family details give scammers less to copy; and a family agreement that money requests mean a call, on the number you already have, beats every script."
   device_tip: "On a real phone, look in your chat app's settings for two-step verification and a PIN, and set who can see your profile photo."
   habit_card: call-the-number-you-know
   already_clicked:

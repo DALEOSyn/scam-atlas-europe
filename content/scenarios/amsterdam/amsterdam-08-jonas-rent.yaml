@@ -85,7 +85,7 @@ beats:
       request: pay
     inspectables:
       - target: payee.name_check
-        reveal: "Name matches: the account is held by the name you typed. That shows whose account it is, not whether the story is true, so it can't prove anything either way."
+        reveal: "Name matches: the account is held by the name entered. That shows whose account it is, not whether the story is true, so it can't prove anything either way."
         red_flag: false
         type: payee
       - target: payee.iban
@@ -138,7 +138,7 @@ debrief:
   layer2:
     message_flags:
       - "Due today: urgency leaves no time for a call."
-    notes: "A Kettle call goes to whoever holds the Kettle account, and right now that may not be Jonas. A normal phone call goes to his SIM. A passed-on code (like the one in Berlin) is how accounts like this get taken over: turn on the two-step PIN. And a matching name shows whose account it is, not that the story is true."
+    notes: "A Kettle call goes to whoever holds the Kettle account, and right now that may not be Jonas. A normal phone call goes to his SIM. A passed-on code (like the one in Berlin) is a common way accounts like this get taken over: turn on the two-step PIN. And a matching name shows whose account it is, not that the story is true."
   device_tip: "On a real phone, call the person from your phone's contacts as a normal call, not from inside the chat app."
   habit_card: check-who-gets-the-money
   already_clicked:

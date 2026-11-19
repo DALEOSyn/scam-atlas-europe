@@ -91,5 +91,5 @@ debrief:
     message_flags: []
     notes: "The habit in full: asked by message for money you didn't expect, or to an account that isn't theirs? Call a number you already had. Why it was safe to act here: it asked only to save a number, and the home line you already had still works if you want to check. The tell is never a new number alone; it is new number + money + no call. Scam chats can start like this too and ask for money days later. That's when you call."
   device_tip: "On a real phone, before you save a new number for someone you know, you can ring the number you already have for them. It takes a minute."
-  habit_card: call-the-number-you-know
+  habit_card: calm-not-paranoid
   sources: [nl-fraudehelpdesk-hulpvraag-campaign, nl-veiliginternetten-hulpvraag]

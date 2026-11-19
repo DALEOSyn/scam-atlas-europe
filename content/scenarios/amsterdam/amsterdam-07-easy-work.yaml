@@ -131,8 +131,8 @@ beats:
       request: open_link
     inspectables:
       - target: page.address
-        reveal: "tallyfern-earn.example. Read the end: the owner part is tallyfern-earn.example, not Klaverwerk's site. The job was offered in Klaverwerk's name, but the work happens somewhere else."
-        red_flag: true
+        reveal: "tallyfern-earn.example, the site from the mentor's link. A trial page with a payout looks the same whoever runs it, so the address alone can't prove anything either way. Judge what it asks next."
+        red_flag: false
         type: page_address
       - target: page.info
         reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
@@ -203,7 +203,7 @@ outcomes:
       - { step: stop_paying, category: stop }
       - { step: tell_trusted_adult, category: stop }
       - { step: call_bank_known_number, category: secure }
-      - { step: contact_fraud_helpline, category: report }
+      - { step: report_to_police, category: report }
       - { step: pay_last_fee, category: harmful }
       - step: keep_quiet
         category: harmful
@@ -221,9 +221,9 @@ outcomes:
   mentor_ignored:
     narrative: "You stop replying. Two more \"Still there? 😊\" messages, then silence."
   teo_six_euros:
-    narrative: "Teo rings back at once: \"Six euros to try it? Clever. They'll want money from you next, you'll see. Real jobs pay you, full stop. Glad you asked before going further, kiddo.\""
+    narrative: "Teo rings back at once: \"Six euros for trying it? Clever. They'll want money from you next, you'll see. Real jobs pay you, full stop. Glad you asked before going further, kiddo.\""
   trial_closed:
-    narrative: "You close the site. Six euros richer, and nothing more to lose."
+    narrative: "You close the site. The €6 was bait: next they'd have asked you to pay. If they message again, don't reply."
   teo_pay_to_get_paid:
     narrative: "Teo: \"Pay to get paid? No. You did the right thing stopping here, kiddo. Plenty of people get pulled in this far; it's built that way. Close it, and keep the chat in case you report it.\""
   klaverwerk_site_bait:
@@ -236,14 +236,12 @@ outcomes:
 debrief:
   variant: standard
   layer1:
-    tell: "Unasked-for job, too-good pay, then a fee to get paid."
-    what_works: "A real job pays you. Stop and ask."
+    tell: "Unasked-for job, too-good pay, then a fee."
+    what_works: "A real job pays you. Stop, ask someone you trust."
   layer2:
     message_flags:
       - "A recorded call offering work you never applied for."
-      - "A small early payout is part of the trick, not proof the job is real."
-      - "\"Not enough tasks done\" and a fine for unfinished sets: reasons why you get less, or nothing."
-    notes: "If you'd kept going: (1) an offer you never asked for, (2) a move to Kettle with a friendly \"mentor\", (3) a €6 payout that seems to prove it's real, (4) top-ups that keep growing, with a balance you can never take out. If you paid: stop, tell a trusted adult, call your bank, keep the chats, and report it to the police. Beware of anyone who later offers to get your money back for a fee. And if a \"job\" ever wants to use your bank account, that's a different trap."
+    notes: "If you'd kept going: (1) an offer you never asked for, (2) a move to Kettle with a friendly \"mentor\", (3) a €6 payout that seems to prove it's real, but a small early payout is part of the trick, not proof, (4) \"not enough tasks done\", a fine for unfinished sets and top-ups that keep growing, with a balance you can never take out. If you paid: stop, tell a trusted adult, call your bank, keep the chats, and report it to the police. Beware of anyone who later offers to get your money back for a fee. And if a \"job\" ever wants to use your bank account, that's a different trap."
   device_tip: "On a real phone, search for the company yourself and use the contact details on its own site. Don't save a number or switch apps because a recording asks."
   habit_card: easy-money-costs-you
   already_clicked:

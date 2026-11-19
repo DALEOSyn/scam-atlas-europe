@@ -4,8 +4,8 @@
 # doesn't apply. Checkables (G): sender.detail neutral (design ruling 1 §22.8: saved contact on a pay
 # request; same wording as 2-8), link neutral (ruling 2: real-domain payment-request links), reference
 # (the booking), request.
-# Banking beat: payment-request page (CR-18(c)); no payee check runs there; the payee name shows whose
-# account it is. Spec gap: GDD §22.3 lists only "Pay €18" and "Decline" on the banking beat, but CR-18(b)
+# Banking beat: payment-request page (CR-18(c)); no payee check runs there; the payee name is the name on the
+# request (no bank-confirmed holder). Spec gap: GDD §22.3 lists only "Pay €18" and "Decline" on the banking beat, but CR-18(b)
 # requires a verify on every banking beat opened by start_transfer, so "Call Mateus on his work phone"
 # (call_back_known, ★★★) is added there with the same outcome as on the message.
 id: amsterdam-06-boat-tour-share
@@ -23,7 +23,7 @@ brands: [kettle, larchwick]
 cast: [mateus]
 pressure:
   timer: false
-  levers: [helpfulness]
+  levers: []
   pusher:
     messages:
       - { at_seconds: 30, text: "No rush! I'm settling up with everyone tonight" }
@@ -43,7 +43,7 @@ inspectables:
     red_flag: false
     type: sender
   - target: link
-    reveal: "larchwick-bank.example: Larchwick's own address. A payment request opens there whoever sent it, so it can't prove anything either way. The request page shows who gets the money."
+    reveal: "larchwick-bank.example: Larchwick's own address. A payment request opens there whoever sent it, so it can't prove anything either way. The request page shows the name on the request."
     red_flag: false
     type: link
   - target: reference
@@ -82,7 +82,7 @@ beats:
       request: pay
     inspectables:
       - target: payee.name
-        reveal: "The request page shows who gets the money: Mateus Ferreira. That shows whose account it is, so it can't prove the message is from him."
+        reveal: "The request page names Mateus Ferreira as the one asking for the money. No bank name check runs on a request page, so this is the name on the request, not a bank-confirmed holder. It can't prove the message is from him."
         red_flag: false
         type: payee
     actions:
@@ -115,11 +115,11 @@ outcomes:
 debrief:
   variant: standard
   layer1:
-    tell: "Money you agreed, to his own name: fine to pay."
+    tell: "Money agreed in person, to the name you expected: fine to pay."
     what_works: "A call never hurts."
   layer2:
     message_flags: []
-    notes: "Why it was safe: you agreed this at breakfast, the request page showed Mateus's own name, and nothing was urgent. The habit (a call on a number you already had) is for money requests you didn't agree in person. A payment-request page runs no name check: it just shows who gets the money, and here that was Mateus."
+    notes: "Why it was safe: you agreed this at breakfast, the request page showed the name you expected, and nothing was urgent. The habit (a call on a number you already had) is for money requests you didn't agree in person. A payment-request page runs no bank name check: it shows the name on the request. If that isn't the person you agreed with, stop and call."
   device_tip: "On a real phone, open the payment request and read who gets the money before you pay. If it's not the person you agreed with, stop and call them."
   habit_card: calm-not-paranoid
   sources: [nl-veiligbankieren-hulpvraag, nl-fraudehelpdesk-hulpvraag-campaign, be-febelfin-vop-faq]

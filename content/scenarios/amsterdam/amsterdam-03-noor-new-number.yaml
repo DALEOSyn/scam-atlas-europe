@@ -5,7 +5,7 @@
 # the claim "I'll pay you back tomorrow" (a promise, neutral). Text flags in layer 2: the "can't call"
 # excuse and the deadline.
 # Banking beat (CR-18, start_transfer = class step, not in R): the player types Noor's saved name and
-# the IBAN from the chat. Payee check: no match, a warning and never a name (producer answer 3, CR-23).
+# the IBAN from the chat (the payee name is Noor's saved name, masked like 2-8's "K. ••••"). Payee check: no match, a warning and never a name (producer answer 3, CR-23).
 # the name check is a red flag (FI §3.5), the IBAN a decoy.
 # Deviation from GDD §22.3: the phone "went in the bath", not "in the canal". Noor is back home, not in
 # Amsterdam, and the scammer can't know where the player is; a canal would be an unteachable location
@@ -82,11 +82,11 @@ beats:
   - id: noor_transfer
     device: banking
     message:
-      payee: { name: "Noor", iban: "NL••••••••••••••29", name_check: mismatch, amount: "€84.00" }
+      payee: { name: "Noor ••••", iban: "NL••••••••••••••29", name_check: mismatch, amount: "€84.00" }
       request: pay
     inspectables:
       - target: payee.name_check
-        reveal: "No match: the account isn't held by Noor, the name you typed. The bank doesn't say whose it is. Money for a cousin, going to someone else's account, is the moment to stop and call."
+        reveal: "No match: the name you typed doesn't match the account holder, and the bank doesn't say whose it is. Money for a cousin, going to an account that may not be hers, is the moment to stop and call."
         red_flag: true
         type: payee
       - target: payee.iban

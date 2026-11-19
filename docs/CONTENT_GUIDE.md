@@ -53,3 +53,6 @@ A taken-over account shows the same saved contact as the real person. So from Am
 The same applies to links on a real payment-request domain (ruling 2): "larchwick-bank.example: Larchwick's own address. A payment request opens there whoever sent it, so it can't prove anything either way. The request page shows who gets the money."
 
 A **new number** is different from a saved contact, so its reveal states the fact on genuine and fraud alike and opens with the same words ("Not in your contacts: a new number, not X's saved one."); the request decides (ruling 3).
+
+### Payee names (sceptic, T-3.4 review)
+Scam payees are shown as an initial plus a masked surname (`R. ••••`, `K. ••••`). **Any genuine payment to a stranger outside the cast is masked the same way**, so masking never becomes a tell. Cast members keep their own names (Mateus Ferreira on his request page); a name typed from a saved contact is masked like the contact's surname (`Noor ••••`).

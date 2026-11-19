@@ -63,7 +63,7 @@ cards:
     lo: LO-07
     title: "Call the number you already know"
     habit: "Asked by message for money you didn't expect, or to an account that isn't theirs? Call a number you already had. For requests you didn't agree in person."
-    example: "Teo's new mobile? A call from you, on the home number you already had."
+    example: "\"Noor\" on a new number wants €84 today? A call from you, on Noor's saved number."
     already_clicked: "Call your bank now on the number on your card (with a parent or trusted adult if you're under 18). Don't pay a second request."
   - id: easy-money-costs-you
     lo: LO-12
@@ -74,6 +74,6 @@ cards:
   - id: check-who-gets-the-money
     lo: LO-06
     title: "Check who gets the money"
-    habit: "If a friend, a relative or a supplier asks you to pay a new or different account, or it's urgent or secret: call them on a number you already had. If your bank says the name doesn't match: stop. If it matches: it only shows whose account it is, so still call."
+    habit: "New or different account, or urgent? Call them on a number you already had. Name doesn't match? Stop. Name matches? Still call: it only shows whose account it is."
     example: "A friend asks you to pay their landlord directly? The name can match and the story still be false. A call to your friend settles it."
     already_clicked: "Paid already? Call your bank now on the number on your card and ask it to stop or recall the payment. Then tell the real person, with a call to their saved number."

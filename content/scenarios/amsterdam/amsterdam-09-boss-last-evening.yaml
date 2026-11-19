@@ -14,6 +14,9 @@
 #   booking reference. Hang up -> "What now?": call his saved work phone (no answer: still in the air),
 #   ask Adaeze (verify), "Call back this number" (engage note), report, leave it there.
 # Interrupt after beat 3 (genuine): the real Mateus from his saved contact.
+# Damage control: the same six steps for every fall in the boss, so the merged list stays at six (QA Q1).
+# Interrupt timing: the engine delivers an after_beat interrupt as "What now?" opens; delivering it after
+# the choice needs an engine change (QA Q7, reported).
 # Layer 1: the producer's wording (tell "Two strangers wanting money first: one as a job, one as Mateus.",
 # what works "Asked to pay first? Check it yourself, on a number or site you already know.") is 27 words;
 # with the fixed copy (14) and the shortest possible slot line (7, "Next time: call a number you know.")
@@ -56,7 +59,7 @@ message:
 
 inspectables:
   - target: sender.detail
-    reveal: "Shows the sender name KLAVERWERK, as a real text from the agency would. Any sender can set this name, so it can't prove anything either way."
+    reveal: "Shows the sender name KLAVERWERK, as a real text from the agency would. Sender names on texts can be faked, so it can't prove anything either way."
     red_flag: false
     type: sender
   - target: link
@@ -108,7 +111,7 @@ beats:
         red_flag: true
         type: sender
       - target: link
-        reveal: "larchwick-bank.example: Larchwick's own address. A payment request opens there whoever sent it, so it can't prove anything either way. The request page shows who gets the money."
+        reveal: "larchwick-bank.example: Larchwick's own address. A payment request opens there whoever sent it, so it can't prove anything either way. The request page shows the name on the request."
         red_flag: false
         type: link
       - target: image
@@ -146,7 +149,7 @@ beats:
       request: pay
     inspectables:
       - target: payee.name
-        reveal: "The request page shows who gets the money: R. ••••. Not Mateus, and not a hotel."
+        reveal: "The request page names R. •••• as the one asking for the money. Not Mateus, and not a hotel."
         red_flag: true
         type: payee
     actions:
@@ -202,7 +205,7 @@ beats:
       - id: pay_request_on_call
         label: "Pay the request now"
         kind: pay
-        outcome: hotel_request_paid
+        outcome: paid_on_call
         pressure_target: true
       - id: hang_up_voice
         label: "Hang up"
@@ -232,7 +235,7 @@ interrupts:
     message:
       sender: { display: "Mateus (work phone)", detail: "Saved contact: Mateus (work phone)" }
       from_cast: mateus
-      body: "Hotel wifi finally 🙂 All fine here, see you Monday!"
+      body: "Just landed, hotel wifi finally 🙂 All fine here"
       request: reply
     inspectables:
       - target: sender.detail
@@ -255,11 +258,11 @@ outcomes:
   starter_topup_paid:
     narrative: "\"Account active! Unlock your first task set with a €75 top-up.\" The €30 is gone, and the next fee is already waiting."
     recovery:
-      - { step: stop_paying, category: stop }
+      - { step: call_bank_stop_payment, category: stop }
       - { step: tell_trusted_adult, category: stop }
-      - { step: call_bank_known_number, category: secure }
       - { step: contact_fraud_helpline, category: report }
-      - { step: pay_last_fee, category: harmful }
+      - { step: tell_real_person, category: warn }
+      - { step: pay_second_request, category: harmful }
       - step: keep_quiet
         category: harmful
         feedback: "Feeling embarrassed is normal, and it's what keeps people paying and silent. There is no need to feel ashamed: anyone can fall for this. Telling a trusted adult and your bank early is what limits the damage."
@@ -268,10 +271,23 @@ outcomes:
     recovery:
       - { step: call_bank_stop_payment, category: stop }
       - { step: tell_trusted_adult, category: stop }
-      - { step: report_to_police_online, category: report }
+      - { step: contact_fraud_helpline, category: report }
       - { step: tell_real_person, category: warn }
       - { step: pay_second_request, category: harmful }
-      - { step: reply_ask_money_back, category: harmful }
+      - step: keep_quiet
+        category: harmful
+        feedback: "Feeling embarrassed is normal, and it's what keeps people paying and silent. There is no need to feel ashamed: anyone can fall for this. Telling a trusted adult and your bank early is what limits the damage."
+  paid_on_call:
+    narrative: "You pay the request while he's still on the line. \"Thank you!! Can you do the taxi too? €45.\" The money went to R. ••••. When the real Mateus lands, he has never heard of any of it."
+    recovery:
+      - { step: call_bank_stop_payment, category: stop }
+      - { step: tell_trusted_adult, category: stop }
+      - { step: contact_fraud_helpline, category: report }
+      - { step: tell_real_person, category: warn }
+      - { step: pay_second_request, category: harmful }
+      - step: keep_quiet
+        category: harmful
+        feedback: "Feeling embarrassed is normal, and it's what keeps people paying and silent. There is no need to feel ashamed: anyone can fall for this. Telling a trusted adult and your bank early is what limits the damage."
   klaverwerk_no_topups:
     narrative: "You type klaverwerk-staffing.example. No task accounts, no top-ups: \"We never ask you to pay.\" Then Kettle pings."
   klaverwerk_text_reported:
@@ -306,9 +322,9 @@ debrief:
     what_works: "Asked to pay first? Check on a number or site you already know."
   layer2:
     message_flags:
-      - "Beat 1: a real job pays you; it never asks you to pay in."
-      - "Beat 2: the request page showed R. ••••, not Mateus. A payment-request page runs no name check: it just shows who gets the money."
-      - "Beat 3: you don't have to tell a fake voice from a real one. Your call-back does that."
+      - "The job text: a real job pays you; it never asks you to pay in."
+      - "The chat: the request page showed R. ••••, not Mateus. A payment-request page runs no name check: it just shows the name on the request."
+      - "The call: you don't have to tell a fake voice from a real one. Your call-back does that."
     notes: "Two different scams on one evening, and one habit for both: when someone wants money first, check it yourself, on a number or site you already know. Can't reach the person? Then don't pay, and ask someone close. These scams are built to hit people who care, at any age."
   device_tip: "On a real phone, end the call yourself, then ring the person from your contacts. If they don't answer, message someone close to them before paying anything."
   habit_card: call-the-number-you-know

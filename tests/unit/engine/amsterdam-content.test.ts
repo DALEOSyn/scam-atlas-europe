@@ -151,6 +151,13 @@ describe('Amsterdam boss (CR-18(e) chaining, covered_by, interrupt)', () => {
     while (st.phase === 'consequence') st = step(s, c(), st, cont);
     expect(st.phase).toBe('damage_control');
   });
+
+  it('falls on every beat merge into one six-step list (QA Q1: same steps everywhere in the boss)', () => {
+    let st = run(s, c(), [act('pay_starter_topup'), cont, act('open_hotel_request'), act('pay_260'), cont, act('pay_request_on_call')]);
+    while (st.phase === 'consequence') st = step(s, c(), st, cont);
+    expect(st.phase).toBe('damage_control');
+    expect(st.recovery?.options).toHaveLength(6);
+  });
 });
 
 describe('Amsterdam drill 2-4', () => {

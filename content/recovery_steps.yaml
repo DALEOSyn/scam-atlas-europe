@@ -14,7 +14,7 @@ steps:
   - id: turn_on_two_step
     label: "Turn on two-step sign-in"
   - id: report_to_police_online
-    label: "Report it to the police online"
+    label: "Report it to the police (online in many cases)"
   - id: warn_contacts
     label: "Warn your contacts that messages from you may be fake"
   - id: reply_ask_money_back
@@ -47,7 +47,7 @@ steps:
   - id: change_password_sign_out
     label: "Change the password and sign out other sessions"
   - id: call_bank_stop_payment
-    label: "Call your bank on the number on your card and ask it to stop or reverse the payment"
+    label: "Call your bank on the number on your card and ask it to try to stop or recall the payment"
   # Amsterdam (GDD §22.6, T-3.4). Real reporting bodies are named only on the "Where to report" screen.
   - id: stop_paying
     label: "Stop paying: no last fee ever releases the money"

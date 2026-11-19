@@ -303,7 +303,7 @@ export function fixArcFlags(flags: readonly string[], arc: Pick<ArcState, 'choic
  * (every `*-arc-alex-*` file in the history has `pressure.timer: false`) and `reply` is the only kind in them that
  * ends the beat without a decision, so a stored `timer_expiry` on slots 1–9 can only be a reply. The kind feeds the
  * timeline wording only: `closes` (an `ignore`), `reportedAtSlot` and `arc_told_someone` (report, ask_someone) never
- * read it. Applied once (a future timed arc beat's real expiry, stored after the fix, is kept). Idempotent.
+ * read it. `arc.choices` only ever holds slot beats (1–9), so every entry is a slot. Applied once (a future timed arc beat's real expiry, stored after the fix, is kept). Idempotent.
  */
 export function fixArcChoices<A extends Pick<ArcState, 'choices'>>(arc: A): A {
   if (!arc.choices.some((c) => c.kind === 'timer_expiry')) return arc;

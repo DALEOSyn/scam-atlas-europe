@@ -33,7 +33,7 @@ message:
 
 inspectables:
   - target: sender.detail
-    reveal: "Adaeze's saved contact, the one from your staff directory, in your usual chat with her. It fits, though a familiar name alone proves nothing."
+    reveal: "Adaeze's saved contact, the one from your staff directory, in your usual chat with her. It fits, but a familiar name isn't proof on its own."
     red_flag: false
     type: sender
     reassures: true

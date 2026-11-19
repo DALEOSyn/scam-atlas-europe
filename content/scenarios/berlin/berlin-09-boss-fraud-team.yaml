@@ -8,13 +8,7 @@
 #   code just texted "to stop it". Code-SMS variant (request: share_code). The code text is a
 #   banner inside the call screen (no actions, never reportable) and says the code AUTHORISES a payment.
 #   Decoys: caller ID, the number the caller quotes, case number.
-#   TODO(T-2.3): `request` is not yet a checkable target (src/content/checkables.ts), so the schema
-#   rejects it. Once T-2.3 lands, add to beat 3's inspectables:
-#     - target: request
-#       reveal: "The caller wants the code from the text above. That text says the code authorises a card payment of €489.00, not that it stops one."
-#       red_flag: true
-#       type: request
-#   Until then the request lives in the debrief message_flags, and boss R is 3 instead of GDD §7.2's 4.
+#   Red flag: the request (its checkable shows the banner text; GDD §17, T-2.4b ruling 1).
 # Boss rules: no open_link on fraud boss beats (GDD §16 ruling 4): "<do X> through the link".
 # Hang up opens "What now?": call the number on the Larchwick card = verify; "Call back this number"
 # = engage (note, caps the beat at ★★, GDD §17); report; Done = dismiss.
@@ -37,7 +31,10 @@ pressure:
   levers: [authority, fear, urgency, helpfulness]
   pusher:
     messages:
-      - { at_seconds: 30, text: "TRUNDLE: Reminder: without payment, your parcel goes back today at 18:00." }
+      - at_seconds: 30
+        text: "TRUNDLE: Erinnerung: Ohne Zahlung geht Ihre Sendung heute um 18 Uhr zurück."
+        lang: de
+        translation: "TRUNDLE: Reminder: without payment, your parcel goes back today at 6 pm."
       - { at_seconds: 115, text: "Caller: \"Are you still there? The payment is almost through.\"" }
 
 message:
@@ -169,6 +166,10 @@ beats:
         reveal: "LW-77310 sounds like a case number. Anyone can make one up; it proves nothing either way."
         red_flag: false
         type: reference
+      - target: request
+        reveal: "The caller wants the code from the text above. That text says the code authorises a card payment of €489.00, not that it stops one."
+        red_flag: true
+        type: request
     actions:
       - id: read_out_code
         label: "Read out the code"
@@ -270,7 +271,7 @@ debrief:
     message_flags:
       - "A customs fee by text and then by email, before delivery."
       - "In Germany, the carrier usually collects duties at the door; otherwise a letter by post asks you to collect the parcel at the customs office. German customs never asks for payment by SMS or email."
-      - "A caller asking you to read out a code \"to stop\" a payment. The code text said it was for authorising one. A real fraud team never needs your code or an approval to stop a payment."
+      - "A real fraud team never needs your code or an approval to stop a payment."
       - "Three channels telling one story. More channels is more pressure, not more proof."
     notes: "Hang up. Call Larchwick back on the number on your card or in the Larchwick app you open yourself. Caller ID can be faked, even to show the bank's real number, so you can't tell whose line it is. Read what a code or approval is for. And a logo or familiar name proves nothing: scammers copy them perfectly, even into a real thread."
   device_tip: "On a real phone, end the call yourself, then dial the number on the back of your card. Don't use redial or the call log."

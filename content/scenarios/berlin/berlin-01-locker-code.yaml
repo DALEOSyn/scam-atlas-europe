@@ -35,7 +35,7 @@ message:
 
 inspectables:
   - target: sender.detail
-    reveal: "TRUNDLE, the sender name your earlier Trundle texts came from, in the same thread. It fits, but a sender name can be copied, so it isn't proof on its own."
+    reveal: "TRUNDLE, the sender name your earlier Trundle texts came from, in the same thread. It fits, but a sender name isn't proof on its own."
     red_flag: false
     type: sender
     reassures: true

@@ -42,7 +42,7 @@ message:
 
 inspectables:
   - target: sender.detail
-    reveal: "orders@thimbleandpine.example. Read the end: the owner part is thimbleandpine.example, Thimble & Pine's own domain. It fits, but a sender address alone proves nothing."
+    reveal: "orders@thimbleandpine.example. Read the end: the owner part is thimbleandpine.example, Thimble & Pine's own domain. It fits, but a sender address isn't proof on its own."
     red_flag: false
     type: sender
     reassures: true
@@ -56,7 +56,7 @@ inspectables:
     red_flag: false
     type: reference
   - target: image
-    reveal: "The Thimble & Pine logo. Logos are easy to copy, so it proves nothing either way."
+    reveal: "The Thimble & Pine logo, as on the shop's emails. A logo isn't proof on its own."
     red_flag: false
     type: logo
 

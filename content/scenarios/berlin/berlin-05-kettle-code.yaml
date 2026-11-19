@@ -5,13 +5,10 @@
 # registers Kettle on a new device (brief §3 red flag 3: read what the code is for).
 # Sender-or-link decoy: the sender name "Kettle" (the real code and the request arrive under the same
 # name). No link.
-# Red flags: GDD §7.2 lists the code request and the deadline. Neither is a checkable target yet, so
-# both live in the debrief's message_flags. The checkable red flag is the private mobile number the code is
-# to be texted to (brief §3 red flag 1; §7 "a real service never asks you to send it a code by chat
-# or SMS reply").
-# TODO(T-2.3): once `request` is a checkable target, add
-#   - { target: request, reveal: "It asks you to pass on the code Kettle just sent you. The code text says it registers your account on a new device.", red_flag: true, type: request }
-# so 1-5 has the 2 checkable red flags GDD §7.2 counts (R = 12).
+# Red flags (GDD §17 T-2.4b ruling 2): the private mobile number the code is to be texted to (brief §3
+# red flag 1; §7 "a real service never asks you to send it a code by chat or SMS reply") and the request
+# (its checkable shows the banner text, which says the code registers the account on a new device).
+# The 10-minute deadline is a layer-2 text flag: a deadline is never a checkable red flag.
 # Decoys: sender name, request number.
 id: berlin-05-kettle-code
 chapter: berlin
@@ -61,6 +58,10 @@ inspectables:
     reveal: "+49 1•• •••• ••90, a private mobile number. Kettle doesn't collect codes by text, at this number or any other."
     red_flag: true
     type: phone_number
+  - target: request
+    reveal: "It asks you to pass on the code Kettle just sent you. The code text says the code registers your account on a new device."
+    red_flag: true
+    type: request
 
 actions:
   - id: text_code
@@ -106,7 +107,7 @@ debrief:
     what_works: "Never pass a code on; open Kettle yourself."
   layer2:
     message_flags:
-      - "It asks you to pass on a code sent to you. Codes are only for the person who started the sign-in, and the code text said it would register your account on a new device."
+      - "Codes are only for the person who started the sign-in. No real service asks you to text one back."
       - "A 10-minute deletion threat: a deadline meant to stop you checking."
     notes: "The name \"Kettle\" proved nothing: the real code and the request arrived under the same sender name. Read what a code says it is for. Turning on two-step verification (a PIN in the app's settings) makes a stolen code much less useful."
   device_tip: "In your real messaging app, find Settings › Linked devices and the two-step PIN now, so you know where they are if you ever need them."

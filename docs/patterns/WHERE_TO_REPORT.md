@@ -99,7 +99,9 @@ For each chapter country there is now a checked entry for the reporting route, p
 | France | child | Fil Santé Jeunes **0 800 235 236** (ages 12–25, free, anonymous, 9:00–23:00) | No 116 111 found | fr-santefr-lignes-ecoute |
 | France | harassment card only | **3018** (online harassment or violence, free, 9:00–23:00) | Sextortion / online-harassment help card only, not the scam help screen | fr-solidarites-numeros-2025, fr-santefr-lignes-ecoute |
 | France | crisis | **3114**, free, 24/7 | Added for consistency; drop if crisis rows are wanted only for ES/SE/PT | fr-santefr-lignes-ecoute |
-| **Ireland** | bank | Your bank, after clicking or giving details | | ie-ncsc-phishing-guide |
+| **Ireland** | bank | Your bank, after clicking, giving details or paying | | ie-ncsc-phishing-guide, ie-ccpc-investment-scams, ie-ccpc-spot-a-scam-2026 |
+| Ireland | police (T-3.10r) | Garda Confidential Line **1800 666 111**, scope "suspected investment fraud" (re-opened 2026-11-19); no "free" claim | Now listed in the help YAML as `ie-garda-confidential` | ie-garda-investment-2025 |
+| Ireland | report (T-3.10r) | Central Bank of Ireland: report an unauthorised firm (centralbank.ie page; the form is on a third-party host and is not linked); phone **0818 681 681** / **+353 1 224 5800**, "Call costs may apply." | Not the police; report to the Gardaí too | ie-cbi-report-unauthorised, ie-cbi-avoiding-scams |
 | Ireland | support | Samaritans **116 123**, freephone, 24/7 | | ie-hse-urgent-help |
 | Ireland | child | Childline **1800 66 66 66**, freephone | Text HELLO to 50808 (free, 24/7) also listed | ie-hse-urgent-help |
 | **Italy** | report | Polizia Postale e delle comunicazioni | Named by the central bank; police site blocked automated access, so **no URL** | it-bdi-truffe-cyber |
@@ -123,7 +125,7 @@ For each chapter country there is now a checked entry for the reporting route, p
 | Spain | crisis | **024**, free, confidential, 24/7 | Crisis row only, never support | es-sanidad-024 |
 | Spain | child | **116 111** (ANAR), free, 24/7 | Regional government page + operator | es-caib-116111, es-anar-116111-carta |
 | **Sweden** | police / report | 112 now; 114 14 otherwise; some online reports with a Swedish ID number | | se-polisen-bedragerier-anmalan |
-| Sweden | bank | **Fallback** (generic) | No SE-specific source | eu-esas-ai-scams-factsheet-nl |
+| Sweden | bank | Your bank straight away to stop payments or block the card; banks have a 24/7 number (T-3.10r, replaces the fallback) | Police vishing page, reviewed 2026-08-19 | se-polisen-telefonbedrageri, se-konsumentverket-investment-fraud |
 | Sweden | support | Jourhavande medmänniska **08-702 16 80**, "Every night, 21:00–06:00. Call costs may apply." | Cost not stated on either page | se-ki-nasp-hjalplinjer, se-krisinformation-phone-numbers |
 | Sweden | crisis | Mind Självmordslinjen **90101**, day and night | Crisis row only, never support; cost not stated | se-ki-nasp-hjalplinjer, se-krisinformation-phone-numbers |
 | Sweden | child | BRIS **116 111**, day and night, "Call costs may apply." | Cost not stated; the EU 116 decision does not oblige free calls | se-ki-nasp-hjalplinjer, se-krisinformation-phone-numbers, eu-dec-2007-116 |

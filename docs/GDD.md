@@ -339,6 +339,14 @@ All endings show the red-flag timeline (slot 1 is shown as "Nothing to notice ye
 
 **Tutorial grace and the Home strategy check (ruling L4, T-2.7).** Slot 0 scores over-caution on genuine as ★, 0 points (§7.1): reporting 0-1 or 0-3, or closing 0-3 (you started the reset) is not punished below ★ while the player has not yet met a scam. 0-1's `welcome_reported` narrative agrees with ★: "IT replies: "Thanks for checking! This one really is from Adaeze, so go ahead and open your pack."" 0-3's `still_locked_out` stays. Home recheck (played through the runner, `tests/unit/engine/learning-rulings.test.ts`): **blind always-report stays bronze**, because it reports both genuine messages (2 > silver's 1); the two reports score ★ and 0 points each instead of 0 and −5.
 
+**L1–L4 implementation decisions (T-2.7, accepted by producer ruling, 2026-11-19):**
+1. **`you_chose_dismiss_started`** is "You left it. You started this reset; it was safe." The ruled "…reset, so it was safe." is 11 words on the validator's `wordCount()` and put 0-3 at 41 layer-1 words; dropping "so" keeps it at 10. The copy names a reset: a future `player_started` scenario that is not a reset needs its own wording.
+2. **"Fair instinct" wrong-mark lines are per type** (UI_SPEC §8.2): caller ID "…a real call shows the same name…" (ruled copy), sender "…a real message shows the same name…", logo "…a real message shows the same logo…", each ending "so it can't tell you which this is."
+3. **The spotting tier hint drops "to reach silver"**: "Spot at least {n} red flags. Each mark on a safe detail takes one off. Your count: {net}." It sits under "To reach silver next time:" or "To reach gold next time:", which already names the tier.
+4. **No tutorial grace on timer expiry.** A timer running out is not a choice, so it scores the star table (timer_expiry = dismiss) in slot 0 too.
+
+The decoy reveal rule (docs/CONTENT_GUIDE.md) is applied to every Home decoy and padlock reveal (T-2.7).
+
 **T-2.4a rulings (game-designer, 2026-11-18):**
 1. **0-3 is difficulty 2** (was 1). The chapter uses 2 for 0-4 and the boss, so difficulty parity (§6) needs a genuine scenario at 2. A high-stakes genuine message that must be acted on is a fair "2"; 0-1 stays the genuine at 1.
 2. **0-3 opens on the browser** ("check your inbox" page), then the reset email. Accepted: it makes "you started this" visible instead of told, which is the point of the mechanic. The opener beat is setup: its `proceed` ("Go to your inbox") is not the decisive action when the email beat is reached; the email beat's action is. If the player leaves on the opener (`ignore`), that is the decisive action (dismiss). The "things you started" coach mark shows on the opener, the timer coach mark on the email.

@@ -83,7 +83,7 @@ debrief:
     what_works: "Open it, or use Waymarker Desk."
   layer2:
     message_flags: []
-    notes: "Why it was safe to act: you had just joined, the email asked only that you read something, and the link stayed on Waymarker's own site. None of those alone is proof (senders can be faked); together they fit. Adaeze also told you how to check her: the staff directory."
+    notes: "Why it was safe to act: you had just joined, the email asked only that you read something, and the link stayed on Waymarker's own site. None of those alone is proof; together they fit. Adaeze also told you how to check her: the staff directory."
   device_tip: "On a real phone, tap the sender's name to see the full email address behind it."
   habit_card: who-really-sent
   sources: [ie-ncsc-phishing-guide, de-bsi-protect-phishing, eu-europol-phishing-leaflet]

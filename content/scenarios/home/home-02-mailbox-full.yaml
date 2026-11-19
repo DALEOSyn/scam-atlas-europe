@@ -42,7 +42,7 @@ inspectables:
     red_flag: false
     type: reference
   - target: phone_number
-    reveal: "A Brussels-style number, masked here. It looks normal, so it settles nothing. The IT desk's real contact is in your staff directory."
+    reveal: "A Brussels-style number, masked here. A real IT message could show a normal-looking number just like it, so it can't prove anything either way. The IT desk's real contact is in your staff directory."
     red_flag: false
     type: phone_number
 
@@ -78,7 +78,7 @@ beats:
         red_flag: true
         type: page_address
       - target: page.info
-        reveal: "The connection is encrypted. Necessary, but never proof of who runs the site."
+        reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
         red_flag: false
         type: padlock
     actions:

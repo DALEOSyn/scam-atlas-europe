@@ -34,7 +34,7 @@ message:
 
 inspectables:
   - target: sender.detail
-    reveal: "Any sender can set the name a text shows, so it settles nothing."
+    reveal: "Shows \"Kettle\", the same name a real Kettle text would show. Any sender can set the name a text shows, so it can't prove anything either way."
     red_flag: false
     type: sender
   - target: link
@@ -42,7 +42,7 @@ inspectables:
     red_flag: true
     type: link
   - target: reference
-    reveal: "K-55902 looks like a case number. Anyone can make one up; it proves nothing either way."
+    reveal: "K-55902 looks like a case number, just as a real Kettle message would show. Anyone can make one up, so it can't prove anything either way."
     red_flag: false
     type: reference
 
@@ -78,7 +78,7 @@ beats:
         red_flag: true
         type: page_address
       - target: page.info
-        reveal: "The connection is encrypted. Necessary, but never proof of who runs the site."
+        reveal: "The connection is encrypted, the same lock a real site shows. Necessary, but it can't show who runs the site, so it can't prove anything either way."
         red_flag: false
         type: padlock
     actions:

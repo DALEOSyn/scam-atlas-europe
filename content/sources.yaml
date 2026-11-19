@@ -28,6 +28,7 @@
 #                help-where-to-report-en   (docs/patterns/where-to-report.draft.en.yaml for now; moves to content/help/ once the linter exemption exists; T-2.5)
 #                campaign-catalogue   (docs/patterns/THREAT_CATALOGUE.md, backlog research T-R.1, 2026-11-18)
 #                berlin-arc-alex-01 | arc   (Alex friendship-manipulation arc beats, GDD §10; added T-2.4b, 2026-11-18)
+#                ceo-fraud-bec | payment-detail-change   (chapter 3 Paris briefs; added phase 3, 2026-11-19)
 #              An empty list means provenance only: not cited directly, kept because another entry's
 #              date or content relies on it.
 #   notes      what the source actually supports; caveats
@@ -91,14 +92,14 @@ sources:
     notes: "Europol does not take reports from the public. The page redirects to each country's national reporting site and says to use a local police station where no online option exists. The country list is rendered by JavaScript and could not be read in this session."
 
   - id: eu-europol-phishing-leaflet
-    publisher: Europol (EC3) with European Banking Federation, #CyberScams campaign
+    publisher: "Europol (EC3) with European Banking Federation, #CyberScams campaign"
     title: "Phishing / Vishing / Smishing (campaign leaflet)"
     url: https://www.europol.europa.eu/sites/default/files/documents/3_phishing_vishing_sms.pdf
     published: n/d (marking '07/20' possibly July 2020, unconfirmed)
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [email-phishing-credential, multichannel-support-callback, MAP-ch4, campaign-catalogue]
+    used_for: [email-phishing-credential, multichannel-support-callback, MAP-ch4, campaign-catalogue, ceo-fraud-bec]
     notes: "Red flags: urgency; sender address differs from earlier genuine mail; requests to click, download or give credentials. Habit: type the bank's address yourself; take caller details and call back on a number you look up; don't verify using a number the caller gives. Older campaign material."
 
   - id: eu-ebf-cyberscams
@@ -109,7 +110,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 3
-    used_for: [email-phishing-credential, MAP-ch3, campaign-catalogue]
+    used_for: [email-phishing-credential, MAP-ch3, campaign-catalogue, ceo-fraud-bec, payment-detail-change]
     notes: "Lists CEO/BEC, invoice/supplier IBAN change, phishing/smishing/vishing, spoofed bank sites, romance, money-mule recruitment, fake jobs, relative-in-distress messages, investment scams. CAVEAT: still recommends 'padlock and https' as a safety sign. That is outdated as a trust signal (see pt-gnr-phishing, ch-ncsc-links-2025); cited in the email brief only as an example of that outdated advice."
 
   - id: eu-esas-ai-scams-2025
@@ -131,7 +132,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [email-phishing-credential, it-portal-credential-phishing, MAP-ch2, MAP-ch5, MAP-ch6, MAP-ch10, MAP-missing, MAP-crosscutting, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
+    used_for: [email-phishing-credential, it-portal-credential-phishing, MAP-ch2, MAP-ch5, MAP-ch6, MAP-ch10, MAP-missing, MAP-crosscutting, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue, ceo-fraud-bec, payment-detail-change]
     notes: "Covers impersonation incl. voice cloning/deepfakes of relatives and banks; celebrity investment ads; dating-to-investment; phishing inserted into existing email threads; marketplace deals moving the victim off-platform to a fake bank login. Advice: pause; verify via known numbers; family safe word; check regulator warning lists (IOSCO I-SCAN); never install remote-access software; contact the bank at once; beware 'recovery' offers. Notes AI removes grammar errors, so polish is not proof."
 
   - id: eu-epc-threats-2025
@@ -142,8 +143,8 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 3
-    used_for: [email-phishing-credential, messenger-account-takeover-code, it-portal-credential-phishing, multichannel-support-callback, MAP-ch2, MAP-ch4, MAP-ch6, MAP-ch7, MAP-ch9, MAP-ch10, MAP-missing, campaign-catalogue]
-    notes: "Social engineering increasingly targets people rather than technology. Covers: spoofed sender names/numbers; messages that give a phone number instead of a link; 'safe account' scams; call-then-home-visit; fake remote support; task scams with small early payouts; recovery scams; cloned voices in family-emergency scams; QR swaps on letters, invoices and EV chargers; victims asked to approve login QR codes sent via messaging apps; money mules. Read to char 100000 of ~130000."
+    used_for: [email-phishing-credential, messenger-account-takeover-code, it-portal-credential-phishing, multichannel-support-callback, MAP-ch2, MAP-ch4, MAP-ch6, MAP-ch7, MAP-ch9, MAP-ch10, MAP-missing, campaign-catalogue, ceo-fraud-bec, payment-detail-change]
+    notes: "Social engineering increasingly targets people rather than technology. Covers: spoofed sender names/numbers; messages that give a phone number instead of a link; 'safe account' scams; call-then-home-visit; fake remote support; task scams with small early payouts; recovery scams; cloned voices in family-emergency scams; QR swaps on letters, invoices and EV chargers; victims asked to approve login QR codes sent via messaging apps; money mules. Read to char 100000 of ~130000. Re-read 2026-11-19 (Paris briefs), full text incl. chars 100000-130011: targets shifting to 'company executives, employees (through CEO fraud)' (p.6); AI produces 'voice and video impersonating well-known persons (e.g. CEO fraud)' (p.6) and deepfakes 'impersonate executives' (p.22); 'a particular increase in business email compromise' (p.22); invoicing exposed to 'APP fraud or IBAN manipulation' incl. QR tampering on invoices (p.7, p.17); fraudsters instruct victims 'to ignore or dismiss alerts' (p.23, bank alerts in general, not VOP specifically). VOP mentioned only as a new scheme with no fraud cases yet (p.8). No passage on VOP limits or on matching-name accounts."
 
   - id: eu-ec-ipr-vop-2025
     publisher: European Commission (DG FISMA)
@@ -153,7 +154,7 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [MAP-ch2, MAP-crosscutting]
+    used_for: [MAP-ch2, MAP-crosscutting, payment-detail-change]
     notes: "From 2025-10-09, euro-area payment providers must offer free payee verification (name vs IBAN) before a transfer. Non-euro EU states later (see eu-ecb-ipr)."
 
   - id: eu-ecb-ipr
@@ -164,8 +165,8 @@ sources:
     accessed: 2026-11-18
     region: EU
     tier: 1
-    used_for: [MAP-ch2, MAP-ch3, MAP-crosscutting, campaign-catalogue]
-    notes: "Verification of Payee results: match / close match / no match / other. Applies to standard and instant credit transfers, free of charge. Deadlines: euro area 2025-10-09; non-euro Member States 2027-07-09."
+    used_for: [MAP-ch2, MAP-ch3, MAP-crosscutting, campaign-catalogue, payment-detail-change]
+    notes: "Verification of Payee results: match / close match / no match / other. Applies to standard and instant credit transfers, free of charge. Deadlines: euro area 2025-10-09; non-euro Member States 2027-07-09. Re-opened 2026-11-19: confirms the four results, 'informs payers of any discrepancies between the payment account identifier given and the name of the intended payee', free of charge, both deadlines. (2027-01-09 on the same page is the non-euro deadline for receiving instant payments, not for VoP.) Does not describe what the payer sees."
 
   - id: eu-eba-ecb-fraud-2025
     publisher: European Banking Authority and European Central Bank
@@ -443,7 +444,7 @@ sources:
     accessed: 2026-11-18
     region: FR
     tier: 2
-    used_for: [email-phishing-credential, it-portal-credential-phishing, MAP-ch0, WHERE_TO_REPORT, help-where-to-report-en]
+    used_for: [email-phishing-credential, it-portal-credential-phishing, MAP-ch0, WHERE_TO_REPORT, help-where-to-report-en, ceo-fraud-bec, payment-detail-change]
     notes: "Contact the organisation directly via known details; hover over links or type the address; a single changed character signals a fake. Victim steps incl. bank opposition, changing every reused password, keeping evidence, filing a complaint. Reporting: Signal Spam, Phishing Initiative, Info Escroqueries 0 805 805 817."
 
   - id: fr-bdf-osmp-2024
@@ -465,8 +466,8 @@ sources:
     accessed: 2026-11-18
     region: FR
     tier: 3
-    used_for: [MAP-ch3, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
-    notes: "FOVI / 'arnaque au Président': urgent confidential transfer requested by a fake executive or lawyer; supplier bank-detail (RIB) change; targets SMEs, artisans and local authorities; timed for holidays and evenings. Prevention: a fixed internal validation procedure. If victim: ask the bank to recall the funds immediately (speed matters); file a complaint."
+    used_for: [MAP-ch3, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue, ceo-fraud-bec, payment-detail-change]
+    notes: "FOVI / 'arnaque au Président': urgent confidential transfer requested by a fake executive or lawyer; supplier bank-detail (RIB) change; targets SMEs, artisans and local authorities; timed for holidays and evenings. Prevention: a fixed internal validation procedure. If victim: ask the bank to recall the funds immediately (speed matters); file a complaint. Re-opened 2026-11-19: contact by phone or email; a second call from 'another executive' reassures the employee; timing 'au milieu d'un pont', evenings, holidays, when accounting is short-staffed; a variant claims the firm must pay to comply with accessibility or GDPR rules; procedure must be 'non dérogeable' with internal hierarchical validation; limit public exposure of staff who can make transfers; victims can also ask the 'brigade numérique' 24/7. Does NOT mention deepfakes, callback by name, or dual signature by name."
 
   # ---------------------------------------------------------------- Spain
   - id: es-incibe-smishing-bank-callback-2025
@@ -658,7 +659,7 @@ sources:
     accessed: 2026-11-18
     region: SE
     tier: 3
-    used_for: [MAP-ch3, MAP-ch9, MAP-ch10, campaign-catalogue]
+    used_for: [MAP-ch3, MAP-ch9, MAP-ch10, campaign-catalogue, ceo-fraud-bec]
     notes: "Total fraud proceeds fell -16% (2023->2024) and -10% (2024->2025): the 'second year running'. 2025 proceeds ~SEK 5.7bn: investment ~SEK 1.6bn, romance SEK 551m, vishing SEK 320m, CEO/BEC SEK 214m. Telephone-fraud (vishing) proceeds SEK 708m (2023) -> SEK 320m (2025), a drop of ~55%. Attempts (incl. mass SMS) are increasing."
 
   - id: se-polisen-vishing-2026
@@ -737,7 +738,7 @@ sources:
     accessed: 2026-11-18
     region: DE
     tier: 2
-    used_for: [MAP-ch6, MAP-missing, campaign-catalogue]
+    used_for: [MAP-ch6, MAP-missing, campaign-catalogue, ceo-fraud-bec]
     notes: "Explains voice cloning (text-to-speech and voice conversion; seconds-to-hours of audio needed). Fake voices used in fraud calls, e.g. CEO fraud triggering a transfer. Audible tells: metallic sound, mispronunciation, monotone or odd emphasis, reply delay. Countermeasure: awareness. Does NOT mention calls impersonating relatives; older (2022) and quality is improving, so tells are not to be taught as reliable."
 
   # ================================================ T-2.5 additions (chapters 0-1 briefs + help screen), all opened 2026-11-18
@@ -1334,6 +1335,154 @@ sources:
     tier: 3
     used_for: [multichannel-support-callback]
     notes: "Fraudsters claim a push-TAN will stop suspicious debits, but it authorises transfers; being asked by phone for passwords or TANs is always a sign of fraud; banks generally don't call unprompted."
+
+  # ================================================ Phase 3, chapter 3 (Paris) additions, all opened 2026-11-19
+  # Briefs: docs/patterns/ceo-fraud-bec.md, docs/patterns/payment-detail-change.md
+
+  # ---------------------------------------------------------------- EU level (Paris)
+  - id: eu-eurlex-ipr-2024-886
+    publisher: European Union (EUR-Lex, Official Journal)
+    title: "Regulation (EU) 2024/886 of the European Parliament and of the Council of 13 March 2024 amending Regulations (EU) No 260/2012 and (EU) 2021/1230 and Directives 98/26/EC and (EU) 2015/2366 as regards instant credit transfers in euro"
+    url: https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:32024R0886
+    published: "adopted 2024-03-13; in force 2024-04-08 (EUR-Lex metadata)"
+    accessed: "2026-11-19"
+    region: EU
+    tier: 1
+    used_for: [payment-detail-change]
+    notes: "Read to char 100000 of ~133000 (Art. 5c fully covered). Art. 5c (inserted into Reg. 260/2012): payer's PSP must offer payee verification 'regardless of the payment initiation channel', 'immediately after the payer provides relevant information about the payee' and before authorisation. Outcomes: match; 'almost' match (PSP shows the payee name linked to the IBAN); no match (payer told authorising 'might lead to transferring the funds to a payment account not held by the payee indicated by the payer'); check not possible. Service must not prevent the payer from authorising (5c(5)). PSPs must tell users the liability/refund consequences of ignoring a notification (5c(7)). PSP not liable for execution to an unintended payee if it complied (5c(8)); payer's PSP refunds if it failed to offer the check. 'free of charge' wording located in Art. 5b(2) in this reading (the ECB page states the VoP service is free; rely on eu-ecb-ipr for that). Application (5c(9)): euro-area PSPs by 2025-10-09; non-euro Member States by 2027-07-09. Adoption and entry-into-force dates are from EUR-Lex metadata; the OJ publication date was not checked."
+
+  - id: eu-epc-vop-scheme
+    publisher: European Payments Council
+    title: "Verification Of Payee"
+    url: https://www.europeanpaymentscouncil.eu/what-we-do/other-schemes/verification-payee
+    published: n/d (latest dated event 2024-10-10)
+    accessed: "2026-11-19"
+    region: EU
+    tier: 3
+    used_for: [payment-detail-change]
+    notes: "Scheme answers 'match', 'no match', 'close match' (with the payee's name) or 'check not possible'; the requesting PSP 'immediately passes on the response to the payer'. Rulebook published 2024-10-10, in force 2025-10-05. Limitation stated: the scheme is a messaging function, not a payment instrument, and 'cannot be relied upon to identify a private or a legal person'. Does not cite the regulation number or the 2025-10-09 date (use eu-eurlex-ipr-2024-886)."
+
+  - id: eu-epc-vop-faq
+    publisher: European Payments Council
+    title: "How should the PSPs inform the requesters (payers) about the outcome of the VOP check? (VOP scheme rulebook FAQ)"
+    url: https://www.europeanpaymentscouncil.eu/faq/verification-payee-scheme/rulebook
+    published: n/d
+    accessed: "2026-11-19"
+    region: EU
+    tier: 3
+    used_for: [payment-detail-change]
+    notes: "Payers must be informed when the result is 'No Match' or 'Close Match'; 'It is up to the Requesting PSP to decide how to comply with this requirement.' So the on-screen wording and design differ by bank: the game must invent its own fictional warning, not copy a real bank's."
+
+  - id: eu-europol-ceo-bec-leaflet
+    publisher: "Europol (EC3) with European Banking Federation, #CyberScams campaign"
+    title: "CEO / BEC fraud (campaign leaflet)"
+    url: https://www.europol.europa.eu/cms/sites/default/files/documents/4_ceo-bec_fraud.pdf
+    published: "n/d (same #CyberScams series as eu-europol-phishing-leaflet)"
+    accessed: "2026-11-19"
+    region: EU
+    tier: 1
+    used_for: [ceo-fraud-bec]
+    notes: "Fraudster poses as CEO/CFO, has 'a good knowledge about the organization', demands an urgent payment that bypasses normal approval; money often goes to banks outside Europe. Warning signs: unsolicited email or call; direct contact from a senior official you don't normally deal with; request for absolute confidentiality; pressure and urgency; unusual request contradicting internal procedures; threats, unusual flattery or promised reward. Employees: check email addresses carefully; if unsure, consult a competent colleague; follow payment procedures and don't give in to pressure; tell IT about suspicious mail or calls. Companies: verification procedure for payment requests received by email; report attempts to police even without loss. Older campaign material, undated."
+
+  # ---------------------------------------------------------------- France (Paris)
+  - id: fr-cybermalveillance-fiche-fovi
+    publisher: Cybermalveillance.gouv.fr (GIP ACYMA), with Ministère de l'Intérieur and ANSSI
+    title: "Fiche réflexe : les faux ordres de virement (FOVI)"
+    url: https://www.cybermalveillance.gouv.fr/medias/2021/01/230602_FicheReflexe_FauxOrdresDeVirement.pdf
+    published: "2023 (version code V230417; no explicit date)"
+    accessed: "2026-11-19"
+    region: FR
+    tier: 2
+    used_for: [ceo-fraud-bec, payment-detail-change]
+    notes: "FOVI: persuasion, threats or pressure to obtain an unplanned transfer, often presented as from a senior executive ('arnaque au Président'), 'urgent et confidentiel'. Variants: fake supplier announcing a 'changement de RIB'; fake employee asking to change the account their salary is paid into. By phone and/or electronic messages; sometimes follows the hacking and use of the impersonated person's mailbox. Beneficiary account often abroad. Prevention: a 'non dérogeable' internal hierarchical verification and validation procedure for unplanned transfers and bank-detail changes; clear rules to authenticate senders; limit public info on staff who can pay. Victim: identify transfers, suspend pending ones, alert bank at once and request return of funds (bank may ask for a complaint), keep evidence, change passwords if a mailbox was hacked, file a complaint with police or gendarmerie in parallel. No phone numbers given."
+
+  - id: fr-cybermalveillance-fiche-faux-rib
+    publisher: Cybermalveillance.gouv.fr (GIP ACYMA), with Ministère de l'Intérieur and ANSSI
+    title: "Fiche réflexe : la fraude au virement (faux RIB)"
+    url: https://www.cybermalveillance.gouv.fr/medias/2023/05/240208_FicheReflexe_FraudeVirement.pdf
+    published: "2024 (version code V240201; no explicit date)"
+    accessed: "2026-11-19"
+    region: FR
+    tier: 2
+    used_for: [payment-detail-change, ceo-fraud-bec, MAP-ch3]
+    notes: "Opened with the host in capitals (CYBERMALVEILLANCE.GOUV.FR); hostnames are case-insensitive, recorded in lower case. Scam: divert a victim's transfer by impersonating a creditor they already deal with; examples named: 'artisan', 'notaire', 'propriétaire' (landlord). Often follows hacking of the creditor's or the victim's mailbox. Victim gets an email asking for payment by transfer, usually with an invoice and a falsified RIB. Prevention: for any transfer to a new RIB, contact the creditor directly on their usual number; protect email password, 2FA, updates. Victim: alert bank at once to suspend or recover; alert the impersonated creditor (their mailbox may be hacked); keep evidence; check own mailbox for unknown forwarding/filter rules and connections (screenshot first); change password; file a complaint (police, gendarmerie, or in writing to the procureur); advice from Info Escroqueries 0 805 805 817 (free)."
+
+  - id: fr-cybermalveillance-17cyber-2024
+    publisher: Cybermalveillance.gouv.fr, Police nationale, Gendarmerie nationale
+    title: "Communiqué de presse : lancement de 17Cyber"
+    url: https://www.cybermalveillance.gouv.fr/medias/2024/12/20241216_CP17Cyber.pdf
+    published: "2024-12-16"
+    accessed: "2026-11-19"
+    region: FR
+    tier: 2
+    used_for: [ceo-fraud-bec, payment-detail-change]
+    notes: "17Cyber (https://17cyber.gouv.fr/) is the 'équivalent numérique de l'appel 17' for all victims of digital offences (individuals, businesses, local authorities). Online diagnosis 24/7 with tailored advice; for serious incidents, chat with a police officer or gendarme for emergency advice and to start proceedings; referral to listed technical providers. The 17cyber.gouv.fr site itself was not opened this session (the gendarmerie and info.gouv.fr pages about it returned errors)."
+
+  - id: fr-justice-thesee-messagerie-2025
+    publisher: Ministère de la Justice (justice.fr; fiche from Service-Public / DILA)
+    title: "Porter plainte suite à la réception d'un message frauduleux provenant de la messagerie piratée d'un contact (THESEE)"
+    url: https://www.justice.fr/fiche/porter-plainte-reception-message-frauduleux-piratage-messagerie-contact-thesee
+    published: "2025-02-11 (mis à jour)"
+    accessed: "2026-11-19"
+    region: FR
+    tier: 3
+    used_for: [ceo-fraud-bec, payment-detail-change]
+    notes: "THESEE online complaint is possible if you received a money request from a contact 'dont la messagerie a été piratée'; you state the sum requested; no payment needs to have been made. Authentication via FranceConnect is mandatory (Service Public account only for those who cannot use it, e.g. foreign tourists). 'Seuls les majeurs peuvent déposer plainte sur le téléservice THESEE'; minors can only make a 'signalement'. Complaint in your own name only. Without a money request: complain in person or write to the procureur. Does NOT cover a look-alike (non-hacked) address explicitly."
+
+  - id: fr-bdf-fraude-moyens-paiement
+    publisher: Banque de France
+    title: "Les fraudes aux moyens de paiement"
+    url: https://www.banque-france.fr/fr/votre-service/particuliers/la-banque-de-france-vous-aide/fraude-aux-moyens-de-paiement
+    published: n/d (updated on or after 2026-05-07, per its FNC-RF text)
+    accessed: "2026-11-19"
+    region: FR
+    tier: 3
+    used_for: [payment-detail-change, ceo-fraud-bec]
+    notes: "'Méfiez-vous de toutes nouvelles coordonnées bancaires communiquées au moment du règlement d'une facture'; check the RIB for crude forgery and that BIC matches the bank; call the payee on their usual number. VoP: 'Depuis le 9 octobre 2025, votre banque vérifie, pour les virements SEPA, la concordance entre le nom du bénéficiaire que vous avez entré et celui du titulaire de l'IBAN'; 'il ne doit pas abaisser votre vigilance sur l'exactitude et le caractère légitime des informations entrées sur votre bénéficiaire.' General: never act in a rush or under pressure; report suspicious SMS to 33 700. Victim: contact bank at once and ask for a fraud recall of the transfer; pre-plainte en ligne then police/gendarmerie; Thésée for scams incl. transfer fraud, Perceval for card fraud; file quickly. Since 2026-05-07 the Banque de France runs the FNC-RF, a file in which French banks share suspected-fraud alerts (bank-side; nothing the payer sees is described). Does not mention fraude au président by name."
+
+  - id: fr-inc-vop-2025
+    publisher: Institut national de la consommation (INC)
+    title: "Virements bancaires : du nouveau le 9 octobre"
+    url: https://www.inc-conso.fr/content/virements-bancaires-du-nouveau-le-9-octobre
+    published: "2025-10-10 (updated 2025-11-05)"
+    accessed: "2026-11-19"
+    region: FR
+    tier: 3
+    used_for: [payment-detail-change]
+    notes: "VoP mandatory from 2025-10-09 for standard and instant SEPA transfers from euro-area banks; checks first and last name for people, trade or company name for firms; free; every channel (app, online banking, ATM). Results as named in France: 'correspondance exacte', 'correspondance partielle', 'aucune correspondance', 'vérification impossible'. User can confirm, correct or cancel; may still send after a mismatch 'en toute connaissance de cause', and the bank is then no longer responsible. Advice: 'Ne validez pas le virement en cas de non-concordance', even if the payee insists. Not applied to transfers to New Caledonia, French Polynesia, Wallis and Futuna, international transfers, or external transfers to savings accounts. Does not discuss matching-name fraud accounts."
+
+  - id: fr-inc-iban-rib-fraudes-2025
+    publisher: Institut national de la consommation (INC)
+    title: "IBAN et RIB : quelles sont les fraudes ?"
+    url: https://www.inc-conso.fr/content/iban-et-rib-quelles-sont-les-fraudes
+    published: "2025-03-20 (updated 2025-04-03)"
+    accessed: "2026-11-19"
+    region: FR
+    tier: 3
+    used_for: [payment-detail-change]
+    notes: "'L'arnaque au faux RIB': supplier, artisan or notary appears to send new bank details, often after their mailbox was hacked. Red flags: new bank details at payment time; 'prétendue urgence'; a known contact asking you to pay a RIB you've never used; crude alterations on the RIB; BIC not matching the bank. Habit: call on a number you already know, not one in the email. Victim: bank at once (suspend or recall; instant transfers can't be recalled but can be contested), warn the impersonated party, pre-plainte-en-ligne.gouv.fr then police/gendarmerie, check own mailbox rules, keep evidence; support via cybermalveillance.gouv.fr and 17Cyber. OUTDATED: says banks generally don't check that name and IBAN match; true before 2025-10-09 only (see fr-inc-vop-2025). Don't cite it for VoP."
+
+  - id: fr-fbf-cles-faux-rib-2025
+    publisher: Fédération bancaire française (Les clés de la banque)
+    title: "Fraude au RIB : comment reconnaître une fausse demande de changement de coordonnées bancaires"
+    url: https://www.lesclesdelabanque.com/particulier/fraude-coordonnees-bancaires/
+    published: "2025-10-12 (modified 2025-10-14)"
+    accessed: "2026-11-19"
+    region: FR
+    tier: 3
+    used_for: [payment-detail-change, ceo-fraud-bec, MAP-ch3]
+    notes: "Consumer page of the FBF's 'Les clés de la banque'. A creditor (landlord, energy supplier, telecom operator, an administration) supposedly changed banks and asks you to pay a new account. The sender may use an address 'très proche' of the real one and copy logo and layout; a look-alike website may add credibility. Once paid to the fraudster's account the transfer may not be recoverable. Habit: don't trust a message because it seems familiar; contact your usual contact on the phone number or email you already had; don't click links in the message; ask your banker. Victim: bank at once, tell the company concerned, complain to police or gendarmerie. Does not mention VoP."
+
+  - id: fr-dgsi-flash-117-2025
+    publisher: DGSI (Direction générale de la sécurité intérieure)
+    title: "Flash ingérence n°117 : Risques associés à l'usage de l'intelligence artificielle dans le monde professionnel"
+    url: https://www.dgsi.interieur.gouv.fr/sites/dgsi/files/medias/documents/2025-12/Flash_117_0.pdf
+    published: "2025-12"
+    accessed: "2026-11-19"
+    region: FR
+    tier: 3
+    used_for: [ceo-fraud-bec]
+    notes: "Case: a site manager of a French industrial group got a video call from someone presenting as the group's chief executive; 'l'apparence physique et la voix de l'individu à l'écran correspondant bien à celles du dirigeant'; he was asked for a transfer of funds for a supposed acquisition. Surprised by the unusual request, he ended the call and alerted management 'through the usual channels'; it was a 'tentative d'escroquerie par hypertrucage associant le visage et la voix du dirigeant'. Recommendations are general (train staff, report AI incidents to the DGSI); the flash does not itself prescribe a callback. One case, no prevalence figure."
 
   # ------------------------------------------------ placeholders (example scenario only)
   - id: europol-scam-smishing

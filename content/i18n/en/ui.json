@@ -83,6 +83,7 @@
   "you_chose_dismiss_started": "You left it. You started this reset; it was safe.",
   "next_time_after_hang_up": "Next time: call a number you know.",
   "deadline_fake": "The deadline was fake. Nothing happened.",
+  "deadline_fake_fell": "The deadline was fake.",
   "deadline_real": "Time ran out. This one was genuine, and its deadline was real.",
   "debrief_more": "More",
   "debrief_marked": "You marked this",

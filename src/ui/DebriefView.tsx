@@ -12,7 +12,7 @@ import { choiceLineText, nextTimeText } from '../engine/choiceText.ts';
 import { lookup, t, type MessageKey } from '../i18n/index.ts';
 import { deviceHeading } from './devices/Device.tsx';
 import { Icon } from './Icon.tsx';
-import { elementLabel } from './labels.ts';
+import { deadlineText, elementLabel } from './labels.ts';
 import { RichText } from './RichText.tsx';
 import styles from './DebriefView.module.css';
 
@@ -146,7 +146,7 @@ export function DebriefView({ data, onContinue, onAgain }: DebriefViewProps) {
                 <RichText text={n} />
               </p>
             ))}
-            {l2.deadline ? <p>{t(l2.deadline === 'fake' ? 'deadline_fake' : 'deadline_real')}</p> : null}
+            {l2.deadline ? <p>{deadlineText(l2.deadline)}</p> : null}
           </section>
         ) : null}
         {l2.youChoseOther.length > 0 ? (

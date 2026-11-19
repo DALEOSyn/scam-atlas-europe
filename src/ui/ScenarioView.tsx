@@ -21,7 +21,7 @@ import { DeviceView, deviceHeading } from './devices/Device.tsx';
 import type { CallStage } from './devices/types.ts';
 import { BreathPanel, formatTime, Hud } from './Hud.tsx';
 import { Icon } from './Icon.tsx';
-import { WHAT_NOW_KEYS } from './labels.ts';
+import { deadlineText, WHAT_NOW_KEYS } from './labels.ts';
 import { RichText } from './RichText.tsx';
 import { unrevealedTargets, words } from './text.ts';
 import styles from './ScenarioView.module.css';
@@ -482,8 +482,17 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
                 </h3>
                 <p class={styles.caption}>
                   <Icon name="info" />
-                  <span>{view.consequenceDeadline ? t(view.consequenceDeadline === 'fake' ? 'deadline_fake' : 'deadline_real') : <RichText text={view.consequence ?? ''} />}</span>
+                  <span>{view.consequenceDeadline ? deadlineText(view.consequenceDeadline) : <RichText text={view.consequence ?? ''} />}</span>
                 </p>
+                {/* Interrupts answered during this beat (QA M3): their outcome, after the beat's own. */}
+                {view.consequenceAsides.map((n, i) => (
+                  <p key={i} class={styles.caption} data-aside="">
+                    <Icon name="info" />
+                    <span>
+                      <RichText text={n} />
+                    </span>
+                  </p>
+                ))}
                 <button type="button" class={styles.primary} onClick={runner.continueConsequence}>
                   {t('app_continue')}
                 </button>

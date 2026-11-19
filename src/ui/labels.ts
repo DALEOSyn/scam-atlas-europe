@@ -46,3 +46,8 @@ export const WHAT_NOW_KEYS: Record<WhatNowBuiltin, MessageKey> = {
   report: 'what_now_report',
   done: 'what_now_done',
 };
+
+/** The timer-expiry line (consequence caption and layer 2 "What happened"). */
+export function deadlineText(line: 'fake' | 'fake_fell' | 'real'): string {
+  return t(line === 'fake' ? 'deadline_fake' : line === 'fake_fell' ? 'deadline_fake_fell' : 'deadline_real');
+}

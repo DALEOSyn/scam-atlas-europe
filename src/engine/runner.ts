@@ -23,7 +23,7 @@
 import type { Action, ActionKind, Message, Device, Scenario, WhatNow } from '../content/schema.ts';
 import type { CheckableBeat } from './inspect.ts';
 import { checkablesOf, keyOf } from './inspect.ts';
-import { firePusher, startPushers, type PusherState } from './pushers.ts';
+import { armBeat, firePusher, planPushers, startPushers, stopPushers, type PusherPlan, type PusherState } from './pushers.ts';
 import { orderOptions, recoveryOptionsOf, scoreRecovery, type RecoveryOption, type RecoveryResult } from './recovery.ts';
 import { classOf, decisionOf, isFall, mergeDecision, truthOf, type Decision, type EngineBalance, type Truth } from './scoring.ts';
 import { clampStress, onArrival, pressureStyled, stressState, type StressState } from './stress.ts';
@@ -96,6 +96,8 @@ export interface InterruptState {
   arrived: boolean;
   actionId: string | undefined;
   outcome: string | undefined;
+  /** Index of the beat group that was live when the player answered (its consequence step shows the outcome). */
+  group?: number | undefined;
 }
 
 export type RunnerLogEntry =
@@ -180,6 +182,11 @@ export function scheduleOf(s: Scenario): { beatId: string; at: number }[] {
   return out;
 }
 
+/** Each follow-up placed on its scheduled beat (pushers.ts). */
+export function pusherPlanOf(s: Scenario): PusherPlan[] {
+  return planPushers(s.pressure.pusher?.messages ?? [], scheduleOf(s));
+}
+
 // ---------------------------------------------------------------------------
 // Start
 
@@ -237,7 +244,7 @@ export function startScenario(s: Scenario, ctx: RunnerContext): RunnerState {
     schedule: scheduleOf(s),
     arrived: ['start'],
     groups: [newGroup(s, 'start')],
-    pushers: startPushers(ctx.balance, s.pressure.pusher?.messages ?? [], ctx.settings.pushers, stressState(ctx.balance, stress)),
+    pushers: startPushers(ctx.balance, pusherPlanOf(s), ctx.settings.pushers, stressState(ctx.balance, stress)),
     interrupts: s.interrupts.map((i) => ({ id: i.id, at: i.at_seconds, arrived: false, actionId: undefined, outcome: undefined })),
     checks: [],
     tags: [],
@@ -269,9 +276,11 @@ function setStress(ctx: RunnerContext, st: RunnerState, v: number): RunnerState 
 }
 
 /** Is a timer or pusher currently putting on pressure? */
-function underPressure(ctx: RunnerContext, st: RunnerState): boolean {
+function underPressure(s: Scenario, ctx: RunnerContext, st: RunnerState): boolean {
   const timerActive = st.timer !== null && st.timer.expiries < 2;
-  const pusherActive = st.pushers.nextDue !== null || st.pushers.fired.length > 0;
+  const g = activeGroup(st);
+  const plan = st.pushers.fired.length > 0 && g ? pusherPlanOf(s) : [];
+  const pusherActive = st.pushers.nextDue !== null || st.pushers.fired.some((f) => plan[f.index]?.beat === g?.beatId);
   return timerActive || pusherActive || stressState(ctx.balance, st.stress) !== 'calm';
 }
 
@@ -293,7 +302,8 @@ function frozen(st: RunnerState): boolean {
 
 function resolveGroup(s: Scenario, ctx: RunnerContext, st: RunnerState, g: GroupState): RunnerState {
   const done: GroupState = { ...g, resolved: true, pendingOutcome: undefined };
-  let next = withGroup({ ...st, timer: null }, done);
+  // The beat is over: its follow-ups stop (QA M2).
+  let next = withGroup({ ...st, timer: null, pushers: stopPushers(st.pushers) }, done);
   const fell = !done.timerExpired && done.decision !== undefined && isFall(done.decision.cls, st.truth);
   if (fell) next = setStress(ctx, next, next.stress + ctx.balance.stress.on_fall);
 
@@ -302,19 +312,39 @@ function resolveGroup(s: Scenario, ctx: RunnerContext, st: RunnerState, g: Group
   // 2026-11-19: the narrative is not part of debrief layer 1).
   const moreScheduled = next.schedule.length > next.groups.length;
   const narrative = done.outcome ? s.outcomes[done.outcome]?.narrative : undefined;
-  if (moreScheduled || narrative || done.timerExpired) return { ...next, phase: 'consequence' };
+  const asides = interruptNarratives(s, next, next.groups.length - 1);
+  if (moreScheduled || narrative || done.timerExpired || asides.length > 0) return { ...next, phase: 'consequence' };
   return enterDamageControlOrDone(s, next);
 }
 
 function enterDamageControlOrDone(s: Scenario, st: RunnerState): RunnerState {
   if (s.role === 'arc') return { ...st, phase: 'done' };
-  // Boss: damage control once at the end, from the first beat that fell. Others: the outcome reached.
+  // Boss: damage control once at the end, with the steps of every beat that fell, merged in beat order
+  // and de-duplicated (QA L2). Others: the outcome reached.
   const truth = st.truth;
-  const fallen = st.groups.find((g) => g.decision && !g.timerExpired && isFall(g.decision.cls, truth) && g.outcome);
-  const source = s.role === 'boss' ? fallen : st.groups[st.groups.length - 1];
-  const options = recoveryOptionsOf(source?.outcome ? s.outcomes[source.outcome] : undefined);
+  const sources =
+    s.role === 'boss'
+      ? st.groups.filter((g) => g.decision && !g.timerExpired && isFall(g.decision.cls, truth) && g.outcome)
+      : st.groups.slice(-1);
+  const options = mergeRecoveryOptions(sources.map((g) => recoveryOptionsOf(g.outcome ? s.outcomes[g.outcome] : undefined)));
   if (options.length === 0) return { ...st, phase: 'done' };
   return { ...st, phase: 'damage_control', recovery: { options: orderOptions(options, s.id), result: null } };
+}
+
+/** Merge damage-control steps: first appearance wins (order and category), no step twice. */
+export function mergeRecoveryOptions(lists: readonly (readonly RecoveryOption[])[]): RecoveryOption[] {
+  const out: RecoveryOption[] = [];
+  for (const list of lists) for (const o of list) if (!out.some((x) => x.step === o.step)) out.push(o);
+  return out;
+}
+
+/** Outcome narratives of interrupts the player answered while group `group` was live, in answer order. */
+export function interruptNarratives(s: Scenario, st: Pick<RunnerState, 'interrupts'>, group: number): string[] {
+  return st.interrupts.flatMap((i) => {
+    if (i.group !== group || !i.outcome) return [];
+    const n = s.outcomes[i.outcome]?.narrative;
+    return n ? [n] : [];
+  });
 }
 
 function finishWithOutcome(s: Scenario, ctx: RunnerContext, st: RunnerState, g: GroupState, outcome: string): RunnerState {
@@ -357,13 +387,13 @@ function applyTimerEvents(s: Scenario, ctx: RunnerContext, st: RunnerState, even
 
 function firePusherNow(s: Scenario, ctx: RunnerContext, st: RunnerState): RunnerState {
   const messages = s.pressure.pusher?.messages ?? [];
-  const index = st.pushers.fired.length;
+  const index = st.pushers.cursor;
   const msg = messages[index];
-  if (!msg) return st;
+  if (!msg || st.pushers.nextDue === null) return st;
   let next = setStress(ctx, st, st.stress + ctx.balance.stress.on_pusher_message);
   next = {
     ...next,
-    pushers: firePusher(ctx.balance, messages, st.pushers, st.clock, stressState(ctx.balance, next.stress)),
+    pushers: firePusher(ctx.balance, pusherPlanOf(s), st.pushers, st.clock, stressState(ctx.balance, next.stress)),
     log: [...next.log, { type: 'pusher', index, text: msg.text, at: st.clock }],
   };
   return noteStyling(s, ctx, next);
@@ -424,11 +454,11 @@ function advanceClock(s: Scenario, ctx: RunnerContext, st: RunnerState, dt: numb
 // ---------------------------------------------------------------------------
 // Pause
 
-function doPause(ctx: RunnerContext, st: RunnerState): RunnerState {
+function doPause(s: Scenario, ctx: RunnerContext, st: RunnerState): RunnerState {
   // Pause only while a message is live (QA E6).
   if (st.real < st.pause.cooldownUntil || (st.phase !== 'playing' && st.phase !== 'what_now')) return st;
   const g = activeGroup(st);
-  const lo04 = !!g && !g.resolved && g.decision === undefined && underPressure(ctx, st);
+  const lo04 = !!g && !g.resolved && g.decision === undefined && underPressure(s, ctx, st);
   let next = setStress(ctx, st, st.stress - ctx.balance.pause.reduces_stress_by);
   const cost = ctx.settings.timerMode === 'off' ? 0 : ctx.balance.pause.timer_cost_seconds;
   next = {
@@ -487,11 +517,12 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
       let g2: GroupState = { ...g, kinds: [...g.kinds, action.kind], steps: [...g.steps, { beatId: beat.id, kind: action.kind }] };
       const cls = classOf(ctx.balance, action.kind);
       if (cls === 'meta') {
-        next = doPause(ctx, next);
+        next = doPause(s, ctx, next);
         g2 = { ...g2, pausedUnderPressure: activeGroup(next)?.pausedUnderPressure ?? g2.pausedUnderPressure };
       } else if (action.kind === 'hang_up' && (beat.device === 'call' || beat.what_now) && action.outcome !== undefined) {
         // GDD §6: hanging up is not terminal; "What now?" with the dialler open.
-        return { ...withGroup(next, { ...g2, pendingOutcome: action.outcome }), phase: 'what_now', timer: null };
+        // The call is over: its follow-ups stop with it (QA M2).
+        return { ...withGroup(next, { ...g2, pendingOutcome: action.outcome }), phase: 'what_now', timer: null, pushers: stopPushers(next.pushers) };
       } else {
         if (cls === 'engage' && !g2.firstEngage) g2 = { ...g2, firstEngage: { id: action.id, label: action.label } };
         g2 = {
@@ -566,7 +597,7 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
     }
 
     case 'pause':
-      return doPause(ctx, st);
+      return doPause(s, ctx, st);
 
     case 'pause_end':
       return endPause(st);
@@ -583,7 +614,8 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
       const def = s.interrupts.find((x) => x.id === ev.interruptId);
       const action = def?.actions.find((a) => a.id === ev.actionId);
       if (!i || !i.arrived || i.actionId !== undefined || !action) return st;
-      return { ...st, interrupts: st.interrupts.map((x) => (x.id === i.id ? { ...x, actionId: action.id, outcome: action.outcome } : x)) };
+      const group = st.groups.length - 1;
+      return { ...st, interrupts: st.interrupts.map((x) => (x.id === i.id ? { ...x, actionId: action.id, outcome: action.outcome, group } : x)) };
     }
 
     case 'continue': {
@@ -596,6 +628,8 @@ export function step(s: Scenario, ctx: RunnerContext, st: RunnerState, ev: Runne
       if (!next.arrived.includes(nextBeat.beatId)) next = { ...next, arrived: [...next.arrived, nextBeat.beatId] };
       const beat = s.beats.find((b) => b.id === nextBeat.beatId);
       next = { ...next, groups: [...next.groups, newGroup(s, nextBeat.beatId)], timer: beat ? newTimer(s, ctx, beat.device, true, beat.timer_seconds) : null };
+      // This beat's follow-ups are timed from now, when it is on screen (QA M2).
+      next = { ...next, pushers: armBeat(ctx.balance, pusherPlanOf(s), next.pushers, nextBeat.beatId, next.clock, stressState(ctx.balance, next.stress)) };
       return noteStyling(s, ctx, next);
     }
 
@@ -647,6 +681,10 @@ export interface CheckableView {
 export interface PusherMessageView {
   text: string;
   at: number;
+  /** The scheduled beat it belongs to, and that beat's channel and sender (QA M2). */
+  beatId: string;
+  device: Device;
+  sender: string;
   lang?: string | undefined;
   translation?: string | undefined;
 }
@@ -663,7 +701,10 @@ export interface RunnerView {
   waitingBeats: string[];
   /** Arrived interrupts not yet answered. */
   interrupts: { id: string; device: Device; message: Message; actions: ActionView[] }[];
-  /** Sender follow-ups fired so far; `lang`/`translation` for in-world foreign text (CR-14). */
+  /**
+   * Follow-ups of the beat group on screen, fired so far, each with its own beat's channel and sender;
+   * `lang`/`translation` for in-world foreign text (CR-14). Earlier beats' follow-ups are not shown.
+   */
   pusherMessages: PusherMessageView[];
   timer: { remaining: number; length: number; expiries: number; frozen: boolean } | null;
   stress: { value: number; state: StressState };
@@ -675,11 +716,25 @@ export interface RunnerView {
   consequenceTimerExpired: boolean;
   /**
    * Which caption that expiry gets: `fake` on fraud ("The deadline was fake. Nothing happened."),
+   * `fake_fell` on fraud after an earlier fall in the scenario ("The deadline was fake."; QA m1),
    * `real` on a genuine scenario ("Time ran out. This one was genuine, and its deadline was real.").
    * null when the timer did not end the beat.
    */
-  consequenceDeadline: 'fake' | 'real' | null;
+  consequenceDeadline: DeadlineLine;
+  /** Outcomes of interrupts answered during the beat that just ended (QA M3), shown with the caption. */
+  consequenceAsides: string[];
   recovery: { options: RecoveryOption[]; pick: number } | null;
+}
+
+/** The timer-expiry line (consequence caption and layer 2 "What happened", UI_SPEC §7). */
+export type DeadlineLine = 'fake' | 'fake_fell' | 'real' | null;
+
+export function deadlineLine(isFraud: boolean, fell: boolean): Exclude<DeadlineLine, null> {
+  return !isFraud ? 'real' : fell ? 'fake_fell' : 'fake';
+}
+
+function groupFell(g: GroupState, truth: Truth): boolean {
+  return !!g.decision && !g.timerExpired && isFall(g.decision.cls, truth);
 }
 
 function actionViews(actions: readonly Action[], state: StressState): ActionView[] {
@@ -717,6 +772,7 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
       : [];
   const last = st.groups.filter((x) => x.resolved).at(-1);
   const messages = s.pressure.pusher?.messages ?? [];
+  const plan = st.pushers.fired.length > 0 ? pusherPlanOf(s) : [];
   return {
     phase: st.phase,
     beat,
@@ -732,10 +788,14 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
         const def = s.interrupts.find((x) => x.id === i.id);
         return def ? [{ id: def.id, device: def.device, message: def.message, actions: actionViews(def.actions, state) }] : [];
       }),
-    pusherMessages: st.pushers.fired.flatMap((f) => {
-      const m = messages[f.index];
-      return m ? [{ text: m.text, at: f.at, lang: m.lang, translation: m.translation }] : [];
-    }),
+    pusherMessages: live && g
+      ? st.pushers.fired.flatMap((f) => {
+          const m = messages[f.index];
+          const owner = plan[f.index]?.beat;
+          const ob = owner === g.beatId ? storyBeat(s, owner) : undefined;
+          return m && ob ? [{ text: m.text, at: f.at, lang: m.lang, translation: m.translation, beatId: ob.id, device: ob.device, sender: ob.message.sender?.display ?? '' }] : [];
+        })
+      : [],
     timer: st.timer && live ? { remaining: st.timer.remaining, length: st.timer.length, expiries: st.timer.expiries, frozen: frozen(st) } : null,
     stress: { value: st.stress, state },
     pause: {
@@ -756,7 +816,8 @@ export function viewOf(s: Scenario, ctx: RunnerContext, st: RunnerState): Runner
         : null,
     consequence: last?.outcome ? (s.outcomes[last.outcome]?.narrative ?? null) : null,
     consequenceTimerExpired: !!last && last.timerExpired && !last.outcome,
-    consequenceDeadline: !!last && last.timerExpired && !last.outcome ? (s.is_fraud ? 'fake' : 'real') : null,
+    consequenceDeadline: !!last && last.timerExpired && !last.outcome ? deadlineLine(s.is_fraud, st.groups.some((x) => groupFell(x, st.truth))) : null,
+    consequenceAsides: last && st.phase === 'consequence' ? interruptNarratives(s, st, st.groups.indexOf(last)) : [],
     recovery: st.phase === 'damage_control' && st.recovery ? { options: st.recovery.options, pick: ctx.balance.recovery.pick } : null,
   };
 }

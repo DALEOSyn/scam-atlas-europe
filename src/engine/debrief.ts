@@ -8,7 +8,7 @@ import { overCautionOf } from './choiceText.ts';
 import { inspectableFor } from './inspect.ts';
 import { alreadyClickedLine, type AlreadySituation } from './recovery.ts';
 import type { ScenarioResult } from './result.ts';
-import { beatById, WHAT_NOW_BUILTINS, type GroupState, type RunnerState, type WhatNowBuiltin } from './runner.ts';
+import { beatById, deadlineLine, interruptNarratives, WHAT_NOW_BUILTINS, type DeadlineLine, type GroupState, type RunnerState, type WhatNowBuiltin } from './runner.ts';
 import type { BeatResult } from './result.ts';
 import { truthOf } from './scoring.ts';
 
@@ -104,9 +104,10 @@ export interface DebriefData {
     narratives: string[];
     /**
      * Timer expiry line under "What happened", gated like the consequence caption: `fake` on fraud
-     * ("The deadline was fake…"), `real` on genuine ("Time ran out. This one was genuine…"), else null.
+     * ("The deadline was fake…"), `fake_fell` on fraud after a fall (no "Nothing happened", QA m1),
+     * `real` on genuine ("Time ran out. This one was genuine…"), else null.
      */
-    deadline: 'fake' | 'real' | null;
+    deadline: DeadlineLine;
     /**
      * "Your other choices": the other beats' lines below ★★★, in beat order (CR-15), each with its
      * beat's stars. When layer 1 shows no line (after a fall, or ★★★ displayed with a lower beat) the
@@ -227,9 +228,14 @@ export function debriefOf(
       alreadyClicked: alreadyClickedLine(s, r.situation) ?? null,
     },
     layer2: {
-      // A boss can reach the same outcome on several beats: say it once (QA E4).
-      narratives: [...new Set(r.outcomes.flatMap((o) => (s.outcomes[o] ? [s.outcomes[o].narrative] : [])))],
-      deadline: r.timerExpired ? (s.is_fraud ? 'fake' : 'real') : null,
+      // A boss can reach the same outcome on several beats: say it once (QA E4). Interrupts the player
+      // answered come right after the beat they arrived in (QA M3).
+      narratives: [
+        ...new Set(
+          st.groups.flatMap((g, i) => [...(g.outcome && s.outcomes[g.outcome] ? [s.outcomes[g.outcome]?.narrative ?? ''] : []), ...interruptNarratives(s, st, i)]),
+        ),
+      ],
+      deadline: r.timerExpired ? deadlineLine(s.is_fraud, r.fell) : null,
       youChoseOther,
       flags,
       wrongTags,

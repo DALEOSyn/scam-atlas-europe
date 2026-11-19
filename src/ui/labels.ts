@@ -13,6 +13,7 @@ const ELEMENT_KEYS: Record<string, MessageKey> = {
   'page.address': 'element_page_address',
   'page.info': 'element_page_info',
   'payee.name_check': 'element_payee_name',
+  'payee.name': 'element_payee_name_plain',
   'payee.iban': 'element_payee_iban',
   'prompt.service': 'element_prompt_service',
   'prompt.where': 'element_prompt_where',
@@ -21,6 +22,8 @@ const ELEMENT_KEYS: Record<string, MessageKey> = {
   'prompt.number': 'element_prompt_number',
   letterhead: 'element_letterhead',
   image: 'element_image',
+  video: 'element_video',
+  claim: 'element_claim',
   request: 'element_request',
 };
 
@@ -28,7 +31,9 @@ export function elementLabel(target: string, device?: string): string {
   const base = target.replace(/#(\d)$/, '');
   const n = /#(\d)$/.exec(target)?.[1];
   // The ask (ruling QA L1): "What the caller asks" on a call, "What the message asks" elsewhere.
-  const label = t(base === 'request' && device === 'call' ? 'element_request_call' : (ELEMENT_KEYS[base] ?? 'element_other'));
+  const label = t(
+    base === 'request' && device === 'call' ? 'element_request_call' : base === 'claim' && device === 'call' ? 'element_claim_call' : (ELEMENT_KEYS[base] ?? 'element_other'),
+  );
   return n ? `${label} ${n}` : label;
 }
 

@@ -44,6 +44,8 @@ function deviceProps(over: Partial<DeviceProps>): DeviceProps {
     onAnswer: () => undefined,
     onDecline: null,
     onNextLine: () => undefined,
+    coachMarks: [],
+    onCoachMark: () => undefined,
     heading: 'Heading',
     headingRef: { current: null },
     ...over,

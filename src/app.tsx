@@ -347,6 +347,8 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario 
           settings={save.settings}
           defaultTimer={defaultTimerMode(reduced)}
           onSettings={saveSettings}
+          coachMarks={save.coachMarks}
+          onCoachMarkSeen={(id) => update((sv) => (sv.coachMarks.includes(id) ? sv : { ...sv, coachMarks: [...sv.coachMarks, id] }))}
           onQuit={toTitle}
           onDone={(st, r) => onDone(screen.scenario, st, r, screen.progress)}
         />

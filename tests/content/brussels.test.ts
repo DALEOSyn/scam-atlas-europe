@@ -403,7 +403,7 @@ describe('Registries (GDD §30.11)', () => {
     const easy = cards.cards.find((c) => c.id === 'easy-money-costs-you');
     expect(easy?.habit).toBe("A real job pays you. If a 'job' wants a deposit, a top-up, a fee or a fine before you can earn or withdraw, or your ID copy before any contract, stop and talk to someone you trust.");
     expect(easy?.example).toContain("Someone online wants to 'use your account for a few transfers'? Say no and ask someone.");
-    // R27, T-3.13g: one de-duplicated line in MMR §7 order, then the money-mule case (fraud-researcher to confirm).
+    // R27, T-3.13g: one de-duplicated line in MMR §7 order, then the money-mule case (confirmed by fraud-researcher 2026-11-19).
     expect(easy?.already_clicked).toBe(
       "It's not too late: paid, or shared your login or card? Stop: no last fee releases the money. Tell someone you trust today, call your bank on the number on your card, then change your login. Keep the chats. Money arrived in your account? Don't pass it on; tell your bank.",
     );

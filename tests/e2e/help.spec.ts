@@ -64,8 +64,14 @@ test('help list: default EU, switch to Sweden, crisis row last; choice kept in t
   const country = scene.getByRole('combobox', { name: 'Your country (for local numbers; stays on this device)' });
   await expect(country).toHaveValue('');
   await expect(country.locator('option:checked')).toHaveText('EU / other country');
-  expect(await groupOrder(page)).toEqual(['bank', 'report', 'support', 'child']);
-  await expect(scene.locator('[data-help-group="crisis"]')).toHaveCount(0);
+  // T-4.7 (§3d): the default shows the 112-only crisis row, last and on its own.
+  expect(await groupOrder(page)).toEqual(['bank', 'report', 'support', 'child', 'crisis']);
+  const euCrisis = scene.locator('[data-help-group="crisis"]');
+  await expect(euCrisis.getByRole('heading', { level: 2 })).toHaveText(CRISIS);
+  await expect(euCrisis.locator('[data-help-row]')).toHaveCount(1);
+  await expect(euCrisis).toContainText('In danger now? Call 112.');
+  await expect(euCrisis).toContainText('Emergency number in every EU country, free from any phone.');
+  expect(await scene.locator('[data-help-cards] > :last-child').getAttribute('data-help-group')).toBe('crisis');
   await expect(scene.locator('[data-help-row]').first().locator('[data-help-checked]')).toHaveText(/^Checked on \d{1,2} \w+ 2026$/);
   await axeClean(page);
 

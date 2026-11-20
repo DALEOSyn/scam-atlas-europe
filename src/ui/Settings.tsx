@@ -11,6 +11,7 @@ import { calmPreset } from '../engine/save.ts';
 import type { TimerMode } from '../engine/timer.ts';
 import { t } from '../i18n/index.ts';
 import styles from './Settings.module.css';
+import { useDocumentTitle } from './documentTitle.ts';
 
 export interface SettingsPanelProps {
   settings: Settings;
@@ -28,6 +29,8 @@ const TIMER_KEYS = { standard: 'timing_standard', extended: 'timing_extended', o
 
 export function SettingsPanel({ settings, defaultTimer, onChange, onClose, modal = false, inScenario = false }: SettingsPanelProps) {
   const heading = useRef<HTMLHeadingElement>(null);
+  // In a scenario the Settings dialog is modal over the scenario screen: its title stays.
+  useDocumentTitle(modal ? undefined : t('settings_title'));
   const box = useRef<HTMLDivElement>(null);
   useEffect(() => heading.current?.focus(), []);
   useEffect(() => {

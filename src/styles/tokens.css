@@ -96,7 +96,10 @@
 /* 2. Semantic tokens — LIGHT (default)                                       */
 /* ------------------------------------------------------------------------- */
 :root,
-[data-theme="light"] {
+[data-theme="light"],
+[data-surface="paper"] {
+  /* [data-surface="paper"] (T-4.5): printed paper (letters, postcards) stays light in the dark theme,
+     so everything on it re-takes the light text, link, accent, focus and border tokens. */
   color-scheme: light;
 
   /* Illustration (ART_DIRECTION §3.6, §13): dusk over backdrops only in dark theme; player lines. */
@@ -156,6 +159,11 @@
   --browser-chrome-bg: var(--p-paper-100);
   --address-dim: var(--p-ink-600);             /* scheme/path in address bar: 5.61 on chrome */
   --address-strong: var(--p-ink-900);          /* registrable domain */
+}
+
+/* Paper colour and shadows follow the page theme, not the paper surface (kept out of the block above). */
+:root,
+[data-theme="light"] {
   --letter-paper: #fffdf7;
   --letter-ink: #23201a;
 
@@ -200,6 +208,13 @@
     --color-sim-watermark: rgb(220 200 240 / 0.06);
     --color-pressure: var(--p-ember-300);
     --color-on-pressure: var(--p-ember-950);   /* 7.78 */
+    /* T-4.5 B3: stamp text and marks on the dark surfaces (WCAG 1.4.3 / 1.4.11). */
+    --color-stamp-bronze: var(--p-bronze-300); /* 7.20 on surface, 8.14 on bg, 6.15 on sunken */
+    --color-stamp-bronze-fill: var(--p-bronze-700);
+    --color-stamp-silver: var(--p-silver-300); /* 9.83 on surface, 11.10 on bg, 8.39 on sunken */
+    --color-stamp-silver-fill: var(--p-silver-700);
+    --color-stamp-gold: var(--p-gold-300);     /* 9.55 on surface, 10.79 on bg, 8.15 on sunken */
+    --color-stamp-gold-fill: var(--p-gold-700);
     --color-scrim: rgb(0 0 0 / 0.6);
     --color-vignette: rgb(0 0 0 / 0.12);       /* cap, see §13.4 */
     --device-frame: #0b0c12;
@@ -251,6 +266,12 @@
   --color-sim-watermark: rgb(220 200 240 / 0.06);
   --color-pressure: var(--p-ember-300);
   --color-on-pressure: var(--p-ember-950);
+  --color-stamp-bronze: var(--p-bronze-300);
+  --color-stamp-bronze-fill: var(--p-bronze-700);
+  --color-stamp-silver: var(--p-silver-300);
+  --color-stamp-silver-fill: var(--p-silver-700);
+  --color-stamp-gold: var(--p-gold-300);
+  --color-stamp-gold-fill: var(--p-gold-700);
   --color-scrim: rgb(0 0 0 / 0.6);
   --color-vignette: rgb(0 0 0 / 0.12);
   --device-frame: #0b0c12;

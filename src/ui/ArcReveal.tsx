@@ -8,9 +8,11 @@ import type { TimelineRow } from '../engine/arc.ts';
 import { t } from '../i18n/index.ts';
 import { RedFlagTimeline, RevealCard } from './ArcFinale.tsx';
 import styles from './ChapterList.module.css';
+import { useDocumentTitle } from './documentTitle.ts';
 
 export function ArcReveal({ timeline, names = null, onContinue }: { timeline: TimelineRow[]; names?: readonly string[] | null; onContinue: () => void }) {
   const heading = useRef<HTMLHeadingElement>(null);
+  useDocumentTitle(t('reveal_title'));
   useEffect(() => heading.current?.focus(), []);
   return (
     <main class={styles.shell}>

@@ -50,7 +50,13 @@ export function Hud({ view, progress, chip, timersOff, onPause, menu }: { view: 
   useEffect(() => {
     if (!open) return undefined;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') toggle(false);
+      if (e.key !== 'Escape') return;
+      // T-4.5 B1: the menu is about to be hidden; if it holds focus, hand focus back to its button
+      // (as Settings and Fairmeasure do), never to <body>.
+      const wrap = menuRef.current;
+      const inside = !!wrap && wrap.contains(document.activeElement);
+      toggle(false);
+      if (inside) wrap?.querySelector<HTMLButtonElement>('[data-hud="menu"]')?.focus();
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
@@ -110,7 +116,17 @@ export function Hud({ view, progress, chip, timersOff, onPause, menu }: { view: 
         <Icon name="breath" />
         <span class={styles.label}>{view.pause.available ? (overwhelmed ? t('pause_breath') : t('pause')) : t('pause_cooldown', { seconds: Math.ceil(view.pause.cooldownLeft) })}</span>
       </button>
-      <div class={styles.menuWrap} ref={menuRef}>
+      <div
+        class={styles.menuWrap}
+        ref={menuRef}
+        onFocusOut={(e) => {
+          // T-4.5 m2: Tabbing out of the open menu closes it, so it never covers what gets focus next.
+          // Only when focus lands on a known element outside: a click that drops focus to nothing
+          // (relatedTarget null, e.g. Safari) must not hide the menu before its item's click fires.
+          const next = e.relatedTarget;
+          if (open && next instanceof Node && !e.currentTarget.contains(next)) toggle(false);
+        }}
+      >
         <button type="button" class={styles.button} aria-expanded={open} aria-controls="hud-menu" data-hud="menu" onClick={() => toggle(!open)}>
           <Icon name="menu" />
           <span class={styles.label}>{t('menu')}</span>

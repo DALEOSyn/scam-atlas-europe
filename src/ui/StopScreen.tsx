@@ -5,9 +5,11 @@
 import { useEffect, useRef } from 'preact/hooks';
 import { t } from '../i18n/index.ts';
 import styles from './ChapterList.module.css';
+import { useDocumentTitle } from './documentTitle.ts';
 
 export function StopScreen({ done, total, left, onKeepGoing, onBack }: { done: number; total: number; left: number; onKeepGoing: () => void; onBack: () => void }) {
   const heading = useRef<HTMLHeadingElement>(null);
+  useDocumentTitle(t('stop_title'));
   useEffect(() => heading.current?.focus(), []);
   return (
     <main class={styles.shell}>

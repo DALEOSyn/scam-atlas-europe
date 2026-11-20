@@ -50,7 +50,7 @@ export function Postcard({ ifThen, city, backdrop, start = 'back' }: { ifThen: I
   return (
     <div class={styles.postcard} data-postcard={city} data-side={side}>
       <div aria-live="polite">
-        <div class={styles.postcardFace} key={turns} data-turned={turns > 0 ? '' : undefined}>
+        <div class={styles.postcardFace} data-surface="paper" key={turns} data-turned={turns > 0 ? '' : undefined}>
           {side === 'front' && backdrop ? <img class={styles.postcardFront} src={artUrl(`backdrops/${backdrop}.svg`)} alt={t('postcard_front_alt', { place: backdropPlace(backdrop, city) })} /> : <Back ifThen={ifThen} />}
         </div>
       </div>
@@ -76,7 +76,7 @@ export function FlipCard({ ifThen, cityName }: { ifThen: IfThen; cityName: strin
   return (
     <div class={styles.postcard} data-flip-card="" data-side={flipped ? 'back' : 'front'}>
       <div aria-live="polite">
-        <div class={styles.postcardFace} key={flipped ? 'b' : 'f'} data-turned={flipped ? '' : undefined}>
+        <div class={styles.postcardFace} data-surface="paper" key={flipped ? 'b' : 'f'} data-turned={flipped ? '' : undefined}>
           <span class={styles.stamp} aria-hidden="true" />
           <p class={styles.postcardHeading}>{t('scene_flip_from', { city: cityName })}</p>
           <p class={styles.postcardLine}>{flipped ? `${ifThen.cue} ${ifThen.action}` : `${ifThen.cue.replace(/,\s*$/, '')}…`}</p>

@@ -28,7 +28,7 @@
   font: inherit;
   font-weight: var(--fw-bold);
   font-size: var(--fs-lg);
-  border: none;
+  border: var(--border-w) solid transparent; /* T-4.5 m1: drawn in forced colours */
   border-radius: var(--radius-pill);
   background: var(--color-accent);
   color: var(--color-on-accent);

@@ -9,6 +9,7 @@ import { Postcard } from './Postcard.tsx';
 import { RichText } from './RichText.tsx';
 import { t, type MessageKey } from '../i18n/index.ts';
 import styles from './DebriefView.module.css';
+import { useDocumentTitle } from './documentTitle.ts';
 
 const NEED_KEYS: Record<NonNullable<ChapterSummary['nextTier']>['needs'][number], MessageKey> = {
   rating: 'tier_need_rating',
@@ -45,6 +46,7 @@ export function ChapterDone({
   onBack: () => void;
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
+  useDocumentTitle(city ? `${city} · ${t('chapter_done_title')}` : t('chapter_done_title'));
   useEffect(() => heading.current?.focus(), []);
   const next = summary.nextTier;
   const stampKey: MessageKey = summary.stamp === 'gold' ? 'stamp_gold' : summary.stamp === 'silver' ? 'stamp_silver' : 'stamp_bronze';

@@ -4,7 +4,7 @@
  * play (the authored scenes in content/scenes are played by the production e2e).
  * Review T-S3 items 3 (listener beside the speaker), 4 (Next stays on screen) and 5 (HUD one row).
  *
- * `?view=scene&id=<fixture id>` plays a fixture scene; `?view=real&id=<scene id>` an authored scene (CR-28); `?view=hud&coach=1|0` shows the HUD with the
+ * `?view=scene&id=<fixture id>` plays a fixture scene; `?view=content&id=<scenario id>` an authored scenario (T-4.5); `?view=real&id=<scene id>` an authored scene (CR-28); `?view=hud&coach=1|0` shows the HUD with the
  * coach-mark freeze on or off. Data comes from vite.harness.config.ts (fixtures parsed by sceneSchema).
  */
 import { render } from 'preact';
@@ -25,6 +25,7 @@ declare const __HARNESS_SCENES__: Scene[];
 declare const __HARNESS_REAL_SCENES__: Scene[];
 declare const __HARNESS_SCENARIOS__: Scenario[];
 declare const __HARNESS_FINALE__: { chapters: Chapter[]; scenarios: Scenario[]; scenes: Scene[] };
+declare const __HARNESS_CONTENT__: { scenario: Scenario; slot: number }[];
 
 /**
  * CR-43: seeded arc states for `?view=app&arc=…` (a local save only, Red Line 7): C open with money in, A reported
@@ -101,6 +102,20 @@ function Harness() {
             document.body.setAttribute('data-done', JSON.stringify({ stars: r.stars, points: r.points, beats: r.beats.map((b) => b.stars) }));
           }}
         />
+      </AnnouncerProvider>
+    );
+  }
+  if (q.get('view') === 'content') {
+    // T-4.5: an authored scenario (content/scenarios) in the real ScenarioView at its chapter's slot, timers
+    // off, as its chapter's "City · Message 1 of 1" screen. On done, the result lands on <body data-done>.
+    const entry = __HARNESS_CONTENT__.find((x) => x.scenario.id === q.get('id'));
+    if (!entry) return <p>No such scenario.</p>;
+    const s = entry.scenario;
+    const ctx: RunnerContext = { balance, slot: entry.slot, settings: { timerMode: 'off', pushers: true }, stress: 10 };
+    const city = s.chapter.charAt(0).toUpperCase() + s.chapter.slice(1);
+    return (
+      <AnnouncerProvider minInterval={15}>
+        <ScenarioView scenario={s} ctx={ctx} chapterName={city} progress={{ index: 1, total: 1 }} coachMarks={['payee_check', 'fairmeasure']} onDone={() => document.body.setAttribute('data-done', '1')} />
       </AnnouncerProvider>
     );
   }

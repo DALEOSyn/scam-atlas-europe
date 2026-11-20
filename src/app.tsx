@@ -52,6 +52,7 @@ import { DamageControl, ScenarioView } from './ui/ScenarioView.tsx';
 import { SettingsPanel } from './ui/Settings.tsx';
 import { StopScreen } from './ui/StopScreen.tsx';
 import styles from './app.module.css';
+import { useDocumentTitle } from './ui/documentTitle.ts';
 
 /** `finale`: a scenario of the arc finale block (CR-43): its debrief leads back to the block, not the chapter. */
 type Progress = { index: number; total: number; finale?: FinaleStep | undefined };
@@ -141,6 +142,7 @@ function useFocusOnMount() {
  */
 export function TimingScreen({ onChoose, preselect }: { onChoose: (mode: TimerMode | 'calm') => void; preselect: TimerMode }) {
   const heading = useFocusOnMount();
+  useDocumentTitle(t('timing_title'));
   const [mode, setMode] = useState<TimerMode>(preselect);
   return (
     <main class={styles.shell}>
@@ -218,6 +220,8 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
   // Back on the start screen: focus the button that opened the page we left, else the title (QA T-2.8 m1).
   const titleRef = useRef<HTMLHeadingElement>(null);
   const titleFrom = screen.kind === 'title' ? screen.from : undefined;
+  // T-4.5 m4: the title, loading and error screens carry the game's name alone; every other screen sets its own.
+  useDocumentTitle(screen.kind === 'title' || screen.kind === 'loading' || screen.kind === 'error' ? null : screen.kind === 'finale_damage' ? t('damage_title') : undefined);
   useEffect(() => {
     if (!titleFrom) return;
     const btn = titleFrom === 'elsewhere' ? null : document.querySelector<HTMLElement>(`[data-title-button="${titleFrom}"]`);
@@ -681,6 +685,7 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
           onCoachMarkSeen={(id) => update((sv) => (sv.coachMarks.includes(id) ? sv : { ...sv, coachMarks: [...sv.coachMarks, id] }))}
           onQuit={toTitle}
           revealNames={screen.progress.finale ? (revealNames() ?? undefined) : undefined}
+          chapterName={loadFirst ? undefined : chapter.name}
           recoveryOffered={screen.progress.finale === 'recovery_offer' ? chapter.arc_finale?.damage_control.map((x) => x.step) : undefined}
           onDone={(st, r) => onDone(screen.scenario, st, r, screen.progress)}
         />

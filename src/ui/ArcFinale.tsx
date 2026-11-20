@@ -14,6 +14,7 @@ import type { TimelineRow } from '../engine/arc.ts';
 import { t } from '../i18n/index.ts';
 import { RichText } from './RichText.tsx';
 import styles from './ChapterList.module.css';
+import { useDocumentTitle } from './documentTitle.ts';
 
 /** The arc character's first name (content/cast.yaml `arc_character`), for "The same picture {name} used.". */
 export function arcName(): string {
@@ -107,6 +108,7 @@ function useHeadingFocus() {
 /** A finale step: the reveal on its own (an arc closed earlier by a report or a second Close, §30.6). */
 export function RevealScreen({ names, tell, habit, onContinue }: { names: readonly string[]; tell: string; habit: string; onContinue: () => void }) {
   const heading = useHeadingFocus();
+  useDocumentTitle(t('finale_reveal_title'));
   return (
     <main class={styles.shell} data-finale-step="reveal">
       <h1 id="finale-reveal-h" ref={heading} tabIndex={-1} class={styles.title}>
@@ -130,6 +132,7 @@ export function RevealScreen({ names, tell, habit, onContinue }: { names: readon
 /** A finale step: the red-flag timeline (all endings; B's walk-through is the same screen). h1 per UI_SPEC §7. */
 export function TimelineScreen({ rows, onContinue }: { rows: readonly TimelineRow[]; onContinue: () => void }) {
   const heading = useHeadingFocus();
+  useDocumentTitle(t('reveal_timeline'));
   return (
     <main class={styles.shell} data-finale-step="timeline">
       <h1 id="finale-timeline-h" ref={heading} tabIndex={-1} class={styles.title}>

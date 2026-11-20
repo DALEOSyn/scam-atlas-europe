@@ -10,6 +10,7 @@ import type { AtlasPage } from '../engine/story.ts';
 import { t } from '../i18n/index.ts';
 import { Postcard } from './Postcard.tsx';
 import styles from './Scene.module.css';
+import { useDocumentTitle } from './documentTitle.ts';
 
 export function AtlasPages({ pages, headingLevel = 2 }: { pages: readonly AtlasPage[]; headingLevel?: 2 | 3 }) {
   const H = headingLevel === 2 ? 'h2' : 'h3';
@@ -42,6 +43,7 @@ export function AtlasPages({ pages, headingLevel = 2 }: { pages: readonly AtlasP
 
 export function AtlasScreen({ pages, loading = false, backTo = 'title', onBack }: { pages: readonly AtlasPage[]; loading?: boolean; backTo?: 'title' | 'chapters'; onBack: () => void }) {
   const heading = useRef<HTMLHeadingElement>(null);
+  useDocumentTitle(t('atlas_title'));
   useEffect(() => heading.current?.focus(), []);
   return (
     <main class={styles.shell}>
@@ -80,6 +82,7 @@ export function SceneReplayList({
   onBack: () => void;
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
+  useDocumentTitle(t('replay_title', { city }));
   const list = useRef<HTMLUListElement>(null);
   const loaded = scenes !== null;
   useEffect(() => {

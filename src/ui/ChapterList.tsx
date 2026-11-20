@@ -7,6 +7,7 @@ import { useEffect, useRef } from 'preact/hooks';
 import type { Stamp } from '../engine/chapter.ts';
 import { t, type MessageKey } from '../i18n/index.ts';
 import styles from './ChapterList.module.css';
+import { useDocumentTitle } from './documentTitle.ts';
 
 export interface ChapterRow {
   city: string;
@@ -45,6 +46,7 @@ export function ChapterList({
   onBack: () => void;
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
+  useDocumentTitle(t('chapters_title'));
   const main = useRef<HTMLElement>(null);
   useEffect(() => {
     const sel = focus?.kind === 'atlas' ? '[data-chapters-atlas]' : focus?.kind === 'replay' ? `[data-replay-chapter="${focus.city}"]` : focus?.kind === 'play' ? `[data-play-chapter="${focus.city}"]` : null;

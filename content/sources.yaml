@@ -1968,11 +1968,11 @@ sources:
     title: "Contactos de emergência em Portugal"
     url: https://www.gov.pt/guias/contactos-de-emergencia-em-portugal
     published: 2026-04-29 (updated)
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: PT
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
-    notes: "Lists 'Linha de Apoio à Criança - 116 111' (support for children to talk about their problems; 24 hours; free calls). 112 is the single European emergency number. No emotional-support line, 116 006 or cybercrime contact on this page."
+    notes: "Lists 'Linha de Apoio à Criança - 116 111' (support for children to talk about their problems; 24 hours; free calls). 112 is the single European emergency number. G3 item 2 (re-opened 2026-11-20): Linha Saúde 24 808 24 24 24, 'O valor da chamada é o de uma chamada para a rede fixa' (landline rate); clinical contact 24h, admin 8:00-22:00; psychological counselling not mentioned. 1411 not mentioned. No 116 006 or cybercrime contact on this page."
 
   - id: pt-gov-sns24-psych-2022
     publisher: Governo de Portugal (gov.pt, news)
@@ -2178,6 +2178,17 @@ sources:
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
     notes: "BRIS Barnens telefon 116 111, 'dygnet runt alla dagar'; Mind Självmordslinjen 90101, open around the clock; Jourhavande medmänniska 08-702 16 80, daily 21-06. Cost and ages not stated. 116 123 not mentioned."
+
+  - id: se-bris-prata-med-oss
+    publisher: Bris (Barnens Rätt i Samhället; operator site)
+    title: "Prata med Bris"
+    url: https://www.bris.se/for-barn-och-unga/prata-med-oss/
+    published: "n/d (footer '© Bris 2026')"
+    accessed: "2026-11-20"
+    region: SE
+    tier: 4
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "G3 item 4 (2026-11-20). Section 'Ring 116 111': 'Telefonen är alltid öppen – även på natten'; 'det kostar ingenting'. Intro: 'Det kostar inget att höra av sig, syns inte på telefonräkningen'. For under-18s. English spoken on the phone. Operator site, so it backs the help screen only."
 
   - id: se-krisinformation-phone-numbers
     publisher: Krisinformation.se (Swedish government crisis-information service)

@@ -152,10 +152,11 @@ fallbacks:
 eu:
   - id: europol-report-signpost
     name: "Europol: Report cybercrime online"
-    body: "Europol does not take reports itself. Its page sends you to your country's official online reporting site."
+    body: "The agency's page sends you to your country's official online reporting site."
     url: https://www.europol.europa.eu/report-a-crime/report-cybercrime-online
     checked: 2026-11-19
     sources: [eu-europol-report-cybercrime]
+    review_note: "G3 item 9 (2026-11-20): dropped the inferred 'does not take reports itself'. The body now says only what the page says: it redirects you to your country's reporting site."
 
   - id: ecc-net
     name: "European Consumer Centres Network (ECC-Net)"
@@ -209,10 +210,10 @@ countries:
         - number: "106"
           label: "Tele-Onthaal (Dutch). Call costs may apply."
         - number: "107"
-          label: "Télé-Accueil (French): free, 24/7"
+          label: "Télé-Accueil (French). Call costs may apply."
       checked: 2026-11-19
       sources: [be-police-autres-numeros, be-brussels-hulpdiensten]
-      review_note: "107 free, anonymous, 24/7 per police.be (zone 5329). 106 from the Brussels Region portal, which gives no cost or hours; not verified on the operator's site, hence 'Call costs may apply.'"
+      review_note: "G3 item 3 (2026-11-20): 'free, 24/7' removed from the 107 label. Both numbers are confirmed on the Brussels Region portal, which gives no cost or hours. The 107 cost and hours came only from police.be (zone 5329), which was down at G3. PRE-G4 RE-CHECK: open police.be zone 5329 or the operator's own site in a browser within 30 days before G4; restore 'Free, 24/7' only if an official page says so."
     - id: be-youth-line
       role: child
       name: "Awel (Dutch) / Écoute-Enfants (French)"
@@ -228,15 +229,15 @@ countries:
     - id: be-crisis
       role: crisis
       name: "Thinking about ending your life, or worried about someone?"
-      body: "1813 (Dutch) and 0800 32 123 (French) are free, day and night. In danger now? Call 112."
+      body: "Call 1813 (Dutch) or 0800 32 123 (French). In danger now? Call 112."
       phones:
         - number: "1813"
           label: "Zelfmoordlijn (Dutch): free, anonymous, day and night"
         - number: "0800 32 123"
-          label: "Suicide prevention line (French): free, day and night"
+          label: "Suicide prevention line (French). Call costs may apply."
       checked: 2026-11-19
       sources: [be-zelfmoord1813, be-police-autres-numeros, be-brussels-hulpdiensten]
-      review_note: "T-3.12r. 1813: operator site (zelfmoord1813.be) says anonymous, free, phone 24/7; also on the Brussels Region portal. 0800 32 123: police.be (zone 5329) says suicide prevention line, free, 24/7; the French-language operator's own site was NOT opened, so its name is not shown. Crisis wording goes to the G3 human review."
+      review_note: "T-3.12r. 1813: operator site (zelfmoord1813.be) says anonymous, free, phone 24/7; also on the Brussels Region portal. G3 item 3 (2026-11-20): 'free, day and night' removed for 0800 32 123 from the label and the body. Its number is confirmed on the Brussels Region portal; its cost and hours came only from police.be (zone 5329), which was down at G3. PRE-G4 RE-CHECK: open zone 5329 or the French-language operator's own site in a browser within 30 days before G4; restore 'free, day and night' only if an official page says so. The operator's name is not shown (own site not opened). Crisis wording goes to the G3 human review."
 
   DE:
     - id: de-116111
@@ -359,10 +360,10 @@ countries:
       body: "Free advice line after a scam."
       phones:
         - number: "0 805 805 817"
-          label: "Free advice"
+          label: "Free advice, Monday to Friday 9:00-18:30"
       checked: 2026-11-19
       sources: [fr-cybermalveillance-fiche-hameconnage, fr-justice-arnaque-escroquerie]
-      review_note: "G3 re-check 2026-11-19 on justice.fr (and service-public.gouv.fr): same number, free from France, Monday to Friday 9:00-18:30. Hours not shown yet: ask the producer whether to add them to the label."
+      review_note: "G3 re-check 2026-11-19 on justice.fr (and service-public.gouv.fr): same number, free from France, Monday to Friday 9:00-18:30. G3 item 8 (2026-11-20): hours added to the label, in the same style as the other FR labels."
     - id: fr-cybermalveillance
       role: report
       name: "Cybermalveillance.gouv.fr"
@@ -493,13 +494,13 @@ countries:
     - id: it-112
       role: police
       name: "112"
-      body: "Call if someone claiming to be police or a relative 'in trouble' is pressuring you right now."
+      body: "Call if a caller says a relative is 'in trouble', or a caller asks you to hand over money or valuables."
       phones:
         - number: "112"
           label: "Emergency"
       checked: 2026-11-19
       sources: [it-carabinieri-contro-truffe]
-      review_note: "G3 (2026-11-19): only partly verified. The number is right, but the fake-police / relative-in-trouble wording is not directly backed by the cited source. Open item 7 in docs/patterns/G3_SOURCES_CHECK.md."
+      review_note: "G3 item 7 (2026-11-20): body narrowed to what the Carabinieri page supports. It names 112 for the fake-relative trick and for phone requests for money. Its fake-police paragraph does not name 112, so fake police is no longer in the body."
     - id: it-polizia-postale
       role: report
       name: "Polizia Postale e delle comunicazioni"
@@ -663,20 +664,20 @@ countries:
       body: "Talk to a counsellor through the national health line, in Portuguese or English."
       phones:
         - number: "808 24 24 24"
-          label: "Portuguese or English. Call costs may apply."
-      checked: 2026-11-19
-      sources: [pt-gov-sns24-psych-2022]
-      review_note: "Official page (2022) gives no cost, hours or menu option: show none and say 'Call costs may apply.' The 1411 line is a separate crisis row (pt-1411)."
+          label: "Portuguese or English. Normal call rate."
+      checked: 2026-11-20
+      sources: [pt-gov-sns24-psych-2022, pt-gov-emergency-contacts-2026]
+      review_note: "G3 item 2 (2026-11-20): label now 'Normal call rate.' gov.pt's emergency guide (updated 2026-04-29, re-opened 2026-11-20) says a call to 808 24 24 24 costs the same as a call to a landline ('rede fixa'). The 2022 page gives the counselling service and English; neither page gives the menu option, so none is shown. Clinical line 24h per the guide, but the counselling service's own hours are not stated: no hours shown. The 1411 line is a separate crisis row (pt-1411)."
     - id: pt-1411
       role: crisis
       name: "Thinking about ending your life, or worried about someone?"
-      body: "1411 is free, day and night. In danger now? Call 112."
+      body: "1411 is answered by psychologists and mental-health nurses. In danger now? Call 112."
       phones:
         - number: "1411"
-          label: "Free, day and night"
+          label: "Mental-health support line (SNS 24). Call costs may apply."
       checked: 2026-11-19
       sources: [pt-gov-1411-2025, pt-deco-1411-2025]
-      review_note: "Round 2. Number, start (2025-09-10) and staffing (psychologists and mental-health nurses; part of SNS 24 but autonomous) from the government page, which states no cost or hours. 'Free' and '24 hours a day, every day of the year' from DECO PROteste (consumer body, 2025-09-09), not from a government page: confirm on an SNS 24 page at G3. Crisis wording goes to the G3 human review."
+      review_note: "G3 item 1 (2026-11-20): cost and hours removed from body and label. Number, start (2025-09-10) and staffing (psychologists and mental-health nurses; part of SNS 24 but autonomous) come from the government page, which states no cost or hours. 'Free' and '24 hours' rest only on DECO PROteste (consumer body, tier 4), so they stay out of player copy until an SNS 24 or government page confirms them. Re-check sns24.gov.pt within 30 days before G4. Crisis wording goes to the G3 human review."
     - id: pt-116111
       role: child
       name: "116 111: Linha de Apoio à Criança"
@@ -733,10 +734,10 @@ countries:
       body: "Line for children and young people, open day and night."
       phones:
         - number: "116 111"
-          label: "Day and night. Call costs may apply."
-      checked: 2026-11-19
-      sources: [se-ki-nasp-hjalplinjer, se-krisinformation-phone-numbers]
-      review_note: "Cost not stated on either page. The EU decision on 116 numbers (2007/116/EC, recital 3) says they 'should be freephone numbers' but without obliging operators to carry calls at their own expense, so it does not prove a call is free: don't say 'free' for SE. The BRIS site itself was not opened."
+          label: "Free, day and night."
+      checked: 2026-11-20
+      sources: [se-bris-prata-med-oss, se-ki-nasp-hjalplinjer, se-krisinformation-phone-numbers]
+      review_note: "G3 item 4 (2026-11-20): label changed to 'Free, day and night.' The operator's own page (bris.se 'Prata med Bris', opened 2026-11-20) says the phone is always open, even at night, that it costs nothing, and that the call doesn't show on the phone bill. NASP and Krisinformation confirm 24/7 but state no cost. The 2007 EU 116 decision alone is still not treated as proof of a free call."
 
 # ---------------------------------------------------------------- 4b. Coverage per chapter country (T-3.8r, 2026-11-19)
 # report = national cyber/fraud reporting route · advice = advice line (not a report) · police · bank
@@ -750,10 +751,10 @@ countries:
 #   ES  report: es-police (INCIBE's own report page not opened)   advice: es-017   police: es-police   bank: es-bank, es-bde-complaint   support: FALLBACK   child: es-116111 (regional source)   crisis: es-024
 #   PL  report: pl-8080, pl-cert-incident   police: pl-police   bank: pl-bank   support: pl-116123   child: pl-116111   crisis: none
 #   IT  report: it-polizia-postale (no URL)   police: it-112   bank: it-bank   support: it-telefono-amico (NGO site only, normal call cost)   child: it-114   crisis: none
-#   PT  report: pt-police (no online channel verified)   police: pt-police   bank: pt-bank   support: pt-sns24-psych (cost unknown)   child: pt-116111   crisis: pt-1411 (free/24h from consumer body)
+#   PT  report: pt-police (no online channel verified)   police: pt-police   bank: pt-bank   support: pt-sns24-psych (normal call rate, G3)   child: pt-116111   crisis: pt-1411 (no cost or hours shown, G3)
 #   IE  report: ie-garda, ie-cbi-report (unauthorised firms)   police: ie-garda, ie-garda-confidential (investment fraud only)   bank: ie-bank   support: ie-samaritans   child: ie-childline   crisis: none
-#   SE  report: se-police   police: se-police   bank: se-bank (T-3.10r)   support: se-jourhavande (21:00-06:00, cost unknown)   child: se-bris (cost unknown)   crisis: se-mind
-#   BE  report: be-safeonweb-forward   advice: be-fsma (T-3.12r)   police: be-police (updated T-3.12r)   bank: be-card-stop (cost unknown)   support: be-listening-line (106 cost unknown)   child: be-youth-line   crisis: be-crisis (T-3.12r)
+#   SE  report: se-police   police: se-police   bank: se-bank (T-3.10r)   support: se-jourhavande (21:00-06:00, cost unknown)   child: se-bris (free, operator site, G3)   crisis: se-mind
+#   BE  report: be-safeonweb-forward   advice: be-fsma (T-3.12r)   police: be-police (updated T-3.12r)   bank: be-card-stop (cost unknown)   support: be-listening-line (106 and 107 cost unknown, G3)   child: be-youth-line   crisis: be-crisis (T-3.12r)
 #   EU / home (generic): eu.europol-report-signpost, eu.ecc-net + fallbacks.police / bank / support / child_helpline; no crisis row
 
 # ---------------------------------------------------------------- 5. Not included on purpose (keep out until verified)
@@ -763,9 +764,12 @@ countries:
 #   Portuguese Queixa Eletrónica and CNCS incident form; Spanish Teléfono de la Esperanza (third-party pages only);
 #   Belgian Card Stop's old number 070 344 344 (outdated); German Länder online-police URLs (not opened one by one).
 # - Round 2 (2026-11-19): crisis lines (ES 024, SE 90101, PT 1411, FR 3114) are NEVER shown as support; they are role `crisis`
-#   rows only. French 119 (children in danger) not listed. "Free" is not claimed for BRIS 116 111, BE 106, BE 078 170 170,
+#   rows only. French 119 (children in danger) not listed. "Free" is not claimed for BE 106, BE 078 170 170,
 #   SNS 24 808 24 24 24, Jourhavande medmänniska or Mind 90101 (no page states a cost; the 2007 EU 116 decision does not
 #   oblige free calls).
+# - G3 outcome (2026-11-20): "free" and "24/7" are not claimed for PT 1411, BE 107 or BE 0800 32 123 until an official
+#   page confirms them (re-check before G4). BRIS 116 111 is now "Free, day and night." (operator site). SNS 24
+#   808 24 24 24 is now "Normal call rate." (gov.pt).
 # - T-3.10r (2026-11-19): Garda Confidential Line 1800 666 111 now listed (ie-garda-confidential) with scope
 #   "suspected investment fraud". Not shown: the Central Bank's third-party report-form URL (link the centralbank.ie page);
 #   the Swedish financial supervisor's warning list and report route (named by the consumer agency, own pages not opened);

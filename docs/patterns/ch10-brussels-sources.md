@@ -73,7 +73,7 @@ Companion to GDD §18 (Brussels summary), §28.5 and §29.5 (hand-overs) until t
    - Awel 102 (Dutch) / Écoute-Enfants 103 (French). (help-list row be-youth-line)
 9. **Crisis row, last:** "Thinking about ending your life, or worried about someone?"
    - Zelfmoordlijn **1813** (Dutch: free, anonymous, day and night) (be-zelfmoord1813).
-   - Suicide prevention line **0800 32 123** (French: free, day and night) (be-police-autres-numeros).
+   - Suicide prevention line **0800 32 123** (French; "Call costs may apply." since G3, 2026-11-20: "free, day and night" not re-confirmed, police.be down, re-check before G4) (be-police-autres-numeros).
    - "In danger now? Call 112."
    - Wording goes to G3 review.
 

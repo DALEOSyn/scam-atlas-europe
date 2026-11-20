@@ -8,7 +8,7 @@ import { scenarioRules } from '../../scripts/lib/rules.ts';
 import type { Brand } from '../../src/content/schema.ts';
 import { realRegistries } from './fixtures.ts';
 import { rawTransfer } from '../unit/engine/cr-fixtures.ts';
-import { isAllowedSourceHost } from '../../scripts/lib/source-hosts.ts';
+import { isAcceptedSource, isAllowedSourceHost } from '../../scripts/lib/source-hosts.ts';
 import {
   balanceSchema,
   brandSchema,
@@ -294,6 +294,23 @@ describe('scenario cross-checks', () => {
   });
 });
 
+describe('debrief may not rest on tier-4 sources alone (Red Line 6, G4 vetting)', () => {
+  const run = (tiers: [number | undefined, number | undefined]): string[] => {
+    const sources = new Map([
+      ['europol-scam-smishing', { id: 'europol-scam-smishing', title: 't', placeholder: false, tier: tiers[0] }],
+      ['bsi-smishing', { id: 'bsi-smishing', title: 't', placeholder: false, tier: tiers[1] }],
+    ]);
+    const r: ContentReport = { errors: [], warnings: [], scenarios: new Map() };
+    const base = rawTransfer() as { debrief: Record<string, unknown> };
+    const raw = { ...base, debrief: { ...base.debrief, sources: ['europol-scam-smishing', 'bsi-smishing'] } };
+    checkScenario(fileFor(raw), raw, loadBrands(CONTENT, r), sources, r);
+    return r.errors.filter((e) => e.includes('every cited source is tier 4'));
+  };
+  it('only tier-4 sources is an error', () => expect(run([4, 4])).toHaveLength(1));
+  it('one primary source is enough', () => expect(run([4, 2])).toEqual([]));
+  it('untiered sources are not treated as secondary', () => expect(run([undefined, 4])).toEqual([]));
+});
+
 describe('scenario file name = id (T-4.6, sceptic PR #72: the game loads scenarios by file name)', () => {
   const sources = new Map([
     ['europol-scam-smishing', { id: 'europol-scam-smishing', title: 't', placeholder: false }],
@@ -345,11 +362,36 @@ describe('sources.yaml (finding 8)', () => {
     expect(sourcesFileSchema.safeParse({ sources: [{ id: 'x', title: 't', placeholder: true }] }).success).toBe(true);
   });
 
-  it('host allowlist matches hosts and subdomains (warn-only in content:validate)', () => {
+  it('host allowlist matches hosts and subdomains', () => {
     expect(isAllowedSourceHost('https://www.europol.europa.eu/x')).toBe(true);
     expect(isAllowedSourceHost('https://www.bsi.bund.de/x')).toBe(true);
     expect(isAllowedSourceHost('https://europa.eu.evil.example/x')).toBe(false);
     expect(isAllowedSourceHost('https://blog.example/x')).toBe(false);
+  });
+
+  it('secondary hosts are accepted only for tier-4 sources (G4 vetting)', () => {
+    expect(isAcceptedSource('https://nos.nl/l/1', 4)).toBe(true);
+    expect(isAcceptedSource('https://nos.nl/l/1', 2)).toBe(false);
+    expect(isAcceptedSource('https://nos.nl/l/1', undefined)).toBe(false);
+    expect(isAcceptedSource('https://www.europol.europa.eu/x', 1)).toBe(true);
+    expect(isAcceptedSource('https://blog.example/x', 4)).toBe(false);
+    expect(isAcceptedSource('https://nos.nl.evil.example/x', 4)).toBe(false);
+    expect(isAcceptedSource('https://www.telefonseelsorge.de/', 4)).toBe(true);
+    expect(isAcceptedSource('https://www.telefonseelsorge.de/', 2)).toBe(false);
+  });
+
+  it('a source on an unlisted host is a content:validate error, not a warning (G4 vetting)', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'sae-hosts-'));
+    try {
+      cpSync(CONTENT, join(dir, 'content'), { recursive: true });
+      const file = join(dir, 'content', 'sources.yaml');
+      writeFileSync(file, readFileSync(file, 'utf8').replace(/url: (["']?)https:\/\/www\.bsi\.bund\.de\//, 'url: $1https://blog.example/'));
+      const r = validateContent(join(dir, 'content'));
+      expect(r.errors.some((e) => e.includes('host is not on the reputable-source host list') && e.includes('blog.example'))).toBe(true);
+      expect(r.warnings.some((w) => w.includes('host is not on the reputable-source host list'))).toBe(false);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });
 

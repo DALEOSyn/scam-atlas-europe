@@ -71,6 +71,20 @@ const fixtureScenarios: Scenario[] = readdirSync(FIXTURE_SCENARIOS_DIR)
   .map((f) => scenarioSchema.parse(parse(readFileSync(join(FIXTURE_SCENARIOS_DIR, f), 'utf8'))));
 
 /**
+ * T-4.5: every authored scenario in content/scenarios, as the game parses it, for the dark-mode axe pass
+ * (`?view=content&id=<scenario id>`), one or more views per chapter.
+ */
+const CONTENT_SCENARIOS_DIR = resolve(import.meta.dirname, 'content', 'scenarios');
+const contentScenarios: { scenario: Scenario; slot: number }[] = readdirSync(CONTENT_SCENARIOS_DIR, { withFileTypes: true })
+  .filter((d) => d.isDirectory())
+  .flatMap((d) => {
+    const chapter = chapterSchema.parse(parse(readFileSync(resolve(import.meta.dirname, 'content', 'chapters', `${d.name}.yaml`), 'utf8')));
+    return readdirSync(join(CONTENT_SCENARIOS_DIR, d.name))
+      .filter((f) => f.endsWith('.yaml'))
+      .map((f) => ({ scenario: scenarioSchema.parse(parse(readFileSync(join(CONTENT_SCENARIOS_DIR, d.name, f), 'utf8'))), slot: chapter.slot }));
+  });
+
+/**
  * CR-40 … CR-44: the finale fixture (tests/fixtures/finale): a slot-10 chapter with an arc finale block, its
  * scenarios and resolution scenes, played in the real App (`?view=app&arc=<C|A|B|R>`). A finished stub chapter
  * (`fxpast`, slot 1, the Berlin fixture resolution as its If-then) gives the Open Evening a postcard to pick, and
@@ -99,7 +113,7 @@ export default defineConfig({
   root: resolve(import.meta.dirname, 'tests', 'e2e', 'harness'),
   base: '/',
   publicDir: harnessPublicDir(),
-  define: { __HARNESS_SCENES__: JSON.stringify(scenes), __HARNESS_REAL_SCENES__: JSON.stringify(realScenes), __HARNESS_SCENARIOS__: JSON.stringify(fixtureScenarios), __HARNESS_FINALE__: JSON.stringify(finale) },
+  define: { __HARNESS_SCENES__: JSON.stringify(scenes), __HARNESS_REAL_SCENES__: JSON.stringify(realScenes), __HARNESS_SCENARIOS__: JSON.stringify(fixtureScenarios), __HARNESS_FINALE__: JSON.stringify(finale), __HARNESS_CONTENT__: JSON.stringify(contentScenarios) },
   plugins: [yamlPlugin(), preact()],
   build: { outDir: resolve(import.meta.dirname, 'dist-harness'), emptyOutDir: true, target: 'es2022' },
 });

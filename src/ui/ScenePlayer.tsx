@@ -24,6 +24,7 @@ import { t, type MessageKey } from '../i18n/index.ts';
 import { artUrl, FlipCard, Postcard } from './Postcard.tsx';
 import { HelpCards } from './HelpCards.tsx';
 import styles from './Scene.module.css';
+import { useDocumentTitle } from './documentTitle.ts';
 
 export interface FlipPick {
   city: string;
@@ -101,13 +102,15 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
   const [helpFrom, setHelpFrom] = useState<'note' | 'panels'>('panels');
   const [picked, setPicked] = useState<Record<number, number>>({});
   const heading = useRef<HTMLHeadingElement>(null);
+  const helpButton = useRef<HTMLButtonElement>(null);
+  useDocumentTitle(view === 'note' ? t('scene_note_title') : view === 'help' ? t('help_title') : title);
   /** The heading row (h1, Help, Skip): kept in view when a scene opens (CR-28 round 2). */
   const headRef = useRef<HTMLElement>(null);
   const flipRecorded = useRef(false);
   const items = useRef<(HTMLLIElement | null)[]>([]);
   const replies = useRef<(HTMLParagraphElement | null)[]>([]);
   /** What gets focus after the next render: the heading, a panel, or a choice reply. */
-  const focusNext = useRef<{ kind: 'heading' } | { kind: 'panel'; i: number } | { kind: 'reply'; i: number } | { kind: 'picked' }>({ kind: 'heading' });
+  const focusNext = useRef<{ kind: 'heading' } | { kind: 'help' } | { kind: 'panel'; i: number } | { kind: 'reply'; i: number } | { kind: 'picked' }>({ kind: 'heading' });
   /** CR-44(a), QA B3: the "You picked {city}." line, focused after a postcard pick. */
   const pickedLine = useRef<HTMLParagraphElement | null>(null);
 
@@ -157,7 +160,8 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
       items.current.slice(0, f.i).forEach((li) => li && liftArtCap(li));
       el.focus({ preventScroll: true });
       revealPanel(el, footerRef.current, prefersReducedMotion() ? 'auto' : 'smooth');
-    } else if (f.kind === 'reply') replies.current[f.i]?.focus();
+    } else if (f.kind === 'help') helpButton.current?.focus();
+    else if (f.kind === 'reply') replies.current[f.i]?.focus();
     else if (f.kind === 'picked') pickedLine.current?.focus();
     else {
       heading.current?.focus({ preventScroll: true });
@@ -216,7 +220,7 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
   const helpLabel = t(sensitive ? 'scene_help_sensitive' : 'scene_help');
   const chrome = (
     <div class={styles.chrome}>
-      <button type="button" class={sensitive ? `${styles.help} ${styles.helpStrong}` : styles.help} data-scene="help"
+      <button type="button" class={sensitive ? `${styles.help} ${styles.helpStrong}` : styles.help} data-scene="help" ref={helpButton}
         onClick={() => {
           setHelpFrom(view === 'note' ? 'note' : 'panels');
           setView('help');
@@ -259,9 +263,11 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
   }
 
   if (view === 'help') {
-    // Back where the player was: the content note, or the same panel (focus on it).
+    // Back where the player was. From the panels: focus on the same panel, so the reading place is kept
+    // (learning-psychologist, T-4.5 round 2). From the content note: focus on the help button that opened
+    // the help (T-4.5 m5), as Settings, Fairmeasure and the Check card return to their trigger.
     const back = () => {
-      if (helpFrom === 'panels') focusNext.current = { kind: 'panel', i: shown - 1 };
+      focusNext.current = helpFrom === 'panels' ? { kind: 'panel', i: shown - 1 } : { kind: 'help' };
       setView(helpFrom);
     };
     return (

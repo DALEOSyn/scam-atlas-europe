@@ -90,7 +90,7 @@ test('Amsterdam 2-3 bank card at 720×450: payee and IBAN are never under the ju
   await page.setViewportSize({ width: 720, height: 450 });
   await open(page, seed({ home: { ...done, position: 0 }, berlin: { ...done, position: 1 } }), 'Amsterdam');
   const next = async () => {
-    const consequence = page.getByRole('heading', { level: 3, name: 'What happened' });
+    const consequence = page.getByRole('heading', { level: 2, name: 'What happened' }).and(page.locator('#consequence-h'));
     const debrief = page.getByRole('heading', { level: 1, name: /This was (a scam|genuine):/ });
     await expect(consequence.or(debrief)).toBeVisible();
     if (await consequence.isVisible()) await page.getByRole('button', { name: 'Continue' }).click();
@@ -125,7 +125,7 @@ test('CR-28 (Paris QA r3): Shift+Tab to a bank checkable at 720×450 leaves it f
   await page.setViewportSize({ width: 720, height: 450 });
   await open(page, seed({ home: { ...done, position: 0 }, berlin: { ...done, position: 1 } }), 'Amsterdam');
   const next = async () => {
-    const consequence = page.getByRole('heading', { level: 3, name: 'What happened' });
+    const consequence = page.getByRole('heading', { level: 2, name: 'What happened' }).and(page.locator('#consequence-h'));
     const debrief = page.getByRole('heading', { level: 1, name: /This was (a scam|genuine):/ });
     await expect(consequence.or(debrief)).toBeVisible();
     if (await consequence.isVisible()) await page.getByRole('button', { name: 'Continue' }).click();

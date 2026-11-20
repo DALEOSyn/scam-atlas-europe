@@ -3,7 +3,7 @@
  * never leave it. The timer is announced only at thresholds (role=timer, aria-live off); a "Time left"
  * item in the menu reads it on demand. Pause opens the non-modal "Take a breath" panel.
  */
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import type { RunnerView } from '../engine/runner.ts';
 import { t, type MessageKey } from '../i18n/index.ts';
 import { Icon } from './Icon.tsx';
@@ -47,10 +47,20 @@ export function Hud({ view, progress, chip, timersOff, onPause, menu }: { view: 
     setOpen(on);
     menu.onOpen(on);
   };
-  useEffect(() => {
+  // T-4.5 round 2 (CI): a layout effect, so the Escape listener is on as soon as the menu is rendered open.
+  // A passive effect runs only after the next paint (Preact: rAF or a 35 ms fallback), so an Escape pressed
+  // in that window, right after opening and Tabbing in (fast keyboards, screen readers, a busy CI runner),
+  // was lost and the menu stayed open.
+  useLayoutEffect(() => {
     if (!open) return undefined;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') toggle(false);
+      if (e.key !== 'Escape') return;
+      // T-4.5 B1: the menu is about to be hidden; if it holds focus, hand focus back to its button
+      // (as Settings and Fairmeasure do), never to <body>.
+      const wrap = menuRef.current;
+      const inside = !!wrap && wrap.contains(document.activeElement);
+      toggle(false);
+      if (inside) wrap?.querySelector<HTMLButtonElement>('[data-hud="menu"]')?.focus();
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
@@ -110,7 +120,17 @@ export function Hud({ view, progress, chip, timersOff, onPause, menu }: { view: 
         <Icon name="breath" />
         <span class={styles.label}>{view.pause.available ? (overwhelmed ? t('pause_breath') : t('pause')) : t('pause_cooldown', { seconds: Math.ceil(view.pause.cooldownLeft) })}</span>
       </button>
-      <div class={styles.menuWrap} ref={menuRef}>
+      <div
+        class={styles.menuWrap}
+        ref={menuRef}
+        onFocusOut={(e) => {
+          // T-4.5 m2: Tabbing out of the open menu closes it, so it never covers what gets focus next.
+          // Only when focus lands on a known element outside: a click that drops focus to nothing
+          // (relatedTarget null, e.g. Safari) must not hide the menu before its item's click fires.
+          const next = e.relatedTarget;
+          if (open && next instanceof Node && !e.currentTarget.contains(next)) toggle(false);
+        }}
+      >
         <button type="button" class={styles.button} aria-expanded={open} aria-controls="hud-menu" data-hud="menu" onClick={() => toggle(!open)}>
           <Icon name="menu" />
           <span class={styles.label}>{t('menu')}</span>

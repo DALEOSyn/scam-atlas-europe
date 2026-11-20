@@ -10,7 +10,8 @@ async function axeClean(page: Page) {
 
 const debriefHeading = (page: Page) => page.getByRole('heading', { level: 1, name: /This was (a scam|genuine):|Teo was right/ });
 
-const consequenceHeading = (page: Page) => page.getByRole('heading', { level: 3, name: 'What happened' });
+// The consequence step's own heading (h2 since T-4.5 R3; the debrief also has an h2 "What happened").
+const consequenceHeading = (page: Page) => page.getByRole('heading', { level: 2, name: 'What happened' }).and(page.locator('#consequence-h'));
 
 /**
  * The consequence step after every resolved scenario (layer-1 ruling 2026-11-19): focus lands on its

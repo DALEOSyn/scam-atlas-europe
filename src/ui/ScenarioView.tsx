@@ -35,6 +35,7 @@ import { COACH_FAIRMEASURE, FairmeasurePanel, RegisterResult, regulatorName } fr
 import { registerAvailable, registerEntries } from '../content/brands.ts';
 import { linePace, readingHoldSeconds, unrevealedTargets } from './text.ts';
 import styles from './ScenarioView.module.css';
+import { useDocumentTitle } from './documentTitle.ts';
 
 export interface ScenarioViewProps {
   scenario: Scenario;
@@ -56,6 +57,8 @@ export interface ScenarioViewProps {
   revealNames?: readonly string[] | undefined;
   /** CR-53: steps the arc damage control just offered (their harmful-step feedback is not repeated on a read-only "Your steps"). */
   recoveryOffered?: readonly string[] | undefined;
+  /** T-4.5 m3/m4: the chapter's display name ("Berlin"), for the screen's h1 and the document title. */
+  chapterName?: string | undefined;
 }
 
 function useDesk(): boolean {
@@ -164,9 +167,9 @@ function ReadOnlySteps({ view, offered, onDone }: { view: NonNullable<RunnerView
   const { helps, harmful } = readOnlySteps(view.options, offered);
   return (
     <section class={styles.panel} aria-labelledby="damage-feedback-heading" data-recovery-readonly="">
-      <h3 id="damage-feedback-heading" ref={heading} tabIndex={-1}>
+      <h2 id="damage-feedback-heading" ref={heading} tabIndex={-1}>
         {t('damage_feedback_title')}
-      </h3>
+      </h2>
       {view.note ? <p data-recovery-note="">{view.note}</p> : null}
       <ol class={styles.feedback}>
         {helps.map((o) => (
@@ -226,9 +229,9 @@ function DamagePicks({ view, intro, onDone }: { view: NonNullable<RunnerView['re
   if (submitted) {
     return (
       <section class={styles.panel} aria-labelledby="damage-feedback-heading">
-        <h3 id="damage-feedback-heading" ref={feedbackHeading} tabIndex={-1}>
+        <h2 id="damage-feedback-heading" ref={feedbackHeading} tabIndex={-1}>
           {t('damage_feedback_title')}
-        </h3>
+        </h2>
         <ol class={styles.feedback}>
           {picks.map((step) => {
             const harmful = byStep.get(step)?.category === 'harmful';
@@ -260,9 +263,9 @@ function DamagePicks({ view, intro, onDone }: { view: NonNullable<RunnerView['re
   }
   return (
     <section class={styles.panel} aria-labelledby="damage-heading">
-      <h3 id="damage-heading" ref={heading} tabIndex={-1}>
+      <h2 id="damage-heading" ref={heading} tabIndex={-1}>
         {t('damage_title')}
-      </h3>
+      </h2>
       {intro ? (
         <p data-damage-intro="">
           <strong>{intro}</strong>
@@ -302,7 +305,13 @@ function DamagePicks({ view, intro, onDone }: { view: NonNullable<RunnerView['re
 }
 
 /** One scenario from arrival to the end of damage control. Give it a `key` to restart. */
-export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines = 'auto', onCallLines, alwaysTranslate = false, onQuit, settings, defaultTimer = 'standard', onSettings, coachMarks = [], onCoachMarkSeen, revealNames, recoveryOffered }: ScenarioViewProps) {
+/** The scenario screen's name (T-4.5 m3/m4): "Berlin · Message 3 of 10", parts left out when unknown. */
+export function scenarioTitle(chapterName: string | undefined, progress: { index: number; total: number } | null): string {
+  const message = progress ? t('progress_label', { n: progress.index, total: progress.total }) : t('scenario_h1_plain');
+  return chapterName ? t('scenario_h1', { city: chapterName, message }) : message;
+}
+
+export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines = 'auto', onCallLines, alwaysTranslate = false, onQuit, settings, defaultTimer = 'standard', onSettings, coachMarks = [], onCoachMarkSeen, revealNames, recoveryOffered, chapterName }: ScenarioViewProps) {
   const runner = useScenarioRunner(scenario, ctx);
   const { view, state } = runner;
   const announce = useContext(AnnounceContext);
@@ -735,6 +744,8 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
     if (showJump && beat && jumpBeat !== beat.id) setJumpBeat(beat.id);
   }, [showJump, beat?.id]);
   const jumpReserved = !desk && live && !!beat && jumpBeat === beat.id;
+  const screenTitle = scenarioTitle(chapterName, progress);
+  useDocumentTitle(screenTitle);
 
   return (
     <div class={styles.play}>
@@ -775,6 +786,10 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
       ) : null}
       <main class={beat ? styles.main : `${styles.main} ${styles.solo}`} inert={blocked}>
         <CheckContext.Provider value={api}>
+          {/* T-4.5 m3: the screen's h1 ("Berlin · Message 3 of 10"); visually hidden, the HUD shows the count. */}
+          <h1 class={styles.vh} data-scenario-h1="">
+            {screenTitle}
+          </h1>
           {showJump || jumpReserved ? (
             // Hidden (not unmounted) once the options are in view: it keeps its place, and visibility:hidden
             // takes it out of the tab order and the accessibility tree.
@@ -967,9 +982,9 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
             ) : null}
             {view.phase === 'consequence' ? (
               <div class={styles.panel}>
-                <h3 id="consequence-h" ref={consequenceRef} tabIndex={-1}>
+                <h2 id="consequence-h" ref={consequenceRef} tabIndex={-1}>
                   {t('consequence_title')}
-                </h3>
+                </h2>
                 <p class={styles.caption}>
                   <Icon name="info" />
                   <span>{view.consequenceDeadline ? deadlineText(view.consequenceDeadline, scenario.pressure.honest_deadline) : <RichText text={view.consequence ?? ''} />}</span>

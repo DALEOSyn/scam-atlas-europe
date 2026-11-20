@@ -376,7 +376,7 @@ describe('CR-27 round 2: chapter rules card, resume and the way back (psych M1, 
     await screen.findByRole('heading', { level: 1, name });
     fireEvent.click(screen.getByRole('button', { name: 'Start' }));
     fireEvent.click(await screen.findByRole('button', { name: 'Check in the app first' }));
-    await waitFor(() => screen.getByRole('heading', { level: 3, name: 'What happened' }));
+    await waitFor(() => screen.getByRole('heading', { level: 2, name: 'What happened' }));
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     await waitFor(() => screen.getByRole('heading', { level: 1, name: /This was genuine/ }));
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));

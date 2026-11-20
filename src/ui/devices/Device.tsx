@@ -1264,7 +1264,7 @@ function Letter(p: DeviceProps) {
   const segs = segmentMessage(m);
   return (
     <section class={styles.table} aria-label={t('region_letter')}>
-      <article class={styles.letter} aria-label={t('heading_letter', { from: m.letterhead ?? '' })} lang={m.lang}>
+      <article class={styles.letter} data-surface="paper" aria-label={t('heading_letter', { from: m.letterhead ?? '' })} lang={m.lang}>
         <p class={styles.letterhead}>
           <Checkable target="letterhead">{m.letterhead}</Checkable>
         </p>

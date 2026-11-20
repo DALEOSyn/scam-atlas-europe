@@ -531,5 +531,11 @@
   "end_cards": "Your habit cards",
   "end_card_mastered": "Gold",
   "end_print": "Print your Atlas",
-  "end_back": "Back to the map"
+  "end_back": "Back to the map",
+  "doc_title": "{screen} · {app}",
+  "scenario_h1": "{city} · {message}",
+  "scenario_h1_plain": "Message",
+  "debrief_doc_title": "Debrief",
+  "finale_h1": "{city} · Finale",
+  "chapter_done_doc_title": "{city} · {title}"
 }

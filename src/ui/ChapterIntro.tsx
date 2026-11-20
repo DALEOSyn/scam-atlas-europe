@@ -14,6 +14,7 @@ import type { Chapter } from '../content/schema.ts';
 import { t, type MessageKey } from '../i18n/index.ts';
 import { Icon } from './Icon.tsx';
 import styles from './ChapterList.module.css';
+import { useDocumentTitle } from './documentTitle.ts';
 
 /** CR-48b: the "How stamps work" bullets, in order (≤ 5). */
 export const STAMPS_HELP_KEYS: readonly MessageKey[] = ['stamps_help_bronze', 'stamps_help_silver', 'stamps_help_gold', 'stamps_help_slip', 'stamps_help_habits'];
@@ -53,6 +54,7 @@ export function ChapterIntro({
   onBack?: (() => void) | undefined;
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
+  useDocumentTitle(name);
   useEffect(() => heading.current?.focus(), []);
   const paragraphs = intro.split(/\n\s*\n/u).map((x) => x.trim()).filter(Boolean);
   return (

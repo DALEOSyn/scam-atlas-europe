@@ -15,6 +15,7 @@ import { t } from '../i18n/index.ts';
 import { AtlasPages } from './Atlas.tsx';
 import { HelpCards } from './HelpCards.tsx';
 import styles from './Scene.module.css';
+import { useDocumentTitle } from './documentTitle.ts';
 
 export interface EndScreenProps {
   epigraph: { speaker: string; line: string } | null;
@@ -33,6 +34,7 @@ export function earnedCards(habits: Readonly<Record<string, HabitProgress>>): { 
 
 export function EndScreen({ epigraph, pages, habits, onBack }: EndScreenProps) {
   const heading = useRef<HTMLHeadingElement>(null);
+  useDocumentTitle(t('end_title'));
   useEffect(() => heading.current?.focus(), []);
   const cards = earnedCards(habits);
   const speaker = epigraph ? castMember(epigraph.speaker)?.name.split(/\s+/u)[0] : undefined;

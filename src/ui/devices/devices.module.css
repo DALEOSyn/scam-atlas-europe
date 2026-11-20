@@ -1117,7 +1117,12 @@
   font-weight: var(--fw-bold);
   font-size: var(--fs-lg);
 }
-.letter .link {
+/* T-4.5 B2: the letter is light paper in every theme. Its data-surface="paper" re-takes the light semantic
+   tokens (tokens.css), so the translation, chips, bank-details card, check affordance and focus ring on it
+   use light-theme colours that pass on --letter-paper. */
+.letter .link,
+.letter .translateToggle,
+.letter .textButton {
   color: var(--letter-ink);
 }
 

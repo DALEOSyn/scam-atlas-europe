@@ -40,7 +40,8 @@ const SEED = {
 };
 
 const debriefHeading = (page: Page) => page.getByRole('heading', { level: 1, name: /This was (a scam|genuine):/ });
-const consequenceHeading = (page: Page) => page.getByRole('heading', { level: 3, name: 'What happened' });
+// The consequence step's own heading (h2 since T-4.5 R3; the debrief also has an h2 "What happened").
+const consequenceHeading = (page: Page) => page.getByRole('heading', { level: 2, name: 'What happened' }).and(page.locator('#consequence-h'));
 
 test('Madrid 4-5: a "bank" call guides you into your own app; the name doesn\'t match; hanging up there is ★★ (axe clean)', async ({ page }) => {
   test.setTimeout(90_000);

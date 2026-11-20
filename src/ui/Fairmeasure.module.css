@@ -146,7 +146,7 @@
   justify-self: start;
 }
 .primary {
-  border: 0;
+  border: var(--border-w) solid transparent; /* T-4.5 m1: drawn in forced colours */
   background: var(--color-accent);
   color: var(--color-on-accent);
 }

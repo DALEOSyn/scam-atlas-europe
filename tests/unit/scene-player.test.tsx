@@ -78,7 +78,7 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     expect(p3.querySelector('img[data-art="speaker"]')).toBeNull();
     expect(p3.textContent).toContain('You');
   });
-  it('Skip ends the scene; Help opens the help list and returns to the same panel', () => {
+  it('Skip ends the scene; Help opens the help list and returns to the same panel, focus on it (T-4.5 round 2)', () => {
     const onDone = vi.fn();
     const { container } = render(<ScenePlayer scene={arrival()} heading="Berlin · Arrival" chapterName="Berlin" onDone={onDone} />);
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
@@ -86,8 +86,20 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     expect(document.activeElement?.textContent).toBe('Where to report and get help');
     // QA 2 (T-4.2 review): two Back buttons, above and below the cards; both return to the same place.
     expect(screen.getAllByRole('button', { name: 'Back to the story' })).toHaveLength(2);
+    // Opened from the panels: back on the same panel (the reading place), and no panel was skipped.
+    const onPanel2 = () => {
+      const p2 = container.querySelector('li[data-panel="2"]');
+      expect(document.activeElement).toBe(p2);
+      expect(within(p2 as HTMLElement).getByText('Panel 2 of 3')).toBeTruthy();
+      expect(container.querySelector('li[data-panel="3"]')).toBeNull();
+      expect(screen.queryByText('Panel 3 of 3')).toBeNull();
+    };
     fireEvent.click(screen.getAllByRole('button', { name: 'Back to the story' })[1] as HTMLElement);
-    expect(document.activeElement).toBe(container.querySelector('li[data-panel="2"]'));
+    onPanel2();
+    // The top Back button does the same.
+    fireEvent.click(screen.getByRole('button', { name: 'Where to get help' }));
+    fireEvent.click(screen.getAllByRole('button', { name: 'Back to the story' })[0] as HTMLElement);
+    onPanel2();
     fireEvent.click(screen.getByRole('button', { name: 'Skip story' }));
     expect(onDone).toHaveBeenCalledWith('skipped');
   });
@@ -114,6 +126,7 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     fireEvent.click(screen.getByRole('button', { name: 'Need to talk? Where to get help' }));
     fireEvent.click(screen.getAllByRole('button', { name: 'Back to the story' })[0] as HTMLElement);
     expect(screen.getByRole('heading', { level: 1, name: 'Before this story scene' })).toBeTruthy();
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Need to talk? Where to get help' }));
     fireEvent.click(screen.getByRole('button', { name: 'Show the scene' }));
     expect(screen.getByText('Panel 1 of 3')).toBeTruthy();
     cleanup();

@@ -16,6 +16,7 @@ import { Icon } from './Icon.tsx';
 import { deadlineText, elementLabel } from './labels.ts';
 import { LangText, RichText } from './RichText.tsx';
 import styles from './DebriefView.module.css';
+import { useDocumentTitle } from './documentTitle.ts';
 
 export interface DebriefViewProps {
   data: DebriefData;
@@ -101,6 +102,7 @@ function Stars({ n }: { n: number }) {
 
 export function DebriefView({ data, onContinue, onAgain, onTellMeNow }: DebriefViewProps) {
   const heading = useRef<HTMLHeadingElement>(null);
+  useDocumentTitle(t('debrief_doc_title'));
   const [confirm, setConfirm] = useState(false);
   const confirmNo = useRef<HTMLButtonElement>(null);
   const tellButton = useRef<HTMLButtonElement>(null);

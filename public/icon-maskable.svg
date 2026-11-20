@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Scam Atlas: Europe">
+  <!-- Maskable variant of icon.svg (T-4.6): full-bleed background, the same glyph scaled to 66 % so it stays inside the 80 % safe zone. -->
+  <rect width="512" height="512" fill="#0f1b2d"/>
+  <g transform="translate(256 256) scale(0.66) translate(-256 -256)">
+    <circle cx="230" cy="230" r="120" fill="none" stroke="#f5c542" stroke-width="36"/>
+    <line x1="318" y1="318" x2="420" y2="420" stroke="#f5c542" stroke-width="44" stroke-linecap="round"/>
+  </g>
+</svg>

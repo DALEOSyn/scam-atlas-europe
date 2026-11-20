@@ -42,7 +42,7 @@ function ruleErrors(r: Raw): string[] {
 }
 function crossErrors(r: Raw): string[] {
   const report: ContentReport = { errors: [], warnings: [], scenarios: new Map() };
-  checkScenario('fixture.yaml', r, fixtureBrands(report), loadSources(CONTENT, report), report);
+  checkScenario(`${String(r.id)}.yaml`, r, fixtureBrands(report), loadSources(CONTENT, report), report);
   return report.errors;
 }
 const clone = <T>(x: T): T => structuredClone(x);

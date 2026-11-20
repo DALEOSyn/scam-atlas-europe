@@ -851,6 +851,25 @@
 .checkChecking .checkResult {
   font-style: italic;
 }
+/* T-4.6 P3: while checking, an invisible copy of the result shares the cell with "Checking…" (same height as
+   the result), and the footer and actions are laid out but hidden, so nothing moves when the check finishes. */
+.checkStack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+.checkStack > * {
+  grid-area: 1 / 1;
+}
+.checkGhostLine {
+  font-style: normal;
+  visibility: hidden;
+}
+.checkGhost {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+  visibility: hidden;
+}
 .checkClose .checkResult {
   background: var(--color-surface-sunken);
   color: var(--color-text);

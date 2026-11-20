@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { join, resolve } from 'node:path';
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { parse } from 'yaml';
 import { brandHosts, loadBrands, loadHabitCards, validateContent, validateI18n, checkScenario, type ContentReport } from '../../scripts/lib/content.ts';
@@ -25,6 +25,8 @@ const CONTENT = resolve(ROOT, 'content');
 
 /** Template-derived example scenario (test fixture, not game content; cites placeholder sources). */
 const EXAMPLE_FILE = resolve(ROOT, 'tests/fixtures/example-scenario.yaml');
+/** A file name that matches the raw scenario's id (content:validate requires it, T-4.6). */
+const fileFor = (raw: unknown): string => `${String((raw as { id?: unknown }).id)}.yaml`;
 function example(): Record<string, unknown> {
   return parse(readFileSync(EXAMPLE_FILE, 'utf8')) as Record<string, unknown>;
 }
@@ -191,7 +193,7 @@ describe('scenario cross-checks', () => {
   ]);
   const run = (raw: unknown): ContentReport => {
     const r: ContentReport = { errors: [], warnings: [], scenarios: new Map() };
-    checkScenario('x.yaml', raw, brands, sources, r);
+    checkScenario(fileFor(raw), raw, brands, sources, r);
     return r;
   };
 
@@ -207,7 +209,7 @@ describe('scenario cross-checks', () => {
       const bank = (raw.beats as Record<string, unknown>[]).find((b) => b.id === 'bank') as { message: Record<string, unknown> };
       bank.message.bank = { brand };
       const r: ContentReport = { errors: [], warnings: [], scenarios: new Map() };
-      checkScenario('x.yaml', raw, reg, sources, r);
+      checkScenario(fileFor(raw), raw, reg, sources, r);
       return r.errors.filter((e) => e.includes('message.bank.brand'));
     };
     expect(withBank('larchwick-business')).toEqual([]);
@@ -289,6 +291,39 @@ describe('scenario cross-checks', () => {
     const s = example();
     (s.message as Record<string, unknown>).qr = { payload: 'https://x.example' };
     expect(run(s).errors.join()).toMatch(/in-game route/);
+  });
+});
+
+describe('scenario file name = id (T-4.6, sceptic PR #72: the game loads scenarios by file name)', () => {
+  const sources = new Map([
+    ['europol-scam-smishing', { id: 'europol-scam-smishing', title: 't', placeholder: false }],
+    ['bsi-smishing', { id: 'bsi-smishing', title: 't', placeholder: false }],
+  ]);
+  const errorsFor = (file: string): string[] => {
+    const r: ContentReport = { errors: [], warnings: [], scenarios: new Map() };
+    checkScenario(file, rawTransfer(), loadBrands(CONTENT, r), sources, r);
+    return r.errors.filter((e) => e.includes('does not match the scenario id'));
+  };
+
+  it('a file named after its id passes; any other name (or a near miss) is an error', () => {
+    const id = String((rawTransfer() as { id?: unknown }).id);
+    expect(errorsFor(`/c/scenarios/berlin/${id}.yaml`)).toEqual([]);
+    expect(errorsFor(`/c/scenarios/berlin/${id}.yml`)).toEqual([]);
+    expect(errorsFor('/c/scenarios/berlin/x.yaml').join('\n')).toMatch(new RegExp(`file name "x.yaml" does not match the scenario id "${id}"`));
+    expect(errorsFor(`/c/scenarios/berlin/${id}-copy.yaml`)).toHaveLength(1);
+    expect(errorsFor(`/c/scenarios/berlin/${id.toUpperCase()}.yaml`)).toHaveLength(1);
+  });
+
+  it('content:validate fails when a shipped scenario file is renamed', () => {
+    const dir = copyContent();
+    try {
+      const from = join(dir, 'scenarios', 'berlin', 'berlin-01-locker-code.yaml');
+      renameSync(from, join(dir, 'scenarios', 'berlin', 'berlin-01-renamed.yaml'));
+      const report = validateContent(dir);
+      expect(report.errors.filter((e) => e.includes('does not match the scenario id')).join('\n')).toMatch(/berlin-01-renamed\.yaml.*"berlin-01-locker-code"/);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });
 

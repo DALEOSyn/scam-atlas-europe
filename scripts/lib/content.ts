@@ -8,6 +8,7 @@ import { parseDocument } from 'yaml';
 import { yamlStructureIssues } from './yaml-safety.ts';
 import type { z } from 'zod';
 import { isAllowedSourceHost } from './source-hosts.ts';
+import { checkHelp, HELP_FILE_REL } from './help.ts';
 import { svgSafetyIssues } from './svg-safety.ts';
 import { artIssues, castListIssues } from './art.ts';
 import { castByChapter, loadScenes, sceneRules, sceneSetRules, sceneWarnings } from './scenes.ts';
@@ -387,6 +388,30 @@ export interface ValidateOptions {
   docsDir?: string;
 }
 
+/**
+ * T-4.2: the "Where to report and get help" data (content/help/where-to-report.en.yaml), checked by scripts/lib/help.ts.
+ * Any other file under content/help/ is an error: the real-name exemption covers that one file only.
+ */
+export function loadHelp(contentDir: string, sources: Map<string, Source>, report: ContentReport): void {
+  const file = join(contentDir, 'help', basename(HELP_FILE_REL));
+  const helpDir = dirname(file);
+  for (const other of listFiles(helpDir, ['.yaml', '.yml', '.json'])) {
+    if (other !== file) report.errors.push(`${other}: only ${HELP_FILE_REL} may live in content/help/ (single-file red-line exemption)`);
+  }
+  if (!existsSync(file)) {
+    report.errors.push(`${file}: missing`);
+    return;
+  }
+  let raw: unknown;
+  try {
+    raw = readYaml(file);
+  } catch (e) {
+    report.errors.push(`${file}: YAML error: ${(e as Error).message}`);
+    return;
+  }
+  report.errors.push(...checkHelp(raw, sources).errors.map((e) => `${file}: ${e}`));
+}
+
 export function validateContent(contentDir: string, opts: ValidateOptions = {}): ContentReport {
   const report: ContentReport = { errors: [], warnings: [], scenarios: new Map(), chapters: new Map(), scenes: new Map() };
   validateI18n(contentDir, report);
@@ -402,6 +427,7 @@ export function validateContent(contentDir: string, opts: ValidateOptions = {}):
   const recoveryFeedback = loadRecoveryFeedback(contentDir, { errors: [], warnings: [], scenarios: new Map(), chapters: new Map() });
   const habitCards = loadHabitCards(contentDir, report, los);
   const chapters = loadChapters(contentDir, report);
+  loadHelp(contentDir, sources, report);
 
   const scenarioDir = join(contentDir, 'scenarios');
   const files = listFiles(scenarioDir, ['.yaml', '.yml']);

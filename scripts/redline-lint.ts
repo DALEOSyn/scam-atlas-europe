@@ -16,6 +16,13 @@
  * Not scanned: content/sources.yaml (real reference URLs by design, checked by
  * content:validate) and the linter's own list files.
  *
+ * Single-file exemption (T-4.2, G3): content/help/where-to-report.en.yaml (HELP_FILE, matched on its exact
+ * resolved path) may hold real bodies, phone numbers, e-mail addresses and URLs (Red Line 1: named only on the
+ * "Where to report" screen). For that file only the domain, URL, phone and brand rules are replaced by the help
+ * checker (scripts/lib/help.ts: https only, no query, `checked` on every row, source ids, link hosts on an exact
+ * allowlist); markup, IBAN, card and QR rules still run on its raw text and decoded values. Any other file,
+ * including other files in content/help/, is linted in full.
+ *
  * content/brands.yaml is scanned with two narrow exemptions (see
  * exemptBrandReviewNotes): the review-only fields brands[].checked_against,
  * web_check and rationale may name real brands (only brand-category findings
@@ -29,10 +36,11 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { resolve, relative, basename, sep } from 'node:path';
 import { LineCounter, parse, parseDocument, isMap, isScalar, isSeq, type Node } from 'yaml';
-import { listFiles, loadPatternIds } from './lib/content.ts';
+import { listFiles, loadPatternIds, loadSources } from './lib/content.ts';
+import { checkHelp, HELP_FILE_REL } from './lib/help.ts';
 import { yamlStructureIssues } from './lib/yaml-safety.ts';
 import { svgSafetyIssues } from './lib/svg-safety.ts';
-import { blankSvgGeometry, checkQrPayload, scanText, type Finding, type RuleConfig } from './redline/rules.ts';
+import { blankSvgGeometry, checkQrPayload, scanText, type Category, type Finding, type RuleConfig } from './redline/rules.ts';
 import { compileList } from './redline/lists.ts';
 import { CHECKABLE_TARGETS } from '../src/content/checkables.ts';
 import { DEVICES } from '../src/content/schema.ts';
@@ -49,6 +57,14 @@ const SCANNED_EXTS = ['.yaml', '.yml', '.json', '.md', '.txt', '.svg', '.html', 
 const RASTER_EXTS = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.avif', '.ico', '.bmp', '.heic'] as const;
 export const BRANDS_FILE = resolve(CONTENT, 'brands.yaml');
 const EXCLUDED = new Set([resolve(CONTENT, 'sources.yaml'), DENYLIST_FILE, WARNLIST_FILE, ALLOWLIST_FILE]);
+/** The one file exempt from the real-name rules (see the header). Exact path: nothing else inherits it. */
+export const HELP_FILE = resolve(ROOT, HELP_FILE_REL);
+/** Rule categories the help checker takes over for HELP_FILE. Everything else (markup, iban, card, qr) still applies. */
+export const HELP_EXEMPT_CATEGORIES: ReadonlySet<Category> = new Set<Category>(['domain', 'url', 'phone', 'brand']);
+
+export function isHelpFile(file: string): boolean {
+  return resolve(file) === HELP_FILE;
+}
 
 export interface FileFinding extends Finding {
   file: string;
@@ -366,7 +382,26 @@ function lintTextUncached(file: string, text: string, cfg: RuleConfig, briefs?: 
       );
     }
   }
+  if (isHelpFile(file)) return helpFileFindings(file, doc, found);
   return found.sort((a, b) => (a.line ?? 0) - (b.line ?? 0));
+}
+
+let helpSourceCache: Map<string, { placeholder?: boolean }> | undefined;
+function helpSources(): Map<string, { placeholder?: boolean }> {
+  helpSourceCache ??= loadSources(CONTENT, { errors: [], warnings: [], scenarios: new Map() });
+  return helpSourceCache;
+}
+
+/**
+ * HELP_FILE only: drop the real-name categories (domain, url, phone, brand) and add the help checker's errors.
+ * A parse failure or any help-check error fails the lint, so the exemption never applies to a file that is
+ * not the validated help data.
+ */
+function helpFileFindings(file: string, doc: ReturnType<typeof parseDocument> | undefined, found: FileFinding[]): FileFinding[] {
+  const kept = found.filter((f) => !HELP_EXEMPT_CATEGORIES.has(f.category));
+  const errors = doc && doc.errors.length === 0 ? checkHelp(doc.toJS(), helpSources()).errors : ['cannot parse the help file'];
+  for (const e of errors) kept.push({ file, category: 'help', severity: 'error', match: e, index: 0, line: 0, message: `help checker (scripts/lib/help.ts): ${e}` });
+  return kept.sort((a, b) => (a.line ?? 0) - (b.line ?? 0));
 }
 
 /** Raster images can hide real logos and text the linter cannot read: each must be declared. */

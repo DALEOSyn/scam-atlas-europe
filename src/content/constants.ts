@@ -29,3 +29,6 @@ export const ARC_CHECKED = 'arc_checked';
 export const ARC_HELPED_TEO = 'arc_helped_teo';
 /** CR-51: arc slots decided by these kinds set ARC_TOLD_SOMEONE. */
 export const ARC_TOLD_KINDS: readonly string[] = ['report', 'ask_someone'];
+/** T-4.2 (G1 question 6): help links open in a new tab with these rel values; helpFileSchema pins meta.link_rel / link_target to them. */
+export const HELP_LINK_REL = 'noopener noreferrer';
+export const HELP_LINK_TARGET = '_blank';

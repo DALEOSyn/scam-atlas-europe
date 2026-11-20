@@ -12,7 +12,7 @@
  */
 import { z } from 'zod';
 import { deriveCheckables } from './checkables.ts';
-import { ARC_CHECKED, ARC_TOLD_SOMEONE, ICU_MESSAGE_RE, SPOTTED_EXPR_RE } from './constants.ts';
+import { ARC_CHECKED, ARC_TOLD_SOMEONE, HELP_LINK_REL, HELP_LINK_TARGET, ICU_MESSAGE_RE, SPOTTED_EXPR_RE } from './constants.ts';
 import { firstLang, langMarkupIssues, strayLangMarkers } from './inlineLang.ts';
 import { DIAL_KINDS, parentKinds } from './callDirection.ts';
 
@@ -2069,3 +2069,126 @@ export const i18nCatalogueSchema = z
       ),
   )
   .refine((r) => Object.keys(r).length > 0, 'catalogue is empty');
+
+// ---------------------------------------------------------------------------
+// "Where to report and get help" data (content/help/where-to-report.en.yaml, T-4.2; WHERE_TO_REPORT §3b, §3c).
+// The one content file allowed to hold real bodies, phone numbers and URLs (Red Line 1: named only on this screen;
+// G1 question 6). scripts/lib/help.ts adds the checks that need other files (source ids, link hosts).
+
+/** T-3.8r roles. `harassment` rows appear only on the sextortion / online-harassment help card, never on the scam help screen. */
+export const HELP_ROLES = ['report', 'advice', 'police', 'bank', 'support', 'child', 'crisis', 'harassment'] as const;
+export type HelpRole = (typeof HELP_ROLES)[number];
+
+/** Round 2 ruling (WHERE_TO_REPORT §3b): the same calm title on every crisis row. */
+export const HELP_CRISIS_TITLE = 'Thinking about ending your life, or worried about someone?';
+/** Every crisis row ends its body with the emergency step (§3b round 2 bodies). */
+export const HELP_CRISIS_EMERGENCY = 'In danger now? Call 112.';
+export { HELP_LINK_REL, HELP_LINK_TARGET };
+
+/** A real calendar date written YYYY-MM-DD. */
+export function isIsoDate(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const d = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === value;
+}
+
+/** A help link: absolute https, no query string (no tracking parameters) and no fragment. */
+export function isCleanHelpUrl(value: string): boolean {
+  if (!isHttpsUrl(value) || value.includes('?') || value.includes('#')) return false;
+  const u = new URL(value);
+  return u.search === '' && u.hash === '' && u.port === '';
+}
+
+const helpDate = z.string().refine(isIsoDate, 'checked must be a real date written YYYY-MM-DD');
+const helpText = z.string().trim().min(1);
+const helpUrl = z.string().refine(isCleanHelpUrl, 'url must be an absolute https:// URL with no query string, fragment or port');
+const helpEmail = z.string().regex(/^[a-z0-9._%+-]+@[a-z0-9-]+(?:\.[a-z0-9-]+)+$/, 'email must be a plain lower-case address');
+/** Where the claim comes from: ids in content/sources.yaml ([] only for safeguarding wording that makes no claim). */
+const helpSources = z.array(slug);
+
+export const helpPhoneSchema = z
+  .object({
+    /** Exactly as published (digits, spaces, a leading +, one hyphen in Swedish area codes). */
+    number: z.string().regex(/^\+?\d[\d -]*\d$|^\d+$/, 'number: digits, spaces, an optional leading + and hyphens only'),
+    /** When to use it, with the cost wording of the T-3.8r round 2 rule. */
+    label: helpText,
+  })
+  .strict();
+
+export const helpFirstStepSchema = z
+  .object({ id: slug, title: helpText, body: helpText, checked: helpDate, sources: helpSources, review_note: z.string().optional() })
+  .strict();
+
+export const helpFallbackSchema = z
+  .object({ body: helpText, checked: helpDate, sources: helpSources, review_note: z.string().optional() })
+  .strict();
+
+export const helpEuEntrySchema = z
+  .object({ id: slug, name: helpText, body: helpText, url: helpUrl, checked: helpDate, sources: z.array(slug).min(1), review_note: z.string().optional() })
+  .strict();
+
+export const helpEntrySchema = z
+  .object({
+    id: slug,
+    role: z.enum(HELP_ROLES),
+    name: helpText,
+    body: helpText,
+    phones: z.array(helpPhoneSchema).min(1).optional(),
+    email: helpEmail.optional(),
+    url: helpUrl.optional(),
+    /** Player text: what the contact is for, when narrower than the body. */
+    scope: helpText.optional(),
+    checked: helpDate,
+    sources: z.array(slug).min(1),
+    /** Internal note for reviewers. Never rendered and never shipped (scripts/lib/yaml-module.ts helpProjection). */
+    review_note: z.string().optional(),
+  })
+  .strict()
+  .superRefine((e, ctx) => {
+    if (e.role === 'crisis') {
+      if (e.name !== HELP_CRISIS_TITLE) ctx.addIssue({ code: 'custom', path: ['name'], message: `a crisis row's title is "${HELP_CRISIS_TITLE}" (WHERE_TO_REPORT §3b)` });
+      if (!e.body.endsWith(HELP_CRISIS_EMERGENCY)) ctx.addIssue({ code: 'custom', path: ['body'], message: `a crisis row's body ends with "${HELP_CRISIS_EMERGENCY}" (WHERE_TO_REPORT §3b)` });
+    } else if (e.name === HELP_CRISIS_TITLE) {
+      ctx.addIssue({ code: 'custom', path: ['role'], message: 'a row titled as a crisis row must have role crisis (never support)' });
+    }
+  });
+
+export const helpFileSchema = z
+  .object({
+    meta: z
+      .object({
+        locale: z.string().regex(/^[a-z]{2}(?:-[A-Z]{2})?$/),
+        checked: helpDate,
+        link_rel: z.literal(HELP_LINK_REL),
+        link_target: z.literal(HELP_LINK_TARGET),
+        intro: helpText,
+        disclaimer: helpText,
+        external_links_note: helpText,
+        review_note: z.string().optional(),
+      })
+      .strict(),
+    first_steps: z.array(helpFirstStepSchema).min(1),
+    /** No crisis fallback on purpose: a country without a verified crisis line shows no crisis row (§3c). */
+    fallbacks: z.object({ child_helpline: helpFallbackSchema, police: helpFallbackSchema, bank: helpFallbackSchema, support: helpFallbackSchema }).strict(),
+    eu: z.array(helpEuEntrySchema).min(1),
+    /** ISO 3166-1 alpha-2 codes. A missing country means "not verified yet": the UI falls back. */
+    countries: z.record(z.string().regex(/^[A-Z]{2}$/, 'country keys are ISO 3166-1 alpha-2 codes, e.g. BE'), z.array(helpEntrySchema).min(1)),
+  })
+  .strict()
+  .superRefine((f, ctx) => {
+    const seen = new Map<string, string>();
+    const claim = (id: string, path: (string | number)[]) => {
+      const prev = seen.get(id);
+      if (prev) ctx.addIssue({ code: 'custom', path, message: `duplicate help id "${id}" (also at ${prev})` });
+      else seen.set(id, path.join('.'));
+    };
+    f.first_steps.forEach((s, i) => claim(s.id, ['first_steps', i, 'id']));
+    f.eu.forEach((e, i) => claim(e.id, ['eu', i, 'id']));
+    for (const [cc, rows] of Object.entries(f.countries)) {
+      rows.forEach((e, i) => claim(e.id, ['countries', cc, i, 'id']));
+      if (rows.filter((e) => e.role === 'crisis').length > 1) ctx.addIssue({ code: 'custom', path: ['countries', cc], message: 'one crisis row per country (its own calm final row, §3c)' });
+    }
+  });
+export type HelpFile = z.infer<typeof helpFileSchema>;
+export type HelpEntry = z.infer<typeof helpEntrySchema>;
+export type HelpFallback = z.infer<typeof helpFallbackSchema>;

@@ -12,7 +12,8 @@ import { findBrandHits, type BrandMatcher, type Severity } from './lists.ts';
 
 export { normalise, foldForBrand } from './fold.ts';
 
-export type Category = 'domain' | 'url' | 'markup' | 'iban' | 'card' | 'phone' | 'brand' | 'qr' | 'asset';
+/** `help`: the help checker's findings on the one exempt help file (scripts/lib/help.ts, T-4.2). */
+export type Category = 'domain' | 'url' | 'markup' | 'iban' | 'card' | 'phone' | 'brand' | 'qr' | 'asset' | 'help';
 
 export interface Finding {
   category: Category;

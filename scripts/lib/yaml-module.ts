@@ -10,6 +10,7 @@
  */
 import { isAbsolute, relative, resolve, sep } from 'node:path';
 import { parse } from 'yaml';
+import { helpProjection } from './help.ts';
 import { brandsFileSchema, castFileSchema, chapterSchema, scenarioSchema, sceneSchema } from '../../src/content/schema.ts';
 
 /** True when `file` lies inside `dir` (any platform's separators). */
@@ -29,6 +30,8 @@ export function yamlModuleData(file: string, code: string, scenariosDir: string,
   if (isInside(resolve(scenariosDir, '..', 'scenes'), file)) return sceneSchema.parse(raw);
   if (resolve(file) === resolve(scenariosDir, '..', 'brands.yaml')) return brandProjection(raw);
   if (resolve(file) === resolve(scenariosDir, '..', 'cast.yaml')) return castProjection(raw);
+  // T-4.2: the help screen data ships without review_note and sources (never rendered).
+  if (isInside(resolve(scenariosDir, '..', 'help'), file)) return helpProjection(raw);
   return raw;
 }
 

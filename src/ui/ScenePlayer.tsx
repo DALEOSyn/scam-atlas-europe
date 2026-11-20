@@ -6,7 +6,8 @@
  *   Next moves focus to the new panel's list item (ART_DIRECTION §9 structure: section → ol → li →
  *   figure with one image description and a figcaption holding the speaker label, line and choice).
  * - Skip (same place on every scene) ends the scene; the Help link opens "Where to report and get help"
- *   inside the player and returns to the same panel. On sensitive scenes the link reads "Need to talk?".
+ *   inside the player and returns to the same panel. On sensitive scenes the link reads "Need to talk?" and the
+ *   per-country cards put support, young people's lines and the crisis row first (HelpCards, WHERE_TO_REPORT §3c).
  * - A sensitive scene opens on its content note with a way out: show it, skip it, or get help.
  * - Art is plain <img> with a fragment id (`cast/<id>.svg#x-<expression>`); each image mounts with its final
  *   src (keyed by src), so engines that ignore fragment-only src changes still show the right face.
@@ -21,6 +22,7 @@ import { fillStory, scenesAfter, visiblePanels, type IfThen, type StoryVars } fr
 import type { ArcEnding } from '../engine/arc.ts';
 import { t, type MessageKey } from '../i18n/index.ts';
 import { artUrl, FlipCard, Postcard } from './Postcard.tsx';
+import { HelpCards } from './HelpCards.tsx';
 import styles from './Scene.module.css';
 
 export interface FlipPick {
@@ -87,21 +89,6 @@ export function sceneHeading(scene: Pick<Scene, 'id' | 'slot' | 'title'>, chapte
 function prefersReducedMotion(): boolean {
   if (typeof document !== 'undefined' && document.documentElement.dataset.motion === 'reduced') return true;
   return typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
-
-/** Generic help list (placeholder until the verified per-country list). Sensitive scenes put "talk to someone" first [P]. */
-export function HelpList({ sensitive = false }: { sensitive?: boolean }) {
-  const talk = <li key="talk">{t('help_talk')}</li>;
-  return (
-    <ul class={styles.helpList}>
-      {sensitive ? talk : null}
-      <li key="bank">{t('help_bank')}</li>
-      <li key="police">{t('help_police')}</li>
-      <li key="consumer">{t('help_consumer')}</li>
-      <li key="platform">{t('help_platform')}</li>
-      {sensitive ? null : talk}
-    </ul>
-  );
 }
 
 export function ScenePlayer({ scene, heading: title, chapterName = '', flags = new Set(), vars = { count: 0, lastCity: '' }, flip: autoFlip = null, flipChoices = null, arcEnding = null, onFlip, contentNote = null, onDone }: ScenePlayerProps) {
@@ -278,8 +265,7 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
           <h1 id="scene-help-h" ref={heading} tabIndex={-1} class={styles.title}>
             {t('help_title')}
           </h1>
-          <p>{t('help_intro')}</p>
-          <HelpList sensitive={sensitive} />
+          <HelpCards sensitive={sensitive} level={2} />
           <div class={styles.buttons}>
             <button
               type="button"

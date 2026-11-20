@@ -213,6 +213,12 @@ export function checkScenario(
     return undefined;
   }
   const s = res.data;
+  // T-4.6 (sceptic PR #72): the runtime finds a scenario by its file name (src/content/scenarios.ts
+  // findScenarioRef), so a file whose name differs from its id would never load. The name must be the id.
+  const fileId = basename(file).replace(/\.ya?ml$/, '');
+  if (fileId !== s.id) {
+    report.errors.push(`${file}: file name "${basename(file)}" does not match the scenario id "${s.id}" (name the file "${s.id}.yaml"; the game loads scenarios by file name)`);
+  }
   if (opts.expectedChapter !== undefined && s.chapter !== opts.expectedChapter) {
     report.errors.push(`${file}: chapter "${s.chapter}" does not match its folder "${opts.expectedChapter}"`);
   }

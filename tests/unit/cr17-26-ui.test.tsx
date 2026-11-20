@@ -106,6 +106,39 @@ describe('CR-23: payee-name check result cards', () => {
       vi.useRealTimers();
     }
   });
+  it('T-4.6 P3: while checking, the final layout is reserved but invisible, inert and hidden; nothing is actionable or announced', async () => {
+    vi.useFakeTimers();
+    delete document.documentElement.dataset.motion;
+    const onCoachMark = vi.fn();
+    const onAct = vi.fn();
+    const { container } = render(<DeviceView {...props('banking', bankMessage({ name: 'R. ••••', name_check: 'mismatch' }), { coachMarks: [], onCoachMark, onAct })} />);
+    const ghosts = [...container.querySelectorAll<HTMLElement>('[data-check-ghost]')];
+    // The result line copy and the footer/coach/actions block.
+    expect(ghosts).toHaveLength(2);
+    for (const g of ghosts) {
+      expect(g.getAttribute('aria-hidden')).toBe('true');
+      // Outside the live region: only "Checking…" → the result is announced.
+      expect(g.closest('[role="status"]')).toBeNull();
+    }
+    const block = ghosts[1] as HTMLElement;
+    expect(block.hasAttribute('inert')).toBe(true);
+    expect(block.textContent).toContain('Got it');
+    // No real actions, no coach-mark freeze, no focusable controls in the stand-in.
+    expect(container.querySelector('[data-action]')).toBeNull();
+    expect(container.querySelector('[data-coach]')).toBeNull();
+    expect(onCoachMark).not.toHaveBeenCalled();
+    for (const b of block.querySelectorAll('button')) expect(b.getAttribute('tabindex')).toBe('-1');
+    for (const b of block.querySelectorAll('button')) fireEvent.click(b);
+    expect(onAct).not.toHaveBeenCalled();
+    await flush(async () => {
+      vi.advanceTimersByTime(800);
+    });
+    expect(container.querySelector('[data-check-ghost]')).toBeNull();
+    expect(container.querySelector('[data-action]')).not.toBeNull();
+    expect(container.querySelector('[data-coach="payee_check"]')).not.toBeNull();
+    cleanup();
+    vi.useRealTimers();
+  });
   it('the first payee check shows the coach mark; "Got it" focuses the result, never <body>; then never again', async () => {
     const onCoachMark = vi.fn();
     const { container } = render(<DeviceView {...props('banking', bankMessage({ name: 'R. ••••', name_check: 'mismatch' }), { coachMarks: [], onCoachMark })} />);

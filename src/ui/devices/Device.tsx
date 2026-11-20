@@ -958,21 +958,28 @@ function CoachMark({ id, text, onCoachMark, returnTo }: { id: string; text: stri
     return () => onCoachMark(id, false);
   }, [id]);
   return (
-    <div class={styles.coach} role="note" aria-labelledby={`coach-${id}-h`} data-coach={id}>
-      <p class={styles.coachTitle} id={`coach-${id}-h`}>
+    <CoachMarkBox
+      id={id}
+      text={text}
+      onGotIt={() => {
+        // Focus first: the button unmounts when the mark closes, and focus must not fall to <body>.
+        returnTo();
+        onCoachMark(id, false, true);
+      }}
+    />
+  );
+}
+
+/** The coach mark's markup only (no freeze, no "seen"). Without `onGotIt` it is the inert stand-in of the payee check (T-4.6 P3). */
+function CoachMarkBox({ id, text, onGotIt }: { id: string; text: string; onGotIt?: () => void }) {
+  return (
+    <div class={styles.coach} role={onGotIt ? 'note' : undefined} aria-labelledby={onGotIt ? `coach-${id}-h` : undefined} data-coach={onGotIt ? id : undefined}>
+      <p class={styles.coachTitle} id={onGotIt ? `coach-${id}-h` : undefined}>
         <Icon name="info" />
         <span>{t('coach_title')}</span>
       </p>
       <p>{text}</p>
-      <button
-        type="button"
-        class={styles.small}
-        onClick={() => {
-          // Focus first: the button unmounts when the mark closes, and focus must not fall to <body>.
-          returnTo();
-          onCoachMark(id, false, true);
-        }}
-      >
+      <button type="button" class={styles.small} tabIndex={onGotIt ? undefined : -1} onClick={onGotIt}>
         {t('coach_got_it')}
       </button>
     </div>
@@ -998,7 +1005,7 @@ function NameCheckCard(p: DeviceProps & { bankName: string }) {
     p.onNameCheck?.(p.beatId, !checking);
   }, [checking, p.beatId]);
   if (!payee || !result) return null;
-  const text = checking ? t('bank_check_checking') : (nameCheckText(p.message, p.bankName) ?? '');
+  const resultText = nameCheckText(p.message, p.bankName) ?? '';
   const cls = checking ? styles.checkChecking : result === 'match' ? styles.checkMatch : result === 'close_match' ? styles.checkClose : result === 'mismatch' ? styles.checkMismatch : styles.checkUnavailable;
   const icon = result === 'match' ? 'tick' : result === 'mismatch' ? 'warning' : 'info';
   const seen = p.coachMarks.includes(COACH_PAYEE_CHECK);
@@ -1007,12 +1014,40 @@ function NameCheckCard(p: DeviceProps & { bankName: string }) {
       <h3 class={styles.vh} id={`name-check-${p.beatId}`}>
         {t('bank_check_title')}
       </h3>
-      <p class={styles.checkResult} role="status" id={nameCheckResultId(p.beatId)} tabIndex={-1} ref={resultRef}>
-        {checking ? null : <Icon name={icon} />}
-        {/* CR-27: the result itself is the `payee.name_check` checkable ("Name check result"), not the payee field. */}
-        {checking ? <span>{text}</span> : <Checkable target="payee.name_check">{text}</Checkable>}
-      </p>
-      {checking ? null : (
+      {/* T-4.6 P3: the status paragraph shares a grid cell with an invisible copy of the result line, so it already has
+          the result's height while "Checking…" shows and nothing below it moves when the check finishes. The copy is
+          outside the status paragraph (only "Checking…" → the result is announced) and hidden from assistive technology. */}
+      <div class={styles.checkStack}>
+        <p class={styles.checkResult} role="status" id={nameCheckResultId(p.beatId)} tabIndex={-1} ref={resultRef}>
+          {checking ? null : <Icon name={icon} />}
+          {/* CR-27: the result itself is the `payee.name_check` checkable ("Name check result"), not the payee field. */}
+          {checking ? <span>{t('bank_check_checking')}</span> : <Checkable target="payee.name_check">{resultText}</Checkable>}
+        </p>
+        {checking ? (
+          <p class={`${styles.checkResult} ${styles.checkGhostLine}`} aria-hidden="true" data-check-ghost="">
+            <Icon name={icon} />
+            <span>{resultText}</span>
+          </p>
+        ) : null}
+      </div>
+      {checking ? (
+        // T-4.6 P3: while checking, the footer, coach mark and actions are laid out but invisible, inert and hidden
+        // from assistive technology (no data-action, no handlers), so the card keeps its final size.
+        <div class={styles.checkGhost} aria-hidden="true" inert data-check-ghost="">
+          <p class={styles.checkFooter}>{t('bank_check_footer', { bank: p.bankName })}</p>
+          {seen ? null : <CoachMarkBox id={`${COACH_PAYEE_CHECK}-ghost`} text={t('coach_payee_check')} />}
+          {p.onCall ? <p class={styles.checkFooter}>{t('oncall_choose')}</p> : null}
+          <ul class={styles.cardActions}>
+            {p.actions.map((a) => (
+              <li key={a.id}>
+                <button type="button" tabIndex={-1} class={a.styled ? `${styles.cardAction} ${styles.cardPressure}` : styles.cardAction}>
+                  <LangText text={a.label} />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
         <>
           <p class={styles.checkFooter}>{t('bank_check_footer', { bank: p.bankName })}</p>
           {seen ? null : <CoachMark id={COACH_PAYEE_CHECK} text={t('coach_payee_check')} onCoachMark={p.onCoachMark} returnTo={() => resultRef.current?.focus()} />}

@@ -7,4 +7,20 @@
 #   origin: "Drawn by ux-artist for this project"
 #   licence: CC BY-SA 4.0
 #   review: "sceptic-reviewer PASS, T-x.y"
-assets: []
+assets:
+  - path: icon-192.png
+    origin: "Rendered by scripts/build-icons.ts from public/icon.svg (the project's own vector icon); no stock or generated image"
+    licence: CC BY-SA 4.0
+    review: "sceptic-reviewer PASS, T-4.6"
+  - path: icon-512.png
+    origin: "Rendered by scripts/build-icons.ts from public/icon.svg (the project's own vector icon); no stock or generated image"
+    licence: CC BY-SA 4.0
+    review: "sceptic-reviewer PASS, T-4.6"
+  - path: icon-maskable-512.png
+    origin: "Rendered by scripts/build-icons.ts from public/icon-maskable.svg (the project's own vector icon); no stock or generated image"
+    licence: CC BY-SA 4.0
+    review: "sceptic-reviewer PASS, T-4.6"
+  - path: touch-icon-180.png
+    origin: "Rendered by scripts/build-icons.ts from public/icon-maskable.svg (the project's own vector icon); no stock or generated image"
+    licence: CC BY-SA 4.0
+    review: "sceptic-reviewer PASS, T-4.6"

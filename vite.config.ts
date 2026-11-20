@@ -4,6 +4,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 import { resolve } from 'node:path';
 import { validateContent } from './scripts/lib/content.ts';
 import { yamlModuleSource } from './scripts/lib/yaml-module.ts';
+import { chapterChunkName } from './scripts/lib/chunks.ts';
 
 const CONTENT_DIR = resolve(import.meta.dirname, 'content');
 const SCENARIOS_DIR = resolve(CONTENT_DIR, 'scenarios');
@@ -61,6 +62,9 @@ function cspPlugin(): Plugin {
   };
 }
 
+/** One theme colour for the page (index.html) and the installed app (manifest); T-4.6 P4. */
+const THEME_COLOR = '#fbf6ec'; // --p-paper-50, the light page background (tokens.css)
+
 export default defineConfig({
   base: process.env.VITE_BASE ?? '/',
   plugins: [
@@ -70,7 +74,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: false,
-      includeAssets: ['icon.svg'],
+      // The workbox glob already precaches the icons (T-4.6: no duplicate entries).
+      includeManifestIcons: false,
       manifest: {
         name: 'Scam Atlas: Europe',
         short_name: 'Scam Atlas',
@@ -80,18 +85,29 @@ export default defineConfig({
         scope: '.',
         display: 'standalone',
         background_color: '#0f1b2d',
-        theme_color: '#0f1b2d',
-        icons: [{ src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }],
+        theme_color: THEME_COLOR,
+        // T-4.6 P4: the SVG for any size, plus PNGs rendered from our own icon SVGs (scripts/build-icons.ts).
+        icons: [
+          { src: 'icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' },
+          { src: 'icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: 'icon-maskable.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'maskable' },
+          { src: 'icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+        ],
       },
       workbox: {
         // Precache only the game's own build output. No runtimeCaching: nothing
         // from other origins is ever fetched or cached.
-        globPatterns: ['**/*.{js,css,html,svg,webmanifest}'],
+        // Icons are matched here; the plugin adds manifest.webmanifest itself (T-4.6: no duplicate entries).
+        globPatterns: ['**/*.{js,css,html,svg,png}'],
         // Story art is precached for offline play, except review material that the game never loads
         // (ART_DIRECTION §11, §12.1: art/samples and art/rig).
         globIgnores: ['**/art/samples/**', '**/art/rig/**'],
         navigateFallback: 'index.html',
         cleanupOutdatedCaches: true,
+        // T-4.6 P1: with skipWaiting (autoUpdate), the new worker also takes control of the open tab at once,
+        // so a first visit can go offline in the same tab instead of depending on the HTTP cache.
+        clientsClaim: true,
         runtimeCaching: [],
       },
     }),
@@ -99,5 +115,9 @@ export default defineConfig({
   build: {
     target: 'es2022',
     sourcemap: false,
+    rolldownOptions: {
+      // T-4.6 P1: one lazy chunk per chapter (scripts/lib/chunks.ts), budgets in tests/unit/bundle-guard.test.ts.
+      output: { codeSplitting: { groups: [{ name: (id: string) => chapterChunkName(id) }] } },
+    },
   },
 });

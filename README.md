@@ -22,15 +22,15 @@ Scam Atlas teaches recognition and response, never how to run a scam. The full r
 
 ## Privacy
 
-There are no accounts, no tracking and no analytics. Your progress and settings stay in your own browser (`localStorage`). The game makes no network requests of its own, and it works offline once loaded. Help links open only when you click them.
+There are no accounts, no tracking and no analytics. Your progress and settings stay in your own browser (`localStorage`). The game makes no requests to any other site, and it works offline once loaded. Help links open only when you click them.
 
 ## Accessibility
 
-The game is built and audited against WCAG 2.2 AA. It supports keyboard-only play and screen readers, and works at 320 px and 400 % zoom. It respects reduced motion and offers dark mode. Timers can be set to Extended or turned off. Every story scene can be paused, skipped or replayed.
+The game is designed and tested against WCAG 2.2 AA; a full audit is in progress before release. It supports keyboard-only play and screen readers, and works at 320 px and 400 % zoom. It respects reduced motion and follows your device's dark mode. Timers can be set to Extended or turned off. Story scenes advance only when you choose, and can be skipped or replayed.
 
 ## Run it locally
 
-You need Node.js 22.
+You need Node.js 22 (as used in CI).
 
 ```sh
 npm ci
@@ -50,7 +50,7 @@ The game was designed and built by an AI-assisted team of Claude Code agents, an
 ## Licences
 
 - **Code** (everything except the game content and art): MIT, see [`LICENSE`](LICENSE).
-- **Game content and art** (`content/`, `public/art/`, `public/brands/`): CC BY-SA 4.0, see [`LICENSE-CONTENT.md`](LICENSE-CONTENT.md).
+- **Game content and art** (`content/`, `public/art/`, `public/brands/`, `public/icon.svg`): CC BY-SA 4.0, see [`LICENSE-CONTENT.md`](LICENSE-CONTENT.md) for the exact scope.
 
 ## If you've been scammed
 

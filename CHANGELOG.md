@@ -2,7 +2,7 @@
 
 ## 1.0.0 (release candidate, not yet published)
 
-This is the first public release. Publishing waits for Gate G4 in `docs/DECISIONS.md`.
+This will be the first public release. Publishing waits for Gate G4 in `docs/DECISIONS.md`.
 
 ### The game
 - **11 chapters and 108 scenarios.** Home (tutorial), Berlin, Amsterdam, Paris, Madrid, Warsaw, Rome, Lisbon, Dublin, Stockholm and the Brussels finale.
@@ -13,8 +13,8 @@ This is the first public release. Publishing waits for Gate G4 in `docs/DECISION
 - **Help screens.** Checked reporting, bank, support and crisis contacts for 10 countries, plus an EU / other-country default with 112.
 
 ### Accessibility and privacy
-- Audited against WCAG 2.2 AA (`docs/qa/T-4.5-a11y-privacy-audit.md`).
-- Keyboard and screen-reader play; Extended or no timers; reduced motion; dark mode.
+- Designed and tested against WCAG 2.2 AA; the pre-release audit (T-4.5) is being closed out.
+- Keyboard and screen-reader play; Extended or no timers; reduced motion; follows the device's dark mode.
 - No accounts, tracking or analytics. Progress stays in the browser, and the game plays offline once loaded.
 
 ### Known limits

@@ -15,7 +15,7 @@ learning_objectives: [LO-16, LO-18]
 difficulty: 3
 is_fraud: false
 device: messenger
-brands: [kettle, larchwick, tremolik]
+brands: [brewnook, larchwick, tremolik]
 cast: [mateus, kasia]
 pressure:
   timer: false
@@ -75,7 +75,7 @@ debrief:
     what_works: "Stop the damage: call the bank first."
   layer2:
     message_flags: []
-    notes: "Mateus calls Larchwick on the number on his card, then reports Kasia's account in Kettle. \"Done. Thanks for staying calm for me.\" Experts get caught too. What counts is the next ten minutes. A payment code from your banking app is money: only type it where you are paying yourself, and read what you're confirming."
+    notes: "Mateus calls Larchwick on the number on his card, then reports Kasia's account in Brewnook. \"Done. Thanks for staying calm for me.\" Experts get caught too. What counts is the next ten minutes. A payment code from your banking app is money: only type it where you are paying yourself, and read what you're confirming."
   device_tip: "Find the number on the back of your card, or the bank's number inside its app, before you ever need it."
   habit_card: stop-the-damage-first
   already_clicked:

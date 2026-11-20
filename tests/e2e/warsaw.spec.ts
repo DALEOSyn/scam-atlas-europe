@@ -5,7 +5,7 @@ import AxeBuilder from '@axe-core/playwright';
  * Warsaw (T-3.7): the marketplace boss beat (CR-33 buyer chat) in the real game. Home and Berlin are seeded
  * as finished and the Warsaw run as resumed at the boss (local save only, Red Line 7), timers off, so the run
  * is quick and deterministic. The resumed run shows "Kasia's selling rules" again (CR-27, psych M2), then
- * the boss: Swaploft chat with the listing card, axe clean; "Keep it in Swaploft" (★★★), then the Kettle
+ * the boss: Swaploft chat with the listing card, axe clean; "Keep it in Swaploft" (★★★), then the Brewnook
  * collect-your-payment beat (axe clean). A second test resumes at 5-3 and opens the collect page: the
  * training-page frame (SIMULATION pill, dashed form, demo note) is visible and axe is clean (sceptic, round 1).
  */
@@ -27,7 +27,7 @@ const SEED = {
   },
 };
 
-test('Warsaw boss beat 1: the Swaploft buyer chat with the listing card, then the Kettle "collect your payment" beat (axe clean)', async ({ page }) => {
+test('Warsaw boss beat 1: the Swaploft buyer chat with the listing card, then the Brewnook "collect your payment" beat (axe clean)', async ({ page }) => {
   test.setTimeout(90_000);
   await page.addInitScript((seed) => {
     if (!localStorage.getItem('scam-atlas-europe:save')) localStorage.setItem('scam-atlas-europe:save', JSON.stringify(seed));
@@ -55,7 +55,7 @@ test('Warsaw boss beat 1: the Swaploft buyer chat with the listing card, then th
   await expect(page.getByText(/Nothing paid yet\. Real offers and payments show here\./)).toBeVisible();
   await page.getByRole('button', { name: 'Continue' }).click();
 
-  // Beat 2: Kettle, from the number the buyer gave (CR-19 new contact), a link to collect the payment.
+  // Beat 2: Brewnook, from the number the buyer gave (CR-19 new contact), a link to collect the payment.
   await expect(page.locator('#device-heading')).toHaveText(/Chat message from \+48/);
   await expect(page.getByText('Not in your contacts').first()).toBeVisible();
   await axeClean(page);

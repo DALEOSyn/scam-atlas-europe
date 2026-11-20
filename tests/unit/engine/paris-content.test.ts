@@ -141,7 +141,7 @@ describe('Paris banking paths (CR-18: start_transfer never decides or caps)', ()
     expect(fell.r.fell).toBe(true);
     expect(fell.r.points).toBe(9);
     expect(fell.r.flagsSet).toContain('paris_pay_redirected');
-    expect(play(s, ctx({ slot: 3, timerMode: 'off' }), [act('ask_ines_kettle')]).r.stars).toBe(3);
+    expect(play(s, ctx({ slot: 3, timerMode: 'off' }), [act('ask_ines_brewnook')]).r.stars).toBe(3);
   });
 
   it('3-6 genuine urgent: the usual approval is ★★★, signing off alone ★, reporting it −5', () => {

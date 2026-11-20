@@ -19,7 +19,7 @@ describe('hostParts (owner part = last two labels)', () => {
     });
   });
   it('keeps a look-alike prefix out of the owner part', () => {
-    expect(hostParts('kettle.account-check.test').owner).toBe('account-check.test');
+    expect(hostParts('brewnook.account-check.test').owner).toBe('account-check.test');
   });
   it('separates the local part of an e-mail address', () => {
     const p = hostParts('it-desk@example-sso.test');
@@ -52,7 +52,7 @@ describe('Host rendering never wraps at hyphens', () => {
   it('inside a control the owner part is plain text (no nested focusable box)', () => {
     const { container } = render(
       <button type="button">
-        <Host text="kettle.example-verify.test/keep" />
+        <Host text="brewnook.example-verify.test/keep" />
       </button>,
     );
     expect(container.querySelector('[data-owner]')?.className).not.toMatch(/ownerScroll/);
@@ -77,10 +77,10 @@ describe('masked numbers', () => {
     expect(spokenNumber('••• 3310')).not.toMatch(/\d{5,}/);
   });
   it('richPieces finds hosts and masked numbers in running text', () => {
-    const pieces = richPieces('Call 0800 ••• 3310 or visit help.kettle.example/now.');
+    const pieces = richPieces('Call 0800 ••• 3310 or visit help.brewnook.example/now.');
     expect(pieces.filter((p) => p.kind !== 'text').map((p) => [p.kind, p.text])).toEqual([
       ['masked', '0800 ••• 3310'],
-      ['host', 'help.kettle.example/now'],
+      ['host', 'help.brewnook.example/now'],
     ]);
   });
 });

@@ -1,4 +1,4 @@
-# 3-7 "Volet Bleu" from a look-alike address: new RIB, pay early (GDD §23.4 3-7; payment-detail-change
+# 3-7 "Brivolet Gestion" from a look-alike address: new RIB, pay early (GDD §23.4 3-7; payment-detail-change
 # brief). Fraud, difficulty 3, timer (slot length) + pusher at 25 s. Home twin of paris-01-rent-close-match
 # (both French, both with the real lease reference).
 # Red flags (R = 3): sender (an added hyphen), request (pay early, new account, late fee), attachment
@@ -9,7 +9,7 @@
 # The French pusher (with translation, CR-14) is the sourced coaching tactic: "the name check may say it
 # doesn't match, just confirm" (EPC threats report; INC: don't confirm after a no-match).
 # The banking beat shows the same lease note as 3-1 (not checkable; the new IBAN differs from it).
-# Banking beat: you type "Volet Bleu" from your lease; the check says it doesn't match (no holder shown,
+# Banking beat: you type "Brivolet" from your lease; the check says it doesn't match (no holder shown,
 # CR-23); the warning is a red flag on the sub-beat (counts toward spotting, not R).
 # Fall -> damage control (6, 2 harmful); layer 2 keeps "may not have to refund you" (never "won't").
 id: paris-07-agency-new-account
@@ -22,7 +22,7 @@ learning_objectives: [LO-06, LO-01, LO-04]
 difficulty: 3
 is_fraud: true
 device: email
-brands: [volet-bleu, larchwick]
+brands: [brivolet, larchwick]
 cast: []
 pressure:
   timer: true
@@ -35,18 +35,18 @@ pressure:
         translation: "Reminder: your bank's name check may say the name doesn't match our new account. That's normal, just confirm."
 
 message:
-  sender: { display: "Volet Bleu · Gestion", detail: "gestion@volet-bleu.example" }
+  sender: { display: "Brivolet · Gestion", detail: "gestion@bri-volet.example" }
   subject: "Loyer du mois prochain · nouveau RIB"
   body: |
     Bonjour,
 
     Nous avons changé de banque et l'ancien compte va être clôturé. Merci de régler le loyer du mois prochain avant vendredi sur notre nouveau compte (RIB en pièce jointe). Des frais de retard s'appliqueront après cette date.
 
-    Réf. VB-2291-03
+    Réf. BG-2291-03
 
-    Volet Bleu · Gestion locative
+    Brivolet · Gestion locative
   lang: fr
-  translation: "Hello, we've changed banks and the old account is closing. Please pay next month's rent before Friday to our new account (RIB attached). Late fees will apply after that date. Ref. VB-2291-03. Volet Bleu · Lettings"
+  translation: "Hello, we've changed banks and the old account is closing. Please pay next month's rent before Friday to our new account (RIB attached). Late fees will apply after that date. Ref. BG-2291-03. Brivolet · Lettings"
   request: pay
   ask:
     text: "Merci de régler le loyer du mois prochain avant vendredi sur notre nouveau compte (RIB en pièce jointe)."
@@ -54,13 +54,13 @@ message:
   claims:
     - text: "Nous avons changé de banque et l'ancien compte va être clôturé."
       translation: "we've changed banks and the old account is closing."
-  attachments: [{ name: "RIB_VoletBleu.pdf", size: "63 KB" }]
-  references: ["VB-2291-03"]
+  attachments: [{ name: "RIB_Brivolet.pdf", size: "63 KB" }]
+  references: ["BG-2291-03"]
   l10n_note: "French in-world text is intentional (Paris chapter); the English translation is shown inline. 'RIB' is a bank-details slip."
 
 inspectables:
   - target: sender.detail
-    reveal: "volet-bleu.example. Read it slowly: there's a hyphen. The agency's address on your lease and on its first email is voletbleu.example."
+    reveal: "bri-volet.example. Read it slowly: there's a hyphen. The agency's address on your lease and on its first email is brivolet.example."
     red_flag: true
     type: sender
   - target: attachment
@@ -68,7 +68,7 @@ inspectables:
     red_flag: true
     type: attachment
   - target: reference
-    reveal: "Your lease reference, VB-2291-03, as on your lease. A reference like this can be copied from earlier mail, so it can't prove anything either way."
+    reveal: "Your lease reference, BG-2291-03, as on your lease. A reference like this can be copied from earlier mail, so it can't prove anything either way."
     red_flag: false
     type: reference
   - target: claim
@@ -87,7 +87,7 @@ actions:
     next_beat: agency_transfer
     pressure_target: true
   - id: call_agency_lease_fake
-    label: "Call Volet Bleu on your lease's number"
+    label: "Call Brivolet Gestion on your lease's number"
     kind: call_back_known
     outcome: agency_no_change
   - id: report_agency_email
@@ -103,12 +103,12 @@ beats:
   - id: agency_transfer
     device: banking
     message:
-      body: "Your lease, page 4: Volet Bleu Gestion SAS · account ending 31"
-      payee: { name: "Volet Bleu", iban: "FR•••••••••••••••••••••••82", name_check: mismatch, amount: "€690.00" }
+      body: "Your lease, page 4: Brivolet Gestion SAS · account ending 31"
+      payee: { name: "Brivolet", iban: "FR•••••••••••••••••••••••82", name_check: mismatch, amount: "€690.00" }
       request: pay
     inspectables:
       - target: payee.name_check
-        reveal: "Doesn't match: the account isn't held by Volet Bleu, the name from your lease. That warning is the moment to stop, even when the sender told you to expect it."
+        reveal: "Doesn't match: the account isn't held by Brivolet, the name from your lease. That warning is the moment to stop, even when the sender told you to expect it."
         red_flag: true
         type: payee
       - target: payee.iban

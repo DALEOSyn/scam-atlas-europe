@@ -1,5 +1,5 @@
 # 7-4 Drill: Beatriz's two rooms (GDD §27.4; rental-offplatform-payment). Unscored. Beatriz, from her
-# saved Kettle contact, compares room A (in Roostwell, viewing Saturday, pay in the app after) with room B
+# saved Brewnook contact, compares room A (in Roostwell, viewing Saturday, pay in the app after) with room B
 # (cheaper, owner abroad, deposit and ID today). The owner's message is quoted (context: quoted).
 # Quoted red flags: the claim ("many students") and the request (deposit and ID before a viewing).
 # Every pick gets a Beatriz reply; no stars. The last pick is gentle: Beatriz decides well anyway.
@@ -11,7 +11,7 @@ learning_objectives: [LO-18, LO-11]
 difficulty: 3
 is_fraud: false
 device: messenger
-brands: [kettle, roostwell]
+brands: [brewnook, roostwell]
 cast: [beatriz, mateus]
 pressure: { timer: false, levers: [] }
 

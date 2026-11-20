@@ -75,15 +75,15 @@ describe('Amsterdam 2-7 (engage chain)', () => {
   it('verify at the call ("What now?" extra) is ★★★; stopping at the top-up with Teo is ★★ (engage cap)', () => {
     const s = get('amsterdam-07-easy-work');
     expect(play(s, c(), [act('hang_up_recording'), whatNow('look_up_klaverwerk_call')]).r.stars).toBe(3);
-    const curious = play(s, c(), [act('message_on_kettle'), act('open_trial'), act('start_task_set'), act('stop_ask_teo')]);
+    const curious = play(s, c(), [act('message_on_brewnook'), act('open_trial'), act('start_task_set'), act('stop_ask_teo')]);
     expect(curious.r.stars).toBe(2);
   });
 
   it('the top-up follow-up fires only once the top-up page is reached (CR-21)', () => {
     const s = get('amsterdam-07-easy-work');
-    const early = run(s, ctx({ slot: 2, timerMode: 'off' }), [act('message_on_kettle'), tick(30)]);
+    const early = run(s, ctx({ slot: 2, timerMode: 'off' }), [act('message_on_brewnook'), tick(30)]);
     expect(early.pushers.fired.map((f) => f.index)).not.toContain(1);
-    const late = run(s, ctx({ slot: 2, timerMode: 'off' }), [act('message_on_kettle'), act('open_trial'), act('start_task_set'), tick(21)]);
+    const late = run(s, ctx({ slot: 2, timerMode: 'off' }), [act('message_on_brewnook'), act('open_trial'), act('start_task_set'), tick(21)]);
     expect(late.pushers.fired.map((f) => f.index)).toContain(1);
   });
 });

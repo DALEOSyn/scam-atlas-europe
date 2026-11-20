@@ -2,11 +2,11 @@
 # (call beat, then the slot length), beat-bound pushers (CR-21). Levers: greed, fear, urgency,
 # small_amount (sunk cost has no lever value yet, GDD §22.3).
 # The recruitment -> small payout -> deposit thread, chained by the player's own engage choices:
-#   start (recorded call, CR-20) -> mentor_chat (Kettle) -> trial_payout (training page + €6 banner)
+#   start (recorded call, CR-20) -> mentor_chat (Brewnook) -> trial_payout (training page + €6 banner)
 #   -> top_up (training page, "not enough tasks done, top up to finish the set", TJ §2.5, §10).
 # Opening checkables: caller_id D (an unknown number, as a real recruiter's call might be), link D
 # (Klaverwerk's real site named in the recording; producer answer 3), claim R (pay offer, TJ §3.3),
-# request R (save this number and move to Kettle, TJ §3.4, §3.2).
+# request R (save this number and move to Brewnook, TJ §3.4, §3.2).
 # Hang up -> "What now?": the extra "Look up Klaverwerk and call its number" (call_back_known; replaces
 # the generic call-back built-in), plus report and "Leave it there". Verify at the call = ★★★; every
 # engage caps at ★★ (design ruling 4 §22.8).
@@ -25,7 +25,7 @@ learning_objectives: [LO-12, LO-02, LO-04, LO-18, LO-16]
 difficulty: 3
 is_fraud: true
 device: call
-brands: [klaverwerk, tallyfern, kettle, larchwick]
+brands: [klaverwerk, tallyfern, brewnook, larchwick]
 cast: [teo]
 pressure:
   timer: true
@@ -41,9 +41,9 @@ message:
   transcript:
     - { speaker: caller, text: "Hello! This is a message from Klaverwerk Staffing, klaverwerk-staffing.example." }
     - { speaker: caller, text: "We have flexible online work: about an hour a day, €100 to €300 a day, no experience needed." }
-    - { speaker: caller, text: "Interested? Save this number and send us a message on Kettle. A mentor will get you started today." }
+    - { speaker: caller, text: "Interested? Save this number and send us a message on Brewnook. A mentor will get you started today." }
   request: reply
-  ask: { text: "Save this number and send us a message on Kettle." }
+  ask: { text: "Save this number and send us a message on Brewnook." }
   claims:
     - { text: "about an hour a day, €100 to €300 a day, no experience needed" }
 
@@ -66,8 +66,8 @@ inspectables:
     type: request
 
 actions:
-  - id: message_on_kettle
-    label: "Message them on Kettle"
+  - id: message_on_brewnook
+    label: "Message them on Brewnook"
     kind: reply
     next_beat: mentor_chat
     pressure_target: true
@@ -242,7 +242,7 @@ debrief:
   layer2:
     message_flags:
       - "A recorded call offering work you never applied for."
-    notes: "If you'd kept going: (1) an offer you never asked for, (2) a move to Kettle with a friendly \"mentor\", (3) a €6 payout that seems to prove it's real, but a small early payout is part of the trick, not proof, (4) \"not enough tasks done\", a fine for unfinished sets and top-ups that keep growing, with a balance you can never take out. If you paid: stop, tell a trusted adult, call your bank, keep the chats, and report it to the police. Beware of anyone who later offers to get your money back for a fee. And if a \"job\" ever wants to use your bank account, that's a different trap."
+    notes: "If you'd kept going: (1) an offer you never asked for, (2) a move to Brewnook with a friendly \"mentor\", (3) a €6 payout that seems to prove it's real, but a small early payout is part of the trick, not proof, (4) \"not enough tasks done\", a fine for unfinished sets and top-ups that keep growing, with a balance you can never take out. If you paid: stop, tell a trusted adult, call your bank, keep the chats, and report it to the police. Beware of anyone who later offers to get your money back for a fee. And if a \"job\" ever wants to use your bank account, that's a different trap."
   device_tip: "On a real phone, search for the company yourself and use the contact details on its own site. Don't save a number or switch apps because a recording asks."
   habit_card: easy-money-costs-you
   already_clicked:

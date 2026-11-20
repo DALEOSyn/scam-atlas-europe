@@ -9,7 +9,7 @@
 #   §17 banner rule): 48 000 kr to Skarvlund Trygg AB. R: claim#2 ("it moves nothing out of your name";
 #   read the prompt, not the caller), the request. D: caller_id, claim ("the police asked us to call").
 #   The ask and claim#2 are separate caller lines (a claim must not overlap the ask).
-# Beat 3 (Kettle, +45 s, 40 s, covered_by start + bank_call): "Inspector Holm (Police)" from a new number
+# Beat 3 (Brewnook, +45 s, 40 s, covered_by start + bank_call): "Inspector Holm (Police)" from a new number
 #   with a Gatewren login code in the chat (CR-39(b)). R: both claims (the "statement" scan, the deadline).
 #   D: sender.detail, the QR destination (SK3). No `ask` (scan_qr carries none; CR-30 exempts it). Written to
 #   read true whatever the player did at beats 1–2. A design combination (fraud-researcher): no debrief
@@ -28,7 +28,7 @@ difficulty: 5
 is_fraud: true
 device: call
 setup: "Evening. Birgitta, Jamal and Lina are in Birgitta's kitchen, icing buns. You're in your room. Your phone rings."
-brands: [larchwick, gatewren, kettle, skarvlund-trygg]
+brands: [larchwick, gatewren, brewnook, skarvlund-trygg]
 cast: [birgitta]
 pressure:
   timer: true

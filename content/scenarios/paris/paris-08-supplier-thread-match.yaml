@@ -22,7 +22,7 @@ learning_objectives: [LO-06, LO-01, LO-18]
 difficulty: 4
 is_fraud: true
 device: email
-brands: [platinoir, ruchelune, larchwick, kettle]
+brands: [platinoir, ruchelune, larchwick, brewnook]
 cast: [ines, solene, bastien]
 pressure:
   timer: true

@@ -35,7 +35,7 @@ export function LaptopFrame({ label, children }: { label: string; children: Comp
   );
 }
 
-/** Brand app header bar (Kettle, Larchwick, Gatewren …) through --brand-<id>-* tokens only. */
+/** Brand app header bar (Brewnook, Larchwick, Gatewren …) through --brand-<id>-* tokens only. */
 export function BrandBar({ brand, title, sub, children }: { brand: BrandMark | undefined; title: string; sub?: string | undefined; children?: ComponentChildren }) {
   const style = brand ? { background: `var(--brand-${brand.id}-primary)`, color: `var(--brand-${brand.id}-on-primary)` } : undefined;
   return (

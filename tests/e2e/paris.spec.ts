@@ -47,13 +47,13 @@ test('Paris 3-1 and 3-2: the payee check shows a close match, then "couldn\'t ch
   await axeClean(page);
   await intro.getByRole('button', { name: 'Start' }).click();
 
-  // 3-1: Volet Bleu's rent notice (genuine). Pay with the details from your lease.
+  // 3-1: Brivolet Gestion's rent notice (genuine). Pay with the details from your lease.
   await page.getByRole('button', { name: /Pay it with the details from your lease/ }).click();
   const result = page.locator('[id^="name-check-result-"]');
   // The check shows "Checking…" for 0.8 s; under a parallel run the card can take longer to mount.
-  await expect(result, '3-1 payee check result').toContainText("Close match. The account is held by 'Volet Bleu Gestion SAS'.", { timeout: 20_000 });
+  await expect(result, '3-1 payee check result').toContainText("Close match. The account is held by 'Brivolet Gestion SAS'.", { timeout: 20_000 });
   // The lease note to compare against (QA rework: not checkable, shown on the bank card).
-  await expect(page.getByText('Your lease, page 4: Volet Bleu Gestion SAS · account ending 31')).toBeVisible();
+  await expect(page.getByText('Your lease, page 4: Brivolet Gestion SAS · account ending 31')).toBeVisible();
   // The coach mark mounts with the result; give it a moment instead of a one-shot isVisible().
   const gotIt = page.getByRole('button', { name: 'Got it' });
   await gotIt.waitFor({ state: 'visible', timeout: 2_000 }).catch(() => undefined);
@@ -62,7 +62,7 @@ test('Paris 3-1 and 3-2: the payee check shows a close match, then "couldn\'t ch
     await gotIt.click();
   }
   await axeClean(page);
-  await page.getByRole('button', { name: /Use 'Volet Bleu Gestion SAS' and pay/ }).click();
+  await page.getByRole('button', { name: /Use 'Brivolet Gestion SAS' and pay/ }).click();
   await expect(consequenceHeading(page), '3-1 consequence step').toBeFocused();
   await page.getByRole('button', { name: 'Continue' }).click();
   await expect(debriefHeading(page), '3-1 debrief').toBeFocused();

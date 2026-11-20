@@ -1,10 +1,10 @@
-# 0-4 "Unusual sign-in to your Kettle account. Locked in 30 min" (GDD §16). Fraud, difficulty 2.
+# 0-4 "Unusual sign-in to your Brewnook account. Locked in 30 min" (GDD §16). Fraud, difficulty 2.
 # New mechanics: pusher, stress, pause, "the deadline was fake". Brief: see pattern below,
 # §2 (fake security alert with a link, page asks for phone number and code).
 # Red flags: the link (real name first, different owner: the subtle one), the page address, plus the
-# code request and the 30-minute lock in the text. Decoys: the sender name (anyone can set "Kettle" as
+# code request and the 30-minute lock in the text. Decoys: the sender name (anyone can set "Brewnook" as
 # a text sender name) and the case reference.
-id: home-04-kettle-locked
+id: home-04-brewnook-locked
 chapter: home
 role: standard
 pattern: messenger-account-takeover-code
@@ -13,36 +13,36 @@ learning_objectives: [LO-04, LO-05, LO-02]
 difficulty: 2
 is_fraud: true
 device: sms
-brands: [kettle]
+brands: [brewnook]
 cast: [noor]
 pressure:
   timer: true
   levers: [urgency, fear]
   pusher:
     messages:
-      - { at_seconds: 20, text: "Kettle: 20 minutes left. Confirm it's you to keep your chats." }
-      - { at_seconds: 40, text: "Kettle: Final notice. Your account will be locked in 10 minutes." }
+      - { at_seconds: 20, text: "Brewnook: 20 minutes left. Confirm it's you to keep your chats." }
+      - { at_seconds: 40, text: "Brewnook: Final notice. Your account will be locked in 10 minutes." }
 
 message:
-  sender: { display: "Kettle", detail: "Sender name: Kettle" }
+  sender: { display: "Brewnook", detail: "Sender name: Brewnook" }
   body: |
-    Kettle: Unusual sign-in to your account from a new device. Not you? Confirm it's you within 30 min or your account will be locked: kettle-chat.example-verify.test/keep
+    Brewnook: Unusual sign-in to your account from a new device. Not you? Confirm it's you within 30 min or your account will be locked: brewnook-chat.example-verify.test/keep
 
-    Case K-55902
+    Case BN-55902
   request: open_link
-  references: ["K-55902"]
+  references: ["BN-55902"]
 
 inspectables:
   - target: sender.detail
-    reveal: "Shows \"Kettle\", the same name a real Kettle text would show. A text's sender name is easy to fake, so it can't prove anything either way."
+    reveal: "Shows \"Brewnook\", the same name a real Brewnook text would show. A text's sender name is easy to fake, so it can't prove anything either way."
     red_flag: false
     type: sender
   - target: link
-    reveal: "kettle-chat.example-verify.test. Read the end: the owner part is example-verify.test, not kettle-chat.example. The real name at the start is borrowed."
+    reveal: "brewnook-chat.example-verify.test. Read the end: the owner part is example-verify.test, not brewnook-chat.example. The real name at the start is borrowed."
     red_flag: true
     type: link
   - target: reference
-    reveal: "K-55902 looks like a case number, just as a real Kettle message would show. Anyone can make one up, so it can't prove anything either way."
+    reveal: "BN-55902 looks like a case number, just as a real Brewnook message would show. Anyone can make one up, so it can't prove anything either way."
     red_flag: false
     type: reference
 
@@ -52,29 +52,29 @@ actions:
     kind: open_link
     next_beat: keep_page
     pressure_target: true
-  - id: open_kettle_yourself
-    label: "Open Kettle yourself and check linked devices"
+  - id: open_brewnook_yourself
+    label: "Open Brewnook yourself and check linked devices"
     kind: verify_in_app
     outcome: no_new_device
-  - id: report_kettle_sms
+  - id: report_brewnook_sms
     label: "Report the text as spam"
     kind: report
-    outcome: kettle_sms_reported
-  - id: delete_kettle_sms
+    outcome: brewnook_sms_reported
+  - id: delete_brewnook_sms
     label: "Delete the text"
     kind: delete
-    outcome: kettle_sms_deleted
+    outcome: brewnook_sms_deleted
 
 beats:
   - id: keep_page
     device: browser
     message:
-      page: { address: "kettle-chat.example-verify.test/keep", title: "Kettle · Security check" }
+      page: { address: "brewnook-chat.example-verify.test/keep", title: "Brewnook · Security check" }
       body: "To keep your account, enter your phone number and the 6-digit code we just sent you by text."
       request: share_code
     inspectables:
       - target: page.address
-        reveal: "Still example-verify.test. Kettle's real site is kettle-chat.example."
+        reveal: "Still example-verify.test. Brewnook's real site is brewnook-chat.example."
         red_flag: true
         type: page_address
       - target: page.info
@@ -82,10 +82,10 @@ beats:
         red_flag: false
         type: padlock
     actions:
-      - id: type_kettle_code
+      - id: type_brewnook_code
         label: "Type in your number and the code"
         kind: share_code
-        outcome: kettle_taken
+        outcome: brewnook_taken
         pressure_target: true
       - id: close_keep_page
         label: "Close the page"
@@ -93,8 +93,8 @@ beats:
         outcome: left_keep_page
 
 outcomes:
-  kettle_taken:
-    narrative: "An unknown device appears in Kettle's linked devices. That evening Noor emails you: \"Why did you send me a weird voting link on Kettle?\""
+  brewnook_taken:
+    narrative: "An unknown device appears in Brewnook's linked devices. That evening Noor emails you: \"Why did you send me a weird voting link on Brewnook?\""
     recovery:
       - { step: log_out_unknown_devices, category: stop }
       - { step: turn_on_two_step, category: secure }
@@ -102,13 +102,13 @@ outcomes:
       - { step: warn_contacts, category: warn }
       - { step: reply_to_sender, category: harmful }
       - { step: wait_and_see, category: harmful }
-    sets_flags: [kettle_hacked]
+    sets_flags: [brewnook_hacked]
   no_new_device:
-    narrative: "Kettle opens as normal. Linked devices: just your phone. No alert, no lock."
-  kettle_sms_reported:
+    narrative: "Brewnook opens as normal. Linked devices: just your phone. No alert, no lock."
+  brewnook_sms_reported:
     narrative: "Reported. Your phone files the text under spam."
-  kettle_sms_deleted:
-    narrative: "Deleted. Thirty minutes pass. Your Kettle account is fine."
+  brewnook_sms_deleted:
+    narrative: "Deleted. Thirty minutes pass. Your Brewnook account is fine."
   left_keep_page:
     narrative: "You close the page without typing anything. Nothing happens."
 
@@ -116,7 +116,7 @@ debrief:
   variant: standard
   layer1:
     tell: "A 30-minute lock threat, and a link to example-verify.test."
-    what_works: "Pause, then open Kettle yourself."
+    what_works: "Pause, then open Brewnook yourself."
   layer2:
     message_flags:
       - "A 30-minute deadline plus reminders: pressure to act before you think. The deadline was fake. Nothing happened."
@@ -126,5 +126,5 @@ debrief:
   habit_card: pressure-is-the-tell
   already_clicked:
     clicked: "Close the page and type nothing. If anything downloaded or you installed something, run a security scan or ask for help."
-    shared_code: "Open Kettle's linked devices and log out any you don't know. Turn on two-step verification, warn your contacts and report it to the police."
+    shared_code: "Open Brewnook's linked devices and log out any you don't know. Turn on two-step verification, warn your contacts and report it to the police."
   sources: [de-vzn-ghost-pairing-2026, pl-cert-vote-takeover-2026, nl-politie-whatsapp-takeover-2024, pl-cert-phishing-kb-2026, ie-ncsc-phishing-guide]

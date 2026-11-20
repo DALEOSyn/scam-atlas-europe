@@ -18,7 +18,7 @@ learning_objectives: [LO-14, LO-18]
 is_fraud: true
 device: messenger
 setup: "The Open Evening is tomorrow. Across the table, Teo holds up his phone, then sends you a screenshot."
-brands: [kettle, wordswap]
+brands: [brewnook, wordswap]
 cast: [teo]
 advice: { for: teo }
 pressure: { timer: false, levers: [] }

@@ -1,7 +1,7 @@
 /**
  * Warsaw (T-3.7): the authored chapter played through the runner, so the GDD §25.7 strategy check, the
  * marketplace device (CR-33), the code confirmation (CR-34), the drill for Mateus (CR-32) and the boss's
- * "Move the chat to Kettle" engage (CR-35, ruling R14) hold for the real YAML.
+ * "Move the chat to Brewnook" engage (CR-35, ruling R14) hold for the real YAML.
  */
 import { readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -151,12 +151,12 @@ describe('Warsaw boss (CR-33 buyer chat, CR-35 engage, covered_by)', () => {
     expect(r.genuineReported).toBe(0);
   });
 
-  it('row 3: "Move the chat to Kettle" ends beat 1 at ★★ (CR-35), then verifying beats 2–3: 46', () => {
+  it('row 3: "Move the chat to Brewnook" ends beat 1 at ★★ (CR-35), then verifying beats 2–3: 46', () => {
     const cx = c();
     const st = finish(
       s,
       cx,
-      run(s, cx, [...tagBoth('request'), act('move_chat_kettle'), cont, ...tagBoth('link', 'collect'), ...tagBoth('request', 'collect'), act('open_sales_boss'), cont, ...tagBoth('link', 'release'), ...tagBoth('request', 'release'), act('open_sales_release')]),
+      run(s, cx, [...tagBoth('request'), act('move_chat_brewnook'), cont, ...tagBoth('link', 'collect'), ...tagBoth('request', 'collect'), act('open_sales_boss'), cont, ...tagBoth('link', 'release'), ...tagBoth('request', 'release'), act('open_sales_release')]),
     );
     const r = resultOf(s, B, st);
     expect(r.beats.map((b) => b.stars)).toEqual([2, 3, 3]);
@@ -171,7 +171,7 @@ describe('Warsaw boss (CR-33 buyer chat, CR-35 engage, covered_by)', () => {
 
   it('falls on beats 2 and 3 merge into one six-step list, set warsaw_bank_called, and skip Kasia\'s message', () => {
     const cx = c();
-    let st = run(s, cx, [act('move_chat_kettle'), cont, act('enter_card_boss'), cont, act('bank_login_boss')]);
+    let st = run(s, cx, [act('move_chat_brewnook'), cont, act('enter_card_boss'), cont, act('bank_login_boss')]);
     while (st.phase === 'consequence') st = step(s, cx, st, cont);
     expect(st.phase).toBe('damage_control');
     expect(st.recovery?.options).toHaveLength(6);
@@ -206,7 +206,7 @@ describe('Warsaw strategy rows (GDD §25.7)', () => {
   it('row 11 "inside the app is safe": 157 (GDD table: 155), spotted 10 (gold under today\'s rules; R15 input)', () => {
     const p55 = points('warsaw-05-card-photo-in-app', [act('send_card_photo')], PICKS_CARD);
     expect(p55.points).toBe(9);
-    const boss = points(BOSS, [act('move_chat_kettle'), cont, ...tagBoth('link', 'collect'), ...tagBoth('request', 'collect'), act('open_sales_boss'), cont, ...tagBoth('link', 'release'), ...tagBoth('request', 'release'), act('open_sales_release')]);
+    const boss = points(BOSS, [act('move_chat_brewnook'), cont, ...tagBoth('link', 'collect'), ...tagBoth('request', 'collect'), act('open_sales_boss'), cont, ...tagBoth('link', 'release'), ...tagBoth('request', 'release'), act('open_sales_release')]);
     expect(boss.points).toBe(46);
     expect(ideal().reduce((a, b) => a + b, 0) + p55.points + boss.points).toBe(157);
     expect(boss.correctTags - boss.wrongTags).toBe(4);

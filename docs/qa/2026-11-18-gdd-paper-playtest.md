@@ -323,7 +323,7 @@ Once a build exists I will re-test these with Playwright at 375×812 and 1440×9
 **Observations (no action required):**
 - Gold now allows **zero** off-focus checks; v2 allowed one. Under §7.2 row 3, checking Adaeze's meeting change with her costs gold. I lean towards allowing one (G1 question 5 is for Roman).
 - Once beat 1 of a boss is verified, beats 2–3 carry less tension. They still teach hang up and call back, so this is acceptable.
-- 1-5 (the Kettle code callback) has no genuine twin in Berlin. Check that `legit_twin_required` is meant per chapter rather than per fraud scenario.
+- 1-5 (the Brewnook code callback) has no genuine twin in Berlin. Check that `legit_twin_required` is meant per chapter rather than per fraud scenario.
 
 ### Re-check verdict: **FAIL** (narrow)
 

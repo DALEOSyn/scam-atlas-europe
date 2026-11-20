@@ -96,9 +96,9 @@ describe('fixed wording (STORY §4.4, §5.6)', () => {
 });
 
 describe('scene rules the generic validator does not see', () => {
-  it('the Berlin turn never mentions Kettle, codes or fees (STORY §6.2)', () => {
+  it('the Berlin turn never mentions Brewnook, codes or fees (STORY §6.2)', () => {
     const all = scene('berlin-turn').panels.map(text).join(' ');
-    expect(all).not.toMatch(/kettle|code|fee/i);
+    expect(all).not.toMatch(/brewnook|code|fee/i);
   });
   it('no S4 scene mentions dating or "anyone new" (STORY §2.2)', () => {
     for (const s of scenes.values()) expect(s.panels.map(text).join(' '), s.id).not.toMatch(/\bdat(e|ing)\b|anyone new|someone new|online friend/i);
@@ -180,7 +180,7 @@ describe('Madrid and Warsaw scenes (T-S4e; STORY §3.4, §3.5; GDD §24.2, §25.
     expect(words('warsaw-turn')).toContain('the deal and the money stay inside Swaploft.');
     expect(words('warsaw-resolution')).toContain("Kasia's account asked for my code and I sent it. Me. The gadget guy.");
     expect(words('warsaw-resolution')).toContain('It wasn\'t really me. And you fixed it fast.');
-    expect(words('warsaw-kasia-back')).toContain("Someone got into my Kettle while I was playing. I've got it back in the app and turned on two-step.");
+    expect(words('warsaw-kasia-back')).toContain("Someone got into my Brewnook while I was playing. I've got it back in the app and turned on two-step.");
     expect(words('madrid-turn')).toContain('So I\'ll make the decisions. Kidding.');
     expect(words('warsaw-kasia-back')).toContain('Not your fault, Kasia. And the bank\'s on it: I called them first.');
   });

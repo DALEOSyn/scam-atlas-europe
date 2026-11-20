@@ -112,7 +112,7 @@ describe('fixed wording (STORY §3.3, §4.4; GDD §23.13)', () => {
 
 describe('scene rules the generic validator does not see', () => {
   it('no scene names a brand from a later scenario before it plays (GDD §23.13)', () => {
-    for (const s of scenes.values()) expect(all(s), s.id).not.toMatch(/Volet Bleu|Feuillemont|Platinoir|Morvenac|Vellacourt|Ostrelle|Tessivane|Vardoulec/);
+    for (const s of scenes.values()) expect(all(s), s.id).not.toMatch(/Brivolet|Feuillemont|Platinoir|Morvenac|Vellacourt|Ostrelle|Tessivane|Vardoulec/);
   });
   it('the player dials the directory number on Friday; an incoming caller is never treated as proof', () => {
     for (const p of scene('paris-resolution').panels.filter((x) => x.caption?.startsWith('Friday'))) {

@@ -9,7 +9,7 @@ export interface BrandMark {
   id: string;
   name: string;
   short_name?: string;
-  /** Path under public/, e.g. brands/kettle-mark.svg */
+  /** Path under public/, e.g. brands/brewnook-mark.svg */
   mark?: string;
   /** CR-27: sub-brands (e.g. Larchwick Pro), id and name only. */
   sub_brands?: { id: string; name: string }[];
@@ -46,7 +46,7 @@ export function headerBrand(id: string, registry: readonly BrandMark[] = brands)
 }
 
 /**
- * The brand a display name claims, e.g. "Waymarker IT" → Waymarker, "Kettle" → Kettle.
+ * The brand a display name claims, e.g. "Waymarker IT" → Waymarker, "Brewnook" → Brewnook.
  * Same display name → same mark, genuine or spoof (UI_SPEC §2.5, §12): the tell is never the logo.
  */
 export function brandForName(display: string | undefined): BrandMark | undefined {

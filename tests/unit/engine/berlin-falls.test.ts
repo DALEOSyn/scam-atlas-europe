@@ -69,7 +69,7 @@ const ideal: Record<string, RunnerEvent[]> = {
   'berlin-01-locker-code': [act('collect_parcel')],
   'berlin-02-briefing-moved': [act('reply_see_you')],
   'berlin-03-address-incomplete': [...tagAll('start', 'sender.detail', 'link'), act('open_trundle_app')],
-  'berlin-05-kettle-code': [...tagAll('start', 'phone_number', 'request'), act('open_kettle_check')],
+  'berlin-05-brewnook-code': [...tagAll('start', 'phone_number', 'request'), act('open_brewnook_check')],
   'berlin-06-payment-failed': [act('open_shop_update')],
   'berlin-07-customs-fee': [...tagAll('start', 'sender.detail', 'link'), act('open_trundle_app_fee')],
   'berlin-08-payment-failed-lookalike': [...tagAll('start', 'sender.detail', 'link'), act('open_shop_check')],

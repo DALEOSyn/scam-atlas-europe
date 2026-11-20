@@ -82,7 +82,7 @@ export const LANGUAGE_TYPES: readonly (typeof INSPECTABLE_TYPES)[number][] = ['s
 export const NEVER_PROOF_TYPES: readonly (typeof INSPECTABLE_TYPES)[number][] = ['logo', 'display_name'];
 
 /** Flag and arc-variable names (CR-08): snake_case, e.g. alex_invested. Dotted names read as domains to the red-line linter. */
-export const flagName = z.string().regex(/^[a-z][a-z0-9_]*$/, 'flags are snake_case, e.g. kettle_hacked or alex_invested');
+export const flagName = z.string().regex(/^[a-z][a-z0-9_]*$/, 'flags are snake_case, e.g. brewnook_hacked or alex_invested');
 
 export const loId = z.string().regex(/^LO-\d{2}$/, 'learning objective ids look like LO-01');
 

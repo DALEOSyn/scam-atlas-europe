@@ -11,7 +11,7 @@ learning_objectives: [LO-18, LO-16]
 difficulty: 1
 is_fraud: false
 device: messenger
-brands: [kettle, thimble-pine, larchwick]
+brands: [brewnook, thimble-pine, larchwick]
 cast: [teo]
 pressure: { timer: false, levers: [] }
 

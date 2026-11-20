@@ -366,9 +366,9 @@ describe('CR-34: code then confirm', () => {
 
 describe('CR-35 (ruling R14): an engage that ends a boss beat', () => {
   const s = fixture('cr35-boss-off-platform.yaml');
-  it('"Move the chat to Kettle" ends beat 1 at ★★ (10 points); beat 2 still arrives and scores on its own', () => {
-    let st = run(s, ctx(), [act('move_to_kettle')]);
-    expect(st.groups[0]).toMatchObject({ resolved: true, engagedOnFraud: true, decision: { cls: 'engage', actionId: 'move_to_kettle' } });
+  it('"Move the chat to Brewnook" ends beat 1 at ★★ (10 points); beat 2 still arrives and scores on its own', () => {
+    let st = run(s, ctx(), [act('move_to_brewnook')]);
+    expect(st.groups[0]).toMatchObject({ resolved: true, engagedOnFraud: true, decision: { cls: 'engage', actionId: 'move_to_brewnook' } });
     expect(st.phase).toBe('consequence');
     st = continueTo(s, st);
     expect(st.groups[1]?.beatId).toBe('collect');
@@ -380,13 +380,13 @@ describe('CR-35 (ruling R14): an engage that ends a boss beat', () => {
       [3, 15],
     ]);
     // An engage is never "already checked" cover for beat 2's report.
-    const reported = continueTo(s, step(s, ctx(), continueTo(s, run(s, ctx(), [act('move_to_kettle')])), act('block_report')));
+    const reported = continueTo(s, step(s, ctx(), continueTo(s, run(s, ctx(), [act('move_to_brewnook')])), act('block_report')));
     expect(resultOf(s, B, reported).beats[1]).toMatchObject({ covered: false, stars: 2 });
   });
   it('limited to scheduled boss beats at run time: the Alex arc engages still never decide (sceptic round 1)', () => {
     const arcs: [string, string][] = [
       ['berlin/berlin-arc-alex-01.yaml', 'chat_back_alex'],
-      ['amsterdam/amsterdam-arc-alex-02.yaml', 'move_to_kettle'],
+      ['amsterdam/amsterdam-arc-alex-02.yaml', 'move_to_brewnook'],
       ['paris/paris-arc-alex-03.yaml', 'promise_secret'],
     ];
     for (const [file, id] of arcs) {

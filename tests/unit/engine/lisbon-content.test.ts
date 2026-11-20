@@ -68,7 +68,7 @@ const ideal: Record<string, RunnerEvent[]> = {
     ...tagAll('start', 'sender.detail', 'link', 'request'),
     act('open_roostwell_b1'),
     cont,
-    ...tagAll('host_kettle', 'sender.detail', 'request'),
+    ...tagAll('host_brewnook', 'sender.detail', 'request'),
     act('check_booking_b2'),
     cont,
     ...tagAll('final_sms', 'link', 'request'),

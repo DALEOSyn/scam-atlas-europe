@@ -4,7 +4,7 @@ import { skipScene } from './scene-helpers.ts';
 /**
  * CR-55 (QA Phase 3 gate B1): an interleaved chapter order. Home and Berlin are finished (Berlin played arc slot 1)
  * and Dublin is the first middle chapter played. Dublin's arc position is its first scenario, so it plays slot 2,
- * Amsterdam's arc file ("Move the chat to Kettle"). After that beat Dublin goes on with its own 8-1: the run is
+ * Amsterdam's arc file ("Move the chat to Brewnook"). After that beat Dublin goes on with its own 8-1: the run is
  * not restarted and no further arc beat (slot 3…) is chained in. Local save only (Red Line 7); timers off.
  */
 const KEY = 'scam-atlas-europe:save';
@@ -39,7 +39,7 @@ test('interleaved order: Dublin first plays arc slot 2 once, then its own 8-1 (n
   await intro.getByRole('button', { name: 'Start' }).click();
 
   // Slot 2 (the lowest not yet played), from Amsterdam's arc file, at Dublin's arc position.
-  await page.locator('[data-action="move_to_kettle"]').click();
+  await page.locator('[data-action="move_to_brewnook"]').click();
   await page.getByRole('button', { name: 'Continue' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toBeFocused();
   let s = await saved(page);
@@ -52,7 +52,7 @@ test('interleaved order: Dublin first plays arc slot 2 once, then its own 8-1 (n
   // Debrief Continue: Dublin's own 8-1, not another Alex beat; the run is not restarted.
   await page.getByRole('button', { name: 'Continue' }).last().click();
   await expect(page.locator('[data-action="pay_roisin_app"]')).toBeVisible();
-  await expect(page.locator('[data-action="move_to_kettle"]')).toHaveCount(0);
+  await expect(page.locator('[data-action="move_to_brewnook"]')).toHaveCount(0);
   s = await saved(page);
   expect(s.arc.timeline).toEqual([1, 2]);
   expect(s.chapters['dublin']?.run?.index).toBe(1);

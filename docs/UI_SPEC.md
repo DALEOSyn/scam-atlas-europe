@@ -8,7 +8,7 @@ Reviewers: `sceptic-reviewer` (brand resemblance, Red Lines 1–3), `qa-playtest
 > Rule for engineers: **if a value is not a token, ask before hard-coding it.** If a behaviour is not in this spec, choose the most accessible option and note it in the PR.
 > Finding ids from the reviews are tagged in brackets, e.g. [U3], so reviewers can trace each fix.
 
-**Names in this version:** the inspect tool is called **Check** (icon: magnifier); "Check mode" is the optional mode that shows every checkable element. Brands: Waymarker Network (+ Waymarker Desk, Waymarker mail), Trundle, **Larchwick Bank**, Thimble & Pine (non-craft products), **Swaploft**, Kettle, **Gatewren**, Wordswap. Old names (Corvelle, Hoardly, Nodkey, Lantern, PaketPilot) must not appear anywhere.
+**Names in this version:** the inspect tool is called **Check** (icon: magnifier); "Check mode" is the optional mode that shows every checkable element. Brands: Waymarker Network (+ Waymarker Desk, Waymarker mail), Trundle, **Larchwick Bank**, Thimble & Pine (non-craft products), **Swaploft**, Brewnook, **Gatewren**, Wordswap. Old names (Corvelle, Hoardly, Nodkey, Lantern, PaketPilot) must not appear anywhere.
 
 ---
 
@@ -145,8 +145,8 @@ Common rules:
 - Links: underlined `--color-link`. **Tapping a link never opens anything.** Touch tap shows a toast: "To see where it goes, press and hold, or use Check. Your choices are below." Keyboard/AT activation opens the Check card directly [U14]. Opening the link is only ever an authored action (`open_link`).
 - A spoof inside a genuine thread looks identical to its neighbours.
 
-### 3.3 Messenger (`messenger`, Kettle)
-- Kettle header (`--brand-kettle-primary` bar, white title), illustrated avatars, outgoing bubbles `--brand-kettle-bubble-out`.
+### 3.3 Messenger (`messenger`, Brewnook)
+- Brewnook header (`--brand-brewnook-primary` bar, white title), illustrated avatars, outgoing bubbles `--brand-brewnook-bubble-out`.
 - **New-contact banner** (`sender.new_contact`, CR-19; top, `--color-surface-sunken` with info icon, never warn colours, so it is neutral): "Not in your contacts · {detail}" (masked number). The number stays checkable through the sender. It appears for *every* unknown number, genuine or not. `message.image` on messenger is the profile photo checkable.
 - **Bank-details card** (`payee` on `email` or `messenger` only, CR-22; never on letters or other devices): a stylised card titled "Bank details" (1 px `--color-border`, `--radius-md`) with rows "Name given in the message" (fact-check S8, Paris T-3.5: not a verified holder), "IBAN" (mono, grouped in 4s) and optional amount. Our own layout, never a real bank's details-slip format. Only the IBAN is checkable; **no name check, holder or request fields** outside `banking`.
 - Group chats: sender name above incoming bubbles. Typing indicator: static dots + text "typing…".
@@ -250,7 +250,7 @@ Card: avatar, name, "Sponsored" (text), illustration (fictional people only), bo
 A phone frame in the marketplace brand (`message.app.brand`: header with the brand mark and name, sub-label "Notices" or "Messages"; region "Phone: {app}"). Never a real marketplace's layout.
 - **Listing card** (`message.listing`), under the header: small caps label "Listing", then one bordered checkable (≥ 44 px) with the title (bold) and the price; it is the first `reference` checkable. Other `references` follow as reference 2, 3.
 - **System notice** (`message.notice: true`): a card in the thread with a sender row (brand mark, "{app name}" as the checkable sender, "Notice" muted), the body and the Translate toggle. Heading "{app}: notice".
-- **Buyer chat** (no `notice`): a chat head with avatar, the buyer's handle as the checkable sender ("user 2208"; never a name pointing to an ethnicity) and "Chat in the app"; the message and follow-ups are bubbles as in Kettle. Heading "{app}: chat with {handle}".
+- **Buyer chat** (no `notice`): a chat head with avatar, the buyer's handle as the checkable sender ("user 2208"; never a name pointing to an ethnicity) and "Chat in the app"; the message and follow-ups are bubbles as in Brewnook. Heading "{app}: chat with {handle}".
 - Thread history ("Earlier"), Check, tags, the Translate toggle, timers and follow-ups behave exactly as in the messenger (§3.3). No "Not in your contacts" banner (in-app accounts). Notifications from a marketplace beat elsewhere are labelled "App message".
 
 ---
@@ -621,7 +621,7 @@ Text 4.5:1, non-text 3:1. Computed with the WCAG formula; script kept by ux-arti
 | Larchwick | white / indigo `#2D2A6E`; sand `#EAD9B5` / indigo | 12.59; 9.05 |
 | Thimble & Pine | white / pine `#2F5D3A`; pine / blush `#F6DCD0` | 7.64; 5.85 |
 | Swaploft | white / fuchsia `#A8175A`; fuchsia / cream `#FFF6EE` | 7.15; 6.70 |
-| Kettle | white / tomato `#B83A1E`; tomato / cream `#FFF5EC`; `#3A1208` / `#F9D9CC` | 5.73; 5.33; 12.46 |
+| Brewnook | white / tomato `#B83A1E`; tomato / cream `#FFF5EC`; `#3A1208` / `#F9D9CC` | 5.73; 5.33; 12.46 |
 | Gatewren | white / plum `#4B2A5C`; peach `#F6C8A8` / plum | 11.77; 7.70 |
 | Wordswap | cream `#FFF3E6` / cocoa `#6E4430`; apricot `#F4B183` / cocoa (non-text) | 7.59; 4.53 |
 
@@ -636,10 +636,10 @@ The vignette covers only the device layer, so HUD and tray pairs are unaffected.
 | address-dim / chrome | 5.02 | border / surface | 3.46 |
 | border / screen | 3.55 | warn | 7.59 |
 | warn · sim | 5.81 · 7.99 | sim | 7.84 |
-| Kettle white/tomato · tomato/cream | 5.14 · 4.79 | Kettle white/tomato | 5.26 |
+| Brewnook white/tomato · tomato/cream | 5.14 · 4.79 | Brewnook white/tomato | 5.26 |
 | Trundle white/teal · Larchwick white/indigo | 6.69 · 10.40 | | |
 | Wordswap apricot/cocoa (non-text) | 4.00 | | |
-Maximum safe alpha found: 0.17 (light, limited by Kettle tomato on cream) and 0.12 (dark, limited by the border). The cap is 0.12 for both.
+Maximum safe alpha found: 0.17 (light, limited by Brewnook tomato on cream) and 0.12 (dark, limited by the border). The cap is 0.12 for both.
 
 ---
 
@@ -654,7 +654,7 @@ Maximum safe alpha found: 0.17 (light, limited by Kettle tomato on cream) and 0.
 - [ ] **Schema requests** (for CR discussion): `actions[].pressure_target: bool`; `debrief.already_clicked: { clicked, entered_details, paid }`; `debrief.layer1: { tell, what_works }`; inspectable `context: quoted` (exists in CR-04); checkable element types derived from the device template.
 
 ## 15. Open items and risks
-- All brand names are web-checked only (BRAND_CHECK.md). A human must run a formal TMview/EUIPO search before G4. Kettle is a watch item; Wordswap has a fallback (Talktangle).
+- All brand names are web-checked only (BRAND_CHECK.md). A human must run a formal TMview/EUIPO search before G4. Kettle was renamed Brewnook on 2026-11-20 (BRAND_CHECK G4-1); Brewnook still needs the formal search; Wordswap has a fallback (Talktangle).
 - Gatewren's mark (gate + bird) could read as a birdcage at very small sizes; check at 24 px in the build.
 - Brands still needed later: utility, parking app, regulator warning list, remote-support tool, holiday-rental site.
 - Debrief copy in mock-up 3 is illustrative. Final wording is owned by game-designer, and the facts by fraud-researcher [LI-5].

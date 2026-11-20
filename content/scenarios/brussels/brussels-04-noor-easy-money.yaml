@@ -22,7 +22,7 @@ difficulty: 4
 is_fraud: true
 device: messenger
 setup: "After lunch. Noor is at the next desk, scrolling. Your phone buzzes: it's her."
-brands: [kettle, postwick, summer-euro-club]
+brands: [brewnook, postwick, summer-euro-club]
 cast: [noor]
 advice: { for: noor }
 pressure:

@@ -33,7 +33,7 @@ learning_objectives: [LO-12, LO-07, LO-04, LO-03, LO-02, LO-16]
 difficulty: 3
 is_fraud: true
 device: sms
-brands: [klaverwerk, tallyfern, kettle, larchwick, waymarker]
+brands: [klaverwerk, tallyfern, brewnook, larchwick, waymarker]
 cast: [mateus, adaeze]
 pressure:
   timer: true
@@ -290,11 +290,11 @@ outcomes:
         category: harmful
         feedback: "Feeling embarrassed is normal, and it's what keeps people paying and silent. There is no need to feel ashamed: anyone can fall for this. Telling a trusted adult and your bank early is what limits the damage."
   klaverwerk_no_topups:
-    narrative: "You type klaverwerk-staffing.example. No task accounts, no top-ups: \"We never ask you to pay.\" Then Kettle pings."
+    narrative: "You type klaverwerk-staffing.example. No task accounts, no top-ups: \"We never ask you to pay.\" Then Brewnook pings."
   klaverwerk_text_reported:
-    narrative: "Reported. Your phone files it under spam. Then Kettle pings."
+    narrative: "Reported. Your phone files it under spam. Then Brewnook pings."
   klaverwerk_text_deleted:
-    narrative: "Deleted. Then Kettle pings."
+    narrative: "Deleted. Then Brewnook pings."
   mateus_in_the_air:
     narrative: "No answer: his phone is off, he's still in the air. Can't reach him? Then don't pay. You message Adaeze through the staff directory. Adaeze: \"He lands at nine. Whoever that is, it isn't him.\""
   mateus_chat_reported:

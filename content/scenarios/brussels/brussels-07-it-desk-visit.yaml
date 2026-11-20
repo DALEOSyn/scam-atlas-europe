@@ -16,7 +16,7 @@ is_fraud: false
 stakes: low
 device: email
 setup: "This morning you raised a ticket on Waymarker Desk: the projector laptop keeps freezing."
-brands: [waymarker, kettle]
+brands: [waymarker, brewnook]
 cast: [teo]
 pressure: { timer: false, levers: [] }
 

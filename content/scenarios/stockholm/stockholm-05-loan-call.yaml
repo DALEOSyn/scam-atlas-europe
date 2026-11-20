@@ -18,7 +18,7 @@ difficulty: 4
 is_fraud: true
 device: call
 setup: "Mid-afternoon. Your phone rings."
-brands: [larchwick, gatewren, kettle]
+brands: [larchwick, gatewren, brewnook]
 cast: [birgitta]
 pressure:
   timer: true

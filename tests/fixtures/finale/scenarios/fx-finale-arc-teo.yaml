@@ -7,7 +7,7 @@ finale: teo
 learning_objectives: [LO-14, LO-18]
 is_fraud: true
 device: messenger
-brands: [kettle, swaploft]
+brands: [brewnook, swaploft]
 cast: [teo]
 advice: { for: teo }
 pressure: { timer: false, levers: [] }

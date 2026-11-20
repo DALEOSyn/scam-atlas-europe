@@ -16,7 +16,7 @@ is_fraud: false
 stakes: high
 device: auth
 setup: "On the office laptop you opened Waymarker Desk yourself to print tomorrow's guest list, and tapped 'Log in with Gatewren'."
-brands: [gatewren, waymarker, kettle]
+brands: [gatewren, waymarker, brewnook]
 cast: [mateus]
 pressure:
   timer: true

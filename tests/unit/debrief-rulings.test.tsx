@@ -16,7 +16,7 @@ describe('DebriefView, rulings L1 and L2', () => {
   it('★★★ displayed after "Leave it there": the Next time pointer in layer 1, the beat line with stars in layer 2', () => {
     const { st, r } = play(s, ctx({ slot: 0 }), [
       act('open_desk_bookmark'), { type: 'continue' },
-      check('image', 'kettle_it_chat'), tag('image', 'kettle_it_chat'), act('ask_adaeze_chat'), { type: 'continue' },
+      check('image', 'brewnook_it_chat'), tag('image', 'brewnook_it_chat'), act('ask_adaeze_chat'), { type: 'continue' },
       check('caller_id', 'it_call'), tag('caller_id', 'it_call'),
       act('hang_up_it_call'), { type: 'what_now', choice: 'done' },
     ]);

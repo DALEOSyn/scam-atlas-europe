@@ -16,7 +16,7 @@ learning_objectives: [LO-05, LO-08, LO-01]
 difficulty: 4
 is_fraud: true
 device: call
-brands: [larchwick, kettle]
+brands: [larchwick, brewnook]
 cast: [lucia]
 pressure:
   timer: true

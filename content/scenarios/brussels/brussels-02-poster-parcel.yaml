@@ -19,7 +19,7 @@ difficulty: 4
 is_fraud: true
 device: sms
 setup: "The Atlas posters are on their way with Trundle."
-brands: [trundle, larchwick, kettle, waymarker]
+brands: [trundle, larchwick, brewnook, waymarker]
 cast: [adaeze]
 pressure:
   timer: true

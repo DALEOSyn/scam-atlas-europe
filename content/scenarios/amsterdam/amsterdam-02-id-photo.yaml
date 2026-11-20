@@ -15,20 +15,20 @@ learning_objectives: [LO-12, LO-01, LO-03]
 difficulty: 2
 is_fraud: true
 device: sms
-brands: [klaverwerk, kettle]
+brands: [klaverwerk, brewnook]
 cast: []
 pressure: { timer: false, levers: [greed, authority] }
 
 message:
   sender: { display: "+31 6 •• •• •• 17", detail: "Mobile number +31 6 •• •• •• 17" }
   body: |
-    Hoi! Ik ben recruiter bij Klaverwerk Staffing. Online producten beoordelen vanuit huis: €150 per dag voor één uur werk, geen ervaring nodig. Vacature KW-20417, zie klaverwerk-staffing.example. Stuur een foto van je ID via Kettle naar dit nummer om je aan te melden.
+    Hoi! Ik ben recruiter bij Klaverwerk Staffing. Online producten beoordelen vanuit huis: €150 per dag voor één uur werk, geen ervaring nodig. Vacature KW-20417, zie klaverwerk-staffing.example. Stuur een foto van je ID via Brewnook naar dit nummer om je aan te melden.
   lang: nl
-  translation: "Hi! I'm a recruiter at Klaverwerk Staffing. Rating products online from home: €150 a day for one hour's work, no experience needed. Vacancy KW-20417, see klaverwerk-staffing.example. Send a photo of your ID on Kettle to this number to register."
+  translation: "Hi! I'm a recruiter at Klaverwerk Staffing. Rating products online from home: €150 a day for one hour's work, no experience needed. Vacancy KW-20417, see klaverwerk-staffing.example. Send a photo of your ID on Brewnook to this number to register."
   request: enter_details
   ask:
-    text: "Stuur een foto van je ID via Kettle naar dit nummer om je aan te melden."
-    translation: "Send a photo of your ID on Kettle to this number to register."
+    text: "Stuur een foto van je ID via Brewnook naar dit nummer om je aan te melden."
+    translation: "Send a photo of your ID on Brewnook to this number to register."
   claims:
     - text: "€150 per dag voor één uur werk, geen ervaring nodig"
       translation: "€150 a day for one hour's work, no experience needed"
@@ -59,7 +59,7 @@ inspectables:
 
 actions:
   - id: send_id_photo
-    label: "Send a photo of your ID on Kettle"
+    label: "Send a photo of your ID on Brewnook"
     kind: enter_details
     outcome: id_photo_sent
     pressure_target: true

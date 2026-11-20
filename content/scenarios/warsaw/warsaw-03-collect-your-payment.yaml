@@ -1,4 +1,4 @@
-# 5-3 A new Kettle number: "I'm the buyer for your rucksack… collect your payment here" (GDD §25.4 5-3;
+# 5-3 A new Brewnook number: "I'm the buyer for your rucksack… collect your payment here" (GDD §25.4 5-3;
 # marketplace-collect-payment-link). Fraud twin of 5-1.
 # Fraud, difficulty 3, timer (slot length) + pusher at 25 s from the same number. Levers helpfulness,
 # urgency, greed. Polish in-world text with translation (as 5-1 and 5-5, so language is never a tell).
@@ -17,7 +17,7 @@ learning_objectives: [LO-10, LO-02, LO-01, LO-16]
 difficulty: 3
 is_fraud: true
 device: messenger
-brands: [kettle, swaploft, larchwick]
+brands: [brewnook, swaploft, larchwick]
 cast: []
 pressure:
   timer: true

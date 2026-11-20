@@ -9,7 +9,7 @@ learning_objectives: [LO-12, LO-18]
 difficulty: 4
 is_fraud: true
 device: messenger
-brands: [kettle, swaploft]
+brands: [brewnook, swaploft]
 cast: [noor]
 advice: { for: noor }
 pressure: { timer: false, levers: [greed, social_proof] }

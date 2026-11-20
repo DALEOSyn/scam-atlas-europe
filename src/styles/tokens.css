@@ -457,12 +457,12 @@
   --brand-swaploft-accent: #fff6ee;        /* primary on accent: 6.70 */
   --brand-swaploft-secondary: #f7c6da;     /* decorative only */
 
-  /* Kettle (messenger) */
-  --brand-kettle-primary: #b83a1e;
-  --brand-kettle-on-primary: #ffffff;      /* 5.73 */
-  --brand-kettle-accent: #fff5ec;          /* primary on accent: 5.33 */
-  --brand-kettle-bubble-out: #f9d9cc;
-  --brand-kettle-bubble-out-text: #3a1208; /* 12.46 */
+  /* Brewnook (messenger) */
+  --brand-brewnook-primary: #b83a1e;
+  --brand-brewnook-on-primary: #ffffff;      /* 5.73 */
+  --brand-brewnook-accent: #fff5ec;          /* primary on accent: 5.33 */
+  --brand-brewnook-bubble-out: #f9d9cc;
+  --brand-brewnook-bubble-out-text: #3a1208; /* 12.46 */
 
   /* Gatewren (sign-in / e-ID approval app; renamed from Nodkey) */
   --brand-gatewren-primary: #4b2a5c;

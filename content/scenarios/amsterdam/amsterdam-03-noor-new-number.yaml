@@ -21,7 +21,7 @@ learning_objectives: [LO-07, LO-06, LO-04, LO-01]
 difficulty: 2
 is_fraud: true
 device: messenger
-brands: [kettle, larchwick]
+brands: [brewnook, larchwick]
 cast: [noor]
 pressure:
   timer: true
@@ -138,7 +138,7 @@ debrief:
     message_flags:
       - "\"Can't call yet\": an excuse not to talk is part of the script. A real cousin would want you to ring."
       - "It has to be today: urgency leaves no time for a call."
-    notes: "If it happens for real: save the chat and take screenshots first, then report it to your bank and the police, and report the chat in Kettle last, because it disappears once you do. Then tell Noor and the family, with a call. These messages are built to hit people who care, at any age."
+    notes: "If it happens for real: save the chat and take screenshots first, then report it to your bank and the police, and report the chat in Brewnook last, because it disappears once you do. Then tell Noor and the family, with a call. These messages are built to hit people who care, at any age."
   device_tip: "On a real phone, open your contacts and call the number you already have for the person, not the new one in the chat."
   habit_card: call-the-number-you-know
   already_clicked:

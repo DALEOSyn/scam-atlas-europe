@@ -1,6 +1,6 @@
 # 9-6 A "buyer" sends a Gatewren login code to "confirm the seller" (GDD §29.4; e-id-approval-on-call B,
 # Medium: EU-level sources only, no debrief says it is Swedish). Fraud, difficulty 4, calm (no timer).
-# Levers helpfulness, greed (small). Kettle chat from a new number (CR-19) about your Swaploft listing,
+# Levers helpfulness, greed (small). Brewnook chat from a new number (CR-19) about your Swaploft listing,
 # with the code in the chat bubble (CR-39(b)): the QR destination gatewren.example, payload /qr/<id> only.
 # Opener per the producer's Stockholm Q2 ruling: a would-be buyer who hasn't paid asks whether the lamp is
 # still for sale and wants a seller "check" by QR (unlike Warsaw 5-3's "I've paid, collect it here" link).
@@ -19,8 +19,8 @@ learning_objectives: [LO-09, LO-02]
 difficulty: 4
 is_fraud: true
 device: messenger
-setup: "You listed your old bike lamp on Swaploft last week. A Kettle message arrives from a number you don't know."
-brands: [kettle, swaploft, gatewren, larchwick]
+setup: "You listed your old bike lamp on Swaploft last week. A Brewnook message arrives from a number you don't know."
+brands: [brewnook, swaploft, gatewren, larchwick]
 cast: [jamal]
 pressure: { timer: false, levers: [helpfulness, greed] }
 

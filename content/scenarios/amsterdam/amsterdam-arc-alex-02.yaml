@@ -1,4 +1,4 @@
-# Arc beat, slot 2 (GDD §10.1, §10.2, §22.3). Alex suggests moving the chat to Kettle. Warning sign:
+# Arc beat, slot 2 (GDD §10.1, §10.2, §22.3). Alex suggests moving the chat to Brewnook. Warning sign:
 # off-platform. Friendship only; Alex's line is ≤ 25 words, generic, no persuasion copy.
 # Options per §10.1 slot 2: Move → reply · Mention it to Teo → ask_someone · Stay on Wordswap → ignore.
 # Debrief per §10.2 slot 2 (layer 1 words fixed there), with the safeguarding line.
@@ -12,7 +12,7 @@ arc_slot: 2
 learning_objectives: [LO-14]
 is_fraud: true
 device: messenger
-brands: [wordswap, kettle]
+brands: [wordswap, brewnook]
 cast: [alex, teo]
 pressure: { timer: false, levers: [] }
 
@@ -20,7 +20,7 @@ message:
   sender: { display: "Alex", detail: "Wordswap practice partner" }
   from_cast: alex
   body: |
-    Wordswap keeps lagging for me 🙄 Shall we move to Kettle? Easier to chat there. Add me?
+    Wordswap keeps lagging for me 🙄 Shall we move to Brewnook? Easier to chat there. Add me?
   request: reply
 
 inspectables:
@@ -30,10 +30,10 @@ inspectables:
     type: sender
 
 actions:
-  - id: move_to_kettle
-    label: "Move the chat to Kettle"
+  - id: move_to_brewnook
+    label: "Move the chat to Brewnook"
     kind: reply
-    outcome: moved_to_kettle
+    outcome: moved_to_brewnook
     pressure_target: true
   - id: mention_to_teo
     label: "Mention it to Teo"
@@ -45,8 +45,8 @@ actions:
     outcome: stayed_on_wordswap
 
 outcomes:
-  moved_to_kettle:
-    narrative: "You add Alex on Kettle. Alex sends a wave and a sticker of a cat in sunglasses."
+  moved_to_brewnook:
+    narrative: "You add Alex on Brewnook. Alex sends a wave and a sticker of a cat in sunglasses."
   teo_on_moving_apps:
     narrative: "Teo: \"Someone you met on an app wants to move to another one? Nothing wrong with Alex being friendly, kiddo, but stay where you met until you know them. And tell me if it ever gets odd.\""
   stayed_on_wordswap:

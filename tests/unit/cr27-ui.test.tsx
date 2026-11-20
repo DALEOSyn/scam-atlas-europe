@@ -66,7 +66,7 @@ function props(device: DeviceProps['device'], message: Message, over: Partial<De
 function frenchEmail(over: Raw = {}): Raw {
   const raw = rawTransfer('fr1', true, { device: 'email', pressure: { timer: true, levers: ['urgency'] }, ...over });
   raw.message = {
-    sender: { display: 'Volet Bleu · Gestion', detail: 'gestion@trundle.example' },
+    sender: { display: 'Brivolet · Gestion', detail: 'gestion@trundle.example' },
     subject: 'Loyer du mois prochain · nouveau RIB',
     body: 'Bonjour, merci de régler le loyer sur notre nouveau compte avant vendredi. Cordialement.',
     lang: 'fr',

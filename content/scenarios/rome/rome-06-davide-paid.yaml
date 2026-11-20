@@ -17,7 +17,7 @@ learning_objectives: [LO-16, LO-18]
 difficulty: 3
 is_fraud: false
 device: messenger
-brands: [kettle, larchwick]
+brands: [brewnook, larchwick]
 cast: [davide, bruna, giulia]
 pressure:
   timer: false

@@ -16,7 +16,7 @@ difficulty: 2
 is_fraud: false
 stakes: low
 device: messenger
-brands: [kettle]
+brands: [brewnook]
 cast: [andres, lucia]
 pressure: { timer: false, levers: [] }
 

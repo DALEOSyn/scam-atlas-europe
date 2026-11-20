@@ -379,7 +379,7 @@ describe('Brussels scene rules the generic validator does not see', () => {
   });
   it('no scam-side name, brand, app or platform; Alex never appears (STORY §2.2)', () => {
     for (const s of scenes.values()) {
-      expect(all(s), s.id).not.toMatch(/Alex|Wordswap|Robin|Sacha|Glimmerfund|Backhaven|Marrowby|Kindhand|Larchwick|Gatewren|Weekfold|Summer Euro|Kettle|Fairmeasure|platform|pop-up|helpdesk/i);
+      expect(all(s), s.id).not.toMatch(/Alex|Wordswap|Robin|Sacha|Glimmerfund|Backhaven|Marrowby|Kindhand|Larchwick|Gatewren|Weekfold|Summer Euro|Brewnook|Fairmeasure|platform|pop-up|helpdesk/i);
       for (const p of s.panels) {
         if (p.speaker && p.speaker !== 'you') expect(['adaeze', 'teo', 'noor'], s.id).toContain(p.speaker);
         if (p.with) expect(['adaeze', 'teo', 'noor'], s.id).toContain(p.with.id);

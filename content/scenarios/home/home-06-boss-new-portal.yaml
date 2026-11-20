@@ -1,5 +1,5 @@
 # 0-6 Boss (GDD §16): one fake "IT" request on three channels, arriving on the scammer's schedule.
-# Beat 1 email (log in to a "new travel portal"), beat 2 a Kettle chat from "IT" pushing, beat 3 a call
+# Beat 1 email (log in to a "new travel portal"), beat 2 a Brewnook chat from "IT" pushing, beat 3 a call
 # from "IT" asking for a code. Coach mark the first time the call device appears (engine).
 # Verify: ask_someone (Adaeze, staff directory) or verify_in_app (open Waymarker Desk yourself).
 # After a fall, the stop step is changing the password (GDD §16). Brief: it-portal-credential-phishing.
@@ -17,7 +17,7 @@ learning_objectives: [LO-01, LO-02, LO-03, LO-04, LO-05, LO-08, LO-18]
 difficulty: 2
 is_fraud: true
 device: email
-brands: [waymarker, kettle]
+brands: [waymarker, brewnook]
 cast: [adaeze]
 pressure: { timer: true, levers: [authority, urgency] }
 
@@ -73,7 +73,7 @@ actions:
     outcome: portal_email_ignored
 
 beats:
-  - id: kettle_it_chat
+  - id: brewnook_it_chat
     device: messenger
     arrives_after: 45
     message:

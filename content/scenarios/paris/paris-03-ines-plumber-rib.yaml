@@ -1,5 +1,5 @@
 # 3-3 Drill: Inès spots one, a near miss (GDD §23.4 3-3; payment-detail-change brief, faux-RIB variant).
-# Unscored. Inès, from her saved Kettle contact, shares the email her mum nearly paid: the plumber's
+# Unscored. Inès, from her saved Brewnook contact, shares the email her mum nearly paid: the plumber's
 # "new bank" for the balance. She called the number on his quote; he never changed bank.
 # The quote sits inside her genuine message (context: quoted). Quoted red flag: the look-alike link in
 # the email's footer (owner part cuivrelin-factures.example; the quote says cuivrelin.example). The
@@ -15,7 +15,7 @@ learning_objectives: [LO-18, LO-06, LO-01]
 difficulty: 2
 is_fraud: false
 device: messenger
-brands: [kettle, cuivrelin]
+brands: [brewnook, cuivrelin]
 cast: [ines]
 pressure: { timer: false, levers: [] }
 

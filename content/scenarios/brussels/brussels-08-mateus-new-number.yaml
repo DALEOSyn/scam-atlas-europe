@@ -1,4 +1,4 @@
-# 10-8 Kettle, a new number, "Mateus": a €60 hotel deposit to a new account (GDD §30.4 10-8;
+# 10-8 Brewnook, a new number, "Mateus": a €60 hotel deposit to a new account (GDD §30.4 10-8;
 # family-impersonation chat callback, Amsterdam and Rome). Fraud, difficulty 5, timer 35 s; pusher at
 # 15 s (same chat); interrupt (Adaeze) at 12 s. Levers affection, urgency, small_amount. New contact (CR-19).
 # Checkables (4; R 2): sender R (a new number using a friend's name, as Rome 8-8: the sender-or-link decoy
@@ -18,8 +18,8 @@ learning_objectives: [LO-07, LO-06]
 difficulty: 5
 is_fraud: true
 device: messenger
-setup: "Late afternoon, back at the office. A Kettle chat opens from a number you don't know."
-brands: [kettle, larchwick, waymarker]
+setup: "Late afternoon, back at the office. A Brewnook chat opens from a number you don't know."
+brands: [brewnook, larchwick, waymarker]
 cast: [mateus, adaeze]
 pressure:
   timer: true

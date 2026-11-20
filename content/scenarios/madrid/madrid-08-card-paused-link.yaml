@@ -15,7 +15,7 @@ learning_objectives: [LO-02, LO-03, LO-01, LO-05]
 difficulty: 4
 is_fraud: true
 device: sms
-brands: [larchwick, thimble-pine, kettle]
+brands: [larchwick, thimble-pine, brewnook]
 cast: [noor]
 pressure: { timer: false, levers: [fear, authority] }
 

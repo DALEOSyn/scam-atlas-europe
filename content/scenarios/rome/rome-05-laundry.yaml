@@ -16,7 +16,7 @@ difficulty: 4
 is_fraud: false
 stakes: high
 device: messenger
-brands: [kettle, larchwick]
+brands: [brewnook, larchwick]
 cast: [bruna, davide]
 pressure:
   timer: false

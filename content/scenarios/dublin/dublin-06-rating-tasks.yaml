@@ -1,4 +1,4 @@
-# 8-6 Kettle, new number: "Aisling from Tallyfern", €45 an hour to rate finance apps (GDD §28.4 8-6; task-job-scam
+# 8-6 Brewnook, new number: "Aisling from Tallyfern", €45 an hour to rate finance apps (GDD §28.4 8-6; task-job-scam
 # callback, Tallyfern is Amsterdam's task platform). Fraud, difficulty 4, timer 40 s; follow-up in the same chat at
 # 22 s. Interrupt (Declan, small talk) at 12 s. Levers greed, urgency, helpfulness.
 # Checkables (4; R 2): sender R (a stranger with a job you never applied for; CR-19 banner) · reference D (the
@@ -16,7 +16,7 @@ learning_objectives: [LO-12, LO-18]
 difficulty: 4
 is_fraud: true
 device: messenger
-brands: [kettle, tallyfern, larchwick]
+brands: [brewnook, tallyfern, larchwick]
 cast: [declan]
 pressure:
   timer: true
@@ -138,7 +138,7 @@ outcomes:
   coordinator_on_tasks:
     narrative: "The coordinator: \"A job that finds you in a chat and pays €45 to rate apps? Those nearly always end with a top-up.\""
   aisling_blocked:
-    narrative: "You block and report the number. Kettle goes quiet."
+    narrative: "You block and report the number. Brewnook goes quiet."
   aisling_ignored:
     narrative: "You leave it. \"Aisling\" sends one more 😊, then nothing."
   declan_retraining_reply:

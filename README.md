@@ -26,7 +26,7 @@ There are no accounts, no tracking and no analytics. Your progress and settings 
 
 ## Accessibility
 
-The game is designed and tested against WCAG 2.2 AA. The pre-release audit ([`docs/qa/T-4.5-a11y-privacy-audit.md`](docs/qa/T-4.5-a11y-privacy-audit.md)) was done by the project's own QA, with automated axe checks and manual keyboard, dark-mode and small-screen testing in Chromium, and all its findings are fixed. It is not an independent conformance certification, and testing with real screen readers and in Safari is still to come. It supports keyboard-only play and screen readers, and works at 320 px and 400 % zoom. It respects reduced motion and follows your device's dark mode. Timers can be set to Extended or turned off. Story scenes advance only when you choose, and can be skipped or replayed.
+The game is designed and tested against WCAG 2.2 AA. The pre-release audit ([`docs/qa/T-4.5-a11y-privacy-audit.md`](docs/qa/T-4.5-a11y-privacy-audit.md)) was an internal, automated one: axe checks plus scripted keyboard, dark-mode, forced-colours and small-screen checks in Chromium (Playwright). All its findings are fixed. It is not an independent conformance certification, and there has been no hands-on testing by people yet, with real screen readers or in Safari and Firefox. It supports keyboard-only play and is built for screen readers (accessible names, headings, live announcements), though not yet tested with one. It works at 320 px and 400 % zoom. It respects reduced motion and follows your device's dark mode. Timers can be set to Extended or turned off. Story scenes advance only when you choose, and can be skipped or replayed.
 
 ## Run it locally
 

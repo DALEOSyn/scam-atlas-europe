@@ -13,8 +13,8 @@ This will be the first public release. Publishing waits for Gate G4 in `docs/DEC
 - **Help screens.** Checked reporting, bank, support and crisis contacts for 10 countries, plus an EU / other-country default with 112.
 
 ### Accessibility and privacy
-- Designed and tested against WCAG 2.2 AA; the pre-release audit (T-4.5) is being closed out.
-- Keyboard and screen-reader play; Extended or no timers; reduced motion; follows the device's dark mode.
+- Designed and tested against WCAG 2.2 AA. The internal, automated pre-release audit (T-4.5: axe plus scripted keyboard, dark-mode, forced-colours and small-screen checks in Chromium) is closed, with all findings fixed. Hands-on testing with real screen readers and in Safari and Firefox is still to come.
+- Keyboard play; built for screen readers (not yet tested with one); Extended or no timers; reduced motion; follows the device's dark mode.
 - No accounts, tracking or analytics. Progress stays in the browser, and the game plays offline once loaded.
 
 ### Known limits

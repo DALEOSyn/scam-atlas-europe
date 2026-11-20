@@ -160,13 +160,24 @@
 1. **PT 1411, "free, day and night".** This still rests only on DECO PROteste, a consumer body. No government or SNS 24 page states it, and sns24.gov.pt was unreachable today. Options:
    - keep it (DECO is tier 4, supporting), or
    - show "1411. In danger now? Call 112." without the cost and hours.
+   - **G3 outcome (2026-11-20): fixed.** Cost and hours removed from the pt-1411 label and body. The label is now "1411. In danger now? Call 112." The body names only the staffing, which the government page confirms. A review_note says why, and asks for a re-check of sns24.gov.pt before G4.
 2. **PT SNS 24 808 24 24 24.** gov.pt now says the call costs the same as a call to a landline. I suggest changing the label to "Normal call rate." (house rule). Your call; I did not change it.
+   - **G3 outcome (2026-11-20): fixed.** Label is now "Portuguese or English. Normal call rate." The gov.pt guide was re-opened on 2026-11-20 and still says "rede fixa" rate. It is added to the row's sources.
 3. **BE 107 and 0800 32 123 "free, 24/7".** The source page (police.be zone 5329) was down today. The numbers are confirmed on the Brussels portal, but the costs and hours are not. Re-check in a browser before G4.
+   - **G3 outcome (2026-11-20): fixed for now, re-check before G4.** "Free, 24/7" removed from both labels and from the be-crisis body. 107 now says "Call costs may apply." Both rows carry a review_note for the pre-G4 re-check. Restore the claim only if an official page states it.
 4. **SE BRIS 116 111.** BRIS's own site says the call is free. I suggest the label "Free, day and night." with a new operator source, which would also settle the "Free lines" heading question in WHERE_TO_REPORT §3c. Needs your or the psychologist's OK.
+   - **G3 outcome (2026-11-20): fixed.** Label is now "Free, day and night." The operator page "Prata med Bris" was opened on 2026-11-20. It says the phone is always open, even at night, that it costs nothing, and that the call doesn't show on the phone bill. New source `se-bris-prata-med-oss` (tier 4, operator site).
 5. **IT Polizia Postale URL.** The site blocks automated access, so the row has no link. A human should open commissariatodips.it in a browser if a link is wanted.
+   - **G3 outcome (2026-11-20): open.** No URL is shown. A human still needs to open the site in a browser.
 6. **FR fiche réflexe PDF.** It could not be re-read today. The Info Escroqueries number is now also backed by justice.fr. The "Cybermalveillance.gouv.fr" row still links the PDF.
+   - **G3 outcome (2026-11-20): open.** The PDF still needs a human read before G4.
 7. **IT 112 row wording.** "Someone claiming to be police … call 112" is general good practice. The Carabinieri page names 112 for the fake-relative trick and for phone money requests, but not in its fake-police paragraph. Low risk. Keep it, or narrow it to "a relative 'in trouble' or a caller asking for money".
+   - **G3 outcome (2026-11-20): fixed.** Body narrowed to "Call if a caller says a relative is 'in trouble', or a caller asks you for money." Fake police is no longer in the body.
 8. **FR Info Escroqueries hours** (Mon–Fri 9:00–18:30) are verified but not shown. Add them to the label?
+   - **G3 outcome (2026-11-20): fixed.** Label is now "Free advice, Monday to Friday 9:00-18:30".
 9. **EU signpost body.** "Does not take reports itself" is inferred from the page, which redirects to national sites. Wording that sticks closer to the page would be "Its page sends you to your country's official reporting site."
+   - **G3 outcome (2026-11-20): fixed.** Body is now "Its page sends you to your country's official online reporting site." The inferred sentence is gone.
 10. **Crisis-row wording** (ES, SE, PT, FR, BE) still goes to your G3 human review, as already logged.
+    - **G3 outcome (2026-11-20): open.** A human reads the crisis rows. Note that the PT and BE crisis rows changed today (items 1 and 3).
 11. **Re-check all numbers within 30 days before G4** (PLAN risk table). The help data is still parked in docs/ until the per-country cards are wired into the help screen.
+    - **G3 outcome (2026-11-20): open.** Accepted. Every number is re-checked within 30 days before G4, including items 1, 3 and 6.

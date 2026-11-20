@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks'
 import { balance } from './content/balance.ts';
 import { listChapters } from './content/chapters.ts';
 import type { Chapter, Scenario, Scene } from './content/schema.ts';
-import { listScenarios } from './content/scenarios.ts';
+import { loadScenario } from './content/scenarios.ts';
 import { listScenes, type SceneRef } from './content/scenes.ts';
 import { advanceFinale, arcSlotForRun, bankArcPoints, enterFinale, finaleDone, finaleStep, tellMeNow, timelineRows, type ArcEnding, type FinaleStep, type TimelineRow } from './engine/arc.ts';
 import { orderOptions, scoreRecovery, type RecoveryOption } from './engine/recovery.ts';
@@ -113,13 +113,6 @@ function soloChapter(s: Scenario | null): Chapter {
   };
 }
 
-async function loadScenario(city: string, id: string): Promise<Scenario | undefined> {
-  for (const ref of listScenarios().filter((r) => r.chapter === city)) {
-    const s = await ref.load();
-    if (s.id === id) return s;
-  }
-  return undefined;
-}
 
 function prefersReducedMotion(): boolean {
   if (typeof document !== 'undefined' && document.documentElement.dataset.motion === 'reduced') return true;

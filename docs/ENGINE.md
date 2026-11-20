@@ -70,8 +70,41 @@ The state's `log` lists announcement-worthy events (`beat_arrived`, `pusher`, `i
 - **Pause** (Take a breath) works only in `playing` and `what_now`. Interrupts are hidden during consequence and damage control. `checkedCount` counts the current beat only.
 - **Unlocking:** home → Berlin → free choice of slots 2–9 → finale when all of those exist and are finished. Never score-gated.
 - **Save:** key `scam-atlas-europe:save`, `version: 1`. Unknown or corrupt data → fresh save; a newer version → read-only for the session (never overwritten); every field sanitised separately; storage errors are swallowed and the game runs in memory. `useSave` writes outside the state updater; `useScenarioRunner` clamps each tick to at most 1 s (`clampDt`), so a backgrounded tab cannot expire a timer in one jump.
-- **No Zod at runtime:** runtime code imports only types from `src/content/schema.ts`; shared regexes live in `src/content/constants.ts`. An ESLint `no-restricted-imports` rule and `tests/unit/bundle-guard.test.ts` enforce it (shell about 47 KB gzipped after T-2.3). `npm run test:bundle` runs after the build (in `check` and CI) with `BUNDLE_REQUIRED=1`, so a missing `dist/` fails, and checks the 300 KB gzipped shell budget.
+- **No Zod at runtime:** runtime code imports only types from `src/content/schema.ts`; shared regexes live in `src/content/constants.ts`. An ESLint `no-restricted-imports` rule and `tests/unit/bundle-guard.test.ts` enforce it (shell about 47 KB gzipped after T-2.3, 105 KB at T-4.6). `npm run test:bundle` runs after the build (in `check` and CI) with `BUNDLE_REQUIRED=1`, so a missing `dist/` fails, and checks the performance budgets below (the shell budget is 130 KB gzipped since T-4.6; it was 300 KB).
 - **i18n:** `format()` supports ICU `plural` (Intl.PluralRules, `other` branch required by the catalogue schema), e.g. `waiting_beats`.
+
+## Performance budgets (T-4.6)
+
+Audit: `docs/qa/T-4.6-performance-audit.md`. Sizes are gzip (zlib default level), 1 KB = 1024 B, on the production build. "Measured" is the value after the T-4.6 fixes.
+
+- **Loading.** Lazy content is one chunk per chapter: its scenarios and story scenes, named `chapter-<city>`, with interludes in `chapter-interludes` (`scripts/lib/chunks.ts`, `build.rolldownOptions.output.codeSplitting` in `vite.config.ts`).
+- **Scenario lookup.** `loadScenario(city, id)` (`src/content/scenarios.ts`) finds the scenario by file name, which content:validate keeps equal to the id, so it loads only that one file. The ref list is built once.
+- **Service worker.** It uses `skipWaiting` and `clientsClaim`, so it controls the first-visit tab as soon as it is installed.
+- **Precache.** No duplicate entries: the manifest icons come from the glob, with `includeManifestIcons: false` and no `includeAssets`.
+
+| Budget | Measured | Limit | Enforced by |
+|---|---:|---:|---|
+| Initial load: shell JS (entry script + modulepreloads) | 105 KB | **130 KB** | `test:bundle` |
+| Initial load: CSS linked by `index.html` | 14.3 KB | **20 KB** | `test:bundle` |
+| Initial load: html + shell JS + CSS + manifest + workbox-window | 123 KB | **160 KB** | `test:bundle` |
+| Initial load: requests before first paint (html, scripts, modulepreloads, stylesheets) | 3 | **≤ 4** | `test:bundle` |
+| Title LCP, mobile, Slow 4G, 4x CPU (Lighthouse simulated / applied throttling) | 0.8 s / 2.0 s | **≤ 1.5 s / ≤ 2.5 s** | QA before each gate |
+| Per chapter: its `chapter-<city>` chunk; exactly one per chapter, no other lazy JS | 9.4–17.7 KB | **35 KB** | `test:bundle` |
+| Per chapter: cold "Start" → device, Slow 4G, 4x CPU | 0.85 s | **≤ 1.0 s** | QA run |
+| Per chapter: resume a run at any point, cold, Slow 4G, 4x CPU | about 1.0 s | **≤ 1.5 s** | QA run |
+| Art: per file / per chapter / shared / whole story layer | — | ART_DIRECTION §11 (unchanged) | `content:validate` |
+| Brand marks (`public/brands`): total / per file | 13.4 / 0.6 KB | **20 / 1 KB** | `test:bundle` |
+| Precache: total transfer | about 410 KB | **600 KB** | `test:bundle` |
+| Precache: entries, no duplicates | 93 | **≤ 120** (room for the planned map and city glyphs, ART_DIRECTION §11) | `test:bundle` |
+| Offline: the first-visit tab is controlled and plays offline in the same tab | yes | **required** | `test:bundle` (`clientsClaim`), e2e `tests/e2e/offline.spec.ts` |
+| PWA: one theme colour (`index.html` = manifest), a 512 px maskable PNG, a 192 px icon, an iOS home-screen icon (`touch-icon-180.png`) | yes | **required** | `test:bundle` |
+| Runtime: interaction latency (Event Timing) p98 / max, 4x CPU | 56 / 104 ms | **≤ 100 / ≤ 200 ms** | QA run |
+| Runtime: CLS (no recent input) over a 5-chapter play | < 0.001 | **≤ 0.05** (hard limit 0.1) | QA run |
+| Runtime: JS heap after 5 chapters (after GC) | 5.2 MB | **≤ 12 MB**; DOM nodes back to ≤ 200 between screens | QA run |
+
+**Icons.** The PWA's PNG icons (`icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, `touch-icon-180.png`, the iOS home-screen icon link in `index.html`) are rendered from our own `public/icon.svg` and `public/icon-maskable.svg` by `scripts/build-icons.ts`. Each PNG is listed in `public/assets-manifest.yaml`. Re-run the script after changing either SVG.
+
+**Payee check.** The check card holds its final size while "Checking…" shows (`NameCheckCard` in `src/ui/devices/Device.tsx`). An invisible copy of the result shares the result line, and the footer, coach mark and actions are laid out invisible, inert and `aria-hidden`, without `data-action`. So nothing moves when the check finishes.
 
 ## Content contract additions (schema)
 - `what_now: { call_back_label?, outcomes?: { call_back_known?, report?, done? }, extra: [{ id, label, kind, note? | outcome? }] }` (max 3 extras, exactly one of `note` (engage) or `outcome` (verify class)) on the opening or a beat; needs a `hang_up` action with an `outcome`. Interrupts cannot have `what_now`. An `after_beat` interrupt may set `after_what_now: true` (Amsterdam QA q): it is not delivered as "What now?" opens, but after the choice (due on resolution, then its own step before the debrief), so a reassuring message cannot give the answer away. Since CR-27 this is the behaviour of every after_beat interrupt (see below).

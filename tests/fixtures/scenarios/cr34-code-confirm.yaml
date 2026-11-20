@@ -9,7 +9,7 @@ learning_objectives: [LO-05, LO-07]
 difficulty: 4
 is_fraud: true
 device: messenger
-brands: [kettle, larchwick]
+brands: [brewnook, larchwick]
 pressure: { timer: true, levers: [affection, urgency] }
 
 message:
@@ -63,7 +63,7 @@ outcomes:
       - { step: keep_evidence, category: secure }
       - { step: reply_ask_money_back, category: harmful }
       - { step: wait_and_see, category: harmful }
-  kasia_safe: { narrative: "Kasia: 'Strings? I'm in rehearsal. Someone's in my Kettle!'" }
+  kasia_safe: { narrative: "Kasia: 'Strings? I'm in rehearsal. Someone's in my Brewnook!'" }
   reported: { narrative: "Reported. Now call Kasia on her number so she can get her account back." }
   left: { narrative: "The chat goes quiet." }
   declined: { narrative: "You decline. Nothing leaves your account." }

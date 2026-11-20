@@ -20,12 +20,12 @@ const fraudStd = (id: string) => scenario(rawFraud(id));
 /** "1-5": sender decoy, no link, two red-flag phone numbers. */
 const fraudCode = scenario({
   ...rawFraud('f15'),
-  message: { sender: { display: 'Kettle', detail: 'KETTLE' }, body: 'Send us the 6-digit code we just texted you.', request: 'share_code', references: ['K-1'], phone_numbers: ['0800 ••• 1', '0800 ••• 2'] },
+  message: { sender: { display: 'Brewnook', detail: 'BREWNOOK' }, body: 'Send us the 6-digit code we just texted you.', request: 'share_code', references: ['BN-1'], phone_numbers: ['0800 ••• 1', '0800 ••• 2'] },
   inspectables: [
     { target: 'sender.detail', reveal: 'Looks like the real sender ID.', red_flag: false },
     { target: 'reference', reveal: 'A case number.', red_flag: false },
-    { target: 'phone_number', reveal: 'Not Kettle support.', red_flag: true },
-    { target: 'phone_number#2', reveal: 'Not Kettle support either.', red_flag: true },
+    { target: 'phone_number', reveal: 'Not Brewnook support.', red_flag: true },
+    { target: 'phone_number#2', reveal: 'Not Brewnook support either.', red_flag: true },
   ],
   actions: [
     { id: 'tap_link', label: 'Reply with the code', kind: 'reply', next_beat: 'fee_page', pressure_target: true },

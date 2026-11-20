@@ -1,5 +1,5 @@
 # 9-4 Drill: Jamal's "police" call (GDD §29.4; e-id-approval-on-call, with the spoofed-authority-call
-# callback). Unscored. Jamal, from his saved Kettle contact, quotes a "police officer" who wants him to
+# callback). Unscored. Jamal, from his saved Brewnook contact, quotes a "police officer" who wants him to
 # identify himself with Gatewren. The caller's words are quoted (context: quoted): the request is the tell.
 # Every pick gets a Jamal reply; no stars. S-M1: Jamal hangs up himself in every branch, so his resolution
 # line ("I hung up, like Birgitta") is true whatever the player picked. The last pick is gentle: Birgitta
@@ -14,7 +14,7 @@ learning_objectives: [LO-09, LO-18]
 difficulty: 3
 is_fraud: false
 device: messenger
-brands: [kettle, gatewren]
+brands: [brewnook, gatewren]
 cast: [jamal, birgitta]
 pressure: { timer: false, levers: [] }
 

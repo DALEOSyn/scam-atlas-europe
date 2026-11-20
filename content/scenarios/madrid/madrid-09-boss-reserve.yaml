@@ -34,7 +34,7 @@ difficulty: 4
 is_fraud: true
 device: sms
 setup: "22:15. Lucía has left for her night shift; Andrés has gone to bed early before school. You're on the sofa with your phone."
-brands: [larchwick, thimble-pine, kettle]
+brands: [larchwick, thimble-pine, brewnook]
 cast: [andres, lucia]
 pressure:
   timer: true

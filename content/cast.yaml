@@ -70,7 +70,7 @@ cast:
     name: "Kasia Wójcik"
     role: "Music student, Waymarker volunteer (Warsaw)"
     known_channel: { label: "Saved contact", detail: "Kasia (Warsaw)" }
-    notes: "Selling half her flat before she moves. Her real Kettle account is taken over in 5-6 while she is at rehearsal (never her fault, never shown how). She is never the one who falls."
+    notes: "Selling half her flat before she moves. Her real Brewnook account is taken over in 5-6 while she is at rehearsal (never her fault, never shown how). She is never the one who falls."
   - id: ola
     name: "Ola"
     role: "Fellow Waymarker volunteer (Warsaw)"
@@ -102,7 +102,7 @@ cast:
     name: "Leonor"
     role: "Genuine host of the Graça studio (Lisbon)"
     known_channel: { label: "Roostwell app", detail: "Leonor (host)" }
-    notes: "Contact only (GDD §27.10): never drawn, never in a scene. Her name is borrowed by the boss's Kettle number (never her fault); no surname on screen."
+    notes: "Contact only (GDD §27.10): never drawn, never in a scene. Her name is borrowed by the boss's Brewnook number (never her fault); no surname on screen."
   # Dublin (GDD §28.10, story bible §3.8).
   - id: declan
     name: "Declan Byrne"

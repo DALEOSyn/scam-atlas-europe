@@ -166,7 +166,7 @@ describe('Dublin scene rules the generic validator does not see', () => {
   });
   it('no brand, ad face, platform, firm or scam-side name; Orla Fennick is never drawn (STORY §3.8)', () => {
     for (const s of scenes.values()) {
-      expect(all(s), s.id).not.toMatch(/Fairmeasure|Postwick|Orla|Fennick|Quorvex|Ellisfen|Backhaven|Brindlecove|Glimmerfund|Kettle|Larchwick|Ciarán|Gráinne|Aisling|Tallyfern|Alex|Wordswap/);
+      expect(all(s), s.id).not.toMatch(/Fairmeasure|Postwick|Orla|Fennick|Quorvex|Ellisfen|Backhaven|Brindlecove|Glimmerfund|Brewnook|Larchwick|Ciarán|Gráinne|Aisling|Tallyfern|Alex|Wordswap/);
       expect(all(s), s.id).not.toMatch(/celebrit|presenter|balance|platform/i);
       for (const p of s.panels) {
         expect(['declan', 'roisin'], s.id).toContain(p.speaker);

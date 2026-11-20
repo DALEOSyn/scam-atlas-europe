@@ -27,7 +27,7 @@ learning_objectives: [LO-01, LO-02, LO-03, LO-04, LO-05, LO-08, LO-16]
 difficulty: 3
 is_fraud: true
 device: sms
-brands: [trundle, larchwick, waymarker, kettle]
+brands: [trundle, larchwick, waymarker, brewnook]
 cast: [jonas]
 pressure:
   timer: true

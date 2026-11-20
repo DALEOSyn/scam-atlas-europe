@@ -52,7 +52,7 @@ describe('runtime scenario data carries schema defaults (vite content plugin)', 
     for (const b of data) expect(Object.keys(b).every((k) => ['id', 'name', 'short_name', 'mark', 'sub_brands', 'register'].includes(k))).toBe(true);
     // CR-27: sub-brands (bank header names) ship id and name only, never their domain or purpose.
     for (const b of data) for (const sb of (b.sub_brands as Record<string, unknown>[] | undefined) ?? []) expect(Object.keys(sb).sort()).toEqual(['id', 'name']);
-    expect(data.find((b) => b.id === 'kettle')).toMatchObject({ name: 'Kettle', mark: 'brands/kettle-mark.svg' });
+    expect(data.find((b) => b.id === 'brewnook')).toMatchObject({ name: 'Brewnook', mark: 'brands/brewnook-mark.svg' });
     expect(JSON.stringify(data)).not.toMatch(/checked_against|rationale|web_check/);
     // CR-38 (Dublin, T-3.10): the register entry ships status and the register's own (masked) contact details only.
     expect(data.find((b) => b.id === 'ellisfen')?.register).toEqual({ status: 'authorised', address: 'ellisfen.example', phone: '+353 1 ••• ••60' });

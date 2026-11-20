@@ -28,7 +28,7 @@ Approve `docs/GDD.md`, the chapter list (`docs/patterns/MAP.md`), the learning o
 - Verifying is always rewarded. Silver and gold also need red flags actually spotted, so button-mashing stays at bronze.
 - Calm mode exists, timers are optional, and nothing ever scores on speed.
 - Pressure cues appear on genuine messages too, so they never give the answer away.
-- Fictional brands: Waymarker, Trundle, Larchwick Bank, Thimble & Pine, Swaploft, Kettle, Gatewren, Wordswap.
+- Fictional brands: Waymarker, Trundle, Larchwick Bank, Thimble & Pine, Swaploft, Kettle, Gatewren, Wordswap. (2026-11-20: Kettle renamed Brewnook after the G4 trademark check, BRAND_CHECK G4-1.)
 
 **Questions for Roman** (GDD §21, plus two from review):
 1. **Arc.** Friendship-only Alex arc. Debriefs don't reveal the verdict until the finale, and there is an optional "Tell me now" reveal. Approve? *Recommended: yes.*

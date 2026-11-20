@@ -20,7 +20,7 @@ learning_objectives: [LO-08, LO-09, LO-01]
 difficulty: 4
 is_fraud: true
 device: sms
-brands: [larchwick, kettle]
+brands: [larchwick, brewnook]
 cast: [noor]
 pressure:
   timer: true

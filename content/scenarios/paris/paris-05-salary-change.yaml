@@ -18,7 +18,7 @@ learning_objectives: [LO-01, LO-06, LO-18]
 difficulty: 4
 is_fraud: true
 device: email
-brands: [ruchelune, kettle, waymarker]
+brands: [ruchelune, brewnook, waymarker]
 cast: [ines, adaeze]
 pressure:
   timer: false
@@ -61,8 +61,8 @@ actions:
     kind: enter_details
     outcome: pay_details_changed
     pressure_target: true
-  - id: ask_ines_kettle
-    label: "Ask Inès on her saved Kettle contact"
+  - id: ask_ines_brewnook
+    label: "Ask Inès on her saved Brewnook contact"
     kind: call_back_known
     outcome: ines_never_sent
   - id: report_salary_email
@@ -117,7 +117,7 @@ outcomes:
         category: harmful
         feedback: "Replying feels like a way to sort it out, but the sender is the scammer, not Inès. Put her real details back with her in person, then tell Solène through the directory."
   ines_never_sent:
-    narrative: "Inès, on Kettle: \"What? I didn't send that. My bank's the same!\" She's shaken: it had her staff number."
+    narrative: "Inès, on Brewnook: \"What? I didn't send that. My bank's the same!\" She's shaken: it had her staff number."
   salary_reported:
     narrative: "Reported to Ruchelune IT, and payroll keeps Inès's real details. Tell Inès too, so she knows her name is being used."
   salary_left:

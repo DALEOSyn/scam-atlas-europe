@@ -1,13 +1,13 @@
 # 2-8 Jonas's real account (GDD §22.3; family-impersonation brief variant B, §3.2–3.5, §4,
 # §5.7). Fraud, difficulty 3, timer (slot length) + pusher at 30 s. Twin of amsterdam-06-boat-tour-share.
-# Jonas's real Kettle account, taken over (not his fault). Earlier thread shows his real message.
+# Jonas's real Brewnook account, taken over (not his fault). Earlier thread shows his real message.
 # Red flags: request (money by message, to someone else's account, today) and claim #1 "on a quiet
 # train, can't talk" (avoids a call, FI §3.4). Decoys: sender.detail (saved contact, neutral per design
 # ruling 1 §22.8, same wording as 2-6) and claim #2 "I'll send it back tomorrow".
 # Banking beat (start_transfer, class step): the payee name is prefilled from the chat and masked
 # (K. ••••); the full name never appears. The typed name is exactly the account name, so the check says
 # "Name matches": the chapter's misleading-match moment (LO-06). name_check and IBAN are decoys.
-# Habit: a normal phone call to Jonas's saved number, not a Kettle call (FI §4 variant B).
+# Habit: a normal phone call to Jonas's saved number, not a Brewnook call (FI §4 variant B).
 # The IBAN is masked and German-format (Jonas lives in Berlin); no country is taught as a tell.
 id: amsterdam-08-jonas-rent
 chapter: amsterdam
@@ -19,7 +19,7 @@ learning_objectives: [LO-07, LO-06, LO-01, LO-16]
 difficulty: 3
 is_fraud: true
 device: messenger
-brands: [kettle, larchwick]
+brands: [brewnook, larchwick]
 cast: [jonas]
 pressure:
   timer: true
@@ -65,7 +65,7 @@ actions:
     next_beat: landlord_transfer
     pressure_target: true
   - id: phone_jonas
-    label: "Phone Jonas (a normal call, not in Kettle)"
+    label: "Phone Jonas (a normal call, not in Brewnook)"
     kind: call_back_known
     outcome: jonas_logged_out
   - id: report_jonas_chat
@@ -109,7 +109,7 @@ beats:
 
 outcomes:
   paid_landlord:
-    narrative: "\"Thanks, you're a lifesaver!\" Twenty minutes later: \"Landlord says the deposit top-up is due too, €200. Could you?\" That evening Jonas rings from his own phone: his Kettle was taken over this morning. He never asked."
+    narrative: "\"Thanks, you're a lifesaver!\" Twenty minutes later: \"Landlord says the deposit top-up is due too, €200. Could you?\" That evening Jonas rings from his own phone: his Brewnook was taken over this morning. He never asked."
     recovery:
       - { step: call_bank_stop_payment, category: stop }
       - { step: tell_trusted_adult, category: stop }
@@ -120,9 +120,9 @@ outcomes:
         category: harmful
         feedback: "Replying feels like a way to sort it out, but the chat is in the scammer's hands right now, not Jonas's. Call your bank, then phone Jonas on his saved number, a normal call."
   jonas_logged_out:
-    narrative: "Jonas picks up at work: \"My Kettle logged me out this morning and I can't get back in. I didn't send anything! Thanks for ringing.\""
+    narrative: "Jonas picks up at work: \"My Brewnook logged me out this morning and I can't get back in. I didn't send anything! Thanks for ringing.\""
   match_then_call:
-    narrative: "A match only shows whose account it is. Your call settled it. Good stop. Jonas, at work: \"My Kettle logged me out this morning. That wasn't me.\""
+    narrative: "A match only shows whose account it is. Your call settled it. Good stop. Jonas, at work: \"My Brewnook logged me out this morning. That wasn't me.\""
   jonas_chat_reported:
     narrative: "Reported. Now phone Jonas, a normal call, so he can get his account back."
   jonas_chat_ignored:
@@ -138,7 +138,7 @@ debrief:
   layer2:
     message_flags:
       - "Due today: urgency leaves no time for a call."
-    notes: "A Kettle call goes to whoever holds the Kettle account, and right now that may not be Jonas. A normal phone call goes to his SIM. A passed-on code (like the one in Berlin) is a common way accounts like this get taken over: turn on the two-step PIN. And a matching name shows whose account it is, not that the story is true."
+    notes: "A Brewnook call goes to whoever holds the Brewnook account, and right now that may not be Jonas. A normal phone call goes to his SIM. A passed-on code (like the one in Berlin) is a common way accounts like this get taken over: turn on the two-step PIN. And a matching name shows whose account it is, not that the story is true."
   device_tip: "On a real phone, call the person from your phone's contacts as a normal call, not from inside the chat app."
   habit_card: check-who-gets-the-money
   already_clicked:

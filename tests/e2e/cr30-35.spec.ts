@@ -89,14 +89,14 @@ for (const width of [320, 1280]) {
   });
 }
 
-test('CR-35 + CR-33 buyer chat: "Move the chat to Kettle" ends beat 1 at ★★, beat 2 arrives', async ({ page }) => {
+test('CR-35 + CR-33 buyer chat: "Move the chat to Brewnook" ends beat 1 at ★★, beat 2 arrives', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 700 });
   await open(page, 'fx-cr35-boss-off-platform');
   await expect(page.locator('#device-heading')).toHaveText('Swaploft: chat with user 3150');
   await minTarget(page, '[data-action]');
   await noOverflow(page);
   await axeClean(page);
-  await press(page, 'Move the chat to Kettle');
+  await press(page, 'Move the chat to Brewnook');
   await press(page, 'Continue');
   await expect(page.locator('#device-heading')).toHaveText(/Chat message from \+48/);
   await press(page, 'Open your Swaploft sales yourself');

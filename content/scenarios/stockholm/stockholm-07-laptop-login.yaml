@@ -22,7 +22,7 @@ is_fraud: false
 stakes: low
 device: browser
 setup: "Your phone's at 3%, so you borrow Birgitta's laptop to pay your phone bill. You opened larchwick-bank.example yourself and chose 'Log in with Gatewren'."
-brands: [larchwick, gatewren, kettle]
+brands: [larchwick, gatewren, brewnook]
 cast: [birgitta, noor]
 pressure: { timer: false, levers: [] }
 

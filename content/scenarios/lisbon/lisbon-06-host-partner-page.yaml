@@ -14,7 +14,7 @@ learning_objectives: [LO-10, LO-02]
 difficulty: 4
 is_fraud: true
 device: marketplace
-brands: [roostwell, kettle, larchwick]
+brands: [roostwell, brewnook, larchwick]
 cast: [beatriz]
 pressure:
   timer: true

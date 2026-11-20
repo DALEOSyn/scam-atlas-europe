@@ -1,4 +1,4 @@
-# 5-2 Ola's real Kettle account: "vote for my little sister's band" (GDD §25.4 5-2; callback
+# 5-2 Ola's real Brewnook account: "vote for my little sister's band" (GDD §25.4 5-2; callback
 # of the account-takeover code pattern, with the CERT vote-takeover advisory).
 # Fraud, difficulty 3, calm (no timer, no pusher). Levers helpfulness, affection, small_amount.
 # Ola is a saved contact only (never cast, never drawn). How her account was taken over is never shown.
@@ -6,7 +6,7 @@
 # neutral (an ordinary favour, as Paris 3-5), claim R (a vote that needs the code), link R (votelark).
 # vote_page and code_page are training pages (no network, read-only demo fields). Their flags count toward
 # spotting, not R. Writer note (BRAND_CHECK MW3): real institutions do run online votes, so the tell stays
-# on the code banner ("registers your Kettle account on a new device"); nothing here says online votes are
+# on the code banner ("registers your Brewnook account on a new device"); nothing here says online votes are
 # fake. Fall: the code is typed (enter_details). Damage control per §25.4 (6, 2 harmful).
 id: warsaw-02-vote-for-the-band
 chapter: warsaw
@@ -17,7 +17,7 @@ learning_objectives: [LO-05, LO-02, LO-07]
 difficulty: 3
 is_fraud: true
 device: messenger
-brands: [kettle, votelark]
+brands: [brewnook, votelark]
 cast: []
 pressure:
   timer: false
@@ -43,7 +43,7 @@ inspectables:
     red_flag: true
     type: link
   - target: claim
-    reveal: "A vote that needs the code sent to your phone. That code is a key to your Kettle account, not a vote."
+    reveal: "A vote that needs the code sent to your phone. That code is a key to your Brewnook account, not a vote."
     red_flag: true
     type: claim
   - target: request
@@ -107,8 +107,8 @@ beats:
     banner:
       device: sms
       message:
-        sender: { display: "Kettle", detail: "Kettle" }
-        body: "Kettle code: 3•••••. Don't share it. This code registers your Kettle account on a new device."
+        sender: { display: "Brewnook", detail: "Brewnook" }
+        body: "Brewnook code: 3•••••. Don't share it. This code registers your Brewnook account on a new device."
         request: none
     message:
       page: { address: "votelark-vote.example/band/brzoza/confirm", title: "Votelark · Confirm your vote" }
@@ -117,7 +117,7 @@ beats:
       ask: { text: "Enter the 6-digit code to confirm your vote." }
     inspectables:
       - target: page.address
-        reveal: "Still votelark-vote.example, now asking for the code Kettle just sent you."
+        reveal: "Still votelark-vote.example, now asking for the code Brewnook just sent you."
         red_flag: true
         type: page_address
       - target: page.info
@@ -125,14 +125,14 @@ beats:
         red_flag: false
         type: padlock
       - target: request
-        reveal: "Asks for the code the banner says registers your Kettle account on a new device. Typing it here hands your account to whoever runs this page."
+        reveal: "Asks for the code the banner says registers your Brewnook account on a new device. Typing it here hands your account to whoever runs this page."
         red_flag: true
         type: request
     actions:
       - id: type_vote_code
         label: "Type the code to vote"
         kind: enter_details
-        outcome: kettle_taken_over
+        outcome: brewnook_taken_over
         pressure_target: true
       - id: close_call_ola
         label: "Close it and call Ola"
@@ -144,8 +144,8 @@ beats:
         outcome: code_page_closed
 
 outcomes:
-  kettle_taken_over:
-    narrative: "\"Thanks for voting!\" A minute later Kettle logs you out on your phone. Your contacts start getting \"vote for my sister's band\" from you."
+  brewnook_taken_over:
+    narrative: "\"Thanks for voting!\" A minute later Brewnook logs you out on your phone. Your contacts start getting \"vote for my sister's band\" from you."
     recovery:
       - { step: log_out_unknown_devices, category: stop }
       - { step: reregister_app_own_number, category: stop }
@@ -154,15 +154,15 @@ outcomes:
       - { step: reply_to_sender, category: harmful }
       - { step: keep_quiet, category: harmful }
   ola_says_no:
-    narrative: "Ola picks up: \"Vote? My sister's eleven and plays the recorder. Someone's in my Kettle, I think. Thanks for ringing!\""
+    narrative: "Ola picks up: \"Vote? My sister's eleven and plays the recorder. Someone's in my Brewnook, I think. Thanks for ringing!\""
   ola_chat_reported:
-    narrative: "Reported. Kettle will look at the account. Ola still doesn't know: a normal call to her saved number would tell her."
+    narrative: "Reported. Brewnook will look at the account. Ola still doesn't know: a normal call to her saved number would tell her."
   ola_chat_ignored:
-    narrative: "You leave it. Later Ola posts on the volunteers' noticeboard: \"Don't vote for anything from me, my Kettle was taken over!\""
+    narrative: "You leave it. Later Ola posts on the volunteers' noticeboard: \"Don't vote for anything from me, my Brewnook was taken over!\""
   vote_page_closed:
     narrative: "You close the page without typing anything. Nothing happens."
   code_page_closed:
-    narrative: "You close the page without typing the code. Your Kettle account stays on your phone only."
+    narrative: "You close the page without typing the code. Your Brewnook account stays on your phone only."
 
 debrief:
   variant: standard
@@ -171,11 +171,11 @@ debrief:
     what_works: "Never type that code anywhere. Call your friend."
   layer2:
     message_flags:
-      - "The code text says what it is for: it registers your Kettle account on a new device. A vote has nothing to do with that."
-    notes: "This is one way friends' accounts get taken over: the code that registers your account goes to someone else. Then your account asks your friends. Turn on Kettle's two-step PIN: it makes a stolen code much less useful."
+      - "The code text says what it is for: it registers your Brewnook account on a new device. A vote has nothing to do with that."
+    notes: "This is one way friends' accounts get taken over: the code that registers your account goes to someone else. Then your account asks your friends. Turn on Brewnook's two-step PIN: it makes a stolen code much less useful."
   device_tip: "In your real messaging app, Settings › Linked devices lists every device signed in to your account; turn on the two-step PIN there too."
   habit_card: codes-are-only-for-you
   already_clicked:
     clicked: "Opened the page but typed nothing? Close it. Then call your friend on their saved number, a normal call, to tell them."
-    entered_details: "Typed the code? Open Kettle's linked devices and log out any you don't know, set the app up again with your own number, turn on two-step, and warn your contacts another way."
+    entered_details: "Typed the code? Open Brewnook's linked devices and log out any you don't know, set the app up again with your own number, turn on two-step, and warn your contacts another way."
   sources: [pl-cert-vote-takeover-2026, pl-cert-monthly-2026-07, de-vzn-ghost-pairing-2026, pl-cert-phishing-kb-2026, nl-politie-whatsapp-takeover-2024]

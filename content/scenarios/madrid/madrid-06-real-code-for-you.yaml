@@ -23,7 +23,7 @@ is_fraud: false
 stakes: high
 device: browser
 setup: "You're buying a travel adapter from Thimble & Pine, the online shop."
-brands: [thimble-pine, larchwick, kettle, waymarker]
+brands: [thimble-pine, larchwick, brewnook, waymarker]
 cast: [andres]
 pressure:
   timer: true

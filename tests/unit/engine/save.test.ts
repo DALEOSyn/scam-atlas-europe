@@ -31,7 +31,7 @@ describe('save format (Red Line 7: localStorage only, versioned)', () => {
   it('round-trips through storage', () => {
     const store = createStore(memory());
     const s = freshSave();
-    s.flags = ['kettle_hacked'];
+    s.flags = ['brewnook_hacked'];
     s.chapters.home = { finished: true, bestStamp: 'silver', bestRating: 81, position: 0, run: null };
     expect(store.save(s)).toBe(true);
     expect(store.load()).toEqual(s);

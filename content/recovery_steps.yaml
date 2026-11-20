@@ -118,7 +118,7 @@ steps:
   # call_back_text_number (GDD §24.10, above); one copy kept at the merge.
   # Labels stay generic: real bodies are named only on the Italy help card.
   - id: report_number_in_app
-    label: "Block and report the number in Kettle"
+    label: "Block and report the number in Brewnook"
   # Lisbon (GDD §27.10). `report_sticker` is common sense (no PT source, QRP §5.4).
   - id: report_sticker
     label: "Photograph the sticker or slip and report it in the parking app or to the city"
@@ -131,7 +131,7 @@ steps:
     label: "Pay a 'refundable' deposit if they ask for one"
     feedback: "Wanting your money back is natural, but a second payment only adds to the loss. Call your bank instead."
   - id: keep_chatting_host
-    label: "Keep chatting to the 'host' on Kettle to sort it out"
+    label: "Keep chatting to the 'host' on Brewnook to sort it out"
     feedback: "Wanting to sort it out with them feels reasonable, but the 'host' is the scammer and won't fix anything. Report them in the Roostwell app and call your bank."
   # Stockholm (GDD §29.10). go_offline, get_device_checked and let_caller_finish are reused by the Brussels
   # boss (§29.5). approve_again_to_cancel is the e-ID sibling of send_code_to_cancel and rescan_to_cancel.

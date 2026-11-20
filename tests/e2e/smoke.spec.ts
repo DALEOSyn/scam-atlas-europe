@@ -162,18 +162,18 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
   await keepGoing(page);
   await playScene(page, 'home-turn', { choose: 'Pause' });
 
-  // 0-4 SMS with a timer and pushers: Take a breath, then open Kettle yourself.
+  // 0-4 SMS with a timer and pushers: Take a breath, then open Brewnook yourself.
   await expect(page.getByRole('region', { name: 'Phone: Messages' })).toBeVisible();
   await page.locator('[data-hud="pause"]').click();
   await expect(page.getByText('Real companies give you days, not seconds.')).toBeVisible();
   await expect(page.locator('[data-hud="pause"]')).toBeFocused(); // Take a breath never moves focus away from the control
   await axeClean(page);
   await page.getByRole('button', { name: 'Back to it' }).click();
-  await page.getByRole('button', { name: /Open Kettle yourself/ }).click();
+  await page.getByRole('button', { name: /Open Brewnook yourself/ }).click();
   await continueToNext(page);
 
-  // 0-5 drill in the Kettle chat: damage control for Teo, unscored; drill layout has no verdict or stars.
-  await expect(page.getByRole('region', { name: 'Phone: Kettle' })).toBeVisible();
+  // 0-5 drill in the Brewnook chat: damage control for Teo, unscored; drill layout has no verdict or stars.
+  await expect(page.getByRole('region', { name: 'Phone: Brewnook' })).toBeVisible();
   await page.getByRole('button', { name: /Talk Teo through/ }).click();
   await passConsequence(page);
   await expect(page.getByRole('heading', { name: 'Limit the damage' })).toBeFocused();
@@ -189,7 +189,7 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
   await expect(page.getByRole('img', { name: /of 3 stars/ })).toHaveCount(0);
   await continueToNext(page);
 
-  // 0-6 boss: email → Kettle chat → call; beat 3: answer, hang up → "What now?".
+  // 0-6 boss: email → Brewnook chat → call; beat 3: answer, hang up → "What now?".
   await page.getByRole('button', { name: /Open Waymarker Desk from your bookmark/ }).click();
   await page.getByRole('button', { name: 'Continue' }).click();
   await expect(page.getByRole('heading', { name: 'Chat message from Waymarker IT' })).toBeFocused();
@@ -379,7 +379,7 @@ async function reachBossCall(page: Page) {
   await continueToNext(page);
   await keepGoing(page);
   await skipScene(page, 'home-turn');
-  await page.getByRole('button', { name: /Open Kettle yourself/ }).click();
+  await page.getByRole('button', { name: /Open Brewnook yourself/ }).click();
   await continueToNext(page);
   await page.getByRole('button', { name: /Talk Teo through/ }).click();
   await passConsequence(page);

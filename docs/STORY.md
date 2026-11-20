@@ -20,7 +20,7 @@ A newly hired trust inspector crosses Europe with a borrowed phone, a grandfathe
    - **An Atlas page = the city's If-then line (§4.4) + links to that chapter's habit cards.** The Atlas is not the habit-card collection; it points to it.
    - **Pages and postcards are given when the chapter is finished, never for performance.** A player who fell in every scenario gets the same page and postcard as one who scored gold.
 2. **Family: Teo's postcards.** Teo asks for a postcard from every city, with "what you learned written on the back". The back carries the city's If-then line, word for word. He reads them at the **Thursday phone café** he runs at his local library for neighbours of every age, and in the interludes he reads them back to you (§3.12). His arc: slips once (Home 0-5), teaches you (Berlin 1-4), leads (Rome), and arrives in Brussels as a co-presenter. Noor (15), your cousin, grows from "I set up your phone" to asking your advice, and being right to ask.
-3. **The friend: Alex** (GDD §10, friendship only). Alex lives only in Wordswap and Kettle chats (arc beats). Scenes never show Alex (§2.2). The finale closes the arc through the endings in GDD §10.3; the scenes after it are about the people around you.
+3. **The friend: Alex** (GDD §10, friendship only). Alex lives only in Wordswap and Brewnook chats (arc beats). Scenes never show Alex (§2.2). The finale closes the arc through the endings in GDD §10.3; the scenes after it are about the people around you.
 
 ### 1.4 Why you keep travelling
 - Every city has **asked Waymarker for an inspector**, and someone there has a human problem (§3). After Berlin, each unvisited city shows an **invitation postcard** on the illustrated map: one line from its local, ≤ 20 words. You pick where to go. These invitations are the chapter hooks.
@@ -63,11 +63,11 @@ From "I'm the inspector, I'd never fall for that" to "anyone can be caught, and 
 
 | City | Local(s) | Capable / fallible | Expressions |
 |---|---|---|---|
-| Berlin | **Jonas** (mid-30s), night-shift baker next door; daughter Mia (8, background only). Recurs in Amsterdam 2-8, where his real Kettle account is taken over (not his fault; messages only, not drawn in Amsterdam scenes) | Capable once he opens the app himself | warm, worried, thinking, relieved, proud |
+| Berlin | **Jonas** (mid-30s), night-shift baker next door; daughter Mia (8, background only). Recurs in Amsterdam 2-8, where his real Brewnook account is taken over (not his fault; messages only, not drawn in Amsterdam scenes) | Capable once he opens the app himself | warm, worried, thinking, relieved, proud |
 | Amsterdam | **Sanne** (19), student, works the desk at your guesthouse, job hunting after a rent rise; her mum and little brother off screen. Known channel "Guesthouse desk"; story scenes only (GDD §22.1) | Capable; worries a scam on her mum was her fault, learns it wasn't; her mum is a capable parent who rang the real number | warm, laughing, worried, relieved, focused (for "determined") |
 | Paris | **Solène Arbogast**, director of Ruchelune (print-and-design cooperative); **Bastien Morel**, accounts officer, on leave; **Inès Roussel** (17), apprentice designer. Margaux (front desk) is a directory entry, not cast (GDD §23.10) | Inès capable (spots the plumber fake in drill 3-3), then targeted (3-5); Solène stretched thin, firm on the procedure | Solène: worried, calm, relieved, warm · Inès: focused, worried, calm, proud · Bastien: warm, calm |
 | Madrid | **Lucía Herrera** (34), night-shift nurse, your host; partner **Andrés** (36), teacher | Both capable; tiredness is the risk, not ability | Lucía: warm, calm, thinking, relieved · Andrés: worried, laughing, proud |
-| Warsaw | **Kasia Wójcik** (23), music student, Waymarker volunteer (Mateus is the fallible one); her Kettle account is taken over off screen (GDD §25), never her fault. Contact only: **Ola** (fellow volunteer, saved as "Ola (volunteers)"; never drawn) | Capable seller | warm, focused, laughing, calm, worried (placed beat only) |
+| Warsaw | **Kasia Wójcik** (23), music student, Waymarker volunteer (Mateus is the fallible one); her Brewnook account is taken over off screen (GDD §25), never her fault. Contact only: **Ola** (fellow volunteer, saved as "Ola (volunteers)"; never drawn) | Capable seller | warm, focused, laughing, calm, worried (placed beat only) |
 | Rome | **Signora Bruna Esposito** (72), B&B owner, Teo's postcard pen-pal of 40 years; grandson **Davide** (19); granddaughter **Giulia** (22, abroad, video only) | Bruna capable and leads; Davide falls (GDD §15) | Bruna: warm, calm, thinking, proud · Davide: sheepish, worried, relieved · Giulia: laughing, relieved |
 | Lisbon | **Beatriz Ferreira** (20), Mateus's sister, room-hunting before her master's (not "Inês": that name belongs to Paris's Inès Roussel). Contact only: **Leonor** (the genuine host, "Leonor (host)" in the Roostwell app; her name is borrowed in the boss, never her fault; never drawn) | Capable once she slows down; never falls (GDD §27) | laughing, worried, thinking, relieved |
 | Dublin | **Declan Byrne** (52), made redundant after 22 years at a warehouse; daughter **Róisín** (18), starting college | Declan tempted, checks; Róisín supportive | Declan: worried, thinking, sheepish, laughing · Róisín: worried, warm, proud |
@@ -124,7 +124,7 @@ Each block lists the patterns from MAP.md or the chapter spec (the scene never s
 - **Glue (added to beat 4):**
   - **If-then panel (Sanne):** "If someone messages me for money I didn't expect, then I call them on the number I already have." Extra line under it on the Atlas page and postcard: "A real job pays you."
   - **Map invitation (Sanne):** "Your room at the guesthouse is ready. Fair warning: everyone here settles up by payment request."
-- **Arc note:** the spec's "arc beat, slot 2" becomes "arc slot N, wherever it lands" (§1.4). The spec placed it before 2-7 because slot 2's "move to Kettle" warning sign matches 2-7's debrief; with play-position slots that match no longer holds, so the spec owner rechecks the placement.
+- **Arc note:** the spec's "arc beat, slot 2" becomes "arc slot N, wherever it lands" (§1.4). The spec placed it before 2-7 because slot 2's "move to Brewnook" warning sign matches 2-7's debrief; with play-position slots that match no longer holds, so the spec owner rechecks the placement.
 - **Order note:** Mateus flies "to the next city" in the boss; keep it unnamed (free order).
 - **Content note:** "This chapter includes a family-emergency story. Everyone ends up safe. You can pause or skip any story scene."
 - **Safety:** Sanne's mum is a capable parent and her near-miss is off screen; Noor and Mateus are shown fine afterwards.
@@ -164,12 +164,12 @@ Each block lists the patterns from MAP.md or the chapter spec (the scene never s
 
 ### 3.5 Warsaw (map no. 5) — scene content per GDD §25.2 (spec in review)
 - **Habit cards / LOs on the Atlas page:** `codes-are-only-for-you` (LO-05), `stay-on-the-platform` (LO-10, new card, GDD §25.9), `call-the-number-you-know` (LO-07), `stop-the-damage-first` (LO-16).
-- **Patterns (GDD §25):** a marketplace "buyer" moves the chat from Swaploft to Kettle and sends a link to "collect" the payment while you sell something; a hijacked friend's account asks for money and, in one scenario only (5-6), a 6-digit payment code from the Larchwick app; vote-request takeover as the callback (5-2).
-- **Locals:** Kasia; Mateus. **Kasia's real Kettle account is the one taken over** (in 5-6, while she is at rehearsal; never her fault, never shown how). She is never the one who falls. Mateus falls in drill 5-7 and the player guides his damage control. Contact only: Ola (fellow volunteer, 5-2; never drawn).
+- **Patterns (GDD §25):** a marketplace "buyer" moves the chat from Swaploft to Brewnook and sends a link to "collect" the payment while you sell something; a hijacked friend's account asks for money and, in one scenario only (5-6), a 6-digit payment code from the Larchwick app; vote-request takeover as the callback (5-2).
+- **Locals:** Kasia; Mateus. **Kasia's real Brewnook account is the one taken over** (in 5-6, while she is at rehearsal; never her fault, never shown how). She is never the one who falls. Mateus falls in drill 5-7 and the player guides his damage control. Contact only: Ola (fellow volunteer, 5-2; never drawn).
 - **Human problem:** Kasia is moving to a smaller flat to afford her last year of music school and is selling furniture; you have something to sell too (the scenario-writer picks the item; the boss uses a stove).
 - **Arrival** (before 5-1; calm): a flat full of boxes and a cello case. Kasia (warm): "Everything must go, except the cello." Mateus photographs a lamp (laughing): "Good photos sell. Trust me, I'm a professional." Kasia pins her selling rules to the fridge (the rules card follows on the intro screen).
 - **Turn** (stop point, after 5-3; calm → focused): Kasia (focused): "I sell a lot. My rule is simple: the deal and the money stay inside Swaploft." Mateus (thinking): "Good rule. I might borrow it." Kasia, shouldering the cello case: "Rehearsal at four, concert tonight. Phone on silent, but I'll pick up between pieces."
-- **Placed beat `warsaw-kasia-back`** (after drill 5-7; worried → relieved): Kasia, back from rehearsal (worried): "Someone got into my Kettle while I was playing. I've got it back in the app and turned on two-step." Mateus (relieved): "Not your fault, Kasia. And the bank's on it: I called them first." True in every branch: the drill always ends with Mateus having called his bank.
+- **Placed beat `warsaw-kasia-back`** (after drill 5-7; worried → relieved): Kasia, back from rehearsal (worried): "Someone got into my Brewnook while I was playing. I've got it back in the app and turned on two-step." Mateus (relieved): "Not your fault, Kasia. And the bank's on it: I called them first." True in every branch: the drill always ends with Mateus having called his bank.
 - **Resolution** (after the boss debrief; Mateus's fallible moment): Mateus (sheepish): "Kasia's account asked for my code and I sent it. Me. The gadget guy." Kasia (warm): "It wasn't really me. And you fixed it fast." *(Was "A friend's account…" / "It wasn't really your friend" in v1.3; the friend is now Kasia herself.)*
   - **Variant `warsaw_bank_called`** (story-only flag, set by every boss fall outcome; DECISIONS R17): the first panel of the resolution, Kasia (calm): "The bank was called straight away, the right first step. We'll see what it can do." No refund promise.
 - **If-then panel (Mateus, phone at the ear; Warsaw exception, §4.4):** "If anyone asks for a code, even a friend, then I don't send it, and I call them on the number I know." Extra line under it: "Money comes to you inside the app."
@@ -377,7 +377,7 @@ Both chapters exist and are complete; scenes are added around them with **no cha
 | Scene | Placement | Must do |
 |---|---|---|
 | `home-arrival` (3–4 panels) | before `home-01-welcome-pack` | Introduce Teo, **Noor** (she is named in home-04's outcome) and the postcard ritual ("what you learned written on the back"). Adaeze is not drawn yet; her welcome email (0-1) introduces her. |
-| `home-turn` (2–3 panels) | stop point, between `home-03-password-reset` and `home-04-kettle-locked` | Teo's "ask me, I'll do the same" (seeds 0-5 without revealing it); optional rehearsal choice. |
+| `home-turn` (2–3 panels) | stop point, between `home-03-password-reset` and `home-04-brewnook-locked` | Teo's "ask me, I'll do the same" (seeds 0-5 without revealing it); optional rehearsal choice. |
 | `home-resolution` (5 panels) | after `home-06-boss-new-portal` debrief | Adaeze video intro (first time drawn); Teo's "First postcard is mine"; Noor's "normal number" line; Berlin caption; Teo's If-then panel last. |
 
 Check: the Home tutorial teaches one mechanic per scenario with coach marks; scenes must not add a coach mark or a new control beyond Skip, Help and the optional choice.
@@ -386,7 +386,7 @@ Check: the Home tutorial teaches one mechanic per scenario with coach marks; sce
 | Scene | Placement | Must do |
 |---|---|---|
 | `berlin-arrival` (4 panels) | before `berlin-01-locker-code` | Introduce Jonas and Mia's present, **Mateus** (named in berlin-05's outcome), and the documents arriving by Trundle; consistent with berlin-02 ("tomorrow's briefing"). |
-| `berlin-turn` (3 panels) | stop point, between `berlin-04-teo-customs` and `berlin-05-kettle-code` | Mateus's "open the Trundle app yourself"; Jonas's nap joke. Must not mention Kettle, codes or fees. |
+| `berlin-turn` (3 panels) | stop point, between `berlin-04-teo-customs` and `berlin-05-brewnook-code` | Mateus's "open the Trundle app yourself"; Jonas's nap joke. Must not mention Brewnook, codes or fees. |
 | `berlin-resolution` (3 panels) | after `berlin-09-boss-fraud-team` debrief | Jonas with both parcels (matches the boss interrupt, true in every branch); Jonas's If-then panel; map invitations appear. |
 
 Check: the Alex arc beat sits between berlin-07 and berlin-08; no scene is placed next to it and no scene mentions Wordswap.

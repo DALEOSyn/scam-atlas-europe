@@ -19,7 +19,7 @@ difficulty: 4
 is_fraud: false
 stakes: high
 device: email
-brands: [ruchelune, feuillemont, kettle]
+brands: [ruchelune, feuillemont, brewnook]
 cast: [solene, ines]
 pressure:
   timer: true

@@ -1,10 +1,10 @@
 # 5-9 Boss: the stove (GDD §25.6; marketplace-collect-payment-link). Evening; Kasia is at her concert.
-# Beat 1 (marketplace buyer chat, start, 40 s): "let's continue on Kettle". R: request. D: sender (W1),
-#   link (W3), reference (listing card), phone number. "Move the chat to Kettle" is an engage that ends the
+# Beat 1 (marketplace buyer chat, start, 40 s): "let's continue on Brewnook". R: request. D: sender (W1),
+#   link (W3), reference (listing card), phone number. "Move the chat to Brewnook" is an engage that ends the
 #   beat at ★★ (CR-35, ruling R14): beat 2 continues the conversation (covered_by: [start]).
-# Beat 2 (Kettle, +45 s, 40 s): the number from beat 1 (W5: neutral here, the tell already happened):
+# Beat 2 (Brewnook, +45 s, 40 s): the number from beat 1 (W5: neutral here, the tell already happened):
 #   "collect your payment here" (card). R: link, request. D: sender, reference, claim.
-# Beat 3 (Kettle, +45 s, 40 s): "payment on hold until you confirm with your bank: log in here".
+# Beat 3 (Brewnook, +45 s, 40 s): "payment on hold until you confirm with your bank: log in here".
 #   R: link, request. D: sender, claim. Design combination (fraud-researcher): the brief sources a collect
 #   page asking for a card "or your bank login"; "release a payment on hold" as a separate follow-up is the
 #   game's combination and no debrief presents it as a known sequence. The claim is kept free of times
@@ -24,7 +24,7 @@ difficulty: 4
 is_fraud: true
 device: marketplace
 setup: "Evening. Kasia is at her concert and Mateus is packing. Your stove listing has a new message."
-brands: [swaploft, kettle, larchwick]
+brands: [swaploft, brewnook, larchwick]
 cast: [kasia]
 pressure:
   timer: true
@@ -37,13 +37,13 @@ message:
   app: { brand: swaploft }
   listing: { title: "Camping stove", price: "€40.00" }
   sender: { display: "user 3150", detail: "Swaploft buyer · user 3150" }
-  body: "Cześć! Biorę kuchenkę za 40 € i dorzucę 5 € za szybki odbiór 🙂 Rzadko tu zaglądam, piszmy dalej na Kettle: +48 5•• ••• •31. Chodzi o tę: swaploft.example/item/7702"
+  body: "Cześć! Biorę kuchenkę za 40 € i dorzucę 5 € za szybki odbiór 🙂 Rzadko tu zaglądam, piszmy dalej na Brewnook: +48 5•• ••• •31. Chodzi o tę: swaploft.example/item/7702"
   lang: pl
-  translation: "Hi! I'll take the stove for €40 and add €5 for a quick pick-up 🙂 I'm hardly ever on here, let's continue on Kettle: +48 5•• ••• •31. This one: swaploft.example/item/7702"
+  translation: "Hi! I'll take the stove for €40 and add €5 for a quick pick-up 🙂 I'm hardly ever on here, let's continue on Brewnook: +48 5•• ••• •31. This one: swaploft.example/item/7702"
   request: reply
   ask:
-    text: "piszmy dalej na Kettle"
-    translation: "let's continue on Kettle"
+    text: "piszmy dalej na Brewnook"
+    translation: "let's continue on Brewnook"
   phone_numbers: ["+48 5•• ••• •31"]
   l10n_note: "Polish in-world text (Warsaw), translation inline. Buyer handles are neutral (GDD §2)."
 
@@ -65,13 +65,13 @@ inspectables:
     red_flag: false
     type: phone_number
   - target: request
-    reveal: "Asks you to leave Swaploft's chat for Kettle. Off the platform, Swaploft can't see the deal or protect it."
+    reveal: "Asks you to leave Swaploft's chat for Brewnook. Off the platform, Swaploft can't see the deal or protect it."
     red_flag: true
     type: request
 
 actions:
-  - id: move_chat_kettle
-    label: "Move the chat to Kettle"
+  - id: move_chat_brewnook
+    label: "Move the chat to Brewnook"
     kind: reply
     outcome: chat_moved
     pressure_target: true
@@ -230,13 +230,13 @@ interrupts:
 
 outcomes:
   chat_moved:
-    narrative: "You move the chat to Kettle. A minute later, a Kettle message arrives from the number the buyer gave you."
+    narrative: "You move the chat to Brewnook. A minute later, a Brewnook message arrives from the number the buyer gave you."
   nothing_paid_yet:
-    narrative: "Nothing paid yet. Real offers and payments show here. Then Kettle pings anyway: the number from the chat."
+    narrative: "Nothing paid yet. Real offers and payments show here. Then Brewnook pings anyway: the number from the chat."
   buyer_3150_reported:
-    narrative: "Reported with Swaploft's own button. Then Kettle pings anyway: the number from the chat."
+    narrative: "Reported with Swaploft's own button. Then Brewnook pings anyway: the number from the chat."
   buyer_3150_ignored:
-    narrative: "You leave it. Then Kettle pings anyway: the number from the chat."
+    narrative: "You leave it. Then Brewnook pings anyway: the number from the chat."
   card_typed_boss:
     narrative: "\"Processing your payout…\" Nothing comes in. Your Larchwick app shows a card payment to an online shop you've never heard of."
     sets_flags: [warsaw_bank_called]
@@ -282,8 +282,8 @@ debrief:
   layer2:
     message_flags:
       - "Swaploft chat: leaving the platform is the first step of this scam."
-      - "First Kettle message: a link to collect money, on a look-alike address."
-      - "Second Kettle message: a bank login \"to release\" a payment. Nobody needs it to pay you."
+      - "First Brewnook message: a link to collect money, on a look-alike address."
+      - "Second Brewnook message: a bank login \"to release\" a payment. Nobody needs it to pay you."
     notes: "Each step sounded small: a quicker chat, a link, a login. Compare the morning's real sale: a notice inside the app, money held by Swaploft, nothing to collect. If you've been paid, it shows in the app you open yourself."
   device_tip: "On a real phone, keep buyer chats inside the marketplace app and open your sales list yourself. A courier never needs your bank login."
   habit_card: stay-on-the-platform

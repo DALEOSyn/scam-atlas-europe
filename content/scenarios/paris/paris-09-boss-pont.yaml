@@ -9,7 +9,7 @@
 #   not in your contacts. No spoofing shown or claimed. R: request, the number he gives to check him (P6).
 #   D: caller ID, the firm's name. Hang up -> "What now?": call Solène on the directory number (verify),
 #   "Call back the number he gave" (engage note), report, leave it there.
-# Beat 3 (video call, +45 s, 40 s, covered_by start + lawyer_call; CR-24): "Solène" on Kettle, a stylised
+# Beat 3 (video call, +45 s, 40 s, covered_by start + lawyer_call; CR-24): "Solène" on Brewnook, a stylised
 #   illustration (public/art/video/paris-boss-solene.svg, ux-artist) at an airport gate; transcript only,
 #   no audio, no glitch effects (P5: the lesson is the request, not spotting artefacts). R: request.
 #   D: caller ID, face and voice. "What now?": directory call-back or "Message Adaeze through the staff
@@ -32,7 +32,7 @@ difficulty: 4
 is_fraud: true
 device: email
 setup: "18:40, the last working day before the long weekend. Bastien is away; Solène left at five. You're closing the accounts inbox."
-brands: [ruchelune, larchwick, kettle, ostrelle, waymarker]
+brands: [ruchelune, larchwick, brewnook, ostrelle, waymarker]
 cast: [solene, bastien, ines, adaeze]
 pressure:
   timer: true
@@ -197,7 +197,7 @@ beats:
     timer_seconds: 40
     covered_by: [start, lawyer_call]
     message:
-      sender: { display: "Solène Arbogast", detail: "Kettle video call · shows Solène Arbogast and her photo" }
+      sender: { display: "Solène Arbogast", detail: "Brewnook video call · shows Solène Arbogast and her photo" }
       video:
         illustration: public/art/video/paris-boss-solene.svg
         alt: "Solène on a video call at an airport gate, calm, a parked plane through the window behind her"
@@ -324,9 +324,9 @@ outcomes:
   solene_no_lawyer:
     narrative: "Solène answers on the directory number, at home: \"I don't know any Maître Vellacourt. Don't send anything. If something's already gone, call the bank now.\""
   lawyer_call_reported:
-    narrative: "Reported. Keep a note of the number and the time. Then Kettle rings: a video call."
+    narrative: "Reported. Keep a note of the number and the time. Then Brewnook rings: a video call."
   lawyer_call_left:
-    narrative: "You hang up and leave it there. Then Kettle rings: a video call."
+    narrative: "You hang up and leave it there. Then Brewnook rings: a video call."
   solene_video_wasnt_me:
     narrative: "Solène answers from home: \"A video call? That wasn't me. Don't pay anything. I'm calling our bank and changing my email password now.\""
   adaeze_dont_send:
@@ -334,7 +334,7 @@ outcomes:
   video_call_reported:
     narrative: "Reported. Keep a note of the time and what was said."
   video_call_left:
-    narrative: "You end the call and leave it there. Kettle rings once more, then stops."
+    narrative: "You end the call and leave it there. Brewnook rings once more, then stops."
   ines_bonne_soiree:
     narrative: "Inès: \"Bonne soirée! Don't stay too late.\""
   ines_weekend_reported:

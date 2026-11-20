@@ -1,5 +1,5 @@
 # 8-4 Drill: Declan's two ads (GDD §28.4 8-4; investment-ad-fake-platform). Unscored. Declan, from his saved
-# Kettle contact, quotes two ads: a "state-backed" bond at 7% with a deadline, and Brindlecove Bonds,
+# Brewnook contact, quotes two ads: a "state-backed" bond at 7% with a deadline, and Brindlecove Bonds,
 # "guaranteed 9%" (on Fairmeasure's warning list). Every pick gets a Declan reply; no stars.
 # Quoted checkables (should-fix 8: the tags point at the high rate and the deadline, never at a state guarantee
 # alone, since real state-backed savings exist): claim R "7% a year" · request R (the ad's deadline, quoted as
@@ -21,7 +21,7 @@ learning_objectives: [LO-13, LO-18]
 difficulty: 3
 is_fraud: false
 device: messenger
-brands: [kettle, fairmeasure, brindlecove-bonds]
+brands: [brewnook, fairmeasure, brindlecove-bonds]
 cast: [declan, roisin]
 pressure: { timer: false, levers: [] }
 

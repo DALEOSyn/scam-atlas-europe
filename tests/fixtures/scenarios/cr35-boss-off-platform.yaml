@@ -1,4 +1,4 @@
-# CR-35 (ruling R14): an engage ("Move the chat to Kettle") ends boss beat 1 at ★★, because beat 2
+# CR-35 (ruling R14): an engage ("Move the chat to Brewnook") ends boss beat 1 at ★★, because beat 2
 # continues the same conversation (covered_by: [start]). Beat 1 is a marketplace buyer chat (CR-33).
 id: fx-cr35-boss-off-platform
 chapter: fixtures
@@ -9,16 +9,16 @@ learning_objectives: [LO-03, LO-02]
 difficulty: 4
 is_fraud: true
 device: marketplace
-brands: [swaploft, kettle]
+brands: [swaploft, brewnook]
 pressure: { timer: true, levers: [helpfulness, urgency] }
 
 message:
   app: { brand: swaploft }
   listing: { title: "Stove", price: "€40.00" }
   sender: { display: "user 3150", detail: "Swaploft buyer · user 3150" }
-  body: "Hi! I'll take the stove and add €5 for a quick pick-up. I'm hardly ever on here, let's continue on Kettle: +48 5•• ••• •31"
+  body: "Hi! I'll take the stove and add €5 for a quick pick-up. I'm hardly ever on here, let's continue on Brewnook: +48 5•• ••• •31"
   request: reply
-  ask: { text: "let's continue on Kettle" }
+  ask: { text: "let's continue on Brewnook" }
   phone_numbers: ["+48 5•• ••• •31"]
 
 inspectables:
@@ -37,7 +37,7 @@ inspectables:
     type: request
 
 actions:
-  - { id: move_to_kettle, label: "Move the chat to Kettle", kind: reply, outcome: moved_chat, pressure_target: true }
+  - { id: move_to_brewnook, label: "Move the chat to Brewnook", kind: reply, outcome: moved_chat, pressure_target: true }
   - { id: check_sales, label: "Keep it in Swaploft: check your sales", kind: check_with_platform, outcome: nothing_paid }
   - { id: report_buyer, label: "Report the buyer in Swaploft", kind: report, outcome: buyer_reported }
   - { id: ignore_buyer, label: "Ignore it", kind: ignore, outcome: ignored }
@@ -70,7 +70,7 @@ beats:
       - { id: ignore_collect, label: "Ignore it", kind: ignore, outcome: ignored }
 
 outcomes:
-  moved_chat: { narrative: "You move the chat to Kettle. A minute later, a Kettle message arrives." }
+  moved_chat: { narrative: "You move the chat to Brewnook. A minute later, a Brewnook message arrives." }
   nothing_paid: { narrative: "Nothing paid yet. Real offers and payments show here." }
   buyer_reported: { narrative: "Reported. Swaploft will look at the account." }
   ignored: { narrative: "You leave it." }

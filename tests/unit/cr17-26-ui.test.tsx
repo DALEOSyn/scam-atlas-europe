@@ -75,8 +75,8 @@ describe('CR-23: payee-name check result cards', () => {
     expect(form?.getAttribute('data-simulated')).toBe('true');
   });
   it('close match shows the holder; match shows the typed name; couldn\'t check shows none', async () => {
-    const close = render(<DeviceView {...props('banking', bankMessage({ name: 'Volet Bleu', name_check: 'close_match', holder: 'Volet Bleu Gestion SARL' }))} />);
-    expect((await resultCard(close.container, 'close_match')).textContent).toContain("Close match. The account is held by 'Volet Bleu Gestion SARL'. Is that who you mean to pay?");
+    const close = render(<DeviceView {...props('banking', bankMessage({ name: 'Brivolet', name_check: 'close_match', holder: 'Brivolet Gestion SARL' }))} />);
+    expect((await resultCard(close.container, 'close_match')).textContent).toContain("Close match. The account is held by 'Brivolet Gestion SARL'. Is that who you mean to pay?");
     cleanup();
     const match = render(<DeviceView {...props('banking', bankMessage({ name: 'Feuillemont', name_check: 'match' }))} />);
     expect((await resultCard(match.container, 'match')).textContent).toContain("Name matches. The account is held by 'Feuillemont'.");

@@ -772,7 +772,7 @@ sources:
     region: NL
     tier: 3
     used_for: [messenger-account-takeover-code, messenger-family-impersonation, hijacked-friend-payment-code, help-where-to-report-en, campaign-catalogue]
-    notes: "Police report-preparation form for a hijacked messenger account (English gloss: 'form for reporting a taken-over/hacked WhatsApp account'). Victim receives a verification code by SMS; someone says it was sent by mistake and asks for it; the account is then used for friend-in-need fraud. Advice: set a two-step verification PIN; never pass on codes; verify money requests another way; don't publish your number in listings; warn contacts; re-register with your own number to regain access (may need to wait hours). Names a real messenger: game uses Kettle only."
+    notes: "Police report-preparation form for a hijacked messenger account (English gloss: 'form for reporting a taken-over/hacked WhatsApp account'). Victim receives a verification code by SMS; someone says it was sent by mistake and asks for it; the account is then used for friend-in-need fraud. Advice: set a two-step verification PIN; never pass on codes; verify money requests another way; don't publish your number in listings; warn contacts; re-register with your own number to regain access (may need to wait hours). Names a real messenger: game uses Brewnook only."
 
   # ---------------------------------------------------------------- Germany (T-2.5)
   - id: de-vzn-ghost-pairing-2026

@@ -190,7 +190,7 @@
   padding: var(--space-2) var(--space-3);
   overflow-wrap: break-word;
 }
-[data-brand='kettle'] .bubbleIn {
+[data-brand='brewnook'] .bubbleIn {
   background: var(--bubble-in-bg);
 }
 .body {

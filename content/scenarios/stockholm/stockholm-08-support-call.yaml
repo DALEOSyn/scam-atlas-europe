@@ -21,7 +21,7 @@ difficulty: 5
 is_fraud: true
 device: call
 setup: "Late afternoon, back in your room. Your phone rings."
-brands: [gatewren, kindhand, kettle]
+brands: [gatewren, kindhand, brewnook]
 cast: [lina]
 pressure:
   timer: true

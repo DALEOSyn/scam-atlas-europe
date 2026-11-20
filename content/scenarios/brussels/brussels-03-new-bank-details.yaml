@@ -20,7 +20,7 @@ difficulty: 5
 is_fraud: true
 device: email
 setup: "Mid-morning. The posters are sorted, and the Ruchelune thread pings again."
-brands: [ruchelune, larchwick, waymarker, kettle]
+brands: [ruchelune, larchwick, waymarker, brewnook]
 cast: [ines, adaeze, teo]
 pressure:
   timer: true

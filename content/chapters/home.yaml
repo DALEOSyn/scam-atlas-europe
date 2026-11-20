@@ -13,7 +13,7 @@ callbacks: []
 lo_focus: [LO-01, LO-02, LO-03, LO-04, LO-05, LO-08, LO-16, LO-17, LO-18]
 scenario_order:
   am: [home-01-welcome-pack, home-02-mailbox-full, home-03-password-reset]
-  pm: [home-04-kettle-locked, home-05-teo-prize, home-06-boss-new-portal]
+  pm: [home-04-brewnook-locked, home-05-teo-prize, home-06-boss-new-portal]
 boss: home-06-boss-new-portal
 intro: "Before the trip: your phone, your inbox and a few habits that travel well."
 scenes:

@@ -41,7 +41,7 @@ difficulty: 5
 is_fraud: true
 device: browser
 setup: "Late afternoon in Waymarker's office. IT has been and gone, and Teo and Noor have gone to the hotel. You're loading tomorrow's slides on the projector laptop."
-brands: [weekfold, kindhand, marrowby, larchwick, gatewren, waymarker, kettle]
+brands: [weekfold, kindhand, marrowby, larchwick, gatewren, waymarker, brewnook]
 cast: [noor]
 pressure:
   timer: true

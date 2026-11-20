@@ -149,9 +149,9 @@ describe('chapter sequence and unlocking', () => {
     expect(messagesLeft(chapter, 1)).toEqual({ today: 4, thisHalf: 2 });
   });
   it('skips echoes whose requires_flags are not set', () => {
-    const req = (id: string) => (id === 'echo' ? ['kettle_hacked'] : []);
+    const req = (id: string) => (id === 'echo' ? ['brewnook_hacked'] : []);
     expect(nextIndex(chapter, 2, req, new Set())).toBe(3);
-    expect(nextIndex(chapter, 2, req, new Set(['kettle_hacked']))).toBe(2);
+    expect(nextIndex(chapter, 2, req, new Set(['brewnook_hacked']))).toBe(2);
     expect(nextIndex(chapter, 5, req, new Set())).toBe(-1);
   });
   it('home, then Berlin, then free choice of slots 2–9, finale after all of them; never score-gated', () => {

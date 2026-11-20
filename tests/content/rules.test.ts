@@ -677,7 +677,7 @@ describe('padlock reveals (producer ruling, T-2.7 review)', () => {
     expect(scenarioRules(load('home-03-password-reset'), reg).errors).toEqual([]);
   });
   it('padlock reveals must be identical across scenarios', () => {
-    const same = ['home-02-mailbox-full', 'home-03-password-reset', 'home-04-kettle-locked'].map(load);
+    const same = ['home-02-mailbox-full', 'home-03-password-reset', 'home-04-brewnook-locked'].map(load);
     expect(padlockRevealIssues(same)).toEqual([]);
     const odd = [same[0], withPadlock(same[1] as Scenario, 'Encrypted. Fine.'), same[2]] as Scenario[];
     const issues = padlockRevealIssues(odd);

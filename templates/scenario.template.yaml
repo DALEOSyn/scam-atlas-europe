@@ -15,7 +15,7 @@ is_fraud: true
 device: sms                           # email | sms | messenger | call | browser | qr | banking | social | auth | letter
 brands: [trundle]
 cast: []                              # content/cast.yaml ids appearing in this scenario
-# requires_flags: [kettle_hacked]     # snake_case flags set by an earlier outcome
+# requires_flags: [brewnook_hacked]     # snake_case flags set by an earlier outcome
 pressure:
   timer: true                         # length comes from balance.yaml (timers: by_slot), never per scenario
   levers: [urgency, small_amount]     # urgency | authority | fear | greed | helpfulness | affection | secrecy | small_amount | social_proof

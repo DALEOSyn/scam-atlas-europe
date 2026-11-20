@@ -642,3 +642,209 @@ Same method and limits as above (web, app-store and company-directory check via 
 2. **Keep:** Marrowby, Robin, Sacha, Fairmeasure, and the Postwick and Ellisfen marks.
 3. **Kindhand mark:** keep, with BR4's conditions (no red, orange or blue rings with white; no "Rescue/SOS/Assist" wording; no arrows or screens). Spare mark: an open palm.
 4. **Before G4:** EUIPO design register and TMview for the marks; TMview and the Belgian KBO/BCE for Marrowby and the recruiter name. This check is not trademark or legal clearance.
+
+---
+
+# G4 trademark check (2026-11-20)
+
+**Owner:** fraud-researcher · **Searched:** 2026-11-20 · **Status:** draft for producer decision and sceptic review · **Scope:** every brand in `content/brands.yaml` (33 entries, plus the sub-brand Larchwick Pro), including Weekfold (R23, "TMview/KBO pending").
+
+## Method and limits: read this first
+**The formal register search was NOT done. This section is not trademark clearance.** Every registry I tried refused or could not render for an automated client on 2026-11-20:
+
+| Registry | Tried | Result |
+|---|---|---|
+| TMview (tmdn.org) | `tmdn.org/tmview/` and a results URL | **Refused**: robots.txt could not be read, so the page was not fetched |
+| EUIPO eSearch | `euipo.europa.eu/eSearch/` and a basic-search URL | **Failed**: server error, nothing retrieved |
+| WIPO Global Brand Database | similar-name results URL for "trundle" | **Not readable**: returned a JavaScript app with no text, no results |
+| Belgian KBO/BCE public search (Weekfold, Marrowby, Summer Euro Club) | phonetic name search for "weekfold" | **Not conclusive**: only the empty search form came back, no result list. I can't say "no KBO entry" |
+| French annuaire-entreprises.data.gouv.fr | company page and search | **Blocked** by a bot-protection page |
+| French **recherche-entreprises.api.gouv.fr** (the official public API behind the annuaire, SIRENE data) | name queries | **Worked.** Used for the Paris names below. It covers company names, not trademarks (INPI) |
+
+**What this check does cover:**
+- An exact-name web search for every name (one US-based index), with the sector added where useful.
+- Trademark-aggregator pages surfaced by that search: Justia, Markinton, trademarkregistration.app, and the UK IPO Trade Mark Journal. **These mirror US (USPTO) and UK filings, not EUIPO.** Where one turned up a mark, I opened it and give the owner, classes and status.
+- App-store listings, plus the French company register through the API above.
+
+**What a human must still do before G4:**
+- Run each name through **TMview** (which covers EUIPO and the national offices) and the **WIPO Global Brand Database**, in Nice classes 9, 35, 36, 38, 39, 42, and 41 where relevant.
+- Check **KBO/BCE** for the Brussels names.
+- The national checks listed in the sections above (INPI, OEPM, UPRP, UIBM, INPI-PT, CRO, Bolagsverket) are **still open**.
+
+**Grades:**
+- **Clear:** no same or similar name found in the same or an adjacent sector, either in the sources above or in earlier checks.
+- **Watch:** a similar name or mark exists nearby. Keep the name, but with conditions, and the human TMview search should look at this name first.
+- **Rename:** the evidence is enough that I recommend a new coined name. Content is unchanged; that is the producer's decision.
+
+## Summary
+| Name (role) | Classes to search | New evidence 2026-11-20 | Grade |
+|---|---|---|---|
+| **Kettle** (messenger; **spoofed** in 0-4, 1-5, and via the code in 5-2) | 9, 38, 42 | **"Kettle"**, an AI family assistant that works *inside SMS / iMessage family group chats* (kettle.family; directory listings 2026-11-10 and 2026-11-17; US). **KETTLE**, US reg. 7013358 (KettleSpace Inc., live, classes 9 + 42, co-working software). Older hits as in §6 | **Rename** (Medium; borderline with watch) |
+| **Volet Bleu** / Volet Bleu Gestion SAS (letting agency; impersonated in 3-7) | 35, 36 | French register: **SCI VOLET BLEU** (Igny, 938625043), **SCI LE VOLET BLEU** (Velaux, 349093898) and **LES VOLETS BLEUS** (Clohars-Carnoët, 978118412, created 2023-07-20), all **active**, all NAF **68.20B** (letting of real estate). This settles P3 | **Rename** (Medium) |
+| **Wordswap** (language-exchange setting of the Alex arc) | 9, 38, 41, 42 | an app called **WordSwap** whose terms (last updated 2025-03-08) name Belgium as the governing country; **what it does is not identified**. Also "WORD SWAP" US application 88015361 (dead, abandoned 2019, classes 9/41/42). Earlier word-game hits stand | **Watch** (raised from Low–Medium) |
+| **Swaploft** (marketplace; spoofed "Safe Delivery" page) | 9, 35, 36, 39, 42 | **Swappie** (FI; refurbished iPhones across Europe; "Verified by Swappie" tests and ships phones between private sellers and buyers, Finland only). **Swapfiets** (NL; bike subscription). Many US "SWAP…" marks. No "Swaploft" anywhere | **Watch** |
+| **Postwick** (social network; genuine, not spoofed) | 9, 38, 42 | **POSTNICK**, US reg. 6361789 (Postnick, Inc., live, classes 9 + 42, address-management software): one letter away | **Watch** (low) |
+| Waymarker Network (+ Waymarker Desk / mail) | 9, 35, 41, 42 | WAYMARK, US reg. 8336113 (Waymark, Inc., class 9, Medicaid community-health software); Waymarkly (hobby app). No "Waymarker" | Clear |
+| Trundle (courier) | 9, 39, 42 | TRUNDLE, US 86549512 (class 35, franchising for mobile wheel repair; registered 2016; Section 8 renewal not confirmed on the page); TRUNDL, US 97571435 (Trundl Inc., IT consulting); trundle.me (travel app, §2). No courier | Clear |
+| Larchwick Bank / Larchwick Pro | 9, 36, 42 | no hit at all | Clear |
+| Thimble & Pine (shop) | 35, 9 | no exact hit; only "Thimble…" craft sellers (§4) | Clear |
+| Gatewren (sign-in / e-ID app) | 9, 42, 45 | no hit (only Gatewise, a US gate-access product, which is a different word) | Clear |
+| Klaverwerk Staffing | 35 | no hit (Klavierwerke, *klaverjas*, as §9a) | Clear |
+| Tallyfern (scam-only) | 9, 35, 42 | no hit | Clear |
+| Ruchelune | 35, 40, 42 | French register: 0 results; web: none | Clear |
+| Feuillemont | 16, 35 | French register: 0; web: none | Clear |
+| Platinoir | 37 | French register: 0; web: none | Clear |
+| Cuivrelin | 37 | French register: 0; web: none | Clear |
+| Cabinet Ostrelle / Maître Vellacourt | 45 | French register "ostrelle": fuzzy hits only (OSTREL AMÉNAGEMENT, NAF 29.20Z vehicle bodies; OSTREL, ceased, 70.22Z); **no law firm (69.10Z)**. Web: none | Clear |
+| Votelark (scam-only vote page) | 9, 35, 42 | no hit | Clear |
+| TREMOLIK (payee name) | 35 | no hit | Clear |
+| Roostwell (rental platform) | 9, 35, 36, 42, 43 | no hit; Student Roost note (RL1) unchanged | Clear (RL1 note stands) |
+| Zonelet (parking app) | 9, 36, 39, 42 | no hit beyond the "Zonelets" blog template (RL2) | Clear |
+| Fairmeasure (in-world regulator) | 36, 45 | no hit. A US "FAIRESURE" mark surfaced, but its page failed to load; it is a different word | Clear |
+| Ellisfen Invest | 36 | no hit | Clear |
+| Quorvex (scam-only) | 36, 9 | no exact hit (Qorvex, Qoronex, Quorionex, as DS4) | Clear |
+| Glimmerfund (scam-only) | 36 | no exact hit (as DS5) | Clear |
+| Backhaven Recovery (scam-only) | 36, 45 | no hit; only "Backstage Recovery" and generic RECOVER marks (US) | Clear |
+| Brindlecove Bonds (warning list) | 36 | no hit | Clear |
+| Orla Fennick (fictional presenter) | (person) | no presenter or public figure "Fennick"; Irish broadcasters named Orla have other surnames | Clear |
+| Kindhand Support (helper-app prop) | 9, 42 | **KindlyHand** (iOS, Social Networking: prayer and charity giving) is a different sector; no support or remote-access app. BR4 mark watch unchanged | Clear (mark: BR4 watch stands) |
+| Skarvlund Trygg AB (payee) | 36 | no hit | Clear |
+| Marrowby (card-blocking line) | 36, 38 | no hit; KBO not checked | Clear (KBO open) |
+| Summer Euro Club (mule-recruiter profile) | 35, 36 | no hit (sports "Euro" summer events only) | Clear (KBO open) |
+| **Weekfold** (Brussels culture-listings site, R23) | 9, 16, 35, 41, 42 | exact-name web search: **no hit** (only Woolfold, a place, and "weekly…" pages). KBO: form only, **not conclusive**. TMview: refused | Clear (web); TMview and KBO **still pending** |
+
+## G4-1. Kettle: rename (Medium; borderline with watch)
+- **Searched:**
+  - `"KETTLE" trademark EUIPO class 9 OR class 38 messaging software`
+  - `"Kettle" chat app OR messenger 2026`
+  - `kettle.family AI family assistant group chat`
+- **Opened:**
+  - https://www.productcool.com/product/kettle and https://aiagentsdirectory.com/agent/kettle (the AI family assistant; maker and country not stated; H-E-B grocery checkout and US-dollar pricing suggest the US)
+  - https://markinton.com/trademark/kettle-90713049 (KETTLE, KettleSpace Inc., live, classes 9 and 42)
+- The search also returned UK IPO Trade Mark Journal pages (2025–2026). I did not open them, so I make no claim that they contain a KETTLE mark.
+- **Why this changes the grade:**
+  - In 0-4 and 1-5 the lesson is about **texts that arrive under the sender name "Kettle"**. A live product called Kettle now sends texts into real family group chats.
+  - This is the same reasoning as Nodkey and Kerbello: a real product's name on a scam message could teach players to distrust that product's genuine messages.
+  - The overlap is weaker than Nodkey's: the product is an assistant rather than a messenger, it appears to be US-only, and it is brand new. Kettle is also a common English word.
+  - That is why I grade it **Medium, borderline with watch**.
+- **Cost:** Kettle is in about 60 scenario files (brand id `kettle`), so a rename is a big change.
+- **If the producer keeps it:**
+  - Keep the tomato kettle-bubble mark (it has nothing in common with an SMS assistant).
+  - Never show "Kettle" with an AI, assistant, family-planner or grocery feature.
+  - Make Kettle the first name in the human TMview search (classes 9, 38, 42).
+- **Look-alike names (real brands near "Kettle"):**
+  - the AI family assistant above;
+  - KettleSpace / KETTLE (US mark, co-working software);
+  - Kettel (UK proptech, §6);
+  - Appkettle (smart-kettle hardware).
+  - None of these is a messenger in the EU.
+- **Look-alike hosts:** the only one in use is `kettle-chat.example-verify.test` (0-4), and it is already registered. 1-5 has no link.
+- **Coined alternatives (checked 2026-11-20, web and app stores only; no registry search):**
+  - **Brewnook**: `"Brewnook" app OR chat OR company`. No exact hit; only brewing apps (Brü, Brewies, BrewView). **Low.**
+  - **Hobcove**: `"Hobcove" OR "Steepnook" app OR company`. No exact hit; only hobby-matching apps (Hobbymate, Hobspot). **Low.**
+  - **Hobnest** (spare): `"Hobnest" app OR chat OR company`. No exact hit, but **Hobnob** social and invitation apps are near in sound and sector. **Low–Medium.**
+  - *Rejected:*
+    - Mugwell: the "mWell" health app and a "Mug" app are near.
+    - Simmerly: "Simrly" and "Simmer With" apps are near.
+    - Anything built on "Kettle" (as §6).
+
+## G4-2. Volet Bleu: rename (Medium)
+- **Searched:**
+  - the French register API with `volet bleu`, `978118412` and `935225342`;
+  - the web query `"Volet Bleu" gestion locative OR agence immobilière OR location`.
+- **Hits (French register, 2026-11-20):**
+  - SCI VOLET BLEU, 938625043, Igny, 68.20B, active
+  - SCI LE VOLET BLEU, 349093898, Velaux, 68.20B, active
+  - LES VOLETS BLEUS, 978118412, Clohars-Carnoët, 68.20B, active, created 2023-07-20. This is the SIREN P3 asked about: it **is** a property-letting business.
+  - Not counted: one 68.31Z sole trader whose *address* is "Maison aux volets bleu", and one closed online retailer.
+- **Assessment:**
+  - In the game, Volet Bleu is the body the player pays rent to, and 3-7 impersonates it to redirect the rent.
+  - Three active French businesses with the same name let property and collect rent.
+  - A rent-redirection scam using their exact name is the Red Line 1 risk that P3 anticipated, so rename.
+  - The look-alike `volet-bleu.example` would follow the new stem.
+- **Coined alternatives:**
+  - **Brivolet Gestion**: French register `brivolet` 0 results; web `"Brivolet" OR "Tuilerose"` returned only rose catalogues and a genealogy page, no business. **Low.** Look-alike with a hyphen: `bri-volet.example`.
+  - **Ardivelle Gestion**: web `"Ardivelle"` had no hit (only the places L'Ardève and Ardière). **I could not read the French register query for it** (client error), so it is unverified there. **Low, pending register.**
+  - *Rejected:*
+    - Lucarnelle: **SAS LE LUCARNEL**, 105571764, NAF 68.10Z (property dealing), active.
+    - Persimont: echoes Persimmon, a large UK housebuilder.
+
+## G4-3. Wordswap: watch (raised from Low–Medium)
+- **Searched:**
+  - `"Wordswap" OR "WordSwap" language exchange app trademark`
+  - `WordSwap app Belgium`
+  - `"WordSwap" app Google Play OR App Store vocabulary OR translate OR language`
+  - `"WordSwap" app 2025 developer`
+- **Opened:**
+  - https://www.termsfeed.com/live/21644ee6-f0a9-440e-8d5a-98dea87bb163 ("Terms and Conditions for WordSwap": an app distributed on the App Store and Google Play, governed by Belgian law, last updated 2025-03-08)
+  - https://markinton.com/trademark/word-swap-88015361 (dead US application)
+- **Not found:** the store listing for that WordSwap app, so I don't know whether it is a word game or a language or social app.
+- **Assessment:**
+  - Wordswap is where the player meets Alex (the scam arc), and the arc ends in Brussels.
+  - A same-name app with Belgian terms is enough to make this a watch item.
+- **If the human check finds it is a language-exchange, chat or social app,** rename. Candidates:
+  - **Parlomoor**: `"Parlomoor" OR "Lingomoor" app OR language`. No exact hit; near names are Parlilo and Parlando (language apps). **Low.**
+  - **Talktangle** (the old fallback): `"Talktangle" OR "Talk Tangle" app`. No exact hit, but several social apps are called **Tangle** (incl. "Tangle – Life on purpose", "Tangle: stay in the loop"). Downgraded to **Low–Medium**.
+  - **Wordhearth**: `"Wordhearth" OR "Word Hearth" app OR language`. No exact hit; "Old English Wordhord" (iOS) is near. **Low–Medium.**
+
+## G4-4. Swaploft: watch
+- **Searched:**
+  - `"Swaploft" OR "Swap Loft" app OR marketplace OR trademark`. No "Swaploft"; many US SWAP… marks (SWAP, SWAPP, SWAPPY, SWAPSALE, SWAPSPOT…), as expected for a common word.
+  - `Swappie refurbished iPhone Finland marketplace; Swapfiets bike subscription`
+  - `Swapfiets bike subscription Netherlands company`
+- **Opened:** https://swappie.com/en/blog/verified-by-swappie/ ("Verified by Swappie": a test-and-erase service for privately sold iPhones; Swappie ships the phone from seller to buyer; Finland only).
+- Swapfiets is a Dutch bike-subscription company: https://swapfiets.nl/en-NL/about-us. Both are already in `checked_against`; the notes are now fuller.
+- **Assessment:**
+  - Only the generic word "swap" is shared, and the second element differs ("-loft" against "-pie" / "-fiets").
+  - But Swappie operates a **seller-to-buyer delivery service for private second-hand sales**. That sits right next to Swaploft's scam page "Swaploft Safe Delivery" (Warsaw, 5-3 and boss).
+- **Conditions:**
+  - The fake page and debriefs never use "Verified", "verified by", "tested" or "certified" wording.
+  - The "Safe Delivery" label never becomes "Swaploft Verified".
+  - No phone-refurbishing or bike context for Swaploft items.
+  - I did not compare palettes with Swappie's or Swapfiets' brand colours; a human checks this in the G4 design pass.
+
+## G4-5. Postwick: watch (low)
+- **Searched:** `"Postwick" app OR social OR company OR trademark`. Opened https://markinton.com/trademark/postnick-90183828 (POSTNICK, live US registration, classes 9 and 42, software to manage all your addresses in one app).
+- **Assessment:**
+  - The names are one letter apart in the same classes, but the sectors differ (address management against a social network).
+  - Postwick is never spoofed: the platform is genuine and the ads on it are the scam.
+  - Keep, and include it in the human TMview search. No rename proposed.
+
+## G4-6. Weekfold (R23): clear on the web; registers pending
+- **Searched:** `"Weekfold"` (2026-11-20). There was no company, publication, site, app or product, only Woolfold (a place in England), "weekly" disambiguation pages and code repositories. This confirms the producer's search of 2026-11-19.
+- **KBO/BCE:** tried a phonetic search, but only the empty form was returned, so the result is not conclusive.
+- **TMview:** refused (see the table above).
+- **Assessment:**
+  - No shared stem with Belgian news or culture media (the list in `checked_against`).
+  - The role is benign: a genuine site that a fake warning covers.
+  - Clear for now. A human runs TMview (classes 9, 16, 35, 41, 42) and KBO/BCE before G4.
+
+## G4-7. Clear names: evidence notes
+- **Waymarker:** https://trademarkregistration.app/Trademark/Details/98212249 (WAYMARK, class 9, US Medicaid community-health software) · https://trademark.justia.com/owners/waymark-inc-4164532. A different word and sector, and the brand is the player's employer.
+- **Trundle:**
+  - https://trademarks.justia.com/865/49/trundle-86549512.html: TRUNDLE, class 35, wheel-repair franchising, US.
+  - https://trademark.justia.com/owners/trundl-inc-5290607: TRUNDL, IT consulting, US.
+  - No courier or parcel business was found in a European logistics search; the only near name is Trunkrs, as before.
+- **Paris names (French register API, 2026-11-20):**
+  - `ruchelune`, `feuillemont`, `platinoir`, `cuivrelin`: 0 results each.
+  - `ostrelle`: 12 fuzzy results, none a law firm.
+  - The register covers company names only, so INPI (trademarks) is still open.
+- **Kindhand:** https://apps.apple.com/cz/app/kindlyhand/id6444837693 (KindlyHand, prayer and charity social app). A different name and sector.
+- **No hits at all** for the exact names Larchwick, Gatewren, Klaverwerk, Tallyfern, Votelark, TREMOLIK, Roostwell, Ellisfen, Brindlecove, Skarvlund, Marrowby, Summer Euro Club or Orla Fennick (as a presenter).
+  - Quorvex, Glimmerfund and Backhaven: near forms only, as in DS4, DS5 and DS7.
+  - Zonelet: only the generic US parking marks (TIME2PARK, PARKMOBILE…) that a combined query returned.
+  - Fairmeasure: only "Fair…" marks and the UK regulator's warnings about unrelated "Fair…" firms.
+
+## Actions (producer decides; no content renamed)
+1. **Kettle → rename recommended** (Brewnook, Hobcove; spare Hobnest), or keep with the G4-1 conditions and Kettle first in the human TMview search. Look-alike real names are added to `checked_against`, and `role_in_game` now records the spoofing in 0-4, 1-5 and 5-2.
+2. **Volet Bleu → rename** (Brivolet Gestion; Ardivelle Gestion, pending the register). The 3-7 look-alike follows the new stem.
+3. **Wordswap → watch.** A human identifies the Belgian "WordSwap" app. If it is a language, chat or social app, rename (Parlomoor; Talktangle; Wordhearth).
+4. **Swaploft, Postwick → watch** with the conditions above.
+5. **All other names → clear** on the evidence available. **None of the grades replaces the formal TMview / EUIPO / WIPO search, which could not be run from this environment.** A human runs it before G4: Kettle, Wordswap, Swaploft and Postwick first, then the rest, plus KBO/BCE for Weekfold, Marrowby and Summer Euro Club.
+
+## G4 renames applied (2026-11-20)
+**Owner:** scenario-writer, on the producer's decision · **Status:** awaiting fraud-researcher, sceptic and QA review.
+- **Kettle → Brewnook** (G4-1). Brand id `kettle` → `brewnook`; domain `brewnook-chat.example`; the 0-4 look-alike is now `brewnook-chat.example-verify.test` (same teaching point: real name first, owner part `example-verify.test`). Scenario ids `home-04-kettle-locked` → `home-04-brewnook-locked` and `berlin-05-kettle-code` → `berlin-05-brewnook-code`; action, beat, outcome and flag ids, CSS tokens (`--brand-brewnook-*`) and the marks (`public/brands/brewnook.svg`, `brewnook-mark.svg`) follow. The mark no longer shows a kettle: a chat bubble with an arched "nook" top and one tea leaf, same tomato and cream palette; no cup or steam (a steaming cup is a well-known software logo). Case numbers K-7710 and K-55902 became BN-7710 and BN-55902.
+- **Volet Bleu → Brivolet Gestion** (G4-2), short form "Brivolet". Brand id `volet-bleu` → `brivolet`; legal name "Brivolet Gestion SAS"; genuine address `loyers@brivolet.example`; the 3-7 look-alike is now `gestion@bri-volet.example` (same teaching point: an added hyphen). The payee typed from the lease is "Brivolet", so the 3-1 close match ("Brivolet" vs "Brivolet Gestion SAS") keeps the same gap as before. Lease reference VB-2291-03 became BG-2291-03; the attachment is `RIB_Brivolet.pdf`.
+- The old names stay in `checked_against` as "Renamed from …". This file keeps its historic mentions above.
+- **Still open:** the formal TMview / EUIPO / INPI search for Brewnook and Brivolet Gestion before G4 (web and French-register checks only, as G4-1 and G4-2).

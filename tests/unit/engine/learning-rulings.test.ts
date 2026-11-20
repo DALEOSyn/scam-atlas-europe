@@ -162,7 +162,7 @@ describe('L2 caller ID stays a decoy; the wrong mark says "Fair instinct"', () =
     });
     const { st, r } = play(s, ctx({ slot: 0 }), [
       act('open_desk_bookmark'), { type: 'continue' },
-      check('image', 'kettle_it_chat'), tag('image', 'kettle_it_chat'), act('ask_adaeze_chat'), { type: 'continue' },
+      check('image', 'brewnook_it_chat'), tag('image', 'brewnook_it_chat'), act('ask_adaeze_chat'), { type: 'continue' },
       check('caller_id', 'it_call'), tag('caller_id', 'it_call'), check('reference', 'it_call'), tag('reference', 'it_call'),
       act('hang_up_it_call'), { type: 'what_now', choice: 'hang_up_ask_adaeze' },
     ]);
@@ -250,7 +250,7 @@ describe('T-2.7 review round 1', () => {
   });
 
   it('every home padlock reveal reads the same, and none opens with "It fits"', () => {
-    const reveals = ['home-02-mailbox-full', 'home-03-password-reset', 'home-04-kettle-locked'].flatMap((id) => {
+    const reveals = ['home-02-mailbox-full', 'home-03-password-reset', 'home-04-brewnook-locked'].flatMap((id) => {
       const s = home(id);
       return [s.inspectables, ...s.beats.map((b) => b.inspectables)].flat().filter((i) => i.type === 'padlock').map((i) => i.reveal);
     });

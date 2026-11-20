@@ -1,5 +1,5 @@
 /**
- * Simulated devices (UI_SPEC §3): mail, SMS, messenger (Kettle / Wordswap), social post, call,
+ * Simulated devices (UI_SPEC §3): mail, SMS, messenger (Brewnook / Wordswap), social post, call,
  * browser (training pages), QR camera, banking app, sign-in prompt, letter (only as the carrier of
  * a QR code or URL, Red Line 8), plus in-beat banners.
  *
@@ -309,7 +309,7 @@ function Chat(p: DeviceProps) {
   const display = m.sender?.display ?? '';
   const segs = segmentMessage(m);
   const arc = p.scenario.role === 'arc' && p.scenario.brands.includes('wordswap');
-  const app = p.device === 'messenger' ? brandById(arc ? 'wordswap' : 'kettle') : undefined;
+  const app = p.device === 'messenger' ? brandById(arc ? 'wordswap' : 'brewnook') : undefined;
   const region = p.device === 'sms' ? t('region_sms') : p.device === 'social' ? t('region_social') : t('region_chat', { app: app?.name ?? '' });
   const sender =
     m.sender && p.device !== 'social' ? (

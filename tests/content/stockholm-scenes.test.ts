@@ -148,7 +148,7 @@ describe('Stockholm scene rules the generic validator does not see', () => {
     const cities = ['Berlin', 'Amsterdam', 'Paris', 'Madrid', 'Warsaw', 'Rome', 'Lisbon', 'Dublin', 'Brussels'];
     for (const s of scenes.values()) {
       for (const c of cities) expect(all(s), s.id).not.toContain(c);
-      expect(all(s), s.id).not.toMatch(/Gatewren|Larchwick|Kettle|Swaploft|Kindhand|Waymarker|Holm\b|Erik|Skarvlund|Alex/);
+      expect(all(s), s.id).not.toMatch(/Gatewren|Larchwick|Brewnook|Swaploft|Kindhand|Waymarker|Holm\b|Erik|Skarvlund|Alex/);
       for (const p of s.panels) {
         expect(cast, s.id).toContain(p.speaker);
         if (p.with) expect(cast, s.id).toContain(p.with.id);

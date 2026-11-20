@@ -30,7 +30,7 @@ difficulty: 5
 is_fraud: true
 device: email
 setup: "Friday. Your travel fund is still in Larchwick. You've been reading about savings bonds all week."
-brands: [ellisfen, fairmeasure, larchwick, kettle]
+brands: [ellisfen, fairmeasure, larchwick, brewnook]
 cast: [roisin]
 pressure:
   timer: true

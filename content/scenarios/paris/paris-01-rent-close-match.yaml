@@ -1,4 +1,4 @@
-# 3-1 Rent: Volet Bleu's first-rent notice (GDD §23.4 3-1; payment-detail-change brief, genuine twin).
+# 3-1 Rent: Brivolet Gestion's first-rent notice (GDD §23.4 3-1; payment-detail-change brief, genuine twin).
 # Genuine, high stakes (a payment), difficulty 2, honest timer (slot length) with honest_deadline. Home
 # twin of paris-07-agency-new-account. French in-world email with inline translation (never a tell: its
 # fraud twin is French too).
@@ -22,7 +22,7 @@ difficulty: 2
 is_fraud: false
 stakes: high
 device: email
-brands: [volet-bleu, larchwick]
+brands: [brivolet, larchwick]
 cast: []
 pressure:
   timer: true
@@ -30,38 +30,38 @@ pressure:
   honest_deadline: "Your rent is due by the 5th, four days from now"
 
 message:
-  sender: { display: "Volet Bleu · Loyers", detail: "loyers@voletbleu.example" }
-  subject: "Avis d'échéance · loyer VB-2291-03"
+  sender: { display: "Brivolet · Loyers", detail: "loyers@brivolet.example" }
+  subject: "Avis d'échéance · loyer BG-2291-03"
   body: |
     Bonjour,
 
-    Bienvenue dans votre studio ! Votre premier loyer de 690 € est à régler au plus tard le 5 du mois, sur le compte indiqué dans votre bail (page 4). Merci d'indiquer la référence VB-2291-03 dans le libellé de votre virement.
+    Bienvenue dans votre studio ! Votre premier loyer de 690 € est à régler au plus tard le 5 du mois, sur le compte indiqué dans votre bail (page 4). Merci d'indiquer la référence BG-2291-03 dans le libellé de votre virement.
 
     L'avis d'échéance est en pièce jointe.
 
     Cordialement,
-    Volet Bleu · Gestion locative
+    Brivolet · Gestion locative
   lang: fr
-  translation: "Hello, welcome to your studio! Your first rent of €690 is due by the 5th of the month, to the account in your lease (page 4). Please put the reference VB-2291-03 in your transfer's description. The rent notice is attached. Kind regards, Volet Bleu · Lettings"
+  translation: "Hello, welcome to your studio! Your first rent of €690 is due by the 5th of the month, to the account in your lease (page 4). Please put the reference BG-2291-03 in your transfer's description. The rent notice is attached. Kind regards, Brivolet · Lettings"
   request: pay
   ask:
     text: "Votre premier loyer de 690 € est à régler au plus tard le 5 du mois, sur le compte indiqué dans votre bail (page 4)."
     translation: "Your first rent of €690 is due by the 5th of the month, to the account in your lease (page 4)."
-  attachments: [{ name: "Avis d'échéance VB-2291-03.pdf", size: "84 KB" }]
-  references: ["VB-2291-03"]
+  attachments: [{ name: "Avis d'échéance BG-2291-03.pdf", size: "84 KB" }]
+  references: ["BG-2291-03"]
   l10n_note: "French in-world text is intentional (Paris chapter); the English translation is shown inline. 'Avis d'échéance' is a rent notice."
 
 inspectables:
   - target: sender.detail
-    reveal: "Shows loyers@voletbleu.example, the agency's address on your lease, as a real email would. A real mailbox can be misused, so it can't prove anything either way. Judge the request."
+    reveal: "Shows loyers@brivolet.example, the agency's address on your lease, as a real email would. A real mailbox can be misused, so it can't prove anything either way. Judge the request."
     red_flag: false
     type: sender
   - target: attachment
-    reveal: "Opens a rent notice for VB-2291-03, as a real agency sends. A real document and a fake one look just as tidy, so it can't prove anything either way."
+    reveal: "Opens a rent notice for BG-2291-03, as a real agency sends. A real document and a fake one look just as tidy, so it can't prove anything either way."
     red_flag: false
     type: attachment
   - target: reference
-    reveal: "Your lease reference, VB-2291-03, as on your lease. A reference like this can be copied from earlier mail, so it can't prove anything either way."
+    reveal: "Your lease reference, BG-2291-03, as on your lease. A reference like this can be copied from earlier mail, so it can't prove anything either way."
     red_flag: false
     type: reference
   - target: request
@@ -77,7 +77,7 @@ actions:
     next_beat: rent_transfer
     pressure_target: true
   - id: call_agency_lease
-    label: "Call Volet Bleu on your lease's number"
+    label: "Call Brivolet Gestion on your lease's number"
     kind: call_back_known
     outcome: agency_confirms_rent
   - id: report_rent_email
@@ -93,12 +93,12 @@ beats:
   - id: rent_transfer
     device: banking
     message:
-      body: "Your lease, page 4: Volet Bleu Gestion SAS · account ending 31"
-      payee: { name: "Volet Bleu", iban: "FR•••••••••••••••••••••••31", name_check: close_match, holder: "Volet Bleu Gestion SAS", amount: "€690.00" }
+      body: "Your lease, page 4: Brivolet Gestion SAS · account ending 31"
+      payee: { name: "Brivolet", iban: "FR•••••••••••••••••••••••31", name_check: close_match, holder: "Brivolet Gestion SAS", amount: "€690.00" }
       request: pay
     inspectables:
       - target: payee.name_check
-        reveal: "It fits: the bank shows the holder as Volet Bleu Gestion SAS, the company name in the footer of your lease. That isn't proof on its own, so weigh it with what you're paying: the rent, to the account in your lease."
+        reveal: "It fits: the bank shows the holder as Brivolet Gestion SAS, the company name in the footer of your lease. That isn't proof on its own, so weigh it with what you're paying: the rent, to the account in your lease."
         red_flag: false
         type: payee
         reassures: true
@@ -109,7 +109,7 @@ beats:
         reassures: true
     actions:
       - id: pay_rent_holder
-        label: "Use 'Volet Bleu Gestion SAS' and pay"
+        label: "Use 'Brivolet Gestion SAS' and pay"
         kind: proceed
         outcome: rent_paid
         pressure_target: true
@@ -128,11 +128,11 @@ beats:
 
 outcomes:
   rent_paid:
-    narrative: "Paid: €690 to Volet Bleu Gestion SAS, reference VB-2291-03. Two days later a receipt arrives. Welcome to the third floor."
+    narrative: "Paid: €690 to Brivolet Gestion SAS, reference BG-2291-03. Two days later a receipt arrives. Welcome to the third floor."
   agency_confirms_rent:
     narrative: "The agency picks up on the number in your lease: \"Yes, that's our notice. Pay to the account in your lease.\" You pay the €690 with the details from your lease."
   agency_confirms_holder:
-    narrative: "The agency, on the number in your lease: \"Volet Bleu Gestion SAS, that's us. The account in your lease is right.\" You pay the €690."
+    narrative: "The agency, on the number in your lease: \"Brivolet Gestion SAS, that's us. The account in your lease is right.\" You pay the €690."
   rent_email_reported:
     narrative: "Reported. It was the agency's real notice, though, and the rent is still due by the 5th."
   rent_left:

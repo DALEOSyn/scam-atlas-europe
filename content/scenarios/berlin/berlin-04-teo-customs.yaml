@@ -14,7 +14,7 @@ learning_objectives: [LO-18, LO-01, LO-02]
 difficulty: 1
 is_fraud: false
 device: messenger
-brands: [kettle, trundle]
+brands: [brewnook, trundle]
 cast: [teo]
 pressure: { timer: false, levers: [] }
 

@@ -16,7 +16,7 @@ is_fraud: false
 stakes: high
 device: auth
 setup: "Birgitta bought the fika shopping. In the Larchwick app you opened, you've typed in her saved account to pay her back 236 kr, and tapped Pay."
-brands: [gatewren, larchwick, kettle]
+brands: [gatewren, larchwick, brewnook]
 cast: [birgitta, lina]
 pressure:
   timer: true

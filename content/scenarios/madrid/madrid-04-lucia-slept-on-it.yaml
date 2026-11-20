@@ -1,5 +1,5 @@
 # 4-4 Drill: Lucía slept on it (GDD §24.4; bank-safe-account-call). Unscored. Lucía, from her saved
-# Kettle contact, shares a text that landed overnight in HER real Larchwick thread. She followed her rule
+# Brewnook contact, shares a text that landed overnight in HER real Larchwick thread. She followed her rule
 # (nothing big until she's slept) and now asks what you'd check. Each pick gets a Lucía reply; no stars.
 # The quote sits inside her genuine message (context: quoted). Quoted red flag: the number in the text
 # (not the one on her card). Quoted decoy: the LARCHWICK sender in her real thread (M1; a quoted sender
@@ -13,7 +13,7 @@ learning_objectives: [LO-18, LO-01, LO-04]
 difficulty: 2
 is_fraud: false
 device: messenger
-brands: [kettle, larchwick]
+brands: [brewnook, larchwick]
 cast: [lucia]
 pressure: { timer: false, levers: [] }
 

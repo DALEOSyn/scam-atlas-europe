@@ -50,7 +50,7 @@ The game was designed and built by an AI-assisted team of Claude Code agents, an
 ## Licences
 
 - **Code** (everything except the game content and art): MIT, see [`LICENSE`](LICENSE).
-- **Game content and art** (`content/`, `public/art/`, `public/brands/`, `public/icon.svg` and the app icon PNGs): CC BY-SA 4.0, see [`LICENSE-CONTENT.md`](LICENSE-CONTENT.md) for the exact scope.
+- **Game content and art** (`content/`, `public/art/`, `public/brands/`, `public/icon.svg`, `public/icon-maskable.svg` and the app icon PNGs): CC BY-SA 4.0, see [`LICENSE-CONTENT.md`](LICENSE-CONTENT.md) for the exact scope.
 
 ## If you've been scammed
 

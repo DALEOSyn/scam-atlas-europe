@@ -3,7 +3,8 @@
 The game content in the `content/` directory of this repository (scenarios,
 story scenes, brand registry, source registry, help data, i18n message
 catalogues and other game text) and the original artwork in `public/art/`,
-`public/brands/`, `public/icon.svg` and the app icons rendered from it
+`public/brands/`, `public/icon.svg`, `public/icon-maskable.svg` and the app
+icons rendered from them
 (`public/icon-192.png`, `public/icon-512.png`, `public/icon-maskable-512.png`,
 `public/touch-icon-180.png`)
 is © 2026 Roman (DALEOSyn) and licensed under the

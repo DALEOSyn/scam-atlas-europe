@@ -2171,6 +2171,8 @@ export const helpEuCrisisSchema = z
   .superRefine((e, ctx) => {
     if (e.name !== HELP_CRISIS_TITLE) ctx.addIssue({ code: 'custom', path: ['name'], message: `a crisis row's title is "${HELP_CRISIS_TITLE}" (WHERE_TO_REPORT §3b)` });
     if (!e.body.endsWith(HELP_CRISIS_EMERGENCY)) ctx.addIssue({ code: 'custom', path: ['body'], message: `a crisis row's body ends with "${HELP_CRISIS_EMERGENCY}" (WHERE_TO_REPORT §3b)` });
+    // The EU row names no helpline: 112 is the only number it may show (WHERE_TO_REPORT §3d, PSYCHOLOGY §6).
+    if (e.phones && (e.phones.length > 1 || e.phones.some((p) => p.number !== '112'))) ctx.addIssue({ code: 'custom', path: ['phones'], message: 'eu_crisis may show only the number 112 (WHERE_TO_REPORT §3d)' });
   });
 
 export const helpFileSchema = z

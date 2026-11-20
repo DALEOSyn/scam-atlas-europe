@@ -136,6 +136,9 @@ describe('help schema', () => {
     const m = raw();
     nn(m.eu_crisis).body = 'See helpdesk.example.org. In danger now? Call 112.';
     expect(errorsOf(m).join('\n')).toMatch(/eu_crisis\.body: names the domain/);
+    const n = raw();
+    nn(n.eu_crisis).phones = [{ number: '116 123', label: 'Helpline' }];
+    expect(errorsOf(n).join('\n')).toMatch(/eu_crisis may show only the number 112/);
     const shipped = helpProjection(readYaml(FILE)) as { eu_crisis?: Record<string, unknown> };
     expect(shipped.eu_crisis?.['name']).toBe(HELP_CRISIS_TITLE);
     expect(hasKeyDeep(shipped.eu_crisis, HELP_HIDDEN_KEYS)).toEqual([]);

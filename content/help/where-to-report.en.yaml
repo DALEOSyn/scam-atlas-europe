@@ -832,7 +832,6 @@ countries:
 #   SE  report: se-police   police: se-police   bank: se-bank (T-3.10r)   support: se-jourhavande (21:00-06:00, cost unknown)   child: se-bris (free, operator site, G3)   crisis: se-mind
 #   BE  report: be-safeonweb-forward   advice: be-fsma (T-3.12r)   police: be-police (updated T-3.12r)   bank: be-card-stop (cost unknown)   support: be-listening-line (106 and 107 cost unknown, G3)   child: be-youth-line   crisis: be-crisis (T-3.12r)
 #   EU / home (generic): eu.europol-report-signpost, eu.ecc-net + fallbacks.police / bank / support / child_helpline; crisis: eu_crisis (112 only, T-4.7 §3d)
-#     (T-4.7 proposes a generic "In danger now? Call 112." crisis row; needs a schema + help.ts change, WHERE_TO_REPORT §3d)
 
 # ---------------------------------------------------------------- 5. Not included on purpose (keep out until verified)
 # - 116 111 for NL, FR, IT, IE, BE (not found on official pages; national lines with other numbers are listed instead);

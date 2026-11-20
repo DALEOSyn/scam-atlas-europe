@@ -2153,6 +2153,26 @@ export const helpEntrySchema = z
     }
   });
 
+/**
+ * T-4.7 (WHERE_TO_REPORT §3d): the crisis row for "EU / other country", shown only when no country is chosen.
+ * No helpline number is verified EU-wide, so it holds only the emergency step (112) and no link.
+ */
+export const helpEuCrisisSchema = z
+  .object({
+    id: slug,
+    name: helpText,
+    body: helpText,
+    phones: z.array(helpPhoneSchema).min(1).optional(),
+    checked: helpDate,
+    sources: z.array(slug).min(1),
+    review_note: z.string().optional(),
+  })
+  .strict()
+  .superRefine((e, ctx) => {
+    if (e.name !== HELP_CRISIS_TITLE) ctx.addIssue({ code: 'custom', path: ['name'], message: `a crisis row's title is "${HELP_CRISIS_TITLE}" (WHERE_TO_REPORT §3b)` });
+    if (!e.body.endsWith(HELP_CRISIS_EMERGENCY)) ctx.addIssue({ code: 'custom', path: ['body'], message: `a crisis row's body ends with "${HELP_CRISIS_EMERGENCY}" (WHERE_TO_REPORT §3b)` });
+  });
+
 export const helpFileSchema = z
   .object({
     meta: z
@@ -2168,9 +2188,13 @@ export const helpFileSchema = z
       })
       .strict(),
     first_steps: z.array(helpFirstStepSchema).min(1),
-    /** No crisis fallback on purpose: a country without a verified crisis line shows no crisis row (§3c). */
+    /**
+     * No crisis fallback for countries on purpose: a chosen country without a verified crisis line shows no crisis
+     * row (§3c). Only "EU / other country" has its own crisis row (`eu_crisis`, §3d).
+     */
     fallbacks: z.object({ child_helpline: helpFallbackSchema, police: helpFallbackSchema, bank: helpFallbackSchema, support: helpFallbackSchema }).strict(),
     eu: z.array(helpEuEntrySchema).min(1),
+    eu_crisis: helpEuCrisisSchema.optional(),
     /** ISO 3166-1 alpha-2 codes. A missing country means "not verified yet": the UI falls back. */
     countries: z.record(z.string().regex(/^[A-Z]{2}$/, 'country keys are ISO 3166-1 alpha-2 codes, e.g. BE'), z.array(helpEntrySchema).min(1)),
   })
@@ -2184,6 +2208,7 @@ export const helpFileSchema = z
     };
     f.first_steps.forEach((s, i) => claim(s.id, ['first_steps', i, 'id']));
     f.eu.forEach((e, i) => claim(e.id, ['eu', i, 'id']));
+    if (f.eu_crisis) claim(f.eu_crisis.id, ['eu_crisis', 'id']);
     for (const [cc, rows] of Object.entries(f.countries)) {
       rows.forEach((e, i) => claim(e.id, ['countries', cc, i, 'id']));
       if (rows.filter((e) => e.role === 'crisis').length > 1) ctx.addIssue({ code: 'custom', path: ['countries', cc], message: 'one crisis row per country (its own calm final row, §3c)' });
@@ -2192,3 +2217,4 @@ export const helpFileSchema = z
 export type HelpFile = z.infer<typeof helpFileSchema>;
 export type HelpEntry = z.infer<typeof helpEntrySchema>;
 export type HelpFallback = z.infer<typeof helpFallbackSchema>;
+export type HelpEuCrisis = z.infer<typeof helpEuCrisisSchema>;

@@ -47,7 +47,9 @@ describe('help data at runtime', () => {
   it('sensitive order: support, child, crisis, then bank and Report it (§3c)', () => {
     expect(SENSITIVE_ORDER).toEqual(['support', 'child', 'crisis', 'bank', 'report']);
     expect(kinds('SE', 'sensitive')).toEqual(['support', 'child', 'crisis', 'bank', 'report']);
-    expect(kinds('DE', 'sensitive')).toEqual(['support', 'child', 'bank', 'report']);
+    expect(kinds('DE', 'sensitive')).toEqual(['support', 'child', 'crisis', 'bank', 'report']);
+    // EU / other country: the eu_crisis 112 row sits in the same place as a country's crisis row (T-4.7, §3d).
+    expect(kinds(null, 'sensitive')).toEqual(['support', 'child', 'crisis', 'bank', 'report']);
   });
 
   it('"Report it" lists report, then advice, then police', () => {
@@ -56,19 +58,29 @@ describe('help data at runtime', () => {
     expect(ids('ES', 'report')).toEqual(['es-017', 'es-police']);
   });
 
-  it('the crisis row is on its own: one row, the calm title; no crisis fallback', () => {
-    for (const cc of ['BE', 'ES', 'FR', 'PT', 'SE']) {
+  it('the crisis row is on its own: one row, the calm title; EU / other country gets the 112-only row (§3d)', () => {
+    // T-4.7: every chapter country now has a verified crisis row of its own.
+    for (const cc of ['BE', 'DE', 'ES', 'FR', 'IE', 'IT', 'NL', 'PL', 'PT', 'SE']) {
       const crisis = helpGroups(data, cc, 'scam').at(-1);
       expect(crisis?.kind, cc).toBe('crisis');
       expect(crisis?.rows).toHaveLength(1);
       expect(crisis?.rows[0]?.name).toBe(HELP_CRISIS_TITLE);
     }
-    for (const cc of [null, 'DE', 'IE', 'IT', 'NL', 'PL']) expect(kinds(cc), String(cc)).not.toContain('crisis');
+    const eu = helpGroups(data, null, 'scam').at(-1);
+    expect(eu?.kind, 'EU / other country').toBe('crisis');
+    expect(eu?.rows).toHaveLength(1);
+    expect(eu?.rows[0]).toMatchObject({ id: 'eu-crisis-112', name: HELP_CRISIS_TITLE, body: 'In danger now? Call 112.', phones: [{ number: '112', label: 'Emergency number in every EU country, free from any phone.' }], fallback: false });
+    // A chosen country never shows the EU row next to (or instead of) its own.
+    for (const cc of helpCountries(data)) expect(helpGroups(data, cc, 'scam').flatMap((g) => g.rows.map((r) => r.id)), cc).not.toContain('eu-crisis-112');
+    // Without eu_crisis in the data, the default has no crisis row (no crisis fallback).
+    const withoutEuCrisis: HelpData = { ...data };
+    delete withoutEuCrisis.eu_crisis;
+    expect(helpGroups(withoutEuCrisis, null, 'scam').map((g) => g.kind)).not.toContain('crisis');
   });
 
   it('a missing role falls back: ES support; EU / other country gets the EU entries and every fallback', () => {
     expect(ids('ES', 'support')).toEqual(['fallback-support']);
-    expect(kinds(null)).toEqual(['bank', 'report', 'support', 'child']);
+    expect(kinds(null)).toEqual(['bank', 'report', 'support', 'child', 'crisis']);
     expect(ids(null, 'bank')).toEqual(['fallback-bank']);
     expect(ids(null, 'report')).toEqual([...data.eu.map((e) => e.id), 'fallback-police']);
     expect(ids(null, 'support')).toEqual(['fallback-support']);
@@ -229,7 +241,7 @@ describe('<HelpCards>', () => {
     const { container } = render(<EndScreen epigraph={null} pages={[]} habits={{}} onBack={() => undefined} />);
     const help = container.querySelector('[data-help-cards]') as HTMLElement;
     expect(help).not.toBeNull();
-    expect(within(help).getAllByRole('heading', { level: 3 }).map((h) => h.textContent)).toEqual([t('help_group_bank'), t('help_group_report'), t('help_group_support'), t('help_group_child')]);
+    expect(within(help).getAllByRole('heading', { level: 3 }).map((h) => h.textContent)).toEqual([t('help_group_bank'), t('help_group_report'), t('help_group_support'), t('help_group_child'), HELP_CRISIS_TITLE]);
     await axeClean(container);
   });
 });

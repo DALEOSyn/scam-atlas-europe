@@ -109,6 +109,38 @@ describe('help schema', () => {
     expect(errorsOf(i).join('\n')).toMatch(/one crisis row per country/);
   });
 
+  it('eu_crisis (§3d): optional, calm title, ends with the 112 line, no link, cited, never shipped with notes', () => {
+    const f = raw();
+    expect(f.eu_crisis?.id).toBe('eu-crisis-112');
+    const without = raw();
+    delete without.eu_crisis;
+    expect(errorsOf(without)).toEqual([]);
+    const g = raw();
+    nn(g.eu_crisis).name = 'Crisis';
+    expect(errorsOf(g).join('\n')).toMatch(/eu_crisis\.name: a crisis row's title/);
+    const h = raw();
+    nn(h.eu_crisis).body = 'Call a friend.';
+    expect(errorsOf(h).join('\n')).toMatch(/eu_crisis\.body: a crisis row's body ends with/);
+    const i = raw();
+    (nn(i.eu_crisis) as Record<string, unknown>)['url'] = 'https://incydent.cert.pl';
+    expect(errorsOf(i).join('\n')).toMatch(/eu_crisis: Unrecognized key/i);
+    const j = raw();
+    nn(j.eu_crisis).sources = ['no-such-source-id'];
+    expect(errorsOf(j)).toEqual(['eu_crisis.sources: unknown source id "no-such-source-id" (add it to content/sources.yaml)']);
+    const k = raw();
+    nn(k.eu_crisis).sources = [];
+    expect(errorsOf(k).join('\n')).toMatch(/eu_crisis\.sources/);
+    const l = raw();
+    nn(l.eu_crisis).id = nn(l.eu[0]).id;
+    expect(errorsOf(l).join('\n')).toMatch(/duplicate help id/);
+    const m = raw();
+    nn(m.eu_crisis).body = 'See helpdesk.example.org. In danger now? Call 112.';
+    expect(errorsOf(m).join('\n')).toMatch(/eu_crisis\.body: names the domain/);
+    const shipped = helpProjection(readYaml(FILE)) as { eu_crisis?: Record<string, unknown> };
+    expect(shipped.eu_crisis?.['name']).toBe(HELP_CRISIS_TITLE);
+    expect(hasKeyDeep(shipped.eu_crisis, HELP_HIDDEN_KEYS)).toEqual([]);
+  });
+
   it('a crisis row keeps its calm title and the emergency line; a support row never takes that title', () => {
     const f = raw();
     const crisis = pick(f, 'ES', (r) => r.role === 'crisis');

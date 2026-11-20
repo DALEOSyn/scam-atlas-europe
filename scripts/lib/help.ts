@@ -11,7 +11,7 @@
  * - every `sources` id exists in content/sources.yaml (and is not a placeholder);
  * - every link host is on HELP_LINK_HOSTS and every e-mail domain on HELP_EMAIL_DOMAINS (exact match);
  * - player-visible text holds no URL or scheme, and names no domain other than an allowed help host;
- * - `review_note` and `sources` never reach the bundle (helpProjection drops them; checked here on the output);
+ * - `review_note` and `sources` never reach the bundle (helpProjection drops them, eu_crisis included; checked here on the output);
  * - no support row is a suicide or crisis line (those are role `crisis`, WHERE_TO_REPORT §3b round 2).
  */
 import { HELP_PINNED_STEPS } from '../../src/content/constants.ts';
@@ -59,6 +59,14 @@ export function helpPlayerText(f: HelpFile): { at: string; text: string }[] {
     add(`eu.${i}.name`, e.name);
     add(`eu.${i}.body`, e.body);
   });
+  if (f.eu_crisis) {
+    add('eu_crisis.name', f.eu_crisis.name);
+    add('eu_crisis.body', f.eu_crisis.body);
+    f.eu_crisis.phones?.forEach((p, j) => {
+      add(`eu_crisis.phones.${j}.number`, p.number);
+      add(`eu_crisis.phones.${j}.label`, p.label);
+    });
+  }
   for (const [cc, rows] of Object.entries(f.countries)) {
     rows.forEach((e, i) => {
       const at = `countries.${cc}.${i}`;
@@ -110,6 +118,7 @@ export function helpProjection(raw: unknown): unknown {
     first_steps: f.first_steps.map(strip),
     fallbacks: Object.fromEntries(Object.entries(f.fallbacks).map(([k, v]) => [k, strip(v)])),
     eu: f.eu.map(strip),
+    ...(f.eu_crisis ? { eu_crisis: strip(f.eu_crisis) } : {}),
     countries: Object.fromEntries(Object.entries(f.countries).map(([cc, rows]) => [cc, rows.map(strip)])),
   };
 }
@@ -134,6 +143,7 @@ export function checkHelp(raw: unknown, sources: SourceIndex, opts: HelpCheckOpt
   f.first_steps.forEach((s, i) => cite(`first_steps.${i}`, s.sources));
   for (const [k, fb] of Object.entries(f.fallbacks)) cite(`fallbacks.${k}`, fb.sources);
   f.eu.forEach((e, i) => cite(`eu.${i}`, e.sources));
+  if (f.eu_crisis) cite('eu_crisis', f.eu_crisis.sources);
   for (const [cc, rows] of Object.entries(f.countries)) rows.forEach((e, i) => cite(`countries.${cc}.${i}`, e.sources));
 
   // Link hosts and e-mail domains (exact match).

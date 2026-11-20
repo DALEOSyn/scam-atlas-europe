@@ -41,6 +41,7 @@
 | TelefonSeelsorge | 116 123, free, 24/7 | yes (gesund.bund.de and the operator site) | 2026-11-19 | none |
 | Nummer gegen Kummer | 116 111, Mon–Sat 14:00–20:00, free | yes (operator flyer and home page) | 2026-11-19 | `checked` → 2026-11-19, review_note |
 | Bundesnetzagentur | 2023 customs-SMS warning URL → complaint form | yes (page live, links to the SMS-spam form) | 2026-11-19 | `checked` → 2026-11-19 |
+| Crisis (T-4.7): TelefonSeelsorge | 116 123, free, anonymous, day and night | yes (gesund.bund.de: free, 24/7, 112 in an emergency; operator: free, anonymous, day and night, suicide prevention core work) | 2026-11-20 | new row de-crisis |
 
 ### Spain
 | Organisation | Shown | Verified | Date | Change |
@@ -68,6 +69,7 @@
 | Central Bank of Ireland | 0818 681 681, +353 1 224 5800, report page URL | yes (the "Avoiding Scams" page shows "+353 (0)1 224 5800"; the report page is live, its only route is the third-party form) | 2026-11-19 | none |
 | Samaritans | 116 123, freephone, 24/7 | yes (HSE) | 2026-11-19 | none |
 | Childline | 1800 66 66 66, freephone | yes (HSE) | 2026-11-19 | none |
+| Crisis (T-4.7): Pieta | 1800 247 247, freephone, any time | yes (HSE supports page, reviewed 2025-08-28; HSE suicide-prevention office page, undated; operator: 24/7) | 2026-11-20 | new row ie-pieta |
 
 ### Italy
 | Organisation | Shown | Verified | Date | Change |
@@ -77,6 +79,7 @@
 | Bank → reclamo → ABF | | yes (Banca d'Italia) | 2026-11-19 | none |
 | Telefono Amico Italia | 02 2327 2327, 24 h, normal call cost | yes (operator) | 2026-11-19 | none |
 | 114 Emergenza Infanzia | free, 24 h | yes (minori.gov.it) | 2026-11-19 | none |
+| Crisis (T-4.7): Telefono Amico Italia | 02 2327 2327, 24 h, normal call cost | operator only (NGO, tier 4): emotional crisis, 24 h, 112/118 in imminent danger; its 2024 suicide-prevention release. No official page found | 2026-11-20 | new row it-crisis (open item 12) |
 
 ### Netherlands
 | Organisation | Shown | Verified | Date | Change |
@@ -88,6 +91,7 @@
 | Bank | report to your own bank; 24/7 card lines | yes (veiligbankieren.nl) | 2026-11-19 | none |
 | De Luisterlijn | 088 0767 000, day and night, normal rate | number and 24/7 yes, on the operator's site (cost not stated there) | 2026-11-19 | none |
 | De Kindertelefoon | 0800 0432, free, 8–18, 11:00–21:00 | yes (operator: free, 11:00–21:00; NJI: ages 8–18) | 2026-11-19 | none |
+| Crisis (T-4.7): 113 Zelfmoordpreventie | 113 / 0800 0113, free, anonymous, day and night | yes (two rijksoverheid.nl pages, modified 2026) | 2026-11-20 | new row nl-113 |
 
 ### Poland
 | Organisation | Shown | Verified | Date | Change |
@@ -96,6 +100,7 @@
 | incydent.cert.pl | URL | yes (loads: "Zgłoś incydent \| CERT.PL") | 2026-11-19 | none |
 | Police, bank | report; contact bank | yes (policja.pl PDF) | 2026-11-19 | none |
 | 116 123 / 116 111 | free, anonymous, 24/7 | yes (gov.pl) | 2026-11-19 | none |
+| Crisis (T-4.7): Centrum Wsparcia | 800 70 2222, adults, free, day and night | yes (health ministry page 2024-12-05: free, round the clock, mental-health crisis, 112; regional office suicide-prevention-day page; operator) | 2026-11-20 | new row pl-crisis |
 
 ### Portugal
 | Organisation | Shown | Verified | Date | Change |
@@ -181,3 +186,4 @@
     - **G3 outcome (2026-11-20): open.** A human reads the crisis rows. Note that the PT and BE crisis rows changed today (items 1 and 3).
 11. **Re-check all numbers within 30 days before G4** (PLAN risk table). The help data is still parked in docs/ until the per-country cards are wired into the help screen.
     - **G3 outcome (2026-11-20): open.** Accepted. Every number is re-checked within 30 days before G4, including items 1, 3 and 6.
+12. **T-4.7 (2026-11-20): crisis rows for DE, IE, IT, NL and PL** were added after G3. Their wording joins the human review in item 10. The IT row rests only on the NGO operator's own site; if that is not enough, keep the row with no phone and the body "In danger now? Call 112." The DE and IT rows reuse the support-row number. The EU / other-country crisis row is proposed in WHERE_TO_REPORT §3d and needs a schema change; 112 is backed by `eu-youreurope-112`.

@@ -6,13 +6,14 @@
  * Card order (WHERE_TO_REPORT §3c):
  * - scam help: bank · "Report it" (report, then advice, then police) · support · child · crisis, last and on its own;
  * - sensitive-scene help ("Need to talk?"): support · child · crisis · bank · "Report it".
- * A missing role shows `fallbacks.<role>`; there is no crisis fallback (no verified crisis line → no crisis row).
+ * A missing role shows `fallbacks.<role>`; there is no crisis fallback for a chosen country (no verified crisis line →
+ * no crisis row). "EU / other country" shows `eu_crisis` (T-4.7, §3d: 112 only) in the crisis place, last and on its own.
  * `harassment` rows belong to the sextortion / online-harassment card only and never show here.
  * "EU / other country" (the default) shows the EU-wide entries in "Report it" plus the fallbacks.
  */
 import data from '../../content/help/where-to-report.en.yaml';
 import { HELP_PINNED_STEPS } from './constants.ts';
-import type { HelpEntry, HelpFallback, HelpFile } from './schema.ts';
+import type { HelpEntry, HelpEuCrisis, HelpFallback, HelpFile } from './schema.ts';
 
 type Shipped<T> = Omit<T, 'review_note' | 'sources'>;
 export type HelpRowData = Shipped<HelpEntry>;
@@ -22,6 +23,7 @@ export interface HelpData {
   first_steps: HelpStep[];
   fallbacks: Record<keyof HelpFile['fallbacks'], Shipped<HelpFallback>>;
   eu: Shipped<HelpFile['eu'][number]>[];
+  eu_crisis?: Shipped<HelpEuCrisis>;
   countries: Record<string, HelpRowData[]>;
 }
 
@@ -93,7 +95,8 @@ export function helpGroups(d: HelpData, country: string | null, mode: HelpMode):
     report: [...eu, ...of('report'), ...of('advice'), ...orFallback(of('police'), 'police')],
     support: orFallback(of('support'), 'support'),
     child: orFallback(of('child'), 'child_helpline'),
-    crisis: of('crisis'),
+    // §3d: a chosen country shows only its own verified crisis row; the default shows the EU 112 row.
+    crisis: cc ? of('crisis') : d.eu_crisis ? [{ id: d.eu_crisis.id, name: d.eu_crisis.name, body: d.eu_crisis.body, ...(d.eu_crisis.phones ? { phones: d.eu_crisis.phones } : {}), checked: d.eu_crisis.checked, fallback: false }] : [],
   };
   return (mode === 'sensitive' ? SENSITIVE_ORDER : SCAM_ORDER).filter((k) => groups[k].length > 0).map((kind) => ({ kind, rows: groups[kind] }));
 }

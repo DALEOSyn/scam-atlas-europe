@@ -181,6 +181,21 @@ describe('help checker', () => {
     expect(errorsOf(g)).toEqual([]);
   });
 
+  it('the pinned first steps (under-18, not-your-fault) must exist', () => {
+    const f = raw();
+    f.first_steps = f.first_steps.filter((x) => x.id !== 'under-18');
+    expect(errorsOf(f)).toEqual(['first_steps: the pinned step "under-18" is missing']);
+  });
+
+  it('source hosts under a broad parent domain match exactly (gov.pt, gov.pl, belgium.be)', () => {
+    for (const ok of ['https://www.gov.pt/x', 'https://portugal.gov.pt/x', 'https://samorzad.gov.pl/x', 'https://news.belgium.be/x', 'https://cncs.gov.pt/x', 'https://ccb.belgium.be/x']) {
+      expect(isAllowedSourceHost(ok), ok).toBe(true);
+    }
+    for (const bad of ['https://gov.pt/x', 'https://anything.gov.pt/x', 'https://x.www.gov.pt/x', 'https://evil.samorzad.gov.pl/x', 'https://gov.pl/x', 'https://belgium.be/x', 'https://x.news.belgium.be/x']) {
+      expect(isAllowedSourceHost(bad), bad).toBe(false);
+    }
+  });
+
   it('a support row is never a suicide or crisis line', () => {
     const f = raw();
     pick(f, 'DE', (r) => r.role === 'support').body = 'Free suicide prevention line.';

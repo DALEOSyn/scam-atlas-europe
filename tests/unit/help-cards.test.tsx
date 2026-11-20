@@ -8,7 +8,7 @@ import { cleanup, fireEvent, render, screen, within } from '@testing-library/pre
 import axe from 'axe-core';
 import { resolve } from 'node:path';
 import { readYaml } from '../../scripts/lib/content.ts';
-import { checkedDate, countryName, helpCountries, helpData, helpGroups, knownCountry, SCAM_ORDER, SENSITIVE_ORDER, type HelpData } from '../../src/content/help.ts';
+import { checkedDate, countryName, helpCountries, helpData, helpFirstSteps, helpGroups, knownCountry, SCAM_ORDER, SENSITIVE_ORDER, type HelpData } from '../../src/content/help.ts';
 import { HELP_CRISIS_TITLE, type HelpFile } from '../../src/content/schema.ts';
 import { DEFAULT_SETTINGS, freshSave, parseSave } from '../../src/engine/save.ts';
 import { t } from '../../src/i18n/index.ts';
@@ -231,5 +231,91 @@ describe('<HelpCards>', () => {
     expect(help).not.toBeNull();
     expect(within(help).getAllByRole('heading', { level: 3 }).map((h) => h.textContent)).toEqual([t('help_group_bank'), t('help_group_report'), t('help_group_support'), t('help_group_child')]);
     await axeClean(container);
+  });
+});
+
+describe('first steps, intro, headings and the live line (T-4.2 review)', () => {
+  const select = () => screen.getByRole('combobox', { name: t('help_country_label') }) as HTMLSelectElement;
+  const step = (id: string) => {
+    const st = data.first_steps.find((x) => x.id === id);
+    if (!st) throw new Error(`fixture: first step ${id} missing`);
+    return st;
+  };
+  /** Document order of the main parts of the help list. */
+  const order = (container: Element) =>
+    [...container.querySelectorAll('[data-help-intro], [data-help-step="under-18"], [data-help-step="not-your-fault"], [data-help-steps-more], select, [data-help-group]')].map(
+      (el) => el.getAttribute('data-help-step') ?? (el.hasAttribute('data-help-steps-more') ? 'more' : el.hasAttribute('data-help-intro') ? 'intro' : el.tagName === 'SELECT' ? 'picker' : `group:${el.getAttribute('data-help-group')}`),
+    );
+
+  it('splits the first steps: under-18 then not-your-fault pinned, the rest in file order', () => {
+    const { pinned, more } = helpFirstSteps(data);
+    expect(pinned.map((x) => x.id)).toEqual(['under-18', 'not-your-fault']);
+    expect(more.map((x) => x.id)).toEqual(data.first_steps.map((x) => x.id).filter((id) => id !== 'under-18' && id !== 'not-your-fault'));
+    expect(more.map((x) => x.id)).toEqual(expect.arrayContaining(['report-platform', 'recovery-warning']));
+  });
+
+  it('scam screen: intro, under-18, not-your-fault, collapsed first steps, picker, then the cards (crisis last)', () => {
+    const { container } = render(<HelpCards />);
+    fireEvent.change(select(), { target: { value: 'SE' } });
+    expect(order(container)).toEqual(['intro', 'under-18', 'not-your-fault', 'more', 'picker', 'group:bank', 'group:report', 'group:support', 'group:child', 'group:crisis']);
+    expect(container.querySelector('[data-help-intro]')?.textContent).toBe(data.meta.intro);
+    for (const id of ['under-18', 'not-your-fault']) {
+      const el = container.querySelector(`[data-help-step="${id}"]`) as HTMLElement;
+      expect(el.closest('details')).toBeNull();
+      expect(el.textContent).toContain(step(id).title);
+      expect(el.textContent).toContain(step(id).body);
+    }
+    const more = container.querySelector('details[data-help-steps-more]') as HTMLDetailsElement;
+    expect(more.open).toBe(false);
+    expect(more.querySelector('summary')?.textContent).toBe('First steps, wherever you are');
+    for (const id of ['report-platform', 'recovery-warning']) {
+      expect(more.textContent).toContain(step(id).title);
+      expect(more.textContent).toContain(step(id).body);
+    }
+    // Platform reporting is a first step, never part of "Report it".
+    const report = container.querySelector('[data-help-group="report"]') as HTMLElement;
+    expect(report.textContent).not.toContain(step('report-platform').title);
+    expect(report.querySelector('[data-help-step]')).toBeNull();
+    expect((container.querySelector('[data-help-cards]') as HTMLElement).lastElementChild?.getAttribute('data-help-group')).toBe('crisis');
+  });
+
+  it('sensitive scenes: the gentler intro and the pinned steps on top; the collapsed first steps after the cards', () => {
+    const { container } = render(<HelpCards sensitive />);
+    fireEvent.change(select(), { target: { value: 'ES' } });
+    expect(container.querySelector('[data-help-intro]')?.textContent).toBe("You're not alone. Start with whichever feels right.");
+    expect(t('help_intro_sensitive')).toBe("You're not alone. Start with whichever feels right.");
+    expect(order(container)).toEqual(['intro', 'under-18', 'not-your-fault', 'picker', 'group:support', 'group:child', 'group:crisis', 'group:bank', 'group:report', 'more']);
+    expect(container.querySelector('details[data-help-steps-more]')?.textContent).toContain(step('report-platform').body);
+  });
+
+  it('the end screen shows the pinned steps and the collapsed first steps too', async () => {
+    const { container } = render(<EndScreen epigraph={null} pages={[]} habits={{}} onBack={() => undefined} />);
+    expect(container.querySelector('[data-help-step="under-18"]')?.textContent).toContain(step('under-18').title);
+    expect(container.querySelector('details[data-help-steps-more]')?.textContent).toContain(step('recovery-warning').body);
+    await axeClean(container);
+  });
+
+  it('QA 1: a row named like its group heading does not repeat it', () => {
+    const { container } = render(<HelpCards />);
+    fireEvent.change(select(), { target: { value: 'SE' } });
+    const bank = container.querySelector('[data-help-group="bank"]') as HTMLElement;
+    expect(within(bank).getAllByRole('heading').map((h) => h.textContent)).toEqual(['Your bank']);
+    // Rows with their own name keep it (Belgium: Card Stop under "Your bank").
+    fireEvent.change(select(), { target: { value: 'BE' } });
+    const be = container.querySelector('[data-help-group="bank"]') as HTMLElement;
+    expect(within(be).getAllByRole('heading').map((h) => h.textContent)).toEqual(['Your bank', 'Card Stop / Fraudstop']);
+  });
+
+  it('the label says why and where the choice is kept; a polite live line names the new country after a change only', () => {
+    const { container } = render(<HelpCards />);
+    expect(select()).toBe(screen.getByRole('combobox', { name: 'Your country (for local numbers; stays on this device)' }));
+    const live = container.querySelector('[data-help-showing]') as HTMLElement;
+    expect(live.getAttribute('role')).toBe('status');
+    expect(live.getAttribute('aria-live')).toBe('polite');
+    expect(live.textContent).toBe('');
+    fireEvent.change(select(), { target: { value: 'PT' } });
+    expect(live.textContent).toBe('Showing help for Portugal');
+    fireEvent.change(select(), { target: { value: '' } });
+    expect(live.textContent).toBe('Showing help for EU / other country');
   });
 });

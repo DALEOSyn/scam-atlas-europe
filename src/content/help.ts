@@ -11,12 +11,15 @@
  * "EU / other country" (the default) shows the EU-wide entries in "Report it" plus the fallbacks.
  */
 import data from '../../content/help/where-to-report.en.yaml';
+import { HELP_PINNED_STEPS } from './constants.ts';
 import type { HelpEntry, HelpFallback, HelpFile } from './schema.ts';
 
 type Shipped<T> = Omit<T, 'review_note' | 'sources'>;
 export type HelpRowData = Shipped<HelpEntry>;
+export type HelpStep = Shipped<HelpFile['first_steps'][number]>;
 export interface HelpData {
   meta: Shipped<HelpFile['meta']>;
+  first_steps: HelpStep[];
   fallbacks: Record<keyof HelpFile['fallbacks'], Shipped<HelpFallback>>;
   eu: Shipped<HelpFile['eu'][number]>[];
   countries: Record<string, HelpRowData[]>;
@@ -50,7 +53,7 @@ export const SENSITIVE_ORDER: readonly HelpGroupKind[] = ['support', 'child', 'c
 export function helpData(raw: unknown = data): HelpData | null {
   if (!raw || typeof raw !== 'object') return null;
   const d = raw as Partial<HelpData>;
-  const ok = !!d.meta && !!d.fallbacks && Array.isArray(d.eu) && !!d.countries && typeof d.countries === 'object';
+  const ok = !!d.meta && Array.isArray(d.first_steps) && !!d.fallbacks && Array.isArray(d.eu) && !!d.countries && typeof d.countries === 'object';
   return ok ? (d as HelpData) : null;
 }
 
@@ -118,4 +121,14 @@ export function linkHost(url: string): string {
   } catch {
     return url;
   }
+}
+
+/**
+ * First steps (T-4.2 review, psychologist ruling): the pinned steps (under-18, then not-your-fault) are always shown;
+ * the rest, in file order, go in one collapsed "First steps, wherever you are". Platform reporting stays here,
+ * never inside "Report it".
+ */
+export function helpFirstSteps(d: HelpData): { pinned: HelpStep[]; more: HelpStep[] } {
+  const pinned = HELP_PINNED_STEPS.flatMap((id) => d.first_steps.filter((s) => s.id === id));
+  return { pinned, more: d.first_steps.filter((s) => !HELP_PINNED_STEPS.includes(s.id)) };
 }

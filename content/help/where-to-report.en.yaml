@@ -11,6 +11,10 @@
 # HELP_FILE). It is checked instead by scripts/lib/help.ts (https only, no query, `checked` on every row, source
 # ids, link hosts on HELP_LINK_HOSTS in scripts/lib/source-hosts.ts) and by helpFileSchema in src/content/schema.ts.
 # review_note and sources never reach the game bundle (scripts/lib/yaml-module.ts, helpProjection).
+# NOT CHECKED, ON PURPOSE: YAML comments (like this header) and every `review_note` may name real bodies, hosts
+# and numbers that are not on the help allowlists. They are reviewer notes only: the help checker does not scan
+# them, and they are never rendered or shipped (comments are dropped by the YAML parser; helpProjection strips
+# review_note). Anything a player can see must be in a checked field (name, title, body, scope, phones, email, url).
 #
 # G1 question 6 conditions (docs/DECISIONS.md, approved 2026-11-18):
 #   - This is the ONE data file allowed to hold real reporting bodies' phone numbers and URLs.

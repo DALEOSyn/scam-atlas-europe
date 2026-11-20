@@ -105,6 +105,39 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
+.steps {
+  margin: 0;
+  padding-left: var(--space-5);
+  display: grid;
+  gap: var(--space-2);
+}
+.pinned {
+  list-style: none;
+  padding-left: 0;
+}
+.step {
+  display: grid;
+  gap: var(--space-1);
+}
+.more {
+  display: grid;
+  gap: var(--space-2);
+}
+.summary {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  font-weight: 700;
+  cursor: pointer;
+}
+.summary:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px var(--color-focus-halo);
+}
+.more[open] > .steps {
+  margin-top: var(--space-2);
+}
 @media print {
   .picker {
     display: none;

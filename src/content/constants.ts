@@ -32,3 +32,8 @@ export const ARC_TOLD_KINDS: readonly string[] = ['report', 'ask_someone'];
 /** T-4.2 (G1 question 6): help links open in a new tab with these rel values; helpFileSchema pins meta.link_rel / link_target to them. */
 export const HELP_LINK_REL = 'noopener noreferrer';
 export const HELP_LINK_TARGET = '_blank';
+/**
+ * T-4.2 review (learning-psychologist ruling): first_steps ids always shown at the top of the help list, in this order;
+ * the rest sit in a collapsed "First steps, wherever you are". The help checker requires both ids in the data.
+ */
+export const HELP_PINNED_STEPS: readonly string[] = ['under-18', 'not-your-fault'];

@@ -84,7 +84,9 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     fireEvent.click(screen.getByRole('button', { name: 'Where to get help' }));
     expect(document.activeElement?.textContent).toBe('Where to report and get help');
-    fireEvent.click(screen.getByRole('button', { name: 'Back to the story' }));
+    // QA 2 (T-4.2 review): two Back buttons, above and below the cards; both return to the same place.
+    expect(screen.getAllByRole('button', { name: 'Back to the story' })).toHaveLength(2);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Back to the story' })[1] as HTMLElement);
     expect(document.activeElement).toBe(container.querySelector('li[data-panel="2"]'));
     fireEvent.click(screen.getByRole('button', { name: 'Skip story' }));
     expect(onDone).toHaveBeenCalledWith('skipped');
@@ -93,13 +95,13 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     const groups = () => [...document.querySelectorAll('[data-help-group]')].map((g) => g.getAttribute('data-help-group'));
     render(<ScenePlayer scene={arrival()} heading="Berlin · Arrival" chapterName="Berlin" onDone={() => undefined} />);
     fireEvent.click(screen.getByRole('button', { name: 'Where to get help' }));
-    fireEvent.change(screen.getByRole('combobox', { name: 'Your country' }), { target: { value: 'SE' } });
+    fireEvent.change(screen.getByRole('combobox', { name: 'Your country (for local numbers; stays on this device)' }), { target: { value: 'SE' } });
     expect(groups()).toEqual(['bank', 'report', 'support', 'child', 'crisis']);
     expect(screen.getAllByRole('heading', { level: 2 }).at(-1)?.textContent).toBe('Thinking about ending your life, or worried about someone?');
     cleanup();
     render(<ScenePlayer scene={{ ...arrival(), sensitive: true }} heading="Berlin · Arrival" chapterName="Berlin" contentNote="A note." onDone={() => undefined} />);
     fireEvent.click(screen.getByRole('button', { name: 'Need to talk? Where to get help' }));
-    fireEvent.change(screen.getByRole('combobox', { name: 'Your country' }), { target: { value: 'SE' } });
+    fireEvent.change(screen.getByRole('combobox', { name: 'Your country (for local numbers; stays on this device)' }), { target: { value: 'SE' } });
     expect(groups()).toEqual(['support', 'child', 'crisis', 'bank', 'report']);
   });
   it('a sensitive scene opens on its content note with a way out; the help link says "Need to talk?"', () => {
@@ -110,7 +112,7 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     expect(document.activeElement?.id).toBe('scene-note-h');
     expect(screen.getByRole('button', { name: 'Need to talk? Where to get help' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Need to talk? Where to get help' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Back to the story' }));
+    fireEvent.click(screen.getAllByRole('button', { name: 'Back to the story' })[0] as HTMLElement);
     expect(screen.getByRole('heading', { level: 1, name: 'Before this story scene' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Show the scene' }));
     expect(screen.getByText('Panel 1 of 3')).toBeTruthy();

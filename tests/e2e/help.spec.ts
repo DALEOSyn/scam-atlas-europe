@@ -50,7 +50,18 @@ test('help list: default EU, switch to Sweden, crisis row last; choice kept in t
   await scene.getByRole('button', { name: 'Where to get help' }).click();
   await expect(scene.getByRole('heading', { level: 1, name: 'Where to report and get help' })).toBeFocused();
 
-  const country = scene.getByRole('combobox', { name: 'Your country' });
+  // First steps (psychologist ruling): under-18 and not-your-fault always shown, the rest collapsed before the picker.
+  await expect(scene.locator('[data-help-step="under-18"]')).toBeVisible();
+  await expect(scene.locator('[data-help-step="not-your-fault"]')).toBeVisible();
+  const more = scene.locator('details[data-help-steps-more]');
+  await expect(more.locator('[data-help-step="report-platform"]')).toBeHidden();
+  await more.locator('summary', { hasText: 'First steps, wherever you are' }).click();
+  await expect(more.locator('[data-help-step="report-platform"]')).toBeVisible();
+  await expect(more.locator('[data-help-step="recovery-warning"]')).toBeVisible();
+  await axeClean(page);
+  await more.locator('summary').click();
+
+  const country = scene.getByRole('combobox', { name: 'Your country (for local numbers; stays on this device)' });
   await expect(country).toHaveValue('');
   await expect(country.locator('option:checked')).toHaveText('EU / other country');
   expect(await groupOrder(page)).toEqual(['bank', 'report', 'support', 'child']);
@@ -60,6 +71,7 @@ test('help list: default EU, switch to Sweden, crisis row last; choice kept in t
 
   await country.selectOption({ label: 'Sweden' });
   await expect(scene.locator('[data-help-cards]')).toHaveAttribute('data-help-country', 'SE');
+  await expect(scene.getByRole('status').filter({ hasText: 'Showing help for Sweden' })).toHaveCount(1);
   expect(await groupOrder(page)).toEqual(['bank', 'report', 'support', 'child', 'crisis']);
   const crisis = scene.locator('[data-help-group="crisis"]');
   await expect(crisis.getByRole('heading', { level: 2 })).toHaveText(CRISIS);
@@ -89,9 +101,10 @@ test('help list: default EU, switch to Sweden, crisis row last; choice kept in t
   expect(save.settings?.helpCountry).toBe('SE');
 
   // Back to the story and in again: still Sweden.
-  await scene.getByRole('button', { name: 'Back to the story' }).click();
+  await expect(scene.getByRole('button', { name: 'Back to the story' })).toHaveCount(2);
+  await scene.getByRole('button', { name: 'Back to the story' }).first().click();
   await scene.getByRole('button', { name: 'Where to get help' }).click();
-  await expect(scene.getByRole('combobox', { name: 'Your country' })).toHaveValue('SE');
+  await expect(scene.getByRole('combobox', { name: 'Your country (for local numbers; stays on this device)' })).toHaveValue('SE');
 
   expect(foreign).toEqual([]);
 });
@@ -111,8 +124,11 @@ test('sensitive scene ("Need to talk?"): support, young people and crisis first,
   await page.getByRole('button', { name: "Watch: Sanne's story" }).click();
   const scene = page.locator('main[data-scene-id="amsterdam-sanne-story"]');
   await scene.getByRole('button', { name: 'Need to talk? Where to get help' }).click();
-  await expect(scene.getByRole('combobox', { name: 'Your country' })).toHaveValue('ES');
+  await expect(scene.getByRole('combobox', { name: 'Your country (for local numbers; stays on this device)' })).toHaveValue('ES');
   expect(await groupOrder(page)).toEqual(['support', 'child', 'crisis', 'bank', 'report']);
+  await expect(scene.locator('[data-help-intro]')).toHaveText("You're not alone. Start with whichever feels right.");
+  // Sensitive scenes: the collapsed first steps come after the cards.
+  expect(await scene.locator('[data-help-cards] > :last-child').evaluate((el) => el.hasAttribute('data-help-steps-more'))).toBe(true);
   await expect(scene.locator('[data-help-group="crisis"]').getByRole('heading', { level: 2 })).toHaveText(CRISIS);
   await expect(scene.locator('[data-help-group="crisis"]')).toContainText('024');
   await axeClean(page);

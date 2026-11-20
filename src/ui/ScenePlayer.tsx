@@ -259,23 +259,26 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
   }
 
   if (view === 'help') {
+    // Back where the player was: the content note, or the same panel (focus on it).
+    const back = () => {
+      if (helpFrom === 'panels') focusNext.current = { kind: 'panel', i: shown - 1 };
+      setView(helpFrom);
+    };
     return (
       <main class={styles.shell} data-scene-id={scene.id}>
         <section class={styles.scene} aria-labelledby="scene-help-h">
           <h1 id="scene-help-h" ref={heading} tabIndex={-1} class={styles.title}>
             {t('help_title')}
           </h1>
+          {/* QA 2 (T-4.2 review): the way back is also above the cards, so a long list never hides it. */}
+          <div class={styles.buttons} data-help-back="top">
+            <button type="button" class={styles.secondary} onClick={back}>
+              {t('help_back')}
+            </button>
+          </div>
           <HelpCards sensitive={sensitive} level={2} />
-          <div class={styles.buttons}>
-            <button
-              type="button"
-              class={styles.primary}
-              onClick={() => {
-                // Back where the player was: the content note, or the same panel (focus on it).
-                if (helpFrom === 'panels') focusNext.current = { kind: 'panel', i: shown - 1 };
-                setView(helpFrom);
-              }}
-            >
+          <div class={styles.buttons} data-help-back="bottom">
+            <button type="button" class={styles.primary} onClick={back}>
               {t('help_back')}
             </button>
           </div>

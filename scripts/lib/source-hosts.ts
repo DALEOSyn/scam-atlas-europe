@@ -50,7 +50,7 @@ export const SOURCE_HOST_ALLOWLIST: readonly string[] = [
   'cncs.gov.pt',
   // T-4.2 (2026-11-20): reputable hosts listed in docs/patterns/SOURCE_HOSTS.md as "new" (tiers 1-3 only).
   // Not added on purpose: news hosts (supporting only), NGO operators and industry campaign sites (tier 4: the
-  // warning is expected, SOURCE_HOSTS.md), and broad suffixes the doc rules out (gov.pl, belgium.be).
+  // warning is expected, SOURCE_HOSTS.md), and broad suffixes the doc rules out (gov.pt, gov.pl, belgium.be: see SOURCE_HOST_EXACT).
   // EU level and Switzerland (supporting only)
   'eccnet.eu',
   'ebf.eu',
@@ -73,7 +73,6 @@ export const SOURCE_HOST_ALLOWLIST: readonly string[] = [
   'sante.fr',
   // Belgium, Netherlands, Luxembourg
   'ccb.belgium.be',
-  'news.belgium.be',
   'be.brussels',
   'vlaanderen.be',
   'en.kerkrade.nl',
@@ -91,7 +90,6 @@ export const SOURCE_HOST_ALLOWLIST: readonly string[] = [
   'minori.gov.it',
   'gnr.pt',
   'bportugal.pt',
-  'gov.pt',
   'bde.es',
   'boe.es',
   'cnmc.es',
@@ -102,7 +100,6 @@ export const SOURCE_HOST_ALLOWLIST: readonly string[] = [
   'nask.pl',
   'policja.pl',
   'policja.gov.pl',
-  'samorzad.gov.pl',
   // Sweden
   'polisen.se',
   'konsumentverket.se',
@@ -144,10 +141,16 @@ export function isHelpLinkHost(url: string, hosts: readonly string[] = HELP_LINK
   }
 }
 
-export function isAllowedSourceHost(url: string, allowlist: readonly string[] = SOURCE_HOST_ALLOWLIST): boolean {
+/**
+ * Source hosts matched on the EXACT hostname only (no subdomains): hosts under a parent domain too broad to allow
+ * as a suffix (gov.pt, gov.pl, belgium.be; SOURCE_HOSTS.md "exact host only"). T-4.2 review.
+ */
+export const SOURCE_HOST_EXACT: readonly string[] = ['www.gov.pt', 'portugal.gov.pt', 'samorzad.gov.pl', 'news.belgium.be'];
+
+export function isAllowedSourceHost(url: string, allowlist: readonly string[] = SOURCE_HOST_ALLOWLIST, exact: readonly string[] = SOURCE_HOST_EXACT): boolean {
   try {
     const host = new URL(url).hostname.toLowerCase();
-    return allowlist.some((a) => host === a || host.endsWith(`.${a}`));
+    return exact.includes(host) || allowlist.some((a) => host === a || host.endsWith(`.${a}`));
   } catch {
     return false;
   }

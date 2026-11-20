@@ -9,11 +9,15 @@
  *   and the URL exactly as verified (no parameters added). The game never fetches them: they are plain links the
  *   player may click. Phone numbers and e-mail addresses are plain text.
  * - review_note and sources never reach the bundle (scripts/lib/yaml-module.ts), so they cannot be rendered.
+ * - First steps (T-4.2 review, psychologist ruling): under-18 and not-your-fault always show at the top; the rest
+ *   sit in one collapsed <details> ("First steps, wherever you are"): before the picker on the scam screen (nothing
+ *   after the cards, so crisis stays last), after the cards on sensitive scenes.
+ * - Changing the country says "Showing help for {country}" in a polite live line.
  * - If the bundled data is missing or malformed, the generic list (GenericHelpList) is shown instead.
  */
 import { createContext, type ComponentChildren } from 'preact';
 import { useContext, useId, useState } from 'preact/hooks';
-import { checkedDate, countryName, helpCountries, helpData, helpGroups, knownCountry, linkHost, type HelpData, type HelpGroup, type HelpGroupKind, type HelpRow } from '../content/help.ts';
+import { checkedDate, countryName, helpCountries, helpData, helpFirstSteps, helpGroups, knownCountry, linkHost, type HelpData, type HelpGroup, type HelpGroupKind, type HelpRow, type HelpStep } from '../content/help.ts';
 import { HELP_LINK_REL, HELP_LINK_TARGET } from '../content/constants.ts';
 import { t, type MessageKey } from '../i18n/index.ts';
 import styles from './Help.module.css';
@@ -107,17 +111,40 @@ function Group({ group, level, idBase }: { group: HelpGroup; level: Level; idBas
       </section>
     );
   }
+  const heading = t(GROUP_HEADING[group.kind]);
   return (
     <section class={styles.group} aria-labelledby={id} data-help-group={group.kind}>
       <Heading level={level} id={id}>
-        {t(GROUP_HEADING[group.kind])}
+        {heading}
       </Heading>
       <ul class={styles.rows}>
         {group.rows.map((r) => (
-          <Row key={r.id} row={r} showName={true} nameLevel={nameLevel} />
+          // QA 1: a row named like its group ("Your bank" under "Your bank") does not repeat the heading.
+          <Row key={r.id} row={r} showName={r.name !== heading} nameLevel={nameLevel} />
         ))}
       </ul>
     </section>
+  );
+}
+
+function Steps({ steps, ordered = false }: { steps: readonly HelpStep[]; ordered?: boolean }) {
+  const items = steps.map((st) => (
+    <li key={st.id} class={styles.step} data-help-step={st.id}>
+      <strong>{st.title}</strong>
+      <p>{st.body}</p>
+    </li>
+  ));
+  return ordered ? <ol class={styles.steps}>{items}</ol> : <ul class={`${styles.steps} ${styles.pinned}`}>{items}</ul>;
+}
+
+/** The other first steps, in file order, collapsed by default (psychologist ruling, T-4.2 review). */
+function MoreSteps({ steps }: { steps: readonly HelpStep[] }) {
+  if (steps.length === 0) return null;
+  return (
+    <details class={styles.more} data-help-steps-more="">
+      <summary class={styles.summary}>{t('help_first_steps')}</summary>
+      <Steps steps={steps} ordered />
+    </details>
   );
 }
 
@@ -134,6 +161,7 @@ export interface HelpCardsProps {
 export function HelpCards({ sensitive = false, level = 2, data = helpData() }: HelpCardsProps) {
   const shared = useContext(HelpCountryContext);
   const [local, setLocal] = useState<string | null>(null);
+  const [showing, setShowing] = useState('');
   const idBase = `help${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
   if (!data) {
     return (
@@ -149,9 +177,15 @@ export function HelpCards({ sensitive = false, level = 2, data = helpData() }: H
     .map((code) => ({ code, name: countryName(code) }))
     .sort((a, b) => a.name.localeCompare(b.name, 'en'));
   const groups = helpGroups(data, country, sensitive ? 'sensitive' : 'scam');
+  const steps = helpFirstSteps(data);
+  const nameOf = (cc: string | null) => (cc === null ? t('help_country_eu') : countryName(cc));
   return (
     <div class={styles.help} data-help-cards="" data-help-country={country ?? 'EU'}>
-      <p>{data.meta.intro}</p>
+      {/* Psych ruling: a gentler intro on sensitive scenes; meta.intro ("Start at the top") on the scam screen. */}
+      <p data-help-intro="">{sensitive ? t('help_intro_sensitive') : data.meta.intro}</p>
+      <Steps steps={steps.pinned} />
+      {/* Scam screen: the other first steps before the picker, so nothing follows the cards (crisis stays last). */}
+      {sensitive ? null : <MoreSteps steps={steps.more} />}
       <div class={styles.picker}>
         <label for={`${idBase}-country`}>{t('help_country_label')}</label>
         <select
@@ -160,7 +194,9 @@ export function HelpCards({ sensitive = false, level = 2, data = helpData() }: H
           value={country ?? ''}
           onChange={(e) => {
             const v = (e.currentTarget as HTMLSelectElement).value;
-            setCountry(v === '' ? null : v);
+            const next = v === '' ? null : v;
+            setCountry(next);
+            setShowing(t('help_showing', { country: nameOf(knownCountry(data, next)) }));
           }}
         >
           <option value="">{t('help_country_eu')}</option>
@@ -170,6 +206,10 @@ export function HelpCards({ sensitive = false, level = 2, data = helpData() }: H
             </option>
           ))}
         </select>
+        {/* QA 5 / psych a: said once after a change (empty until then, so nothing is announced on open). */}
+        <p class={styles.showing} role="status" aria-live="polite" data-help-showing="">
+          {showing}
+        </p>
       </div>
       <p class={styles.note}>{data.meta.disclaimer}</p>
       <p class={styles.note}>{data.meta.external_links_note}</p>
@@ -177,6 +217,8 @@ export function HelpCards({ sensitive = false, level = 2, data = helpData() }: H
       {groups.map((g) => (
         <Group key={g.kind} group={g} level={level} idBase={idBase} />
       ))}
+      {/* Sensitive scenes: support, young people and crisis come first; the other first steps follow the cards. */}
+      {sensitive ? <MoreSteps steps={steps.more} /> : null}
     </div>
   );
 }

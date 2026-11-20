@@ -14,6 +14,7 @@
  * - `review_note` and `sources` never reach the bundle (helpProjection drops them; checked here on the output);
  * - no support row is a suicide or crisis line (those are role `crisis`, WHERE_TO_REPORT §3b round 2).
  */
+import { HELP_PINNED_STEPS } from '../../src/content/constants.ts';
 import { helpFileSchema, type HelpFile } from '../../src/content/schema.ts';
 import { findDomains, findMarkup, findUrls, normalise } from '../redline/rules.ts';
 import { HELP_EMAIL_DOMAINS, HELP_LINK_HOSTS, isHelpLinkHost } from './source-hosts.ts';
@@ -165,6 +166,9 @@ export function checkHelp(raw: unknown, sources: SourceIndex, opts: HelpCheckOpt
 
   // Hidden keys never reach the bundle.
   for (const hit of hasKeyDeep(helpProjection(raw), HELP_HIDDEN_KEYS)) errors.push(`${hit}: must not be shipped to the game (helpProjection)`);
+
+  // The psychologist's ruling pins these first steps at the top of every help list (src/content/help.ts).
+  for (const id of HELP_PINNED_STEPS) if (!f.first_steps.some((s) => s.id === id)) errors.push(`first_steps: the pinned step "${id}" is missing`);
 
   // A listed country has at least one row for the scam help screen (harassment rows show only on their own card).
   for (const [cc, rows] of Object.entries(f.countries)) {

@@ -1,7 +1,9 @@
 # Content licence
 
 The game content in the `content/` directory of this repository (scenarios,
-brand registry, source registry, i18n message catalogues and other game text)
+story scenes, brand registry, source registry, help data, i18n message
+catalogues and other game text) and the original artwork in `public/art/`,
+`public/brands/` and `public/icon.svg`
 is © 2026 Roman (DALEOSyn) and licensed under the
 **Creative Commons Attribution-ShareAlike 4.0 International** licence
 (CC BY-SA 4.0).
@@ -15,7 +17,9 @@ same licence.
 
 All brands, people, domains, phone numbers and account numbers in the
 scenarios are fictional. Third-party sources listed in `content/sources.yaml`
-are cited for reference only and remain under their own terms.
+are cited for reference only and remain under their own terms. The real
+organisations, phone numbers and web addresses in `content/help/` are listed
+as factual help contacts only; their names and marks belong to their owners.
 
-The source code (everything outside `content/`) is licensed under the MIT
+The source code (everything outside the content and artwork listed above) is licensed under the MIT
 licence; see `LICENSE`.

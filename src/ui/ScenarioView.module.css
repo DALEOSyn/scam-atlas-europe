@@ -122,6 +122,9 @@
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
 }
+/* T-4.5 R3: the consequence and damage-control headings are h2 (under the screen's h1), the "What now?"
+   heading stays h3 under "Your options"; both keep this look. */
+.panel h2,
 .panel h3 {
   margin: 0;
   font-size: var(--fs-lg);
@@ -129,6 +132,7 @@
 .panel p {
   margin: 0;
 }
+.panel h2:focus-visible,
 .panel h3:focus-visible,
 .trayTitle:focus-visible {
   outline: var(--focus-ring-w) solid var(--color-focus);
@@ -386,20 +390,21 @@ h3.interruptMeta:focus-visible {
 .jumpIdle {
   visibility: hidden;
 }
-/* T-4.5 m6: on phones the idle bar keeps no blank band under the HUD (about 56 px at 320 px). The scroll
-   padding still keeps room for the bar (ScenarioView: at least 44 px), so a focus target is never under it
-   when it comes back; scroll anchoring keeps the visible content still while it hides or shows. */
+/* T-4.5 m6 (round 2): on phones the bar itself is shorter, the same whether it shows or only keeps its room
+   (visibility: hidden above), so nothing under it ever moves: the tap-target minimum (44 px) with no extra
+   vertical padding, a smaller label, and half the usual grid gap under it. */
 @media (max-width: 599px) {
-  .jumpIdle {
-    display: none;
+  .jump {
+    min-height: var(--tap-min);
+    padding: 0 var(--space-3);
+    font-size: var(--fs-sm);
+    margin-bottom: calc(var(--space-2) - var(--space-4));
   }
 }
-/* At 400 % zoom (320×256) the shown bar is slimmer, still well above the 24 px of WCAG 2.5.8. */
+/* At 400 % zoom (320×256) the bar, shown or reserved, is slimmer still: 32 px, above the 24 px of WCAG 2.5.8. */
 @media (max-width: 599px) and (max-height: 500px) {
   .jump {
     min-height: 32px;
-    padding: 0 var(--space-3);
-    font-size: var(--fs-sm);
   }
 }
 @media (min-width: 1024px) {

@@ -263,10 +263,11 @@ export function ScenePlayer({ scene, heading: title, chapterName = '', flags = n
   }
 
   if (view === 'help') {
-    // Back where the player was (the content note or the panels), focus on the "Where to get help" button
-    // that opened the help, like Settings, Fairmeasure and the Check card return to their trigger (T-4.5 m5).
+    // Back where the player was. From the panels: focus on the same panel, so the reading place is kept
+    // (learning-psychologist, T-4.5 round 2). From the content note: focus on the help button that opened
+    // the help (T-4.5 m5), as Settings, Fairmeasure and the Check card return to their trigger.
     const back = () => {
-      focusNext.current = { kind: 'help' };
+      focusNext.current = helpFrom === 'panels' ? { kind: 'panel', i: shown - 1 } : { kind: 'help' };
       setView(helpFrom);
     };
     return (

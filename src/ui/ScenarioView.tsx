@@ -167,9 +167,9 @@ function ReadOnlySteps({ view, offered, onDone }: { view: NonNullable<RunnerView
   const { helps, harmful } = readOnlySteps(view.options, offered);
   return (
     <section class={styles.panel} aria-labelledby="damage-feedback-heading" data-recovery-readonly="">
-      <h3 id="damage-feedback-heading" ref={heading} tabIndex={-1}>
+      <h2 id="damage-feedback-heading" ref={heading} tabIndex={-1}>
         {t('damage_feedback_title')}
-      </h3>
+      </h2>
       {view.note ? <p data-recovery-note="">{view.note}</p> : null}
       <ol class={styles.feedback}>
         {helps.map((o) => (
@@ -229,9 +229,9 @@ function DamagePicks({ view, intro, onDone }: { view: NonNullable<RunnerView['re
   if (submitted) {
     return (
       <section class={styles.panel} aria-labelledby="damage-feedback-heading">
-        <h3 id="damage-feedback-heading" ref={feedbackHeading} tabIndex={-1}>
+        <h2 id="damage-feedback-heading" ref={feedbackHeading} tabIndex={-1}>
           {t('damage_feedback_title')}
-        </h3>
+        </h2>
         <ol class={styles.feedback}>
           {picks.map((step) => {
             const harmful = byStep.get(step)?.category === 'harmful';
@@ -263,9 +263,9 @@ function DamagePicks({ view, intro, onDone }: { view: NonNullable<RunnerView['re
   }
   return (
     <section class={styles.panel} aria-labelledby="damage-heading">
-      <h3 id="damage-heading" ref={heading} tabIndex={-1}>
+      <h2 id="damage-heading" ref={heading} tabIndex={-1}>
         {t('damage_title')}
-      </h3>
+      </h2>
       {intro ? (
         <p data-damage-intro="">
           <strong>{intro}</strong>
@@ -982,9 +982,9 @@ export function ScenarioView({ scenario, ctx, onDone, progress = null, callLines
             ) : null}
             {view.phase === 'consequence' ? (
               <div class={styles.panel}>
-                <h3 id="consequence-h" ref={consequenceRef} tabIndex={-1}>
+                <h2 id="consequence-h" ref={consequenceRef} tabIndex={-1}>
                   {t('consequence_title')}
-                </h3>
+                </h2>
                 <p class={styles.caption}>
                   <Icon name="info" />
                   <span>{view.consequenceDeadline ? deadlineText(view.consequenceDeadline, scenario.pressure.honest_deadline) : <RichText text={view.consequence ?? ''} />}</span>

@@ -22,6 +22,18 @@ async function axeClean(page: Page, where: string) {
   ).toEqual([]);
 }
 
+/** T-4.5 R3: one h1, and no heading level skipped going down (h1 → h3) among the visible headings. */
+async function headingsInOrder(page: Page, where: string) {
+  const levels = await page.evaluate(() =>
+    [...document.querySelectorAll('h1, h2, h3, h4, h5, h6')]
+      .filter((h) => !h.closest('[hidden], [aria-hidden="true"]'))
+      .map((h) => `${h.tagName.toLowerCase()} ${(h.textContent ?? '').trim().slice(0, 40)}`),
+  );
+  expect(levels.filter((l) => l.startsWith('h1 ')), `${where}: one h1`).toHaveLength(1);
+  const skips = levels.flatMap((l, i) => (i > 0 && Number(l[1]) > Number((levels[i - 1] ?? 'h1')[1]) + 1 ? [`${levels[i - 1]} → ${l}`] : []));
+  expect(skips, `${where}: heading levels`).toEqual([]);
+}
+
 async function darkActive(page: Page) {
   expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches), 'the page sees the dark scheme').toBe(true);
 }
@@ -83,6 +95,7 @@ for (const [city, id] of CHAPTERS) {
     await first.click();
     await settle(page);
     await axeClean(page, `${id} after the first choice`);
+    await headingsInOrder(page, `${id} after the first choice`);
   });
 
   test(`dark: ${city} resolution scene to its last panel`, async ({ page }) => {
@@ -154,7 +167,9 @@ test('dark: the finale (ending C) through the timeline, postcard pick, chapter e
   await press(page, 'Continue');
   await expect(page.locator('#damage-heading')).toHaveText('Limit the damage');
   await expect(page).toHaveTitle('Limit the damage · Scam Atlas: Europe');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Finale fixture · Finale');
   await axeClean(page, 'finale damage control');
+  await headingsInOrder(page, 'finale damage control');
   for (const st of ['stop_paying', 'call_bank_known_number', 'keep_evidence']) await pressOn(page, page.locator(`[data-step="${st}"]`), st);
   await press(page, 'Done');
   await press(page, 'Continue');
@@ -172,7 +187,7 @@ test('dark: the finale (ending C) through the timeline, postcard pick, chapter e
   await expect(page.getByText('You picked Berlin.')).toBeVisible();
   await axeClean(page, 'flip card');
   await storyUntil(page, 'text=Chapter complete');
-  await expect(page).toHaveTitle(/Chapter complete · Scam Atlas: Europe$/);
+  await expect(page).toHaveTitle('Finale fixture · Chapter complete · Scam Atlas: Europe');
   await axeClean(page, 'chapter complete (stamp)');
   await press(page, 'Back to the chapters');
   const end = page.locator('[data-end-screen]');
@@ -184,7 +199,13 @@ test('dark: the finale (ending C) through the timeline, postcard pick, chapter e
   await axeClean(page, 'end screen');
 });
 
-test('B1 and m2: Escape returns focus to Menu; Tab out of the menu closes it', async ({ page }) => {
+/**
+ * `busy`: animation frames never fire (as on a loaded CI runner), so passive effects wait for Preact's 35 ms
+ * fallback. The Escape listener must already be on when the keys arrive faster than that (round 2: CI saw
+ * the menu stay open because the listener was added after paint).
+ */
+for (const busy of [false, true]) test(`B1 and m2${busy ? ' (no animation frames)' : ''}: Escape returns focus to Menu; Tab out of the menu closes it`, async ({ page }) => {
+  if (busy) await page.addInitScript(() => Object.assign(window, { requestAnimationFrame: () => 0 }));
   await openContent(page, 'berlin-09-boss-fraud-team');
   await expect(page).toHaveTitle('Berlin · Message 1 of 1 · Scam Atlas: Europe');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Berlin · Message 1 of 1');
@@ -206,4 +227,23 @@ test('B1 and m2: Escape returns focus to Menu; Tab out of the menu closes it', a
   await page.keyboard.press('Tab');
   await expect(page.locator('#hud-menu')).toBeHidden();
   expect(await page.evaluate(() => document.activeElement?.closest('#hud-menu') === null && document.activeElement !== document.body)).toBe(true);
+});
+
+test('m6 at 320×640: the jump bar keeps the 44 px target, and content does not move when it goes idle', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 640 });
+  await openContent(page, 'berlin-09-boss-fraud-team');
+  const bar = page.locator('[data-jump]');
+  // The options are below the fold on a phone: the bar shows once they are out of view.
+  await expect(bar).toBeVisible();
+  const shown = await bar.boundingBox();
+  expect(shown?.height ?? 0).toBeGreaterThanOrEqual(44);
+  expect(shown?.height ?? 99).toBeLessThan(48);
+  const stageTop = () => page.locator('#device-heading').evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+  const before = await stageTop();
+  await bar.click();
+  // Idle: hidden but keeping its room, at the same size, so nothing above or below it moves.
+  await expect(page.getByRole('button', { name: 'Jump to your options' })).toHaveCount(0);
+  const idle = await bar.evaluate((el) => ({ h: el.getBoundingClientRect().height, v: getComputedStyle(el).visibility }));
+  expect(idle).toEqual({ h: shown?.height, v: 'hidden' });
+  expect(await stageTop()).toBe(before);
 });

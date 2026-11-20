@@ -46,7 +46,7 @@ export function ChapterDone({
   onBack: () => void;
 }) {
   const heading = useRef<HTMLHeadingElement>(null);
-  useDocumentTitle(city ? `${city} · ${t('chapter_done_title')}` : t('chapter_done_title'));
+  useDocumentTitle(city ? t('chapter_done_doc_title', { city, title: t('chapter_done_title') }) : t('chapter_done_title'));
   useEffect(() => heading.current?.focus(), []);
   const next = summary.nextTier;
   const stampKey: MessageKey = summary.stamp === 'gold' ? 'stamp_gold' : summary.stamp === 'silver' ? 'stamp_silver' : 'stamp_bronze';

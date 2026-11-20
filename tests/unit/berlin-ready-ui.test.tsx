@@ -171,7 +171,7 @@ describe('M1/M3/M4: interrupts', () => {
     await flush(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'Report it' }));
     });
-    const panel = screen.getByRole('heading', { level: 3, name: 'What happened' }).parentElement as HTMLElement;
+    const panel = screen.getByRole('heading', { level: 2, name: 'What happened' }).parentElement as HTMLElement;
     expect(panel.textContent).toContain('Reported.');
     expect(panel.textContent).toContain('Jonas: see you later.');
   });
@@ -265,7 +265,7 @@ describe('B1: chapters, Start continues the next unfinished unlocked chapter', (
     await waitFor(() => screen.getByRole('button', { name: 'Check in the app first' }));
     expect(screen.getByRole('img', { name: /1 of 2/ })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Check in the app first' }));
-    await waitFor(() => screen.getByRole('heading', { level: 3, name: 'What happened' }));
+    await waitFor(() => screen.getByRole('heading', { level: 2, name: 'What happened' }));
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     await waitFor(() => screen.getByRole('heading', { level: 1, name: /This was genuine/ }));
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));

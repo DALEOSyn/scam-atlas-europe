@@ -15,7 +15,7 @@ afterEach(cleanup);
 
 /** The consequence step after the last beat: focus on its heading, then Continue (ruling 2026-11-19). */
 async function passConsequence() {
-  const h = await waitFor(() => screen.getByRole('heading', { level: 3, name: 'What happened' }));
+  const h = await waitFor(() => screen.getByRole('heading', { level: 2, name: 'What happened' }));
   await waitFor(() => expect(document.activeElement).toBe(h));
   fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
 }

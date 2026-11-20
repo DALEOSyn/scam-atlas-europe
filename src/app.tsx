@@ -1,3 +1,4 @@
+import type { ComponentChildren } from 'preact';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { balance } from './content/balance.ts';
 import { listChapters } from './content/chapters.ts';
@@ -137,6 +138,22 @@ function useFocusOnMount() {
 }
 
 /**
+ * The finale's arc damage control as a screen of its own (T-4.5 round 2): a visually hidden h1 ("Brussels ·
+ * Finale") above the step's visible "Limit the damage" heading, and the tab title for this screen.
+ */
+function FinaleDamageShell({ city, children }: { city: string; children: ComponentChildren }) {
+  useDocumentTitle(t('damage_title'));
+  return (
+    <main class={styles.shell} data-finale-step="damage_control">
+      <h1 class={styles.vh} data-finale-h1="">
+        {t('finale_h1', { city })}
+      </h1>
+      {children}
+    </main>
+  );
+}
+
+/**
  * Timing, asked before the first timed scenario (UI_SPEC §6.1, §11): Standard / Extended / Off as one
  * choice, Extended pre-selected when the device asks for reduced motion (QA m7), plus the Calm preset.
  */
@@ -221,7 +238,7 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
   const titleRef = useRef<HTMLHeadingElement>(null);
   const titleFrom = screen.kind === 'title' ? screen.from : undefined;
   // T-4.5 m4: the title, loading and error screens carry the game's name alone; every other screen sets its own.
-  useDocumentTitle(screen.kind === 'title' || screen.kind === 'loading' || screen.kind === 'error' ? null : screen.kind === 'finale_damage' ? t('damage_title') : undefined);
+  useDocumentTitle(screen.kind === 'title' || screen.kind === 'loading' || screen.kind === 'error' ? null : undefined);
   useEffect(() => {
     if (!titleFrom) return;
     const btn = titleFrom === 'elsewhere' ? null : document.querySelector<HTMLElement>(`[data-title-button="${titleFrom}"]`);
@@ -719,7 +736,7 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
       {screen.kind === 'reveal' ? <ArcReveal timeline={screen.timeline} names={screen.names} onContinue={() => void next(currentSave())} /> : null}
       {screen.kind === 'finale_reveal' ? <RevealScreen names={screen.names} tell={screen.chapter.arc_finale?.reveal.tell ?? ''} habit={screen.chapter.arc_finale?.reveal.habit ?? ''} onContinue={() => finaleNext(screen.chapter, 'reveal')} /> : null}
       {screen.kind === 'finale_damage' ? (
-        <main class={styles.shell} data-finale-step="damage_control">
+        <FinaleDamageShell city={screen.chapter.name}>
           <DamageControl
             view={{ options: screen.options, pick: balance.recovery.pick, forCast: null, forLabel: null }}
             intro={t('arc_damage_intro', { name: arcName() })}
@@ -729,7 +746,7 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
               finaleNext(screen.chapter, 'damage_control', (sv) => ({ ...sv, arc: bankArcPoints(sv.arc, points) }));
             }}
           />
-        </main>
+        </FinaleDamageShell>
       ) : null}
       {screen.kind === 'finale_timeline' ? <TimelineScreen rows={screen.rows} onContinue={() => finaleNext(screen.chapter, 'timeline')} /> : null}
       {screen.kind === 'end' ? <EndScreen epigraph={screen.epigraph} pages={screen.pages} habits={save.habits} onBack={() => void toMap()} /> : null}

@@ -535,5 +535,7 @@
   "doc_title": "{screen} · {app}",
   "scenario_h1": "{city} · {message}",
   "scenario_h1_plain": "Message",
-  "debrief_doc_title": "Debrief"
+  "debrief_doc_title": "Debrief",
+  "finale_h1": "{city} · Finale",
+  "chapter_done_doc_title": "{city} · {title}"
 }

@@ -3,7 +3,7 @@
  * never leave it. The timer is announced only at thresholds (role=timer, aria-live off); a "Time left"
  * item in the menu reads it on demand. Pause opens the non-modal "Take a breath" panel.
  */
-import { useEffect, useRef, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useRef, useState } from 'preact/hooks';
 import type { RunnerView } from '../engine/runner.ts';
 import { t, type MessageKey } from '../i18n/index.ts';
 import { Icon } from './Icon.tsx';
@@ -47,7 +47,11 @@ export function Hud({ view, progress, chip, timersOff, onPause, menu }: { view: 
     setOpen(on);
     menu.onOpen(on);
   };
-  useEffect(() => {
+  // T-4.5 round 2 (CI): a layout effect, so the Escape listener is on as soon as the menu is rendered open.
+  // A passive effect runs only after the next paint (Preact: rAF or a 35 ms fallback), so an Escape pressed
+  // in that window, right after opening and Tabbing in (fast keyboards, screen readers, a busy CI runner),
+  // was lost and the menu stayed open.
+  useLayoutEffect(() => {
     if (!open) return undefined;
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;

@@ -32,9 +32,10 @@ export function listScenarios(): readonly ScenarioRef[] {
 }
 
 /**
- * The ref of scenario `id` in chapter `city`, or undefined. content:validate makes every file name equal
- * its scenario id, so this is a lookup by file name: only that one file is ever loaded (T-4.6 P2; before,
- * every scenario of the city was loaded in turn until the id matched).
+ * The ref of scenario `id` in chapter `city`, or undefined. This is a lookup by file name, so only that one
+ * file is ever loaded (T-4.6 P2; before, every scenario of the city was loaded in turn until the id matched).
+ * It relies on every scenario file being named `<id>.yaml`: `checkScenario` in scripts/lib/content.ts fails
+ * content:validate (and the build) when a file name differs from its id, and its folder from its chapter.
  */
 export function findScenarioRef(all: readonly ScenarioRef[], city: string, id: string): ScenarioRef | undefined {
   return all.find((r) => r.chapter === city && r.file.replace(/\.ya?ml$/, '') === id);

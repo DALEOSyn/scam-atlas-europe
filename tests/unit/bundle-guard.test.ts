@@ -81,6 +81,14 @@ const shellJs = (): string[] =>
   [...html().matchAll(/<script[^>]+src="[^"]*?(assets\/[^"]+\.js)"/g), ...html().matchAll(/<link[^>]+rel="modulepreload"[^>]+href="[^"]*?(assets\/[^"]+\.js)"/g)].map((m) => m[1] ?? '');
 const stylesheets = (): string[] => [...html().matchAll(/<link[^>]+rel="stylesheet"[^>]+href="[^"]*?(assets\/[^"]+\.css)"/g)].map((m) => m[1] ?? '');
 const assets = (): string[] => readdirSync(resolve(DIST, 'assets'));
+/** The configured base of this build (vite.config.ts `base: process.env.VITE_BASE ?? '/'`), with a trailing slash. */
+const BASE = ((b: string) => (b.endsWith('/') ? b : `${b}/`))(process.env['VITE_BASE'] ?? '/');
+/** A URL from index.html as a path inside dist/: the base is removed (absolute or relative hrefs). */
+function distPath(href: string, base: string = BASE): string {
+  const path = href.split(/[?#]/)[0] ?? '';
+  if (base !== '/' && path.startsWith(base)) return path.slice(base.length);
+  return path.replace(/^\.?\//, '');
+}
 const precacheUrls = (): string[] => [...readFileSync(resolve(DIST, 'sw.js'), 'utf8').matchAll(/\{url:"([^"]+)",revision:/g)].map((m) => m[1] ?? '');
 const manifest = (): { theme_color?: string; icons?: { src: string; sizes: string; type: string; purpose?: string }[] } => JSON.parse(readFileSync(resolve(DIST, 'manifest.webmanifest'), 'utf8')) as ReturnType<typeof manifest>;
 
@@ -138,6 +146,13 @@ describe.runIf(distBuilt)('performance budgets (T-4.6)', () => {
     expect(sw).toMatch(/clientsClaim\(\)/);
   });
 
+  it('distPath strips the configured base from index.html URLs (subpath builds)', () => {
+    expect(distPath('/touch-icon-180.png', '/')).toBe('touch-icon-180.png');
+    expect(distPath('/scam-atlas-europe/touch-icon-180.png', '/scam-atlas-europe/')).toBe('touch-icon-180.png');
+    expect(distPath('./touch-icon-180.png', '/scam-atlas-europe/')).toBe('touch-icon-180.png');
+    expect(distPath('/scam-atlas-europe/assets/x.js?v=1', '/scam-atlas-europe/')).toBe('assets/x.js');
+  });
+
   it('one theme colour, a maskable icon and an apple-touch-icon, all present in the build (T-4.6 P4)', () => {
     const meta = /<meta name="theme-color" content="([^"]+)"/.exec(html())?.[1];
     expect(meta).toBeDefined();
@@ -146,8 +161,9 @@ describe.runIf(distBuilt)('performance budgets (T-4.6)', () => {
     expect(icons.some((i) => i.purpose === 'maskable' && i.type === 'image/png' && i.sizes === '512x512')).toBe(true);
     expect(icons.some((i) => (i.purpose ?? 'any') === 'any' && i.sizes === '192x192')).toBe(true);
     for (const i of icons) expect(existsSync(resolve(DIST, i.src)), i.src).toBe(true);
-    const apple = /<link rel="apple-touch-icon" href="\/?([^"]+)"/.exec(html())?.[1];
+    // The href carries the configured base (VITE_BASE, e.g. /scam-atlas-europe/ on a subpath build): strip it.
+    const apple = /<link rel="apple-touch-icon" href="([^"]+)"/.exec(html())?.[1];
     expect(apple).toBeDefined();
-    expect(existsSync(resolve(DIST, apple ?? ''))).toBe(true);
+    expect(existsSync(resolve(DIST, distPath(apple ?? '')))).toBe(true);
   });
 });

@@ -1,6 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { findScenarioRef, listScenarios, loadScenario, type ScenarioRef } from '../../src/content/scenarios.ts';
 import type { Scenario } from '../../src/content/schema.ts';
+import { readdirSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { ROOT } from './helpers.ts';
 
 /** T-4.6 P2: a scenario is looked up by file name; no other file of the chapter is loaded. */
 describe('scenario lookup', () => {
@@ -29,9 +32,14 @@ describe('scenario lookup', () => {
     const all = listScenarios();
     expect(listScenarios()).toBe(all);
     expect(all.length).toBeGreaterThan(0);
-    for (const r of all.slice(0, 5)) {
+    // Every bundled scenario (sceptic PR #72): each is found by its own id and chapter, so none is unreachable.
+    const scenarioDirs = readdirSync(resolve(ROOT, 'content', 'scenarios'), { withFileTypes: true }).filter((d) => d.isDirectory());
+    const files = scenarioDirs.flatMap((d) => readdirSync(resolve(ROOT, 'content', 'scenarios', d.name)).filter((f) => /\.ya?ml$/.test(f)));
+    expect(all).toHaveLength(files.length);
+    for (const r of all) {
       const s = await r.load();
-      expect(findScenarioRef(all, r.chapter, s.id)).toBe(r);
+      expect(s.chapter, r.file).toBe(r.chapter);
+      expect(findScenarioRef(all, r.chapter, s.id), r.file).toBe(r);
     }
   });
 });

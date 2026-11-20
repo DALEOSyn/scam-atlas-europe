@@ -58,10 +58,16 @@ Play the tutorial + first city chapter yourself (link to preview build). Approve
 
 **D-S1, decided by Roman 2026-11-19: "Illustrated story layer".** Comic-style scenes, character portraits, city backdrops and an illustrated map around the existing device scenarios, built in Phase 3 (track S). Not chosen: a walkable 2D city, or graphics after G3. ✅
 
-**D-S2, producer clarification 2026-11-19 (pending Roman's confirmation at G3): what "no AI-generated images" means.** Art in `public/art/**` is SVG written element by element as code by the AI-assisted agent team, and each file header says so. Not allowed: image-generation models, auto-vectorised rasters, traced references, stock assets. Reason: hand-written SVG code has no training-image provenance risk and stays reviewable line by line. Raised by `sceptic-reviewer` as a public provenance claim; Roman may change it at G3 (including a human illustrator).
+**D-S2, producer clarification 2026-11-19 (confirmed by Roman at G3, 2026-11-20): what "no AI-generated images" means.** Art in `public/art/**` is SVG written element by element as code by the AI-assisted agent team, and each file header says so. Not allowed: image-generation models, auto-vectorised rasters, traced references, stock assets. Reason: hand-written SVG code has no training-image provenance risk and stays reviewable line by line. Raised by `sceptic-reviewer` as a public provenance claim; Roman may change it at G3 (including a human illustrator).
 
-## G3 — Content complete (state: Open)
+## G3 — Content complete (state: Approved ✅)
 All chapters in English pass review. Approve sources list and "Where to report" pages. Decide on external expert review (e.g. a contact at a CERT or consumer body), optional, including the proposed human review of story tone and emotional safety (PLAN.md track S5).
+
+**Roman, 2026-11-20: approved G3 with the recommendations in the Phase 3 sign-off doc** (decision card "Approve G3 as recommended", after "signing off" in the project chat). Basis: 11 chapters (Home, 9 cities, Brussels finale), 108 scenarios, 44 story scenes, Alex arc with endings A, A′, B, C, R; full-game QA round 2 PASS at bbb6990; sources and help-page re-check in docs/patterns/G3_SOURCES_CHECK.md (#66). The four points:
+1. **Sources and Where to report: approved.** content/sources.yaml and the verified per-country help data in docs/patterns/where-to-report.draft.en.yaml (10 countries + EU). The frontend may now wire it into the build in place of the generic HelpList (help checker, move to content/help/, role order), which unblocks shipping the sensitive chapters.
+2. **External review: yes, a short human tone read** of the sensitive chapters (Amsterdam, Rome, Brussels) before G4 (PLAN S5). The team prepares the reviewer brief; finding and engaging the reader is Roman's step, since it involves a real person outside the project.
+3. **D-S2: confirmed.** Art stays SVG written as code; no image-generation models, traced or stock art.
+4. **Open source items: plan accepted.** Fix the wording items now (G3_SOURCES_CHECK §4: PT SNS 24 "Normal call rate", SE BRIS "Free, day and night", IT 112 wording, EU signpost wording, Info Escroqueries hours), keep the unconfirmed claims out of player copy until confirmed, have a human read the crisis rows, and re-check every number within 30 days before G4.
 
 ## G4 — Public release (state: Open)
 Approve going public: deploy to GitHub Pages (or other host), domain, announcement. Irreversible in practice (content gets indexed).

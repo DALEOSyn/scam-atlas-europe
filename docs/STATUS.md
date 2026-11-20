@@ -2,7 +2,7 @@
 
 _Updated by the producer at the end of every session. Keep it readable in under a minute._
 
-**Phase:** 3 — Content production (started 2026-11-19) · **Next gate:** G3 (all chapters in English pass review) · **Last update:** 2026-11-19
+**Phase:** 4 — Hardening and release prep (started 2026-11-20; Phase 3 closed at G3) · **Next gate:** G4 (public release) · **Last update:** 2026-11-20
 
 ## Summary
 Phase 1 is done. Research (PR #1) and the scaffold with the red-line linter (PR #2) are merged. The design, the UI spec and the brands are in the G1 design PR. G1 approved by Roman (all as recommended). Phase 2 (vertical slice) is done: tutorial and Berlin merged (PRs #10–#15), G2 approved by Roman on 2026-11-19 after playing the private preview. Phase 3 (chapters 2–10, up to two in parallel) has started.
@@ -142,7 +142,8 @@ _(none)_
 ## Open gates
 - G0 Kickoff: Approved 2026-11-18
 - G1 Design: Approved 2026-11-18
-- G2 Vertical slice: Open
+- G2 Vertical slice: Approved 2026-11-19
+- G3 Content complete: Approved 2026-11-20
 - Validator: require `pressure.honest_deadline` on genuine timed scenarios (or use neutral copy), so `deadline_real` is always true (sceptic, T-2.3).
 - UI polish (QA, T-2.3): consequence step inside the device per UI_SPEC §7, or Enter/click-anywhere to continue; ux-artist ruling on the letter device showing the QR destination without a scan step.
 - T-2.8 QA m3 (deferred, routed to game-designer): merged boss damage control can list near-duplicate steps from different beats (e.g. two password-change steps worded differently); needs a designer rule (step families or content dedupe).

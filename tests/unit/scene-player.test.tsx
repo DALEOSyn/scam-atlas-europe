@@ -14,7 +14,8 @@ import { chapterSchema, type Scene } from '../../src/content/schema.ts';
 import { createStore, freshSave, SAVE_KEY, type StorageLike } from '../../src/engine/save.ts';
 import { AtlasScreen } from '../../src/ui/Atlas.tsx';
 import { ChapterDone } from '../../src/ui/ChapterDone.tsx';
-import { HelpList, liftArtCap, revealOnOpen, revealPanel, ScenePlayer, sceneHeading, scenePart, shrinkArt } from '../../src/ui/ScenePlayer.tsx';
+import { liftArtCap, revealOnOpen, revealPanel, ScenePlayer, sceneHeading, scenePart, shrinkArt } from '../../src/ui/ScenePlayer.tsx';
+import { GenericHelpList } from '../../src/ui/HelpCards.tsx';
 import { fixtureScene } from '../content/scene-fixtures.ts';
 import { loadExample } from './helpers.ts';
 
@@ -83,10 +84,25 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
     fireEvent.click(screen.getByRole('button', { name: 'Where to get help' }));
     expect(document.activeElement?.textContent).toBe('Where to report and get help');
-    fireEvent.click(screen.getByRole('button', { name: 'Back to the story' }));
+    // QA 2 (T-4.2 review): two Back buttons, above and below the cards; both return to the same place.
+    expect(screen.getAllByRole('button', { name: 'Back to the story' })).toHaveLength(2);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Back to the story' })[1] as HTMLElement);
     expect(document.activeElement).toBe(container.querySelector('li[data-panel="2"]'));
     fireEvent.click(screen.getByRole('button', { name: 'Skip story' }));
     expect(onDone).toHaveBeenCalledWith('skipped');
+  });
+  it('T-4.2: the help view shows the per-country cards; sensitive scenes put support first (WHERE_TO_REPORT §3c)', () => {
+    const groups = () => [...document.querySelectorAll('[data-help-group]')].map((g) => g.getAttribute('data-help-group'));
+    render(<ScenePlayer scene={arrival()} heading="Berlin · Arrival" chapterName="Berlin" onDone={() => undefined} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Where to get help' }));
+    fireEvent.change(screen.getByRole('combobox', { name: 'Your country (for local numbers; stays on this device)' }), { target: { value: 'SE' } });
+    expect(groups()).toEqual(['bank', 'report', 'support', 'child', 'crisis']);
+    expect(screen.getAllByRole('heading', { level: 2 }).at(-1)?.textContent).toBe('Thinking about ending your life, or worried about someone?');
+    cleanup();
+    render(<ScenePlayer scene={{ ...arrival(), sensitive: true }} heading="Berlin · Arrival" chapterName="Berlin" contentNote="A note." onDone={() => undefined} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Need to talk? Where to get help' }));
+    fireEvent.change(screen.getByRole('combobox', { name: 'Your country (for local numbers; stays on this device)' }), { target: { value: 'SE' } });
+    expect(groups()).toEqual(['support', 'child', 'crisis', 'bank', 'report']);
   });
   it('a sensitive scene opens on its content note with a way out; the help link says "Need to talk?"', () => {
     const scene: Scene = { ...arrival(), sensitive: true };
@@ -96,7 +112,7 @@ describe('ScenePlayer: panels, focus and screen-reader structure (ART_DIRECTION 
     expect(document.activeElement?.id).toBe('scene-note-h');
     expect(screen.getByRole('button', { name: 'Need to talk? Where to get help' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Need to talk? Where to get help' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Back to the story' }));
+    fireEvent.click(screen.getAllByRole('button', { name: 'Back to the story' })[0] as HTMLElement);
     expect(screen.getByRole('heading', { level: 1, name: 'Before this story scene' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Show the scene' }));
     expect(screen.getByText('Panel 1 of 3')).toBeTruthy();
@@ -388,9 +404,9 @@ describe('scene titles [P] and the help list (review T-S3 items 6, 7)', () => {
     expect(sceneHeading(sc('berlin-resolution', 'resolution', 'Open Evening'), ch)).toBe('Berlin · Open Evening');
     expect(sceneHeading(sc('interlude-cafe', 'interlude', 'Teo\'s café'), null)).toBe("Teo's café");
   });
-  it('a sensitive help list puts "talk to someone" first [P]', () => {
+  it('the generic help list (fallback) on a sensitive scene puts "talk to someone" first [P]', () => {
     const items = (sensitive: boolean) => {
-      const { container } = render(<HelpList sensitive={sensitive} />);
+      const { container } = render(<GenericHelpList sensitive={sensitive} />);
       const out = [...container.querySelectorAll('li')].map((li) => li.textContent ?? '');
       cleanup();
       return out;

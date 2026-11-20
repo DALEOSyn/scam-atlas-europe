@@ -1,4 +1,4 @@
-# docs/patterns/where-to-report.draft.en.yaml: "Where to report / get help" screen data, English launch (EU-wide).
+# content/help/where-to-report.en.yaml: "Where to report / get help" screen data, English launch (EU-wide).
 # Owner: fraud-researcher. Status: DRAFT, rework 1 after sceptic FAIL (T-2.5). Entries checked 2026-11-18;
 # T-3.8r (2026-11-19) added the per-country verified help list (reporting route, police, bank step,
 # emotional-support line, child/youth line) for DE, NL, FR, ES, PL, IT, PT, IE, SE, BE + the generic EU entry.
@@ -6,8 +6,15 @@
 # T-3.10r (2026-11-19, Dublin/Stockholm): IE adds ie-garda-confidential and ie-cbi-report; SE adds se-bank.
 # T-3.12r (2026-11-19, Brussels): BE updates be-police (URL, Police on Web vs station), adds be-fsma (advice) and be-crisis.
 #
-# LOCATION: parked under docs/ because it trips redline:lint under content/. The engineer adds a path-specific
-# exemption plus a dedicated checker, then moves it back to content/help/where-to-report.en.yaml.
+# LOCATION (T-4.2, 2026-11-20): moved here from docs/patterns/where-to-report.draft.en.yaml. This one file is
+# exempt from the general redline:lint rules for real names, numbers, domains and URLs (scripts/redline-lint.ts,
+# HELP_FILE). It is checked instead by scripts/lib/help.ts (https only, no query, `checked` on every row, source
+# ids, link hosts on HELP_LINK_HOSTS in scripts/lib/source-hosts.ts) and by helpFileSchema in src/content/schema.ts.
+# review_note and sources never reach the game bundle (scripts/lib/yaml-module.ts, helpProjection).
+# NOT CHECKED, ON PURPOSE: YAML comments (like this header) and every `review_note` may name real bodies, hosts
+# and numbers that are not on the help allowlists. They are reviewer notes only: the help checker does not scan
+# them, and they are never rendered or shipped (comments are dropped by the YAML parser; helpProjection strips
+# review_note). Anything a player can see must be in a checked field (name, title, body, scope, phones, email, url).
 #
 # G1 question 6 conditions (docs/DECISIONS.md, approved 2026-11-18):
 #   - This is the ONE data file allowed to hold real reporting bodies' phone numbers and URLs.
@@ -45,6 +52,7 @@
 #   sources      ids in content/sources.yaml that back the entry ([] = safeguarding wording, no claim)  [not shown]
 #   review_note  internal note for reviewers/engineer; NEVER rendered                 [not shown]
 #
+# Order: within one role, rows show in file order (T-4.2 moved es-bank above es-bde-complaint, per its review_note).
 # Re-verify every entry at G3 and again within 30 days before G4 (PLAN risk table).
 
 meta:
@@ -308,6 +316,13 @@ countries:
       checked: 2026-11-19
       sources: [es-incibe-smishing-bank-callback-2025, es-bde-vishing-2020]
       review_note: "No URL: the online police-report route (scope, in-person confirmation) was not verified. Regional police forces not checked."
+    - id: es-bank
+      role: bank
+      name: "Your bank"
+      body: "Call your bank now on the number on your card or in its app. Ask it to try to stop or recall the transfer."
+      checked: 2026-11-19
+      sources: [es-incibe-smishing-bank-callback-2025]
+      review_note: "T-3.8r. Generic bank step with an ES source. T-3.6r (madrid-warsaw branch) adds es-bde-complaint for refusals; keep both."
     - id: es-bde-complaint
       role: bank
       name: "Banco de España (complaints about your bank)"
@@ -317,13 +332,6 @@ countries:
       checked: 2026-11-19
       sources: [es-bde-reclamacion]
       review_note: "Page in Spanish only. A complaint, not an emergency step: list it after the bank and police entries."
-    - id: es-bank
-      role: bank
-      name: "Your bank"
-      body: "Call your bank now on the number on your card or in its app. Ask it to try to stop or recall the transfer."
-      checked: 2026-11-19
-      sources: [es-incibe-smishing-bank-callback-2025]
-      review_note: "T-3.8r. Generic bank step with an ES source. T-3.6r (madrid-warsaw branch) adds es-bde-complaint for refusals; keep both."
     - id: es-116111
       role: child
       name: "116 111: help line for children and teenagers (Fundación ANAR)"

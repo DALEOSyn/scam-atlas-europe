@@ -32,6 +32,11 @@ export interface Settings {
   alwaysTranslate: boolean;
   shortcuts: boolean;
   nickname: string | null;
+  /**
+   * T-4.2: the country picked on "Where to report and get help" (ISO 3166-1 alpha-2), or null for the default
+   * "EU / other country". Additive (no version bump); a choice the help data does not know shows the default.
+   */
+  helpCountry: string | null;
 }
 
 export interface ChapterRun {
@@ -83,6 +88,7 @@ export const DEFAULT_SETTINGS: Settings = {
   alwaysTranslate: false,
   shortcuts: false,
   nickname: null,
+  helpCountry: null,
 };
 
 export function freshSave(): SaveState {
@@ -119,6 +125,7 @@ const num = (v: unknown, d: number): number => (typeof v === 'number' && Number.
 const SNAKE = /^[a-z][a-z0-9_]*$/;
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const LO = /^LO-\d{2}$/;
+const COUNTRY = /^[A-Z]{2}$/;
 const strings = (v: unknown, re: RegExp): string[] => (Array.isArray(v) ? [...new Set(v.filter((x): x is string => typeof x === 'string' && re.test(x)))] : []);
 const oneOf = <T extends string>(v: unknown, opts: readonly T[], d: T): T => (typeof v === 'string' && (opts as readonly string[]).includes(v) ? (v as T) : d);
 const NICKNAME_MAX = 24;
@@ -134,6 +141,7 @@ function sanitiseSettings(v: unknown): Settings {
     alwaysTranslate: bool(o.alwaysTranslate, false),
     shortcuts: bool(o.shortcuts, false),
     nickname: nick.length > 0 ? nick : null,
+    helpCountry: typeof o.helpCountry === 'string' && COUNTRY.test(o.helpCountry) ? o.helpCountry : null,
   };
 }
 

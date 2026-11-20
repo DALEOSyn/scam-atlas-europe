@@ -45,6 +45,7 @@ import { DebriefView } from './ui/DebriefView.tsx';
 import { ArcReveal } from './ui/ArcReveal.tsx';
 import { arcName, RevealScreen, TimelineScreen } from './ui/ArcFinale.tsx';
 import { EndScreen } from './ui/EndScreen.tsx';
+import { HelpCountryProvider } from './ui/HelpCards.tsx';
 import { AtlasScreen, SceneReplayList } from './ui/Atlas.tsx';
 import { ScenePlayer, sceneHeading, scenePart, type FlipPick } from './ui/ScenePlayer.tsx';
 import { DamageControl, ScenarioView } from './ui/ScenarioView.tsx';
@@ -597,6 +598,8 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
 
   return (
     <AnnouncerProvider minInterval={SR_MIN_INTERVAL}>
+      {/* T-4.2: the help screen's country choice lives in the existing save (settings.helpCountry), no new key. */}
+      <HelpCountryProvider country={save.settings.helpCountry} onChange={(c) => update((sv) => ({ ...sv, settings: { ...sv.settings, helpCountry: c } }))}>
       {screen.kind === 'title' || screen.kind === 'loading' || screen.kind === 'error' ? (
         <main class={styles.shell}>
           <h1 class={styles.title} ref={titleRef} tabIndex={-1}>
@@ -768,6 +771,7 @@ export function App({ loadFirst, store, chapters: injected, load = loadScenario,
             );
           })()
         : null}
+      </HelpCountryProvider>
     </AnnouncerProvider>
   );
 }

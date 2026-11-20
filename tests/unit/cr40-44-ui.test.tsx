@@ -292,8 +292,14 @@ describe('CR-44(b): the end screen "Your Atlas"', () => {
     expect(container.querySelectorAll('[data-gold-mark]')).toHaveLength(cards.filter((c) => c.gold).length);
     expect(container.querySelector('[data-end-card="open-it-yourself"] [data-gold-mark]')).toBeNull();
     expect(screen.getByRole('heading', { level: 2, name: t('help_title') })).not.toBeNull();
-    // No ranking, totals, amounts or counts anywhere on it.
-    expect(container.textContent ?? '').not.toMatch(/\d|€|%|rank|total|streak/i);
+    // No ranking, totals, amounts or counts anywhere on it. T-4.2: the help cards hold real phone numbers and
+    // "Checked on" dates, so digits are allowed inside [data-help-cards] only; the other words stay banned there too.
+    const help = container.querySelector('[data-help-cards]') as HTMLElement;
+    expect(help).not.toBeNull();
+    const rest = container.cloneNode(true) as HTMLElement;
+    rest.querySelector('[data-help-cards]')?.remove();
+    expect(rest.textContent ?? '').not.toMatch(/\d|€|%|rank|total|streak/i);
+    expect(help.textContent ?? '').not.toMatch(/€|%|rank|total|streak|score|points/i);
   });
   it('Print uses the browser\'s own print', () => {
     const print = vi.spyOn(window, 'print').mockImplementation(() => undefined);

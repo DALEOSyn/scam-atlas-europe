@@ -1,0 +1,149 @@
+/* "Where to report and get help" cards (T-4.2; WHERE_TO_REPORT §3c). Plain, calm, no colour-only meaning. */
+.help {
+  display: grid;
+  gap: var(--space-4);
+}
+.help p {
+  margin: 0;
+}
+.picker {
+  display: grid;
+  gap: var(--space-1);
+  justify-items: start;
+}
+.picker label {
+  font-weight: 700;
+}
+.select {
+  min-height: var(--tap-min);
+  min-width: min(100%, 16rem);
+  max-width: 100%;
+  padding: 0 var(--space-3);
+  font: inherit;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+.select:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px var(--color-focus-halo);
+}
+.note {
+  color: var(--color-text-muted);
+}
+.group {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+.crisis {
+  border-width: 2px;
+}
+.groupHeading {
+  margin: 0;
+  font-size: var(--fs-lg);
+}
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+.row {
+  display: grid;
+  gap: var(--space-1);
+  overflow-wrap: anywhere;
+}
+.row + .row {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border-subtle);
+}
+.rowName {
+  margin: 0;
+  font-size: var(--fs-md, 1rem);
+}
+.phones {
+  margin: 0;
+  padding-left: var(--space-5, 1.25rem);
+}
+.number {
+  font-weight: 700;
+  white-space: nowrap;
+}
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  color: var(--color-link);
+}
+.link:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px var(--color-focus-halo);
+}
+.checked {
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+}
+.generic {
+  margin: 0;
+  padding-left: var(--space-6);
+  display: grid;
+  gap: var(--space-2);
+}
+.vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.steps {
+  margin: 0;
+  padding-left: var(--space-5);
+  display: grid;
+  gap: var(--space-2);
+}
+.pinned {
+  list-style: none;
+  padding-left: 0;
+}
+.step {
+  display: grid;
+  gap: var(--space-1);
+}
+.more {
+  display: grid;
+  gap: var(--space-2);
+}
+.summary {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap-min);
+  font-weight: 700;
+  cursor: pointer;
+}
+.summary:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px var(--color-focus-halo);
+}
+.more[open] > .steps {
+  margin-top: var(--space-2);
+}
+@media print {
+  .picker {
+    display: none;
+  }
+}
+
+.showing:empty {
+  display: none;
+}

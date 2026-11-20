@@ -25,7 +25,7 @@
 #                messenger-account-takeover-code | it-portal-credential-phishing
 #                card-phishing-payment-failed | multichannel-support-callback   (added T-2.5, 2026-11-18)
 #                MAP-ch0..MAP-ch10 | MAP-missing | MAP-crosscutting | WHERE_TO_REPORT
-#                help-where-to-report-en   (docs/patterns/where-to-report.draft.en.yaml for now; moves to content/help/ once the linter exemption exists; T-2.5)
+#                help-where-to-report-en   (content/help/where-to-report.en.yaml; moved from docs/patterns/ in T-4.2)
 #                campaign-catalogue   (docs/patterns/THREAT_CATALOGUE.md, backlog research T-R.1, 2026-11-18)
 #                berlin-arc-alex-01 | arc   (Alex friendship-manipulation arc beats, GDD §10; added T-2.4b, 2026-11-18)
 #                messenger-family-impersonation | task-job-scam   (chapter 2 Amsterdam briefs; added phase 3, 2026-11-19)

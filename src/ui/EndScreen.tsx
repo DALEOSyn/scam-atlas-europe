@@ -3,7 +3,7 @@
  * - Opens with Adaeze's last line as its epigraph (the resolution panel marked `epigraph`).
  * - Every city's If-then line in the order played (reusing AtlasPages).
  * - The habit cards earned; a mastered card carries a small gold mark (a label on the card, never a count).
- * - The help list ("Where to report and get help"; the generic list until the verified per-country cards land).
+ * - The help list ("Where to report and get help"): the per-country cards (HelpCards, T-4.2), scam order.
  * - Printable (the browser's own print). No ranking, no totals, no amounts, no streaks, no scores.
  */
 import { useEffect, useRef } from 'preact/hooks';
@@ -13,7 +13,7 @@ import { habitStatus, type HabitProgress } from '../engine/habits.ts';
 import type { AtlasPage } from '../engine/story.ts';
 import { t } from '../i18n/index.ts';
 import { AtlasPages } from './Atlas.tsx';
-import { HelpList } from './ScenePlayer.tsx';
+import { HelpCards } from './HelpCards.tsx';
 import styles from './Scene.module.css';
 
 export interface EndScreenProps {
@@ -75,8 +75,7 @@ export function EndScreen({ epigraph, pages, habits, onBack }: EndScreenProps) {
         ) : null}
         <section aria-labelledby="end-help-h">
           <h2 id="end-help-h">{t('help_title')}</h2>
-          <p>{t('help_intro')}</p>
-          <HelpList />
+          <HelpCards level={3} />
         </section>
         <div class={styles.buttons}>
           <button type="button" class={styles.secondary} data-end="print" onClick={() => (typeof window.print === 'function' ? window.print() : undefined)}>

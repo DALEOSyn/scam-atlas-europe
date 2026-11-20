@@ -651,7 +651,7 @@ Defender's level only: what you see and what you do. No samples, commands or con
 - **Red flags:** an unknown device.
 - **Habit:** don't plug in unknown devices; hand them to IT.
 - **Reported in:** not verified in a European source this session (ATT&CK only). **Status:** candidate: not briefable until a European source is found. **Fit:** low (close to physical; Red Line 8 borderline). **Conf.:** Low (non-EU taxonomy only).
-- **Sources:** int-mitre-attack-enterprise.
+- **Sources:** none yet. The ATT&CK ids above are labels from the taxonomy index, not evidence. G4 source-host vetting (2026-11-20, SOURCE_HOSTS.md): a taxonomy reference may be cited only next to a primary source, so this entry stays parked until a European primary source is found.
 
 ## B2 Fake and malicious mobile apps
 
@@ -806,7 +806,7 @@ Defender's level only: what you see and what you do. No samples, commands or con
 - **Channel:** web. **Audience:** all. **ATT&CK:** T1491.
 - **Red flags / habit:** don't download or follow links from the defaced page; use official status updates.
 - **Reported in:** ATT&CK only (not verified in a European source this session). **Status:** candidate: not briefable until a European source is found. **Fit:** low. **Conf.:** Low.
-- **Sources:** int-mitre-attack-enterprise.
+- **Sources:** none yet. The ATT&CK id above is a label from the taxonomy index, not evidence. G4 source-host vetting (2026-11-20, SOURCE_HOSTS.md): parked until a European primary source is found.
 
 ## B8 Data exposure
 
@@ -844,7 +844,7 @@ Defender's level only: what you see and what you do. No samples, commands or con
 - **Red flags:** unexplained charges; a constantly busy device.
 - **Habit:** check the bill; remove unknown apps; ask the provider for a premium-SMS block.
 - **Reported in:** not verified in a European source this session. **Status:** candidate: not briefable until a European source is found. **Fit:** low. **Conf.:** Low (ATT&CK only).
-- **Sources:** int-mitre-attack-enterprise, int-mitre-attack-mobile.
+- **Sources:** none yet. The ATT&CK ids above are labels from the taxonomy indexes, not evidence. G4 source-host vetting (2026-11-20, SOURCE_HOSTS.md): parked until a European primary source is found.
 
 ---
 

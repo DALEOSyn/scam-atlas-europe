@@ -93,7 +93,7 @@ sources:
     title: "Report cybercrime online"
     url: https://www.europol.europa.eu/report-a-crime/report-cybercrime-online
     published: n/d
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: EU
     tier: 1
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -192,7 +192,7 @@ sources:
     title: "The European Consumer Centres Network"
     url: https://www.eccnet.eu/node/33
     published: n/d
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: EU
     tier: 1
     used_for: [WHERE_TO_REPORT, help-where-to-report-en, rental-offplatform-payment]
@@ -347,7 +347,7 @@ sources:
     title: "Aktueller Hinweis: Zollgebühren (SMS)"
     url: https://www.bundesnetzagentur.de/DE/Vportal/TK/Aerger/Aktuelles/Hinweise/AktHinw2023/Zollgebuehren.html?nn=884716
     published: 2023-05-02
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: DE
     tier: 3
     used_for: [smishing-parcel-fee, multichannel-support-callback, MAP-ch1, WHERE_TO_REPORT, help-where-to-report-en]
@@ -426,7 +426,7 @@ sources:
     title: "An Garda Síochána Advises the Public to be Extra Vigilant of Fraud When Investing"
     url: https://www.garda.ie/en/about-us/our-departments/office-of-corporate-communications/press-releases/2025/october/gnecb-an-garda-siochana-advises-the-public-to-be-extra-vigilant-of-fraud-when-investing.html
     published: 2025-10-02
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: IE
     tier: 3
     used_for: [MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue, investment-ad-fake-platform]
@@ -596,7 +596,7 @@ sources:
     title: "Contro le truffe (pillole di prevenzione)"
     url: https://www.carabinieri.it/in-vostro-aiuto/consigli/pillole-di-prevenzione/contro-le-truffe
     published: n/d
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: IT
     tier: 3
     used_for: [MAP-ch6, messenger-family-impersonation, spoofed-authority-call, cloned-voice-family-emergency, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
@@ -709,7 +709,7 @@ sources:
     title: "Phishing messages surge: Safeonweb receives nearly 10 million suspicious alerts in 2025"
     url: https://ccb.belgium.be/news/phishing-messages-surge-safeonweb-receives-nearly-10-million-suspicious-alerts-2025
     published: 2025-12-23
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: BE
     tier: 2
     used_for: [email-phishing-credential, it-portal-credential-phishing, MAP-ch10, MAP-missing, MAP-crosscutting, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
@@ -768,7 +768,7 @@ sources:
     title: "Invulformulier bij aangifte doen als uw WhatsApp-account is overgenomen/gehackt"
     url: https://politie.nl/binaries/content/assets/politie/onderwerpen/whatsapp-account-overgenomen-gehackt/%E2%80%8B%E2%80%8Binvulformulier-bij-aangifte-doen-als-uw-whatsapp-account-is-overgenomen-gehackt.pdf
     published: 2024-09 (version shown on the form)
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: NL
     tier: 3
     used_for: [messenger-account-takeover-code, messenger-family-impersonation, hijacked-friend-payment-code, help-where-to-report-en, campaign-catalogue]
@@ -1431,7 +1431,7 @@ sources:
     title: "Fraudhelpdesk, the Dutch national anti-fraud hotline"
     url: https://www.fraudehelpdesk.nl/fraudhelpdesk-the-dutch-national-anti-fraud-hotline/
     published: n/d (last modified 2025-12-11, page metadata)
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: NL
     tier: 3
     used_for: [messenger-family-impersonation, task-job-scam]
@@ -1442,7 +1442,7 @@ sources:
     title: "Fraudehelpdesk (Contactgids)"
     url: https://www.rijksoverheid.nl/contact/contactgids/fraudehelpdesk
     published: 2014-05-07 (last modified 2026-03-17)
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: NL
     tier: 3
     used_for: [messenger-family-impersonation, task-job-scam]
@@ -1857,7 +1857,7 @@ sources:
     title: "Cosa fare se si è stati vittima di truffe o frodi"
     url: https://www.bancaditalia.it/focus/cybersicurezza/truffe-cyber/index.html
     published: n/d (page metadata last modified 2024-07-01)
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: IT
     tier: 3
     used_for: [spoofed-authority-call, cloned-voice-family-emergency, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
@@ -1890,7 +1890,7 @@ sources:
     title: "Servizio 114, lanciata la terza edizione della campagna di comunicazione"
     url: https://www.minori.gov.it/en/print/8849
     published: 2024-05-10
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: IT
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -1905,7 +1905,7 @@ sources:
     region: IT
     tier: 4
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
-    notes: "Operator's own site, help screen only. 02 2327 2327 'tutti i giorni 24 ore su 24'; the service is free ('in modo completamente gratuito'), the number is a Milan landline (normal call cost not stated); WhatsApp 324 011 72 52, daily 18-21; for 'chiunque si trovi in stato di crisi o emergenza emozionale'; imminent danger: 112 or 118. No official (government) page listing it was found this session. Re-opened 2026-11-20 (T-4.7): unchanged (24 ore su 24, free service, 'stato di crisi o emergenza emozionale', 112 or 118); the home page itself does not mention suicide (see it-telefonoamico-suicide-day-2024)."
+    notes: "T-4.4 / T-4.7a (2026-11-20, second opening): unchanged: 02 2327 2327 'tutti i giorni 24 ore su 24'; 'in modo completamente gratuito'; WhatsApp daily 18-21; 'in stato di crisi o emergenza emozionale'; imminent danger '112 o il 118'; no mention of suicide. The 24-hour cover started 2026-09-01 (it-lespresso-telefonoamico-2026). Earlier note:Operator's own site, help screen only. 02 2327 2327 'tutti i giorni 24 ore su 24'; the service is free ('in modo completamente gratuito'), the number is a Milan landline (normal call cost not stated); WhatsApp 324 011 72 52, daily 18-21; for 'chiunque si trovi in stato di crisi o emergenza emozionale'; imminent danger: 112 or 118. No official (government) page listing it was found this session. Re-opened 2026-11-20 (T-4.7): unchanged (24 ore su 24, free service, 'stato di crisi o emergenza emozionale', 112 or 118); the home page itself does not mention suicide (see it-telefonoamico-suicide-day-2024)."
 
   # ---------------------------------------------------------------- Portugal (T-3.8r)
   - id: pt-rtp-gnr-rentals-2026
@@ -1979,7 +1979,7 @@ sources:
     title: "Linha de aconselhamento psicológico do SNS 24 disponível em inglês"
     url: https://www.gov.pt/noticias/linha-de-aconselhamento-psicologico-do-sns-24-disponivel-em-ingles
     published: 2022-04-22
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: PT
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -1990,7 +1990,7 @@ sources:
     title: "Nova linha de prevenção do suicídio entra em funcionamento"
     url: https://portugal.gov.pt/gc25/comunicacao/noticias/nova-linha-de-prevencao-do-suicidio-entra-em-funcionamento
     published: 2025-09-10
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: PT
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -2024,7 +2024,7 @@ sources:
     title: "Wat kan ik doen bij vermoedens van kindermishandeling?"
     url: https://www.rijksoverheid.nl/onderwerpen/kindermishandeling/vraag-en-antwoord/doen-bij-vermoedens-van-kindermishandeling
     published: 2011-05-24 (last modified 2025-08-15)
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: NL
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -2035,7 +2035,7 @@ sources:
     title: "Met wie kan ik bellen of chatten?"
     url: https://www.nji.nl/kennis/welbevinden/met-wie-kan-ik-bellen-of-chatten
     published: n/d (footer 2026)
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: NL
     tier: 4
     used_for: [WHERE_TO_REPORT]
@@ -2046,7 +2046,7 @@ sources:
     title: "De Luisterlijn now available on new phone number 088 0767 000"
     url: https://en.kerkrade.nl/de-luisterlijn-nu-bereikbaar-op-nieuw-telefoonnummer-088-0767-000
     published: n/d
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: NL
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -2058,7 +2058,7 @@ sources:
     title: "Anlaufstellen bei psychischen Krisen"
     url: https://gesund.bund.de/wege-im-gesundheitswesen/erwachsenenleben/psychische-gesundheit/anlaufstellen-bei-psychischen-krisen
     published: 2026-04-23 (Stand)
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: DE
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -2069,7 +2069,7 @@ sources:
     title: "Filing a criminal complaint by computer or smartphone (Onlinewache)"
     url: https://www.hilfe-info.de/Webs/hilfeinfo/EN/KnowYourRights/Strafverfahren/Anzeige/Onlinewache/Onlinewache_node.html
     published: n/d (footer 2026)
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: DE
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -2081,7 +2081,7 @@ sources:
     title: "Lignes d'écoute (trouver de l'aide en santé mentale)"
     url: https://www.sante.fr/trouver-aide-sante-mentale/selon-votre-profil/lignes-ecoute
     published: n/d
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: FR
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -2104,7 +2104,7 @@ sources:
     title: "024. Línea de atención a la conducta suicida"
     url: https://www.sanidad.gob.es/linea024/home.htm
     published: n/d
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: ES
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -2115,7 +2115,7 @@ sources:
     title: "Teléfono 116 111 de ayuda a la infancia"
     url: https://www.caib.es/sites/obia/es/telefono_de_ayuda_a_la_infancia_116111/
     published: n/d
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: ES
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -2126,7 +2126,7 @@ sources:
     title: "Carta de servicio telefónico 116111"
     url: https://www.anar.org/wp-content/uploads/2023/03/CARTA-DE-SERVICIO-TELEFONICO-116111-F_ANAR.pdf
     published: n/d (file 2023-03)
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: ES
     tier: 4
     used_for: [WHERE_TO_REPORT]
@@ -2138,7 +2138,7 @@ sources:
     title: "Dwie linie pomocy, jeden cel - rusza ogólnopolska kampania Ministerstwa Cyfryzacji"
     url: https://www.gov.pl/web/cyfryzacja/dwie-linie-pomocy-jeden-cel-rusza-ogolnopolska-kampania-ministerstwa-cyfryzacji
     published: 2025-10-27
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: PL
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -2161,7 +2161,7 @@ sources:
     title: "Get urgent help (mental health)"
     url: https://www2.hse.ie/mental-health/services-support/get-urgent-help/
     published: last reviewed 2025-05-28 (next review 2028-05-28)
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: IE
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -2173,7 +2173,7 @@ sources:
     title: "Hjälplinjer och stöd"
     url: https://ki.se/nasp/information-och-stod/hjalplinjer-och-stod
     published: 2026-09-11 (updated)
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: SE
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -2191,22 +2191,22 @@ sources:
     notes: "G3 item 4 (2026-11-20). Section 'Ring 116 111': 'Telefonen är alltid öppen – även på natten'; 'det kostar ingenting'. Intro: 'Det kostar inget att höra av sig, syns inte på telefonräkningen'. For under-18s. English spoken on the phone. Operator site, so it backs the help screen only."
 
   - id: se-krisinformation-phone-numbers
-    publisher: Krisinformation.se (Swedish government crisis-information service)
+    publisher: Krisinformation.se (Swedish government crisis-information service, run by the Swedish Civil Defence and Resilience Agency, MCF; formerly the Swedish Civil Contingencies Agency, MSB)
     title: "Important phone numbers"
     url: https://www.krisinformation.se/en/finding-help-and-services/important-phone-numbers
     published: n/d ('Updated' label without a date)
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: SE
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
-    notes: "Jourhavande medmänniska 08-702 16 80 'every night between 9 pm and 6 am'; Mind Självmordslinjen 90101, for people thinking about suicide or worried about a loved one, chat also available; BRIS support line for children 116 111, 'Open 24 hours a day'. No cost stated for any of these (only Teletal is called free). The page names no publisher in the fetched text; krisinformation.se is run by the Swedish Civil Contingencies Agency (not re-checked on the page)."
+    notes: "Jourhavande medmänniska 08-702 16 80 'every night between 9 pm and 6 am'; Mind Självmordslinjen 90101, for people thinking about suicide or worried about a loved one, chat also available (re-opened 2026-11-20: no hours shown for 90101 in the fetched text; 'open around the clock' rests on se-ki-nasp-hjalplinjer); BRIS support line for children 116 111, 'Open 24 hours a day'. No cost stated for any of these (only Teletal is called free). PUBLISHER (T-4.4, 2026-11-20, open item closed): this page names no publisher; the site's own 'About this web site' page (se-krisinformation-about, undated) says 'Krisinformation.se is owned by the Swedish Civil Contingencies Agency (MSB)'; the successor agency's site (se-mcf-websites, reviewed 2026-08-19) lists Krisinformation.se under 'Our websites' and names itself 'Swedish Civil Defence and Resilience Agency'. The About page still uses the old agency name."
 
   - id: se-polisen-bedragerier-anmalan
     publisher: Polisen
     title: "Bedrägerier (polisanmälan)"
     url: https://polisen.se/utsatt-for-brott/polisanmalan/bedrageri/bedragerier/
     published: 2023-09-25 (last modified 2024-01-10)
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: SE
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -2218,7 +2218,7 @@ sources:
     title: "Fraudstop: one central phone number for anyone who suspects online fraud"
     url: https://febelfin.be/en/press-room/fraude-veiligheid/fraudstop-one-central-phone-number-for-anyone-who-suspects-online-fraud
     published: 2026-06-22
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: BE
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en, remote-access-support-call, money-mule-recruitment, MAP-ch10]
@@ -2229,18 +2229,18 @@ sources:
     title: "Autres numéros d'urgence"
     url: https://www.police.be/5329/node/280
     published: n/d
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: BE
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
-    notes: "107 Télé-Accueil: free, anonymous, 24/7, anyone who needs to talk; 103 Écoute-Enfants: free, anonymous listening line for young people; 0800 32 123 suicide prevention line (free, 24/7); 116 000 Child Focus. Lists Card Stop as 070 344 344, which is OUTDATED (see be-febelfin-fraudstop-2026)."
+    notes: "T-4.4 (2026-11-20): reachable again after the G3 server error; 107 'gratuit', '24h/24', anonymous; 0800 32 123 'gratuit', '24 h/24'; 103 shown as '10 h/24' (garbled; use be-police-ecoute-enfants for 103 hours); 106 not on the page; Card Stop still the OLD 070 344 344. Earlier note:107 Télé-Accueil: free, anonymous, 24/7, anyone who needs to talk; 103 Écoute-Enfants: free, anonymous listening line for young people; 0800 32 123 suicide prevention line (free, 24/7); 116 000 Child Focus. Lists Card Stop as 070 344 344, which is OUTDATED (see be-febelfin-fraudstop-2026)."
 
   - id: be-police-ecoute-enfants
     publisher: Police locale (police.be, zone 5300)
     title: "Écoute-Enfants"
     url: https://www.police.be/5300/contact/numeros-durgence/ecoute-enfants
     published: n/d
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: BE
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -2251,7 +2251,7 @@ sources:
     title: "Hulp- en wachtdiensten"
     url: https://be.brussels/nl/hulp-sociaal-gezondheid/noodhulp-en-preventie/hulp-en-wachtdiensten
     published: n/d
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: BE
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -2262,7 +2262,7 @@ sources:
     title: "Awel"
     url: https://www.vlaanderen.be/gezin/kinderen/jeugdhulp/awel
     published: n/d
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: BE
     tier: 3
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -2386,7 +2386,7 @@ sources:
     title: "Warnings list: companies operating unlawfully in Belgium"
     url: https://www.fsma.be/en/warnings-list-companies-operating-unlawfully-belgium
     published: "n/d (footer (c) 2026)"
-    accessed: "2026-11-19"
+    accessed: "2026-11-20"
     region: BE
     tier: 3
     used_for: [recovery-scam, MAP-ch10, WHERE_TO_REPORT, help-where-to-report-en]
@@ -2397,7 +2397,7 @@ sources:
     title: "Porter plainte pour une arnaque en ligne"
     url: https://www.police.be/5998/fr/a-propos/campagnes-de-communication/campagne-scam/porter-plainte-pour-une-arnaque-en-ligne
     published: "n/d (campaign flyer dated 2026-02-06)"
-    accessed: "2026-11-19"
+    accessed: "2026-11-20"
     region: BE
     tier: 3
     used_for: [money-mule-recruitment, remote-access-support-call, WHERE_TO_REPORT, help-where-to-report-en]
@@ -2408,7 +2408,7 @@ sources:
     title: "Zelfmoord1813.be (home page)"
     url: https://www.zelfmoord1813.be
     published: "n/d (latest news item 2026-10-21)"
-    accessed: "2026-11-19"
+    accessed: "2026-11-20"
     region: BE
     tier: 4
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
@@ -2534,7 +2534,7 @@ sources:
     title: "Your Help in Cybersecurity (017): FAQ"
     url: https://www.incibe.es/en/linea-de-ayuda-en-ciberseguridad/faq
     published: n/d
-    accessed: "2026-11-19"
+    accessed: "2026-11-20"
     region: ES
     tier: 2
     used_for: [bank-safe-account-call, WHERE_TO_REPORT, help-where-to-report-en]
@@ -2545,7 +2545,7 @@ sources:
     title: "Cómo realizar una reclamación"
     url: https://clientebancario.bde.es/pcb/es/menu-horizontal/podemosayudarte/consultasreclama/comorealizarrecl/
     published: n/d
-    accessed: "2026-11-19"
+    accessed: "2026-11-20"
     region: ES
     tier: 3
     used_for: [bank-safe-account-call, WHERE_TO_REPORT, help-where-to-report-en]
@@ -2590,7 +2590,7 @@ sources:
     title: "Podsumowanie CERT Polska 2026/07 (monthly summary)"
     url: https://cert.pl/uploads/docs/Podsumowanie_CERT_Polska_2026_07.pdf
     published: n/d (covers 2026-07)
-    accessed: "2026-11-19"
+    accessed: "2026-11-20"
     region: PL
     tier: 2
     used_for: [hijacked-friend-payment-code, marketplace-collect-payment-link, MAP-ch5, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
@@ -2659,7 +2659,7 @@ sources:
     title: "Avoiding Scams and Unauthorised Activity"
     url: https://www.centralbank.ie/regulation/how-we-regulate/authorisation/unauthorised-firms/avoiding-scams-and-unauthorised-activity
     published: n/d (footer (c) 2026)
-    accessed: "2026-11-19"
+    accessed: "2026-11-20"
     region: IE
     tier: 3
     used_for: [investment-ad-fake-platform, recovery-scam, MAP-ch8, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
@@ -2681,7 +2681,7 @@ sources:
     title: "Report an Unauthorised Firm"
     url: https://centralbank.ie/regulation/how-we-regulate/authorisation/unauthorised-firms/report-an-unauthorised-firm
     published: n/d (footer (c) 2026)
-    accessed: "2026-11-19"
+    accessed: "2026-11-20"
     region: IE
     tier: 3
     used_for: [MAP-ch8, investment-ad-fake-platform, WHERE_TO_REPORT, help-where-to-report-en]
@@ -2837,7 +2837,7 @@ sources:
     title: "Telefonbedrägeri, vishing"
     url: https://polisen.se/telefonbedragerier
     published: "2026-08-19 (reviewed; created 2018-11-22)"
-    accessed: "2026-11-19"
+    accessed: "2026-11-20"
     region: SE
     tier: 3
     used_for: [e-id-approval-on-call, remote-access-support-call, MAP-ch9, WHERE_TO_REPORT, help-where-to-report-en, campaign-catalogue]
@@ -3008,6 +3008,96 @@ sources:
     tier: 4
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
     notes: "Operator's own site: 'bezpłatny numer 800 70 2222', 'Całodobowo', '7 dni w tygodniu'; 'Zadanie realizowane ze środków Ministra Zdrowia'. Does not mention suicide or name the foundation."
+
+  # ---------------------------------------------------------------- T-4.4 / T-4.7a additions (pre-G4 help re-check, 2026-11-20)
+  # All opened 2026-11-20. Operator sites (tier 4) back the help screen only.
+  - id: be-teleaccueil-home
+    publisher: Télé-Accueil (French-language listening line, operator site of the federation)
+    title: "Télé-Accueil (home page)"
+    url: https://tele-accueil.be/
+    published: n/d
+    accessed: "2026-11-20"
+    region: BE
+    tier: 4
+    used_for: [help-where-to-report-en]
+    notes: "Operator's own site: call 107; 'Service d'écoute gratuit 24h/24 7j/7'; 'dans l'anonymat et la confidentialité'. Corroborates be-police-autres-numeros (zone 5329: 107 'gratuit', '24h/24')."
+
+  - id: be-teleonthaal-home
+    publisher: Tele-Onthaal (Dutch-language listening line, operator site)
+    title: "Tele-Onthaal (home page)"
+    url: https://www.tele-onthaal.be/
+    published: n/d
+    accessed: "2026-11-20"
+    region: BE
+    tier: 4
+    used_for: [help-where-to-report-en]
+    notes: "Operator's own site: 'Bel 106', '24u op 24 en 7d op 7'; 'Gratis en anoniem.' (said of the service in general, next to the call button). No official page found that gives the 106 cost or hours; the Brussels Region portal (be-brussels-hulpdiensten) gives the number only."
+
+  - id: be-cps-ligne-ecoute
+    publisher: Centre de Prévention du Suicide (operator site)
+    title: "La ligne d'écoute 0800 32 123"
+    url: https://www.preventionsuicide.be/la-ligne-decoute-0800-32-123
+    published: n/d
+    accessed: "2026-11-20"
+    region: BE
+    tier: 4
+    used_for: [help-where-to-report-en]
+    notes: "Operator's own page for the French-language suicide-prevention line: 'Elle est anonyme, gratuite et ouverte 24h/24 et 7j/7.' The home page names the organisation 'Centre de Prévention du Suicide'. Corroborates be-police-autres-numeros (zone 5329: 0800 32 123 'gratuit', '24 h/24')."
+
+  - id: fr-servicepublic-escroquerie
+    publisher: Service-Public.fr (French administration's official information site, DILA)
+    title: "Escroquerie"
+    url: https://www.service-public.gouv.fr/particuliers/actualites/A15295
+    published: "vérifié le 2025-05-28"
+    accessed: "2026-11-20"
+    region: FR
+    tier: 3
+    used_for: [help-where-to-report-en]
+    notes: "Info Escroqueries 0 805 805 817: 'Numéro vert (appel gratuit depuis la France)'; 'Du lundi au vendredi de 9h à 18h30'. Added in T-4.4 because justice.fr (fr-justice-arnaque-escroquerie) could not be reached on 2026-11-20. Opened at this URL; the page heading reads 'Escroquerie'."
+
+  - id: it-senato-ddl64-2025
+    publisher: Senato della Repubblica (Italian Senate), bill DDL n. 64, XIX legislature
+    title: "Norme per la prevenzione del suicidio e il supporto alle persone in difficoltà psicologica"
+    url: https://www.senato.it/service/PDF/PDFServer/BGT/01476428.pdf
+    published: "2025-09-10 (presented)"
+    accessed: "2026-11-20"
+    region: IT
+    tier: 3
+    used_for: [help-where-to-report-en]
+    notes: "A bill, not law. Art. 2(2): 'Il Ministero della salute istituisce un numero telefonico di pubblica utilità dedicato alla prevenzione del suicidio', to be run with associations and Telefono Amico Italia; Art. 4(1)(c): a cooperation protocol with Telefono Amico Italia; the report cites over 7,000 contacts about suicidal thoughts to Telefono Amico in 2023. Use only as: Italy has no state suicide-prevention number yet, and Parliament names Telefono Amico Italia as the existing service. Adoption status not checked."
+
+  - id: it-lespresso-telefonoamico-2026
+    publisher: L'Espresso (news)
+    title: "Suicidi, prevenzione: Giornata mondiale, giovani e Telefono Amico Italia"
+    url: https://lespresso.it/c/attualita/2026/09/08/suicidi-prevenzione-giornata-mondiale-giovani-telefono-amico-italia/64569
+    published: "2026-09-08"
+    accessed: "2026-11-20"
+    region: IT
+    tier: 4
+    used_for: [help-where-to-report-en]
+    notes: "NEWS, supporting only. Telefono Amico Italia 02 2327 2327 now '24 ore su 24, 7 giorni su 7'; round-the-clock cover started on 1 September (2026) after a six-month overnight trial (345 night calls). Explains why the operator's 2024 release (it-telefonoamico-suicide-day-2024) gave 9-24 hours. Title is a gloss from the URL slug."
+
+  - id: se-krisinformation-about
+    publisher: Krisinformation.se
+    title: "What is Krisinformation.se? (About this web site)"
+    url: https://krisinformation.se/en/finding-help-and-services/about-this-web-site
+    published: n/d
+    accessed: "2026-11-20"
+    region: SE
+    tier: 3
+    used_for: []
+    notes: "Provenance only, for the publisher of se-krisinformation-phone-numbers: 'Krisinformation.se is owned by the Swedish Civil Contingencies Agency (MSB).' Undated; the agency has since been renamed (see se-mcf-websites)."
+
+  - id: se-mcf-websites
+    publisher: Swedish Civil Defence and Resilience Agency (Myndigheten för civilt försvar, MCF)
+    title: "Websites and social media"
+    url: https://www.mcf.se/en/about-us/communication-channels/websites-and-social-media/
+    published: "2026-08-19 (latest reviewed)"
+    accessed: "2026-11-20"
+    region: SE
+    tier: 3
+    used_for: []
+    notes: "Provenance only: lists Krisinformation.se under the agency's 'Our websites'. Does not itself say 'owned by'; read together with se-krisinformation-about."
 
   # ------------------------------------------------ placeholders (example scenario only)
   - id: europol-scam-smishing

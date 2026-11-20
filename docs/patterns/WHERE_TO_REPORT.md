@@ -87,7 +87,7 @@ For each chapter country there is now a checked entry for the reporting route, p
 | Country | Role | Contact | Notes | Source id |
 |---|---|---|---|---|
 | **Belgium** | bank | **Card Stop / Fraudstop 078 170 170**, 24/7, "Call costs may apply." | Since 22 Jun 2026 the same number also blocks banking apps via your bank. One local police page still shows the old 070 344 344: never use it | be-febelfin-fraudstop-2026, be-brussels-hulpdiensten |
-| Belgium | support | Tele-Onthaal **106** (Dutch, "Call costs may apply."); Télé-Accueil **107** (French, free, 24/7) | 106: no cost/hours on the regional page | be-police-autres-numeros, be-brussels-hulpdiensten |
+| Belgium | support | Tele-Onthaal **106** (Dutch, "Call costs may apply."); Télé-Accueil **107** (French, "Call costs may apply.") | 106: no cost/hours on the regional page; 107 "free, 24/7" not re-confirmed at G3 (police.be down), dropped until an official page confirms it | be-police-autres-numeros, be-brussels-hulpdiensten |
 | Belgium | child | Awel **102** (Dutch, free, 16:00–22:00, not Sundays or public holidays); Écoute-Enfants **103** (French, free, 10:00–24:00) | No 116 111 found | be-police-ecoute-enfants, be-brussels-hulpdiensten, be-vlaanderen-awel |
 | **Germany** | police / report | Online report (Onlinewache) in most states; otherwise any station | 13 Länder online; BY, SL, TH contact form. No Länder URLs shown | de-hilfeinfo-onlinewache |
 | Germany | bank | **116 116** to block cards (+49 116 116), then your bank | Number from the federal justice ministry page; operator site not opened | de-hilfeinfo-onlinewache |
@@ -116,7 +116,7 @@ For each chapter country there is now a checked entry for the reporting route, p
 | Poland | support / child | **116 123** adults; **116 111** children and young people; both free, anonymous, 24/7 | | pl-gov-cyfryzacja-116-2025 |
 | **Portugal** | police / report | PSP, GNR or PJ | Online portal and CNCS form **not verified** | pt-bdp-ficaadica-2023 |
 | Portugal | bank | Your bank immediately; cancel access details if typed | | pt-bdp-ficaadica-2023 |
-| Portugal | support | SNS 24 psychological counselling **808 24 24 24** (PT/EN), "Call costs may apply." | Cost, hours, menu option not stated | pt-gov-sns24-psych-2022 |
+| Portugal | support | SNS 24 psychological counselling **808 24 24 24** (PT/EN), "Normal call rate." | Cost: gov.pt emergency guide (landline rate, G3 2026-11-20); hours, menu option not stated | pt-gov-sns24-psych-2022 |
 | Portugal | child | **116 111** Linha de Apoio à Criança, free, 24 h | | pt-gov-emergency-contacts-2026 |
 | Portugal | crisis | **1411**, free, day and night | Number and service from the government page; "free" and "24 h" from the consumer body only: confirm on an SNS 24 page at G3 | pt-gov-1411-2025, pt-deco-1411-2025 |
 | **Spain** | advice | **017** (INCIBE, free advice, 8:00–23:00) | Now role `advice`, not report: "not a line for reports" | es-incibe-017-faq |
@@ -128,12 +128,12 @@ For each chapter country there is now a checked entry for the reporting route, p
 | Sweden | bank | Your bank straight away to stop payments or block the card; banks have a 24/7 number (T-3.10r, replaces the fallback) | Police vishing page, reviewed 2026-08-19 | se-polisen-telefonbedrageri, se-konsumentverket-investment-fraud |
 | Sweden | support | Jourhavande medmänniska **08-702 16 80**, "Every night, 21:00–06:00. Call costs may apply." | Cost not stated on either page | se-ki-nasp-hjalplinjer, se-krisinformation-phone-numbers |
 | Sweden | crisis | Mind Självmordslinjen **90101**, day and night | Crisis row only, never support; cost not stated | se-ki-nasp-hjalplinjer, se-krisinformation-phone-numbers |
-| Sweden | child | BRIS **116 111**, day and night, "Call costs may apply." | Cost not stated; the EU 116 decision does not oblige free calls | se-ki-nasp-hjalplinjer, se-krisinformation-phone-numbers, eu-dec-2007-116 |
+| Sweden | child | BRIS **116 111**, "Free, day and night." | Free and always open per the operator page (se-bris-prata-med-oss, G3 2026-11-20); the EU 116 decision alone does not oblige free calls | se-ki-nasp-hjalplinjer, se-krisinformation-phone-numbers, eu-dec-2007-116 |
 | **EU / home** | all | Europol signpost; ECC-Net; generic fallbacks for police, bank, support (no number) and child line (no number); no crisis row | | eu-europol-report-cybercrime, eu-eccnet-about, eu-esas-ai-scams-factsheet-nl |
 
 **Round 2 rulings applied (sceptic and learning-psychologist, 2026-11-19):**
 - A suicide or crisis line is never the "support" line. It has role `crisis` and is shown as its own calm final row. Title for every country: "Thinking about ending your life, or worried about someone?" Bodies: ES "024 is free and confidential, day and night. In danger now? Call 112."; SE "Mind Självmordslinjen 90101 is open day and night. In danger now? Call 112."; PT "1411 is free, day and night. In danger now? Call 112."; FR "3114 is free, day and night. In danger now? Call 112." **The crisis-row wording goes to the G3 human review.**
-- Costs: "free" only where a page says so. Known normal rate: "Normal call rate." (IT: "Normal call cost."). Unknown: "Call costs may apply." The 2007 EU decision on 116 numbers says they "should be freephone numbers" but does not oblige operators to carry the calls free (eu-dec-2007-116), so it cannot back "free" for BRIS.
+- Costs: "free" only where a page says so. Known normal rate: "Normal call rate." (IT: "Normal call cost."). Unknown: "Call costs may apply." (crisis rows too; their wording also goes to the human tone read, T-4.3) The 2007 EU decision on 116 numbers says they "should be freephone numbers" but does not oblige operators to carry the calls free (eu-dec-2007-116), so it cannot back "free" for BRIS.
 - New roles: `advice` (an advice line, not a report: ES 017, FR Info Escroqueries), shown in the "Report it" group after report and police; `harassment` (FR 3018), shown only on the sextortion / online-harassment help card.
 
 ## 3c. Card order (T-3.8r round 2)
@@ -149,7 +149,7 @@ For each chapter country there is now a checked entry for the reporting route, p
   3. Crisis.
   4. Then bank and "Report it".
 - A missing role falls back to `fallbacks.<role>`. There is no crisis fallback: a country without a verified crisis line shows no crisis row.
-- The child heading says "Free lines" for every country, but BRIS (SE) has no verified cost and its label reads "Call costs may apply.". Either confirm BRIS on its own site before G3 or use the heading "Under 18? Lines for young people" for SE. This choice is for the psychologist.
+- ~~The child heading "Free lines" vs BRIS cost~~: settled at G3 (2026-11-20). BRIS confirmed free on its own site, so "Free lines" holds for SE.
 
 ## 4. Open items before G3
 - Safeonweb's Dec 2025 article mentions both suspicious@ and verdacht@ addresses. The English address is used above; confirm language variants.

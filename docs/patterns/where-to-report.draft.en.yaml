@@ -152,7 +152,7 @@ fallbacks:
 eu:
   - id: europol-report-signpost
     name: "Europol: Report cybercrime online"
-    body: "Its page sends you to your country's official online reporting site."
+    body: "The agency's page sends you to your country's official online reporting site."
     url: https://www.europol.europa.eu/report-a-crime/report-cybercrime-online
     checked: 2026-11-19
     sources: [eu-europol-report-cybercrime]
@@ -211,7 +211,7 @@ countries:
           label: "Tele-Onthaal (Dutch). Call costs may apply."
         - number: "107"
           label: "Télé-Accueil (French). Call costs may apply."
-      checked: 2026-11-20
+      checked: 2026-11-19
       sources: [be-police-autres-numeros, be-brussels-hulpdiensten]
       review_note: "G3 item 3 (2026-11-20): 'free, 24/7' removed from the 107 label. Both numbers are confirmed on the Brussels Region portal, which gives no cost or hours. The 107 cost and hours came only from police.be (zone 5329), which was down at G3. PRE-G4 RE-CHECK: open police.be zone 5329 or the operator's own site in a browser within 30 days before G4; restore 'Free, 24/7' only if an official page says so."
     - id: be-youth-line
@@ -234,8 +234,8 @@ countries:
         - number: "1813"
           label: "Zelfmoordlijn (Dutch): free, anonymous, day and night"
         - number: "0800 32 123"
-          label: "Suicide prevention line (French)"
-      checked: 2026-11-20
+          label: "Suicide prevention line (French). Call costs may apply."
+      checked: 2026-11-19
       sources: [be-zelfmoord1813, be-police-autres-numeros, be-brussels-hulpdiensten]
       review_note: "T-3.12r. 1813: operator site (zelfmoord1813.be) says anonymous, free, phone 24/7; also on the Brussels Region portal. G3 item 3 (2026-11-20): 'free, day and night' removed for 0800 32 123 from the label and the body. Its number is confirmed on the Brussels Region portal; its cost and hours came only from police.be (zone 5329), which was down at G3. PRE-G4 RE-CHECK: open zone 5329 or the French-language operator's own site in a browser within 30 days before G4; restore 'free, day and night' only if an official page says so. The operator's name is not shown (own site not opened). Crisis wording goes to the G3 human review."
 
@@ -494,11 +494,11 @@ countries:
     - id: it-112
       role: police
       name: "112"
-      body: "Call if a caller says a relative is 'in trouble', or a caller asks you for money."
+      body: "Call if a caller says a relative is 'in trouble', or a caller asks you to hand over money or valuables."
       phones:
         - number: "112"
           label: "Emergency"
-      checked: 2026-11-20
+      checked: 2026-11-19
       sources: [it-carabinieri-contro-truffe]
       review_note: "G3 item 7 (2026-11-20): body narrowed to what the Carabinieri page supports. It names 112 for the fake-relative trick and for phone requests for money. Its fake-police paragraph does not name 112, so fake police is no longer in the body."
     - id: it-polizia-postale
@@ -674,8 +674,8 @@ countries:
       body: "1411 is answered by psychologists and mental-health nurses. In danger now? Call 112."
       phones:
         - number: "1411"
-          label: "Mental-health support line (SNS 24)"
-      checked: 2026-11-20
+          label: "Mental-health support line (SNS 24). Call costs may apply."
+      checked: 2026-11-19
       sources: [pt-gov-1411-2025, pt-deco-1411-2025]
       review_note: "G3 item 1 (2026-11-20): cost and hours removed from body and label. Number, start (2025-09-10) and staffing (psychologists and mental-health nurses; part of SNS 24 but autonomous) come from the government page, which states no cost or hours. 'Free' and '24 hours' rest only on DECO PROteste (consumer body, tier 4), so they stay out of player copy until an SNS 24 or government page confirms them. Re-check sns24.gov.pt within 30 days before G4. Crisis wording goes to the G3 human review."
     - id: pt-116111

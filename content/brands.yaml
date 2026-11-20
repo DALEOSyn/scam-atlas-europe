@@ -73,7 +73,7 @@ brands:
         Stacked-stone cairn with the top stone lit amber, on an ink tile. No lantern, lighthouse,
         shield, padlock, eye or EU-style stars/blue.
       typography: "Generic system sans; no custom letterforms to imitate."
-    checked_against: ["Lantern (VPN app)", "Lantern (child-safety programme)", "Lookout (mobile security)", "Waymark (US video ads)", "Waymarkly (waymarking app)", "WayMaker / Waymaker OS", "Waymap"]
+    checked_against: ["Lantern (VPN app)", "Lantern (child-safety programme)", "Lookout (mobile security)", "Waymark (US video ads)", "Waymarkly (waymarking app)", "WayMaker / Waymaker OS", "Waymap", "WAYMARK (US reg. 8336113, class 9, community-health software)"]
     web_check: "Low. No product or company named 'Waymarker'; near names are in unrelated sectors (BRAND_CHECK §1)."
     lookalike_examples:
       - "waymarker-desk-login.example"
@@ -110,7 +110,7 @@ brands:
         on yellow, red, brown, orange, purple+orange and blue+yellow. No horn, arrow, smile-arrow, wing,
         paper plane or globe.
       typography: "Lowercase rounded sans; regional couriers mostly use bold uppercase or italic wordmarks."
-    checked_against: ["DHL", "Deutsche Post", "DPD", "GLS", "Hermes/Evri", "UPS", "FedEx", "PostNL", "InPost", "bpost", "La Poste", "Correos", "PostNord", "Royal Mail", "Packeta", "Amazon logistics", "Trunkrs (NL same-day parcels)", "Trundle (trundle dot me, travel-content app)"]
+    checked_against: ["DHL", "Deutsche Post", "DPD", "GLS", "Hermes/Evri", "UPS", "FedEx", "PostNL", "InPost", "bpost", "La Poste", "Correos", "PostNord", "Royal Mail", "Packeta", "Amazon logistics", "Trunkrs (NL same-day parcels)", "Trundle (trundle dot me, travel-content app)", "TRUNDLE (US 86549512, class 35, wheel-repair franchising)", "TRUNDL (US 97571435, IT consulting)"]
     web_check: "Low. No courier or logistics company named Trundle; trundle dot me is a travel-content app; Trunkrs only partly overlaps in sound (BRAND_CHECK §2)."
     lookalike_examples:
       - "trundle-zoll.example"          # "customs" fee page (Berlin 1-7)
@@ -227,7 +227,7 @@ brands:
         cluster on teal/turquoise, orange, green and multi-colour. Palette fixed in rework 1: the Hoardly
         draft borrowed Gatewren's peach and Wordswap's apricot; Swaploft uses only its own colours.
       typography: "Heavy lowercase sans, tight tracking."
-    checked_against: ["Vinted", "Wallapop", "Leboncoin", "Kleinanzeigen", "Marktplaats", "OLX", "Allegro Lokalnie", "Blocket", "Tori", "Subito", "Depop", "eBay", "Facebook Marketplace", "GoHoardly", "SW Lofts (UK loft conversions)", "Swappie", "Swapfiets"]
+    checked_against: ["Vinted", "Wallapop", "Leboncoin", "Kleinanzeigen", "Marktplaats", "OLX", "Allegro Lokalnie", "Blocket", "Tori", "Subito", "Depop", "eBay", "Facebook Marketplace", "GoHoardly", "SW Lofts (UK loft conversions)", "Swappie (FI refurbished iPhones; 'Verified by Swappie' seller-to-buyer delivery in Finland; BRAND_CHECK G4-4: no 'Verified' wording on Swaploft pages)", "Swapfiets (NL bike subscription)"]
     web_check: "Low. Only an unrelated UK loft-conversion firm and crypto 'SWFT' results (BRAND_CHECK §5, alternatives)."
     lookalike_examples:
       - "swaploft-safe-delivery.example"
@@ -242,7 +242,11 @@ brands:
     sector: messenger app
     role_in_game: >
       The in-world chat app (`messenger`): family, colleagues, the "new number" pattern, hacked-friend
-      code requests.
+      code requests. Also spoofed as a brand itself: 0-4 (fake "unusual sign-in" text under the sender
+      name "Kettle", link to kettle-chat.example-verify.test), 1-5 (code request under the sender name
+      "Kettle", next to a genuine Kettle code banner) and 5-2 (the Votelark page's code registers the
+      player's Kettle account). G4 trademark check 2026-11-20: rename recommended, producer to decide
+      (BRAND_CHECK G4-1).
     domain: kettle-chat.example
     palette:
       primary: "#B83A1E"       # tomato
@@ -258,7 +262,7 @@ brands:
         A chat bubble that is also a kettle (spout, lid knob, steam), cream on tomato. Messengers cluster
         on green with a handset, blue with a paper plane or bubble, and purple. No handset, plane or bolt.
       typography: "Rounded lowercase."
-    checked_against: ["WhatsApp", "Telegram", "Signal", "Facebook Messenger", "Viber", "Threema", "LINE", "WeChat", "Snapchat", "Discord", "iMessage", "Kettle Comment Anywhere (delisted US app)", "Kettle (US insurtech)", "Kettel (UK proptech)"]
+    checked_against: ["WhatsApp", "Telegram", "Signal", "Facebook Messenger", "Viber", "Threema", "LINE", "WeChat", "Snapchat", "Discord", "iMessage", "Kettle Comment Anywhere (delisted US app)", "Kettle (US insurtech)", "Kettel (UK proptech)", "Kettle (AI family assistant in SMS/iMessage group chats, US, listed Nov 2026; BRAND_CHECK G4-1)", "KETTLE (US reg. 7013358, KettleSpace Inc., classes 9 and 42, co-working software)", "Appkettle (smart-kettle hardware)"]
     web_check: "Low, watch item. Only messaging-adjacent hit is a tiny delisted US app (BRAND_CHECK §6). Re-check before G4."
     lookalike_examples:      # most messenger scams spoof people, not the app; 0-4 spoofs the app itself (account-takeover "security alert" SMS)
       - "kettle-chat.example-verify.test"   # real name first, different owner (owner part: example-verify.test) (home 0-4)
@@ -316,7 +320,7 @@ brands:
         Two offset half-circles facing each other (two speakers), apricot and cream on cocoa. Language
         apps cluster on bright green, blue and yellow-green with mascots. No owl, bird, flag or bubble.
       typography: "Plain title-case sans."
-    checked_against: ["Tandem", "HelloTalk", "Duolingo", "Busuu", "Babbel", "Speaky", "italki", "Lingoda", "Elevate 'Word Swap' mini-game", "Word Swap Web", "Word Search SWAP"]
+    checked_against: ["Tandem", "HelloTalk", "Duolingo", "Busuu", "Babbel", "Speaky", "italki", "Lingoda", "Elevate 'Word Swap' mini-game", "Word Swap Web", "Word Search SWAP", "WordSwap (app with Belgian-law terms, 2025; function not identified; BRAND_CHECK G4-3)", "WORD SWAP (US application 88015361, dead)"]
     web_check: "Low–Medium. Hits are word games, not language exchange; it is a setting, never a spoofed brand (BRAND_CHECK §8). Fallback if the sceptic wants zero overlap: Talktangle."
     lookalike_examples: []
     trademark_search: "web-checked 2026-11-18; formal TMview/EUIPO pending before G4"
@@ -405,7 +409,7 @@ brands:
     rationale:
       name: "'Blue shutter', a common descriptive phrase; no letting agency found under it."
       colour_shape: "Not drawn yet; text-only in Paris."
-    checked_against: ["Les Volets Bleus (a registered company, activity unconfirmed; BRAND_CHECK P3)", "Agence La Clef d'Or (estate agency)"]
+    checked_against: ["Les Volets Bleus (active, NAF 68.20B letting of real estate; SIREN in BRAND_CHECK P3 and G4-2)", "SCI Volet Bleu (Igny, 68.20B, active)", "SCI Le Volet Bleu (Velaux, 68.20B, active)", "Agence La Clef d'Or (estate agency)"]
     web_check: "Low-Medium. Keep, with a human check of that company's activity before G4 (BRAND_CHECK P3)."
     lookalike_examples:
       - "volet-bleu.example"            # 3-7: an added hyphen, difficulty 3
@@ -647,7 +651,7 @@ brands:
         are letters, a camera, a bird, a ghost, a note or a speech bubble. No letter, no bubble, no camera,
         no page-with-folded-corner (a document-app look). Kettle (messenger, tomato) stays clearly apart.
       typography: "Lowercase rounded sans."
-    checked_against: ["Facebook", "Instagram", "X (Twitter)", "Threads", "TikTok", "Snapchat", "LinkedIn", "Reddit", "Pinterest", "YouTube", "Bluesky", "Mastodon", "BeReal", "Natterly (BRAND_CHECK DS3)", "Natter (former UK social network)", "Google Docs (folded-page icon, avoided)", "Kettle (in-game)", "G4 watch: wallet apps whose icons stack cards (Apple Wallet, Google Wallet, Samsung Wallet, PayPal, Curve); the mark is a fan of post cards with an avatar dot and text bars, not payment cards, and must stay so"]
+    checked_against: ["Facebook", "Instagram", "X (Twitter)", "Threads", "TikTok", "Snapchat", "LinkedIn", "Reddit", "Pinterest", "YouTube", "Bluesky", "Mastodon", "BeReal", "Natterly (BRAND_CHECK DS3)", "Natter (former UK social network)", "POSTNICK (US reg. 6361789, classes 9 and 42, address-management software; BRAND_CHECK G4-5)", "Google Docs (folded-page icon, avoided)", "Kettle (in-game)", "G4 watch: wallet apps whose icons stack cards (Apple Wallet, Google Wallet, Samsung Wallet, PayPal, Curve); the mark is a fan of post cards with an avatar dot and text bars, not payment cards, and must stay so"]
     web_check: "Low (BRAND_CHECK DS3): a village near Norwich; no app, company or brand."
     lookalike_examples: []
     trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"
@@ -793,7 +797,7 @@ brands:
         arrows, linked diamonds, monitors or a hand on a screen (GDD §29.10). No arrow, no monitor or screen,
         no hand, no diamond, no headset.
       typography: "Plain sans, title case."
-    checked_against: ["TeamViewer", "AnyDesk", "Quick Assist", "Chrome Remote Desktop", "RustDesk", "Splashtop", "Zoho Assist", "GoTo Resolve / LogMeIn", "ConnectWise ScreenConnect", "Kind Hands (NZ childcare; hand cream)", "KindConnect", "G4 watch: remote-support tools that use a life-ring or lifebuoy icon or 'Rescue' naming (LogMeIn Rescue, BeyondTrust Remote Support, help-desk suites with a lifebuoy mark); BRAND_CHECK BR4 conditions apply: no red, orange or blue ring with white, no Rescue/SOS/Assist wording, no arrows or screens"]
+    checked_against: ["TeamViewer", "AnyDesk", "Quick Assist", "Chrome Remote Desktop", "RustDesk", "Splashtop", "Zoho Assist", "GoTo Resolve / LogMeIn", "ConnectWise ScreenConnect", "Kind Hands (NZ childcare; hand cream)", "KindConnect", "KindlyHand (iOS prayer and charity social app)", "G4 watch: remote-support tools that use a life-ring or lifebuoy icon or 'Rescue' naming (LogMeIn Rescue, BeyondTrust Remote Support, help-desk suites with a lifebuoy mark); BRAND_CHECK BR4 conditions apply: no red, orange or blue ring with white, no Rescue/SOS/Assist wording, no arrows or screens"]
     web_check: "Low (BRAND_CHECK DS8)."
     lookalike_examples: []
     trademark_search: "web-checked 2026-11-19; TMview/EUIPO pending before G4"
@@ -870,7 +874,7 @@ brands:
         Courant (sceptic S1, T-3.12 round 1: "Capital" echoes a real Brussels daily). No city stem, no
         "capital", "courant", "daily", "soir", "times", "news" or broadcaster wording.
       colour_shape: "No mark drawn: the page header is plain text in the browser device's neutral page style."
-    checked_against: ["La Capitale / Sudinfo", "Bruzz", "The Brussels Times", "Le Soir", "La Libre Belgique", "DH (La Dernière Heure)", "De Standaard", "HLN (Het Laatste Nieuws)", "Het Nieuwsblad", "Metro (Belgium)", "RTBF", "VRT"]
+    checked_against: ["La Capitale / Sudinfo", "Bruzz", "The Brussels Times", "Le Soir", "La Libre Belgique", "DH (La Dernière Heure)", "De Standaard", "HLN (Het Laatste Nieuws)", "Het Nieuwsblad", "Metro (Belgium)", "RTBF", "VRT", "Woolfold (place name; BRAND_CHECK G4-6, no business found 2026-11-20)"]
     web_check: "2026-11-19 producer web search for \"Weekfold\": no company, publication, site or product of that name found (only unrelated hits such as the place name Woolfold). No shared stem or sound with the Belgian news brands listed above."
     lookalike_examples: []
     trademark_search: "pending (BRAND_CHECK web, TMview and KBO/BCE search requested, T-3.12 round 1)"

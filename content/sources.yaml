@@ -1901,11 +1901,11 @@ sources:
     title: "Telefono Amico Italia (home page)"
     url: https://www.telefonoamico.it/
     published: n/d (page metadata modified 2026-08-31)
-    accessed: 2026-11-19
+    accessed: 2026-11-20
     region: IT
     tier: 4
     used_for: [WHERE_TO_REPORT, help-where-to-report-en]
-    notes: "Operator's own site, help screen only. 02 2327 2327 'tutti i giorni 24 ore su 24'; the service is free ('in modo completamente gratuito'), the number is a Milan landline (normal call cost not stated); WhatsApp 324 011 72 52, daily 18-21; for 'chiunque si trovi in stato di crisi o emergenza emozionale'; imminent danger: 112 or 118. No official (government) page listing it was found this session."
+    notes: "Operator's own site, help screen only. 02 2327 2327 'tutti i giorni 24 ore su 24'; the service is free ('in modo completamente gratuito'), the number is a Milan landline (normal call cost not stated); WhatsApp 324 011 72 52, daily 18-21; for 'chiunque si trovi in stato di crisi o emergenza emozionale'; imminent danger: 112 or 118. No official (government) page listing it was found this session. Re-opened 2026-11-20 (T-4.7): unchanged (24 ore su 24, free service, 'stato di crisi o emergenza emozionale', 112 or 118); the home page itself does not mention suicide (see it-telefonoamico-suicide-day-2024)."
 
   # ---------------------------------------------------------------- Portugal (T-3.8r)
   - id: pt-rtp-gnr-rentals-2026
@@ -2897,6 +2897,117 @@ sources:
     tier: 1
     used_for: [investment-ad-fake-platform, recovery-scam, e-id-approval-on-call, remote-access-support-call, MAP-ch8, MAP-ch9, campaign-catalogue]
     notes: "Celebrity ads 'innehåller ett kändisfoto och rekommendationer som ofta är falska'; AI fakes of celebrities' faces; redirected to a platform or messaging channel, small then larger sums. Warning signs include requests to 'skanna en QR-kod' or take control of your device; 'skanna inte okända QR-koder'; 'Installera aldrig fjärråtkomstprogram eller dela din skärm' (banks never ask). Legit firms never ask for PINs, passwords, online-banking details or security codes. Recovery scams for a fee, posing as an authority. If scammed: stop transactions, cut contact, bank via official channels, change all passwords, police and supervisor, warn others. Does NOT mention e-ID or signing by name."
+
+  # ---------------------------------------------------------------- Crisis rows (T-4.7, 2026-11-20: IT, DE, IE, NL, PL + EU 112)
+  - id: eu-youreurope-112
+    publisher: European Commission (Your Europe)
+    title: "Emergencies (112)"
+    url: https://europa.eu/youreurope/citizens/travel/security-and-emergencies/emergency/index_en.htm
+    published: "2026-06-22 (last checked by the Commission)"
+    accessed: "2026-11-20"
+    region: EU
+    tier: 1
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "'112 is the European emergency number you can dial free of charge from fixed and mobile phones everywhere in the EU'; '112 is the only number you can use to access the emergency services in all EU countries'. Backs 'In danger now? Call 112.' on every crisis row and the proposed EU / other-country crisis row."
+
+  - id: it-telefonoamico-suicide-day-2024
+    publisher: Telefono Amico Italia (NGO)
+    title: "Giornata mondiale per la prevenzione del suicidio (press release, CS_2024_PrevenzioneSuicidio)"
+    url: https://www.telefonoamico.it/z_site2021/wp-content/uploads/CS_2024_PrevenzioneSuicidio.pdf
+    published: 2024-09-10
+    accessed: "2026-11-20"
+    region: IT
+    tier: 4
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Operator's own World Suicide Prevention Day release: for people with suicidal thoughts who can't talk to someone they know, 'si può provare con i volontari di Telefono Amico Italia' on 02 2327 2327, WhatsApp or the anonymous Mail@mica form. Hours in this release (9-24, inconsistent with itself) are OUTDATED: the home page (it-telefonoamico-home, modified 2026-08-31, re-opened 2026-11-20) says 24 ore su 24. Used only to show the line takes suicide-related calls; no official Italian page listing the line was found."
+
+  - id: de-telefonseelsorge-home
+    publisher: TelefonSeelsorge Deutschland (operator, church-run)
+    title: "TelefonSeelsorge (home page)"
+    url: https://www.telefonseelsorge.de/
+    published: n/d (page metadata modified 2026-11-19)
+    accessed: "2026-11-20"
+    region: DE
+    tier: 4
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Operator's own site: 0800 1110111, 0800 1110222 and 116 123; 'Ihr Anruf ist kostenfrei'; 'kostenlos, anonym'; 'Tag und Nacht erreichbar'; 'Suizidprävention ist ein Kernthema unserer Arbeit'. Supports the DE crisis row together with de-gesundbund-krisen-2026 (free, 24/7, 116 123; 112 'im Notfall')."
+
+  - id: ie-hse-supports-services
+    publisher: HSE (Health Service Executive)
+    title: "Mental health supports and services"
+    url: https://www2.hse.ie/mental-health/services-support/supports-services/
+    published: last reviewed 2025-08-28 (next review 2028-08-28)
+    accessed: "2026-11-20"
+    region: IE
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Pieta listed under 'Talk to someone day or night' and under 'Suicide': 'Freephone: 1800 247 247', 'Any time'; 'Free support for people who self harm, are thinking about suicide or people bereaved by suicide.'"
+
+  - id: ie-hse-nosp-crisis
+    publisher: HSE National Office for Suicide Prevention
+    title: "Are you, or someone you know, in crisis?"
+    url: https://hse.ie/eng/services/list/4/mental-health-services/nosp/help
+    published: n/d
+    accessed: "2026-11-20"
+    region: IE
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Undated (supporting). Pieta 'Freephone 1800 247 247 anytime day or night'; text HELP to 51444 (standard message rates, not shown); emergency services '112 or 999 anytime, day or night'."
+
+  - id: nl-rijksoverheid-113-contact
+    publisher: Rijksoverheid (contactgids)
+    title: "Stichting 113 Zelfmoordpreventie"
+    url: https://www.rijksoverheid.nl/contact/contactgids/stichting-113-zelfmoordpreventie
+    published: "2026-03-17 (last modified, page metadata)"
+    accessed: "2026-11-20"
+    region: NL
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Number 113 (gratis); '24 uur per dag, 7 dagen per week'; anonymous and free; for 'Mensen met suïcidale gedachten en hun naasten'. Does not list 0800 0113."
+
+  - id: nl-rijksoverheid-zelfmoorden-verminderen
+    publisher: Rijksoverheid
+    title: "Zelfmoorden verminderen"
+    url: https://www.rijksoverheid.nl/themas/familie-zorg-en-gezondheid/geestelijke-gezondheidszorg/zelfmoorden-verminderen
+    published: "2026-05-26 (last modified)"
+    accessed: "2026-11-20"
+    region: NL
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "'De hulplijn is 24 uur en 7 dagen per week (anoniem en gratis) te benaderen via het nummer 113 of 0800 0113.' No 112 guidance on the page (112 rests on eu-youreurope-112)."
+
+  - id: pl-gov-zdrowie-pomoc-psych
+    publisher: Ministerstwo Zdrowia (gov.pl)
+    title: "Gdzie uzyskać pomoc psychologiczną i psychiatryczną"
+    url: https://www.gov.pl/web/zdrowie/gdzie-uzyskac-pomoc-psychologiczna-i-psychiatryczna
+    published: 2024-12-05
+    accessed: "2026-11-20"
+    region: PL
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Centrum Wsparcia dla osób dorosłych (Fundacja Itaka) 800 70 2222: 'bezpłatną dostępność i pomoc', 'całodobową', for anyone needing support 'w stanach wystąpienia kryzysu psychicznego'. 116 123 listed as round-the-clock emotional-support line (cost not stated here). Emergencies: 'W nagłej sytuacji zagrożenia życia lub zdrowia' call 112. The page does not use the words 'myśli samobójcze'."
+
+  - id: pl-uw-lubuski-suicide-day-2024
+    publisher: Lubuski Urząd Wojewódzki (gov.pl)
+    title: "10 września - Światowy Dzień Zapobiegania Samobójstwom"
+    url: https://www.gov.pl/web/uw-lubuski/10-wrzesnia---swiatowy-dzien-zapobiegania-samobojstwom
+    published: 2024-09-10
+    accessed: "2026-11-20"
+    region: PL
+    tier: 3
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Regional government office, World Suicide Prevention Day: lists 800-702-222 (written so) Centrum Wsparcia dla Osób Dorosłych w Kryzysie Psychicznym, 116 123, 116 111 and 112 ('w sytuacji zagrożenia życia i zdrowia'). No cost or hours. Supporting: ties the line to suicide prevention."
+
+  - id: pl-centrumwsparcia-home
+    publisher: Centrum Wsparcia dla Osób Dorosłych w Kryzysie Psychicznym (operator; funded by the Minister of Health)
+    title: "Centrum Wsparcia (home page)"
+    url: https://centrumwsparcia.pl/
+    published: n/d (page metadata modified 2026-01-02)
+    accessed: "2026-11-20"
+    region: PL
+    tier: 4
+    used_for: [WHERE_TO_REPORT, help-where-to-report-en]
+    notes: "Operator's own site: 'bezpłatny numer 800 70 2222', 'Całodobowo', '7 dni w tygodniu'; 'Zadanie realizowane ze środków Ministra Zdrowia'. Does not mention suicide or name the foundation."
 
   # ------------------------------------------------ placeholders (example scenario only)
   - id: europol-scam-smishing

@@ -261,6 +261,16 @@ T-3.12r also cites new pages on hosts already listed: febelfin.be (still gives a
 
 **Not a source host:** the Central Bank's report form sits on a third-party survey host. It is NOT linked from the help screen or sources (link the centralbank.ie page instead).
 
+## New hosts from T-4.7 (crisis rows for DE, IE, IT, NL, PL; 2026-11-20)
+
+hse.ie | Health Service Executive, National Office for Suicide Prevention page (host without www, as opened) | 3 | covered by the `hse.ie` suffix entry
+www.telefonseelsorge.de | TelefonSeelsorge Deutschland *(operator, help list only, tier 4)* | 4 | **new**; help-list source only, the warning is expected
+centrumwsparcia.pl | Centrum Wsparcia dla Osób Dorosłych w Kryzysie Psychicznym *(operator, help list only, tier 4)* | 4 | **new**; help-list source only, the warning is expected
+
+T-4.7 also cites new pages on hosts already listed: europa.eu (Your Europe 112 page, covered by `europa.eu`), www2.hse.ie, www.rijksoverheid.nl, www.gov.pl (health ministry; Lubuski voivodeship office), www.telefonoamico.it (2024 press release PDF).
+
+**No new help-screen link hosts:** the crisis rows carry no `url`, like the existing ones, so `HELP_LINK_HOSTS` is unchanged.
+
 ## Notes for the engineer
 - **New to `scripts/lib/source-hosts.ts`** (not in the allow-list yet, per sceptic review 2026-11-18): `politie.nl` (no www), `moje.cert.pl`, `wiedza.cert.pl`, `www.nummergegenkummer.de`, `www.bmbfsfj.bund.de`, `www.bacs.admin.ch`, `www.verbraucherzentrale-niedersachsen.de`, and `incydent.cert.pl` (help file only). The last two were already used in `content/sources.yaml` before T-2.5 but never added to the allow-list.
 - `www.incibe.es` gained new sources in T-2.5 and is already in the allow-list.

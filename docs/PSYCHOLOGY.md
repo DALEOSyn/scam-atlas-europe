@@ -71,10 +71,13 @@ Owner: `learning-psychologist` · Status: v1.0 (2026-11-19), consolidating the r
 **Principle.** Someone upset after a scam needs a person to talk to. Someone in crisis needs a clearly separate, calm route. Mixing the two either under-serves or alarms.
 
 **Rules in practice** (full rules in `docs/patterns/WHERE_TO_REPORT.md`)
-- **The crisis line is its own role, never "support".** It is the last row, on its own, with the same title in every country: "Thinking about ending your life, or worried about someone?"
+- **The crisis line is its own role, never "support".** It sits in its own section, sharing it with no other row, with the same title in every country: "Thinking about ending your life, or worried about someone?"
   - The body ends "In danger now? Call 112."
-  - A country without a verified crisis line shows no crisis row; there is no generic fallback.
-- **Order on the scam help screen:** bank, Report it, support, young people, crisis. On sensitive scenes: support, young people, crisis, then bank and report.
+  - **No invented helplines.** A chosen country without a verified crisis line shows no crisis row; no helpline number is ever shown that was not verified for that country.
+  - **"EU / other country" (no country chosen) shows a 112-only crisis row** (T-4.7, WHERE_TO_REPORT §3d). Its body is only "In danger now? Call 112.", and it names no helpline. 112 is verified as free in every EU country. This keeps an emergency route on the default screen without claiming more than the source says.
+  - **Shared numbers are allowed.** A country may use the same number in its support row and its crisis row when an official page or the operator presents the line for crises, for example DE TelefonSeelsorge 116 123. The two rows stay separate, each with its own wording, and the labels must not contradict each other. A line backed only by its operator (IT) still goes to the human review (T-4.3).
+  - **Adult-only crisis lines** say so plainly and point under-18s to their line in the same body, for example PL: "…for adults in a mental-health crisis. Under 18? Call 116 111." A young person in crisis is never told to wait for an adult first; the §7 "tell an adult first" step is for scams, not for crises.
+- **Order on the scam help screen:** bank, Report it, support, young people, crisis. Crisis comes last here. On sensitive scenes: support, young people, crisis, then bank and report. Crisis closes the talk-to-a-person group there, and money and reporting come after it.
 - **Young people's lines** sit under one heading: "Under 18? Lines for young people".
 - **Cost wording:** "free" only where an official or operator page says so. Otherwise "Normal call rate." or "Call costs may apply."
 - **Accuracy:** never show a number or operator name that was not verified on its own page.

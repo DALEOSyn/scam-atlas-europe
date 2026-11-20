@@ -44,7 +44,9 @@
 #                  child      = line for young people (card heading "Under 18? Lines for young people")
 #                  crisis     = suicide/crisis line: its own calm final row, never rendered as support.
 #                               Row title for every country: "Thinking about ending your life, or worried about someone?"
-#                               Wording goes to the G3 human review. Verified for ES, SE, PT, FR, BE (T-3.12r) only.
+#                               Wording goes to the G3 human review. Verified for ES, SE, PT, FR, BE (T-3.12r) and
+#                               DE, IE, IT, NL, PL (T-4.7, 2026-11-20; IT on the operator's NGO site only).
+#                               "EU / other country": the top-level eu_crisis row (112 only, T-4.7, WHERE_TO_REPORT §3d).
 #                  harassment = online harassment / sextortion line: shown ONLY on that help card, not on the scam help screen
 #   Cost wording (T-3.8r round 2): write "free" only where an official or operator page says so; known normal rate:
 #                "Normal call rate." (IT: "Normal call cost."); unknown: "Call costs may apply."
@@ -154,7 +156,7 @@ fallbacks:
     body: "Feeling shaken, ashamed or alone after a scam? That's a normal reaction. Talk to someone you trust, or ask them to help you find a listening line in your country."
     checked: 2026-11-19
     sources: []
-    review_note: "T-3.8r safeguarding wording, no claim and no number (116 123 is not EU-wide: verified here for DE, PL, IE only; Your Europe does not list it). Round 2: 'free' removed (not verifiable EU-wide). Used today for ES (no general listening line verified; 024 is crisis only). There is no crisis fallback: crisis rows exist only where verified (ES, SE, PT, FR)."
+    review_note: "T-3.8r safeguarding wording, no claim and no number (116 123 is not EU-wide: verified here for DE, PL, IE only; Your Europe does not list it). Round 2: 'free' removed (not verifiable EU-wide). Used today for ES (no general listening line verified; 024 is crisis only). There is no crisis fallback for a country: crisis rows exist only where verified (T-4.7: all ten chapter countries). EU / other country shows eu_crisis (112 only, WHERE_TO_REPORT §3d)."
 
 # ---------------------------------------------------------------- 3. EU-wide
 eu:
@@ -172,6 +174,19 @@ eu:
     url: https://www.eccnet.eu/node/33
     checked: 2026-11-19
     sources: [eu-eccnet-about]
+
+# T-4.7 (WHERE_TO_REPORT §3d): crisis row for "EU / other country" only (no country chosen). 112 only: no helpline
+# number is verified EU-wide. Shown in the crisis place, last and on its own; a chosen country shows only its own row.
+eu_crisis:
+  id: eu-crisis-112
+  name: "Thinking about ending your life, or worried about someone?"
+  body: "In danger now? Call 112."
+  phones:
+    - number: "112"
+      label: "Emergency number in every EU country, free from any phone."
+  checked: 2026-11-20
+  sources: [eu-youreurope-112]
+  review_note: "T-4.7, §3d. Your Europe 'Emergencies (112)' (last checked by the Commission 2026-06-22, opened 2026-11-20): free from fixed and mobile phones everywhere in the EU; the only number for emergency services in all EU countries. No helpline: 116 123 is not EU-wide. Crisis wording goes to the T-4.3 human review."
 
 # ---------------------------------------------------------------- 4. Countries (verified entries only)
 # A country missing here means "not verified yet", not "no service exists". UI falls back to `fallbacks`.
@@ -293,6 +308,16 @@ countries:
       checked: 2026-11-19
       sources: [de-bnetza-zoll-sms-2023]
       review_note: "Links to the regulator's 2023 warning page, which links on to its SMS-spam complaint form. Site navigation query parameter (?nn=...) removed and the clean URL re-checked 2026-11-18. The form's own URL was not opened directly."
+    - id: de-crisis
+      role: crisis
+      name: "Thinking about ending your life, or worried about someone?"
+      body: "TelefonSeelsorge on 116 123 is free and anonymous, day and night. In danger now? Call 112."
+      phones:
+        - number: "116 123"
+          label: "TelefonSeelsorge: free, day and night"
+      checked: 2026-11-20
+      sources: [de-gesundbund-krisen-2026, de-telefonseelsorge-home, eu-youreurope-112]
+      review_note: "T-4.7. Germany has no separate national suicide line on an official page; the federal health portal (gesund.bund.de, Stand 2026-04-23, re-opened 2026-11-20) names TelefonSeelsorge 116 123 as 'kostenlos und rund um die Uhr' under 'Anlaufstellen bei psychischen Krisen', with 112 'im Notfall'. The operator's own site (re-opened 2026-11-20) says calls are free and anonymous, 'Tag und Nacht', and 'Suizidprävention ist ein Kernthema unserer Arbeit'. The same number is the DE support row (de-telefonseelsorge): deliberate, flag for the learning-psychologist. The 0800 1110111 / 0800 1110222 numbers are on the operator site only, so not shown. Crisis wording goes to the human review (T-4.3)."
 
   ES:
     - id: es-017
@@ -497,6 +522,16 @@ countries:
       checked: 2026-11-19
       sources: [ie-hse-urgent-help]
       review_note: "HSE gives no hours for Childline. Text About It (text HELLO to 50808, free, 24/7) is also on the HSE page if a text option is wanted. No 116 111 found for IE."
+    - id: ie-pieta
+      role: crisis
+      name: "Thinking about ending your life, or worried about someone?"
+      body: "Pieta's helpline is free and open any time, for anyone thinking about suicide or self-harm. In danger now? Call 112."
+      phones:
+        - number: "1800 247 247"
+          label: "Pieta: freephone, any time"
+      checked: 2026-11-20
+      sources: [ie-hse-supports-services, ie-hse-nosp-crisis, eu-youreurope-112]
+      review_note: "T-4.7. HSE 'Mental health supports and services' (last reviewed 2025-08-28, opened 2026-11-20): 'Freephone: 1800 247 247', 'Any time', 'Free support for people who self harm, are thinking about suicide or people bereaved by suicide.' The HSE suicide-prevention office's crisis page (undated) gives the same number 'anytime day or night' and '112 or 999' for emergencies. Text HELP to 51444 (standard message rates) not shown. Pieta's own helpline page (opened 2026-11-20) says 24 hours a day, 365 days a year; not added as a source (HSE suffices). Samaritans 116 123 stays the support row. Crisis wording goes to the human review (T-4.3)."
 
   IT:
     - id: it-112
@@ -542,6 +577,16 @@ countries:
       checked: 2026-11-19
       sources: [it-minori-114-2024]
       review_note: "Government-owned child-emergency line (phone, chat, app, WhatsApp). No official Italian page for 116 111 was found."
+    - id: it-crisis
+      role: crisis
+      name: "Thinking about ending your life, or worried about someone?"
+      body: "Telefono Amico Italia answers anyone in emotional crisis, every day, 24 hours. In danger now? Call 112."
+      phones:
+        - number: "02 2327 2327"
+          label: "Telefono Amico Italia: every day, 24 hours. Normal call cost."
+      checked: 2026-11-20
+      sources: [it-telefonoamico-home, it-telefonoamico-suicide-day-2024, eu-youreurope-112]
+      review_note: "T-4.7. LOWER CONFIDENCE: Italy has no state suicide or crisis line that I could find on an official page (searched gov.it, the health ministry and ISS; a Milan municipal page lists an old Telefono Amico number and says activities are suspended, so it was not used). The row rests on the operator (NGO, tier 4) only: home page (modified 2026-08-31, re-opened 2026-11-20) says 02 2327 2327 'tutti i giorni 24 ore su 24', for 'chiunque si trovi in stato di crisi o emergenza emozionale', and 'pericolo imminente: 112 o 118'; its 2024 World Suicide Prevention Day release points people with suicidal thoughts to the same volunteers (that release's 9-24 hours are outdated). 'Normal call cost' as on it-telefono-amico (Milan landline; the service is free, the call is not said to be). Same number as the IT support row: deliberate, flag for the learning-psychologist. The human review (T-4.3) decides whether an NGO-only crisis row is acceptable; if not, drop the phone and keep a body of only 'In danger now? Call 112.' (the schema allows a crisis row without phones)."
 
   NL:
     - id: nl-fraudehelpdesk
@@ -600,6 +645,18 @@ countries:
       checked: 2026-11-19
       sources: [nl-rijksoverheid-kindertelefoon, nl-nji-bellen-chatten]
       review_note: "Number and 'gratis' from the government page; ages and hours from NJI (supporting). 116 111 not stated on either page, so not shown."
+    - id: nl-113
+      role: crisis
+      name: "Thinking about ending your life, or worried about someone?"
+      body: "113 Zelfmoordpreventie is free and anonymous, day and night. In danger now? Call 112."
+      phones:
+        - number: "113"
+          label: "Free, anonymous, day and night"
+        - number: "0800 0113"
+          label: "Same line: free, day and night"
+      checked: 2026-11-20
+      sources: [nl-rijksoverheid-113-contact, nl-rijksoverheid-zelfmoorden-verminderen, eu-youreurope-112]
+      review_note: "T-4.7. Government contact guide (modified 2026-03-17): 113, 'gratis', '24 uur per dag, 7 dagen per week', anonymous, for 'mensen met suïcidale gedachten en hun naasten'. Government theme page (modified 2026-05-26): 'De hulplijn is 24 uur en 7 dagen per week (anoniem en gratis) te benaderen via het nummer 113 of 0800 0113.' Neither page gives 112 guidance; 112 rests on the EU page. Chat on the operator site not shown. Crisis wording goes to the human review (T-4.3)."
 
   PL:
     - id: pl-8080
@@ -651,6 +708,16 @@ countries:
           label: "Children and young people: free, 24/7"
       checked: 2026-11-19
       sources: [pl-gov-cyfryzacja-116-2025]
+    - id: pl-crisis
+      role: crisis
+      name: "Thinking about ending your life, or worried about someone?"
+      body: "The Centrum Wsparcia line, 800 70 2222, is free, day and night, for adults in a mental-health crisis. Under 18? Call 116 111. In danger now? Call 112."
+      phones:
+        - number: "800 70 2222"
+          label: "Adults: free, day and night"
+      checked: 2026-11-20
+      sources: [pl-gov-zdrowie-pomoc-psych, pl-uw-lubuski-suicide-day-2024, pl-centrumwsparcia-home, pl-gov-cyfryzacja-116-2025, eu-youreurope-112]
+      review_note: "T-4.7. Health ministry page (2024-12-05, opened 2026-11-20): Centrum Wsparcia dla osób dorosłych, 800 70 2222, free ('bezpłatną'), round the clock ('całodobową'), for anyone 'w stanach wystąpienia kryzysu psychicznego'; 112 'w nagłej sytuacji zagrożenia życia lub zdrowia'. The page does not say 'myśli samobójcze'; the link to suicide prevention comes from a regional government office's World Suicide Prevention Day page (2024-09-10, lists the line as 800-702-222, no cost or hours). Operator site (modified 2026-01-02): 'bezpłatny', 'Całodobowo', funded by the Minister of Health; operator foundation not named there, so not shown. Adults only, hence the 116 111 pointer (pl-gov-cyfryzacja-116-2025: free, 24/7). 116 123 stays the support row. Crisis wording goes to the human review (T-4.3)."
 
   PT:
     - id: pt-police
@@ -750,20 +817,21 @@ countries:
 # ---------------------------------------------------------------- 4b. Coverage per chapter country (T-3.8r, 2026-11-19)
 # report = national cyber/fraud reporting route · advice = advice line (not a report) · police · bank
 # support = emotional-support line (never a crisis line) · child = young people's line · crisis = suicide/crisis line (own final row)
-# "fallback" = no country-specific entry verified; the UI shows fallbacks.<role>. No crisis fallback: "none" = no crisis row.
+# "fallback" = no country-specific entry verified; the UI shows fallbacks.<role>. No crisis fallback for a country: "none" = no crisis row
+# (the generic eu_crisis 112 row shows only for "EU / other country", T-4.7 §3d).
 # Card order (WHERE_TO_REPORT.md §3c): scam help = bank, Report it (report + advice + police), support, child, crisis last;
 # sensitive-scene help = support, child, crisis, then bank and Report it. `harassment` entries appear only on that help card.
-#   DE  report: de-police (online, Onlinewache), de-bnetza   police: de-police   bank: de-card-block   support: de-telefonseelsorge   child: de-116111   crisis: none
-#   NL  report: nl-fraudehelpdesk, nl-cmi-id-copy   police: nl-police-hulpvraagfraude, nl-police-account-takeover   bank: nl-bank   support: nl-luisterlijn (normal rate)   child: nl-kindertelefoon   crisis: none
+#   DE  report: de-police (online, Onlinewache), de-bnetza   police: de-police   bank: de-card-block   support: de-telefonseelsorge   child: de-116111   crisis: de-crisis (T-4.7, same 116 123)
+#   NL  report: nl-fraudehelpdesk, nl-cmi-id-copy   police: nl-police-hulpvraagfraude, nl-police-account-takeover   bank: nl-bank   support: nl-luisterlijn (normal rate)   child: nl-kindertelefoon   crisis: nl-113 (T-4.7)
 #   FR  report: fr-17cyber, fr-cybermalveillance   advice: fr-info-escroqueries   police: fr-police   bank: fr-bank   support: fr-116006, fr-sos-amitie   child: fr-fil-sante-jeunes   crisis: fr-3114   harassment card: fr-3018
 #   ES  report: es-police (INCIBE's own report page not opened)   advice: es-017   police: es-police   bank: es-bank, es-bde-complaint   support: FALLBACK   child: es-116111 (regional source)   crisis: es-024
-#   PL  report: pl-8080, pl-cert-incident   police: pl-police   bank: pl-bank   support: pl-116123   child: pl-116111   crisis: none
-#   IT  report: it-polizia-postale (no URL)   police: it-112   bank: it-bank   support: it-telefono-amico (NGO site only, normal call cost)   child: it-114   crisis: none
+#   PL  report: pl-8080, pl-cert-incident   police: pl-police   bank: pl-bank   support: pl-116123   child: pl-116111   crisis: pl-crisis (T-4.7, 800 70 2222, adults)
+#   IT  report: it-polizia-postale (no URL)   police: it-112   bank: it-bank   support: it-telefono-amico (NGO site only, normal call cost)   child: it-114   crisis: it-crisis (T-4.7, NGO site only, same number as support)
 #   PT  report: pt-police (no online channel verified)   police: pt-police   bank: pt-bank   support: pt-sns24-psych (normal call rate, G3)   child: pt-116111   crisis: pt-1411 (no cost or hours shown, G3)
-#   IE  report: ie-garda, ie-cbi-report (unauthorised firms)   police: ie-garda, ie-garda-confidential (investment fraud only)   bank: ie-bank   support: ie-samaritans   child: ie-childline   crisis: none
+#   IE  report: ie-garda, ie-cbi-report (unauthorised firms)   police: ie-garda, ie-garda-confidential (investment fraud only)   bank: ie-bank   support: ie-samaritans   child: ie-childline   crisis: ie-pieta (T-4.7)
 #   SE  report: se-police   police: se-police   bank: se-bank (T-3.10r)   support: se-jourhavande (21:00-06:00, cost unknown)   child: se-bris (free, operator site, G3)   crisis: se-mind
 #   BE  report: be-safeonweb-forward   advice: be-fsma (T-3.12r)   police: be-police (updated T-3.12r)   bank: be-card-stop (cost unknown)   support: be-listening-line (106 and 107 cost unknown, G3)   child: be-youth-line   crisis: be-crisis (T-3.12r)
-#   EU / home (generic): eu.europol-report-signpost, eu.ecc-net + fallbacks.police / bank / support / child_helpline; no crisis row
+#   EU / home (generic): eu.europol-report-signpost, eu.ecc-net + fallbacks.police / bank / support / child_helpline; crisis: eu_crisis (112 only, T-4.7 §3d)
 
 # ---------------------------------------------------------------- 5. Not included on purpose (keep out until verified)
 # - 116 111 for NL, FR, IT, IE, BE (not found on official pages; national lines with other numbers are listed instead);
@@ -793,3 +861,6 @@ countries:
 #   report, UOKiK (purchase fraud only; not needed for the Warsaw patterns), the Polish government ID app's
 #   reporting feature (named in CERT/NASK sources, but it is a real app: help-card text only if the producer wants it).
 # - Sextortion help card (GDD §9): separate content, not drafted here.
+# - T-4.7 (2026-11-20) not shown: TelefonSeelsorge 0800 1110111 / 0800 1110222 (operator site only); Pieta text 51444
+#   (standard message rates); 113 chat; Centrum Wsparcia's operator foundation (named on the ministry page, not on the
+#   operator site); Telefono Amico WhatsApp. Italy: no state crisis line found; it-crisis rests on the NGO operator only.

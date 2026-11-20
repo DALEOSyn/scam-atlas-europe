@@ -271,6 +271,92 @@ T-4.7 also cites new pages on hosts already listed: europa.eu (Your Europe 112 p
 
 **No new help-screen link hosts:** the crisis rows carry no `url`, like the existing ones, so `HELP_LINK_HOSTS` is unchanged.
 
+## G4 vetting (2026-11-20)
+
+**Owner:** fraud-researcher · **Task:** make the source-host check an error before G4 · **Input:** the 38 "host is not on the reputable-source host list" warnings of `npm run content:validate`, re-derived by hand from every `url:` in `content/sources.yaml` against `SOURCE_HOST_ALLOWLIST` and `SOURCE_HOST_EXACT` (the commands could not be run in this session, see G4_HELP_RECHECK.md §5). 38 URLs on 24 hosts. T-4.4 adds 6 URLs on 6 more hosts (rows 25-30).
+
+**Classes.**
+- **(a)** an official or reputable body (government, parliament, police, CERT, national helpline operator, consumer body, EU body): add to the list.
+- **(b)** a secondary source (news, journal, NGO network, industry campaign, taxonomy). It stays only because every pattern, table row and scenario `sources:` list that cites it also cites a source on the list. Checked with a search for each id in `content/scenarios/**` and `docs/patterns/*.md`.
+- **(c)** to be replaced by a primary source, or dropped. **No host fell into (c).** Two citation sets failed the (b) rule and were fixed in the citing files instead (rows 10 and 16). The source entries stay.
+
+| # | Host | URLs | Source ids | Class | Category / reason | Action |
+|---|---|---|---|---|---|---|
+| 1 | eucrim.eu | 1 | eu-eucrim-iocta-2026 | b | EU criminal-law journal (Max Planck Institute), tier 4. Provenance only (`used_for: []`): no pattern or scenario cites it | Keep; secondary list |
+| 2 | childhelplineinternational.org | 1 | chi-116111-eu | b | NGO network, tier 4. A lead for the per-country 116 111 search. WHERE_TO_REPORT.md also cites eu-youreurope-116 | Keep; secondary list |
+| 3 | nos.nl | 1 | nl-nos-easy-work-2025 | b | News (public broadcaster). Co-cited every time: MAP ch2 row (eu-epc-threats-2025), task-job-scam (Fraudehelpdesk sources), THREAT_CATALOGUE (eu-epc-threats-2025), ch2 sources doc | Keep; secondary list |
+| 4 | www.polskieradio.pl | 1 | pl-polskieradio-fake-shops-2025 | b | News. MAP ch7 (eu-eccnet-online-fraud), THREAT_CATALOGUE (de-vz-fakeshops-2025, eu-eccnet-online-fraud) | Keep; secondary list |
+| 5 | rr.pt | 1 | pt-rr-psp-rentals-2026 | b | News. MAP ch7, rental-offplatform-payment, THREAT_CATALOGUE: all co-cite de-evz-rental-fraud | Keep; secondary list |
+| 6 | www.dn.pt | 2 | pt-dn-psp-airbnb-2026, pt-dn-psp-cncs-campaign-2025 | b | News. Scenarios lisbon-01, -03, -04, -06, -09 all co-cite de-evz-rental-fraud; patterns and WHERE_TO_REPORT row (pt-gnr-phishing) co-cite | Keep; secondary list |
+| 7 | theportugalpost.com | 1 | pt-portugalpost-gnr-quishing-2026 | b | News. lisbon-02, lisbon-07, qr-sticker-parking, THREAT_CATALOGUE all co-cite ie-ncsc-qr-guide / lu-vdl-parking-qr | Keep; secondary list |
+| 8 | www.deco.proteste.pt | 4 | pt-deco-mbway-2021, pt-deco-qrishing-2024, pt-deco-queixa-eletronica-2025, pt-deco-1411-2025 | a | National consumer association (Portugal's main one; not a public authority). Every citer also cites a primary source anyway | Add `deco.proteste.pt` |
+| 9 | www.nummergegenkummer.de | 1 | de-ngk-116111-flyer-2026 | a | National helpline operator (116 111 DE) | Add `nummergegenkummer.de` |
+| 10 | attack.mitre.org | 8 | int-mitre-attack-* | b | Taxonomy (US), tier 4, never evidence. 27 THREAT_CATALOGUE entries co-cite a European source. **Three entries cited MITRE only** (B1.6 usb-drop, B7.2 defacement, B10.1 cryptojacking/SMS pumping), all already "not briefable" | Keep on the secondary list. **Changed:** the MITRE id was removed from the Sources line of B1.6, B7.2, B10.1 ("none yet; parked until a European primary source is found") |
+| 11 | www.berlin.de | 1 | de-polizei-berlin-falsche-polizei-2025 | a | Police (Polizei Berlin prevention page on the Land Berlin portal) | Add `www.berlin.de` as an EXACT host: the city portal also carries non-government content, so no suffix |
+| 12 | www.unipr.it | 1 | it-mur-smishing-vishing | a | A ministry (MUR) awareness brochure, distributed via state universities. A search found no copy on the ministry's own site, only on university hosts | Add `www.unipr.it` as an EXACT host (only this file is vetted) |
+| 13 | www.open.online | 1 | it-open-roma-finti-poliziotti-2026 | b | News. rome-03, spoofed-authority-call, cloned-voice-family-emergency, ch6 row: all co-cite it-carabinieri-contro-truffe | Keep; secondary list |
+| 14 | www.telefonoamico.it | 2 | it-telefonoamico-home, it-telefonoamico-suicide-day-2024 | a | National helpline operator (IT); named by the Senate bill it-senato-ddl64-2025 as the existing service | Add `telefonoamico.it` |
+| 15 | www.rtp.pt | 1 | pt-rtp-gnr-rentals-2026 | b | News (public broadcaster). lisbon-03, -04, -09, ch7 rows, rental pattern: all co-cite de-evz-rental-fraud or eu-ec-ipr-vop-2025 | Keep; secondary list |
+| 16 | nltimes.nl | 1 | nl-nltimes-booking-phishing-2026 | b | News. lisbon-08 and lisbon-09 co-cite de-evz-rental-fraud. **ch7-lisbon-sources.md row "Message from your accommodation" cited it alone** | Keep on the secondary list. **Changed:** that row now also cites de-evz-rental-fraud and pt-bdp-ficaadica-2023 (general tell and habit); the note says the "pay again" variant is news-only |
+| 17 | www.nji.nl | 1 | nl-nji-bellen-chatten | b | Youth knowledge institute (foundation), supporting only. Both help rows also cite rijksoverheid.nl / kerkrade.nl | Keep; secondary list |
+| 18 | www.anar.org | 1 | es-anar-116111-carta | a | National helpline operator (116 111 ES) | Add `anar.org` |
+| 19 | www.gov.pl | 3 | pl-gov-cyfryzacja-116-2025, pl-gov-zdrowie-pomoc-psych, pl-uw-lubuski-suicide-day-2024 | a | Government (central portal of the ministries and voivodeship offices) | Add `www.gov.pl` as an EXACT host. Keep `gov.pl` out as a suffix (help.test.ts expects `https://gov.pl/x` to fail) |
+| 20 | www.bris.se | 1 | se-bris-prata-med-oss | a | National helpline operator (116 111 SE) | Add `bris.se` |
+| 21 | www.zelfmoord1813.be | 1 | be-zelfmoord1813 | a | National helpline operator (BE, Dutch) | Add `zelfmoord1813.be` |
+| 22 | podszywacze.pl | 1 | pl-blik-podszywacze-2026 | b | Payment-industry campaign site, tier 4. warsaw-06 and warsaw-07 co-cite pl-uknf-seniors-payments-2025 / pl-policja-psp-na-znajomego; hijacked-friend-payment-code and ch5 rows co-cite | Keep; secondary list |
+| 23 | www.telefonseelsorge.de | 1 | de-telefonseelsorge-home | a | National helpline operator (DE) | Add `telefonseelsorge.de` |
+| 24 | centrumwsparcia.pl | 1 | pl-centrumwsparcia-home | a | National helpline operator (PL, funded by the health minister) | Add `centrumwsparcia.pl` |
+| 25 | tele-accueil.be | 1 | be-teleaccueil-home (new, T-4.4) | a | National helpline operator (BE, French) | Add `tele-accueil.be` |
+| 26 | www.tele-onthaal.be | 1 | be-teleonthaal-home (new, T-4.4) | a | National helpline operator (BE, Dutch) | Add `tele-onthaal.be` |
+| 27 | www.preventionsuicide.be | 1 | be-cps-ligne-ecoute (new, T-4.4) | a | National helpline operator (BE, French suicide-prevention line) | Add `preventionsuicide.be` |
+| 28 | www.senato.it | 1 | it-senato-ddl64-2025 (new, T-4.7a) | a | Parliament (Italian Senate) | Add `senato.it` |
+| 29 | lespresso.it | 1 | it-lespresso-telefonoamico-2026 (new, T-4.7a) | b | News. The it-telefono-amico and it-crisis rows also cite the operator, the Senate bill and (crisis) eu-youreurope-112 | Keep; secondary list |
+| 30 | www.mcf.se | 1 | se-mcf-websites (new, T-4.4, provenance) | a | Government agency (Swedish Civil Defence and Resilience Agency, runs the crisis-information site) | Add `mcf.se` |
+
+**Summary.** 30 hosts (24 from the 38 warnings + 6 new today). (a) 16 hosts: 12 by suffix and 3 by exact host on the allow-list, plus DECO. (b) 14 hosts, all tier-4 sources, all co-cited after two fixes. (c) none. Total URLs: 38 + 6 = 44 today; after the (a) entries are added, 22 URLs on (b) hosts remain.
+
+**Exact entries for `scripts/lib/source-hosts.ts`** (the engineer edits the file; not edited here):
+
+```ts
+// SOURCE_HOST_ALLOWLIST: append (G4 vetting, 2026-11-20; docs/patterns/SOURCE_HOSTS.md "G4 vetting")
+  // National helpline operators (help screen only; tier-4 sources)
+  'nummergegenkummer.de',
+  'telefonseelsorge.de',
+  'telefonoamico.it',
+  'anar.org',
+  'bris.se',
+  'zelfmoord1813.be',
+  'tele-onthaal.be',
+  'tele-accueil.be',
+  'preventionsuicide.be',
+  'centrumwsparcia.pl',
+  // Consumer body
+  'deco.proteste.pt',
+  // Parliament and agencies
+  'senato.it',
+  'mcf.se',
+
+// SOURCE_HOST_EXACT: append
+  'www.gov.pl',
+  'www.berlin.de',
+  'www.unipr.it',
+```
+
+**Proposal for the (b) hosts.** These must not join the allow-list, but the check cannot become an error while they warn. Suggest a third list, accepted only for a source with `tier: 4`, so that a primary claim can never rest on these hosts:
+
+```ts
+/** Secondary hosts (news, journal, NGO network, industry campaign, taxonomy): allowed only for tier-4 sources. G4 vetting 2026-11-20. */
+export const SOURCE_HOST_SECONDARY: readonly string[] = [
+  'eucrim.eu', 'childhelplineinternational.org', 'nos.nl', 'polskieradio.pl', 'rr.pt', 'dn.pt',
+  'theportugalpost.com', 'attack.mitre.org', 'open.online', 'rtp.pt', 'nltimes.nl', 'nji.nl',
+  'podszywacze.pl', 'lespresso.it',
+];
+```
+
+A co-citation check would be the full rule: every `sources:` list (scenarios, help rows) that holds a tier-4 id also holds an id on an (a) host. It passes today for every scenario and help row. Markdown citations in `docs/patterns/` were checked by hand.
+
+**Policy change to note:** `source-hosts.ts` says NGO helpline operators were left out on purpose ("the warning is expected"). The G4 task puts national helpline operators in class (a). They are tier 4 in the registry. The operators back only the help screen's hours, cost and wording, and an official page backs the number wherever one exists.
+
 ## Notes for the engineer
 - **New to `scripts/lib/source-hosts.ts`** (not in the allow-list yet, per sceptic review 2026-11-18): `politie.nl` (no www), `moje.cert.pl`, `wiedza.cert.pl`, `www.nummergegenkummer.de`, `www.bmbfsfj.bund.de`, `www.bacs.admin.ch`, `www.verbraucherzentrale-niedersachsen.de`, and `incydent.cert.pl` (help file only). The last two were already used in `content/sources.yaml` before T-2.5 but never added to the allow-list.
 - `www.incibe.es` gained new sources in T-2.5 and is already in the allow-list.

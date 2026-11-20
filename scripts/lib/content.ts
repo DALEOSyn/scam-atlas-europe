@@ -7,7 +7,7 @@ import { join, relative, sep, basename, dirname } from 'node:path';
 import { parseDocument } from 'yaml';
 import { yamlStructureIssues } from './yaml-safety.ts';
 import type { z } from 'zod';
-import { isAllowedSourceHost } from './source-hosts.ts';
+import { isAcceptedSource } from './source-hosts.ts';
 import { checkHelp, HELP_FILE_REL } from './help.ts';
 import { svgSafetyIssues } from './svg-safety.ts';
 import { artIssues, castListIssues } from './art.ts';
@@ -148,8 +148,8 @@ export function loadSources(contentDir: string, report: ContentReport): Map<stri
   }
   for (const s of res.data.sources) {
     if (out.has(s.id)) report.errors.push(`${file}: duplicate source id "${s.id}"`);
-    if (s.url && !isAllowedSourceHost(s.url)) {
-      report.warnings.push(`${file}: source "${s.id}" host is not on the reputable-source host list (scripts/lib/source-hosts.ts): ${s.url}`);
+    if (s.url && !isAcceptedSource(s.url, s.tier)) {
+      report.errors.push(`${file}: source "${s.id}" host is not on the reputable-source host list (scripts/lib/source-hosts.ts; secondary hosts need tier: 4): ${s.url}`);
     }
     out.set(s.id, s);
   }
@@ -228,6 +228,11 @@ export function checkScenario(
     else if (src.placeholder) {
       (opts.strict ? report.errors : report.warnings).push(`${file}: debrief.sources: "${id}" is still a placeholder source`);
     }
+  }
+  // Red Line 6 (G4 vetting): a debrief may not rest on tier-4 (secondary) sources alone.
+  const cited = s.debrief.sources.map((id) => sources.get(id)).filter((x): x is Source => x !== undefined && !x.placeholder);
+  if (cited.length > 0 && cited.every((x) => x.tier === 4)) {
+    report.errors.push(`${file}: debrief.sources: every cited source is tier 4 (secondary); add a primary source (tier 1-3)`);
   }
   for (const id of s.brands) {
     const b = brands.get(id);

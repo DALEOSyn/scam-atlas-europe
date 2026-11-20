@@ -1,7 +1,7 @@
 /**
  * Hosts expected for sources (Red Line 6: public, reputable European sources).
- * A source URL outside this list produces a content:validate WARNING only,
- * so fraud-researcher can extend the list in the same PR that adds the source.
+ * Since G4 vetting (2026-11-20) a source URL outside this list, SOURCE_HOST_EXACT and (for tier-4 sources only)
+ * SOURCE_HOST_SECONDARY is a content:validate ERROR. fraud-researcher extends the list in the same PR that adds the source.
  * Entries match the host itself and any subdomain.
  */
 export const SOURCE_HOST_ALLOWLIST: readonly string[] = [
@@ -106,6 +106,21 @@ export const SOURCE_HOST_ALLOWLIST: readonly string[] = [
   'krisinformation.se',
   'konsumenternasbankochfinansbyra.se',
   'ki.se',
+  // G4 vetting (2026-11-20, docs/patterns/SOURCE_HOSTS.md "G4 vetting"): national helpline operators (tier 4,
+  // help screen only; an official page backs the number wherever one exists), a consumer body, parliament and agencies.
+  'nummergegenkummer.de',
+  'telefonseelsorge.de',
+  'telefonoamico.it',
+  'anar.org',
+  'bris.se',
+  'zelfmoord1813.be',
+  'tele-onthaal.be',
+  'tele-accueil.be',
+  'preventionsuicide.be',
+  'centrumwsparcia.pl',
+  'deco.proteste.pt',
+  'senato.it',
+  'mcf.se',
 ];
 
 /**
@@ -145,7 +160,27 @@ export function isHelpLinkHost(url: string, hosts: readonly string[] = HELP_LINK
  * Source hosts matched on the EXACT hostname only (no subdomains): hosts under a parent domain too broad to allow
  * as a suffix (gov.pt, gov.pl, belgium.be; SOURCE_HOSTS.md "exact host only"). T-4.2 review.
  */
-export const SOURCE_HOST_EXACT: readonly string[] = ['www.gov.pt', 'portugal.gov.pt', 'samorzad.gov.pl', 'news.belgium.be'];
+export const SOURCE_HOST_EXACT: readonly string[] = [
+  'www.gov.pt', 'portugal.gov.pt', 'samorzad.gov.pl', 'news.belgium.be',
+  // G4 vetting (2026-11-20)
+  'www.gov.pl', 'www.berlin.de', 'www.unipr.it',
+];
+
+/**
+ * Secondary hosts (news, journal, NGO network, industry campaign, taxonomy), matched with subdomains. Accepted only
+ * for a source with `tier: 4`, and a debrief may not rest on tier-4 sources alone (checkScenario). G4 vetting 2026-11-20.
+ */
+export const SOURCE_HOST_SECONDARY: readonly string[] = [
+  'eucrim.eu', 'childhelplineinternational.org', 'nos.nl', 'polskieradio.pl', 'rr.pt', 'dn.pt',
+  'theportugalpost.com', 'attack.mitre.org', 'open.online', 'rtp.pt', 'nltimes.nl', 'nji.nl',
+  'podszywacze.pl', 'lespresso.it',
+];
+
+/** True when a source with this URL and tier is acceptable: an allowed host, or a secondary host for a tier-4 source. */
+export function isAcceptedSource(url: string, tier: number | undefined): boolean {
+  if (isAllowedSourceHost(url)) return true;
+  return tier === 4 && isAllowedSourceHost(url, SOURCE_HOST_SECONDARY, []);
+}
 
 export function isAllowedSourceHost(url: string, allowlist: readonly string[] = SOURCE_HOST_ALLOWLIST, exact: readonly string[] = SOURCE_HOST_EXACT): boolean {
   try {

@@ -106,18 +106,8 @@ export const SOURCE_HOST_ALLOWLIST: readonly string[] = [
   'krisinformation.se',
   'konsumenternasbankochfinansbyra.se',
   'ki.se',
-  // G4 vetting (2026-11-20, docs/patterns/SOURCE_HOSTS.md "G4 vetting"): national helpline operators (tier 4,
-  // help screen only; an official page backs the number wherever one exists), a consumer body, parliament and agencies.
-  'nummergegenkummer.de',
-  'telefonseelsorge.de',
-  'telefonoamico.it',
-  'anar.org',
-  'bris.se',
-  'zelfmoord1813.be',
-  'tele-onthaal.be',
-  'tele-accueil.be',
-  'preventionsuicide.be',
-  'centrumwsparcia.pl',
+  // G4 vetting (2026-11-20, docs/patterns/SOURCE_HOSTS.md "G4 vetting"): a consumer body, parliament and agencies.
+  // (National helpline operators are tier-4 only: SOURCE_HOST_OPERATORS below.)
   'deco.proteste.pt',
   'senato.it',
   'mcf.se',
@@ -176,10 +166,27 @@ export const SOURCE_HOST_SECONDARY: readonly string[] = [
   'podszywacze.pl', 'lespresso.it',
 ];
 
+/**
+ * National helpline operators (G4 vetting 2026-11-20): they back only the help screen's hours, cost and wording, so
+ * like SOURCE_HOST_SECONDARY they are accepted only for `tier: 4` sources and never alone behind a debrief.
+ */
+export const SOURCE_HOST_OPERATORS: readonly string[] = [
+  'nummergegenkummer.de',
+  'telefonseelsorge.de',
+  'telefonoamico.it',
+  'anar.org',
+  'bris.se',
+  'zelfmoord1813.be',
+  'tele-onthaal.be',
+  'tele-accueil.be',
+  'preventionsuicide.be',
+  'centrumwsparcia.pl',
+];
+
 /** True when a source with this URL and tier is acceptable: an allowed host, or a secondary host for a tier-4 source. */
 export function isAcceptedSource(url: string, tier: number | undefined): boolean {
   if (isAllowedSourceHost(url)) return true;
-  return tier === 4 && isAllowedSourceHost(url, SOURCE_HOST_SECONDARY, []);
+  return tier === 4 && isAllowedSourceHost(url, [...SOURCE_HOST_SECONDARY, ...SOURCE_HOST_OPERATORS], []);
 }
 
 export function isAllowedSourceHost(url: string, allowlist: readonly string[] = SOURCE_HOST_ALLOWLIST, exact: readonly string[] = SOURCE_HOST_EXACT): boolean {

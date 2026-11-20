@@ -376,6 +376,8 @@ describe('sources.yaml (finding 8)', () => {
     expect(isAcceptedSource('https://www.europol.europa.eu/x', 1)).toBe(true);
     expect(isAcceptedSource('https://blog.example/x', 4)).toBe(false);
     expect(isAcceptedSource('https://nos.nl.evil.example/x', 4)).toBe(false);
+    expect(isAcceptedSource('https://www.telefonseelsorge.de/', 4)).toBe(true);
+    expect(isAcceptedSource('https://www.telefonseelsorge.de/', 2)).toBe(false);
   });
 
   it('a source on an unlisted host is a content:validate error, not a warning (G4 vetting)', () => {

@@ -71,8 +71,19 @@ All chapters in English pass review. Approve sources list and "Where to report" 
 
 *Producer note (2026-11-20, not part of Roman's approval):* engaging a real outside reader means contacting a person outside the project, so the team prepares the brief and Roman chooses and contacts the reader; Roman was told this in the project thread the same day. How each §4 item is resolved is recorded in G3_SOURCES_CHECK §4 by fraud-researcher, under sceptic review.
 
-## G4 — Public release (state: Open)
+## G4 — Public release (state: Approved with conditions, 2026-11-21; deploy not yet allowed)
 Approve going public: deploy to GitHub Pages (or other host), domain, announcement. Irreversible in practice (content gets indexed).
+
+**Roman, 2026-11-21: "Approve with conditions"** (decision-card option on "Approve G4, the public release of Scam Atlas: Europe?", recommended in the private Claude Doc "G4 sign-off: public release", 2026-11-20). ✅ Basis: Phase 4 audits and fixes merged (#71–#76): accessibility audit closed (internal, automated, Chromium), privacy PASS, performance and offline PASS, release docs and licences, help numbers re-checked 2026-11-20, every source host vetted, Kettle and Volet Bleu renamed after the brand check.
+
+**Conditions, all three before any deploy:**
+1. **Human tone read** of Amsterdam, Rome, Brussels and the crisis-line wording (G3 point 2, T-4.3). Roman chooses and contacts the reader; findings are fixed and reviewed.
+2. **Trademark registry search by a person** (TMview, WIPO, KBO) for every name in content/brands.yaml (docs/patterns/BRAND_CHECK.md, "G4 trademark check"); any hit is renamed and reviewed.
+3. **Roman's final playthrough** (Phase 4 exit); his feedback is fixed and reviewed.
+
+Each condition is recorded here as met (date, who, result) before the deploy step runs. A launch more than 30 days after 2026-11-20 also needs another help-number re-check (G3 point 4). Release steps after the conditions: as listed in the sign-off doc (content freeze, Pages deploy step, Roman enables Pages, deploy, live smoke check, tag 1.0.0, announcement draft for Roman).
+
+*Open with Roman (2026-11-20):* the repository is already public, although G0 chose "private at first"; no visibility change was found after creation. Roman decides whether to keep it public.
 
 ## G5 — Localization waves (state: Open)
 Approve each additional locale before it ships.

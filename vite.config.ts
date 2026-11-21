@@ -62,6 +62,27 @@ function cspPlugin(): Plugin {
   };
 }
 
+/**
+ * GitHub Pages fallback (T-4.9): Pages answers an unknown path such as /scam-atlas-europe/qr/<id> with 404.html.
+ * The game has no URL router (QR routes are in-game payloads, never navigated to), so 404.html is a copy of the
+ * built index.html: a deep link opens the start screen, as the service worker's navigateFallback already does
+ * once installed. Asset URLs in it are absolute (base-prefixed), so it works at any depth. Not precached.
+ */
+function pagesFallbackPlugin(): Plugin {
+  return {
+    name: 'scam-atlas-pages-404',
+    apply: 'build',
+    generateBundle: {
+      order: 'post',
+      handler(_options, bundle) {
+        const index = bundle['index.html'];
+        if (index?.type !== 'asset') this.error('pages-404: index.html missing from the bundle');
+        this.emitFile({ type: 'asset', fileName: '404.html', source: index.source });
+      },
+    },
+  };
+}
+
 /** One theme colour for the page (index.html) and the installed app (manifest); T-4.6 P4. */
 const THEME_COLOR = '#fbf6ec'; // --p-paper-50, the light page background (tokens.css)
 
@@ -70,6 +91,7 @@ export default defineConfig({
   plugins: [
     contentPlugin(),
     cspPlugin(),
+    pagesFallbackPlugin(),
     preact(),
     VitePWA({
       registerType: 'autoUpdate',
@@ -101,8 +123,8 @@ export default defineConfig({
         // Icons are matched here; the plugin adds manifest.webmanifest itself (T-4.6: no duplicate entries).
         globPatterns: ['**/*.{js,css,html,svg,png}'],
         // Story art is precached for offline play, except review material that the game never loads
-        // (ART_DIRECTION §11, §12.1: art/samples and art/rig).
-        globIgnores: ['**/art/samples/**', '**/art/rig/**'],
+        // (ART_DIRECTION §11, §12.1: art/samples and art/rig), and the GitHub Pages 404.html copy (T-4.9).
+        globIgnores: ['**/art/samples/**', '**/art/rig/**', '404.html'],
         navigateFallback: 'index.html',
         cleanupOutdatedCaches: true,
         // T-4.6 P1: with skipWaiting (autoUpdate), the new worker also takes control of the open tab at once,

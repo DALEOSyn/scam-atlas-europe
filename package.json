@@ -20,6 +20,7 @@
     "redline:lint": "tsx scripts/redline-lint.ts",
     "e2e": "playwright test --trace off",
     "check": "npm run typecheck && npm run lint && npm run content:validate && npm run redline:lint && npm run test && npm run build && npm run test:bundle",
+    "g4:gate": "node scripts/g4-gate.ts",
     "test:bundle": "BUNDLE_REQUIRED=1 vitest run tests/unit/bundle-guard.test.ts"
   },
   "dependencies": {

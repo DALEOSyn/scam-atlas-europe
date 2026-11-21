@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
+import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { parse } from 'yaml';
 import { ROOT } from './helpers.ts';
 
-interface Step { uses?: string; run?: string; env?: Record<string, string> }
+interface Step { name?: string; uses?: string; run?: string; env?: Record<string, string> }
 interface Job { needs?: string | string[]; permissions?: Record<string, string>; concurrency?: unknown; environment?: { name: string }; steps: Step[] }
 interface Workflow { on: Record<string, unknown>; permissions?: Record<string, string>; jobs: Record<string, Job> }
 
@@ -26,6 +27,21 @@ describe('.github/workflows/deploy.yml', () => {
     const reaches = (name: string): boolean => name === 'gate' || needs(wf.jobs[name] as Job).some(reaches);
     for (const name of Object.keys(wf.jobs)) if (name !== 'gate') expect(needs(wf.jobs[name] as Job).some(reaches), name).toBe(true);
     expect(wf.jobs['gate']?.steps.some((s) => s.run === 'node scripts/g4-gate.ts docs/DECISIONS.md')).toBe(true);
+  });
+
+  it('runs only from main: the gate ref step refuses tags and other branches (rollback = revert on main, redeploy)', () => {
+    const gate = (wf.jobs['gate'] as Job).steps;
+    const refStep = gate[0];
+    expect(refStep?.name).toBe('Deploy only from main');
+    expect(gate.findIndex((s) => s.run === 'node scripts/g4-gate.ts docs/DECISIONS.md')).toBeGreaterThan(0);
+    const script = refStep?.run ?? '';
+    const run = (ref: string) => spawnSync('bash', ['-e', '-c', script], { env: { PATH: process.env['PATH'] ?? '', GITHUB_REF: ref }, encoding: 'utf8' });
+    expect(run('refs/heads/main').status).toBe(0);
+    for (const ref of ['refs/tags/v1.0.0', 'refs/tags/v0.9.0', 'refs/heads/release', 'refs/heads/main-old', 'refs/pull/78/merge', '']) {
+      const r = run(ref);
+      expect(r.status, ref).not.toBe(0);
+      expect(r.stdout, ref).toMatch(/::error::Deploys run only from main/);
+    }
   });
 
   it('only the deploy job gets pages and id-token write; it uses the github-pages environment and a concurrency group', () => {

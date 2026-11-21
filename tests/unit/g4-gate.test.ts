@@ -3,7 +3,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { checkG4Gate, isIsoDate } from '../../scripts/lib/g4-gate.ts';
+import { checkG4Gate, isFiller, isIsoDate, visibleLines } from '../../scripts/lib/g4-gate.ts';
 import { ROOT } from './helpers.ts';
 
 const TODAY = '2026-12-31';
@@ -82,6 +82,58 @@ describe('G4 deploy gate (scripts/lib/g4-gate.ts)', () => {
     expect(checkG4Gate(doc(ticked(1), ticked(2), `* [x] G4 condition 3 met: ${'2026-12-03, R, ok, confirmed by Roman 2026-12-13 (message)'}`), TODAY).ok).toBe(false);
     expect(checkG4Gate(doc(ticked(1), ticked(2), ticked(3)).replace('## G4', '## G4b'), TODAY).ok).toBe(false);
     expect(checkG4Gate(`${doc(ticked(1), ticked(2), ticked(3))}\n## G4 again`, TODAY).ok).toBe(false);
+  });
+
+  it('ignores lines Roman cannot see: three ticked lines in an HTML comment fail', () => {
+    const multi = checkG4Gate(doc(unticked(1), unticked(2), unticked(3), '<!--', ticked(1), ticked(2), ticked(3), '-->'), TODAY);
+    expect(multi.ok).toBe(false);
+    expect(multi.errors).toEqual(['condition 1: not met (unticked)', 'condition 2: not met (unticked)', 'condition 3: not met (unticked)']);
+    const single = checkG4Gate(doc(...[1, 2, 3].map((n) => `<!-- ${ticked(n)} -->`)), TODAY);
+    expect(single.ok).toBe(false);
+    expect(single.errors).toEqual(['condition 1: no marker line', 'condition 2: no marker line', 'condition 3: no marker line']);
+    // A comment opened on the line before and closed after still hides them.
+    expect(checkG4Gate(doc('Notes <!-- draft:', ticked(1), ticked(2), ticked(3), 'end -->'), TODAY).ok).toBe(false);
+  });
+
+  it('ignores lines Roman cannot see: three ticked lines in a code fence (``` or ~~~) fail', () => {
+    for (const f of ['```', '~~~', '````md']) {
+      const close = f.startsWith('`') ? f.replace(/[^`]/g, '') : '~~~';
+      const r = checkG4Gate(doc('Example:', f, ticked(1), ticked(2), ticked(3), close), TODAY);
+      expect(r.ok, f).toBe(false);
+      expect(r.errors, f).toEqual(['condition 1: no marker line', 'condition 2: no marker line', 'condition 3: no marker line']);
+    }
+    // A ``` line does not close a ~~~ fence.
+    expect(checkG4Gate(doc('~~~', '```', ticked(1), ticked(2), ticked(3), '~~~'), TODAY).ok).toBe(false);
+  });
+
+  it('visible ticked lines plus a commented or fenced duplicate count once and pass', () => {
+    const r = checkG4Gate(doc(ticked(1), ticked(2), ticked(3), `<!-- ${ticked(3)} -->`, '<!--', unticked(2), '-->', '```', ticked(1), '```'), TODAY);
+    expect(r).toEqual({ ok: true, errors: [] });
+    // A trailing comment on a visible marker line is stripped, not counted against it.
+    expect(checkG4Gate(doc(ticked(1), ticked(2), `${ticked(3)} <!-- recorded by producer -->`), TODAY).ok).toBe(true);
+  });
+
+  it('a "## G4" heading inside a comment or fence is not the section', () => {
+    const hidden = ['<!--', '## G4 old draft', ticked(1), ticked(2), ticked(3), '-->'].join('\n');
+    expect(checkG4Gate(`${doc(unticked(1), unticked(2), unticked(3))}\n${hidden}`, TODAY).ok).toBe(false);
+  });
+
+  it('rejects filler in who, result and how (TBD, TODO, n/a, -, ?, pending, placeholder; any case)', () => {
+    const fillers = ['TBD', 'tbd', 'TODO', 'ToDo', 'n/a', 'N/A', '-', '?', 'pending', 'Pending', 'PLACEHOLDER', 'placeholder.', '"TBD"', '(pending)', 'TBD later'];
+    for (const f of fillers) {
+      expect(isFiller(f), f).toBe(true);
+      const at = (who: string, result: string, how: string) => checkG4Gate(doc(ticked(1), ticked(2, `2026-12-02, ${who}, ${result}, confirmed by Roman 2026-12-12 (${how})`), ticked(3)), TODAY);
+      expect(at(f, 'ok', 'message').errors.join('\n'), `who ${f}`).toMatch(/condition 2: "who" is empty, a placeholder or filler/);
+      expect(at('Reader', f, 'message').errors.join('\n'), `result ${f}`).toMatch(/condition 2: "result" is empty, a placeholder or filler/);
+      expect(at('Reader', 'ok', f).errors.join('\n'), `how ${f}`).toMatch(/condition 2: the confirmation .* filler/);
+    }
+    for (const real of ['A. Reader', 'no findings left', 'two findings fixed, none pending', 'decision card', 'message in the project thread', 'J. Pendington']) {
+      expect(isFiller(real), real).toBe(false);
+    }
+  });
+
+  it('visibleLines blanks fenced lines and strips comment text, keeping line numbers', () => {
+    expect(visibleLines(['a <!-- b --> c', '```', 'x', '```', 'd <!-- e', 'f', 'g --> h'])).toEqual(['a  c', '', '', '', 'd', '', ' h']);
   });
 
   it('passes when all three are ticked with date, who, result and Roman\'s confirmation (results may contain commas)', () => {

@@ -67,3 +67,23 @@ test('404.html (the GitHub Pages fallback) is the game shell with base-prefixed 
   for (const r of refs) expect(r.startsWith(base.pathname), r).toBe(true);
   expect(body).toContain('<div id="app"></div>');
 });
+
+/**
+ * QA T1: what Pages does on a first visit (no service worker yet). vite preview falls back to index.html with 200
+ * on any path, so the deep link is fulfilled the Pages way instead: the built 404.html body with status 404.
+ */
+test('a Pages-style 404 on a deep link (qr/<id>, first visit) loads the game from 404.html', async ({ page, baseURL }) => {
+  const base = new URL(baseURL ?? '/');
+  const deep = new URL('qr/lisbon-parking-slip', base);
+  const fallback = await (await page.request.get(new URL('404.html', base).href)).text();
+  await page.route(deep.href, (route) => route.fulfill({ status: 404, contentType: 'text/html; charset=utf-8', body: fallback }));
+  const errors: string[] = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  const res = await page.goto(deep.href);
+  expect(res?.status()).toBe(404);
+  expect(await page.evaluate(() => navigator.serviceWorker.controller)).toBeNull();
+  await expect(page.getByRole('button', { name: 'Chapters' })).toBeVisible();
+  await expect(page.getByRole('alert')).toHaveCount(0);
+  expect(new URL(page.url()).pathname).toBe(deep.pathname);
+  expect(errors).toEqual([]);
+});

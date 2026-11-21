@@ -28,17 +28,20 @@ Check locally with `npm run g4:gate`. It exits 0 only when all three lines are t
 ## 3. Help re-check (only if launching after 2026-12-20)
 The help numbers were last re-checked on 2026-11-20 (docs/patterns/G4_HELP_RECHECK.md). If the launch date is more than 30 days after that, the fraud-researcher re-checks every help number, email and URL again (G3 point 4) before the deploy. Any change is fixed and reviewed, and the re-check date is recorded in STATUS.md.
 
-## 4. Roman enables Pages
-Only Roman does this, in the repository settings: **Settings → Pages → Build and deployment → Source: GitHub Actions**. No agent enables Pages or changes repository settings through the GitHub API.
+## 4. Roman enables Pages and becomes the deploy's required reviewer
+Only Roman does this, in the repository settings. No agent enables Pages or changes repository settings through the GitHub API.
 
-This creates the `github-pages` environment. By default it allows deployments from `main` only. To allow a rollback redeploy from a release tag (step 10), add the tag rule `v*` under Settings → Environments → github-pages → Deployment branches and tags.
+1. **Settings → Pages → Build and deployment → Source: GitHub Actions.** This creates the `github-pages` environment.
+2. **Settings → Environments → github-pages → Required reviewers:** add himself and save. Every deploy then waits for his click on "Review deployments" before the `deploy` job starts.
+
+The required-reviewer approval is the real control: agents cannot fake it. The `gate` job (step 1's DECISIONS.md lines) only stops early or accidental runs, because anyone who can edit DECISIONS.md on `main` could also tick the lines.
 
 ## 5. Run the deploy
 Actions → "Deploy to GitHub Pages" → Run workflow → branch `main`. The jobs run in this order:
-1. `gate`: checks the ref (main or a `vX.Y.Z` tag), then runs `node scripts/g4-gate.ts docs/DECISIONS.md`.
+1. `gate`: refuses any ref other than `main`, then runs `node scripts/g4-gate.ts docs/DECISIONS.md`.
 2. `build`: the same checks as ci.yml, then `npm run build` with `VITE_BASE=/scam-atlas-europe/`, then `npm run test:bundle`, then the Pages artifact upload.
 3. `e2e`: the full e2e suite, then the smoke and base-path specs under `/scam-atlas-europe/`.
-4. `deploy`: `actions/deploy-pages` into the `github-pages` environment. Only this job gets `pages: write` and `id-token: write`.
+4. `deploy`: waits for Roman's approval on the `github-pages` environment (step 4), then runs `actions/deploy-pages`. Only this job gets `pages: write` and `id-token: write`.
 
 Write down the commit SHA that was deployed (from the run summary).
 
@@ -63,5 +66,5 @@ Roman posts the announcement. The draft is in docs/ANNOUNCEMENT-DRAFT.md. Agents
 
 ## 10. Rollback
 - **Take the site down:** Roman goes to Settings → Pages and unpublishes the site, or disables Pages. The game stops being served. Players who installed it keep their cached copy until their browser updates it.
-- **Go back to an earlier release:** Actions → "Deploy to GitHub Pages" → Run workflow → choose the tag (for example `v1.0.0`). The tag rule from step 4 must be in place. Players' service workers pick up the redeployed build on their next visit (autoUpdate).
+- **Go back to an earlier release:** revert the bad change on `main` through a normal reviewed PR (for example `git revert` of the commits after `v1.0.0`), let CI go green, then run the deploy from `main` again (step 5, with Roman's approval). Deploys never run from a tag or another branch. Players' service workers pick up the redeployed build on their next visit (autoUpdate).
 - Record the rollback and its reason in STATUS.md, and fix forward on `main` with normal reviews.

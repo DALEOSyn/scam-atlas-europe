@@ -8,7 +8,9 @@
  *
  * Fields: met date (YYYY-MM-DD, a real calendar date), who, result (may contain commas), then
  * ", confirmed by Roman <YYYY-MM-DD> (<how>)" where <how> names the confirmation (a decision-card
- * tap or his message in the project thread). Rules: lower-case `x` only; no `<placeholder>` text;
+ * tap or his message in the project thread). Rules: lower-case `x` only; no `<placeholder>` text and no
+ * filler (TBD, TODO, n/a, -, ?, pending, placeholder) in who, result or how; lines Roman cannot see in the
+ * rendered page (inside HTML comments or fenced code blocks) are ignored;
  * met date <= confirmation date; confirmation on or after the G4 approval (2026-11-21); no date
  * after today. Any line in the G4 section that starts like a marker but does not parse fails the gate.
  */
@@ -33,9 +35,9 @@ export function isIsoDate(s: string): boolean {
   return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s;
 }
 
-/** The lines of the "## G4" section (up to the next "## " heading); null if the heading is missing or repeated. */
+/** The visible lines of the "## G4" section (up to the next "## " heading); null if the heading is missing or repeated. */
 export function g4Section(markdown: string): string[] | null {
-  const lines = markdown.split(/\r?\n/);
+  const lines = visibleLines(markdown.split(/\r?\n/));
   const starts = lines.flatMap((l, i) => (/^## G4\b/.test(l) ? [i] : []));
   if (starts.length !== 1) return null;
   const start = starts[0] as number;
@@ -44,7 +46,62 @@ export function g4Section(markdown: string): string[] | null {
   return end === -1 ? rest : rest.slice(0, end);
 }
 
-const placeholder = (s: string) => /[<>]/.test(s);
+/** Exact filler values (case-insensitive, after trimming quotes, brackets and trailing dots). */
+const FILLER = new Set(['tbd', 'tba', 'todo', 'n/a', 'na', '-', '--', '—', '–', '?', '??', '...', '…', 'pending', 'placeholder', 'xxx', 'fixme']);
+
+/** True if a field is a `<placeholder>`, obvious filler, punctuation only, or mentions TBD/TODO/placeholder/FIXME. */
+export function isFiller(field: string): boolean {
+  const s = field.trim();
+  if (s === '' || /[<>]/.test(s)) return true;
+  const core = s.replace(/^["'`([{\s]+|["'`)\]}\s.]+$/g, '').toLowerCase();
+  if (FILLER.has(core) || FILLER.has(s.toLowerCase())) return true;
+  if (!/[\p{L}\p{N}]/u.test(s)) return true;
+  return /\b(?:tbd|tba|todo|fixme|placeholder)\b/i.test(s);
+}
+
+/**
+ * The lines as Roman sees them on the rendered page: text inside HTML comments (single or multi-line) is
+ * removed and lines inside fenced code blocks (``` or ~~~) are blanked, so a hidden or quoted marker never counts.
+ */
+export function visibleLines(lines: readonly string[]): string[] {
+  const out: string[] = [];
+  let inComment = false;
+  let fence: { char: string; len: number } | null = null;
+  for (const line of lines) {
+    if (fence) {
+      const close = /^ {0,3}(`{3,}|~{3,})\s*$/.exec(line);
+      if (close?.[1] && close[1][0] === fence.char && close[1].length >= fence.len) fence = null;
+      out.push('');
+      continue;
+    }
+    if (!inComment) {
+      const open = /^ {0,3}(`{3,}|~{3,})/.exec(line);
+      if (open?.[1]) {
+        fence = { char: open[1][0] ?? '`', len: open[1].length };
+        out.push('');
+        continue;
+      }
+    }
+    let visible = '';
+    let rest = line;
+    while (rest.length > 0) {
+      if (inComment) {
+        const end = rest.indexOf('-->');
+        if (end === -1) break;
+        rest = rest.slice(end + 3);
+        inComment = false;
+      } else {
+        const start = rest.indexOf('<!--');
+        if (start === -1) { visible += rest; break; }
+        visible += rest.slice(0, start);
+        rest = rest.slice(start + 4);
+        inComment = true;
+      }
+    }
+    out.push(visible.trimEnd());
+  }
+  return out;
+}
 
 /** Checks one ticked marker body ("<date>, <who>, <result>, confirmed by Roman <date> (<how>)"). */
 function checkBody(n: number, body: string, today: string): string[] {
@@ -57,15 +114,15 @@ function checkBody(n: number, body: string, today: string): string[] {
   const result = resultParts.join(', ');
   const confirm = /^(\S+) \((.*)\)$/.exec(body.slice(at + CONFIRM_SEP.length));
   if (!isIsoDate(date.trim()) || date !== date.trim()) errs.push(`condition ${n}: met date "${date}" is not YYYY-MM-DD`);
-  if (who.trim() === '' || placeholder(who)) errs.push(`condition ${n}: "who" is empty or a placeholder`);
-  if (result.trim() === '' || placeholder(result)) errs.push(`condition ${n}: "result" is empty or a placeholder`);
+  if (isFiller(who)) errs.push(`condition ${n}: "who" is empty, a placeholder or filler`);
+  if (isFiller(result)) errs.push(`condition ${n}: "result" is empty, a placeholder or filler`);
   if (!confirm) {
     errs.push(`condition ${n}: confirmation must read "confirmed by Roman <YYYY-MM-DD> (<how>)"`);
     return errs;
   }
   const [, cDate = '', how = ''] = confirm;
   if (!isIsoDate(cDate)) errs.push(`condition ${n}: confirmation date "${cDate}" is not YYYY-MM-DD`);
-  if (how.trim() === '' || placeholder(how)) errs.push(`condition ${n}: the confirmation (how Roman confirmed) is empty or a placeholder`);
+  if (isFiller(how)) errs.push(`condition ${n}: the confirmation (how Roman confirmed) is empty, a placeholder or filler`);
   if (errs.length > 0) return errs;
   if (date > cDate) errs.push(`condition ${n}: met ${date} is after Roman's confirmation ${cDate}`);
   if (cDate < G4_APPROVED) errs.push(`condition ${n}: confirmation ${cDate} is before the G4 approval ${G4_APPROVED}`);

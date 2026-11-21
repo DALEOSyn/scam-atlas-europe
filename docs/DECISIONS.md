@@ -83,6 +83,12 @@ Approve going public: deploy to GitHub Pages (or other host), domain, announceme
 2. **Trademark registry search by a person** (TMview, WIPO, KBO) for every name in content/brands.yaml (docs/patterns/BRAND_CHECK.md, "G4 trademark check"); any hit is renamed and reviewed.
 3. **Roman's final playthrough** (Phase 4 exit); his feedback is fixed and reviewed.
 
+**Condition record (machine-checked; T-4.9).** The deploy workflow's `gate` job (`node scripts/g4-gate.ts`, rules in scripts/lib/g4-gate.ts) fails unless each line below is ticked and filled in. Format, one line per condition: `- [x] G4 condition <n> met: <YYYY-MM-DD>, <who>, <result>, confirmed by Roman <YYYY-MM-DD> (<how>)`, where `<how>` names his confirmation ("decision card" or "message in the project thread"). Lower-case `x` only; no `<…>` placeholder left; the met date is on or before the confirmation date, the confirmation is on or after 2026-11-21, and neither is in the future; exactly one line per condition. A line is ticked only after Roman's own confirmation (next paragraph). Lines inside HTML comments or code fences do not count, and filler such as TBD, TODO, n/a, -, ?, pending or placeholder is rejected. The gate only stops early or accidental runs; the real control is Roman's own approval as the required reviewer on the `github-pages` environment, which every deploy waits for (docs/RELEASE.md step 4).
+
+- [ ] G4 condition 1 met: <date>, <who>, <result>, confirmed by Roman <date> (<how>)
+- [ ] G4 condition 2 met: <date>, <who>, <result>, confirmed by Roman <date> (<how>)
+- [ ] G4 condition 3 met: <date>, <who>, <result>, confirmed by Roman <date> (<how>)
+
 Each condition is recorded here as met (date, who, result) before the deploy step runs, and only on Roman's own confirmation in the project thread (a decision-card tap or his message); an agent's or reviewer's report alone never marks a condition met. A launch more than 30 days after 2026-11-20 also needs another help-number re-check (G3 point 4). Release steps after the conditions: as listed in the sign-off doc (content freeze, Pages deploy step, Roman enables Pages, deploy, live smoke check, tag 1.0.0, announcement draft for Roman).
 
 *Open with Roman (2026-11-20):* the repository is already public, although G0 chose "private at first"; no visibility change was found after creation. Roman decides whether to keep it public.

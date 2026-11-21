@@ -104,7 +104,7 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
     if (msg.type() === 'error') consoleErrors.push(msg.text());
   });
 
-  await page.goto('/');
+  await page.goto('./');
   await expect(page.getByRole('heading', { level: 1, name: 'Scam Atlas: Europe' })).toBeVisible();
   await axeClean(page);
   await page.getByRole('button', { name: 'Start' }).click();
@@ -234,7 +234,7 @@ test('tutorial chapter: full play-through on the new devices, What now?, stamp a
 });
 
 test('tutorial 0-2: fall on the training page, damage control feedback, blame-free debrief', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('./');
   await page.getByRole('button', { name: 'Start' }).click();
   await skipScene(page, 'home-arrival');
   await passIntro(page);
@@ -300,7 +300,7 @@ for (const vp of [
     test.setTimeout(90_000);
     await page.setViewportSize({ width: vp.width, height: vp.height });
     await page.emulateMedia({ reducedMotion: 'reduce' });
-    await page.goto('/');
+    await page.goto('./');
     const noHScroll = async () => expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
     await page.getByRole('button', { name: 'Start' }).click();
     await skipScene(page, 'home-arrival');
@@ -364,7 +364,7 @@ for (const vp of [
 
 /** Play the tutorial to 0-6 beat 3 (the IT call) with Standard timers. */
 async function reachBossCall(page: Page) {
-  await page.goto('/');
+  await page.goto('./');
   // Reach 0-6 beat 3 quickly with timers on (Standard).
   await page.getByRole('button', { name: 'Start' }).click();
   await skipScene(page, 'home-arrival');
@@ -446,7 +446,7 @@ test('call, step-through mode: after the last "Next line" focus stays in the cal
 
 test('1440x900: with every detail checked, hidden text stays inside the scrolling rail (QA R2)', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('/');
+  await page.goto('./');
   await page.getByRole('button', { name: 'Start' }).click();
   await skipScene(page, 'home-arrival');
   await passIntro(page);
@@ -463,7 +463,7 @@ test('1440x900: with every detail checked, hidden text stays inside the scrollin
 });
 
 test('keyboard only: skip link, Check from the Details list, tag, act, debrief (shortcuts off)', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('./');
   await page.keyboard.press('Tab');
   await expect(page.getByRole('button', { name: 'Start' })).toBeFocused();
   await page.keyboard.press('Enter');
@@ -520,7 +520,7 @@ test('keyboard only: skip link, Check from the Details list, tag, act, debrief (
 });
 
 test('reload mid-chapter offers Continue and resumes at the next scenario', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('./');
   await page.getByRole('button', { name: 'Start' }).click();
   await skipScene(page, 'home-arrival');
   await passIntro(page);
@@ -532,14 +532,15 @@ test('reload mid-chapter offers Continue and resumes at the next scenario', asyn
   await expect(page.getByRole('heading', { name: 'Email from Waymarker mail' })).toBeFocused();
 });
 
-test('service worker registers (offline-capable)', async ({ page }) => {
-  await page.goto('/');
+test('service worker registers (offline-capable)', async ({ page, baseURL }) => {
+  await page.goto('./');
   const scope = await page.evaluate(async () => (await navigator.serviceWorker.ready).scope);
-  expect(new URL(scope).pathname).toBe('/');
+  // The base path: / by default, /scam-atlas-europe/ with PW_BASE_PATH (T-4.9).
+  expect(new URL(scope).pathname).toBe(new URL(baseURL ?? '/').pathname);
 });
 
 test('production build ships a CSP that blocks form submission and a web app manifest', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('./');
   const csp = await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute('content');
   expect(csp).toContain("form-action 'none'");
   expect(csp).toContain("connect-src 'self'");
@@ -547,7 +548,7 @@ test('production build ships a CSP that blocks form submission and a web app man
 });
 
 test('start screen: Chapters list, Settings page; Start continues the next unfinished chapter (QA B1, M7)', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('./');
   await page.getByRole('button', { name: 'Chapters' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Chapters' })).toBeFocused();
   await expect(page.locator('[data-chapter="home"]')).toContainText('Not started');
@@ -568,7 +569,7 @@ test('start screen: Chapters list, Settings page; Start continues the next unfin
 
 test('in a scenario: sticky HUD, Settings dialog from the menu, Jump to your options on a small phone (QA M5, M6, M7)', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 560 });
-  await page.goto('/');
+  await page.goto('./');
   await page.getByRole('button', { name: 'Start' }).click();
   await skipScene(page, 'home-arrival');
   await passIntro(page);
@@ -605,7 +606,7 @@ test('in a scenario: sticky HUD, Settings dialog from the menu, Jump to your opt
 test('0-3: "Go to your inbox", then the reset email\'s timer runs out twice → ★, not ★★★ (QA T-2.8 M1)', async ({ page }) => {
   test.setTimeout(90_000);
   await page.clock.install();
-  await page.goto('/');
+  await page.goto('./');
   await page.getByRole('button', { name: 'Start' }).click();
   await skipScene(page, 'home-arrival');
   await passIntro(page);
@@ -628,7 +629,7 @@ test('0-3: "Go to your inbox", then the reset email\'s timer runs out twice → 
 });
 
 test('start screen: Done on Settings and Back from Chapters return focus to their buttons (QA T-2.8 m1, m2)', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('./');
   await page.getByRole('button', { name: 'Settings' }).click();
   await expect(page.getByRole('heading', { level: 1, name: 'Settings' })).toBeFocused();
   await page.getByRole('button', { name: 'Done' }).click();

@@ -14,7 +14,15 @@ const executablePath = process.env.PW_CHROMIUM_PATH;
  */
 const port = Number(process.env['PW_PORT'] ?? 4173);
 if (!Number.isInteger(port) || port < 1024 || port > 65534) throw new Error(`PW_PORT must be a port number 1024–65534 (the harness uses PW_PORT + 1), got "${process.env['PW_PORT']}"`);
-const baseURL = `http://127.0.0.1:${port}`;
+/**
+ * T-4.9: PW_BASE_PATH (e.g. /scam-atlas-europe/, the GitHub Pages subpath) builds with VITE_BASE set to it and points
+ * baseURL at that path. Specs that should run under a subpath navigate with relative URLs (`page.goto('./')`).
+ */
+const basePath = process.env['PW_BASE_PATH'] ?? '/';
+if (!/^\/(?:[a-z0-9-]+\/)*$/.test(basePath)) throw new Error(`PW_BASE_PATH must look like /path/ (leading and trailing slash), got "${basePath}"`);
+const origin = `http://127.0.0.1:${port}`;
+const baseURL = `${origin}${basePath}`;
+const viteBase = basePath === '/' ? '' : `VITE_BASE=${basePath} `;
 /** The scene-engine harness (tests/e2e/harness, test-only build) runs on the next port. */
 export const HARNESS_URL = `http://127.0.0.1:${port + 1}`;
 
@@ -35,7 +43,8 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: `npm run build && npx vite preview --port ${port} --strictPort --host 127.0.0.1`,
+      // VITE_BASE goes to both commands: the preview server must serve the build under the same subpath.
+      command: `${viteBase}npm run build && ${viteBase}npx vite preview --port ${port} --strictPort --host 127.0.0.1`,
       url: baseURL,
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,

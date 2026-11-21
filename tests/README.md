@@ -15,3 +15,12 @@ PW_PORT=4199 npx playwright test --trace off --workers=1
 ```
 
 The server is started with `--strictPort`, so a port that is already taken fails fast instead of silently moving. Outside CI an existing server on the port is reused (`reuseExistingServer`). Make sure it is this worktree's server, or stop it first.
+
+## Subpath base (`PW_BASE_PATH`)
+The site is deployed under `/scam-atlas-europe/` on GitHub Pages. `PW_BASE_PATH=/scam-atlas-europe/` builds and previews with `VITE_BASE` set to that path, and points `baseURL` at it. Only specs that navigate with relative URLs (`page.goto('./')`) work under a subpath: `smoke.spec.ts` and `base-path.spec.ts` (manifest, icons, service worker scope, offline deep link `qr/<id>`, `404.html`). The deploy workflow runs both this way:
+
+```sh
+PW_BASE_PATH=/scam-atlas-europe/ PW_PORT=4199 npx playwright test --trace off tests/e2e/smoke.spec.ts tests/e2e/base-path.spec.ts
+```
+
+Use a port that no server is using yet, because an existing server on it (perhaps a root build) would be reused.

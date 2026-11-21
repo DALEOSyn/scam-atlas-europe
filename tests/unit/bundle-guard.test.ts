@@ -167,3 +167,18 @@ describe.runIf(distBuilt)('performance budgets (T-4.6)', () => {
     expect(existsSync(resolve(DIST, distPath(apple ?? '')))).toBe(true);
   });
 });
+
+/** T-4.9: GitHub Pages serves 404.html for deep links (no URL router); it must be the built index.html and stay out of the precache. */
+describe('GitHub Pages 404.html fallback', () => {
+  it.runIf(distBuilt)('dist/404.html is a byte copy of dist/index.html and is not precached', () => {
+    expect(readFileSync(resolve(DIST, '404.html'), 'utf8')).toBe(html());
+    expect(readFileSync(resolve(DIST, 'sw.js'), 'utf8')).not.toMatch(/404\.html/);
+  });
+
+  it.runIf(distBuilt)('index.html references only base-prefixed absolute paths (works from any depth, e.g. /qr/<id>)', () => {
+    const refs = [...html().matchAll(/\b(?:src|href)="([^"]+)"/g)].map((m) => m[1] ?? '');
+    expect(refs.length).toBeGreaterThan(0);
+    const base = process.env['VITE_BASE'] ?? '/';
+    for (const r of refs) expect(r.startsWith(base), r).toBe(true);
+  });
+});
